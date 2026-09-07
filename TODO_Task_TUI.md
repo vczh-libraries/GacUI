@@ -52,11 +52,8 @@
   - Title calls Consone::SetTitle.
   - TUI immediately takes control when SetupTui*Renderer is called, but only when Show is called, it renders. Hide/Close no ops, all Show functions are the same.
   - The main window will always rendered ans treated as Activated.
-- TuiSkin, organized following darkskin, also needs to be added to `Build.ps1 -Project GacUI`
-  - Exclude ribbon and toolbar since they requires image.
-    - Using them in GacUI XML Resource leading to crash is expected, due to not offering proper control templates.
-  - Colors are listed in workflow global variables, not hardcoded in all XMLs. `-eval` binding could be used in XML to use them.
-  - Polygons on darkskin is to render icons without actually using an image, such thing should be replaced by one character in TuiSkin.
+- TuiSkin, organized following darkskin, also needs to be added to `Build.ps1 -Project GacUI`.
+  - Check out `GacUILayout.md` for details.
 - ListView and DataGrid should not use non-detail view. Inside `SetView` calling `GetTuiApplication` and disable non-detail view accordingly. DataGrid has its own view which is allowed.
   - Proper item template and cell visualizers need to have a TUI specific version, `SetView` could use it when `GetTuiApplication` is not null.
   - When `GetTuiApplication` is not null, ListView's non-detail views are treated as detail view.
