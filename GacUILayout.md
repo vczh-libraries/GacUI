@@ -34,8 +34,10 @@
 
 ## Best Practice for TUI Based Layout
 
-- Usually there should be no distance between objects.
-  - Unless if two buttons or something without a border are stacking vertically, keep one pixel between them would be better.
+- Usually there should be no distance between objects, no matter vertically or horizontally.
+  - For any two objects without visible borders, keep one pixel between them when they are stacking vertically.
+    - There is always no need to leave one pixel between objects with borders in one or both, because borders in TUI already have a visible distance due to the representing character.
+    - There is always no need to leave one pixel between objects stacking horizontally.
   - There is no need to keep a distance if they are stacking horizontally, as TuiSkin requires the control has one pixel to before and after the text.
   - There is no need to keep a distance between two objects with borders, since borders are rendered by characters, they are visibly having a distance.
 
