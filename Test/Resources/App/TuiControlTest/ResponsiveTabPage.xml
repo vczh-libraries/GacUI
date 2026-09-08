@@ -1,7 +1,7 @@
 <Folder>
   <Folder name="ResponsiveComponents">
     <Instance name="ResponsiveViewResource">
-      <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuidemo::TuiResponsiveViewControl">
+      <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiResponsiveViewControl">
         <CustomControl ref.Name="self">
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="0" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
             <att.Rows>
@@ -17,7 +17,7 @@
             </att.Columns>
             <Cell Site="row:0 column:0 rowSpan:5">
               <Bounds MinSizeLimitation="LimitToElementAndChildren">
-                <elements:TuiBorder Color-eval="tuiskin::TuiTheme::GetColorPackage().ControlBorder" />
+                <TuiBorder Color-eval="tuiskin::TuiTheme::GetColorPackage().ControlBorder" />
                 <ResponsiveView ref.Name="responsive" AlignmentToParent="left:1 top:1 right:1 bottom:1">
                   <att.SharedControls>
                     <DocumentTextBox ref.Name="documentBox" EditMode="Editable" Text="Edit me!" />
@@ -84,7 +84,7 @@
       </Instance>
     </Instance>
     <Instance name="ResponsiveStackResource">
-      <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuidemo::TuiResponsiveStackControl">
+      <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiResponsiveStackControl">
         <CustomControl ref.Name="self">
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="0" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
             <att.Rows>
@@ -100,7 +100,7 @@
             </att.Columns>
             <Cell Site="row:0 column:0 rowSpan:5">
               <Bounds MinSizeLimitation="LimitToElementAndChildren">
-                <elements:TuiBorder Color-eval="tuiskin::TuiTheme::GetColorPackage().ControlBorder" />
+                <TuiBorder Color-eval="tuiskin::TuiTheme::GetColorPackage().ControlBorder" />
                 <ResponsiveStack ref.Name="responsive" AlignmentToParent="left:1 top:1 right:1 bottom:1">
                   <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" Padding="0" MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical">
                     <StackItem>
@@ -178,7 +178,7 @@
       </Instance>
     </Instance>
     <Instance name="ResponsiveGroupResource">
-      <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuidemo::TuiResponsiveGroupControl">
+      <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiResponsiveGroupControl">
         <CustomControl ref.Name="self">
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="0" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
             <att.Rows>
@@ -194,7 +194,7 @@
             </att.Columns>
             <Cell Site="row:0 column:0 rowSpan:5">
               <Bounds MinSizeLimitation="LimitToElementAndChildren">
-                <elements:TuiBorder Color-eval="tuiskin::TuiTheme::GetColorPackage().ControlBorder" />
+                <TuiBorder Color-eval="tuiskin::TuiTheme::GetColorPackage().ControlBorder" />
                 <ResponsiveGroup ref.Name="responsive" AlignmentToParent="left:1 top:1 right:1 bottom:1">
                   <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" Padding="0" MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical">
                     <StackItem>
@@ -272,7 +272,7 @@
       </Instance>
     </Instance>
     <Instance name="ResponsiveTabPageResource">
-      <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuidemo::TuiResponsiveTabPage" xmlns:demo="tuidemo::*">
+      <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiResponsiveTabPage" xmlns:demo="tuidemo::*">
         <TabPage ref.Name="self" Text="Responsive">
           <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />

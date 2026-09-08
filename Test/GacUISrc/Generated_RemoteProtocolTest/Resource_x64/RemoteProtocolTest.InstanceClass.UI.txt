@@ -2,6 +2,7 @@
 module <constructor>rptest::ClickMeTab;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -628,6 +629,7 @@ namespace rptest
 module <instance>rptest::ClickMeTab;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -707,6 +709,7 @@ namespace rptest
 module <constructor>rptest::DataGridTab;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -950,6 +953,7 @@ namespace rptest
 module <instance>rptest::DataGridTab;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -995,6 +999,7 @@ namespace rptest
 module <constructor>rptest::DocumentTab;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2030,6 +2035,7 @@ namespace rptest
 module <instance>rptest::DocumentTab;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2073,6 +2079,7 @@ namespace rptest
 module <constructor>rptest::RpMainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2634,6 +2641,7 @@ namespace rptest
 module <instance>rptest::RpMainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;

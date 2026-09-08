@@ -1,31 +1,31 @@
 <Folder>
   <Instance name="DocumentLabelTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiDocumentLabelTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiDocumentLabelTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <DocumentLabelTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" CaretColor-eval="tuiskin::tuiColors.ControlText" BaselineDocument-eval="tuiskin::CreateBaselineDocument()">
         <SolidBackground ref.Style="background" />
       </DocumentLabelTemplate>
     </Instance>
   </Instance>
   <Instance name="DocumentTextBoxTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiDocumentTextBoxTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiDocumentTextBoxTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <DocumentLabelTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" CaretColor-eval="tuiskin::tuiColors.ControlText" BaselineDocument-eval="tuiskin::CreateBaselineDocument()" ContainerComposition-ref="container">
         <SolidBackground ref.Style="background" />
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <elements:TuiBorder ref.Style="border" />
+          <TuiBorder ref.Style="border" />
           <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1" />
         </Bounds>
       </DocumentLabelTemplate>
     </Instance>
   </Instance>
   <Instance name="DocumentViewerTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiDocumentViewerTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiDocumentViewerTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <DocumentViewerTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" CaretColor-eval="tuiskin::tuiColors.ControlText" BaselineDocument-eval="tuiskin::CreateBaselineDocument()">
         <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
         <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
         <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
         <SolidBackground ref.Style="background" />
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <elements:TuiBorder ref.Style="border" />
+          <TuiBorder ref.Style="border" />
           <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:1 top:1 right:1 bottom:1">
             <att.HScrollTemplate>tuiskin::TuiHScrollTemplate</att.HScrollTemplate>
             <att.VScrollTemplate>tuiskin::TuiVScrollTemplate</att.VScrollTemplate>

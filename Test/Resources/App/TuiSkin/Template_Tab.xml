@@ -1,6 +1,6 @@
 <Folder>
   <Instance name="TabHeaderButtonTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiTabHeaderButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiTabHeaderButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground ref.Style="itemBackground" />
         <Bounds AlignmentToParent="left:1 top:0 right:1 bottom:0">
@@ -10,7 +10,7 @@
     </Instance>
   </Instance>
   <Instance name="TabHeaderTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiTabHeaderTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiTabHeaderTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <ref.Parameter Name="CurrentTabPage" Class="presentation::controls::GuiTabPage" />
       <ref.Members><![CDATA[prop Commands : ITabCommandExecutor* = null {}]]></ref.Members>
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
@@ -22,11 +22,11 @@
     </Instance>
   </Instance>
   <Instance name="TabTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiTabTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiTabTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <TabTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container" TabOrder="LeftToRight">
         <SolidBackground ref.Style="background" />
         <Bounds AlignmentToParent-bind="{left:0 top:(header.CachedBounds.y2-header.CachedBounds.y1-1) right:0 bottom:0}">
-          <elements:TuiBorder Color-bind="self.VisuallyEnabled ? tuiskin::tuiColors.ItemBackgroundSelected : tuiskin::tuiColors.ItemBackground" />
+          <TuiBorder Color-bind="self.VisuallyEnabled ? tuiskin::tuiColors.ItemBackgroundSelected : tuiskin::tuiColors.ItemBackground" />
           <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1" />
         </Bounds>
         <RepeatFlow ref.Name="header" AlignmentToParent="left:2 top:0 right:2 bottom:-1" ItemTemplate="tuiskin::TuiTabHeaderTemplate" ItemSource-bind="self.TabPages">

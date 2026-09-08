@@ -2,6 +2,7 @@
 module <constructor>demo::DataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -690,6 +691,7 @@ namespace demo
 module <instance>demo::DataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -755,6 +757,7 @@ namespace demo
 module <constructor>demo::ElementTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -1479,6 +1482,7 @@ namespace demo
 module <instance>demo::ElementTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -1521,6 +1525,7 @@ namespace demo
 module <constructor>demo::ListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2007,6 +2012,7 @@ namespace demo
 module <instance>demo::ListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2065,6 +2071,7 @@ namespace demo
 module <constructor>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -4509,6 +4516,7 @@ namespace demo
 module <instance>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -4590,6 +4598,7 @@ namespace demo
 module <constructor>demo::RepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5248,6 +5257,7 @@ namespace demo
 module <instance>demo::RepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5290,6 +5300,7 @@ namespace demo
 module <constructor>demo::SubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -6511,6 +6522,7 @@ namespace demo
 module <instance>demo::SubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -6555,6 +6567,7 @@ namespace demo
 module <constructor>demo::TextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7232,6 +7245,7 @@ namespace demo
 module <instance>demo::TextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7278,6 +7292,7 @@ namespace demo
 module <constructor>demo::TreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7795,6 +7810,7 @@ namespace demo
 module <instance>demo::TreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7845,6 +7861,7 @@ namespace demo
 module <constructor>demo::AnimationTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -8590,6 +8607,7 @@ namespace demo
 module <instance>demo::AnimationTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9232,6 +9250,7 @@ namespace demo
 module <constructor>demo::DateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9438,6 +9457,7 @@ namespace demo
 module <instance>demo::DateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9479,6 +9499,7 @@ namespace demo
 module <constructor>demo::DateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9822,6 +9843,7 @@ namespace demo
 module <instance>demo::DateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9924,6 +9946,7 @@ namespace demo
 module <constructor>demo::TextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10130,6 +10153,7 @@ namespace demo
 module <instance>demo::TextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10171,6 +10195,7 @@ namespace demo
 module <constructor>demo::CategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10519,6 +10544,7 @@ namespace demo
 module <instance>demo::CategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10582,6 +10608,7 @@ namespace demo
 module <constructor>demo::CategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10827,6 +10854,7 @@ namespace demo
 module <instance>demo::CategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10870,6 +10898,7 @@ namespace demo
 module <constructor>demo::CategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11007,6 +11036,7 @@ namespace demo
 module <instance>demo::CategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11059,6 +11089,7 @@ namespace demo
 module <constructor>demo::CategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11259,6 +11290,7 @@ namespace demo
 module <instance>demo::CategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11300,6 +11332,7 @@ namespace demo
 module <constructor>demo::GenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11439,6 +11472,7 @@ namespace demo
 module <instance>demo::GenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11502,6 +11536,7 @@ namespace demo
 module <constructor>demo::GenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11747,6 +11782,7 @@ namespace demo
 module <instance>demo::GenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11790,6 +11826,7 @@ namespace demo
 module <constructor>demo::GenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11854,6 +11891,7 @@ namespace demo
 module <instance>demo::GenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11906,6 +11944,7 @@ namespace demo
 module <constructor>demo::GenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -12033,6 +12072,7 @@ namespace demo
 module <instance>demo::GenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -12074,6 +12114,7 @@ namespace demo
 module <constructor>demo::DatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -12944,6 +12985,7 @@ namespace demo
 module <instance>demo::DatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -12986,6 +13028,7 @@ namespace demo
 module <constructor>demo::HyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -13233,6 +13276,7 @@ namespace demo
 module <instance>demo::HyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -13296,6 +13340,7 @@ namespace demo
 module <constructor>demo::DocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -16499,6 +16544,7 @@ namespace demo
 module <instance>demo::DocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -16757,6 +16803,7 @@ namespace demo
 module <constructor>demo::DocumentEditorRibbon;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -18801,6 +18848,7 @@ namespace demo
 module <instance>demo::DocumentEditorRibbon;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -19018,6 +19066,7 @@ namespace demo
 module <constructor>demo::StyleItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -19384,6 +19433,7 @@ namespace demo
 module <instance>demo::StyleItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -19486,6 +19536,7 @@ namespace demo
 module <constructor>demo::DocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -20650,6 +20701,7 @@ namespace demo
 module <instance>demo::DocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -20691,6 +20743,7 @@ namespace demo
 module <constructor>demo::EmbeddedControlsSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -21726,6 +21779,7 @@ namespace demo
 module <instance>demo::EmbeddedControlsSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -21768,6 +21822,7 @@ namespace demo
 module <constructor>demo::LocaleSelector;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -21948,6 +22003,7 @@ namespace demo
 module <instance>demo::LocaleSelector;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -22010,6 +22066,7 @@ namespace demo
 module <constructor>demo::LocalizedColorDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -22144,6 +22201,7 @@ namespace demo
 module <instance>demo::LocalizedColorDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -22186,6 +22244,7 @@ namespace demo
 module <constructor>demo::LocalizedDialogsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -22446,6 +22505,7 @@ namespace demo
 module <instance>demo::LocalizedDialogsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -22488,6 +22548,7 @@ namespace demo
 module <constructor>demo::LocalizedFileDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -23265,6 +23326,7 @@ namespace demo
 module <instance>demo::LocalizedFileDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -23355,6 +23417,7 @@ namespace demo
 module <constructor>demo::LocalizedFontDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -23525,6 +23588,7 @@ namespace demo
 module <instance>demo::LocalizedFontDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -23567,6 +23631,7 @@ namespace demo
 module <constructor>demo::LocalizedMessageDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -24032,6 +24097,7 @@ namespace demo
 module <instance>demo::LocalizedMessageDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -24098,6 +24164,7 @@ namespace demo
 module <constructor>demo::LocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -25505,6 +25572,7 @@ namespace demo
 module <instance>demo::LocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -25574,6 +25642,7 @@ namespace demo
 module <constructor>demo::TestWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -25692,6 +25761,7 @@ namespace demo
 module <instance>demo::TestWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -25734,6 +25804,7 @@ namespace demo
 module <constructor>demo::RefreshBindableDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -26400,6 +26471,7 @@ namespace demo
 module <instance>demo::RefreshBindableDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -26457,6 +26529,7 @@ namespace demo
 module <constructor>demo::RefreshBindableListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -27009,6 +27082,7 @@ namespace demo
 module <instance>demo::RefreshBindableListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -27066,6 +27140,7 @@ namespace demo
 module <constructor>demo::RefreshBindableTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -27358,6 +27433,7 @@ namespace demo
 module <instance>demo::RefreshBindableTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -27402,6 +27478,7 @@ namespace demo
 module <constructor>demo::RefreshBindableTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -27665,6 +27742,7 @@ namespace demo
 module <instance>demo::RefreshBindableTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -27724,6 +27802,7 @@ namespace demo
 module <constructor>demo::RefreshListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -28307,6 +28386,7 @@ namespace demo
 module <instance>demo::RefreshListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -28349,6 +28429,7 @@ namespace demo
 module <constructor>demo::RefreshTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -28614,6 +28695,7 @@ namespace demo
 module <instance>demo::RefreshTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -28656,6 +28738,7 @@ namespace demo
 module <constructor>demo::RefreshTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -28887,6 +28970,7 @@ namespace demo
 module <instance>demo::RefreshTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -28929,6 +29013,7 @@ namespace demo
 module <constructor>demo::EnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -29281,6 +29366,7 @@ namespace demo
 module <instance>demo::EnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -29505,6 +29591,7 @@ namespace demo
 module <constructor>demo::EnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -29603,6 +29690,7 @@ namespace demo
 module <instance>demo::EnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -29684,6 +29772,7 @@ namespace demo
 module <constructor>demo::RepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -29802,6 +29891,7 @@ namespace demo
 module <instance>demo::RepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -29854,6 +29944,7 @@ namespace demo
 module <constructor>demo::SharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -29988,6 +30079,7 @@ namespace demo
 module <instance>demo::SharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -30040,6 +30132,7 @@ namespace demo
 module <constructor>demo::SharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -30311,6 +30404,7 @@ namespace demo
 module <instance>demo::SharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -30363,6 +30457,7 @@ namespace demo
 module <constructor>demo::ResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -30990,6 +31085,7 @@ namespace demo
 module <instance>demo::ResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -31032,6 +31128,7 @@ namespace demo
 module <constructor>demo::ResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -31659,6 +31756,7 @@ namespace demo
 module <instance>demo::ResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -31701,6 +31799,7 @@ namespace demo
 module <constructor>demo::ResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -31894,6 +31993,7 @@ namespace demo
 module <instance>demo::ResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -31936,6 +32036,7 @@ namespace demo
 module <constructor>demo::ResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -32849,6 +32950,7 @@ namespace demo
 module <instance>demo::ResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -32891,6 +32993,7 @@ namespace demo
 module <constructor>demo::DocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -33278,6 +33381,7 @@ namespace demo
 module <instance>demo::DocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -33341,6 +33445,7 @@ namespace demo
 module <constructor>demo::TextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -33619,6 +33724,7 @@ namespace demo
 module <instance>demo::TextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -33682,6 +33788,7 @@ namespace demo
 module <constructor>demo::TextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -33993,6 +34100,7 @@ namespace demo
 module <instance>demo::TextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;

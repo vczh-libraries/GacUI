@@ -2,6 +2,7 @@
 module <instance>tui_controls::TuiColorComponentControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -82,6 +83,7 @@ namespace tui_controls
 module <instance>tui_controls::TuiColorDialogControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -174,6 +176,7 @@ namespace tui_controls
 module <instance>tui_controls::TuiColorDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -240,6 +243,7 @@ namespace tui_controls
 module <instance>tui_controls::TuiFileDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -316,6 +320,7 @@ namespace tui_controls
 module <instance>tui_controls::TuiFilePickerControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -406,6 +411,7 @@ namespace tui_controls
 module <instance>tui_controls::TuiFontNameControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -519,6 +525,7 @@ namespace tui_controls
 module <instance>tui_controls::TuiFontSizeControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -625,6 +632,7 @@ namespace tui_controls
 module <instance>tui_controls::TuiFullFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -691,6 +699,7 @@ namespace tui_controls
 module <instance>tui_controls::TuiSimpleFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -757,6 +766,7 @@ namespace tui_controls
 module <instance>tui_controls::TuiMessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -854,6 +864,7 @@ namespace tui_controls
 module <instance>tui_controls::TuiMessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;

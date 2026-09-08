@@ -1,22 +1,22 @@
 <Folder>
   <Instance name="LabelTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiLabelTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiLabelTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <LabelTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" DefaultTextColor-eval="tuiskin::tuiColors.LabelText">
         <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color-bind="self.VisuallyEnabled ? self.TextColor : tuiskin::tuiColors.ControlBorderDisabled" Multiline="true" />
       </LabelTemplate>
     </Instance>
   </Instance>
   <Instance name="ShortcutKeyTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiShortcutKeyTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiShortcutKeyTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <LabelTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" DefaultTextColor-eval="tuiskin::tuiColors.ControlText">
         <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color-bind="self.TextColor" />
       </LabelTemplate>
     </Instance>
   </Instance>
   <Instance name="GroupBoxTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiGroupBoxTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiGroupBoxTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container">
-        <elements:TuiBorder Color-eval="tuiskin::tuiColors.LabelText" Shape="shapeType:RoundRect" />
+        <TuiBorder Color-eval="tuiskin::tuiColors.LabelText" Shape="shapeType:RoundRect" />
         <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1" />
         <Bounds AlignmentToParent="left:2 top:0 right:-1 bottom:-1">
           <SolidBackground ref.Style="background" />
@@ -28,7 +28,7 @@
     </Instance>
   </Instance>
   <Instance name="DateButtonTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiDateButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiDateButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container">
         <SolidBackground ref.Style="itemBackground" />
         <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" />
@@ -36,7 +36,7 @@
     </Instance>
   </Instance>
   <Instance name="DatePickerTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiDatePickerTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiDatePickerTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <DatePickerTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" Date-bind="look.Date">
         <CommonDatePickerLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0" Font-bind="self.Font" Date-bind="self.Date" DateLocale-bind="self.DateLocale" Commands-bind="self.Commands" BackgroundColor-eval="tuiskin::tuiColors.ControlBackground" PrimaryTextColor-eval="tuiskin::tuiColors.ControlText" SecondaryTextColor-eval="tuiskin::tuiColors.LabelText">
           <att.DateButtonTemplate>tuiskin::TuiDateButtonTemplate</att.DateButtonTemplate>

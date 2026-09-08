@@ -2,6 +2,7 @@
 module <constructor>tuiskin::TuiTheme;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -328,6 +329,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiTheme;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -374,6 +376,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -849,6 +852,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -890,6 +894,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiCheckBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -1478,6 +1483,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiCheckBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -1519,6 +1525,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiRadioButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2107,6 +2114,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiRadioButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2148,6 +2156,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiDocumentLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2207,6 +2216,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiDocumentLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2248,6 +2258,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiDocumentTextBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2435,6 +2446,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiDocumentTextBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2476,6 +2488,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiDocumentViewerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2682,6 +2695,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiDocumentViewerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2723,6 +2737,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiComboBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -3514,6 +3529,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiComboBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -3555,6 +3571,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiExpandingDecoratorTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -3681,6 +3698,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiExpandingDecoratorTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -3722,6 +3740,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiItemBackgroundTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -4085,6 +4104,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiItemBackgroundTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -4126,6 +4146,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiListViewColumnHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -4912,6 +4933,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiListViewColumnHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -4953,6 +4975,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiListViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5178,6 +5201,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiListViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5219,6 +5243,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiTextListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5446,6 +5471,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiTextListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5487,6 +5513,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiTreeViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5706,6 +5733,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiTreeViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5747,6 +5775,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiDateButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5923,6 +5952,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiDateButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5964,6 +5994,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiDatePickerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -6407,6 +6438,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiDatePickerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -6448,6 +6480,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiGroupBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -6713,6 +6746,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiGroupBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -6754,6 +6788,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7047,6 +7082,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7088,6 +7124,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiShortcutKeyTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7360,6 +7397,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiShortcutKeyTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7401,6 +7439,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiBottomScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7692,6 +7731,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiBottomScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7733,6 +7773,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiHScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -8118,6 +8159,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiHScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -8168,6 +8210,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiHTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -8429,6 +8472,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiHTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -8477,6 +8521,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiHandleScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -8768,6 +8813,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiHandleScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -8809,6 +8855,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiLeftScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9100,6 +9147,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiLeftScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9141,6 +9189,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiProgressBarTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9376,6 +9425,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiProgressBarTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9417,6 +9467,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiRightScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9708,6 +9759,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiRightScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9749,6 +9801,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiScrollViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9949,6 +10002,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiScrollViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9990,6 +10044,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiTopScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10281,6 +10336,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiTopScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10322,6 +10378,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiVScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10707,6 +10764,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiVScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10757,6 +10815,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiVTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11018,6 +11077,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiVTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11066,6 +11126,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiTabHeaderButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11543,6 +11604,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiTabHeaderButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11584,6 +11646,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiTabHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11890,6 +11953,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiTabHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11963,6 +12027,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiTabTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -12323,6 +12388,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiTabTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -12364,6 +12430,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiMenuBarButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -12806,6 +12873,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiMenuBarButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -12847,6 +12915,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiMenuItemButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -13885,6 +13954,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiMenuItemButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -13926,6 +13996,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiMenuSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -13982,6 +14053,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiMenuSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -14023,6 +14095,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -14116,6 +14189,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -14157,6 +14231,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiToolstripTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -14210,6 +14285,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiToolstripTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -14251,6 +14327,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiCustomControlTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -14294,6 +14371,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiCustomControlTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -14335,6 +14413,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiCustomFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -15731,6 +15810,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiCustomFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -15772,6 +15852,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiSystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -15845,6 +15926,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiSystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -15886,6 +15968,7 @@ namespace tuiskin
 module <constructor>tuiskin::TuiTooltipTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -15979,6 +16062,7 @@ namespace tuiskin
 module <instance>tuiskin::TuiTooltipTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;

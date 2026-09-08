@@ -11,6 +11,7 @@ Registered classes are named like **presentation::controls::GuiWindow**. As desc
 ```
 presentation::controls::GuiWindow;
 presentation::elements::GuiWindowElement;
+presentation::elements::WindowElement;
 presentation::compositions::GuiWindowComposition;
 presentation::compositions::GuiWindow;
 presentation::templates::GuiWindow;
@@ -32,6 +33,7 @@ presentation::theme::Window
 ```
 presentation::controls::GuiWindow;
 presentation::elements::GuiWindowElement;
+presentation::elements::WindowElement;
 presentation::compositions::GuiWindowComposition;
 presentation::compositions::GuiWindow;
 presentation::templates::GuiWindow;
@@ -50,6 +52,8 @@ presentation::templates::Window;
 presentation::theme::Window
 ```
  Now only **presentation::controls::GuiWindow** exist, so **\<Window/\>** is **presentation::controls::GuiWindow**. An error will be generated if zero or multiple of them exist.
+
+The default **presentation::elements::*Element** mapping also resolves **\<TuiBorder/\>** to **presentation::elements::TuiBorderElement**, without an explicit namespace declaration.
 
 For types that are not able to be found in the default namespace, like **presentation::controls::GuiSelectableButton::MutexGroupController** which is a very useful component to define a group of **\<RadioButton/\>**, you need to define your own namespace like:
 ```

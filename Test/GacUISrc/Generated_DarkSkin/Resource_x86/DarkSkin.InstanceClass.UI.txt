@@ -2,6 +2,7 @@
 module <constructor>darkskin::Theme;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -520,6 +521,7 @@ namespace darkskin
 module <instance>darkskin::Theme;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -561,6 +563,7 @@ namespace darkskin
 module <constructor>darkskin::ButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -1186,6 +1189,7 @@ namespace darkskin
 module <instance>darkskin::ButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -1227,6 +1231,7 @@ namespace darkskin
 module <constructor>darkskin::CheckBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2146,6 +2151,7 @@ namespace darkskin
 module <instance>darkskin::CheckBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -2187,6 +2193,7 @@ namespace darkskin
 module <constructor>darkskin::RadioButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -3054,6 +3061,7 @@ namespace darkskin
 module <instance>darkskin::RadioButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -3095,6 +3103,7 @@ namespace darkskin
 module <constructor>darkskin::DocumentLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -3154,6 +3163,7 @@ namespace darkskin
 module <instance>darkskin::DocumentLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -3195,6 +3205,7 @@ namespace darkskin
 module <constructor>darkskin::DocumentTextBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -3382,6 +3393,7 @@ namespace darkskin
 module <instance>darkskin::DocumentTextBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -3423,6 +3435,7 @@ namespace darkskin
 module <constructor>darkskin::DocumentViewerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -3629,6 +3642,7 @@ namespace darkskin
 module <instance>darkskin::DocumentViewerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -3670,6 +3684,7 @@ namespace darkskin
 module <constructor>darkskin::ComboBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -4676,6 +4691,7 @@ namespace darkskin
 module <instance>darkskin::ComboBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -4717,6 +4733,7 @@ namespace darkskin
 module <constructor>darkskin::ExpandingDecoratorTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5384,6 +5401,7 @@ namespace darkskin
 module <instance>darkskin::ExpandingDecoratorTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5425,6 +5443,7 @@ namespace darkskin
 module <constructor>darkskin::ItemBackgroundTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5601,6 +5620,7 @@ namespace darkskin
 module <instance>darkskin::ItemBackgroundTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -5642,6 +5662,7 @@ namespace darkskin
 module <constructor>darkskin::ListViewColumnHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -6996,6 +7017,7 @@ namespace darkskin
 module <instance>darkskin::ListViewColumnHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7037,6 +7059,7 @@ namespace darkskin
 module <constructor>darkskin::ListViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7262,6 +7285,7 @@ namespace darkskin
 module <instance>darkskin::ListViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7303,6 +7327,7 @@ namespace darkskin
 module <constructor>darkskin::TextListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7530,6 +7555,7 @@ namespace darkskin
 module <instance>darkskin::TextListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7571,6 +7597,7 @@ namespace darkskin
 module <constructor>darkskin::TreeViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7790,6 +7817,7 @@ namespace darkskin
 module <instance>darkskin::TreeViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -7831,6 +7859,7 @@ namespace darkskin
 module <constructor>darkskin::DateButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -8100,6 +8129,7 @@ namespace darkskin
 module <instance>darkskin::DateButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -8141,6 +8171,7 @@ namespace darkskin
 module <constructor>darkskin::DatePickerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -8584,6 +8615,7 @@ namespace darkskin
 module <instance>darkskin::DatePickerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -8625,6 +8657,7 @@ namespace darkskin
 module <constructor>darkskin::GroupBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9054,6 +9087,7 @@ namespace darkskin
 module <instance>darkskin::GroupBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9095,6 +9129,7 @@ namespace darkskin
 module <constructor>darkskin::LabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9385,6 +9420,7 @@ namespace darkskin
 module <instance>darkskin::LabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9426,6 +9462,7 @@ namespace darkskin
 module <constructor>darkskin::ShortcutKeyTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9744,6 +9781,7 @@ namespace darkskin
 module <instance>darkskin::ShortcutKeyTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -9785,6 +9823,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonSplitArrowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10481,6 +10520,7 @@ namespace darkskin
 module <instance>darkskin::RibbonSplitArrowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10522,6 +10562,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonButtonsTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10565,6 +10606,7 @@ namespace darkskin
 module <instance>darkskin::RibbonButtonsTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10606,6 +10648,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonGalleryDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -10986,6 +11029,7 @@ namespace darkskin
 module <instance>darkskin::RibbonGalleryDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11027,6 +11071,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonGalleryItemListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11075,6 +11120,7 @@ namespace darkskin
 module <instance>darkskin::RibbonGalleryItemListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11116,6 +11162,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonGalleryTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11636,6 +11683,7 @@ namespace darkskin
 module <instance>darkskin::RibbonGalleryTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11677,6 +11725,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonGroupExpandButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11928,6 +11977,7 @@ namespace darkskin
 module <instance>darkskin::RibbonGroupExpandButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -11969,6 +12019,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonGroupMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -12199,6 +12250,7 @@ namespace darkskin
 module <instance>darkskin::RibbonGroupMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -12240,6 +12292,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonGroupTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -12670,6 +12723,7 @@ namespace darkskin
 module <instance>darkskin::RibbonGroupTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -12711,6 +12765,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonIconLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -13042,6 +13097,7 @@ namespace darkskin
 module <instance>darkskin::RibbonIconLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -13083,6 +13139,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonLargeButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -13910,6 +13967,7 @@ namespace darkskin
 module <instance>darkskin::RibbonLargeButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -13951,6 +14009,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonLargeDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -15052,6 +15111,7 @@ namespace darkskin
 module <instance>darkskin::RibbonLargeDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -15093,6 +15153,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonLargeSplitButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -15948,6 +16009,7 @@ namespace darkskin
 module <instance>darkskin::RibbonLargeSplitButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -15989,6 +16051,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonSmallButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -16802,6 +16865,7 @@ namespace darkskin
 module <instance>darkskin::RibbonSmallButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -16843,6 +16907,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonSmallDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -17935,6 +18000,7 @@ namespace darkskin
 module <instance>darkskin::RibbonSmallDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -17976,6 +18042,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonSmallIconLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -18563,6 +18630,7 @@ namespace darkskin
 module <instance>darkskin::RibbonSmallIconLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -18604,6 +18672,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonSmallSplitButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -19648,6 +19717,7 @@ namespace darkskin
 module <instance>darkskin::RibbonSmallSplitButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -19689,6 +19759,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonToolstripHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -19907,6 +19978,7 @@ namespace darkskin
 module <instance>darkskin::RibbonToolstripHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -19948,6 +20020,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -20169,6 +20242,7 @@ namespace darkskin
 module <instance>darkskin::RibbonToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -20210,6 +20284,7 @@ namespace darkskin
 module <constructor>darkskin::RibbonToolstripsTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -20253,6 +20328,7 @@ namespace darkskin
 module <instance>darkskin::RibbonToolstripsTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -20294,6 +20370,7 @@ namespace darkskin
 module <constructor>darkskin::BottomScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -20564,6 +20641,7 @@ namespace darkskin
 module <instance>darkskin::BottomScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -20605,6 +20683,7 @@ namespace darkskin
 module <constructor>darkskin::HScrollHandleTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -20759,6 +20838,7 @@ namespace darkskin
 module <instance>darkskin::HScrollHandleTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -20800,6 +20880,7 @@ namespace darkskin
 module <constructor>darkskin::HScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -21294,6 +21375,7 @@ namespace darkskin
 module <instance>darkskin::HScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -21344,6 +21426,7 @@ namespace darkskin
 module <constructor>darkskin::HTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -21691,6 +21774,7 @@ namespace darkskin
 module <instance>darkskin::HTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -21739,6 +21823,7 @@ namespace darkskin
 module <constructor>darkskin::LeftScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -22009,6 +22094,7 @@ namespace darkskin
 module <instance>darkskin::LeftScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -22050,6 +22136,7 @@ namespace darkskin
 module <constructor>darkskin::ProgressBarTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -22269,6 +22356,7 @@ namespace darkskin
 module <instance>darkskin::ProgressBarTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -22310,6 +22398,7 @@ namespace darkskin
 module <constructor>darkskin::RightScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -22580,6 +22669,7 @@ namespace darkskin
 module <instance>darkskin::RightScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -22621,6 +22711,7 @@ namespace darkskin
 module <constructor>darkskin::ScrollViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -22733,6 +22824,7 @@ namespace darkskin
 module <instance>darkskin::ScrollViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -22774,6 +22866,7 @@ namespace darkskin
 module <constructor>darkskin::TopScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -23044,6 +23137,7 @@ namespace darkskin
 module <instance>darkskin::TopScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -23085,6 +23179,7 @@ namespace darkskin
 module <constructor>darkskin::VScrollHandleTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -23239,6 +23334,7 @@ namespace darkskin
 module <instance>darkskin::VScrollHandleTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -23280,6 +23376,7 @@ namespace darkskin
 module <constructor>darkskin::VScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -23774,6 +23871,7 @@ namespace darkskin
 module <instance>darkskin::VScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -23824,6 +23922,7 @@ namespace darkskin
 module <constructor>darkskin::VTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -24171,6 +24270,7 @@ namespace darkskin
 module <instance>darkskin::VTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -24219,6 +24319,7 @@ namespace darkskin
 module <constructor>darkskin::TabHeaderButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -24966,6 +25067,7 @@ namespace darkskin
 module <instance>darkskin::TabHeaderButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -25049,6 +25151,7 @@ namespace darkskin
 module <constructor>darkskin::TabHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -25355,6 +25458,7 @@ namespace darkskin
 module <instance>darkskin::TabHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -25428,6 +25532,7 @@ namespace darkskin
 module <constructor>darkskin::TabTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -25895,6 +26000,7 @@ namespace darkskin
 module <instance>darkskin::TabTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -25981,6 +26087,7 @@ namespace darkskin
 module <constructor>darkskin::MenuBarButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -26393,6 +26500,7 @@ namespace darkskin
 module <instance>darkskin::MenuBarButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -26434,6 +26542,7 @@ namespace darkskin
 module <constructor>darkskin::MenuItemButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -27698,6 +27807,7 @@ namespace darkskin
 module <instance>darkskin::MenuItemButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -27739,6 +27849,7 @@ namespace darkskin
 module <constructor>darkskin::MenuSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -27818,6 +27929,7 @@ namespace darkskin
 module <instance>darkskin::MenuSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -27859,6 +27971,7 @@ namespace darkskin
 module <constructor>darkskin::ToolstripSplitArrowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -28284,6 +28397,7 @@ namespace darkskin
 module <instance>darkskin::ToolstripSplitArrowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -28325,6 +28439,7 @@ namespace darkskin
 module <constructor>darkskin::ToolstripButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -28859,6 +28974,7 @@ namespace darkskin
 module <instance>darkskin::ToolstripButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -28900,6 +29016,7 @@ namespace darkskin
 module <constructor>darkskin::ToolstripDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -29713,6 +29830,7 @@ namespace darkskin
 module <instance>darkskin::ToolstripDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -29754,6 +29872,7 @@ namespace darkskin
 module <constructor>darkskin::ToolstripInMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -29824,6 +29943,7 @@ namespace darkskin
 module <instance>darkskin::ToolstripInMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -29865,6 +29985,7 @@ namespace darkskin
 module <constructor>darkskin::ToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -29958,6 +30079,7 @@ namespace darkskin
 module <instance>darkskin::ToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -29999,6 +30121,7 @@ namespace darkskin
 module <constructor>darkskin::ToolstripSplitButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -30764,6 +30887,7 @@ namespace darkskin
 module <instance>darkskin::ToolstripSplitButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -30805,6 +30929,7 @@ namespace darkskin
 module <constructor>darkskin::ToolstripSplitterInMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -30884,6 +31009,7 @@ namespace darkskin
 module <instance>darkskin::ToolstripSplitterInMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -30925,6 +31051,7 @@ namespace darkskin
 module <constructor>darkskin::ToolstripSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -31007,6 +31134,7 @@ namespace darkskin
 module <instance>darkskin::ToolstripSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -31048,6 +31176,7 @@ namespace darkskin
 module <constructor>darkskin::ToolstripTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -31118,6 +31247,7 @@ namespace darkskin
 module <instance>darkskin::ToolstripTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -31159,6 +31289,7 @@ namespace darkskin
 module <constructor>darkskin::CustomControlTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -31202,6 +31333,7 @@ namespace darkskin
 module <instance>darkskin::CustomControlTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -31243,6 +31375,7 @@ namespace darkskin
 module <constructor>darkskin::CustomFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -33705,6 +33838,7 @@ namespace darkskin
 module <instance>darkskin::CustomFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -33746,6 +33880,7 @@ namespace darkskin
 module <constructor>darkskin::SystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -33819,6 +33954,7 @@ namespace darkskin
 module <instance>darkskin::SystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -33860,6 +33996,7 @@ namespace darkskin
 module <constructor>darkskin::TooltipTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;
@@ -33953,6 +34090,7 @@ namespace darkskin
 module <instance>darkskin::TooltipTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
 using presentation::compositions::Gui*Composition;
 using presentation::compositions::Gui*;
 using presentation::templates::Gui*;

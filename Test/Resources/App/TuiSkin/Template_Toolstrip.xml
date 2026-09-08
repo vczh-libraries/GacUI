@@ -1,31 +1,31 @@
 <Folder>
   <Instance name="ToolstripTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiToolstripTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiToolstripTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground Color-eval="tuiskin::tuiColors.MenuBackground" />
       </ControlTemplate>
     </Instance>
   </Instance>
   <Instance name="ToolstripMenuTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiToolstripMenuTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiToolstripMenuTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <MenuTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container">
         <SolidBackground Color-eval="tuiskin::tuiColors.MenuBackground" />
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <elements:TuiBorder Color-eval="tuiskin::tuiColors.ControlBorder" />
+          <TuiBorder Color-eval="tuiskin::tuiColors.ControlBorder" />
           <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1" />
         </Bounds>
       </MenuTemplate>
     </Instance>
   </Instance>
   <Instance name="MenuSplitterTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiMenuSplitterTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiMenuSplitterTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="y:1">
-        <elements:TuiBorder Color-eval="tuiskin::tuiColors.MenuText" />
+        <TuiBorder Color-eval="tuiskin::tuiColors.MenuText" />
       </ControlTemplate>
     </Instance>
   </Instance>
   <Instance name="MenuBarButtonTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiMenuBarButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiMenuBarButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <ToolstripButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <att.SubMenuTemplate>tuiskin::TuiToolstripMenuTemplate</att.SubMenuTemplate>
         <SolidBackground ref.Style="menuBackground" />
@@ -36,7 +36,7 @@
     </Instance>
   </Instance>
   <Instance name="MenuItemButtonTemplateResource">
-    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiMenuItemButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiMenuItemButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <ToolstripButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <att.SubMenuTemplate>tuiskin::TuiToolstripMenuTemplate</att.SubMenuTemplate>
         <SolidBackground ref.Style="menuBackground" />

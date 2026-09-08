@@ -54,6 +54,7 @@ Here are attributes for an **\<Instance/\>**:
 ```
 presentation::controls::Gui*;
 presentation::elements::Gui*Element;
+presentation::elements::*Element;
 presentation::compositions::Gui*Composition;
 presentation::compositions::Gui*;
 presentation::templates::Gui*;
