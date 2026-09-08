@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="PlatformProviders">
@@ -133,6 +133,19 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\GDI\Renderers\GuiGraphicsWindowsGDI.h">
       <Filter>PlatformProviders\Windows\GDI\Renderers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="PlatformProviders\Windows\TUI">
+      <UniqueIdentifier>{9feb0a80-637c-4931-8f6e-92326e19bfa4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\TUI\TuiWindowsController.Windows.cpp">
+      <Filter>PlatformProviders\Windows\TUI</Filter>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\TUI\TuiWindowsController.Windows.h">
+      <Filter>PlatformProviders\Windows\TUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

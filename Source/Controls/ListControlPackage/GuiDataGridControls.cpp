@@ -2,6 +2,7 @@
 #include "GuiDataGridExtensions.h"
 #include "../../GraphicsComposition/GuiGraphicsTableComposition.h"
 #include "../../Application/GraphicsHost/GuiGraphicsHost.h"
+#include "../../PlatformProviders/TUI/TuiApplication.h"
 
 namespace vl
 {
@@ -194,6 +195,8 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnInitialize()
 				{
+					// In-place terminal editors need a text row between their two border rows.
+					if (GetTuiApplication()) SetPreferredMinSize(Size(0, 3));
 					{
 						textTable = new GuiTableComposition;
 						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);

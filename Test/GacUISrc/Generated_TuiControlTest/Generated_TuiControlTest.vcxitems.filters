@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="x86">
+      <UniqueIdentifier>{737f6d3f-73cc-4b9c-b027-3f5cfb68ddce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="x64">
+      <UniqueIdentifier>{91d98f5d-4d23-4cdc-8963-07ffd7cf951f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\TuiControlTestResource.cpp">
+      <Filter>x86</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\TuiControlTest.cpp">
+      <Filter>x86</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\TuiControlTestReflection.cpp">
+      <Filter>x86</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\TuiControlTestResource.cpp">
+      <Filter>x64</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\TuiControlTest.cpp">
+      <Filter>x64</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\TuiControlTestReflection.cpp">
+      <Filter>x64</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\TuiControlTest.h">
+      <Filter>x86</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\TuiControlTestIncludes.h">
+      <Filter>x86</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\TuiControlTestReflection.h">
+      <Filter>x86</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\TuiControlTest.h">
+      <Filter>x64</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\TuiControlTestIncludes.h">
+      <Filter>x64</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\TuiControlTestReflection.h">
+      <Filter>x64</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

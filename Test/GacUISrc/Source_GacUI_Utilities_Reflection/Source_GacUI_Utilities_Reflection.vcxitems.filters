@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Utilities">
@@ -22,6 +22,22 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIReflection.cpp">
       <Filter>Utilities\FakeServices\Dialogs\Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Utilities\FakeServices\TuiDialogs">
+      <UniqueIdentifier>{629e4e5c-c49d-4b3e-b5c9-ac7a4d2dcd5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\FakeServices\TuiDialogs\Source">
+      <UniqueIdentifier>{88137d18-36ea-43d8-8d92-57892762f1a6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUIReflection.h">
+      <Filter>Utilities\FakeServices\TuiDialogs\Source</Filter>
+    </ClInclude>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUIReflection.cpp">
+      <Filter>Utilities\FakeServices\TuiDialogs\Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

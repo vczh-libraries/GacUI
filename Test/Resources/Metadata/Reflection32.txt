@@ -4050,6 +4050,11 @@ interface presentation::ISimpleFontDialogViewModel : presentation::ICommonFontDi
 
 }
 
+interface presentation::ITuiApplication : system::Interface {
+    function Stop() : system::Void;
+
+}
+
 @ValueType
 struct presentation::Margin {
     property bottom : system::Int32;
@@ -5198,6 +5203,9 @@ class presentation::controls::GuiApplication : system::ReferenceType {
     function GetLocale() : system::Locale;
     function GetMainWindow() : presentation::controls::GuiWindow*;
     function GetTooltipOwner() : presentation::controls::GuiControl*;
+    @InvokeTemplate:::vl::presentation::GetTuiApplication($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::presentation::GetTuiApplication)
+    static function GetTuiApplication() : presentation::ITuiApplication*;
     function GetWindowFromNative(nativeWindow : presentation::INativeWindow*) : presentation::controls::GuiWindow*;
     function GetWindows() : system::ReadonlyList<presentation::controls::GuiWindow*>^;
     function InvokeAsync(proc : system::Function<system::Void>^) : system::Void;
@@ -7674,6 +7682,30 @@ enum presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition {
     CaretMoveUp = 6,
 }
 
+class presentation::elements::TuiBorderElement : presentation::elements::IGuiGraphicsElement {
+    property Color : presentation::Color { get:GetColor set:SetColor }
+    property LineStyle : presentation::elements::TuiLineStyle { get:GetLineStyle set:SetLineStyle }
+    property Shape : presentation::elements::ElementShape { get:GetShape set:SetShape }
+
+    function GetColor() : presentation::Color;
+    function GetLineStyle() : presentation::elements::TuiLineStyle;
+    function GetShape() : presentation::elements::ElementShape;
+    function SetColor(value : presentation::Color) : system::Void;
+    function SetLineStyle(value : presentation::elements::TuiLineStyle) : system::Void;
+    function SetShape(value : presentation::elements::ElementShape) : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::Element_Constructor<::vl::presentation::elements::TuiBorderElement>($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::Element_Constructor<::vl::presentation::elements::TuiBorderElement>)
+    constructor () : presentation::elements::TuiBorderElement^;
+}
+
+@ValueType
+enum presentation::elements::TuiLineStyle {
+    Double = 2,
+    Thick = 1,
+    Thin = 0,
+}
+
 class presentation::helper_types::LocalizedStrings : system::ReferenceType {
     static function FirstOrEmpty(formats : system::Enumerable<system::String>^) : system::String;
 
@@ -8727,6 +8759,37 @@ class presentation::templates::GuiWindowTemplate : presentation::templates::GuiC
     function SetTooltipTemplate(value : system::Function<presentation::templates::GuiWindowTemplate*, system::Object>^) : system::Void;
 
     constructor () : presentation::templates::GuiWindowTemplate*;
+}
+
+class presentation::templates::TuiListItemBackgroundTemplate : presentation::templates::GuiSelectableButtonTemplate {
+    event GridRowChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        GridRow,
+    }
+    event SelectedBackgroundColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedBackgroundColor,
+    }
+    event SelectedTextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedTextColor,
+    }
+    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TextColor,
+    }
+
+    property GridRow : system::Boolean { get:GetGridRow set:SetGridRow event:GridRowChanged }
+    property SelectedBackgroundColor : presentation::Color { get:GetSelectedBackgroundColor set:SetSelectedBackgroundColor event:SelectedBackgroundColorChanged }
+    property SelectedTextColor : presentation::Color { get:GetSelectedTextColor set:SetSelectedTextColor event:SelectedTextColorChanged }
+    property TextColor : presentation::Color { get:GetTextColor set:SetTextColor event:TextColorChanged }
+
+    function GetGridRow() : system::Boolean;
+    function GetSelectedBackgroundColor() : presentation::Color;
+    function GetSelectedTextColor() : presentation::Color;
+    function GetTextColor() : presentation::Color;
+    function SetGridRow(value : system::Boolean) : system::Void;
+    function SetSelectedBackgroundColor(value : presentation::Color) : system::Void;
+    function SetSelectedTextColor(value : presentation::Color) : system::Void;
+    function SetTextColor(value : presentation::Color) : system::Void;
+
+    constructor () : presentation::templates::TuiListItemBackgroundTemplate*;
 }
 
 interface presentation::theme::ITheme : system::Interface {
@@ -10139,5 +10202,1925 @@ struct system::workflow_attributes::att_rpc_IdString {
 @FullName:vl::__vwsn::att_rpc_Interface
 @ValueType
 struct system::workflow_attributes::att_rpc_Interface {
+}
+
+@FullName:tui_controls::ITuiDialogStringsStrings
+interface tui_controls::ITuiDialogStringsStrings : system::Interface {
+    function Abort() : system::String;
+    function Blue() : system::String;
+    function Bold() : system::String;
+    function Cancel() : system::String;
+    function Color() : system::String;
+    function ColorDialogTitle() : system::String;
+    function Continue() : system::String;
+    function FileDialogAskCreateFile() : system::String;
+    function FileDialogAskOverrideFile() : system::String;
+    function FileDialogErrorEmptySelection() : system::String;
+    function FileDialogErrorFileExpected() : system::String;
+    function FileDialogErrorFileNotExist() : system::String;
+    function FileDialogErrorFolderNotExist() : system::String;
+    function FileDialogErrorMultipleSelectionNotEnabled() : system::String;
+    function FileDialogFileName() : system::String;
+    function FileDialogOpen() : system::String;
+    function FileDialogSave() : system::String;
+    function FileDialogTextLoadingFiles() : system::String;
+    function FileDialogTextLoadingFolders() : system::String;
+    function FontColorGroup() : system::String;
+    function FontColorGroup2() : system::String;
+    function FontDialogTitle() : system::String;
+    function FontEffectGroup() : system::String;
+    function FontNameGroup() : system::String;
+    function FontPreviewGroup() : system::String;
+    function FontSizeGroup() : system::String;
+    function Green() : system::String;
+    function HAA() : system::String;
+    function Ignore() : system::String;
+    function Italic() : system::String;
+    function No() : system::String;
+    function OK() : system::String;
+    function Red() : system::String;
+    function Retry() : system::String;
+    function Strikeline() : system::String;
+    function TryAgain() : system::String;
+    function Underline() : system::String;
+    function VAA() : system::String;
+    function Yes() : system::String;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<::tui_controls::ITuiDialogStringsStrings>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<::tui_controls::ITuiDialogStringsStrings>::Create)
+    constructor (proxy : system::InterfaceProxy^) : tui_controls::ITuiDialogStringsStrings^;
+}
+
+@FullName:tui_controls::TuiColorComponentControl
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiColorComponentControlConstructor)
+class tui_controls::TuiColorComponentControl : presentation::controls::GuiCustomControl, tui_controls::TuiColorComponentControlConstructor {
+    event TextBoxAltChanged : system::Function<system::Void>^ observing {
+        TextBoxAlt,
+    }
+    event ValueChanged : system::Function<system::Void>^ observing {
+        Value,
+    }
+
+    property TextBoxAlt : system::String { get:GetTextBoxAlt set:SetTextBoxAlt event:TextBoxAltChanged }
+    property Value : system::Int32 { get:GetValue set:SetValue event:ValueChanged }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_TextBoxAlt : system::String;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Value : system::Int32;
+
+    function GetTextBoxAlt() : system::String;
+    function GetValue() : system::Int32;
+    function SetTextBoxAlt(__vwsn_value_ : system::String) : system::Void;
+    function SetValue(__vwsn_value_ : system::Int32) : system::Void;
+
+    constructor () : tui_controls::TuiColorComponentControl*;
+}
+
+@FullName:tui_controls::TuiColorComponentControlConstructor
+class tui_controls::TuiColorComponentControlConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tui_controls::TuiColorComponentControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property textBox : presentation::controls::GuiSinglelineTextBox*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property tracker : presentation::controls::GuiScroll*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tui_controls_TuiColorComponentControl_Initialize(__vwsn_this_ : tui_controls::TuiColorComponentControl*) : system::Void;
+
+    constructor () : tui_controls::TuiColorComponentControlConstructor^;
+}
+
+@FullName:tui_controls::TuiColorDialogControl
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiColorDialogControlConstructor)
+class tui_controls::TuiColorDialogControl : presentation::controls::GuiCustomControl, tui_controls::TuiColorDialogControlConstructor {
+    event StringsChanged : system::Function<system::Void>^ observing {
+        Strings,
+    }
+    event ValueChanged : system::Function<system::Void>^ observing {
+        Value,
+    }
+
+    property Strings : tui_controls::ITuiDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
+    property Value : presentation::Color { get:GetValue set:SetValue event:ValueChanged }
+    property ViewModel : presentation::IColorDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_ViewModel : presentation::IColorDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Strings : tui_controls::ITuiDialogStringsStrings^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Value : presentation::Color;
+
+    function GetStrings() : tui_controls::ITuiDialogStringsStrings^;
+    function GetValue() : presentation::Color;
+    function GetViewModel() : presentation::IColorDialogViewModel^;
+    function ReadColor() : presentation::Color;
+    function SetStrings(__vwsn_value_ : tui_controls::ITuiDialogStringsStrings^) : system::Void;
+    function SetValue(__vwsn_value_ : presentation::Color) : system::Void;
+
+    constructor (__vwsn_ctor_parameter_ViewModel : presentation::IColorDialogViewModel^) : tui_controls::TuiColorDialogControl*;
+}
+
+@FullName:tui_controls::TuiColorDialogControlConstructor
+class tui_controls::TuiColorDialogControlConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property ViewModel : presentation::IColorDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_10 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_13 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_14 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_15 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_16 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_17 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_18 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_8 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property colorBlue : tui_controls::TuiColorComponentControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property colorGreen : tui_controls::TuiColorComponentControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property colorRed : tui_controls::TuiColorComponentControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tui_controls::TuiColorDialogControl*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tui_controls_TuiColorDialogControl_Initialize(__vwsn_this_ : tui_controls::TuiColorDialogControl*) : system::Void;
+
+    constructor () : tui_controls::TuiColorDialogControlConstructor^;
+}
+
+@FullName:tui_controls::TuiColorDialogWindow
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiColorDialogWindowConstructor)
+class tui_controls::TuiColorDialogWindow : presentation::controls::GuiWindow, tui_controls::TuiColorDialogWindowConstructor {
+    event StringsChanged : system::Function<system::Void>^ observing {
+        Strings,
+    }
+
+    property Strings : tui_controls::ITuiDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
+    property ViewModel : presentation::IColorDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_ViewModel : presentation::IColorDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Strings : tui_controls::ITuiDialogStringsStrings^;
+
+    function GetStrings() : tui_controls::ITuiDialogStringsStrings^;
+    function GetViewModel() : presentation::IColorDialogViewModel^;
+    function SetStrings(__vwsn_value_ : tui_controls::ITuiDialogStringsStrings^) : system::Void;
+
+    constructor (__vwsn_ctor_parameter_ViewModel : presentation::IColorDialogViewModel^) : tui_controls::TuiColorDialogWindow*;
+}
+
+@FullName:tui_controls::TuiColorDialogWindowConstructor
+class tui_controls::TuiColorDialogWindowConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property ViewModel : presentation::IColorDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_8 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property colorControl : tui_controls::TuiColorDialogControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tui_controls::TuiColorDialogWindow*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tui_controls_TuiColorDialogWindow_Initialize(__vwsn_this_ : tui_controls::TuiColorDialogWindow*) : system::Void;
+
+    constructor () : tui_controls::TuiColorDialogWindowConstructor^;
+}
+
+@FullName:tui_controls::TuiDialogStrings
+class tui_controls::TuiDialogStrings : system::ReferenceType {
+    static function Get(__vwsn_ls_locale : system::Locale) : tui_controls::ITuiDialogStringsStrings^;
+    static function Install(__vwsn_ls_locale : system::Locale, __vwsn_ls_impl : tui_controls::ITuiDialogStringsStrings^) : system::Void;
+    static function __vwsn_ls_en_US_BuildStrings(__vwsn_ls_locale : system::Locale) : tui_controls::ITuiDialogStringsStrings^;
+
+    constructor () : tui_controls::TuiDialogStrings^;
+}
+
+@FullName:tui_controls::TuiFileDialogWindow
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiFileDialogWindowConstructor)
+class tui_controls::TuiFileDialogWindow : presentation::controls::GuiWindow, tui_controls::TuiFileDialogWindowConstructor {
+    event StringsChanged : system::Function<system::Void>^ observing {
+        Strings,
+    }
+
+    property Strings : tui_controls::ITuiDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
+    property ViewModel : presentation::IFileDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_ViewModel : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Strings : tui_controls::ITuiDialogStringsStrings^;
+
+    function GetStrings() : tui_controls::ITuiDialogStringsStrings^;
+    function GetViewModel() : presentation::IFileDialogViewModel^;
+    function MakeOpenFileDialog() : system::Void;
+    function MakeSaveFileDialog() : system::Void;
+    function SetStrings(__vwsn_value_ : tui_controls::ITuiDialogStringsStrings^) : system::Void;
+    function __vwsn_instance_ctor_() : system::Void;
+
+    constructor (__vwsn_ctor_parameter_ViewModel : presentation::IFileDialogViewModel^) : tui_controls::TuiFileDialogWindow*;
+}
+
+@FullName:tui_controls::TuiFileDialogWindowConstructor
+class tui_controls::TuiFileDialogWindowConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property ViewModel : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonOK : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property filePickerControl : tui_controls::TuiFilePickerControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tui_controls::TuiFileDialogWindow*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tui_controls_TuiFileDialogWindow_Initialize(__vwsn_this_ : tui_controls::TuiFileDialogWindow*) : system::Void;
+
+    constructor () : tui_controls::TuiFileDialogWindowConstructor^;
+}
+
+@FullName:tui_controls::TuiFilePickerControl
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiFilePickerControlConstructor)
+class tui_controls::TuiFilePickerControl : presentation::controls::GuiCustomControl, tui_controls::TuiFilePickerControlConstructor {
+    event RequestClose : system::Function<system::Void>^;
+    event StringsChanged : system::Function<system::Void>^ observing {
+        Strings,
+    }
+
+    property Selection : system::Enumerable<system::String>^ { get:GetSelection }
+    property Strings : tui_controls::ITuiDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
+    property ViewModel : presentation::IFileDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_ViewModel : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Strings : tui_controls::ITuiDialogStringsStrings^;
+
+    function CreateFileFilter(filter : presentation::IFileDialogFilter^) : presentation::controls::list::IDataFilter^;
+    function GetSelectedFiles() : system::Enumerable<presentation::IFileDialogFile^>^;
+    function GetSelection() : system::Enumerable<system::String>^;
+    function GetStrings() : tui_controls::ITuiDialogStringsStrings^;
+    function GetViewModel() : presentation::IFileDialogViewModel^;
+    function LocateSelectedFolderInTreeView() : system::Void;
+    function SetStrings(__vwsn_value_ : tui_controls::ITuiDialogStringsStrings^) : system::Void;
+    function __vwsn_instance_ctor_() : system::Void;
+
+    constructor (__vwsn_ctor_parameter_ViewModel : presentation::IFileDialogViewModel^) : tui_controls::TuiFilePickerControl*;
+}
+
+@FullName:tui_controls::TuiFilePickerControlConstructor
+class tui_controls::TuiFilePickerControlConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property ViewModel : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_10 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_13 : presentation::compositions::GuiGraphicsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_14 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_15 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_16 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_17 : presentation::controls::GuiBindableTextList*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_18 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_19 : presentation::IFileDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::controls::list::DataColumn^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_8 : presentation::compositions::GuiGraphicsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property comboBox : presentation::controls::GuiComboBoxListControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property dataGrid : presentation::controls::GuiBindableDataGrid*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tui_controls::TuiFilePickerControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property textBox : presentation::controls::GuiSinglelineTextBox*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property treeView : presentation::controls::GuiBindableTreeView*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tui_controls_TuiFilePickerControl_Initialize(__vwsn_this_ : tui_controls::TuiFilePickerControl*) : system::Void;
+
+    constructor () : tui_controls::TuiFilePickerControlConstructor^;
+}
+
+@FullName:tui_controls::TuiFontNameControl
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiFontNameControlConstructor)
+class tui_controls::TuiFontNameControl : presentation::controls::GuiCustomControl, tui_controls::TuiFontNameControlConstructor {
+    event LegalChanged : system::Function<system::Void>^ observing {
+        Legal,
+    }
+    event StringsChanged : system::Function<system::Void>^ observing {
+        Strings,
+    }
+    event ValueChanged : system::Function<system::Void>^ observing {
+        Value,
+    }
+
+    property Legal : system::Boolean { get:GetLegal set:SetLegal event:LegalChanged }
+    property Strings : tui_controls::ITuiDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
+    property Value : system::String { get:GetValue set:SetValue event:ValueChanged }
+    property ViewModel : presentation::ICommonFontDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_ViewModel : presentation::ICommonFontDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Legal : system::Boolean;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Strings : tui_controls::ITuiDialogStringsStrings^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Value : system::String;
+
+    function GetLegal() : system::Boolean;
+    function GetStrings() : tui_controls::ITuiDialogStringsStrings^;
+    function GetValue() : system::String;
+    function GetViewModel() : presentation::ICommonFontDialogViewModel^;
+    function InitValue(value : system::String) : system::Void;
+    function SetLegal(__vwsn_value_ : system::Boolean) : system::Void;
+    function SetStrings(__vwsn_value_ : tui_controls::ITuiDialogStringsStrings^) : system::Void;
+    function SetValue(__vwsn_value_ : system::String) : system::Void;
+
+    constructor (__vwsn_ctor_parameter_ViewModel : presentation::ICommonFontDialogViewModel^) : tui_controls::TuiFontNameControl*;
+}
+
+@FullName:tui_controls::TuiFontNameControlConstructor
+class tui_controls::TuiFontNameControlConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property ViewModel : presentation::ICommonFontDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::controls::GuiControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tui_controls::TuiFontNameControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property textBox : presentation::controls::GuiSinglelineTextBox*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tui_controls_TuiFontNameControl_Initialize(__vwsn_this_ : tui_controls::TuiFontNameControl*) : system::Void;
+
+    constructor () : tui_controls::TuiFontNameControlConstructor^;
+}
+
+@FullName:tui_controls::TuiFontSizeControl
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiFontSizeControlConstructor)
+class tui_controls::TuiFontSizeControl : presentation::controls::GuiCustomControl, tui_controls::TuiFontSizeControlConstructor {
+    event LegalChanged : system::Function<system::Void>^ observing {
+        Legal,
+    }
+    event StringsChanged : system::Function<system::Void>^ observing {
+        Strings,
+    }
+    event ValueChanged : system::Function<system::Void>^ observing {
+        Value,
+    }
+
+    property Legal : system::Boolean { get:GetLegal set:SetLegal event:LegalChanged }
+    property Strings : tui_controls::ITuiDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
+    property Value : system::Int32 { get:GetValue set:SetValue event:ValueChanged }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Legal : system::Boolean;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Strings : tui_controls::ITuiDialogStringsStrings^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Value : system::Int32;
+
+    function GetLegal() : system::Boolean;
+    function GetStrings() : tui_controls::ITuiDialogStringsStrings^;
+    function GetValue() : system::Int32;
+    function InitValue(value : system::Int32) : system::Void;
+    function SetLegal(__vwsn_value_ : system::Boolean) : system::Void;
+    function SetStrings(__vwsn_value_ : tui_controls::ITuiDialogStringsStrings^) : system::Void;
+    function SetValue(__vwsn_value_ : system::Int32) : system::Void;
+
+    constructor () : tui_controls::TuiFontSizeControl*;
+}
+
+@FullName:tui_controls::TuiFontSizeControlConstructor
+class tui_controls::TuiFontSizeControlConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::controls::GuiControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tui_controls::TuiFontSizeControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property textBox : presentation::controls::GuiSinglelineTextBox*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tui_controls_TuiFontSizeControl_Initialize(__vwsn_this_ : tui_controls::TuiFontSizeControl*) : system::Void;
+
+    constructor () : tui_controls::TuiFontSizeControlConstructor^;
+}
+
+@FullName:tui_controls::TuiFullFontDialogWindow
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiFullFontDialogWindowConstructor)
+class tui_controls::TuiFullFontDialogWindow : presentation::controls::GuiWindow, tui_controls::TuiFullFontDialogWindowConstructor {
+    event StringsChanged : system::Function<system::Void>^ observing {
+        Strings,
+    }
+
+    property Strings : tui_controls::ITuiDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
+    property ViewModel : presentation::IFullFontDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_ViewModel : presentation::IFullFontDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Strings : tui_controls::ITuiDialogStringsStrings^;
+
+    function GetStrings() : tui_controls::ITuiDialogStringsStrings^;
+    function GetViewModel() : presentation::IFullFontDialogViewModel^;
+    function SetStrings(__vwsn_value_ : tui_controls::ITuiDialogStringsStrings^) : system::Void;
+    function __vwsn_instance_ctor_() : system::Void;
+
+    constructor (__vwsn_ctor_parameter_ViewModel : presentation::IFullFontDialogViewModel^) : tui_controls::TuiFullFontDialogWindow*;
+}
+
+@FullName:tui_controls::TuiFullFontDialogWindowConstructor
+class tui_controls::TuiFullFontDialogWindowConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property ViewModel : presentation::IFullFontDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_10 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_11 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_12 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_13 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_14 : presentation::controls::GuiControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_15 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_16 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_17 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_18 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_19 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_20 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_21 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_22 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_23 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_24 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_25 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_8 : presentation::compositions::GuiStackComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_9 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property checkBold : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property checkItalic : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property checkStrikeline : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property checkUnderline : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property nameControl : tui_controls::TuiFontNameControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tui_controls::TuiFullFontDialogWindow*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property sizeControl : tui_controls::TuiFontSizeControl*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tui_controls_TuiFullFontDialogWindow_Initialize(__vwsn_this_ : tui_controls::TuiFullFontDialogWindow*) : system::Void;
+
+    constructor () : tui_controls::TuiFullFontDialogWindowConstructor^;
+}
+
+@FullName:tui_controls::TuiMessageBoxButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiMessageBoxButtonTemplateConstructor)
+class tui_controls::TuiMessageBoxButtonTemplate : presentation::templates::GuiControlTemplate, tui_controls::TuiMessageBoxButtonTemplateConstructor {
+    event ButtonControlChanged : system::Function<system::Void>^ observing {
+        ButtonControl,
+    }
+    event StringsChanged : system::Function<system::Void>^ observing {
+        Strings,
+    }
+
+    property Action : presentation::IMessageBoxDialogAction^ { get:GetAction }
+    property ButtonControl : presentation::controls::GuiButton* { get:GetButtonControl event:ButtonControlChanged }
+    property Strings : tui_controls::ITuiDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_Action : presentation::IMessageBoxDialogAction^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_ButtonControl : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Strings : tui_controls::ITuiDialogStringsStrings^;
+
+    function GetAction() : presentation::IMessageBoxDialogAction^;
+    function GetButtonAlt(button : presentation::INativeDialogService::MessageBoxButtonsOutput) : system::String;
+    function GetButtonControl() : presentation::controls::GuiButton*;
+    function GetButtonText(button : presentation::INativeDialogService::MessageBoxButtonsOutput, strings : tui_controls::ITuiDialogStringsStrings^) : system::String;
+    function GetStrings() : tui_controls::ITuiDialogStringsStrings^;
+    @system::workflow_attributes::att_cpp_Protected()
+    function SetButtonControl(__vwsn_value_ : presentation::controls::GuiButton*) : system::Void;
+    function SetStrings(__vwsn_value_ : tui_controls::ITuiDialogStringsStrings^) : system::Void;
+    function __vwsn_instance_ctor_() : system::Void;
+
+    constructor (__vwsn_ctor_parameter_Action : presentation::IMessageBoxDialogAction^) : tui_controls::TuiMessageBoxButtonTemplate*;
+}
+
+@FullName:tui_controls::TuiMessageBoxButtonTemplateConstructor
+class tui_controls::TuiMessageBoxButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property Action : presentation::IMessageBoxDialogAction^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonControl : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tui_controls::TuiMessageBoxButtonTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize(__vwsn_this_ : tui_controls::TuiMessageBoxButtonTemplate*) : system::Void;
+
+    constructor () : tui_controls::TuiMessageBoxButtonTemplateConstructor^;
+}
+
+@FullName:tui_controls::TuiMessageBoxWindow
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiMessageBoxWindowConstructor)
+class tui_controls::TuiMessageBoxWindow : presentation::controls::GuiWindow, tui_controls::TuiMessageBoxWindowConstructor {
+    property ViewModel : presentation::IMessageBoxDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_ViewModel : presentation::IMessageBoxDialogViewModel^;
+
+    function GetIconText(icon : presentation::INativeDialogService::MessageBoxIcons) : system::String;
+    function GetViewModel() : presentation::IMessageBoxDialogViewModel^;
+    function __vwsn_instance_ctor_() : system::Void;
+
+    constructor (__vwsn_ctor_parameter_ViewModel : presentation::IMessageBoxDialogViewModel^) : tui_controls::TuiMessageBoxWindow*;
+}
+
+@FullName:tui_controls::TuiMessageBoxWindowConstructor
+class tui_controls::TuiMessageBoxWindowConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property ViewModel : presentation::IMessageBoxDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::controls::GuiScrollContainer*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_8 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonStack : presentation::compositions::GuiRepeatStackComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tui_controls::TuiMessageBoxWindow*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tui_controls_TuiMessageBoxWindow_Initialize(__vwsn_this_ : tui_controls::TuiMessageBoxWindow*) : system::Void;
+
+    constructor () : tui_controls::TuiMessageBoxWindowConstructor^;
+}
+
+@FullName:tui_controls::TuiSimpleFontDialogWindow
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tui_controls::TuiSimpleFontDialogWindowConstructor)
+class tui_controls::TuiSimpleFontDialogWindow : presentation::controls::GuiWindow, tui_controls::TuiSimpleFontDialogWindowConstructor {
+    event StringsChanged : system::Function<system::Void>^ observing {
+        Strings,
+    }
+
+    property Strings : tui_controls::ITuiDialogStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
+    property ViewModel : presentation::ISimpleFontDialogViewModel^ { get:GetViewModel }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_ViewModel : presentation::ISimpleFontDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Strings : tui_controls::ITuiDialogStringsStrings^;
+
+    function GetStrings() : tui_controls::ITuiDialogStringsStrings^;
+    function GetViewModel() : presentation::ISimpleFontDialogViewModel^;
+    function SetStrings(__vwsn_value_ : tui_controls::ITuiDialogStringsStrings^) : system::Void;
+    function __vwsn_instance_ctor_() : system::Void;
+
+    constructor (__vwsn_ctor_parameter_ViewModel : presentation::ISimpleFontDialogViewModel^) : tui_controls::TuiSimpleFontDialogWindow*;
+}
+
+@FullName:tui_controls::TuiSimpleFontDialogWindowConstructor
+class tui_controls::TuiSimpleFontDialogWindowConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property ViewModel : presentation::ISimpleFontDialogViewModel^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_10 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_11 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_12 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_13 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_14 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_15 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_16 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_17 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_8 : presentation::controls::GuiControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_9 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property nameControl : tui_controls::TuiFontNameControl*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tui_controls::TuiSimpleFontDialogWindow*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property sizeControl : tui_controls::TuiFontSizeControl*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize(__vwsn_this_ : tui_controls::TuiSimpleFontDialogWindow*) : system::Void;
+
+    constructor () : tui_controls::TuiSimpleFontDialogWindowConstructor^;
+}
+
+@FullName:tuiskin::ColorPackage
+@ValueType
+struct tuiskin::ColorPackage {
+    property ButtonBackground : presentation::Color;
+    property ButtonBackgroundHighlighted : presentation::Color;
+    property ButtonBackgroundPressed : presentation::Color;
+    property ButtonIcon : presentation::Color;
+    property ButtonText : presentation::Color;
+    property ButtonTextDisabled : presentation::Color;
+    property ButtonTextHighlighted : presentation::Color;
+    property ButtonTextPressed : presentation::Color;
+    property ControlBackground : presentation::Color;
+    property ControlBorder : presentation::Color;
+    property ControlBorderDisabled : presentation::Color;
+    property ControlBorderFocused : presentation::Color;
+    property ControlText : presentation::Color;
+    property ItemBackground : presentation::Color;
+    property ItemBackgroundHighlighted : presentation::Color;
+    property ItemBackgroundSelected : presentation::Color;
+    property ItemText : presentation::Color;
+    property ItemTextDisabled : presentation::Color;
+    property ItemTextHighlighted : presentation::Color;
+    property ItemTextSelected : presentation::Color;
+    property LabelText : presentation::Color;
+    property MenuBackground : presentation::Color;
+    property MenuBackgroundHighlighted : presentation::Color;
+    property MenuText : presentation::Color;
+    property MenuTextDisabled : presentation::Color;
+    property MenuTextHighlighted : presentation::Color;
+}
+
+@FullName:tuiskin::TuiBottomScrollButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiBottomScrollButtonTemplateConstructor)
+class tuiskin::TuiBottomScrollButtonTemplate : presentation::templates::GuiButtonTemplate, tuiskin::TuiBottomScrollButtonTemplateConstructor {
+    constructor () : tuiskin::TuiBottomScrollButtonTemplate*;
+}
+
+@FullName:tuiskin::TuiBottomScrollButtonTemplateConstructor
+class tuiskin::TuiBottomScrollButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiBottomScrollButtonTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize(__vwsn_this_ : tuiskin::TuiBottomScrollButtonTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiBottomScrollButtonTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiButtonTemplateConstructor)
+class tuiskin::TuiButtonTemplate : presentation::templates::GuiButtonTemplate, tuiskin::TuiButtonTemplateConstructor {
+    constructor () : tuiskin::TuiButtonTemplate*;
+}
+
+@FullName:tuiskin::TuiButtonTemplateConstructor
+class tuiskin::TuiButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiButtonTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiButtonTemplate_Initialize(__vwsn_this_ : tuiskin::TuiButtonTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiButtonTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiCheckBoxTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiCheckBoxTemplateConstructor)
+class tuiskin::TuiCheckBoxTemplate : presentation::templates::GuiSelectableButtonTemplate, tuiskin::TuiCheckBoxTemplateConstructor {
+    constructor () : tuiskin::TuiCheckBoxTemplate*;
+}
+
+@FullName:tuiskin::TuiCheckBoxTemplateConstructor
+class tuiskin::TuiCheckBoxTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiStackComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiCheckBoxTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiCheckBoxTemplate_Initialize(__vwsn_this_ : tuiskin::TuiCheckBoxTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiCheckBoxTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiComboBoxTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiComboBoxTemplateConstructor)
+class tuiskin::TuiComboBoxTemplate : presentation::templates::GuiDateComboBoxTemplate, tuiskin::TuiComboBoxTemplateConstructor {
+    constructor () : tuiskin::TuiComboBoxTemplate*;
+}
+
+@FullName:tuiskin::TuiComboBoxTemplateConstructor
+class tuiskin::TuiComboBoxTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_8 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiComboBoxTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiComboBoxTemplate_Initialize(__vwsn_this_ : tuiskin::TuiComboBoxTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiComboBoxTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiCustomControlTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiCustomControlTemplateConstructor)
+class tuiskin::TuiCustomControlTemplate : presentation::templates::GuiControlTemplate, tuiskin::TuiCustomControlTemplateConstructor {
+    constructor () : tuiskin::TuiCustomControlTemplate*;
+}
+
+@FullName:tuiskin::TuiCustomControlTemplateConstructor
+class tuiskin::TuiCustomControlTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiCustomControlTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiCustomControlTemplate_Initialize(__vwsn_this_ : tuiskin::TuiCustomControlTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiCustomControlTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiCustomFrameWindowTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiCustomFrameWindowTemplateConstructor)
+class tuiskin::TuiCustomFrameWindowTemplate : presentation::templates::GuiWindowTemplate, tuiskin::TuiCustomFrameWindowTemplateConstructor {
+    constructor () : tuiskin::TuiCustomFrameWindowTemplate*;
+}
+
+@FullName:tuiskin::TuiCustomFrameWindowTemplateConstructor
+class tuiskin::TuiCustomFrameWindowTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_13 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_14 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_15 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_16 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_17 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_8 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiCustomFrameWindowTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize(__vwsn_this_ : tuiskin::TuiCustomFrameWindowTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiCustomFrameWindowTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiDateButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiDateButtonTemplateConstructor)
+class tuiskin::TuiDateButtonTemplate : presentation::templates::GuiSelectableButtonTemplate, tuiskin::TuiDateButtonTemplateConstructor {
+    constructor () : tuiskin::TuiDateButtonTemplate*;
+}
+
+@FullName:tuiskin::TuiDateButtonTemplateConstructor
+class tuiskin::TuiDateButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiDateButtonTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiDateButtonTemplate_Initialize(__vwsn_this_ : tuiskin::TuiDateButtonTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiDateButtonTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiDatePickerTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiDatePickerTemplateConstructor)
+class tuiskin::TuiDatePickerTemplate : presentation::templates::GuiDatePickerTemplate, tuiskin::TuiDatePickerTemplateConstructor {
+    constructor () : tuiskin::TuiDatePickerTemplate*;
+}
+
+@FullName:tuiskin::TuiDatePickerTemplateConstructor
+class tuiskin::TuiDatePickerTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property look : presentation::templates::GuiCommonDatePickerLook*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiDatePickerTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiDatePickerTemplate_Initialize(__vwsn_this_ : tuiskin::TuiDatePickerTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiDatePickerTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiDocumentLabelTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiDocumentLabelTemplateConstructor)
+class tuiskin::TuiDocumentLabelTemplate : presentation::templates::GuiDocumentLabelTemplate, tuiskin::TuiDocumentLabelTemplateConstructor {
+    constructor () : tuiskin::TuiDocumentLabelTemplate*;
+}
+
+@FullName:tuiskin::TuiDocumentLabelTemplateConstructor
+class tuiskin::TuiDocumentLabelTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiDocumentLabelTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiDocumentLabelTemplate_Initialize(__vwsn_this_ : tuiskin::TuiDocumentLabelTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiDocumentLabelTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiDocumentTextBoxTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiDocumentTextBoxTemplateConstructor)
+class tuiskin::TuiDocumentTextBoxTemplate : presentation::templates::GuiDocumentLabelTemplate, tuiskin::TuiDocumentTextBoxTemplateConstructor {
+    constructor () : tuiskin::TuiDocumentTextBoxTemplate*;
+}
+
+@FullName:tuiskin::TuiDocumentTextBoxTemplateConstructor
+class tuiskin::TuiDocumentTextBoxTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiDocumentTextBoxTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiDocumentTextBoxTemplate_Initialize(__vwsn_this_ : tuiskin::TuiDocumentTextBoxTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiDocumentTextBoxTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiDocumentViewerTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiDocumentViewerTemplateConstructor)
+class tuiskin::TuiDocumentViewerTemplate : presentation::templates::GuiDocumentViewerTemplate, tuiskin::TuiDocumentViewerTemplateConstructor {
+    constructor () : tuiskin::TuiDocumentViewerTemplate*;
+}
+
+@FullName:tuiskin::TuiDocumentViewerTemplateConstructor
+class tuiskin::TuiDocumentViewerTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property look : presentation::templates::GuiCommonScrollViewLook*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiDocumentViewerTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiDocumentViewerTemplate_Initialize(__vwsn_this_ : tuiskin::TuiDocumentViewerTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiDocumentViewerTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiExpandingDecoratorTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiExpandingDecoratorTemplateConstructor)
+class tuiskin::TuiExpandingDecoratorTemplate : presentation::templates::GuiSelectableButtonTemplate, tuiskin::TuiExpandingDecoratorTemplateConstructor {
+    constructor () : tuiskin::TuiExpandingDecoratorTemplate*;
+}
+
+@FullName:tuiskin::TuiExpandingDecoratorTemplateConstructor
+class tuiskin::TuiExpandingDecoratorTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiExpandingDecoratorTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiExpandingDecoratorTemplate_Initialize(__vwsn_this_ : tuiskin::TuiExpandingDecoratorTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiExpandingDecoratorTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiGroupBoxTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiGroupBoxTemplateConstructor)
+class tuiskin::TuiGroupBoxTemplate : presentation::templates::GuiControlTemplate, tuiskin::TuiGroupBoxTemplateConstructor {
+    constructor () : tuiskin::TuiGroupBoxTemplate*;
+}
+
+@FullName:tuiskin::TuiGroupBoxTemplateConstructor
+class tuiskin::TuiGroupBoxTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiGroupBoxTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiGroupBoxTemplate_Initialize(__vwsn_this_ : tuiskin::TuiGroupBoxTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiGroupBoxTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiHScrollTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiHScrollTemplateConstructor)
+class tuiskin::TuiHScrollTemplate : presentation::templates::GuiScrollTemplate, tuiskin::TuiHScrollTemplateConstructor {
+    function __vwsn_instance_ctor_() : system::Void;
+
+    constructor () : tuiskin::TuiHScrollTemplate*;
+}
+
+@FullName:tuiskin::TuiHScrollTemplateConstructor
+class tuiskin::TuiHScrollTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiSideAlignedComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiSideAlignedComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property behavior : presentation::templates::GuiCommonScrollBehavior*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonDecrease : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonIncrease : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property handle : presentation::compositions::GuiPartialViewComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiHScrollTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiHScrollTemplate_Initialize(__vwsn_this_ : tuiskin::TuiHScrollTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiHScrollTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiHTrackerTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiHTrackerTemplateConstructor)
+class tuiskin::TuiHTrackerTemplate : presentation::templates::GuiScrollTemplate, tuiskin::TuiHTrackerTemplateConstructor {
+    function __vwsn_instance_ctor_() : system::Void;
+
+    constructor () : tuiskin::TuiHTrackerTemplate*;
+}
+
+@FullName:tuiskin::TuiHTrackerTemplateConstructor
+class tuiskin::TuiHTrackerTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property behavior : presentation::templates::GuiCommonScrollBehavior*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property handle : presentation::compositions::GuiPartialViewComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiHTrackerTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiHTrackerTemplate_Initialize(__vwsn_this_ : tuiskin::TuiHTrackerTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiHTrackerTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiHandleScrollButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiHandleScrollButtonTemplateConstructor)
+class tuiskin::TuiHandleScrollButtonTemplate : presentation::templates::GuiButtonTemplate, tuiskin::TuiHandleScrollButtonTemplateConstructor {
+    constructor () : tuiskin::TuiHandleScrollButtonTemplate*;
+}
+
+@FullName:tuiskin::TuiHandleScrollButtonTemplateConstructor
+class tuiskin::TuiHandleScrollButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiHandleScrollButtonTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize(__vwsn_this_ : tuiskin::TuiHandleScrollButtonTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiHandleScrollButtonTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiItemBackgroundTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiItemBackgroundTemplateConstructor)
+class tuiskin::TuiItemBackgroundTemplate : presentation::templates::TuiListItemBackgroundTemplate, tuiskin::TuiItemBackgroundTemplateConstructor {
+    constructor () : tuiskin::TuiItemBackgroundTemplate*;
+}
+
+@FullName:tuiskin::TuiItemBackgroundTemplateConstructor
+class tuiskin::TuiItemBackgroundTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiItemBackgroundTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize(__vwsn_this_ : tuiskin::TuiItemBackgroundTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiItemBackgroundTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiLabelTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiLabelTemplateConstructor)
+class tuiskin::TuiLabelTemplate : presentation::templates::GuiLabelTemplate, tuiskin::TuiLabelTemplateConstructor {
+    constructor () : tuiskin::TuiLabelTemplate*;
+}
+
+@FullName:tuiskin::TuiLabelTemplateConstructor
+class tuiskin::TuiLabelTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiLabelTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiLabelTemplate_Initialize(__vwsn_this_ : tuiskin::TuiLabelTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiLabelTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiLeftScrollButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiLeftScrollButtonTemplateConstructor)
+class tuiskin::TuiLeftScrollButtonTemplate : presentation::templates::GuiButtonTemplate, tuiskin::TuiLeftScrollButtonTemplateConstructor {
+    constructor () : tuiskin::TuiLeftScrollButtonTemplate*;
+}
+
+@FullName:tuiskin::TuiLeftScrollButtonTemplateConstructor
+class tuiskin::TuiLeftScrollButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiLeftScrollButtonTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize(__vwsn_this_ : tuiskin::TuiLeftScrollButtonTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiLeftScrollButtonTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiListViewColumnHeaderTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiListViewColumnHeaderTemplateConstructor)
+class tuiskin::TuiListViewColumnHeaderTemplate : presentation::templates::GuiListViewColumnHeaderTemplate, tuiskin::TuiListViewColumnHeaderTemplateConstructor {
+    constructor () : tuiskin::TuiListViewColumnHeaderTemplate*;
+}
+
+@FullName:tuiskin::TuiListViewColumnHeaderTemplateConstructor
+class tuiskin::TuiListViewColumnHeaderTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonArrow : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiListViewColumnHeaderTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize(__vwsn_this_ : tuiskin::TuiListViewColumnHeaderTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiListViewColumnHeaderTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiListViewTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiListViewTemplateConstructor)
+class tuiskin::TuiListViewTemplate : presentation::templates::GuiListViewTemplate, tuiskin::TuiListViewTemplateConstructor {
+    constructor () : tuiskin::TuiListViewTemplate*;
+}
+
+@FullName:tuiskin::TuiListViewTemplateConstructor
+class tuiskin::TuiListViewTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property look : presentation::templates::GuiCommonScrollViewLook*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiListViewTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiListViewTemplate_Initialize(__vwsn_this_ : tuiskin::TuiListViewTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiListViewTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiMenuBarButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiMenuBarButtonTemplateConstructor)
+class tuiskin::TuiMenuBarButtonTemplate : presentation::templates::GuiToolstripButtonTemplate, tuiskin::TuiMenuBarButtonTemplateConstructor {
+    constructor () : tuiskin::TuiMenuBarButtonTemplate*;
+}
+
+@FullName:tuiskin::TuiMenuBarButtonTemplateConstructor
+class tuiskin::TuiMenuBarButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiMenuBarButtonTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize(__vwsn_this_ : tuiskin::TuiMenuBarButtonTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiMenuBarButtonTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiMenuItemButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiMenuItemButtonTemplateConstructor)
+class tuiskin::TuiMenuItemButtonTemplate : presentation::templates::GuiToolstripButtonTemplate, tuiskin::TuiMenuItemButtonTemplateConstructor {
+    constructor () : tuiskin::TuiMenuItemButtonTemplate*;
+}
+
+@FullName:tuiskin::TuiMenuItemButtonTemplateConstructor
+class tuiskin::TuiMenuItemButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_11 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiSharedSizeItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_8 : presentation::compositions::GuiSharedSizeItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_9 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiMenuItemButtonTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize(__vwsn_this_ : tuiskin::TuiMenuItemButtonTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiMenuItemButtonTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiMenuSplitterTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiMenuSplitterTemplateConstructor)
+class tuiskin::TuiMenuSplitterTemplate : presentation::templates::GuiControlTemplate, tuiskin::TuiMenuSplitterTemplateConstructor {
+    constructor () : tuiskin::TuiMenuSplitterTemplate*;
+}
+
+@FullName:tuiskin::TuiMenuSplitterTemplateConstructor
+class tuiskin::TuiMenuSplitterTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiMenuSplitterTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiMenuSplitterTemplate_Initialize(__vwsn_this_ : tuiskin::TuiMenuSplitterTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiMenuSplitterTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiProgressBarTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiProgressBarTemplateConstructor)
+class tuiskin::TuiProgressBarTemplate : presentation::templates::GuiScrollTemplate, tuiskin::TuiProgressBarTemplateConstructor {
+    constructor () : tuiskin::TuiProgressBarTemplate*;
+}
+
+@FullName:tuiskin::TuiProgressBarTemplateConstructor
+class tuiskin::TuiProgressBarTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiPartialViewComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiProgressBarTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiProgressBarTemplate_Initialize(__vwsn_this_ : tuiskin::TuiProgressBarTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiProgressBarTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiRadioButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiRadioButtonTemplateConstructor)
+class tuiskin::TuiRadioButtonTemplate : presentation::templates::GuiSelectableButtonTemplate, tuiskin::TuiRadioButtonTemplateConstructor {
+    constructor () : tuiskin::TuiRadioButtonTemplate*;
+}
+
+@FullName:tuiskin::TuiRadioButtonTemplateConstructor
+class tuiskin::TuiRadioButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::compositions::GuiStackComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiStackItemComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiRadioButtonTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiRadioButtonTemplate_Initialize(__vwsn_this_ : tuiskin::TuiRadioButtonTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiRadioButtonTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiRightScrollButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiRightScrollButtonTemplateConstructor)
+class tuiskin::TuiRightScrollButtonTemplate : presentation::templates::GuiButtonTemplate, tuiskin::TuiRightScrollButtonTemplateConstructor {
+    constructor () : tuiskin::TuiRightScrollButtonTemplate*;
+}
+
+@FullName:tuiskin::TuiRightScrollButtonTemplateConstructor
+class tuiskin::TuiRightScrollButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiRightScrollButtonTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize(__vwsn_this_ : tuiskin::TuiRightScrollButtonTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiRightScrollButtonTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiScrollViewTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiScrollViewTemplateConstructor)
+class tuiskin::TuiScrollViewTemplate : presentation::templates::GuiScrollViewTemplate, tuiskin::TuiScrollViewTemplateConstructor {
+    constructor () : tuiskin::TuiScrollViewTemplate*;
+}
+
+@FullName:tuiskin::TuiScrollViewTemplateConstructor
+class tuiskin::TuiScrollViewTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property look : presentation::templates::GuiCommonScrollViewLook*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiScrollViewTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiScrollViewTemplate_Initialize(__vwsn_this_ : tuiskin::TuiScrollViewTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiScrollViewTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiShortcutKeyTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiShortcutKeyTemplateConstructor)
+class tuiskin::TuiShortcutKeyTemplate : presentation::templates::GuiLabelTemplate, tuiskin::TuiShortcutKeyTemplateConstructor {
+    constructor () : tuiskin::TuiShortcutKeyTemplate*;
+}
+
+@FullName:tuiskin::TuiShortcutKeyTemplateConstructor
+class tuiskin::TuiShortcutKeyTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiShortcutKeyTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize(__vwsn_this_ : tuiskin::TuiShortcutKeyTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiShortcutKeyTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiSystemFrameWindowTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiSystemFrameWindowTemplateConstructor)
+class tuiskin::TuiSystemFrameWindowTemplate : presentation::templates::GuiWindowTemplate, tuiskin::TuiSystemFrameWindowTemplateConstructor {
+    constructor () : tuiskin::TuiSystemFrameWindowTemplate*;
+}
+
+@FullName:tuiskin::TuiSystemFrameWindowTemplateConstructor
+class tuiskin::TuiSystemFrameWindowTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiSystemFrameWindowTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiSystemFrameWindowTemplate_Initialize(__vwsn_this_ : tuiskin::TuiSystemFrameWindowTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiSystemFrameWindowTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiTabHeaderButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiTabHeaderButtonTemplateConstructor)
+class tuiskin::TuiTabHeaderButtonTemplate : presentation::templates::GuiSelectableButtonTemplate, tuiskin::TuiTabHeaderButtonTemplateConstructor {
+    constructor () : tuiskin::TuiTabHeaderButtonTemplate*;
+}
+
+@FullName:tuiskin::TuiTabHeaderButtonTemplateConstructor
+class tuiskin::TuiTabHeaderButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiTabHeaderButtonTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize(__vwsn_this_ : tuiskin::TuiTabHeaderButtonTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiTabHeaderButtonTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiTabHeaderTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiTabHeaderTemplateConstructor)
+class tuiskin::TuiTabHeaderTemplate : presentation::templates::GuiControlTemplate, tuiskin::TuiTabHeaderTemplateConstructor {
+    event CommandsChanged : system::Function<system::Void>^ observing {
+        Commands,
+    }
+
+    property Commands : presentation::controls::ITabCommandExecutor* { get:GetCommands set:SetCommands event:CommandsChanged }
+    property CurrentTabPage : presentation::controls::GuiTabPage* { get:GetCurrentTabPage }
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_parameter_CurrentTabPage : presentation::controls::GuiTabPage*;
+    @system::workflow_attributes::att_cpp_Private()
+    property __vwsn_prop_Commands : presentation::controls::ITabCommandExecutor*;
+
+    function GetCommands() : presentation::controls::ITabCommandExecutor*;
+    function GetCurrentTabPage() : presentation::controls::GuiTabPage*;
+    function SetCommands(__vwsn_value_ : presentation::controls::ITabCommandExecutor*) : system::Void;
+
+    constructor (__vwsn_ctor_parameter_CurrentTabPage : presentation::controls::GuiTabPage*) : tuiskin::TuiTabHeaderTemplate*;
+}
+
+@FullName:tuiskin::TuiTabHeaderTemplateConstructor
+class tuiskin::TuiTabHeaderTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property CurrentTabPage : presentation::controls::GuiTabPage*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::controls::GuiSelectableButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiTabHeaderTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiTabHeaderTemplate_Initialize(__vwsn_this_ : tuiskin::TuiTabHeaderTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiTabHeaderTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiTabTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiTabTemplateConstructor)
+class tuiskin::TuiTabTemplate : presentation::templates::GuiTabTemplate, tuiskin::TuiTabTemplateConstructor {
+    constructor () : tuiskin::TuiTabTemplate*;
+}
+
+@FullName:tuiskin::TuiTabTemplateConstructor
+class tuiskin::TuiTabTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property header : presentation::compositions::GuiRepeatFlowComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiTabTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiTabTemplate_Initialize(__vwsn_this_ : tuiskin::TuiTabTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiTabTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiTextListTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiTextListTemplateConstructor)
+class tuiskin::TuiTextListTemplate : presentation::templates::GuiTextListTemplate, tuiskin::TuiTextListTemplateConstructor {
+    constructor () : tuiskin::TuiTextListTemplate*;
+}
+
+@FullName:tuiskin::TuiTextListTemplateConstructor
+class tuiskin::TuiTextListTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property look : presentation::templates::GuiCommonScrollViewLook*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiTextListTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiTextListTemplate_Initialize(__vwsn_this_ : tuiskin::TuiTextListTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiTextListTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiTheme
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiThemeConstructor)
+class tuiskin::TuiTheme : presentation::theme::ThemeTemplates, tuiskin::TuiThemeConstructor {
+    static function GetColorPackage() : tuiskin::ColorPackage;
+
+    constructor () : tuiskin::TuiTheme*;
+}
+
+@FullName:tuiskin::TuiThemeConstructor
+class tuiskin::TuiThemeConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : tuiskin::TuiTheme*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiTheme_Initialize(__vwsn_this_ : tuiskin::TuiTheme*) : system::Void;
+
+    constructor () : tuiskin::TuiThemeConstructor^;
+}
+
+@FullName:tuiskin::TuiToolstripMenuTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiToolstripMenuTemplateConstructor)
+class tuiskin::TuiToolstripMenuTemplate : presentation::templates::GuiMenuTemplate, tuiskin::TuiToolstripMenuTemplateConstructor {
+    constructor () : tuiskin::TuiToolstripMenuTemplate*;
+}
+
+@FullName:tuiskin::TuiToolstripMenuTemplateConstructor
+class tuiskin::TuiToolstripMenuTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiToolstripMenuTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiToolstripMenuTemplate_Initialize(__vwsn_this_ : tuiskin::TuiToolstripMenuTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiToolstripMenuTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiToolstripTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiToolstripTemplateConstructor)
+class tuiskin::TuiToolstripTemplate : presentation::templates::GuiControlTemplate, tuiskin::TuiToolstripTemplateConstructor {
+    constructor () : tuiskin::TuiToolstripTemplate*;
+}
+
+@FullName:tuiskin::TuiToolstripTemplateConstructor
+class tuiskin::TuiToolstripTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiToolstripTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiToolstripTemplate_Initialize(__vwsn_this_ : tuiskin::TuiToolstripTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiToolstripTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiTooltipTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiTooltipTemplateConstructor)
+class tuiskin::TuiTooltipTemplate : presentation::templates::GuiWindowTemplate, tuiskin::TuiTooltipTemplateConstructor {
+    constructor () : tuiskin::TuiTooltipTemplate*;
+}
+
+@FullName:tuiskin::TuiTooltipTemplateConstructor
+class tuiskin::TuiTooltipTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property container : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiTooltipTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiTooltipTemplate_Initialize(__vwsn_this_ : tuiskin::TuiTooltipTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiTooltipTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiTopScrollButtonTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiTopScrollButtonTemplateConstructor)
+class tuiskin::TuiTopScrollButtonTemplate : presentation::templates::GuiButtonTemplate, tuiskin::TuiTopScrollButtonTemplateConstructor {
+    constructor () : tuiskin::TuiTopScrollButtonTemplate*;
+}
+
+@FullName:tuiskin::TuiTopScrollButtonTemplateConstructor
+class tuiskin::TuiTopScrollButtonTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiTopScrollButtonTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize(__vwsn_this_ : tuiskin::TuiTopScrollButtonTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiTopScrollButtonTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiTreeViewTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiTreeViewTemplateConstructor)
+class tuiskin::TuiTreeViewTemplate : presentation::templates::GuiTreeViewTemplate, tuiskin::TuiTreeViewTemplateConstructor {
+    constructor () : tuiskin::TuiTreeViewTemplate*;
+}
+
+@FullName:tuiskin::TuiTreeViewTemplateConstructor
+class tuiskin::TuiTreeViewTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property look : presentation::templates::GuiCommonScrollViewLook*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiTreeViewTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiTreeViewTemplate_Initialize(__vwsn_this_ : tuiskin::TuiTreeViewTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiTreeViewTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiVScrollTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiVScrollTemplateConstructor)
+class tuiskin::TuiVScrollTemplate : presentation::templates::GuiScrollTemplate, tuiskin::TuiVScrollTemplateConstructor {
+    function __vwsn_instance_ctor_() : system::Void;
+
+    constructor () : tuiskin::TuiVScrollTemplate*;
+}
+
+@FullName:tuiskin::TuiVScrollTemplateConstructor
+class tuiskin::TuiVScrollTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiSideAlignedComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiSideAlignedComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property behavior : presentation::templates::GuiCommonScrollBehavior*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonDecrease : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property buttonIncrease : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property handle : presentation::compositions::GuiPartialViewComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiVScrollTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiVScrollTemplate_Initialize(__vwsn_this_ : tuiskin::TuiVScrollTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiVScrollTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiVTrackerTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiVTrackerTemplateConstructor)
+class tuiskin::TuiVTrackerTemplate : presentation::templates::GuiScrollTemplate, tuiskin::TuiVTrackerTemplateConstructor {
+    function __vwsn_instance_ctor_() : system::Void;
+
+    constructor () : tuiskin::TuiVTrackerTemplate*;
+}
+
+@FullName:tuiskin::TuiVTrackerTemplateConstructor
+class tuiskin::TuiVTrackerTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::controls::GuiButton*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property behavior : presentation::templates::GuiCommonScrollBehavior*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property handle : presentation::compositions::GuiPartialViewComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiVTrackerTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiVTrackerTemplate_Initialize(__vwsn_this_ : tuiskin::TuiVTrackerTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiVTrackerTemplateConstructor^;
 }
 

@@ -1,0 +1,47 @@
+<Folder>
+  <Instance name="ButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container">
+        <SolidBackground ref.Style="buttonBackground" />
+        <Bounds AlignmentToParent="left:1 top:0 right:1 bottom:0">
+          <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="{fontFamily:&quot;TuiFont&quot; size:1 bold:self.Focused underline:(self.State != ButtonState::Normal)}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+          <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+        </Bounds>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="CheckBoxTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiCheckBoxTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container">
+        <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem>
+            <SolidLabel Text-bind="&quot;[&quot; &amp; (self.Selected ? &quot;x&quot; : &quot; &quot;) &amp; &quot;]&quot;" Color-bind="self.VisuallyEnabled ? tuiskin::tuiColors.LabelText : tuiskin::tuiColors.ControlBorderDisabled" Font-bind="{fontFamily:&quot;TuiFont&quot; size:1 bold:self.Focused underline:(self.State != ButtonState::Normal)}" />
+          </StackItem>
+          <StackItem>
+            <Bounds AlignmentToParent="left:1 top:0 right:0 bottom:0">
+              <SolidLabel Text-bind="self.Text" Color-bind="self.VisuallyEnabled ? tuiskin::tuiColors.LabelText : tuiskin::tuiColors.ControlBorderDisabled" Font-bind="{fontFamily:&quot;TuiFont&quot; size:1 bold:self.Focused underline:(self.State != ButtonState::Normal)}" />
+              <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+            </Bounds>
+          </StackItem>
+        </Stack>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="RadioButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiRadioButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container">
+        <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem>
+            <SolidLabel Text-bind="&quot;(&quot; &amp; (self.Selected ? &quot;•&quot; : &quot; &quot;) &amp; &quot;)&quot;" Color-bind="self.VisuallyEnabled ? tuiskin::tuiColors.LabelText : tuiskin::tuiColors.ControlBorderDisabled" Font-bind="{fontFamily:&quot;TuiFont&quot; size:1 bold:self.Focused underline:(self.State != ButtonState::Normal)}" />
+          </StackItem>
+          <StackItem>
+            <Bounds AlignmentToParent="left:1 top:0 right:0 bottom:0">
+              <SolidLabel Text-bind="self.Text" Color-bind="self.VisuallyEnabled ? tuiskin::tuiColors.LabelText : tuiskin::tuiColors.ControlBorderDisabled" Font-bind="{fontFamily:&quot;TuiFont&quot; size:1 bold:self.Focused underline:(self.State != ButtonState::Normal)}" />
+              <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+            </Bounds>
+          </StackItem>
+        </Stack>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+</Folder>

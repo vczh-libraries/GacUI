@@ -41,6 +41,36 @@ TEST_FILE
 		TEST_ASSERT(remote.ResourceService()->GetOSSuperKeyName() == L"osSuper");
 	});
 
+	TEST_CASE(L"Clearing a command shortcut releases the chord and does not restore it on attachment")
+	{
+		GraphicsHostProtocol protocol;
+		SetGuiMainProxy([&]()
+		{
+			auto theme = Ptr(new EmptyControlTheme);
+			theme::RegisterTheme(theme);
+			{
+				GuiWindow window(theme::ThemeName::Window);
+				auto command = Ptr(new GuiToolstripCommand);
+				command->SetShortcutBuilder(L"Ctrl+A");
+				command->Attach(&window);
+				auto manager = window.GetShortcutKeyManager();
+				TEST_ASSERT(manager->GetItemCount() == 1);
+				command->SetShortcutBuilder(L"");
+				TEST_ASSERT(command->GetShortcut() == nullptr);
+				TEST_ASSERT(command->GetShortcutBuilder() == L"");
+				TEST_ASSERT(manager->GetItemCount() == 0);
+				command->Detach(&window);
+				command->Attach(&window);
+				TEST_ASSERT(manager->GetItemCount() == 0);
+				command->SetShortcutBuilder(L"Ctrl+A");
+				TEST_ASSERT(manager->GetItemCount() == 1);
+				command->Detach(&window);
+			}
+			theme::UnregisterTheme(theme->Name);
+		});
+		StartRemoteControllerTest(protocol);
+	});
+
 	TEST_CASE(L"Refresh shortcut labels on initial connection and renderer replacement")
 	{
 		GraphicsHostProtocol protocol;

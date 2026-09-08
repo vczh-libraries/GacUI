@@ -45,7 +45,12 @@ namespace vl
 Type Declaration (Extra)
 ***********************************************************************/
 
+			BEGIN_INTERFACE_MEMBER_NOPROXY(ITuiApplication)
+				CLASS_MEMBER_METHOD(Stop, NO_PARAMETER)
+			END_INTERFACE_MEMBER(ITuiApplication)
+
 			BEGIN_CLASS_MEMBER(GuiApplication)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetTuiApplication, NO_PARAMETER, ITuiApplication*(*)(), vl::presentation::GetTuiApplication)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetApplication, NO_PARAMETER, GuiApplication*(*)(), vl::presentation::controls::GetApplication)
 
 				CLASS_MEMBER_EVENT(LocaleChanged)

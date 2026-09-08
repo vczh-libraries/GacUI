@@ -1,0 +1,157 @@
+<Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiDataGridTabPage" xmlns:demo="tuidemo::*">
+  <ref.Members><![CDATA[
+      var tempData : observe TuiMyDataItem^[] = null;
+    ]]></ref.Members>
+  <ref.Ctor><![CDATA[
+      {
+        tempData = {
+          new TuiMyDataItem^("涼宮 春日",     Female, Lime,  (cast DateTime "1988-08-08 00:00:00.000"),  "http://www.haruhi.tv/")
+          new TuiMyDataItem^("キョン",        Male,   Black, (cast DateTime "1988-08-08 00:00:00.000"),  "http://www.haruhi.tv/")
+          new TuiMyDataItem^("长门 有希",     Female, White, (cast DateTime "2000-08-06 00:00:00.000"),  "http://www.haruhi.tv/")
+          new TuiMyDataItem^("朝比奈 实玖瑠", Female, Red,   (cast DateTime "1987-08-30 00:00:00.000"),  "http://www.haruhi.tv/")
+          new TuiMyDataItem^("古泉 一树",     Male,   Blue,  (cast DateTime "1986-08-12 00:00:00.000"),  "http://www.haruhi.tv/")
+        };
+
+        dataGrid.ItemSource = tempData;
+      }
+    ]]></ref.Ctor>
+  <TabPage ref.Name="self" Text="BindableDataGrid">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="1">
+      <att.Rows>
+        <_>composeType:MinSize</_>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Rows>
+      <att.Columns>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Columns>
+      <Cell Site="row:0 column:0 ">
+        <Stack Direction="Horizontal" Padding="1" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem>
+            <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="6">
+              <att.BoundsComposition-set PreferredMinSize="x:16" />
+              <att.ListControl>
+                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.Items>
+                    <TextItem Text="BigIcon" />
+                    <TextItem Text="SmallIcon" />
+                    <TextItem Text="List" />
+                    <TextItem Text="Tile" />
+                    <TextItem Text="Information" />
+                    <TextItem Text="Detail" />
+                    <TextItem Text="DataGrid" />
+                  </att.Items>
+                </TextList>
+              </att.ListControl>
+              <ev.SelectedIndexChanged-eval><![CDATA[
+              {
+                switch (comboView.SelectedIndex)
+                {
+                case 0:
+                  {
+                    dataGrid.View = BigIcon;
+                  }
+                case 1:
+                  {
+                    dataGrid.View = SmallIcon;
+                  }
+                case 2:
+                  {
+                    dataGrid.View = ListViewView::List;
+                  }
+                case 3:
+                  {
+                    dataGrid.View = Tile;
+                  }
+                case 4:
+                  {
+                    dataGrid.View = Information;
+                  }
+                case 5:
+                  {
+                    dataGrid.View = Detail;
+                  }
+                case 6:
+                  {
+                    dataGrid.SetViewToDefault();
+                  }
+                }
+              }
+            ]]></ev.SelectedIndexChanged-eval>
+            </ComboBox>
+          </StackItem>
+          <StackItem>
+            <Button Alt="X" Text="Rotate Item Source">
+              <att.BoundsComposition-set />
+              <ev.Clicked-eval><![CDATA[
+              {
+                if (dataGrid.ItemSource is not null)
+                {
+                  dataGrid.ItemSource = null;
+                }
+                else
+                {
+                  dataGrid.ItemSource = self.tempData;
+                }
+              }
+            ]]></ev.Clicked-eval>
+            </Button>
+          </StackItem>
+          <StackItem>
+            <Label Text-bind="comboView.SelectedIndex == 6 ? &quot;Effective view: DataGrid&quot; : &quot;Effective view: Detail&quot;" />
+          </StackItem>
+        </Stack>
+      </Cell>
+      <Cell Site="row:1 column:0 ">
+        <BindableDataGrid ref.Name="dataGrid" Alt="L" env.ItemType="tuidemo::TuiMyDataItem^" env.ItemName="itemToBind" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          <att.Columns>
+            <DataColumn Text="Name" Size="18">
+              <att.TextProperty>Name</att.TextProperty>
+              <att.ValueProperty>Name</att.ValueProperty>
+              <att.EditorFactory>demo:TuiTextEditor</att.EditorFactory>
+              <att.Sorter>[Sys::Compare($1.Name, $2.Name)]</att.Sorter>
+            </DataColumn>
+            <DataColumn Text="Gender" Size="12">
+              <att.TextProperty>tuidemo::ToString(itemToBind.Gender)</att.TextProperty>
+              <att.ValueProperty>Gender</att.ValueProperty>
+              <att.VisualizerFactory>demo:TuiGenderVisualizer;demo:TuiCellFocusTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.EditorFactory>demo:TuiGenderEditor</att.EditorFactory>
+              <att.Sorter>[Sys::Compare(cast UInt64 ($1.Gender), cast UInt64 ($2.Gender))]</att.Sorter>
+            </DataColumn>
+            <DataColumn Text="Category" Size="12">
+              <att.TextProperty>tuidemo::ToString(itemToBind.Category)</att.TextProperty>
+              <att.ValueProperty>Category</att.ValueProperty>
+              <att.VisualizerFactory>demo:TuiCategoryVisualizer;demo:TuiCellFocusTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.EditorFactory>demo:TuiCategoryEditor</att.EditorFactory>
+              <att.Sorter>[Sys::Compare(cast UInt64 ($1.Category), cast UInt64 ($2.Category))]</att.Sorter>
+            </DataColumn>
+            <DataColumn Text="Birthday" Size="15">
+              <att.TextProperty>tuidemo::ToString(itemToBind.Birthday)</att.TextProperty>
+              <att.ValueProperty>Birthday</att.ValueProperty>
+              <att.EditorFactory>demo:TuiDateEditor</att.EditorFactory>
+              <att.Sorter>[Sys::Compare($1.Birthday, $2.Birthday)]</att.Sorter>
+              <att.Filter-eval>dateFilter.Filter</att.Filter-eval>
+              <att.Popup>
+                <ToolstripMenu>
+                  <demo:TuiDateFilter ref.Name="dateFilter">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  </demo:TuiDateFilter>
+                </ToolstripMenu>
+              </att.Popup>
+            </DataColumn>
+            <DataColumn Text="Website" Size="32">
+              <att.TextProperty>Website</att.TextProperty>
+              <att.ValueProperty>Website</att.ValueProperty>
+              <att.VisualizerFactory>HyperlinkVisualizerTemplate;demo:TuiCellFocusTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.EditorFactory>demo:TuiTextEditor</att.EditorFactory>
+              <att.Sorter>[Sys::Compare($1.Website, $2.Website)]</att.Sorter>
+            </DataColumn>
+          </att.Columns>
+          <att.DataColumns>
+            <_>0</_>
+          </att.DataColumns>
+        </BindableDataGrid>
+      </Cell>
+    </Table>
+  </TabPage>
+</Instance>

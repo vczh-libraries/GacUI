@@ -1,5 +1,7 @@
 #include "FakeServices/GuiFakeClipboardService.h"
 #include "FakeServices/Dialogs/GuiFakeDialogService.h"
+#include "FakeServices/TuiDialogs/TuiFakeDialogService.h"
+#include "../PlatformProviders/TUI/TuiApplication.h"
 
 namespace vl
 {
@@ -11,7 +13,7 @@ Utilities Registration
 ***********************************************************************/
 
 		FakeClipboardService* fakeClipboardService = nullptr;
-		FakeDialogService* fakeDialogService = nullptr;
+		FakeDialogServiceBase* fakeDialogService = nullptr;
 
 		void GuiInitializeUtilities()
 		{
@@ -25,7 +27,14 @@ Utilities Registration
 
 			if (!fakeDialogService)
 			{
-				fakeDialogService = new FakeDialogService;
+				if (GetTuiApplication())
+				{
+					fakeDialogService = new FakeTuiDialogService;
+				}
+				else
+				{
+					fakeDialogService = new FakeDialogService;
+				}
 				GetNativeServiceSubstitution()->Substitute(fakeDialogService, true);
 			}
 		}

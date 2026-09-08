@@ -40,6 +40,8 @@ Windows:
 #define VCZH_PRESENTATION_GACUI
 
 #include "GacUIReflectionHelper.h"
+#include "PlatformProviders/TUI/TuiApplication.h"
+#include "GraphicsElement/TuiGraphicsElement.h"
 
 #ifdef GAC_HEADER_USE_NAMESPACE
 
@@ -70,6 +72,7 @@ extern int SetupHostedWindowsGDIRenderer();
 extern int SetupHostedWindowsDirect2DRenderer();
 extern int SetupRawWindowsGDIRenderer();
 extern int SetupRawWindowsDirect2DRenderer();
+extern int SetupTuiWindowsRenderer();
 
 // Gtk
 extern int SetupGtkRenderer();

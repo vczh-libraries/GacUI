@@ -14,6 +14,8 @@ static_assert(false, "Don't use GacUIReflection.(h|cpp) if VCZH_DEBUG_NO_REFLECT
 #define VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONPLUGIN
 
 #include "../../GacUIReflectionHelper.h"
+#include "../../GraphicsElement/TuiGraphicsElement.h"
+#include "../../PlatformProviders/TUI/TuiApplication.h"
 #include "../../Utilities/FakeServices/GuiFakeDialogServiceBase.h"
 
 namespace vl
@@ -134,10 +136,12 @@ Type List (Elements)
 			F(presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition)\
 			F(presentation::elements::ElementShapeType)\
 			F(presentation::elements::ElementShape)\
+			F(presentation::elements::TuiLineStyle)\
 			F(presentation::elements::Gui3DSplitterElement::Direction)\
 			F(presentation::elements::GuiGradientBackgroundElement::Direction)\
 
 #define GUIREFLECTIONELEMENT_CLASS_TYPELIST(F)\
+			F(presentation::elements::TuiBorderElement)\
 			F(presentation::elements::GuiFocusRectangleElement)\
 			F(presentation::elements::GuiSolidBorderElement)\
 			F(presentation::elements::Gui3DBorderElement)\
@@ -280,6 +284,7 @@ Type List (Controls)
 
 #define GUIREFLECTIONCONTROLS_EXTRA_TYPELIST(F)\
 			F(presentation::controls::GuiApplication)\
+			F(presentation::ITuiApplication)\
 			F(presentation::theme::ThemeName)\
 			F(presentation::theme::ITheme)\
 			F(presentation::theme::ThemeTemplates)\

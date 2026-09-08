@@ -1,0 +1,45 @@
+<Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiTheme" xmlns:x="tuiskin::*">
+  <ref.Members><![CDATA[
+    static func GetColorPackage() : ColorPackage
+    {
+      return tuiColors;
+    }
+  ]]></ref.Members>
+  <ThemeTemplates Name="TuiSkin" PreferCustomFrameWindow="true">
+    <att.SystemFrameWindow>x:TuiSystemFrameWindowTemplate</att.SystemFrameWindow>
+    <att.CustomFrameWindow>x:TuiCustomFrameWindowTemplate</att.CustomFrameWindow>
+    <att.CustomControl>x:TuiCustomControlTemplate</att.CustomControl>
+    <att.Tooltip>x:TuiTooltipTemplate</att.Tooltip>
+    <att.Label>x:TuiLabelTemplate</att.Label>
+    <att.ShortcutKey>x:TuiShortcutKeyTemplate</att.ShortcutKey>
+    <att.ScrollView>x:TuiScrollViewTemplate</att.ScrollView>
+    <att.GroupBox>x:TuiGroupBoxTemplate</att.GroupBox>
+    <att.Tab>x:TuiTabTemplate</att.Tab>
+    <att.ComboBox>x:TuiComboBoxTemplate</att.ComboBox>
+    <att.MultilineTextBox>x:TuiDocumentViewerTemplate</att.MultilineTextBox>
+    <att.SinglelineTextBox>x:TuiDocumentTextBoxTemplate</att.SinglelineTextBox>
+    <att.DocumentViewer>x:TuiDocumentViewerTemplate</att.DocumentViewer>
+    <att.DocumentLabel>x:TuiDocumentLabelTemplate</att.DocumentLabel>
+    <att.DocumentTextBox>x:TuiDocumentTextBoxTemplate</att.DocumentTextBox>
+    <att.ListView>x:TuiListViewTemplate</att.ListView>
+    <att.TreeView>x:TuiTreeViewTemplate</att.TreeView>
+    <att.TextList>x:TuiTextListTemplate</att.TextList>
+    <att.Menu>x:TuiToolstripMenuTemplate</att.Menu>
+    <att.MenuBar>x:TuiToolstripTemplate</att.MenuBar>
+    <att.MenuSplitter>x:TuiMenuSplitterTemplate</att.MenuSplitter>
+    <att.ToolstripSplitter>x:TuiMenuSplitterTemplate</att.ToolstripSplitter>
+    <att.ToolstripSplitterInMenu>x:TuiMenuSplitterTemplate</att.ToolstripSplitterInMenu>
+    <att.MenuBarButton>x:TuiMenuBarButtonTemplate</att.MenuBarButton>
+    <att.MenuItemButton>x:TuiMenuItemButtonTemplate</att.MenuItemButton>
+    <att.Button>x:TuiButtonTemplate</att.Button>
+    <att.CheckBox>x:TuiCheckBoxTemplate</att.CheckBox>
+    <att.RadioButton>x:TuiRadioButtonTemplate</att.RadioButton>
+    <att.DatePicker>x:TuiDatePickerTemplate</att.DatePicker>
+    <att.DateComboBox>x:TuiComboBoxTemplate</att.DateComboBox>
+    <att.HScroll>x:TuiHScrollTemplate</att.HScroll>
+    <att.VScroll>x:TuiVScrollTemplate</att.VScroll>
+    <att.HTracker>x:TuiHTrackerTemplate</att.HTracker>
+    <att.VTracker>x:TuiVTrackerTemplate</att.VTracker>
+    <att.ProgressBar>x:TuiProgressBarTemplate</att.ProgressBar>
+  </ThemeTemplates>
+</Instance>

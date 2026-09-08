@@ -27,6 +27,26 @@ const wchar_t* REFLECTION_BIN()
 	}
 }
 
+const wchar_t* TUISKIN_BINARY_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_TuiSkin/Resource_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_TuiSkin/Resource_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
+const wchar_t* TUISKIN_SOURCE_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_TuiSkin/Source_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_TuiSkin/Source_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
 const wchar_t* DARKSKIN_BINARY_FOLDER()
 {
 	switch (targetCpuArchitecture)
@@ -103,6 +123,46 @@ const wchar_t* REMOTEVIEWMODELTEST_SOURCE_FOLDER()
 	{
 	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_RemoteViewModelTest/Source_x86/";
 	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_RemoteViewModelTest/Source_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
+const wchar_t* TUIDIALOGS_BINARY_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_TuiDialogs/Resource_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_TuiDialogs/Resource_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
+const wchar_t* TUICONTROLTEST_BINARY_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_TuiControlTest/Resource_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_TuiControlTest/Resource_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
+const wchar_t* TUICONTROLTEST_SOURCE_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_TuiControlTest/Source_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_TuiControlTest/Source_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
+const wchar_t* TUIDIALOGS_SOURCE_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_TuiDialogs/Source_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_TuiDialogs/Source_x64/";
 	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
 	}
 }
@@ -190,6 +250,9 @@ Compiler
 #define BUILD_FAKEDIALOG
 #define BUILD_UNITTESTVIEWER
 #define BUILD_DARKSKIN
+#define BUILD_TUISKIN
+#define BUILD_TUIDIALOGS
+#define BUILD_TUICONTROLTEST
 #define BUILD_FULLCONTROLTEST
 #define BUILD_REMOTEPROTOCOL_TEST
 #define BUILD_REMOTEVIEWMODELTEST
@@ -199,6 +262,9 @@ void GuiMain()
 	GetResourceManager()->UnloadResource(L"GuiFakeDialogServiceUI");
 	GetResourceManager()->UnloadResource(L"GuiUnitTestSnapshotViewer");
 	GetResourceManager()->UnloadResource(L"DarkSkin");
+	GetResourceManager()->UnloadResource(L"TuiSkin");
+	GetResourceManager()->UnloadResource(L"TuiFakeDialogServiceUI");
+	GetResourceManager()->UnloadResource(L"TuiControlTest");
 	GetResourceManager()->UnloadResource(L"FullControlTest");
 	GetResourceManager()->UnloadResource(L"RemoteProtocolTest");
 	GetResourceManager()->UnloadResource(L"RemoteViewModelTest");
@@ -250,6 +316,8 @@ void GuiMain()
 	));
 #endif
 
+
+
 #ifdef BUILD_FULLCONTROLTEST
 	LoadResource(CompileResources(
 		targetCpuArchitecture,
@@ -294,6 +362,51 @@ void GuiMain()
 		false
 	));
 #endif
+
+#ifdef BUILD_TUISKIN
+	LoadResource(CompileResources(
+		targetCpuArchitecture,
+		L"TuiSkin",
+		L"Source: Generated_TuiSkin.vcxitems",
+		L"../../../../Source/GacUI.h",
+		L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h",
+		dependencies,
+		(GetResourcePath() / L"App/TuiSkin/Resource.xml"),
+		(GetResourcePath() / TUISKIN_BINARY_FOLDER()),
+		(GetResourcePath() / TUISKIN_SOURCE_FOLDER()),
+		true
+	));
+#endif
+
+#ifdef BUILD_TUIDIALOGS
+	LoadResource(CompileResources(
+		targetCpuArchitecture,
+		L"TuiFakeDialogServiceUI",
+		L"Source: GacUI TuiFakeDialogServiceUI",
+		L"../../../../GacUI.h",
+		L"../../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h",
+		dependencies,
+		(GetResourcePath() / L"../../Source/Utilities/FakeServices/TuiDialogs/Resource.xml"),
+		(GetResourcePath() / TUIDIALOGS_BINARY_FOLDER()),
+		(GetResourcePath() / TUIDIALOGS_SOURCE_FOLDER()),
+		false
+	));
+#endif
+
+#ifdef BUILD_TUICONTROLTEST
+	LoadResource(CompileResources(
+		targetCpuArchitecture,
+		L"TuiControlTest",
+		L"Source: Generated_TuiControlTest",
+		L"../../../../Source/GacUI.h;../../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUI.h;../../Generated_TuiSkin/Source_" + WString(targetCpuArchitecture == GuiResourceCpuArchitecture::x86 ? L"x86" : L"x64") + L"/TuiSkin.h",
+		L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h;../../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUIReflection.h;../../Generated_TuiSkin/Source_" + WString(targetCpuArchitecture == GuiResourceCpuArchitecture::x86 ? L"x86" : L"x64") + L"/TuiSkinReflection.h",
+		dependencies,
+		(GetResourcePath() / L"App/TuiControlTest/Resource.xml"),
+		(GetResourcePath() / TUICONTROLTEST_BINARY_FOLDER()),
+		(GetResourcePath() / TUICONTROLTEST_SOURCE_FOLDER()),
+		true
+	));
+#endif
 }
 
 /***********************************************************************
@@ -310,9 +423,11 @@ void CompilerMain()
 
 	targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
 	auto input32Path_FakeDialog = GetResourcePath() / DIALOGS_SOURCE_FOLDER();
+	auto input32Path_TuiDialog = GetResourcePath() / TUIDIALOGS_SOURCE_FOLDER();
 	auto input32Path_UnitTestViewer = GetResourcePath() / UNITTESTVIEWER_SOURCE_FOLDER();
 	targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
 	auto input64Path_FakeDialog = GetResourcePath() / DIALOGS_SOURCE_FOLDER();
+	auto input64Path_TuiDialog = GetResourcePath() / TUIDIALOGS_SOURCE_FOLDER();
 	auto input64Path_UnitTestViewer = GetResourcePath() / UNITTESTVIEWER_SOURCE_FOLDER();
 
 #ifdef BUILD_FAKEDIALOG
@@ -328,6 +443,14 @@ void CompilerMain()
 		input32Path_UnitTestViewer,
 		input64Path_UnitTestViewer,
 		(GetResourcePath() / L"../../Source/UnitTestUtilities/SnapshotViewer/Source")
+		);
+#endif
+
+#ifdef BUILD_TUIDIALOGS
+	MergeCppFiles(
+		input32Path_TuiDialog,
+		input64Path_TuiDialog,
+		(GetResourcePath() / L"../../Source/Utilities/FakeServices/TuiDialogs/Source")
 		);
 #endif
 }

@@ -1,0 +1,110 @@
+<Folder>
+  <Instance name="TuiMessageBoxButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="tui_controls::TuiMessageBoxButtonTemplate">
+      <ref.LocalizedStrings Name="Strings" Class="tui_controls::TuiDialogStrings" Default="true" />
+      <ref.Parameter Name="Action" Class="presentation::IMessageBoxDialogAction" />
+      <ref.Members><![CDATA[
+        prop ButtonControl : GuiButton* = null {const}
+
+        func GetButtonText(button: INativeDialogService::MessageBoxButtonsOutput, strings: ITuiDialogStringsStrings^) : string
+        {
+          switch (button)
+          {
+          case SelectOK:        { return strings.OK(); }
+          case SelectCancel:    { return strings.Cancel(); }
+          case SelectYes:       { return strings.Yes(); }
+          case SelectNo:        { return strings.No(); }
+          case SelectRetry:     { return strings.Retry(); }
+          case SelectAbort:     { return strings.Abort(); }
+          case SelectIgnore:    { return strings.Ignore(); }
+          case SelectTryAgain:  { return strings.TryAgain(); }
+          case SelectContinue:  { return strings.Continue(); }
+          default:              { return ""; }
+          }
+        }
+
+        func GetButtonAlt(button: INativeDialogService::MessageBoxButtonsOutput) : string
+        {
+          switch (button)
+          {
+          case SelectOK:        { return "O"; }
+          case SelectCancel:    { return "C"; }
+          case SelectYes:       { return "Y"; }
+          case SelectNo:        { return "N"; }
+          case SelectRetry:     { return "R"; }
+          case SelectAbort:     { return "A"; }
+          case SelectIgnore:    { return "I"; }
+          case SelectTryAgain:  { return "T"; }
+          case SelectContinue:  { return "K"; }
+          default:              { return ""; }
+          }
+        }
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+          self.SetButtonControl(self.buttonControl);
+        }
+      ]]></ref.Ctor>
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Button ref.Name="buttonControl" Text-bind="self.GetButtonText(Action.Button, self.Strings)" Alt-eval="self.GetButtonAlt(Action.Button)">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          <ev.Clicked-eval><![CDATA[{Action.PerformAction(); self.RelatedControlHost.Close();}]]></ev.Clicked-eval>
+        </Button>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="TuiMessageBoxWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="tui_controls::TuiMessageBoxWindow">
+      <ref.Parameter Name="ViewModel" Class="presentation::IMessageBoxDialogViewModel" />
+      <ref.Members><![CDATA[
+        func GetIconText(icon: INativeDialogService::MessageBoxIcons): string
+        {
+          switch (icon)
+          {
+          case IconError: { return "[!]"; }
+          case IconQuestion: { return "[?]"; }
+          case IconWarning: { return "[!]"; }
+          case IconInformation: { return "[i]"; }
+          default: { return ""; }
+          }
+        }
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+          var defaultButton = ViewModel.Buttons.IndexOf(ViewModel.DefaultButton);
+          var buttonControl = (cast (TuiMessageBoxButtonTemplate*) buttonStack.StackItems[defaultButton].Children[0]).ButtonControl;
+          buttonControl.SetFocused();
+        }
+      ]]></ref.Ctor>
+      <Window ref.Name="self" ClientSize="x:56 y:9" ShowInTaskBar="false" MaximizedBox="false" MinimizedBox="false" IconVisible="false" Text-eval="ViewModel.Title" SizeBox="false">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="1">
+          <att.Rows>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0 ">
+            <Label Text-eval="self.GetIconText(ViewModel.Icon)" />
+          </Cell>
+          <Cell Site="row:0 column:1 ">
+            <ScrollContainer HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              <Label Text-eval="ViewModel.Text">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              </Label>
+            </ScrollContainer>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:2">
+            <RepeatStack ref.Name="buttonStack" Direction="Horizontal" Padding="1" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <att.ItemTemplate>tui_controls::TuiMessageBoxButtonTemplate</att.ItemTemplate>
+              <att.ItemSource-eval>ViewModel.Buttons</att.ItemSource-eval>
+            </RepeatStack>
+          </Cell>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
+</Folder>

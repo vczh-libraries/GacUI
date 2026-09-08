@@ -1,4 +1,6 @@
 #include "ItemTemplate_IListViewItemView.h"
+#include "TuiItemTemplates.h"
+#include "../../PlatformProviders/TUI/TuiApplication.h"
 #include "../../GraphicsComposition/GuiGraphicsTableComposition.h"
 
 namespace vl::presentation::controls::list
@@ -654,7 +656,7 @@ DetailListViewItemTemplate
 			auto textBounds = new GuiBoundsComposition;
 			cell->AddChild(textBounds);
 			textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-			textBounds->SetAlignmentToParent(Margin(8, 0, 8, 0));
+			textBounds->SetAlignmentToParent(GetTuiApplication() ? Margin(1, 0, 1, 0) : Margin(8, 0, 8, 0));
 
 			auto subText = GuiSolidLabelElement::Create();
 			subText->SetAlignments(Alignment::Left, Alignment::Center);
@@ -694,7 +696,9 @@ DetailListViewItemTemplate
 				table->SetColumnOption(0, GuiCellOption::MinSizeOption());
 				table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
 				table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				table->SetCellPadding(2);
+				table->SetCellPadding(GetTuiApplication() ? 0 : 2);
+				if (GetTuiApplication()) table->SetRowOption(2, GuiCellOption::AbsoluteOption(0));
+				if (!GetTuiApplication())
 				{
 					auto cell = new GuiCellComposition;
 					table->AddChild(cell);
@@ -713,7 +717,7 @@ DetailListViewItemTemplate
 					auto textBounds = new GuiBoundsComposition;
 					cell->AddChild(textBounds);
 					textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-					textBounds->SetAlignmentToParent(Margin(0, 0, 8, 0));
+					textBounds->SetAlignmentToParent(GetTuiApplication() ? Margin(1, 0, 1, 0) : Margin(0, 0, 8, 0));
 
 					text = GuiSolidLabelElement::Create();
 					text->SetAlignments(Alignment::Left, Alignment::Center);
@@ -738,11 +742,11 @@ DetailListViewItemTemplate
 			ResetTextTable(subColumnCount);
 
 			auto imageData = view->GetSmallImage(itemIndex);
-			if (imageData)
+			if (image && imageData)
 			{
 				image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
 			}
-			else
+			else if (image)
 			{
 				image->SetImage(0);
 			}
@@ -755,10 +759,10 @@ DetailListViewItemTemplate
 
 			if (auto controlTemplate = dynamic_cast<templates::GuiListViewTemplate*>(listControl->TypedControlTemplateObject(true)))
 			{
-				text->SetColor(controlTemplate->GetPrimaryTextColor());
+				text->SetColor(TuiGetItemTextColor(this, controlTemplate->GetPrimaryTextColor()));
 				for (vint i = 0; i < subColumnCount; i++)
 				{
-					subItemTexts[i]->SetColor(controlTemplate->GetSecondaryTextColor());
+					subItemTexts[i]->SetColor(TuiGetItemTextColor(this, controlTemplate->GetSecondaryTextColor()));
 				}
 			}
 		}

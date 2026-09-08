@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Resources">
@@ -460,5 +460,51 @@
     <None Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Metadata\Protocols.json">
       <Filter>PlatformProviders\Remote\Protocol\Metadata</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="PlatformProviders\TUI">
+      <UniqueIdentifier>{37f458f1-00f0-4a6a-af6d-5bfbda213244}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\TUI\TuiApplication.cpp">
+      <Filter>PlatformProviders\TUI</Filter>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\TUI\TuiApplication.h">
+      <Filter>PlatformProviders\TUI</Filter>
+    </ClInclude>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\TUI\TuiController.cpp">
+      <Filter>PlatformProviders\TUI</Filter>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\TUI\TuiController.h">
+      <Filter>PlatformProviders\TUI</Filter>
+    </ClInclude>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\TUI\TuiGraphics.cpp">
+      <Filter>PlatformProviders\TUI</Filter>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\TUI\TuiGraphics.h">
+      <Filter>PlatformProviders\TUI</Filter>
+    </ClInclude>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\TUI\TuiGraphicsRenderers.cpp">
+      <Filter>PlatformProviders\TUI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\TUI\TuiTextLayout.cpp">
+      <Filter>PlatformProviders\TUI</Filter>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\TUI\TuiTextLayout.h">
+      <Filter>PlatformProviders\TUI</Filter>
+    </ClInclude>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\TUI\TuiWindow.cpp">
+      <Filter>PlatformProviders\TUI</Filter>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\TUI\TuiWindow.h">
+      <Filter>PlatformProviders\TUI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\TuiGraphicsElement.h">
+      <Filter>GraphicsElement</Filter>
+    </ClInclude>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\TuiGraphicsElement.cpp">
+      <Filter>GraphicsElement</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

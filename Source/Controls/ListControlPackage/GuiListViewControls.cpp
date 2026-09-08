@@ -1,4 +1,5 @@
 #include "GuiListViewControls.h"
+#include "../../PlatformProviders/TUI/TuiApplication.h"
 #include "../Templates/GuiThemeStyleFactory.h"
 
 namespace vl
@@ -444,6 +445,10 @@ GuiListView
 
 			void GuiVirtualListView::SetView(ListViewView _view)
 			{
+				if (GetTuiApplication() && _view != ListViewView::Unknown)
+				{
+					_view = ListViewView::Detail;
+				}
 				switch (_view)
 				{
 				case ListViewView::BigIcon:

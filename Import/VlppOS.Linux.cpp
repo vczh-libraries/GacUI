@@ -6017,6 +6017,7 @@ namespace vl
 					std::string output;
 					TuiColor lastForeground;
 					TuiColor lastBackground;
+					Nullable<TuiTextStyle> lastStyle;
 					bool hasLastColor = false;
 					for (vint y = 0; y < height; y++)
 					{
@@ -6027,6 +6028,12 @@ namespace vl
 						{
 							auto& pixel = buffer[y * width + x];
 							if (pixel.glyph == TuiPixelGlyph::WideCharContinuation) continue;
+							auto style = GetTextStyle(pixel);
+							if (!lastStyle || style != lastStyle.Value())
+							{
+								output += wtoa(GetTextStyleSequence(style)).Buffer();
+								lastStyle = style;
+							}
 							if (!hasLastColor || pixel.foregroundColor != lastForeground || pixel.backgroundColor != lastBackground)
 							{
 								AppendColor(output, pixel.foregroundColor, pixel.backgroundColor, colorMode);

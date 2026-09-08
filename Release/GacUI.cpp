@@ -10870,6 +10870,8 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnInitialize()
 				{
+					// In-place terminal editors need a text row between their two border rows.
+					if (GetTuiApplication()) SetPreferredMinSize(Size(0, 3));
 					{
 						textTable = new GuiTableComposition;
 						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -11540,6 +11542,7 @@ DataVisualizerBase
 						visualizerTemplate->SetRowValue(itemProvider->GetBindingValue(row));
 						visualizerTemplate->SetCellValue(dataGridView->GetBindingCellValue(row, column));
 					}
+					TuiUpdateGridCellColors(visualizerTemplate);
 				}
 
 				void DataVisualizerBase::SetSelected(bool value)
@@ -11547,6 +11550,7 @@ DataVisualizerBase
 					if (visualizerTemplate)
 					{
 						visualizerTemplate->SetSelected(value);
+						TuiUpdateGridCellColors(visualizerTemplate);
 					}
 				}
 
@@ -11715,6 +11719,7 @@ MainColumnVisualizerTemplate
 
 				void MainColumnVisualizerTemplate::OnSmallImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
+					if (!image) return;
 					auto imageData = GetSmallImage();
 					if (imageData)
 					{
@@ -11736,7 +11741,9 @@ MainColumnVisualizerTemplate
 					table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
 					table->SetColumnOption(0, GuiCellOption::MinSizeOption());
 					table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
-					table->SetCellPadding(2);
+					table->SetCellPadding(GetTuiApplication() ? 0 : 2);
+					if (GetTuiApplication()) table->SetRowOption(2, GuiCellOption::AbsoluteOption(0));
+					if (!GetTuiApplication())
 					{
 						GuiCellComposition* cell = new GuiCellComposition;
 						table->AddChild(cell);
@@ -11755,7 +11762,7 @@ MainColumnVisualizerTemplate
 						auto textBounds = new GuiBoundsComposition;
 						cell->AddChild(textBounds);
 						textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-						textBounds->SetAlignmentToParent(Margin(0, 0, 8, 0));
+						textBounds->SetAlignmentToParent(GetTuiApplication() ? Margin(1, 0, 1, 0) : Margin(0, 0, 8, 0));
 
 						text = GuiSolidLabelElement::Create();
 						text->SetAlignments(Alignment::Left, Alignment::Center);
@@ -11808,7 +11815,7 @@ SubColumnVisualizerTemplate
 					auto textBounds = new GuiBoundsComposition;
 					AddChild(textBounds);
 					textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-					textBounds->SetAlignmentToParent(Margin(8, 0, 8, 0));
+					textBounds->SetAlignmentToParent(GetTuiApplication() ? Margin(1, 0, 1, 0) : Margin(8, 0, 8, 0));
 
 					text = GuiSolidLabelElement::Create();
 					text->SetVerticalAlignment(Alignment::Center);
@@ -11863,9 +11870,9 @@ HyperlinkVisualizerTemplate
 				}
 
 				HyperlinkVisualizerTemplate::HyperlinkVisualizerTemplate()
-					:SubColumnVisualizerTemplate(true)
+					:SubColumnVisualizerTemplate(!GetTuiApplication())
 				{
-					text->SetColor(Color(0, 0, 255));
+					if (!GetTuiApplication()) text->SetColor(Color(0, 0, 255));
 					text->SetEllipse(true);
 					GetEventReceiver()->mouseEnter.AttachMethod(this, &HyperlinkVisualizerTemplate::label_MouseEnter);
 					GetEventReceiver()->mouseLeave.AttachMethod(this, &HyperlinkVisualizerTemplate::label_MouseLeave);
@@ -11890,6 +11897,22 @@ CellBorderVisualizerTemplate
 					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 					focusComposition = new GuiBoundsComposition();
+					if (GetTuiApplication())
+					{
+						auto focus = Ptr(GuiSolidLabelElement::Create());
+						focus->SetText(L">");
+						auto font = GetFont();
+						font.bold = true;
+						focus->SetFont(font);
+						focusComposition->SetOwnedElement(focus);
+						focusComposition->SetAlignmentToParent(Margin(0, 0, -1, 0));
+						focusComposition->SetPreferredMinSize(Size(1, 1));
+						PrimaryTextColorChanged.AttachLambda([this, focus](GuiGraphicsComposition*, GuiEventArgs&)
+						{
+							focus->SetColor(GetPrimaryTextColor());
+						});
+					}
+					else
 					{
 						auto focus = Ptr(GuiFocusRectangleElement::Create());
 						focusComposition->SetOwnedElement(focus);
@@ -11898,7 +11921,7 @@ CellBorderVisualizerTemplate
 					auto container = new GuiBoundsComposition();
 					{
 						container->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						container->SetAlignmentToParent(Margin(2, 2, 2, 2));
+						container->SetAlignmentToParent(GetTuiApplication() ? Margin(1, 0, 0, 0) : Margin(2, 2, 2, 2));
 					}
 
 					AddChild(focusComposition);
@@ -11932,12 +11955,14 @@ CellBorderVisualizerTemplate
 						border1 = GuiSolidBorderElement::Create();
 						bounds1->SetOwnedElement(Ptr(border1));
 						bounds1->SetAlignmentToParent(Margin(-1, 0, 0, 0));
+						if (GetTuiApplication()) bounds1->SetPreferredMinSize(Size(1, 1));
 					}
 					auto bounds2 = new GuiBoundsComposition;
 					{
 						border2 = GuiSolidBorderElement::Create();
 						bounds2->SetOwnedElement(Ptr(border2));
 						bounds2->SetAlignmentToParent(Margin(0, -1, 0, 0));
+						if (GetTuiApplication()) bounds2->SetPreferredMinSize(Size(1, 1));
 					}
 					auto container = new GuiBoundsComposition();
 					{
@@ -11961,6 +11986,7 @@ CellBorderVisualizerTemplate
 		}
 	}
 }
+
 
 /***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\GUILISTCONTROLITEMARRANGERS.CPP
@@ -12234,11 +12260,13 @@ GuiListControl::ItemCallback
 			GuiListControl::ItemStyleRecord GuiListControl::ItemCallback::InstallStyle(ItemStyle* style, vint itemIndex)
 			{
 				templates::GuiTemplate* bounds = style;
+				GuiSelectableButton* tuiBackground = nullptr;
 				if (listControl->GetDisplayItemBackground())
 				{
 					style->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
 					auto backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
+					if (GetTuiApplication()) tuiBackground = backgroundButton;
 					if (auto backgroundStyle = listControl->TypedControlTemplateObject(true)->GetBackgroundTemplate())
 					{
 						backgroundButton->SetControlTemplate(backgroundStyle);
@@ -12260,6 +12288,7 @@ GuiListControl::ItemCallback
 				}
 
 				listControl->OnStyleInstalled(itemIndex, style, false);
+				if (tuiBackground) list::TuiInitializeItemBackground(style, tuiBackground);
 				return { style,bounds };
 			}
 
@@ -13607,6 +13636,10 @@ GuiListView
 
 			void GuiVirtualListView::SetView(ListViewView _view)
 			{
+				if (GetTuiApplication() && _view != ListViewView::Unknown)
+				{
+					_view = ListViewView::Detail;
+				}
 				switch (_view)
 				{
 				case ListViewView::BigIcon:
@@ -16371,7 +16404,7 @@ DetailListViewItemTemplate
 			auto textBounds = new GuiBoundsComposition;
 			cell->AddChild(textBounds);
 			textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-			textBounds->SetAlignmentToParent(Margin(8, 0, 8, 0));
+			textBounds->SetAlignmentToParent(GetTuiApplication() ? Margin(1, 0, 1, 0) : Margin(8, 0, 8, 0));
 
 			auto subText = GuiSolidLabelElement::Create();
 			subText->SetAlignments(Alignment::Left, Alignment::Center);
@@ -16411,7 +16444,9 @@ DetailListViewItemTemplate
 				table->SetColumnOption(0, GuiCellOption::MinSizeOption());
 				table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
 				table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				table->SetCellPadding(2);
+				table->SetCellPadding(GetTuiApplication() ? 0 : 2);
+				if (GetTuiApplication()) table->SetRowOption(2, GuiCellOption::AbsoluteOption(0));
+				if (!GetTuiApplication())
 				{
 					auto cell = new GuiCellComposition;
 					table->AddChild(cell);
@@ -16430,7 +16465,7 @@ DetailListViewItemTemplate
 					auto textBounds = new GuiBoundsComposition;
 					cell->AddChild(textBounds);
 					textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-					textBounds->SetAlignmentToParent(Margin(0, 0, 8, 0));
+					textBounds->SetAlignmentToParent(GetTuiApplication() ? Margin(1, 0, 1, 0) : Margin(0, 0, 8, 0));
 
 					text = GuiSolidLabelElement::Create();
 					text->SetAlignments(Alignment::Left, Alignment::Center);
@@ -16455,11 +16490,11 @@ DetailListViewItemTemplate
 			ResetTextTable(subColumnCount);
 
 			auto imageData = view->GetSmallImage(itemIndex);
-			if (imageData)
+			if (image && imageData)
 			{
 				image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
 			}
-			else
+			else if (image)
 			{
 				image->SetImage(0);
 			}
@@ -16472,10 +16507,10 @@ DetailListViewItemTemplate
 
 			if (auto controlTemplate = dynamic_cast<templates::GuiListViewTemplate*>(listControl->TypedControlTemplateObject(true)))
 			{
-				text->SetColor(controlTemplate->GetPrimaryTextColor());
+				text->SetColor(TuiGetItemTextColor(this, controlTemplate->GetPrimaryTextColor()));
 				for (vint i = 0; i < subColumnCount; i++)
 				{
-					subItemTexts[i]->SetColor(controlTemplate->GetSecondaryTextColor());
+					subItemTexts[i]->SetColor(TuiGetItemTextColor(this, controlTemplate->GetSecondaryTextColor()));
 				}
 			}
 		}
@@ -16499,6 +16534,7 @@ DetailListViewItemTemplate
 	{
 	}
 }
+
 
 /***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\ITEMTEMPLATE_ITEXTITEMVIEW.CPP
@@ -16564,7 +16600,7 @@ DefaultTextListItemTemplate
 		else
 		{
 			AddChild(textComposition);
-			textComposition->SetAlignmentToParent(Margin(5, 2, 0, 2));
+			textComposition->SetAlignmentToParent(GetTuiApplication() ? Margin(1, 0, 0, 0) : Margin(5, 2, 0, 2));
 		}
 
 		FontChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnFontChanged);
@@ -16659,6 +16695,7 @@ DefaultRadioTextListItemTemplate
 	}
 }
 
+
 /***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\ITEMTEMPLATE_ITREEVIEWITEMVIEW.CPP
 ***********************************************************************/
@@ -16689,12 +16726,13 @@ DefaultTreeItemTemplate
 		table->SetColumnOption(2, GuiCellOption::MinSizeOption());
 		table->SetColumnOption(3, GuiCellOption::MinSizeOption());
 		table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-		table->SetCellPadding(2);
+		table->SetCellPadding(GetTuiApplication() ? 0 : 2);
+		if (GetTuiApplication()) table->SetRowOption(2, GuiCellOption::AbsoluteOption(0));
 		{
 			GuiCellComposition* cell = new GuiCellComposition;
 			table->AddChild(cell);
 			cell->SetSite(0, 1, 3, 1);
-			cell->SetPreferredMinSize(Size(16, 16));
+			cell->SetPreferredMinSize(GetTuiApplication() ? Size(2, 1) : Size(16, 16));
 
 			expandingButton = new GuiSelectableButton(theme::ThemeName::TreeItemExpander);
 			if (auto controlTemplate = dynamic_cast<templates::GuiTreeViewTemplate*>(listControl->TypedControlTemplateObject(true)))
@@ -16715,17 +16753,19 @@ DefaultTreeItemTemplate
 			GuiCellComposition* cell = new GuiCellComposition;
 			table->AddChild(cell);
 			cell->SetSite(1, 2, 1, 1);
-			cell->SetPreferredMinSize(Size(16, 16));
-
-			imageElement = GuiImageFrameElement::Create();
-			imageElement->SetStretch(true);
-			cell->SetOwnedElement(Ptr(imageElement));
+			if (!GetTuiApplication())
+			{
+				cell->SetPreferredMinSize(Size(16, 16));
+				imageElement = GuiImageFrameElement::Create();
+				imageElement->SetStretch(true);
+				cell->SetOwnedElement(Ptr(imageElement));
+			}
 		}
 		{
 			GuiCellComposition* cell = new GuiCellComposition;
 			table->AddChild(cell);
 			cell->SetSite(0, 3, 3, 1);
-			cell->SetPreferredMinSize(Size(192, 0));
+			cell->SetPreferredMinSize(GetTuiApplication() ? Size(1, 1) : Size(192, 0));
 
 			textElement = GuiSolidLabelElement::Create();
 			textElement->SetAlignments(Alignment::Left, Alignment::Center);
@@ -16781,11 +16821,12 @@ DefaultTreeItemTemplate
 
 	void DefaultTreeItemTemplate::OnLevelChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 	{
-		table->SetColumnOption(0, GuiCellOption::AbsoluteOption(GetLevel() * 12));
+		table->SetColumnOption(0, GuiCellOption::AbsoluteOption(GetLevel() * (GetTuiApplication() ? 2 : 12)));
 	}
 
 	void DefaultTreeItemTemplate::OnImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 	{
+		if (!imageElement) return;
 		if (auto imageData = GetImage())
 		{
 			imageElement->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
@@ -17349,7 +17390,7 @@ GuiCommonDatePickerLook
 					}
 					comboYear = new GuiComboBoxListControl(theme::ThemeName::ComboBox, listYears);
 					comboYear->SetAlt(L"Y");
-					comboYear->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 2, 0));
+					comboYear->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, GetTuiApplication() ? 1 : 2, 0));
 					comboYear->SelectedIndexChanged.AttachMethod(this, &GuiCommonDatePickerLook::comboYearMonth_SelectedIndexChanged);
 				}
 				{
@@ -17357,7 +17398,7 @@ GuiCommonDatePickerLook
 					listMonths->SetHorizontalAlwaysVisible(false);
 					comboMonth = new GuiComboBoxListControl(theme::ThemeName::ComboBox, listMonths);
 					comboMonth->SetAlt(L"M");
-					comboMonth->GetBoundsComposition()->SetAlignmentToParent(Margin(2, 0, 0, 0));
+					comboMonth->GetBoundsComposition()->SetAlignmentToParent(Margin(GetTuiApplication() ? 1 : 2, 0, 0, 0));
 					comboMonth->SelectedIndexChanged.AttachMethod(this, &GuiCommonDatePickerLook::comboYearMonth_SelectedIndexChanged);
 				}
 				{
@@ -17384,7 +17425,7 @@ GuiCommonDatePickerLook
 				{
 					dayTable = new GuiTableComposition;
 					dayTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					dayTable->SetCellPadding(4);
+					dayTable->SetCellPadding(GetTuiApplication() ? 0 : 4);
 					dayTable->SetRowsAndColumns(DayRows + DayRowStart, DaysOfWeek);
 
 					for (vint i = 0; i < DayRowStart; i++)
@@ -18189,11 +18230,28 @@ GuiDocumentCommonInterface
 			{
 				if (bounds != Rect())
 				{
-					bounds.x1 -= 15;
-					bounds.y1 -= 15;
-					bounds.x2 += 15;
-					bounds.y2 += 15;
-					EnsureRectVisible(bounds);
+					if (GetTuiApplication() && documentComposition->GetRelatedGraphicsHost())
+					{
+						// Request current layout before queuing caret visibility after a large paste.
+						documentControl->GetBoundsComposition()->ForceCalculateSizeImmediately();
+					}
+					auto margin = GetTuiApplication() ? 1 : 15;
+					bounds.x1 -= margin;
+					bounds.y1 -= margin;
+					bounds.x2 += margin;
+					bounds.y2 += margin;
+					if (GetTuiApplication())
+					{
+						// CalculateView updates scrollbar ranges through the same main-thread queue.
+						documentControl->TryDelayExecuteIfNotDeleted([this, bounds]()
+						{
+							EnsureRectVisible(bounds);
+						});
+					}
+					else
+					{
+						EnsureRectVisible(bounds);
+					}
 				}
 			}
 
@@ -18387,7 +18445,7 @@ GuiDocumentCommonInterface
 				documentComposition = new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(Ptr(documentElement));
 				documentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-				documentComposition->SetAlignmentToParent(Margin(2, 2, 2, 2));
+				documentComposition->SetAlignmentToParent(GetTuiApplication() ? Margin(0, 0, 0, 0) : Margin(2, 2, 2, 2));
 				_container->AddChild(documentComposition);
 				ReplaceMouseArea(_mouseArea);
 
@@ -23482,7 +23540,15 @@ GuiToolstripCommand
 
 			void GuiToolstripCommand::SetShortcutBuilder(const WString& value)
 			{
-				BuildShortcut(value);
+				if (value.Length() == 0)
+				{
+					shortcutBuilder = nullptr;
+					ReplaceShortcut(nullptr);
+				}
+				else
+				{
+					BuildShortcut(value);
+				}
 			}
 
 			bool GuiToolstripCommand::GetEnabled()
@@ -54185,7 +54251,7 @@ Utilities Registration
 ***********************************************************************/
 
 		FakeClipboardService* fakeClipboardService = nullptr;
-		FakeDialogService* fakeDialogService = nullptr;
+		FakeDialogServiceBase* fakeDialogService = nullptr;
 
 		void GuiInitializeUtilities()
 		{
@@ -54199,7 +54265,14 @@ Utilities Registration
 
 			if (!fakeDialogService)
 			{
-				fakeDialogService = new FakeDialogService;
+				if (GetTuiApplication())
+				{
+					fakeDialogService = new FakeTuiDialogService;
+				}
+				else
+				{
+					fakeDialogService = new FakeDialogService;
+				}
 				GetNativeServiceSubstitution()->Substitute(fakeDialogService, true);
 			}
 		}
@@ -54222,6 +54295,7 @@ Utilities Registration
 		}
 	}
 }
+
 
 /***********************************************************************
 .\UTILITIES\FAKESERVICES\GUIFAKECLIPBOARDSERVICE.CPP
@@ -66606,6 +66680,9542 @@ namespace vl::presentation::remoting
 		miniHttpAutomationService->Stop();
 		delete miniHttpAutomationService;
 		miniHttpAutomationService = nullptr;
+	}
+}
+
+
+/***********************************************************************
+.\CONTROLS\LISTCONTROLPACKAGE\TUIITEMTEMPLATES.CPP
+***********************************************************************/
+
+namespace vl::presentation::controls::list
+{
+	using namespace templates;
+	using namespace compositions;
+	using namespace elements;
+
+	TuiListItemBackgroundTemplate* TuiGetItemBackground(GuiGraphicsComposition* item)
+	{
+		if (!GetTuiApplication()) return nullptr;
+		for (auto parent = item->GetParent(); parent; parent = parent->GetParent())
+		{
+			if (auto background = dynamic_cast<TuiListItemBackgroundTemplate*>(parent)) return background;
+		}
+		return nullptr;
+	}
+
+	Color TuiGetItemTextColor(GuiGraphicsComposition* item, Color fallback)
+	{
+		if (auto background = TuiGetItemBackground(item)) return background->GetTextColor();
+		return fallback;
+	}
+
+	void TuiUpdateGridCellColors(GuiGridVisualizerTemplate* cell)
+	{
+		if (auto background = TuiGetItemBackground(cell))
+		{
+			auto color = cell->GetSelected() ? background->GetSelectedTextColor() : background->GetTextColor();
+			cell->SetPrimaryTextColor(color);
+			cell->SetSecondaryTextColor(color);
+			if (!cell->GetOwnedElement()) cell->SetOwnedElement(Ptr(GuiSolidBackgroundElement::Create()));
+			if (auto element = cell->GetOwnedElement().Cast<GuiSolidBackgroundElement>())
+			{
+				element->SetColor(cell->GetSelected() ? background->GetSelectedBackgroundColor() : Color(0, 0, 0, 0));
+			}
+		}
+	}
+
+	void TuiRefreshGridColors(GuiGraphicsComposition* composition)
+	{
+		if (auto cell = dynamic_cast<GuiGridVisualizerTemplate*>(composition)) TuiUpdateGridCellColors(cell);
+		for (auto child : composition->Children()) TuiRefreshGridColors(child);
+	}
+
+	void TuiInitializeItemBackground(GuiListItemTemplate* item, GuiSelectableButton* button)
+	{
+		if (auto background = dynamic_cast<TuiListItemBackgroundTemplate*>(button->GetControlTemplateObject()))
+		{
+			background->SetGridRow(dynamic_cast<GuiVirtualDataGrid*>(item->GetAssociatedListControl()) != nullptr);
+			button->SetEnabled(item->GetVisuallyEnabled());
+			item->VisuallyEnabledChanged.AttachLambda([=](GuiGraphicsComposition*, GuiEventArgs&)
+			{
+				button->SetEnabled(item->GetVisuallyEnabled());
+			});
+			auto refresh = [=](GuiGraphicsComposition*, GuiEventArgs&)
+			{
+				if (auto text = dynamic_cast<GuiTextListItemTemplate*>(item)) text->SetTextColor(background->GetTextColor());
+				if (auto tree = dynamic_cast<GuiTreeItemTemplate*>(item)) tree->SetTextColor(background->GetTextColor());
+				if (auto detail = dynamic_cast<DetailListViewItemTemplate*>(item)) detail->RefreshItem();
+				if (background->GetGridRow()) TuiRefreshGridColors(item);
+			};
+			background->TextColorChanged.AttachLambda(refresh);
+			background->SelectedTextColorChanged.AttachLambda(refresh);
+			background->SelectedBackgroundColorChanged.AttachLambda(refresh);
+			if (auto text = dynamic_cast<GuiTextListItemTemplate*>(item)) text->TextColorChanged.AttachLambda(refresh);
+			if (auto tree = dynamic_cast<GuiTreeItemTemplate*>(item)) tree->TextColorChanged.AttachLambda(refresh);
+			GuiEventArgs arguments(item);
+			refresh(item, arguments);
+		}
+	}
+}
+
+
+/***********************************************************************
+.\GRAPHICSELEMENT\TUIGRAPHICSELEMENT.CPP
+***********************************************************************/
+
+namespace vl::presentation::elements
+{
+	Color TuiBorderElement::GetColor()
+	{
+		return color;
+	}
+
+	void TuiBorderElement::SetColor(Color value)
+	{
+		if (color != value)
+		{
+			color = value;
+			InvokeOnElementStateChanged();
+		}
+	}
+
+	ElementShape TuiBorderElement::GetShape()
+	{
+		return shape;
+	}
+
+	void TuiBorderElement::SetShape(ElementShape value)
+	{
+		if (shape != value)
+		{
+			shape = value;
+			InvokeOnElementStateChanged();
+		}
+	}
+
+	TuiLineStyle TuiBorderElement::GetLineStyle()
+	{
+		return lineStyle;
+	}
+
+	void TuiBorderElement::SetLineStyle(TuiLineStyle value)
+	{
+		if (lineStyle != value)
+		{
+			lineStyle = value;
+			InvokeOnElementStateChanged();
+		}
+	}
+}
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\TUI\TUIAPPLICATION.CPP
+***********************************************************************/
+
+namespace vl::presentation
+{
+	ITuiApplication* tuiApplication = nullptr;
+
+	ITuiApplication* GetTuiApplication()
+	{
+		return tuiApplication;
+	}
+
+	void SetTuiApplication(ITuiApplication* application)
+	{
+		tuiApplication = application;
+	}
+}
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\TUI\TUICONTROLLER.CPP
+***********************************************************************/
+
+extern void GuiApplicationMain();
+
+namespace vl::presentation
+{
+	using namespace console;
+	using namespace elements;
+
+	NativeWindowMouseInfo TuiConvertMouseInfo(const WindowMouseInfo& info)
+	{
+		NativeWindowMouseInfo result;
+		result.ctrl = info.ctrl;
+		result.shift = info.shift;
+		result.alt = info.alt;
+		result.osSuper = info.osSuper;
+		result.left = info.left;
+		result.middle = info.middle;
+		result.right = info.right;
+		result.x = info.x;
+		result.y = info.y;
+		result.wheel = info.wheel;
+		return result;
+	}
+
+	TuiControllerBase::TuiControllerBase(INativeController* services)
+		: nativeServices(services)
+	{
+		frameConfig = {
+			BoolOption::AlwaysFalse, BoolOption::AlwaysFalse, BoolOption::AlwaysFalse,
+			BoolOption::AlwaysFalse, BoolOption::AlwaysFalse, BoolOption::AlwaysFalse,
+			BoolOption::AlwaysFalse
+		};
+		nativeServices->CallbackService()->InstallListener(this);
+	}
+
+	TuiControllerBase::~TuiControllerBase()
+	{
+		nativeServices->CallbackService()->UninstallListener(this);
+	}
+
+	ITuiApplication* TuiControllerBase::GetTuiApplication()
+	{
+		return this;
+	}
+
+	void TuiControllerBase::Starting()
+	{
+		GuiHostedController hostedController(this);
+		TuiGraphicsResourceManager resourceManager;
+		GuiHostedGraphicsResourceManager hostedResources(&hostedController, &resourceManager);
+		SetNativeController(&hostedController);
+		SetHostedApplication(hostedController.GetHostedApplication());
+		SetTuiApplication(GetTuiApplication());
+		SetGuiGraphicsResourceManager(&hostedResources);
+		callbackService.InstallListener(&resourceManager);
+		RegisterTuiRenderers();
+		hostedController.Initialize();
+		GuiApplicationMain();
+		hostedController.Finalize();
+		callbackService.UninstallListener(&resourceManager);
+		SetGuiGraphicsResourceManager(nullptr);
+		SetTuiApplication(nullptr);
+		SetHostedApplication(nullptr);
+		SetNativeController(nativeServices);
+		TUI::Stop();
+	}
+
+	INativeCallbackService* TuiControllerBase::CallbackService()
+	{
+		return &callbackService;
+	}
+
+	INativeResourceService* TuiControllerBase::ResourceService()
+	{
+		return this;
+	}
+
+	INativeAsyncService* TuiControllerBase::AsyncService()
+	{
+		return &asyncService;
+	}
+
+	INativeClipboardService* TuiControllerBase::ClipboardService()
+	{
+		return nativeServices->ClipboardService();
+	}
+
+	INativeImageService* TuiControllerBase::ImageService()
+	{
+		return nativeServices->ImageService();
+	}
+
+	INativeInputService* TuiControllerBase::InputService()
+	{
+		return this;
+	}
+
+	INativeDialogService* TuiControllerBase::DialogService()
+	{
+		return nullptr;
+	}
+
+	INativeAutomationService* TuiControllerBase::AutomationService()
+	{
+		return nullptr;
+	}
+
+	WString TuiControllerBase::GetExecutablePath()
+	{
+		return nativeServices->GetExecutablePath();
+	}
+
+	INativeScreenService* TuiControllerBase::ScreenService()
+	{
+		return this;
+	}
+
+	INativeWindowService* TuiControllerBase::WindowService()
+	{
+		return this;
+	}
+
+	INativeCursor* TuiControllerBase::GetSystemCursor(INativeCursor::SystemCursorType type)
+	{
+		return nativeServices->ResourceService()->GetSystemCursor(type);
+	}
+
+	INativeCursor* TuiControllerBase::GetDefaultSystemCursor()
+	{
+		return nativeServices->ResourceService()->GetDefaultSystemCursor();
+	}
+
+	FontProperties TuiControllerBase::GetDefaultFont()
+	{
+		auto font = defaultFont;
+		font.fontFamily = L"TuiFont";
+		font.size = 1;
+		return font;
+	}
+
+	void TuiControllerBase::SetDefaultFont(const FontProperties& value)
+	{
+		defaultFont = value;
+		defaultFont.fontFamily = L"TuiFont";
+		defaultFont.size = 1;
+	}
+
+	void TuiControllerBase::EnumerateFonts(collections::List<WString>& fonts)
+	{
+		fonts.Add(L"TuiFont");
+	}
+
+	WString TuiControllerBase::GetOSSuperKeyName()
+	{
+		return nativeServices->ResourceService()->GetOSSuperKeyName();
+	}
+
+	void TuiControllerBase::StartTimer()
+	{
+		timerEnabled = true;
+		TUI::StartTimer(16);
+	}
+
+	void TuiControllerBase::StopTimer()
+	{
+		timerEnabled = false;
+		TUI::StopTimer();
+	}
+
+	bool TuiControllerBase::IsTimerEnabled()
+	{
+		return timerEnabled;
+	}
+
+	bool TuiControllerBase::IsKeyPressing(VKEY code)
+	{
+		return nativeServices->InputService()->IsKeyPressing(code);
+	}
+
+	bool TuiControllerBase::IsKeyToggled(VKEY code)
+	{
+		return nativeServices->InputService()->IsKeyToggled(code);
+	}
+
+	WString TuiControllerBase::GetKeyName(VKEY code)
+	{
+		return nativeServices->InputService()->GetKeyName(code);
+	}
+
+	VKEY TuiControllerBase::GetKey(const WString& name)
+	{
+		return nativeServices->InputService()->GetKey(name);
+	}
+
+	vint TuiControllerBase::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
+	{
+		return nativeServices->InputService()->RegisterGlobalShortcutKey(ctrl, shift, alt, osSuper, key);
+	}
+
+	bool TuiControllerBase::UnregisterGlobalShortcutKey(vint id)
+	{
+		return nativeServices->InputService()->UnregisterGlobalShortcutKey(id);
+	}
+
+	vint TuiControllerBase::GetScreenCount()
+	{
+		return 1;
+	}
+
+	INativeScreen* TuiControllerBase::GetScreen(vint index)
+	{
+		return index == 0 ? this : nullptr;
+	}
+
+	INativeScreen* TuiControllerBase::GetScreen(INativeWindow* window)
+	{
+		return this;
+	}
+
+	NativeRect TuiControllerBase::GetBounds()
+	{
+		return {NativePoint(), NativeSize(TUI::GetBufferWidth(), TUI::GetBufferHeight())};
+	}
+
+	NativeRect TuiControllerBase::GetClientBounds()
+	{
+		return GetBounds();
+	}
+
+	WString TuiControllerBase::GetName()
+	{
+		return L"Terminal";
+	}
+
+	bool TuiControllerBase::IsPrimary()
+	{
+		return true;
+	}
+
+	double TuiControllerBase::GetScalingX()
+	{
+		return 1;
+	}
+
+	double TuiControllerBase::GetScalingY()
+	{
+		return 1;
+	}
+
+	const NativeWindowFrameConfig& TuiControllerBase::GetMainWindowFrameConfig()
+	{
+		return frameConfig;
+	}
+
+	const NativeWindowFrameConfig& TuiControllerBase::GetNonMainWindowFrameConfig()
+	{
+		return frameConfig;
+	}
+
+	INativeWindow* TuiControllerBase::CreateNativeWindow(INativeWindow::WindowMode windowMode)
+	{
+		CHECK_ERROR(!window, L"TuiControllerBase::CreateNativeWindow#Only one physical terminal window is allowed.");
+		window = Ptr(new TuiWindow(this));
+		callbackService.InvokeNativeWindowCreated(window.Obj());
+		return window.Obj();
+	}
+
+	void TuiControllerBase::DestroyNativeWindow(INativeWindow* value)
+	{
+		CHECK_ERROR(value == window.Obj(), L"TuiControllerBase::DestroyNativeWindow#Unexpected native window.");
+		window->Dispatch([](auto listener) { listener->Destroying(); }, true);
+		callbackService.InvokeNativeWindowDestroying(value);
+		window = nullptr;
+	}
+
+	INativeWindow* TuiControllerBase::GetMainWindow()
+	{
+		return window.Obj();
+	}
+
+	INativeWindow* TuiControllerBase::GetWindow(NativePoint location)
+	{
+		return GetBounds().Contains(location) ? window.Obj() : nullptr;
+	}
+
+	void TuiControllerBase::Run(INativeWindow* value)
+	{
+		CHECK_ERROR(value == window.Obj(), L"TuiControllerBase::Run#Unexpected native window.");
+		value->Show();
+		while (RunOneCycle()) {}
+	}
+
+	bool TuiControllerBase::RunOneCycle()
+	{
+		if (TUI::IsStopRequested()) return false;
+		PumpPlatformEvents();
+		return !TUI::IsStopRequested() && TUI::RunOneCycle();
+	}
+
+	void TuiControllerBase::Stop()
+	{
+		TUI::Stop();
+	}
+
+	void TuiControllerBase::BufferSizeChanged()
+	{
+		if (window)
+		{
+			window->SetClientSize(NativeSize(TUI::GetBufferWidth(), TUI::GetBufferHeight()));
+			window->RedrawContent();
+		}
+	}
+
+	void TuiControllerBase::Timer()
+	{
+		PumpPlatformEvents();
+		if (TUI::IsStopRequested()) return;
+		asyncService.ExecuteAsyncTasks();
+		if (!TUI::IsStopRequested() && timerEnabled) callbackService.InvokeGlobalTimer();
+	}
+
+	void TuiControllerBase::ClipboardUpdated()
+	{
+		if (!TUI::IsStopRequested()) callbackService.InvokeClipboardUpdated();
+	}
+
+	void TuiControllerBase::GlobalShortcutKeyActivated(vint id)
+	{
+		if (!TUI::IsStopRequested()) callbackService.InvokeGlobalShortcutKeyActivated(id);
+	}
+
+	void TuiControllerBase::KeyDown(const NativeWindowKeyInfo& info)
+	{
+		if (window) window->Dispatch([info](auto listener) { listener->KeyDown(info); });
+	}
+
+	void TuiControllerBase::KeyUp(const NativeWindowKeyInfo& info)
+	{
+		if (window) window->Dispatch([info](auto listener) { listener->KeyUp(info); });
+	}
+
+	void TuiControllerBase::Char(const NativeWindowCharInfo& info)
+	{
+		if (window) window->Dispatch([info](auto listener) { listener->Char(info); });
+	}
+
+	void TuiControllerBase::MouseMove(const WindowMouseInfo& info)
+	{
+		auto nativeInfo = TuiConvertMouseInfo(info);
+		if (window) window->Dispatch([nativeInfo](auto listener) { listener->MouseMoving(nativeInfo); });
+	}
+
+	void TuiControllerBase::MouseDown(NativeMouseButton button, const WindowMouseInfo& info)
+	{
+		auto nativeInfo = TuiConvertMouseInfo(info);
+		if (window) window->Dispatch([button, nativeInfo](auto listener) { listener->MouseDown(button, nativeInfo); });
+	}
+
+	void TuiControllerBase::MouseUp(NativeMouseButton button, const WindowMouseInfo& info)
+	{
+		auto nativeInfo = TuiConvertMouseInfo(info);
+		if (window) window->Dispatch([button, nativeInfo](auto listener) { listener->MouseUp(button, nativeInfo); });
+	}
+
+	void TuiControllerBase::MouseDoubleClick(NativeMouseButton button, const WindowMouseInfo& info)
+	{
+		auto nativeInfo = TuiConvertMouseInfo(info);
+		if (window) window->Dispatch([button, nativeInfo](auto listener) { listener->MouseDoubleClick(button, nativeInfo); });
+	}
+
+	void TuiControllerBase::MouseVerticalWheel(const WindowMouseInfo& info)
+	{
+		auto nativeInfo = TuiConvertMouseInfo(info);
+		if (window) window->Dispatch([nativeInfo](auto listener) { listener->VerticalWheel(nativeInfo); });
+	}
+
+	void TuiControllerBase::MouseHorizontalWheel(const WindowMouseInfo& info)
+	{
+		auto nativeInfo = TuiConvertMouseInfo(info);
+		if (window) window->Dispatch([nativeInfo](auto listener) { listener->HorizontalWheel(nativeInfo); });
+	}
+
+}
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\TUI\TUIGRAPHICS.CPP
+***********************************************************************/
+
+namespace vl::presentation::elements
+{
+	using namespace console;
+
+	TuiColor TuiBlend(Color color, TuiColor background)
+	{
+		return {
+			(vuint8_t)((color.r * color.a + background.r * (255 - color.a)) / 255),
+			(vuint8_t)((color.g * color.a + background.g * (255 - color.a)) / 255),
+			(vuint8_t)((color.b * color.a + background.b * (255 - color.a)) / 255)
+		};
+	}
+
+/***********************************************************************
+TuiGraphicsRenderTarget
+***********************************************************************/
+
+	TuiGraphicsRenderTarget::TuiGraphicsRenderTarget(INativeWindow* value)
+		: window(value)
+	{
+	}
+
+	bool TuiGraphicsRenderTarget::CanDraw()
+	{
+		return TUI::IsInUse() && !TUI::IsStopRequested() && window->IsVisible();
+	}
+
+	Rect TuiGraphicsRenderTarget::GetVisibleClipper()
+	{
+		return GetClipper().Intersect(Rect(Point(), GetCanvasSize()));
+	}
+
+	void TuiGraphicsRenderTarget::StartRenderingOnNativeWindow()
+	{
+		if (CanDraw()) TUI::Clear({}, 0, 0, TUI::GetBufferWidth() - 1, TUI::GetBufferHeight() - 1);
+	}
+
+	RenderTargetFailure TuiGraphicsRenderTarget::StopRenderingOnNativeWindow()
+	{
+		if (CanDraw()) TUI::RenderBuffer();
+		return RenderTargetFailure::None;
+	}
+
+	Size TuiGraphicsRenderTarget::GetCanvasSize()
+	{
+		return {TUI::GetBufferWidth(), TUI::GetBufferHeight()};
+	}
+
+	void TuiGraphicsRenderTarget::AfterPushedClipper(Rect clipper, Rect validArea, reflection::DescriptableObject* generator)
+	{
+	}
+
+	void TuiGraphicsRenderTarget::AfterPushedClipperAndBecameInvalid(Rect clipper, reflection::DescriptableObject* generator)
+	{
+	}
+
+	void TuiGraphicsRenderTarget::AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator)
+	{
+	}
+
+	void TuiGraphicsRenderTarget::AfterPoppedClipper(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator)
+	{
+	}
+
+	void TuiGraphicsRenderTarget::Fill(Rect bounds, Color color)
+	{
+		if (!CanDraw() || color.a == 0) return;
+		auto area = bounds.Intersect(GetVisibleClipper());
+		for (vint y = area.y1; y < area.y2; y++)
+		{
+			for (vint x = area.x1; x < area.x2; x++)
+			{
+				auto background = TUI::GetBuffer()[y * TUI::GetBufferWidth() + x].backgroundColor;
+				TUI::Clear(TuiBlend(color, background), x, y, x, y);
+			}
+		}
+	}
+
+	void TuiGraphicsRenderTarget::Border(Rect bounds, Color color, TuiLineStyle style, ElementShape shape)
+	{
+		if (!CanDraw() || color.a == 0 || bounds.Width() <= 0 || bounds.Height() <= 0) return;
+		if (bounds.Width() == 1 && bounds.Height() == 1) return;
+		auto area = bounds.Intersect(GetVisibleClipper());
+		if (area.Width() <= 0 || area.Height() <= 0) return;
+		auto width = TUI::GetBufferWidth();
+		auto height = TUI::GetBufferHeight();
+		borderBuffer.Resize(width * height);
+		for (vint i = 0; i < borderBuffer.Count(); i++) borderBuffer[i] = TUI::GetBuffer()[i];
+		auto glyph = style == TuiLineStyle::Thin ? TuiMergeableGlyph::ThinLine
+			: style == TuiLineStyle::Thick ? TuiMergeableGlyph::ThickLine : TuiMergeableGlyph::DoubleLine;
+		TuiLineOptions line{glyph, {color.r, color.g, color.b}};
+		if (bounds.Width() == 1)
+		{
+			TUI::DrawLineV(&borderBuffer[0], width, height, line, bounds.x1, bounds.y1, bounds.y2 - 1);
+		}
+		else if (bounds.Height() == 1)
+		{
+			TUI::DrawLineH(&borderBuffer[0], width, height, line, bounds.x1, bounds.x2 - 1, bounds.y1);
+		}
+		else
+		{
+			TuiRectOptions rectangle{glyph, line.foregroundColor};
+			if (style == TuiLineStyle::Thin && shape.shapeType != ElementShapeType::Rectangle && bounds.Width() > 2 && bounds.Height() > 2)
+			{
+				rectangle.corner = TuiRectCorner::Round;
+			}
+			TUI::DrawRect(&borderBuffer[0], width, height, rectangle, bounds.x1, bounds.y1, bounds.x2 - 1, bounds.y2 - 1);
+		}
+		for (vint y = area.y1; y < area.y2; y++)
+		{
+			for (vint x = area.x1; x < area.x2; x++)
+			{
+				if (x != bounds.x1 && x != bounds.x2 - 1 && y != bounds.y1 && y != bounds.y2 - 1) continue;
+				auto index = y * width + x;
+				auto pixel = borderBuffer[index];
+				pixel.foregroundColor = TuiBlend(color, TUI::GetBuffer()[index].foregroundColor);
+				TUI::Clear(pixel.backgroundColor, x, y, x, y);
+				TUI::GetBuffer()[index] = pixel;
+			}
+		}
+	}
+
+	void TuiGraphicsRenderTarget::Print(Point location, char32_t code, Color foreground, Color background, TuiTextStyle style)
+	{
+		if (!CanDraw()) return;
+		auto width = TUI::MeasureChar(code);
+		auto clipper = GetVisibleClipper();
+		if (width == 0 || !clipper.Contains(location) || location.x + width > clipper.x2) return;
+		auto pixel = TUI::GetBuffer()[location.y * TUI::GetBufferWidth() + location.x];
+		TuiPrintOptions options;
+		options.foregroundColor = TuiBlend(foreground, pixel.foregroundColor);
+		options.backgroundColor = TuiBlend(background, pixel.backgroundColor);
+		options.style = style;
+		if (foreground.a != 0)
+		{
+			TUI::PrintChar(options, code, location.x, location.y);
+		}
+		else if (background.a != 0)
+		{
+			Fill(Rect(location, Size(width, 1)), background);
+		}
+	}
+
+	void TuiGraphicsRenderTarget::Caret(Point location, Color color)
+	{
+		if (!CanDraw() || !GetVisibleClipper().Contains(location)) return;
+		auto index = location.y * TUI::GetBufferWidth() + location.x;
+		auto pixel = TUI::GetBuffer()[index];
+		if (pixel.glyph == TuiPixelGlyph::WideCharContinuation)
+		{
+			location.x--;
+			pixel = TUI::GetBuffer()[--index];
+		}
+		auto code = pixel.GetChar32();
+		Print(location, code ? code : U' ', Color(pixel.backgroundColor.r, pixel.backgroundColor.g, pixel.backgroundColor.b), color,
+			pixel.glyph == TuiPixelGlyph::Char ? pixel.character.style : TuiTextStyle());
+	}
+
+/***********************************************************************
+TuiGraphicsResourceManager
+***********************************************************************/
+
+	IGuiGraphicsRenderTarget* TuiGraphicsResourceManager::GetRenderTarget(INativeWindow* window)
+	{
+		return renderTarget.Obj();
+	}
+
+	void TuiGraphicsResourceManager::RecreateRenderTarget(INativeWindow* window)
+	{
+	}
+
+	void TuiGraphicsResourceManager::ResizeRenderTarget(INativeWindow* window)
+	{
+	}
+
+	IGuiGraphicsLayoutProvider* TuiGraphicsResourceManager::GetLayoutProvider()
+	{
+		return &layoutProvider;
+	}
+
+	Ptr<IGuiGraphicsElement> TuiGraphicsResourceManager::CreateRawElement()
+	{
+		CHECK_FAIL(L"Raw graphics are not supported by the terminal renderer.");
+	}
+
+	void TuiGraphicsResourceManager::NativeWindowCreated(INativeWindow* window)
+	{
+		renderTarget = Ptr(new TuiGraphicsRenderTarget(window));
+	}
+
+	void TuiGraphicsResourceManager::NativeWindowDestroying(INativeWindow* window)
+	{
+		renderTarget = nullptr;
+	}
+}
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\TUI\TUIGRAPHICSRENDERERS.CPP
+***********************************************************************/
+
+namespace vl::presentation::elements
+{
+	template<typename TElement>
+	class TuiElementRenderer : public GuiElementRendererBase<TElement, TuiElementRenderer<TElement>, TuiGraphicsRenderTarget>
+	{
+	public:
+		void InitializeInternal() {}
+		void FinalizeInternal() {}
+		void RenderTargetChangedInternal(TuiGraphicsRenderTarget*, TuiGraphicsRenderTarget*) {}
+		void OnElementStateChanged() override {}
+		void Render(Rect bounds) override
+		{
+			if constexpr (std::is_same_v<TElement, GuiSolidBackgroundElement>)
+			{
+				this->renderTarget->Fill(bounds, this->element->GetColor());
+			}
+			else if constexpr (std::is_same_v<TElement, GuiSolidBorderElement>)
+			{
+				this->renderTarget->Border(bounds, this->element->GetColor(), TuiLineStyle::Thin, this->element->GetShape());
+			}
+			else
+			{
+				this->renderTarget->Border(bounds, this->element->GetColor(), this->element->GetLineStyle(), this->element->GetShape());
+			}
+		}
+	};
+
+	class TuiLabelRenderer : public GuiElementRendererBase<GuiSolidLabelElement, TuiLabelRenderer, TuiGraphicsRenderTarget>
+	{
+	protected:
+		TuiGraphicsLayoutProvider		provider;
+		Ptr<IGuiGraphicsParagraph>		paragraph;
+		vint							lastWidth = -1;
+		Size							naturalSize;
+	public:
+		void InitializeInternal()
+		{
+			OnElementStateChanged();
+		}
+
+		void FinalizeInternal()
+		{
+		}
+
+		void RenderTargetChangedInternal(TuiGraphicsRenderTarget*, TuiGraphicsRenderTarget*)
+		{
+			OnElementStateChanged();
+		}
+
+		void OnElementStateChanged() override
+		{
+			auto text = element->GetText();
+			if (!element->GetMultiline())
+			{
+				collections::Array<wchar_t> buffer(text.Length());
+				for (vint i = 0; i < text.Length(); i++) buffer[i] = text[i] == L'\r' || text[i] == L'\n' ? L' ' : text[i];
+				if (buffer.Count()) text = WString::CopyFrom(&buffer[0], buffer.Count());
+			}
+			paragraph = provider.CreateParagraph(text, renderTarget, nullptr);
+			naturalSize = paragraph->GetSize();
+			if (element->GetEllipse() && !element->GetWrapLine() && lastWidth >= 0)
+			{
+				text = TuiEllipsizeText(text, lastWidth);
+				paragraph = provider.CreateParagraph(text, renderTarget, nullptr);
+			}
+			paragraph->SetColor(0, text.Length(), element->GetColor());
+			auto font = element->GetFont();
+			auto style = (IGuiGraphicsParagraph::TextStyle)((font.bold ? 1 : 0) | (font.italic ? 2 : 0) | (font.underline ? 4 : 0) | (font.strikeline ? 8 : 0));
+			paragraph->SetStyle(0, text.Length(), style);
+			paragraph->SetWrapLine(element->GetWrapLine());
+			paragraph->SetParagraphAlignment(element->GetHorizontalAlignment());
+			paragraph->SetMaxWidth(lastWidth);
+			UpdateMinSize();
+		}
+
+		void UpdateMinSize()
+		{
+			minSize = naturalSize;
+			if (element->GetWrapLine())
+			{
+				minSize.x = 0;
+				minSize.y = element->GetWrapLineHeightCalculation() ? paragraph->GetSize().y : 0;
+			}
+			else if (element->GetEllipse())
+			{
+				minSize.x = 0;
+			}
+		}
+
+		void Render(Rect bounds) override
+		{
+			if (lastWidth != bounds.Width())
+			{
+				lastWidth = bounds.Width();
+				OnElementStateChanged();
+			}
+			auto size = paragraph->GetSize();
+			auto offset = std::max((vint)0, bounds.Height() - size.y);
+			if (element->GetVerticalAlignment() == Alignment::Center) offset /= 2;
+			else if (element->GetVerticalAlignment() != Alignment::Bottom) offset = 0;
+			auto location = bounds;
+			location.y1 += offset;
+			renderTarget->PushClipper(bounds, element);
+			paragraph->Render(location);
+			renderTarget->PopClipper(element);
+		}
+	};
+
+	void RegisterTuiRenderers()
+	{
+		TuiElementRenderer<TuiBorderElement>::Register();
+		TuiElementRenderer<GuiSolidBorderElement>::Register();
+		TuiElementRenderer<GuiSolidBackgroundElement>::Register();
+		TuiLabelRenderer::Register();
+		GuiDocumentElementRenderer::Register();
+	}
+}
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\TUI\TUITEXTLAYOUT.CPP
+***********************************************************************/
+
+namespace vl::presentation::elements
+{
+	using namespace console;
+	using namespace collections;
+
+	char32_t TuiReadScalar(const WString& text, vint start, vint& length)
+	{
+		length = 1;
+		auto code = (char32_t)text[start];
+#ifdef VCZH_WCHAR_UTF16
+		if (code >= 0xD800 && code <= 0xDBFF && start + 1 < text.Length())
+		{
+			auto next = (char32_t)text[start + 1];
+			if (next >= 0xDC00 && next <= 0xDFFF)
+			{
+				length = 2;
+				return 0x10000 + ((code - 0xD800) << 10) + next - 0xDC00;
+			}
+		}
+#endif
+		if (code == U'\r' && start + 1 < text.Length() && text[start + 1] == L'\n') length = 2;
+		return code;
+	}
+
+	TuiTextStyle TuiGetTextStyle(IGuiGraphicsParagraph::TextStyle style)
+	{
+		using P = IGuiGraphicsParagraph;
+		return {
+			(style & P::Bold) != (P::TextStyle)0,
+			(style & P::Italic) != (P::TextStyle)0,
+			(style & P::Underline) != (P::TextStyle)0,
+			(style & P::Strikeline) != (P::TextStyle)0
+		};
+	}
+
+	WString TuiEllipsizeText(const WString& text, vint width)
+	{
+		WString result;
+		for (vint start = 0; start < text.Length();)
+		{
+			vint end = start;
+			vint visibleEnd = start;
+			vint lineWidth = 0;
+			vint newlineLength = 0;
+			while (end < text.Length())
+			{
+				vint length;
+				auto code = TuiReadScalar(text, end, length);
+				if (code == U'\r' || code == U'\n')
+				{
+					newlineLength = length;
+					break;
+				}
+				lineWidth += code == U'\t' ? 4 - lineWidth % 4 : TUI::MeasureChar(code);
+				end += length;
+				if (lineWidth <= width - 1) visibleEnd = end;
+			}
+			if (lineWidth <= width) result += text.Sub(start, end - start);
+			else if (width > 0) result += text.Sub(start, visibleEnd - start) + L"\u2026";
+			result += text.Sub(end, newlineLength);
+			start = end + newlineLength;
+		}
+		return result;
+	}
+
+/***********************************************************************
+TuiGraphicsParagraph
+***********************************************************************/
+
+	TuiGraphicsParagraph::TuiGraphicsParagraph(const WString& value, IGuiGraphicsLayoutProvider* owner, TuiGraphicsRenderTarget* target, IGuiGraphicsParagraphCallback* listener)
+		: provider(owner)
+		, renderTarget(target)
+		, callback(listener)
+		, text(value)
+		, styles(value.Length())
+		, colors(value.Length())
+		, backgrounds(value.Length())
+	{
+		for (vint i = 0; i < text.Length(); i++)
+		{
+			styles[i] = (TextStyle)0;
+			colors[i] = Color(255, 255, 255);
+			backgrounds[i] = Color(0, 0, 0, 0);
+		}
+	}
+
+	bool TuiGraphicsParagraph::ValidRange(vint start, vint length)
+	{
+		return start >= 0 && length >= 0 && start <= text.Length() && length <= text.Length() - start;
+	}
+
+	void TuiGraphicsParagraph::EnsureLayout()
+	{
+		if (!dirty) return;
+		dirty = false;
+		cells.Clear();
+		lines.Clear();
+		caretToCell.Clear();
+		size = {};
+
+		List<TuiTextCell> tokens;
+		for (vint start = 0; start < text.Length();)
+		{
+			TuiTextCell cell;
+			cell.start = start;
+			cell.code = TuiReadScalar(text, start, cell.length);
+			auto inlineIndex = inlineObjects.Keys().IndexOf(start);
+			if (inlineIndex != -1)
+			{
+				auto entry = inlineObjects.Values()[inlineIndex];
+				cell.length = entry.key;
+				cell.inlineObject = entry.value;
+			}
+			tokens.Add(cell);
+			start += cell.length;
+		}
+		auto isNewline = [](const TuiTextCell& cell)
+		{
+			return !cell.inlineObject && (cell.code == U'\r' || cell.code == U'\n');
+		};
+		auto cellWidth = [](const TuiTextCell& cell, vint x)
+		{
+			return cell.inlineObject
+				? std::max((vint)0, cell.inlineObject.Value().size.x)
+				: cell.code == U'\t' ? 4 - x % 4 : TUI::MeasureChar(cell.code);
+		};
+		auto cellBaseline = [](const TuiTextCell& cell)
+		{
+			if (!cell.inlineObject) return (vint)1;
+			auto properties = cell.inlineObject.Value();
+			auto height = std::max((vint)1, properties.size.y);
+			return properties.baseline < 0 ? height : std::min(height, std::max((vint)0, properties.baseline));
+		};
+
+		TuiTextLine line;
+		vint x = 0;
+		vint y = 0;
+		vint ascent = 1;
+		vint descent = 0;
+		auto finishLine = [&](vint end, vint next)
+		{
+			line.lastCell = cells.Count();
+			line.end = end;
+			line.bounds = Rect(Point(0, y), Size(x, ascent + descent));
+			auto offset = maxWidth < 0 ? 0 : std::max((vint)0, maxWidth - x);
+			if (alignment == Alignment::Center) offset /= 2;
+			else if (alignment != Alignment::Right) offset = 0;
+			line.bounds.x1 += offset;
+			line.bounds.x2 += offset;
+			for (vint i = line.firstCell; i < line.lastCell; i++)
+			{
+				auto& cell = cells[i];
+				cell.bounds.x1 += offset;
+				cell.bounds.x2 += offset;
+				auto shift = ascent - cellBaseline(cell);
+				cell.bounds.y1 += shift;
+				cell.bounds.y2 += shift;
+			}
+			lines.Add(line);
+			size.x = std::max(size.x, x);
+			y += ascent + descent;
+			line = {};
+			line.firstCell = cells.Count();
+			line.start = next;
+			x = 0;
+			ascent = 1;
+			descent = 0;
+		};
+		for (vint first = 0; first < tokens.Count();)
+		{
+			vint last = first + 1;
+			while (last < tokens.Count() && !isNewline(tokens[last - 1]) && !isNewline(tokens[last]))
+			{
+				auto previous = tokens[last - 1].inlineObject;
+				auto next = tokens[last].inlineObject;
+				if (!(previous && previous.Value().breakCondition == StickToNextRun)
+					&& !(next && next.Value().breakCondition == StickToPreviousRun)) break;
+				last++;
+			}
+			// Keep an inline object with its adjacent text when the group fits a row.
+			// Oversized groups still wrap at scalar boundaries without splitting the object.
+			if (wrapLine && maxWidth >= 0 && x > 0 && last > first + 1)
+			{
+				vint widthAtOrigin = 0;
+				vint widthAtCurrent = x;
+				for (vint i = first; i < last; i++)
+				{
+					widthAtOrigin += cellWidth(tokens[i], widthAtOrigin);
+					widthAtCurrent += cellWidth(tokens[i], widthAtCurrent);
+				}
+				if (widthAtOrigin <= std::max((vint)1, maxWidth) && widthAtCurrent > maxWidth)
+				{
+					finishLine(tokens[first].start, tokens[first].start);
+				}
+			}
+			for (vint i = first; i < last; i++)
+			{
+				auto cell = tokens[i];
+				auto newline = isNewline(cell);
+				auto width = newline ? 0 : cellWidth(cell, x);
+				auto height = cell.inlineObject ? std::max((vint)1, cell.inlineObject.Value().size.y) : 1;
+				if (wrapLine && maxWidth >= 0 && x > 0 && x + width > std::max((vint)1, maxWidth))
+				{
+					finishLine(cell.start, cell.start);
+					width = cellWidth(cell, x);
+				}
+				cell.line = lines.Count();
+				cell.bounds = Rect(Point(x, y), Size(width, height));
+				caretToCell.Add(cell.start, cells.Count());
+				cells.Add(cell);
+				auto baseline = cellBaseline(cell);
+				ascent = std::max(ascent, baseline);
+				descent = std::max(descent, height - baseline);
+				x += width;
+				if (newline) finishLine(cell.start, cell.start + cell.length);
+			}
+			first = last;
+		}
+		finishLine(text.Length(), text.Length());
+		size.y = y;
+	}
+
+	bool TuiGraphicsParagraph::SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)
+	{
+		if (length <= 0 || !ValidRange(start, length) || !IsValidCaret(start) || !IsValidCaret(start + length)) return false;
+		for (auto&& [begin, entry] : inlineObjects)
+		{
+			if (begin == start && entry.key == length)
+			{
+				if (entry.value.callbackId != properties.callbackId || entry.value.backgroundImage != properties.backgroundImage) return false;
+				inlineObjects.Set(start, {length, properties});
+				dirty = true;
+				return true;
+			}
+			if (begin < start + length && begin + entry.key > start) return false;
+		}
+		inlineObjects.Add(start, {length, properties});
+		dirty = true;
+		return true;
+	}
+
+	bool TuiGraphicsParagraph::ResetInlineObject(vint start, vint length)
+	{
+		if (!ValidRange(start, length)) return false;
+		List<vint> removed;
+		for (auto&& [begin, entry] : inlineObjects)
+		{
+			if (begin < start + length && begin + entry.key > start) removed.Add(begin);
+		}
+		for (auto begin : removed) inlineObjects.Remove(begin);
+		dirty = true;
+		return true;
+	}
+
+	void TuiGraphicsParagraph::Render(Rect bounds)
+	{
+		EnsureLayout();
+		List<TuiTextCell> snapshot;
+		CopyFrom(snapshot, cells);
+		for (auto cell : snapshot)
+		{
+			if (TUI::IsStopRequested()) return;
+			auto location = cell.bounds;
+			location.x1 += bounds.x1;
+			location.x2 += bounds.x1;
+			location.y1 += bounds.y1;
+			location.y2 += bounds.y1;
+			if (cell.inlineObject)
+			{
+				auto properties = cell.inlineObject.Value();
+				renderTarget->Fill(location, properties.backgroundColor);
+				if (properties.backgroundImage)
+				{
+					auto renderer = properties.backgroundImage->GetRenderer();
+					renderer->SetRenderTarget(renderTarget);
+					renderer->Render(location);
+				}
+				if (callback && properties.callbackId != -1)
+				{
+					auto newSize = callback->OnRenderInlineObject(properties.callbackId, cell.bounds);
+					if (newSize != properties.size && inlineObjects.Keys().Contains(cell.start))
+					{
+						auto entry = inlineObjects[cell.start];
+						entry.value.size = newSize;
+						inlineObjects.Set(cell.start, entry);
+						dirty = true;
+					}
+				}
+			}
+			else if (cell.code == U'\t')
+			{
+				for (vint x = location.x1; x < location.x2; x++)
+				{
+					renderTarget->Print(Point(x, location.y1), U' ', colors[cell.start], backgrounds[cell.start], TuiGetTextStyle(styles[cell.start]));
+				}
+			}
+			else
+			{
+				renderTarget->Print(location.LeftTop(), cell.code, colors[cell.start], backgrounds[cell.start], TuiGetTextStyle(styles[cell.start]));
+			}
+		}
+		if (caretPosition != -1 && caretVisible)
+		{
+			auto caret = GetCaretBounds(caretPosition, caretFrontSide);
+			renderTarget->Caret(Point(bounds.x1 + caret.x1, bounds.y1 + caret.y1), caretColor);
+		}
+	}
+
+	vint TuiGraphicsParagraph::FindLine(vint caret, bool frontSide)
+	{
+		EnsureLayout();
+		for (vint i = 0; i < lines.Count(); i++)
+		{
+			auto line = lines[i];
+			if (caret < line.end || (caret == line.end && (frontSide || i + 1 == lines.Count() || lines[i + 1].start != caret))) return i;
+		}
+		return lines.Count() - 1;
+	}
+
+	Rect TuiGraphicsParagraph::GetCaretBounds(vint caret, bool frontSide)
+	{
+		if (!IsValidCaret(caret)) return {};
+		auto line = lines[FindLine(caret, frontSide)];
+		vint x = line.bounds.x2;
+		vint y = line.bounds.y1;
+		vint height = line.bounds.Height();
+		auto index = caretToCell.Keys().IndexOf(caret);
+		if (caret < line.end && index != -1)
+		{
+			auto bounds = cells[caretToCell.Values()[index]].bounds;
+			x = bounds.x1;
+			y = bounds.y1;
+			height = bounds.Height();
+		}
+		return Rect(Point(x, y), Size(0, height));
+	}
+
+	vint TuiGraphicsParagraph::GetCaretFromPoint(Point point)
+	{
+		EnsureLayout();
+		auto line = lines[lines.Count() - 1];
+		for (auto candidate : lines)
+		{
+			if (point.y < candidate.bounds.y2)
+			{
+				line = candidate;
+				break;
+			}
+		}
+		if (point.x <= line.bounds.x1) return line.start;
+		for (vint i = line.firstCell; i < line.lastCell; i++)
+		{
+			auto cell = cells[i];
+			if (point.x * 2 < cell.bounds.x1 + cell.bounds.x2) return cell.start;
+			if (point.x < cell.bounds.x2) return std::min(line.end, cell.start + cell.length);
+		}
+		return line.end;
+	}
+
+	Nullable<IGuiGraphicsParagraph::InlineObjectProperties> TuiGraphicsParagraph::GetInlineObjectFromPoint(Point point, vint& start, vint& length)
+	{
+		EnsureLayout();
+		for (auto cell : cells)
+		{
+			if (cell.inlineObject && cell.bounds.Contains(point))
+			{
+				start = cell.start;
+				length = cell.length;
+				return cell.inlineObject;
+			}
+		}
+		start = -1;
+		length = 0;
+		return {};
+	}
+
+	vint TuiGraphicsParagraph::GetNearestCaretFromTextPos(vint textPos, bool frontSide)
+	{
+		EnsureLayout();
+		vint previous = 0;
+		for (auto caret : caretToCell.Keys())
+		{
+			if (caret == textPos) return caret;
+			if (caret > textPos) return frontSide ? previous : caret;
+			previous = caret;
+		}
+		return frontSide && textPos < text.Length() ? previous : text.Length();
+	}
+
+	vint TuiGraphicsParagraph::GetCaret(vint comparingCaret, CaretRelativePosition position, bool& preferFrontSide)
+	{
+		if (!IsValidCaret(comparingCaret)) return -1;
+		auto lineIndex = FindLine(comparingCaret, preferFrontSide);
+		switch (position)
+		{
+		case CaretFirst: return 0;
+		case CaretLast: return text.Length();
+		case CaretLineFirst:
+			preferFrontSide = false;
+			return lines[lineIndex].start;
+		case CaretLineLast:
+			preferFrontSide = true;
+			return lines[lineIndex].end;
+		case CaretMoveLeft:
+			preferFrontSide = false;
+			return GetNearestCaretFromTextPos(comparingCaret - 1, true);
+		case CaretMoveRight:
+			preferFrontSide = true;
+			return GetNearestCaretFromTextPos(comparingCaret + 1, false);
+		case CaretMoveUp:
+		case CaretMoveDown:
+			{
+				auto bounds = GetCaretBounds(comparingCaret, preferFrontSide);
+				auto targetLine = lineIndex + (position == CaretMoveUp ? -1 : 1);
+				if (targetLine < 0 || targetLine >= lines.Count()) return comparingCaret;
+				preferFrontSide = true;
+				return GetCaretFromPoint(Point(bounds.x1, lines[targetLine].bounds.y1));
+			}
+		default: return comparingCaret;
+		}
+	}
+
+	IGuiGraphicsLayoutProvider* TuiGraphicsParagraph::GetProvider()
+	{
+		return provider;
+	}
+
+	IGuiGraphicsRenderTarget* TuiGraphicsParagraph::GetRenderTarget()
+	{
+		return renderTarget;
+	}
+
+	bool TuiGraphicsParagraph::GetWrapLine()
+	{
+		return wrapLine;
+	}
+
+	void TuiGraphicsParagraph::SetWrapLine(bool value)
+	{
+		if (wrapLine != value) { wrapLine = value; dirty = true; }
+	}
+
+	vint TuiGraphicsParagraph::GetMaxWidth()
+	{
+		return maxWidth;
+	}
+
+	void TuiGraphicsParagraph::SetMaxWidth(vint value)
+	{
+		if (maxWidth != value) { maxWidth = value; dirty = true; }
+	}
+
+	Alignment TuiGraphicsParagraph::GetParagraphAlignment()
+	{
+		return alignment;
+	}
+
+	void TuiGraphicsParagraph::SetParagraphAlignment(Alignment value)
+	{
+		if (alignment != value) { alignment = value; dirty = true; }
+	}
+
+	bool TuiGraphicsParagraph::SetFont(vint start, vint length, const WString& value)
+	{
+		return ValidRange(start, length);
+	}
+
+	bool TuiGraphicsParagraph::SetSize(vint start, vint length, vint value)
+	{
+		return ValidRange(start, length);
+	}
+
+	bool TuiGraphicsParagraph::SetStyle(vint start, vint length, TextStyle value)
+	{
+		if (!ValidRange(start, length)) return false;
+		for (vint i = start; i < start + length; i++) styles[i] = value;
+		return true;
+	}
+
+	bool TuiGraphicsParagraph::SetColor(vint start, vint length, Color value)
+	{
+		if (!ValidRange(start, length)) return false;
+		for (vint i = start; i < start + length; i++) colors[i] = value;
+		return true;
+	}
+
+	bool TuiGraphicsParagraph::SetBackgroundColor(vint start, vint length, Color value)
+	{
+		if (!ValidRange(start, length)) return false;
+		for (vint i = start; i < start + length; i++) backgrounds[i] = value;
+		return true;
+	}
+
+	Size TuiGraphicsParagraph::GetSize()
+	{
+		EnsureLayout();
+		return size;
+	}
+
+	bool TuiGraphicsParagraph::EnableCaret(vint caret, Color color, bool frontSide)
+	{
+		if (!IsValidCaret(caret)) return false;
+		caretPosition = caret;
+		caretColor = color;
+		caretFrontSide = frontSide;
+		caretVisible = true;
+		return true;
+	}
+
+	void TuiGraphicsParagraph::DisableCaret()
+	{
+		caretPosition = -1;
+	}
+
+	bool TuiGraphicsParagraph::BlinkCaret()
+	{
+		if (caretPosition == -1) return false;
+		caretVisible = !caretVisible;
+		return true;
+	}
+
+	bool TuiGraphicsParagraph::IsValidCaret(vint caret)
+	{
+		EnsureLayout();
+		return caret == text.Length() || (caret >= 0 && caretToCell.Keys().Contains(caret));
+	}
+
+	bool TuiGraphicsParagraph::IsValidTextPos(vint textPos)
+	{
+		return textPos >= 0 && textPos < text.Length();
+	}
+
+/***********************************************************************
+TuiGraphicsLayoutProvider
+***********************************************************************/
+
+	Ptr<IGuiGraphicsParagraph> TuiGraphicsLayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback)
+	{
+		return Ptr(new TuiGraphicsParagraph(text, this, static_cast<TuiGraphicsRenderTarget*>(renderTarget), callback));
+	}
+}
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\TUI\TUIWINDOW.CPP
+***********************************************************************/
+
+namespace vl::presentation
+{
+	using namespace console;
+
+	TuiWindow::TuiWindow(TuiControllerBase* value)
+		: controller(value)
+		, clientSize(TUI::GetBufferWidth(), TUI::GetBufferHeight())
+	{
+	}
+
+	TuiWindow::~TuiWindow()
+	{
+		Dispatch([](auto listener) { listener->Destroyed(); }, true);
+	}
+
+	void TuiWindow::Dispatch(const Func<void(INativeWindowListener*)>& callback, bool duringFinalization)
+	{
+		collections::List<INativeWindowListener*> snapshot;
+		CopyFrom(snapshot, listeners);
+		for (auto listener : snapshot)
+		{
+			if (!duringFinalization && TUI::IsStopRequested()) break;
+			if (listeners.Contains(listener)) callback(listener);
+		}
+	}
+
+	bool TuiWindow::IsActivelyRefreshing()
+	{
+		return true;
+	}
+
+	NativeSize TuiWindow::GetRenderingOffset()
+	{
+		return {};
+	}
+
+	Point TuiWindow::Convert(NativePoint value)
+	{
+		return {value.x.value, value.y.value};
+	}
+
+	NativePoint TuiWindow::Convert(Point value)
+	{
+		return {value.x, value.y};
+	}
+
+	Size TuiWindow::Convert(NativeSize value)
+	{
+		return {value.x.value, value.y.value};
+	}
+
+	NativeSize TuiWindow::Convert(Size value)
+	{
+		return {value.x, value.y};
+	}
+
+	Margin TuiWindow::Convert(NativeMargin value)
+	{
+		return {value.left.value, value.top.value, value.right.value, value.bottom.value};
+	}
+
+	NativeMargin TuiWindow::Convert(Margin value)
+	{
+		return {value.left, value.top, value.right, value.bottom};
+	}
+
+	NativeRect TuiWindow::GetBounds()
+	{
+		return {NativePoint(), clientSize};
+	}
+
+	void TuiWindow::SetBounds(const NativeRect& bounds)
+	{
+		SetClientSize(bounds.GetSize());
+	}
+
+	NativeSize TuiWindow::GetClientSize()
+	{
+		return clientSize;
+	}
+
+	void TuiWindow::SetClientSize(NativeSize size)
+	{
+		if (clientSize != size)
+		{
+			clientSize = size;
+			Dispatch([](auto listener) { listener->Moved(); });
+		}
+	}
+
+	NativeRect TuiWindow::GetClientBoundsInScreen()
+	{
+		return GetBounds();
+	}
+
+	void TuiWindow::SuggestMinClientSize(NativeSize size)
+	{
+	}
+
+	WString TuiWindow::GetTitle()
+	{
+		return title;
+	}
+
+	void TuiWindow::SetTitle(const WString& value)
+	{
+		title = value;
+		controller->ApplyTitle(value);
+	}
+
+	INativeCursor* TuiWindow::GetWindowCursor()
+	{
+		return cursor;
+	}
+
+	void TuiWindow::SetWindowCursor(INativeCursor* value)
+	{
+		cursor = value;
+	}
+
+	NativePoint TuiWindow::GetCaretPoint()
+	{
+		return caret;
+	}
+
+	void TuiWindow::SetCaretPoint(NativePoint value)
+	{
+		caret = value;
+	}
+
+	INativeWindow* TuiWindow::GetParent()
+	{
+		return nullptr;
+	}
+
+	void TuiWindow::SetParent(INativeWindow* parent)
+	{
+	}
+
+	INativeWindow::WindowMode TuiWindow::GetWindowMode()
+	{
+		return Normal;
+	}
+
+	void TuiWindow::EnableCustomFrameMode()
+	{
+	}
+
+	void TuiWindow::DisableCustomFrameMode()
+	{
+	}
+
+	bool TuiWindow::IsCustomFrameModeEnabled()
+	{
+		return false;
+	}
+
+	NativeMargin TuiWindow::GetCustomFramePadding()
+	{
+		return {};
+	}
+
+	Ptr<GuiImageData> TuiWindow::GetIcon()
+	{
+		return icon;
+	}
+
+	void TuiWindow::SetIcon(Ptr<GuiImageData> value)
+	{
+		icon = value;
+	}
+
+	INativeWindow::WindowSizeState TuiWindow::GetSizeState()
+	{
+		return Restored;
+	}
+
+	void TuiWindow::Show()
+	{
+		if (!visible)
+		{
+			visible = true;
+			Dispatch([](auto listener) { listener->Opened(); });
+			Dispatch([](auto listener) { listener->GotFocus(); });
+			Dispatch([](auto listener) { listener->RenderingAsActivated(); });
+		}
+	}
+
+	void TuiWindow::ShowDeactivated()
+	{
+		Show();
+	}
+
+	void TuiWindow::ShowRestored()
+	{
+		Show();
+	}
+
+	void TuiWindow::ShowMaximized()
+	{
+		Show();
+	}
+
+	void TuiWindow::ShowMinimized()
+	{
+		Show();
+	}
+
+	void TuiWindow::Hide(bool closeWindow)
+	{
+	}
+
+	bool TuiWindow::IsVisible()
+	{
+		return visible;
+	}
+
+	void TuiWindow::Enable()
+	{
+		enabled = true;
+	}
+
+	void TuiWindow::Disable()
+	{
+		enabled = false;
+	}
+
+	bool TuiWindow::IsEnabled()
+	{
+		return enabled;
+	}
+
+	void TuiWindow::SetActivate()
+	{
+	}
+
+	bool TuiWindow::IsActivated()
+	{
+		return true;
+	}
+
+	bool TuiWindow::IsRenderingAsActivated()
+	{
+		return true;
+	}
+
+	bool TuiWindow::IsAppearedInTaskBar()
+	{
+		return true;
+	}
+
+	bool TuiWindow::IsEnabledActivate()
+	{
+		return true;
+	}
+
+	void TuiWindow::ShowInTaskBar()
+	{
+	}
+
+	void TuiWindow::HideInTaskBar()
+	{
+	}
+
+	void TuiWindow::EnableActivate()
+	{
+	}
+
+	void TuiWindow::DisableActivate()
+	{
+	}
+
+	void TuiWindow::SupressAlt()
+	{
+	}
+
+	bool TuiWindow::RequireCapture()
+	{
+		capturing = true;
+		return true;
+	}
+
+	bool TuiWindow::ReleaseCapture()
+	{
+		capturing = false;
+		return true;
+	}
+
+	bool TuiWindow::IsCapturing()
+	{
+		return capturing;
+	}
+
+	bool TuiWindow::GetMaximizedBox()
+	{
+		return false;
+	}
+
+	void TuiWindow::SetMaximizedBox(bool value)
+	{
+	}
+
+	bool TuiWindow::GetMinimizedBox()
+	{
+		return false;
+	}
+
+	void TuiWindow::SetMinimizedBox(bool value)
+	{
+	}
+
+	bool TuiWindow::GetBorder()
+	{
+		return false;
+	}
+
+	void TuiWindow::SetBorder(bool value)
+	{
+	}
+
+	bool TuiWindow::GetSizeBox()
+	{
+		return false;
+	}
+
+	void TuiWindow::SetSizeBox(bool value)
+	{
+	}
+
+	bool TuiWindow::GetIconVisible()
+	{
+		return false;
+	}
+
+	void TuiWindow::SetIconVisible(bool value)
+	{
+	}
+
+	bool TuiWindow::GetTitleBar()
+	{
+		return false;
+	}
+
+	void TuiWindow::SetTitleBar(bool value)
+	{
+	}
+
+	bool TuiWindow::GetTopMost()
+	{
+		return false;
+	}
+
+	void TuiWindow::SetTopMost(bool value)
+	{
+	}
+
+	bool TuiWindow::InstallListener(INativeWindowListener* listener)
+	{
+		if (!listener || listeners.Contains(listener)) return false;
+		listeners.Add(listener);
+		return true;
+	}
+
+	bool TuiWindow::UninstallListener(INativeWindowListener* listener)
+	{
+		return listeners.Remove(listener);
+	}
+
+	void TuiWindow::RedrawContent()
+	{
+		Dispatch([](auto listener) { listener->Paint(); });
+	}
+
+}
+
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\TUIDIALOGS\SOURCE\TUIFAKEDIALOGSERVICEUI.CPP
+***********************************************************************/
+/***********************************************************************
+!!!!!! DO NOT MODIFY !!!!!!
+
+Source: GacUI TuiFakeDialogServiceUI
+
+This file is generated by Workflow compiler
+https://github.com/vczh-libraries
+***********************************************************************/
+
+
+#if defined( _MSC_VER)
+#pragma warning(push)
+#pragma warning(disable:4250)
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wparentheses-equality"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#endif
+
+#define GLOBAL_SYMBOL ::vl_workflow_global::TuiFakeDialogServiceUI::
+#define GLOBAL_NAME ::vl_workflow_global::TuiFakeDialogServiceUI::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::TuiFakeDialogServiceUI::Instance()
+
+/***********************************************************************
+Global Variables
+***********************************************************************/
+
+BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_TuiFakeDialogServiceUI)
+	vl_workflow_global::TuiFakeDialogServiceUI instance;
+	INITIALIZE_GLOBAL_STORAGE_CLASS
+
+		instance.__vwsn_ls_TuiDialogStrings = ::vl::reflection::description::IValueDictionary::Create();
+
+		([]()
+		{
+			::tui_controls::TuiDialogStrings::Install(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US")), ::tui_controls::TuiDialogStrings::__vwsn_ls_en_US_BuildStrings(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))));
+		}
+		)();
+	FINALIZE_GLOBAL_STORAGE_CLASS
+
+		instance.__vwsn_ls_TuiDialogStrings = nullptr;
+END_GLOBAL_STORAGE_CLASS(vl_workflow_global_TuiFakeDialogServiceUI)
+
+namespace vl_workflow_global
+{
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
+	TuiFakeDialogServiceUI& TuiFakeDialogServiceUI::Instance()
+	{
+		return Getvl_workflow_global_TuiFakeDialogServiceUI().instance;
+	}
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	//-------------------------------------------------------------------
+
+	__vwsnf10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::__vwsnf10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::__vwsnf11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->SetColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::__vwsnf12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetValue();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetValue(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::__vwsnf13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::tui_controls::ITuiDialogStringsStrings>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_::__vwsnf14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_::__vwsnf15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetConfirmed(true);
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetColor(::vl::__vwsn::This(__vwsnthis_0->colorControl)->GetValue());
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_::__vwsnf16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf17_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_::__vwsnf17_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf17_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf18_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_::__vwsnf18_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf18_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf19_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_::__vwsnf19_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf19_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::tui_controls::ITuiDialogStringsStrings>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_::__vwsnf1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf20_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_::__vwsnf20_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf20_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_::operator()() const
+	{
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost(), vl::Func(::vl_workflow_global::__vwsnf21_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__(__vwsnthis_0)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf21_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__::__vwsnf21_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf21_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__::operator()() const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf22_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_::__vwsnf22_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf22_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->buttonOK)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->buttonOK)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf23_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_::__vwsnf23_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf23_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(static_cast<::vl::presentation::controls::GuiWindow*>(__vwsnthis_0->self), ::vl::__vwsn::This(__vwsnthis_0->filePickerControl)->GetSelection()))
+		{
+			::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf24_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_::__vwsnf24_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf24_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf25_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_::__vwsnf25_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf25_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf26_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_::__vwsnf26_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf26_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::tui_controls::ITuiDialogStringsStrings>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf27_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindow___vwsn_instance_ctor__::__vwsnf27_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindow___vwsn_instance_ctor__(::tui_controls::TuiFileDialogWindow* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf27_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindow___vwsn_instance_ctor__::operator()() const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->filePickerControl)->LocateSelectedFolderInTreeView();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf28_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf28_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf28_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(__vwsn_item_);
+		return ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(item.Obj())->GetFolders()));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf29_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf29_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf29_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(__vwsn_item_);
+		return ::vl::__vwsn::This(item.Obj())->GetName();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_::__vwsnf2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->textBox)->GetAlt();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetAlt(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf30_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf30_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf30_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFilter>>(__vwsn_item_);
+		return ::vl::__vwsn::This(item.Obj())->GetName();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf31_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf31_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf31_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf33_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf33_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf33_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetAdditionalFilter();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::IDataFilter>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->dataGrid)->SetAdditionalFilter(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf34_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf34_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf34_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const
+	{
+		if ((((((! ::vl::__vwsn::This(arguments)->ctrl) && (! ::vl::__vwsn::This(arguments)->shift)) && (! ::vl::__vwsn::This(arguments)->alt)) && (! ::vl::__vwsn::This(arguments)->osSuper)) && (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN)))
+		{
+			if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiWindow>(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost())), ::vl::__vwsn::This(__vwsnthis_0->self)->GetSelection()))
+			{
+				::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->RequestClose)();
+			}
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf35_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf35_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf35_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetDisplayString(::vl::__vwsn::This(__vwsnthis_0->self)->GetSelectedFiles()));
+		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetCaret([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf36_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf36_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf36_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemMouseEventArgs* arguments) const
+	{
+		auto file = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::presentation::IFileDialogFile>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetItemProvider())->GetBindingValue(::vl::__vwsn::This(arguments)->itemIndex));
+		auto selection = ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->ParseDisplayString(::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetDisplayString(::vl::reflection::description::GetLazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>>((::vl::__vwsn::CreateList().Add(file)).list)));
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost(), vl::Func(::vl_workflow_global::__vwsnf37_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__(selection, __vwsnthis_0)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf37_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__::__vwsnf37_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__(::vl::collections::LazyList<::vl::WString> __vwsnctor_selection, ::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:selection(__vwsnctor_selection)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf37_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__::operator()() const
+	{
+		if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiWindow>(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost())), this->selection))
+		{
+			::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->RequestClose)();
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf38_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf38_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf38_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf39_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf39_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf39_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const
+	{
+		if ((((((! ::vl::__vwsn::This(arguments)->ctrl) && (! ::vl::__vwsn::This(arguments)->shift)) && (! ::vl::__vwsn::This(arguments)->alt)) && (! ::vl::__vwsn::This(arguments)->osSuper)) && (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN)))
+		{
+			if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiWindow>(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost())), ::vl::__vwsn::This(__vwsnthis_0->self)->GetSelection()))
+			{
+				::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->RequestClose)();
+			}
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_::__vwsnf3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		auto value = [&](){ try{ return ::vl::__vwsn::Parse<::vl::vint>(::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText()); } catch(...){ return (- static_cast<::vl::vint>(1)); } }();
+		::vl::__vwsn::This(__vwsnthis_0->tracker)->SetPosition(((value < static_cast<::vl::vint>(0)) ? static_cast<::vl::vint>(0) : ((value > static_cast<::vl::vint>(255)) ? static_cast<::vl::vint>(255) : value)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf40_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf40_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf40_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19.Obj())->GetSelectedFilter();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFilter>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19.Obj())->SetSelectedFilter(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf41_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf41_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf41_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19.Obj())->GetSelectedFolder();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19.Obj())->SetSelectedFolder(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf42_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf42_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf42_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()() const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->LocateSelectedFolderInTreeView();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf43_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf43_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf43_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()() const
+	{
+		if ((! ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetIsLoadingFiles()))
+		{
+			::vl::__vwsn::This(__vwsnthis_0->dataGrid)->SetViewPosition([&](){ ::vl::presentation::Point __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(0); __vwsn_temp__.y = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf44_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsnf44_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf44_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::tui_controls::ITuiDialogStringsStrings>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf45_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles_::__vwsnf45_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles_(::tui_controls::TuiFilePickerControl* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf45_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles_::operator()(::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsn_co_impl_) const
+	{
+		return ::vl::Ptr<::vl::reflection::description::ICoroutine>(new ::vl_workflow_global::__vwsnc26_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine(__vwsn_co_impl_, __vwsnthis_0));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf46_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_::__vwsnf46_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf46_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf47_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_::__vwsnf47_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf47_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetValue();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetValue(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf48_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_::__vwsnf48_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf48_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetLegal();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetLegal(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf49_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_::__vwsnf49_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf49_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::tui_controls::ITuiDialogStringsStrings>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf4_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_::__vwsnf4_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf4_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetValue();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetValue(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf50_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_::__vwsnf50_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf50_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf51_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_::__vwsnf51_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf51_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetValue();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetValue(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf52_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_::__vwsnf52_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf52_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetLegal();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetLegal(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf53_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_::__vwsnf53_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf53_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::tui_controls::ITuiDialogStringsStrings>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf54_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf54_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf54_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkBold)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->checkBold)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf55_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf55_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf55_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkItalic)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->checkItalic)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf56_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf56_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf56_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkUnderline)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->checkUnderline)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf57_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf57_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf57_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkStrikeline)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->checkStrikeline)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf58_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf58_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf58_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_15)->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Nullable<::vl::presentation::FontProperties>>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_15)->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf59_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf59_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf59_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_15)->GetTextColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_15)->SetTextColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::__vwsnf5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf60_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf60_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf60_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf61_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf61_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf61_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SelectColor(static_cast<::vl::presentation::controls::GuiWindow*>(__vwsnthis_0->self));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf62_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf62_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf62_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_21)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_21)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf63_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf63_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf63_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetConfirmed(true);
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsnthis_0->checkBold)->GetSelected(); __vwsn_temp__.italic = ::vl::__vwsn::This(__vwsnthis_0->checkItalic)->GetSelected(); __vwsn_temp__.underline = ::vl::__vwsn::This(__vwsnthis_0->checkUnderline)->GetSelected(); __vwsn_temp__.strikeline = ::vl::__vwsn::This(__vwsnthis_0->checkStrikeline)->GetSelected(); __vwsn_temp__.antialias = ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetFont().antialias; __vwsn_temp__.verticalAntialias = ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetFont().verticalAntialias; return __vwsn_temp__; }());
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf64_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf64_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf64_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_24)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_24)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf65_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf65_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf65_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf66_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf66_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf66_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf67_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::__vwsnf67_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf67_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::tui_controls::ITuiDialogStringsStrings>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf68_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::__vwsnf68_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf68_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf69_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::__vwsnf69_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf69_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::__vwsnf6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf70_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::__vwsnf70_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf70_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetConfirmed(true);
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetFontFamily(::vl::WString::Unmanaged(L"TuiFont"));
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetFontSize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf71_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::__vwsnf71_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf71_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf72_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::__vwsnf72_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf72_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf73_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::__vwsnf73_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf73_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf74_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::__vwsnf74_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf74_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::tui_controls::ITuiDialogStringsStrings>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf75_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_::__vwsnf75_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_(::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf75_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->buttonControl)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->buttonControl)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf76_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_::__vwsnf76_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_(::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf76_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->Action.Obj())->PerformAction();
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost())->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf77_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_::__vwsnf77_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_(::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf77_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::tui_controls::ITuiDialogStringsStrings>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf78_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxWindowConstructor___vwsn_tui_controls_TuiMessageBoxWindow_Initialize_::__vwsnf78_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxWindowConstructor___vwsn_tui_controls_TuiMessageBoxWindow_Initialize_(::tui_controls::TuiMessageBoxWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnf78_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxWindowConstructor___vwsn_tui_controls_TuiMessageBoxWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::vl::presentation::IMessageBoxDialogAction>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			{
+				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::tui_controls::TuiMessageBoxButtonTemplate(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IMessageBoxDialogAction>>(__vwsn_viewModel_)));
+			}
+		}
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::__vwsnf7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::__vwsnf8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::__vwsnf9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->SetColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsno32_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::__vwsno32_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsno32_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
+	{
+		return [&](auto file){ return (((::vl::__vwsn::This(file.Obj())->GetType() == ::vl::presentation::FileDialogFileType::Folder) ? ::vl::WString::Unmanaged(L"[+] ") : ::vl::WString::Unmanaged(L"    ")) + ::vl::__vwsn::This(file.Obj())->GetName()); }(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFile>>(__vwsno_1));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Color __vwsn_temp__; __vwsn_temp__.r = static_cast<::vl::vuint8_t>((static_cast<::vl::vint>(255) - static_cast<::vl::vint>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue().r))); __vwsn_temp__.g = static_cast<::vl::vuint8_t>((static_cast<::vl::vint>(255) - static_cast<::vl::vint>(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetValue().g))); __vwsn_temp__.b = static_cast<::vl::vuint8_t>((static_cast<::vl::vint>(255) - static_cast<::vl::vint>(::vl::__vwsn::This(__vwsn_bind_cache_2)->GetValue().b))); return __vwsn_temp__; }();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tui_controls::TuiColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tui_controls::TuiColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tui_controls::TuiColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_0_1 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_0_2 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->ReadColor();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_1()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_2()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tui_controls::TuiColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorRed)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_1 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorGreen)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_1)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_2 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorBlue)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_2)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorRed)->ValueChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_0_1))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorGreen)->ValueChanged, __vwsn_bind_handler_0_1);
+				(__vwsn_bind_handler_0_1 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_0_2))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorBlue)->ValueChanged, __vwsn_bind_handler_0_2);
+				(__vwsn_bind_handler_0_2 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_0_1 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_0_2 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->OK();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiColorDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Cancel();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiColorDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->ColorDialogTitle();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiColorDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::vl::presentation::IFileDialogViewModel>();
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = (! ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetIsLoadingFiles());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::vl::presentation::IFileDialogViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->IsLoadingFilesChanged, ::vl::Func<void()>(this, &__vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->IsLoadingFilesChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::vl::presentation::IFileDialogViewModel>());
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFileDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFileDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Cancel();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiFileDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFileDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorComponentControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tui_controls::TuiColorComponentControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorComponentControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::vl::presentation::IFileDialogViewModel>();
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetSelectedFolder().Obj())->GetFullPath(); } catch(...){ return ::vl::WString::Unmanaged(L""); } }();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::vl::presentation::IFileDialogViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->SelectedFolderChanged, ::vl::Func<void()>(this, &__vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->SelectedFolderChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::vl::presentation::IFileDialogViewModel>());
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::vl::presentation::IFileDialogViewModel>();
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsnthis_0->self)->CreateFileFilter(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetSelectedFilter());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::vl::presentation::IFileDialogViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->SelectedFilterChanged, ::vl::Func<void()>(this, &__vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->SelectedFilterChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::vl::presentation::IFileDialogViewModel>());
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFilePickerControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFilePickerControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FileDialogFileName();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiFilePickerControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFilePickerControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::presentation::IFileDialogFilter>>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelectedItem());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->comboBox; } catch(...){ return static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedIndexChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedIndexChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelectedItem());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->treeView; } catch(...){ return static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectionChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc26_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::__vwsnc26_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine(::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsnctor___vwsn_co_impl_, ::tui_controls::TuiFilePickerControl* __vwsnctorthis_0)
+		:__vwsn_co_impl_(__vwsnctor___vwsn_co_impl_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_co0_file = ::vl::Ptr<::vl::presentation::IFileDialogFile>();
+		this->__vwsn_co1_item = static_cast<::vl::vint>(0);
+		this->__vwsn_co2_for_enumerable_item = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>();
+		this->__vwsn_co3_for_enumerator_item = ::vl::Ptr<::vl::reflection::description::IValueEnumerator>();
+		this->__vwsn_co_state_ = static_cast<::vl::vint>(0);
+		this->__vwsn_co_state_before_pause_ = (- static_cast<::vl::vint>(1));
+		this->__vwsn_prop_Failure = ::vl::Ptr<::vl::reflection::description::IValueException>();
+		this->__vwsn_prop_Status = ::vl::reflection::description::CoroutineStatus::Waiting;
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueException> __vwsnc26_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::GetFailure()
+	{
+		return __vwsn_prop_Failure;
+	}
+	void __vwsnc26_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_)
+	{
+		(__vwsn_prop_Failure = __vwsn_value_);
+	}
+
+	::vl::reflection::description::CoroutineStatus __vwsnc26_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::GetStatus()
+	{
+		return __vwsn_prop_Status;
+	}
+	void __vwsnc26_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::SetStatus(::vl::reflection::description::CoroutineStatus __vwsn_value_)
+	{
+		(__vwsn_prop_Status = __vwsn_value_);
+	}
+
+	void __vwsnc26_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_co_result_)
+	{
+		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Resume should be called only when the coroutine is in the waiting status."));
+		}
+		this->SetStatus(::vl::reflection::description::CoroutineStatus::Executing);
+		try
+		{
+			{
+				if ((__vwsn_co_state_before_pause_ != (- static_cast<::vl::vint>(1))))
+				{
+					if ((! static_cast<bool>(__vwsn_co_result_)))
+					{
+						(__vwsn_co_state_before_pause_ = (- static_cast<::vl::vint>(1)));
+					}
+					else if ((! static_cast<bool>(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure())))
+					{
+						(__vwsn_co_state_before_pause_ = (- static_cast<::vl::vint>(1)));
+					}
+					else
+					{
+						{
+							(__vwsn_co_state_before_pause_ = (- static_cast<::vl::vint>(1)));
+							throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
+						}
+					}
+				}
+				while (true)
+				{
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(0)))
+					{
+						(__vwsn_co2_for_enumerable_item = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetSelectedItems())));
+						(__vwsn_co3_for_enumerator_item = ::vl::__vwsn::This(__vwsn_co2_for_enumerable_item.Obj())->CreateEnumerator());
+						if (::vl::__vwsn::This(__vwsn_co3_for_enumerator_item.Obj())->Next())
+						{
+							(__vwsn_co_state_ = static_cast<::vl::vint>(3));
+							continue;
+						}
+						(__vwsn_co_state_ = static_cast<::vl::vint>(1));
+						continue;
+					}
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(1)))
+					{
+						this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+						return;
+					}
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(2)))
+					{
+						if (::vl::__vwsn::This(__vwsn_co3_for_enumerator_item.Obj())->Next())
+						{
+							(__vwsn_co_state_ = static_cast<::vl::vint>(3));
+							continue;
+						}
+						(__vwsn_co_state_ = static_cast<::vl::vint>(1));
+						continue;
+					}
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(3)))
+					{
+						(__vwsn_co1_item = ::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(__vwsn_co3_for_enumerator_item.Obj())->GetCurrent()));
+						(__vwsn_co0_file = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::presentation::IFileDialogFile>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetItemProvider())->GetBindingValue(__vwsn_co1_item)));
+						if (static_cast<bool>(__vwsn_co0_file))
+						{
+							this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);
+							(__vwsn_co_state_before_pause_ = __vwsn_co_state_);
+							(__vwsn_co_state_ = static_cast<::vl::vint>(4));
+							{
+								::vl::reflection::description::EnumerableCoroutine::YieldAndPause(__vwsn_co_impl_, ::vl::__vwsn::Box(__vwsn_co0_file));
+							}
+							return;
+						}
+						(__vwsn_co_state_ = static_cast<::vl::vint>(2));
+						continue;
+					}
+					if ((__vwsn_co_state_ == static_cast<::vl::vint>(4)))
+					{
+						if (static_cast<bool>(__vwsn_co_result_))
+						{
+							if (static_cast<bool>(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure()))
+							{
+								throw ::vl::Exception(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_co_result_.Obj())->GetFailure().Obj())->GetMessage());
+							}
+						}
+						(__vwsn_co_state_ = static_cast<::vl::vint>(2));
+						continue;
+					}
+				}
+			}
+		}
+		catch(const ::vl::Exception& __vwsne_0)
+		{
+			auto __vwsn_co_ex_ = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
+			{
+				this->SetFailure(__vwsn_co_ex_);
+				this->SetStatus(::vl::reflection::description::CoroutineStatus::Stopped);
+				if (__vwsn_raise_exception_)
+				{
+					throw;
+				}
+			}
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc27_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_CreateFileFilter__vl_presentation_controls_list_IDataFilter::__vwsnc27_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_CreateFileFilter__vl_presentation_controls_list_IDataFilter(::vl::Ptr<::vl::presentation::IFileDialogFilter> __vwsnctor_filter, ::tui_controls::TuiFilePickerControl* __vwsnctorthis_0)
+		:filter(__vwsnctor_filter)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnc27_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_CreateFileFilter__vl_presentation_controls_list_IDataFilter::SetCallback(::vl::presentation::controls::list::IDataProcessorCallback* value)
+	{
+	}
+
+	bool __vwsnc27_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_CreateFileFilter__vl_presentation_controls_list_IDataFilter::Filter(const ::vl::reflection::description::Value& row)
+	{
+		return ::vl::__vwsn::This(filter.Obj())->FilterFile(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFile>>(row));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontNameControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFontNameControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontNameGroup();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiFontNameControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFontNameControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->textBox; } catch(...){ return static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorComponentControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTextBoxAlt();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tui_controls::TuiColorComponentControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAltChanged, ::vl::Func<void()>(this, &__vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAltChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorComponentControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFontNameControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue() == ::vl::WString::Unmanaged(L"TuiFont"));
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tui_controls::TuiFontNameControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFontNameControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontSizeControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFontSizeControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontSizeGroup();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiFontSizeControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFontSizeControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::Parse<::vl::vint>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText()); } catch(...){ return (- static_cast<::vl::vint>(1)); } }();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->textBox; } catch(...){ return static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFontSizeControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue() == static_cast<::vl::vint>(1));
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tui_controls::TuiFontSizeControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFontSizeControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Bold();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Italic();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Underline();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Strikeline();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiScroll*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPosition();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->tracker; } catch(...){ return static_cast<::vl::presentation::controls::GuiScroll*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiScroll*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr);
+		this->__vwsn_bind_cache_3 = static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelected(); __vwsn_temp__.italic = ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected(); __vwsn_temp__.underline = ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetSelected(); __vwsn_temp__.strikeline = ::vl::__vwsn::This(__vwsn_bind_cache_3)->GetSelected(); return __vwsn_temp__; }();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->checkBold; } catch(...){ return static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->checkItalic; } catch(...){ return static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->checkUnderline; } catch(...){ return static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr); } }());
+			(__vwsn_bind_cache_3 = [&](){ try{ return __vwsnthis_0->checkStrikeline; } catch(...){ return static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SelectedChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->SelectedChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_3_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3)->SelectedChanged, __vwsn_bind_handler_3_0);
+				(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr));
+			(__vwsn_bind_cache_3 = static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc41_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc41_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc41_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetColor();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	bool __vwsnc41_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc41_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc41_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontPreviewGroup();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->OK();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Cancel();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontDialogTitle();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiSimpleFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiSimpleFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontPreviewGroup();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiSimpleFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiSimpleFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiSimpleFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiSimpleFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->OK();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiSimpleFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiSimpleFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiSimpleFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiSimpleFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Cancel();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiSimpleFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiSimpleFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Red();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiSimpleFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiSimpleFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontDialogTitle();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiSimpleFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiSimpleFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiMessageBoxButtonTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetButtonText(::vl::__vwsn::This(__vwsnthis_0->Action.Obj())->GetButton(), ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tui_controls::TuiMessageBoxButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiMessageBoxButtonTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::__vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings()
+	{
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Abort()
+	{
+		return ::vl::WString::Unmanaged(L"Abort");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Blue()
+	{
+		return ::vl::WString::Unmanaged(L"Blue:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Bold()
+	{
+		return ::vl::WString::Unmanaged(L"Bold");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Cancel()
+	{
+		return ::vl::WString::Unmanaged(L"Cancel");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Color()
+	{
+		return ::vl::WString::Unmanaged(L"Color:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::ColorDialogTitle()
+	{
+		return ::vl::WString::Unmanaged(L"Choose Color");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Continue()
+	{
+		return ::vl::WString::Unmanaged(L"Continue");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogAskCreateFile()
+	{
+		return ::vl::WString::Unmanaged(L"Do you want to create the following file(s):");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogAskOverrideFile()
+	{
+		return ::vl::WString::Unmanaged(L"Do you want to override the following file(s):");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogErrorEmptySelection()
+	{
+		return ::vl::WString::Unmanaged(L"At least one file must be selected.");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogErrorFileExpected()
+	{
+		return ::vl::WString::Unmanaged(L"File(s) expected but folder(s) selected:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogErrorFileNotExist()
+	{
+		return ::vl::WString::Unmanaged(L"File(s) not exist:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogErrorFolderNotExist()
+	{
+		return ::vl::WString::Unmanaged(L"Folder not exist:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogErrorMultipleSelectionNotEnabled()
+	{
+		return ::vl::WString::Unmanaged(L"Multiple selection is not enabled in this dialog.");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogFileName()
+	{
+		return ::vl::WString::Unmanaged(L"File Name:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogOpen()
+	{
+		return ::vl::WString::Unmanaged(L"Open");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogSave()
+	{
+		return ::vl::WString::Unmanaged(L"Save");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogTextLoadingFiles()
+	{
+		return ::vl::WString::Unmanaged(L"(Loading Folders and Files...)");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FileDialogTextLoadingFolders()
+	{
+		return ::vl::WString::Unmanaged(L"(Loading...)");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FontColorGroup()
+	{
+		return ::vl::WString::Unmanaged(L"Color:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FontColorGroup2()
+	{
+		return ::vl::WString::Unmanaged(L"Pick a Color:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FontDialogTitle()
+	{
+		return ::vl::WString::Unmanaged(L"Choose Font");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FontEffectGroup()
+	{
+		return ::vl::WString::Unmanaged(L"Effect:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FontNameGroup()
+	{
+		return ::vl::WString::Unmanaged(L"Font:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FontPreviewGroup()
+	{
+		return ::vl::WString::Unmanaged(L"Preview:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::FontSizeGroup()
+	{
+		return ::vl::WString::Unmanaged(L"Size:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Green()
+	{
+		return ::vl::WString::Unmanaged(L"Green:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::HAA()
+	{
+		return ::vl::WString::Unmanaged(L"Horizontal Antialias");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Ignore()
+	{
+		return ::vl::WString::Unmanaged(L"Ignore");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Italic()
+	{
+		return ::vl::WString::Unmanaged(L"Italic");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::No()
+	{
+		return ::vl::WString::Unmanaged(L"No");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::OK()
+	{
+		return ::vl::WString::Unmanaged(L"OK");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Red()
+	{
+		return ::vl::WString::Unmanaged(L"Red:");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Retry()
+	{
+		return ::vl::WString::Unmanaged(L"Retry");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Strikeline()
+	{
+		return ::vl::WString::Unmanaged(L"Strike-through");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::TryAgain()
+	{
+		return ::vl::WString::Unmanaged(L"Try Again");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Underline()
+	{
+		return ::vl::WString::Unmanaged(L"Underline");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::VAA()
+	{
+		return ::vl::WString::Unmanaged(L"Vertical Antialias");
+	}
+
+	::vl::WString __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings::Yes()
+	{
+		return ::vl::WString::Unmanaged(L"Yes");
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Green();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Blue();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Color();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::tui_controls::TuiColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tui_controls::TuiColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tui_controls::TuiColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tui_controls::TuiColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+}
+
+/***********************************************************************
+Class (::tui_controls::ITuiDialogStringsStrings)
+***********************************************************************/
+
+namespace tui_controls
+{
+/***********************************************************************
+Class (::tui_controls::TuiColorComponentControlConstructor)
+***********************************************************************/
+
+	void TuiColorComponentControlConstructor::__vwsn_tui_controls_TuiColorComponentControl_Initialize(::tui_controls::TuiColorComponentControl* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint>(1));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint>(1), static_cast<::vl::vint>(2));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = static_cast<::vl::vint>(6); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->textBox = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textBox"), ::vl::__vwsn::Box(this->textBox));
+		}
+		(this->__vwsn_precompile_2 = ::vl::__vwsn::This(this->textBox)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->textBox)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->tracker = new ::vl::presentation::controls::GuiScroll(::vl::presentation::theme::ThemeName::HTracker));
+			::vl::__vwsn::This(this->tracker)->SetPageSize(static_cast<::vl::vint>(0));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"tracker"), ::vl::__vwsn::Box(this->tracker));
+		}
+		{
+			::vl::__vwsn::This(this->tracker)->SetBigMove(static_cast<::vl::vint>(16));
+		}
+		{
+			::vl::__vwsn::This(this->tracker)->SetSmallMove(static_cast<::vl::vint>(1));
+		}
+		{
+			::vl::__vwsn::This(this->tracker)->SetPageSize(static_cast<::vl::vint>(1));
+		}
+		{
+			::vl::__vwsn::This(this->tracker)->SetTotalSize(static_cast<::vl::vint>(256));
+		}
+		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->tracker)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->tracker)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->textBox)->TextChanged, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf4_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	TuiColorComponentControlConstructor::TuiColorComponentControlConstructor()
+		: self(static_cast<::tui_controls::TuiColorComponentControl*>(nullptr))
+		, textBox(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
+		, tracker(static_cast<::vl::presentation::controls::GuiScroll*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiColorComponentControl)
+***********************************************************************/
+
+	::vl::vint TuiColorComponentControl::GetValue()
+	{
+		return this->__vwsn_prop_Value;
+	}
+	void TuiColorComponentControl::SetValue(::vl::vint __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Value != __vwsn_value_))
+		{
+			(this->__vwsn_prop_Value = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->ValueChanged)();
+		}
+	}
+
+	::vl::WString TuiColorComponentControl::GetTextBoxAlt()
+	{
+		return this->__vwsn_prop_TextBoxAlt;
+	}
+	void TuiColorComponentControl::SetTextBoxAlt(const ::vl::WString& __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_TextBoxAlt != __vwsn_value_))
+		{
+			(this->__vwsn_prop_TextBoxAlt = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->TextBoxAltChanged)();
+		}
+	}
+
+	TuiColorComponentControl::TuiColorComponentControl()
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+		, __vwsn_prop_Value(static_cast<::vl::vint>(0))
+		, __vwsn_prop_TextBoxAlt(::vl::WString::Unmanaged(L""))
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"tui_controls::TuiColorComponentControl"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_tui_controls_TuiColorComponentControl_Initialize(this);
+	}
+
+	TuiColorComponentControl::~TuiColorComponentControl()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiColorDialogControlConstructor)
+***********************************************************************/
+
+	void TuiColorDialogControlConstructor::__vwsn_tui_controls_TuiColorDialogControl_Initialize(::tui_controls::TuiColorDialogControl* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint>(0));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint>(4), static_cast<::vl::vint>(2));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(3), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_4 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_4)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
+		}
+		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetSite(static_cast<::vl::vint>(2), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_6 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_5));
+		}
+		(this->__vwsn_precompile_7 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetSite(static_cast<::vl::vint>(3), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_8 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_8)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_7));
+		}
+		(this->__vwsn_precompile_9 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		(this->colorRed = new ::tui_controls::TuiColorComponentControl());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"colorRed"), ::vl::__vwsn::Box(this->colorRed));
+		{
+			::vl::__vwsn::This(this->colorRed)->SetTextBoxAlt(::vl::WString::Unmanaged(L"R"));
+		}
+		(this->__vwsn_precompile_10 = ::vl::__vwsn::This(this->colorRed)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->colorRed)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_9));
+		}
+		(this->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		(this->colorGreen = new ::tui_controls::TuiColorComponentControl());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"colorGreen"), ::vl::__vwsn::Box(this->colorGreen));
+		{
+			::vl::__vwsn::This(this->colorGreen)->SetTextBoxAlt(::vl::WString::Unmanaged(L"G"));
+		}
+		(this->__vwsn_precompile_12 = ::vl::__vwsn::This(this->colorGreen)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->colorGreen)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_11));
+		}
+		(this->__vwsn_precompile_13 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetSite(static_cast<::vl::vint>(2), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		(this->colorBlue = new ::tui_controls::TuiColorComponentControl());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"colorBlue"), ::vl::__vwsn::Box(this->colorBlue));
+		{
+			::vl::__vwsn::This(this->colorBlue)->SetTextBoxAlt(::vl::WString::Unmanaged(L"B"));
+		}
+		(this->__vwsn_precompile_14 = ::vl::__vwsn::This(this->colorBlue)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->colorBlue)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_13));
+		}
+		(this->__vwsn_precompile_15 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetSite(static_cast<::vl::vint>(3), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		(this->__vwsn_precompile_16 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_16));
+		}
+		(this->__vwsn_precompile_17 = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_18 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_18));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_17));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_15));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			::vl::__vwsn::This(this->colorRed)->SetValue(static_cast<::vl::vint>(::vl::__vwsn::This(this->ViewModel.Obj())->GetColor().r));
+		}
+		{
+			::vl::__vwsn::This(this->colorGreen)->SetValue(static_cast<::vl::vint>(::vl::__vwsn::This(this->ViewModel.Obj())->GetColor().g));
+		}
+		{
+			::vl::__vwsn::This(this->colorBlue)->SetValue(static_cast<::vl::vint>(::vl::__vwsn::This(this->ViewModel.Obj())->GetColor().b));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	TuiColorDialogControlConstructor::TuiColorDialogControlConstructor()
+		: self(static_cast<::tui_controls::TuiColorDialogControl*>(nullptr))
+		, ViewModel(::vl::Ptr<::vl::presentation::IColorDialogViewModel>())
+		, colorRed(static_cast<::tui_controls::TuiColorComponentControl*>(nullptr))
+		, colorGreen(static_cast<::tui_controls::TuiColorComponentControl*>(nullptr))
+		, colorBlue(static_cast<::tui_controls::TuiColorComponentControl*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_8(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_9(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_10(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_11(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_12(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_13(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_14(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_15(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_16(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_17(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_18(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
+	{
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiColorDialogControl)
+***********************************************************************/
+
+	::vl::presentation::Color TuiColorDialogControl::GetValue()
+	{
+		return this->__vwsn_prop_Value;
+	}
+	void TuiColorDialogControl::SetValue(::vl::presentation::Color __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Value != __vwsn_value_))
+		{
+			(this->__vwsn_prop_Value = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->ValueChanged)();
+		}
+	}
+
+	::vl::presentation::Color TuiColorDialogControl::ReadColor()
+	{
+		return [&](){ ::vl::presentation::Color __vwsn_temp__; __vwsn_temp__.r = static_cast<::vl::vuint8_t>(::vl::__vwsn::This(this->colorRed)->GetValue()); __vwsn_temp__.g = static_cast<::vl::vuint8_t>(::vl::__vwsn::This(this->colorGreen)->GetValue()); __vwsn_temp__.b = static_cast<::vl::vuint8_t>(::vl::__vwsn::This(this->colorBlue)->GetValue()); return __vwsn_temp__; }();
+	}
+
+	::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> TuiColorDialogControl::GetStrings()
+	{
+		return this->__vwsn_prop_Strings;
+	}
+	void TuiColorDialogControl::SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_Strings = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->StringsChanged)();
+		}
+	}
+
+	::vl::Ptr<::vl::presentation::IColorDialogViewModel> TuiColorDialogControl::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	TuiColorDialogControl::TuiColorDialogControl(::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_ctor_parameter_ViewModel)
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+		, __vwsn_prop_Value(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")))
+		, __vwsn_prop_Strings(::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
+		, __vwsn_parameter_ViewModel(::vl::Ptr<::vl::presentation::IColorDialogViewModel>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"tui_controls::TuiColorDialogControl"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_tui_controls_TuiColorDialogControl_Initialize(this);
+	}
+
+	TuiColorDialogControl::~TuiColorDialogControl()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiColorDialogWindowConstructor)
+***********************************************************************/
+
+	void TuiColorDialogWindowConstructor::__vwsn_tui_controls_TuiColorDialogWindow_Initialize(::tui_controls::TuiColorDialogWindow* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		{
+			::vl::__vwsn::This(this->self)->SetIconVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetMinimizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetMaximizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetShowInTaskBar(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(52); __vwsn_temp__.y = static_cast<::vl::vint>(15); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint>(1));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint>(2), static_cast<::vl::vint>(3));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(3));
+		}
+		(this->colorControl = new ::tui_controls::TuiColorDialogControl(this->ViewModel));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"colorControl"), ::vl::__vwsn::Box(this->colorControl));
+		(this->__vwsn_precompile_2 = ::vl::__vwsn::This(this->colorControl)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->colorControl)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_4 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+		}
+		(this->__vwsn_precompile_5 = ::vl::__vwsn::This(this->__vwsn_precompile_4)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlt(::vl::WString::Unmanaged(L"O"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_4)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
+		}
+		(this->__vwsn_precompile_6 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(2), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_7 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+		}
+		(this->__vwsn_precompile_8 = ::vl::__vwsn::This(this->__vwsn_precompile_7)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlt(::vl::WString::Unmanaged(L"C"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_7)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_6));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_4)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf17_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_7)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf18_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf19_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	TuiColorDialogWindowConstructor::TuiColorDialogWindowConstructor()
+		: self(static_cast<::tui_controls::TuiColorDialogWindow*>(nullptr))
+		, ViewModel(::vl::Ptr<::vl::presentation::IColorDialogViewModel>())
+		, colorControl(static_cast<::tui_controls::TuiColorDialogControl*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_8(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiColorDialogWindow)
+***********************************************************************/
+
+	::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> TuiColorDialogWindow::GetStrings()
+	{
+		return this->__vwsn_prop_Strings;
+	}
+	void TuiColorDialogWindow::SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_Strings = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->StringsChanged)();
+		}
+	}
+
+	::vl::Ptr<::vl::presentation::IColorDialogViewModel> TuiColorDialogWindow::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	TuiColorDialogWindow::TuiColorDialogWindow(::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_ctor_parameter_ViewModel)
+		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
+		, __vwsn_prop_Strings(::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
+		, __vwsn_parameter_ViewModel(::vl::Ptr<::vl::presentation::IColorDialogViewModel>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"tui_controls::TuiColorDialogWindow"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_tui_controls_TuiColorDialogWindow_Initialize(this);
+	}
+
+	TuiColorDialogWindow::~TuiColorDialogWindow()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControlHost*>(this));
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiDialogStrings)
+***********************************************************************/
+
+	::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> TuiDialogStrings::__vwsn_ls_en_US_BuildStrings(::vl::Locale __vwsn_ls_locale)
+	{
+		return ::vl::Ptr<::tui_controls::ITuiDialogStringsStrings>(new ::vl_workflow_global::__vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings());
+	}
+
+	void TuiDialogStrings::Install(::vl::Locale __vwsn_ls_locale, ::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_ls_impl)
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_TuiDialogStrings.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(__vwsn_ls_locale)))
+		{
+			throw ::vl::Exception(((::vl::WString::Unmanaged(L"Localized strings \"tui_controls::TuiDialogStrings\" has already registered for locale \"") + ::vl::__vwsn::ToString(__vwsn_ls_locale)) + ::vl::WString::Unmanaged(L"\".")));
+		}
+		::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_TuiDialogStrings.Obj())->Set(::vl::__vwsn::Box(__vwsn_ls_locale), ::vl::__vwsn::Box(__vwsn_ls_impl));
+	}
+
+	::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> TuiDialogStrings::Get(::vl::Locale __vwsn_ls_locale)
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_TuiDialogStrings.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(__vwsn_ls_locale)))
+		{
+			return ::vl::__vwsn::Unbox<::vl::Ptr<::tui_controls::ITuiDialogStringsStrings>>(::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_TuiDialogStrings.Obj())->Get(::vl::__vwsn::Box(__vwsn_ls_locale)));
+		}
+		return ::vl::__vwsn::Unbox<::vl::Ptr<::tui_controls::ITuiDialogStringsStrings>>(::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_TuiDialogStrings.Obj())->Get(::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US")))));
+	}
+
+	TuiDialogStrings::TuiDialogStrings()
+	{
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiFileDialogWindowConstructor)
+***********************************************************************/
+
+	void TuiFileDialogWindowConstructor::__vwsn_tui_controls_TuiFileDialogWindow_Initialize(::tui_controls::TuiFileDialogWindow* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		{
+			::vl::__vwsn::This(this->self)->SetIconVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetMinimizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetMaximizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetShowInTaskBar(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(74); __vwsn_temp__.y = static_cast<::vl::vint>(24); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint>(1));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint>(2), static_cast<::vl::vint>(3));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(3));
+		}
+		(this->filePickerControl = new ::tui_controls::TuiFilePickerControl(this->ViewModel));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"filePickerControl"), ::vl::__vwsn::Box(this->filePickerControl));
+		(this->__vwsn_precompile_2 = ::vl::__vwsn::This(this->filePickerControl)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->filePickerControl)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->buttonOK = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonOK"), ::vl::__vwsn::Box(this->buttonOK));
+		}
+		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->buttonOK)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->buttonOK)->SetAlt(::vl::WString::Unmanaged(L"O"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonOK)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
+		}
+		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(2), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_6 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+		}
+		(this->__vwsn_precompile_7 = ::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlt(::vl::WString::Unmanaged(L"C"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_5));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf20_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->filePickerControl)->RequestClose, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf22_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf23_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->buttonOK)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf24_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf25_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_6)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetText(::vl::__vwsn::This(this->ViewModel.Obj())->GetTitle());
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf26_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	TuiFileDialogWindowConstructor::TuiFileDialogWindowConstructor()
+		: self(static_cast<::tui_controls::TuiFileDialogWindow*>(nullptr))
+		, ViewModel(::vl::Ptr<::vl::presentation::IFileDialogViewModel>())
+		, filePickerControl(static_cast<::tui_controls::TuiFilePickerControl*>(nullptr))
+		, buttonOK(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiFileDialogWindow)
+***********************************************************************/
+
+	void TuiFileDialogWindow::MakeOpenFileDialog()
+	{
+		::vl::__vwsn::This(this->buttonOK)->SetText(::vl::__vwsn::This(this->GetStrings().Obj())->FileDialogOpen());
+	}
+
+	void TuiFileDialogWindow::MakeSaveFileDialog()
+	{
+		::vl::__vwsn::This(this->buttonOK)->SetText(::vl::__vwsn::This(this->GetStrings().Obj())->FileDialogSave());
+	}
+
+	::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> TuiFileDialogWindow::GetStrings()
+	{
+		return this->__vwsn_prop_Strings;
+	}
+	void TuiFileDialogWindow::SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_Strings = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->StringsChanged)();
+		}
+	}
+
+	::vl::Ptr<::vl::presentation::IFileDialogViewModel> TuiFileDialogWindow::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	TuiFileDialogWindow::TuiFileDialogWindow(::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_ctor_parameter_ViewModel)
+		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
+		, __vwsn_prop_Strings(::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
+		, __vwsn_parameter_ViewModel(::vl::Ptr<::vl::presentation::IFileDialogViewModel>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"tui_controls::TuiFileDialogWindow"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_tui_controls_TuiFileDialogWindow_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void TuiFileDialogWindow::__vwsn_instance_ctor_()
+	{
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(this->self), vl::Func(::vl_workflow_global::__vwsnf27_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindow___vwsn_instance_ctor__(this)));
+	}
+
+	TuiFileDialogWindow::~TuiFileDialogWindow()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControlHost*>(this));
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiFilePickerControlConstructor)
+***********************************************************************/
+
+	void TuiFilePickerControlConstructor::__vwsn_tui_controls_TuiFilePickerControl_Initialize(::tui_controls::TuiFilePickerControl* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		(this->__vwsn_precompile_19 = ::vl::__vwsn::This(this->self)->GetViewModel());
+		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint>(0));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint>(4), static_cast<::vl::vint>(2));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(3), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = static_cast<::vl::vint>(22); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(2));
+		}
+		{
+			(this->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->treeView = new ::vl::presentation::controls::GuiBindableTreeView(::vl::presentation::theme::ThemeName::TreeView));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"treeView"), ::vl::__vwsn::Box(this->treeView));
+		}
+		{
+			::vl::__vwsn::This(this->treeView)->SetChildrenProperty(vl::Func(::vl_workflow_global::__vwsnf28_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this)));
+		}
+		{
+			::vl::__vwsn::This(this->treeView)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->treeView)->SetVerticalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->treeView)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf29_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this)));
+		}
+		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->treeView)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->treeView)->SetAlt(::vl::WString::Unmanaged(L"D"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->treeView)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
+		}
+		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->dataGrid = new ::vl::presentation::controls::GuiBindableDataGrid(::vl::presentation::theme::ThemeName::ListView));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dataGrid"), ::vl::__vwsn::Box(this->dataGrid));
+		}
+		(this->__vwsn_precompile_8 = ::vl::__vwsn::This(this->dataGrid)->GetFocusableComposition());
+		{
+			::vl::__vwsn::This(this->dataGrid)->SetView(::vl::presentation::controls::ListViewView::Detail);
+		}
+		{
+			::vl::__vwsn::This(this->dataGrid)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->dataGrid)->SetVerticalAlwaysVisible(false);
+		}
+		(this->__vwsn_precompile_7 = ::vl::__vwsn::This(this->dataGrid)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->dataGrid)->SetAlt(::vl::WString::Unmanaged(L"F"));
+		}
+		(this->__vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::controls::list::DataColumn>(new ::vl::presentation::controls::list::DataColumn()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetSize(static_cast<::vl::vint>(38));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetText(::vl::WString::Unmanaged(L"Name"));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->dataGrid)->GetColumns());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_6));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->dataGrid)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_5));
+		}
+		(this->__vwsn_precompile_9 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetSite(static_cast<::vl::vint>(2), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_10 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_10)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_9));
+		}
+		(this->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetSite(static_cast<::vl::vint>(2), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->textBox = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textBox"), ::vl::__vwsn::Box(this->textBox));
+		}
+		(this->__vwsn_precompile_13 = ::vl::__vwsn::This(this->textBox)->GetFocusableComposition());
+		(this->__vwsn_precompile_12 = ::vl::__vwsn::This(this->textBox)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->textBox)->SetAlt(::vl::WString::Unmanaged(L"S"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->textBox)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_11));
+		}
+		(this->__vwsn_precompile_14 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetSite(static_cast<::vl::vint>(3), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_15 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetText(::vl::WString::Unmanaged(L"File type:"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_15)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_14));
+		}
+		(this->__vwsn_precompile_16 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetSite(static_cast<::vl::vint>(3), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_17 = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetVerticalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf30_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this)));
+		}
+		{
+			(this->comboBox = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_17)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboBox"), ::vl::__vwsn::Box(this->comboBox));
+		}
+		(this->__vwsn_precompile_18 = ::vl::__vwsn::This(this->comboBox)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->comboBox)->SetAlt(::vl::WString::Unmanaged(L"E"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->comboBox)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_16));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf31_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno32_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this)));
+		}
+		{
+			::vl::__vwsn::This(this->dataGrid)->SetMultiSelect(::vl::__vwsn::This(this->ViewModel.Obj())->GetEnabledMultipleSelection());
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf33_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf34_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_8)->GetEventReceiver()->keyUp, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf35_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->dataGrid)->SelectionChanged, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf36_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->dataGrid)->ItemLeftButtonDoubleClick, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf38_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf39_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_13)->GetEventReceiver()->keyUp, __vwsn_event_handler_);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->ViewModel.Obj())->GetFilters())));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf40_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf41_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf42_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_19.Obj())->SelectedFolderChanged, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf43_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_19.Obj())->IsLoadingFilesChanged, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf44_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	TuiFilePickerControlConstructor::TuiFilePickerControlConstructor()
+		: self(static_cast<::tui_controls::TuiFilePickerControl*>(nullptr))
+		, ViewModel(::vl::Ptr<::vl::presentation::IFileDialogViewModel>())
+		, textBox(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
+		, treeView(static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr))
+		, dataGrid(static_cast<::vl::presentation::controls::GuiBindableDataGrid*>(nullptr))
+		, comboBox(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_6(::vl::Ptr<::vl::presentation::controls::list::DataColumn>())
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_8(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
+		, __vwsn_precompile_9(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_10(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_11(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_12(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_13(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
+		, __vwsn_precompile_14(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_15(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_16(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_17(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
+		, __vwsn_precompile_18(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_19(::vl::Ptr<::vl::presentation::IFileDialogViewModel>())
+	{
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiFilePickerControl)
+***********************************************************************/
+
+	::vl::collections::LazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>> TuiFilePickerControl::GetSelectedFiles()
+	{
+		return ::vl::reflection::description::GetLazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>>(::vl::reflection::description::EnumerableCoroutine::Create(vl::Func(::vl_workflow_global::__vwsnf45_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles_(this))));
+	}
+
+	::vl::collections::LazyList<::vl::WString> TuiFilePickerControl::GetSelection()
+	{
+		return ::vl::__vwsn::This(this->GetViewModel().Obj())->ParseDisplayString(::vl::__vwsn::This(this->textBox)->GetText());
+	}
+
+	void TuiFilePickerControl::LocateSelectedFolderInTreeView()
+	{
+		auto fragments = ::vl::reflection::description::IValueList::Create();
+		auto currentFolder = ::vl::__vwsn::This(this->GetViewModel().Obj())->GetSelectedFolder();
+		if ((! static_cast<bool>(currentFolder)))
+		{
+			return;
+		}
+		while ((static_cast<bool>(currentFolder) && (::vl::__vwsn::This(currentFolder.Obj())->GetType() == ::vl::presentation::FileDialogFolderType::Folder)))
+		{
+			::vl::__vwsn::This(fragments.Obj())->Add(::vl::__vwsn::Box(currentFolder));
+			(currentFolder = ::vl::__vwsn::This(currentFolder.Obj())->GetParent());
+		}
+		auto currentNode = ::vl::__vwsn::This(::vl::__vwsn::This(this->treeView)->GetNodeRootProvider())->GetRootNode();
+		{
+			auto __vwsn_for_enumerable_fragment = ::vl::reflection::description::Sys::ReverseEnumerable(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(fragments));
+			auto __vwsn_for_enumerator_fragment = ::vl::__vwsn::This(__vwsn_for_enumerable_fragment.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_fragment.Obj())->Next())
+			{
+				auto fragment = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(::vl::__vwsn::This(__vwsn_for_enumerator_fragment.Obj())->GetCurrent());
+				{
+					::vl::__vwsn::This(currentNode.Obj())->SetExpanding(true);
+					(currentNode = ::vl::__vwsn::This(currentNode.Obj())->GetChild(::vl::__vwsn::This(fragment.Obj())->GetIndex()));
+					if ((! static_cast<bool>(currentNode)))
+					{
+						return;
+					}
+				}
+			}
+		}
+		auto index = ::vl::__vwsn::This(::vl::__vwsn::This(this->treeView)->GetNodeItemView())->CalculateNodeVisibilityIndex(::vl::__vwsn::Ensure(static_cast<::vl::presentation::controls::tree::INodeProvider*>(currentNode.Obj())));
+		::vl::__vwsn::This(this->treeView)->EnsureItemVisible(index);
+		::vl::__vwsn::This(this->treeView)->SelectItemsByClick(index, false, false, true);
+	}
+
+	::vl::Ptr<::vl::presentation::controls::list::IDataFilter> TuiFilePickerControl::CreateFileFilter(::vl::Ptr<::vl::presentation::IFileDialogFilter> filter)
+	{
+		if ((! static_cast<bool>(filter)))
+		{
+			return ::vl::Ptr<::vl::presentation::controls::list::IDataFilter>();
+		}
+		else
+		{
+			return ::vl::Ptr<::vl::presentation::controls::list::IDataFilter>(new ::vl_workflow_global::__vwsnc27_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_CreateFileFilter__vl_presentation_controls_list_IDataFilter(filter, this));
+		}
+	}
+
+	::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> TuiFilePickerControl::GetStrings()
+	{
+		return this->__vwsn_prop_Strings;
+	}
+	void TuiFilePickerControl::SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_Strings = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->StringsChanged)();
+		}
+	}
+
+	::vl::Ptr<::vl::presentation::IFileDialogViewModel> TuiFilePickerControl::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	TuiFilePickerControl::TuiFilePickerControl(::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_ctor_parameter_ViewModel)
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+		, __vwsn_prop_Strings(::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
+		, __vwsn_parameter_ViewModel(::vl::Ptr<::vl::presentation::IFileDialogViewModel>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"tui_controls::TuiFilePickerControl"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_tui_controls_TuiFilePickerControl_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void TuiFilePickerControl::__vwsn_instance_ctor_()
+	{
+		::vl::__vwsn::This(this->GetViewModel().Obj())->InitLocalizedText(::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogTextLoadingFolders(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogTextLoadingFiles(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorEmptySelection(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorFileNotExist(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorFileExpected(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorFolderNotExist(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorMultipleSelectionNotEnabled(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogAskCreateFile(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogAskOverrideFile());
+		::vl::__vwsn::This(this->treeView)->SetItemSource(::vl::__vwsn::Box(::vl::__vwsn::This(this->GetViewModel().Obj())->GetRootFolder()));
+		::vl::__vwsn::This(this->dataGrid)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFiles())));
+		::vl::__vwsn::This(this->comboBox)->SetSelectedIndex(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFilters()).Obj())->IndexOf(::vl::__vwsn::Box(::vl::__vwsn::This(this->GetViewModel().Obj())->GetSelectedFilter())));
+		::vl::__vwsn::This(this->GetViewModel().Obj())->RefreshFiles();
+	}
+
+	TuiFilePickerControl::~TuiFilePickerControl()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiFontNameControlConstructor)
+***********************************************************************/
+
+	void TuiFontNameControlConstructor::__vwsn_tui_controls_TuiFontNameControl_Initialize(::tui_controls::TuiFontNameControl* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		{
+			(this->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiControl(::vl::presentation::theme::ThemeName::GroupBox));
+		}
+		(this->__vwsn_precompile_2 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			(this->textBox = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textBox"), ::vl::__vwsn::Box(this->textBox));
+		}
+		{
+			::vl::__vwsn::This(this->textBox)->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::Selectable);
+		}
+		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->textBox)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->textBox)->SetAlt(::vl::WString::Unmanaged(L"F"));
+		}
+		{
+			::vl::__vwsn::This(this->textBox)->SetText(::vl::WString::Unmanaged(L"TuiFont"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->textBox));
+		}
+		{
+			::vl::__vwsn::This(this->self)->AddChild(this->__vwsn_precompile_0);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf46_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf47_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf48_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf49_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	TuiFontNameControlConstructor::TuiFontNameControlConstructor()
+		: self(static_cast<::tui_controls::TuiFontNameControl*>(nullptr))
+		, ViewModel(::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel>())
+		, textBox(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::controls::GuiControl*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiFontNameControl)
+***********************************************************************/
+
+	::vl::WString TuiFontNameControl::GetValue()
+	{
+		return this->__vwsn_prop_Value;
+	}
+	void TuiFontNameControl::SetValue(const ::vl::WString& __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Value != __vwsn_value_))
+		{
+			(this->__vwsn_prop_Value = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->ValueChanged)();
+		}
+	}
+
+	bool TuiFontNameControl::GetLegal()
+	{
+		return this->__vwsn_prop_Legal;
+	}
+	void TuiFontNameControl::SetLegal(bool __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Legal != __vwsn_value_))
+		{
+			(this->__vwsn_prop_Legal = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->LegalChanged)();
+		}
+	}
+
+	void TuiFontNameControl::InitValue(const ::vl::WString& value)
+	{
+	}
+
+	::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> TuiFontNameControl::GetStrings()
+	{
+		return this->__vwsn_prop_Strings;
+	}
+	void TuiFontNameControl::SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_Strings = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->StringsChanged)();
+		}
+	}
+
+	::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel> TuiFontNameControl::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	TuiFontNameControl::TuiFontNameControl(::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel> __vwsn_ctor_parameter_ViewModel)
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+		, __vwsn_prop_Value(::vl::WString::Unmanaged(L""))
+		, __vwsn_prop_Legal(true)
+		, __vwsn_prop_Strings(::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
+		, __vwsn_parameter_ViewModel(::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"tui_controls::TuiFontNameControl"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_tui_controls_TuiFontNameControl_Initialize(this);
+	}
+
+	TuiFontNameControl::~TuiFontNameControl()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiFontSizeControlConstructor)
+***********************************************************************/
+
+	void TuiFontSizeControlConstructor::__vwsn_tui_controls_TuiFontSizeControl_Initialize(::tui_controls::TuiFontSizeControl* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		{
+			(this->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiControl(::vl::presentation::theme::ThemeName::GroupBox));
+		}
+		(this->__vwsn_precompile_2 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			(this->textBox = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textBox"), ::vl::__vwsn::Box(this->textBox));
+		}
+		{
+			::vl::__vwsn::This(this->textBox)->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::Selectable);
+		}
+		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->textBox)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->textBox)->SetAlt(::vl::WString::Unmanaged(L"S"));
+		}
+		{
+			::vl::__vwsn::This(this->textBox)->SetText(::vl::WString::Unmanaged(L"1"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->textBox));
+		}
+		{
+			::vl::__vwsn::This(this->self)->AddChild(this->__vwsn_precompile_0);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf50_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf51_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf52_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf53_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	TuiFontSizeControlConstructor::TuiFontSizeControlConstructor()
+		: self(static_cast<::tui_controls::TuiFontSizeControl*>(nullptr))
+		, textBox(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::controls::GuiControl*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiFontSizeControl)
+***********************************************************************/
+
+	::vl::vint TuiFontSizeControl::GetValue()
+	{
+		return this->__vwsn_prop_Value;
+	}
+	void TuiFontSizeControl::SetValue(::vl::vint __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Value != __vwsn_value_))
+		{
+			(this->__vwsn_prop_Value = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->ValueChanged)();
+		}
+	}
+
+	bool TuiFontSizeControl::GetLegal()
+	{
+		return this->__vwsn_prop_Legal;
+	}
+	void TuiFontSizeControl::SetLegal(bool __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Legal != __vwsn_value_))
+		{
+			(this->__vwsn_prop_Legal = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->LegalChanged)();
+		}
+	}
+
+	void TuiFontSizeControl::InitValue(::vl::vint value)
+	{
+	}
+
+	::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> TuiFontSizeControl::GetStrings()
+	{
+		return this->__vwsn_prop_Strings;
+	}
+	void TuiFontSizeControl::SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_Strings = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->StringsChanged)();
+		}
+	}
+
+	TuiFontSizeControl::TuiFontSizeControl()
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+		, __vwsn_prop_Value(static_cast<::vl::vint>(1))
+		, __vwsn_prop_Legal(true)
+		, __vwsn_prop_Strings(::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"tui_controls::TuiFontSizeControl"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_tui_controls_TuiFontSizeControl_Initialize(this);
+	}
+
+	TuiFontSizeControl::~TuiFontSizeControl()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiFullFontDialogWindowConstructor)
+***********************************************************************/
+
+	void TuiFullFontDialogWindowConstructor::__vwsn_tui_controls_TuiFullFontDialogWindow_Initialize(::tui_controls::TuiFullFontDialogWindow* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		{
+			::vl::__vwsn::This(this->self)->SetIconVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetMinimizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetMaximizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetShowInTaskBar(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(62); __vwsn_temp__.y = static_cast<::vl::vint>(15); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint>(1));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint>(2), static_cast<::vl::vint>(3));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(3));
+		}
+		(this->__vwsn_precompile_2 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetCellPadding(static_cast<::vl::vint>(0));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetRowsAndColumns(static_cast<::vl::vint>(3), static_cast<::vl::vint>(2));
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetRowOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetRowOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetRowOption(static_cast<::vl::vint>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetColumnOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetColumnOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		(this->nameControl = new ::tui_controls::TuiFontNameControl(::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel>(this->ViewModel)));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"nameControl"), ::vl::__vwsn::Box(this->nameControl));
+		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->nameControl)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->nameControl)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
+		}
+		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		(this->sizeControl = new ::tui_controls::TuiFontSizeControl());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"sizeControl"), ::vl::__vwsn::Box(this->sizeControl));
+		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->sizeControl)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->sizeControl)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_5));
+		}
+		(this->__vwsn_precompile_7 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(2));
+		}
+		(this->__vwsn_precompile_8 = new ::vl::presentation::compositions::GuiStackComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetPadding(static_cast<::vl::vint>(1));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Horizontal);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(this->__vwsn_precompile_9 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->checkBold = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkBold"), ::vl::__vwsn::Box(this->checkBold));
+		}
+		{
+			::vl::__vwsn::This(this->checkBold)->SetAlt(::vl::WString::Unmanaged(L"B"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkBold)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_9));
+		}
+		(this->__vwsn_precompile_10 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->checkItalic = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkItalic"), ::vl::__vwsn::Box(this->checkItalic));
+		}
+		{
+			::vl::__vwsn::This(this->checkItalic)->SetAlt(::vl::WString::Unmanaged(L"I"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkItalic)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_10));
+		}
+		(this->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->checkUnderline = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkUnderline"), ::vl::__vwsn::Box(this->checkUnderline));
+		}
+		{
+			::vl::__vwsn::This(this->checkUnderline)->SetAlt(::vl::WString::Unmanaged(L"U"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkUnderline)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_11));
+		}
+		(this->__vwsn_precompile_12 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->checkStrikeline = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkStrikeline"), ::vl::__vwsn::Box(this->checkStrikeline));
+		}
+		{
+			::vl::__vwsn::This(this->checkStrikeline)->SetAlt(::vl::WString::Unmanaged(L"T"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkStrikeline)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_12));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_8));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_7));
+		}
+		(this->__vwsn_precompile_13 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetSite(static_cast<::vl::vint>(2), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(2));
+		}
+		{
+			(this->__vwsn_precompile_14 = new ::vl::presentation::controls::GuiControl(::vl::presentation::theme::ThemeName::GroupBox));
+		}
+		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->__vwsn_precompile_14)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			(this->__vwsn_precompile_15 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		(this->__vwsn_precompile_16 = ::vl::__vwsn::This(this->__vwsn_precompile_15)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetText(::vl::WString::Unmanaged(L"ABCxyz 你好"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->__vwsn_precompile_15));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_14)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_13));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_2));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		(this->__vwsn_precompile_18 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetAlt(::vl::WString::Unmanaged(L"K"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetText(::vl::WString::Unmanaged(L"Pick a Color"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_19)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_18));
+		}
+		(this->__vwsn_precompile_20 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_21 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+		}
+		(this->__vwsn_precompile_22 = ::vl::__vwsn::This(this->__vwsn_precompile_21)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_22)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_21)->SetAlt(::vl::WString::Unmanaged(L"O"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_20)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_21)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_20));
+		}
+		(this->__vwsn_precompile_23 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_23)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(2), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_24 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+		}
+		(this->__vwsn_precompile_25 = ::vl::__vwsn::This(this->__vwsn_precompile_24)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_25)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_24)->SetAlt(::vl::WString::Unmanaged(L"C"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_23)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_24)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_23));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf54_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf55_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf56_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf57_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf58_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc41_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf59_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf60_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf61_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_19)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf62_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf63_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_21)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf64_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf65_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_24)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf66_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf67_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	TuiFullFontDialogWindowConstructor::TuiFullFontDialogWindowConstructor()
+		: self(static_cast<::tui_controls::TuiFullFontDialogWindow*>(nullptr))
+		, ViewModel(::vl::Ptr<::vl::presentation::IFullFontDialogViewModel>())
+		, nameControl(static_cast<::tui_controls::TuiFontNameControl*>(nullptr))
+		, sizeControl(static_cast<::tui_controls::TuiFontSizeControl*>(nullptr))
+		, checkBold(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, checkItalic(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, checkUnderline(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, checkStrikeline(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_8(static_cast<::vl::presentation::compositions::GuiStackComposition*>(nullptr))
+		, __vwsn_precompile_9(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_10(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_11(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_12(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_13(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_14(static_cast<::vl::presentation::controls::GuiControl*>(nullptr))
+		, __vwsn_precompile_15(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_16(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_17(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_18(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_19(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_20(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_21(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_22(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_23(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_24(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_25(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiFullFontDialogWindow)
+***********************************************************************/
+
+	::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> TuiFullFontDialogWindow::GetStrings()
+	{
+		return this->__vwsn_prop_Strings;
+	}
+	void TuiFullFontDialogWindow::SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_Strings = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->StringsChanged)();
+		}
+	}
+
+	::vl::Ptr<::vl::presentation::IFullFontDialogViewModel> TuiFullFontDialogWindow::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	TuiFullFontDialogWindow::TuiFullFontDialogWindow(::vl::Ptr<::vl::presentation::IFullFontDialogViewModel> __vwsn_ctor_parameter_ViewModel)
+		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
+		, __vwsn_prop_Strings(::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
+		, __vwsn_parameter_ViewModel(::vl::Ptr<::vl::presentation::IFullFontDialogViewModel>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"tui_controls::TuiFullFontDialogWindow"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_tui_controls_TuiFullFontDialogWindow_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void TuiFullFontDialogWindow::__vwsn_instance_ctor_()
+	{
+		::vl::__vwsn::This(this->nameControl)->InitValue(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFont().fontFamily);
+		::vl::__vwsn::This(this->sizeControl)->InitValue(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFont().size);
+		::vl::__vwsn::This(this->checkBold)->SetSelected(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFont().bold);
+		::vl::__vwsn::This(this->checkItalic)->SetSelected(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFont().italic);
+		::vl::__vwsn::This(this->checkUnderline)->SetSelected(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFont().underline);
+		::vl::__vwsn::This(this->checkStrikeline)->SetSelected(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFont().strikeline);
+	}
+
+	TuiFullFontDialogWindow::~TuiFullFontDialogWindow()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControlHost*>(this));
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiMessageBoxButtonTemplateConstructor)
+***********************************************************************/
+
+	void TuiMessageBoxButtonTemplateConstructor::__vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize(::tui_controls::TuiMessageBoxButtonTemplate* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->Action = ::vl::__vwsn::This(__vwsn_this_)->GetAction());
+		{
+			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			(this->buttonControl = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonControl"), ::vl::__vwsn::Box(this->buttonControl));
+		}
+		(this->__vwsn_precompile_0 = ::vl::__vwsn::This(this->buttonControl)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonControl)->GetBoundsComposition()));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf75_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			::vl::__vwsn::This(this->buttonControl)->SetAlt(::vl::__vwsn::This(this->self)->GetButtonAlt(::vl::__vwsn::This(this->Action.Obj())->GetButton()));
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf76_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->buttonControl)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf77_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	TuiMessageBoxButtonTemplateConstructor::TuiMessageBoxButtonTemplateConstructor()
+		: Action(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction>())
+		, self(static_cast<::tui_controls::TuiMessageBoxButtonTemplate*>(nullptr))
+		, buttonControl(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiMessageBoxButtonTemplate)
+***********************************************************************/
+
+	::vl::presentation::controls::GuiButton* TuiMessageBoxButtonTemplate::GetButtonControl()
+	{
+		return this->__vwsn_prop_ButtonControl;
+	}
+	void TuiMessageBoxButtonTemplate::SetButtonControl(::vl::presentation::controls::GuiButton* __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_ButtonControl != __vwsn_value_))
+		{
+			(this->__vwsn_prop_ButtonControl = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->ButtonControlChanged)();
+		}
+	}
+
+	::vl::WString TuiMessageBoxButtonTemplate::GetButtonText(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button, ::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> strings)
+	{
+		{
+			auto __vwsn_switch_0 = button;
+			if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectOK))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->OK();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectCancel))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->Cancel();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectYes))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->Yes();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectNo))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->No();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectRetry))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->Retry();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectAbort))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->Abort();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectIgnore))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->Ignore();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectTryAgain))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->TryAgain();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectContinue))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->Continue();
+			}
+			else
+			{
+				return ::vl::WString::Unmanaged(L"");
+			}
+		}
+	}
+
+	::vl::WString TuiMessageBoxButtonTemplate::GetButtonAlt(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button)
+	{
+		{
+			auto __vwsn_switch_1 = button;
+			if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectOK))
+			{
+				return ::vl::WString::Unmanaged(L"O");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectCancel))
+			{
+				return ::vl::WString::Unmanaged(L"C");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectYes))
+			{
+				return ::vl::WString::Unmanaged(L"Y");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectNo))
+			{
+				return ::vl::WString::Unmanaged(L"N");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectRetry))
+			{
+				return ::vl::WString::Unmanaged(L"R");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectAbort))
+			{
+				return ::vl::WString::Unmanaged(L"A");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectIgnore))
+			{
+				return ::vl::WString::Unmanaged(L"I");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectTryAgain))
+			{
+				return ::vl::WString::Unmanaged(L"T");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectContinue))
+			{
+				return ::vl::WString::Unmanaged(L"K");
+			}
+			else
+			{
+				return ::vl::WString::Unmanaged(L"");
+			}
+		}
+	}
+
+	::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> TuiMessageBoxButtonTemplate::GetStrings()
+	{
+		return this->__vwsn_prop_Strings;
+	}
+	void TuiMessageBoxButtonTemplate::SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_Strings = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->StringsChanged)();
+		}
+	}
+
+	::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> TuiMessageBoxButtonTemplate::GetAction()
+	{
+		return this->__vwsn_parameter_Action;
+	}
+
+	TuiMessageBoxButtonTemplate::TuiMessageBoxButtonTemplate(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_ctor_parameter_Action)
+		: __vwsn_prop_ButtonControl(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_prop_Strings(::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
+		, __vwsn_parameter_Action(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction>())
+	{
+		(this->__vwsn_parameter_Action = __vwsn_ctor_parameter_Action);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"tui_controls::TuiMessageBoxButtonTemplate"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void TuiMessageBoxButtonTemplate::__vwsn_instance_ctor_()
+	{
+		::vl::__vwsn::This(this->self)->SetButtonControl(::vl::__vwsn::This(this->self)->buttonControl);
+	}
+
+	TuiMessageBoxButtonTemplate::~TuiMessageBoxButtonTemplate()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiMessageBoxWindowConstructor)
+***********************************************************************/
+
+	void TuiMessageBoxWindowConstructor::__vwsn_tui_controls_TuiMessageBoxWindow_Initialize(::tui_controls::TuiMessageBoxWindow* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		{
+			::vl::__vwsn::This(this->self)->SetIconVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetSizeBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetMinimizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetMaximizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetShowInTaskBar(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(56); __vwsn_temp__.y = static_cast<::vl::vint>(9); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint>(1));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint>(2), static_cast<::vl::vint>(2));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_4 = new ::vl::presentation::controls::GuiScrollContainer(::vl::presentation::theme::ThemeName::ScrollView));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetVerticalAlwaysVisible(false);
+		}
+		(this->__vwsn_precompile_7 = ::vl::__vwsn::This(this->__vwsn_precompile_4)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			(this->__vwsn_precompile_5 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->__vwsn_precompile_5)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->__vwsn_precompile_5));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_4)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
+		}
+		(this->__vwsn_precompile_8 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(2));
+		}
+		(this->buttonStack = new ::vl::presentation::compositions::GuiRepeatStackComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonStack"), ::vl::__vwsn::Box(this->buttonStack));
+		{
+			::vl::__vwsn::This(this->buttonStack)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf78_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxWindowConstructor___vwsn_tui_controls_TuiMessageBoxWindow_Initialize_(this)));
+		}
+		{
+			::vl::__vwsn::This(this->buttonStack)->SetPadding(static_cast<::vl::vint>(1));
+		}
+		{
+			::vl::__vwsn::This(this->buttonStack)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Horizontal);
+		}
+		{
+			::vl::__vwsn::This(this->buttonStack)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->buttonStack)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->buttonStack));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_8));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetText(::vl::__vwsn::This(this->self)->GetIconText(::vl::__vwsn::This(this->ViewModel.Obj())->GetIcon()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetText(::vl::__vwsn::This(this->ViewModel.Obj())->GetText());
+		}
+		{
+			::vl::__vwsn::This(this->buttonStack)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->ViewModel.Obj())->GetButtons())));
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetText(::vl::__vwsn::This(this->ViewModel.Obj())->GetTitle());
+		}
+	}
+
+	TuiMessageBoxWindowConstructor::TuiMessageBoxWindowConstructor()
+		: self(static_cast<::tui_controls::TuiMessageBoxWindow*>(nullptr))
+		, ViewModel(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel>())
+		, buttonStack(static_cast<::vl::presentation::compositions::GuiRepeatStackComposition*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::controls::GuiScrollContainer*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_8(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiMessageBoxWindow)
+***********************************************************************/
+
+	::vl::WString TuiMessageBoxWindow::GetIconText(::vl::presentation::INativeDialogService::MessageBoxIcons icon)
+	{
+		{
+			auto __vwsn_switch_2 = icon;
+			if ((__vwsn_switch_2 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconError))
+			{
+				return ::vl::WString::Unmanaged(L"[!]");
+			}
+			else if ((__vwsn_switch_2 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconQuestion))
+			{
+				return ::vl::WString::Unmanaged(L"[?]");
+			}
+			else if ((__vwsn_switch_2 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconWarning))
+			{
+				return ::vl::WString::Unmanaged(L"[!]");
+			}
+			else if ((__vwsn_switch_2 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconInformation))
+			{
+				return ::vl::WString::Unmanaged(L"[i]");
+			}
+			else
+			{
+				return ::vl::WString::Unmanaged(L"");
+			}
+		}
+	}
+
+	::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> TuiMessageBoxWindow::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	TuiMessageBoxWindow::TuiMessageBoxWindow(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_ctor_parameter_ViewModel)
+		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
+		, __vwsn_parameter_ViewModel(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"tui_controls::TuiMessageBoxWindow"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_tui_controls_TuiMessageBoxWindow_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void TuiMessageBoxWindow::__vwsn_instance_ctor_()
+	{
+		auto defaultButton = ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->GetViewModel().Obj())->GetButtons()).Obj())->IndexOf(::vl::__vwsn::Box(::vl::__vwsn::This(this->GetViewModel().Obj())->GetDefaultButton()));
+		auto buttonControl = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::tui_controls::TuiMessageBoxButtonTemplate>(::vl::__vwsn::This(::vl::__vwsn::This(this->buttonStack)->GetStackItems()[defaultButton])->Children()[static_cast<::vl::vint>(0)])))->GetButtonControl();
+		::vl::__vwsn::This(buttonControl)->SetFocused();
+	}
+
+	TuiMessageBoxWindow::~TuiMessageBoxWindow()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControlHost*>(this));
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiSimpleFontDialogWindowConstructor)
+***********************************************************************/
+
+	void TuiSimpleFontDialogWindowConstructor::__vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize(::tui_controls::TuiSimpleFontDialogWindow* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		{
+			::vl::__vwsn::This(this->self)->SetIconVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetMinimizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetMaximizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetShowInTaskBar(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(46); __vwsn_temp__.y = static_cast<::vl::vint>(12); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint>(1));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint>(2), static_cast<::vl::vint>(3));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(3));
+		}
+		(this->__vwsn_precompile_2 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetCellPadding(static_cast<::vl::vint>(0));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetRowsAndColumns(static_cast<::vl::vint>(3), static_cast<::vl::vint>(2));
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetRowOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetRowOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetRowOption(static_cast<::vl::vint>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetColumnOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetColumnOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		(this->nameControl = new ::tui_controls::TuiFontNameControl(::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel>(this->ViewModel)));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"nameControl"), ::vl::__vwsn::Box(this->nameControl));
+		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->nameControl)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->nameControl)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
+		}
+		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		(this->sizeControl = new ::tui_controls::TuiFontSizeControl());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"sizeControl"), ::vl::__vwsn::Box(this->sizeControl));
+		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->sizeControl)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->sizeControl)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_5));
+		}
+		(this->__vwsn_precompile_7 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetSite(static_cast<::vl::vint>(2), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(2));
+		}
+		{
+			(this->__vwsn_precompile_8 = new ::vl::presentation::controls::GuiControl(::vl::presentation::theme::ThemeName::GroupBox));
+		}
+		(this->__vwsn_precompile_11 = ::vl::__vwsn::This(this->__vwsn_precompile_8)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			(this->__vwsn_precompile_9 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		(this->__vwsn_precompile_10 = ::vl::__vwsn::This(this->__vwsn_precompile_9)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetText(::vl::WString::Unmanaged(L"ABCxyz 你好"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->__vwsn_precompile_9));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_8)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_7));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_2));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		(this->__vwsn_precompile_12 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_13 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+		}
+		(this->__vwsn_precompile_14 = ::vl::__vwsn::This(this->__vwsn_precompile_13)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetAlt(::vl::WString::Unmanaged(L"O"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_13)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_12));
+		}
+		(this->__vwsn_precompile_15 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(2), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_16 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+		}
+		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->__vwsn_precompile_16)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetAlt(::vl::WString::Unmanaged(L"C"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_16)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_15));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf68_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf69_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf70_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_13)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf71_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf72_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_16)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf73_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf74_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	TuiSimpleFontDialogWindowConstructor::TuiSimpleFontDialogWindowConstructor()
+		: self(static_cast<::tui_controls::TuiSimpleFontDialogWindow*>(nullptr))
+		, ViewModel(::vl::Ptr<::vl::presentation::ISimpleFontDialogViewModel>())
+		, nameControl(static_cast<::tui_controls::TuiFontNameControl*>(nullptr))
+		, sizeControl(static_cast<::tui_controls::TuiFontSizeControl*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_8(static_cast<::vl::presentation::controls::GuiControl*>(nullptr))
+		, __vwsn_precompile_9(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_10(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_11(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_12(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_13(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_14(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_15(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_16(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_17(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::tui_controls::TuiSimpleFontDialogWindow)
+***********************************************************************/
+
+	::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> TuiSimpleFontDialogWindow::GetStrings()
+	{
+		return this->__vwsn_prop_Strings;
+	}
+	void TuiSimpleFontDialogWindow::SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_Strings = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->StringsChanged)();
+		}
+	}
+
+	::vl::Ptr<::vl::presentation::ISimpleFontDialogViewModel> TuiSimpleFontDialogWindow::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	TuiSimpleFontDialogWindow::TuiSimpleFontDialogWindow(::vl::Ptr<::vl::presentation::ISimpleFontDialogViewModel> __vwsn_ctor_parameter_ViewModel)
+		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
+		, __vwsn_prop_Strings(::tui_controls::TuiDialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
+		, __vwsn_parameter_ViewModel(::vl::Ptr<::vl::presentation::ISimpleFontDialogViewModel>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"tui_controls::TuiSimpleFontDialogWindow"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void TuiSimpleFontDialogWindow::__vwsn_instance_ctor_()
+	{
+		::vl::__vwsn::This(this->nameControl)->InitValue(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFontFamily());
+		::vl::__vwsn::This(this->sizeControl)->InitValue(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFontSize());
+	}
+
+	TuiSimpleFontDialogWindow::~TuiSimpleFontDialogWindow()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControlHost*>(this));
+	}
+
+}
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ
+
+#if defined( _MSC_VER)
+#pragma warning(pop)
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\TUIDIALOGS\SOURCE\TUIFAKEDIALOGSERVICEUIRESOURCE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace user_resource
+		{
+			using namespace collections;
+			using namespace stream;
+			using namespace controls;
+
+			class TuiFakeDialogServiceUIResourceReader
+			{
+			public:
+				static const vint parserBufferLength = 1497; // 1497 bytes before compressing
+				static const vint parserBufferBlock = 1024;
+				static const vint parserBufferRemain = 473;
+				static const vint parserBufferRows = 2;
+				static const char* parserBuffer[2];
+
+				static void ReadToStream(vl::stream::MemoryStream& stream)
+				{
+					DecompressStream(parserBuffer, false, parserBufferRows, parserBufferBlock, parserBufferRemain, stream);
+				}
+			};
+
+			const char* TuiFakeDialogServiceUIResourceReader::parserBuffer[] = {
+				"\x60\x00\x00\x00\x00\x00\x00\x00\x60\x00\x00\x00\x3C\x52\x65\x73\x6F\x75\x72\x63\x65\x4D\x65\x74\x61\x64\x61\x74\x61\x20\x4E\x61\x6D\x65\x3D\x22\x54\x75\x69\x46\x61\x6B\x65\x44\x69\x61\x6C\x6F\x67\x53\x65\x72\x76\x69\x63\x65\x55\x49\x22\x20\x56\x65\x72\x73\x69\x6F\x6E\x3D\x22\x31\x2E\x30\x22\x3E\x3C\x44\x65\x70\x65\x6E\x64\x65\x6E\x63\x69\x65\x73\x2F\x3E\x3C\x2F\x52\x65\x73\x6F\x75\x72\x63\x65\x4D\x65\x74\x61\x64\x61\x74\x61\x3E\x04\x00\x00\x00\x00\x00\x00\x00\x10\x00\x00\x00\x00\x00\x00\x00\x10\x00\x00\x00\x4C\x6F\x63\x61\x6C\x69\x7A\x65\x64\x53\x74\x72\x69\x6E\x67\x73\x08\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00\x49\x6E\x73\x74\x61\x6E\x63\x65\x04\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x54\x65\x78\x74\x0F\x00\x00\x00\x00\x00\x00\x00\x0F\x00\x00\x00\x43\x6C\x61\x73\x73\x4E\x61\x6D\x65\x52\x65\x63\x6F\x72\x64\x00\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x15\x00\x00\x00\x00\x00\x00\x00\x15\x00\x00\x00\x43\x6F\x6C\x6F\x72\x44\x69\x61\x6C\x6F\x67\x43\x6F\x6D\x70\x6F\x6E\x65\x6E\x74\x73\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x14\x00\x00\x00\x00\x00\x00\x00\x14\x00\x00\x00\x46\x69\x6C\x65\x44\x69\x61\x6C\x6F\x67\x43\x6F\x6D\x70\x6F\x6E\x65\x6E\x74\x73\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x14\x00\x00\x00\x00\x00\x00\x00\x14\x00\x00\x00\x46\x6F\x6E\x74\x44\x69\x61\x6C\x6F\x67\x43\x6F\x6D\x70\x6F\x6E\x65\x6E\x74\x73\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0C\x00\x00\x00\x00\x00\x00\x00\x0C\x00\x00\x00\x47\x61\x63\x47\x65\x6E\x43\x6F\x6E\x66\x69\x67\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x43\x70\x70\x00\x00\x00\x00\x00\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x0D\x00\x00\x00\x00\x00\x00\x00\x0D\x00\x00\x00\x43\x70\x70\x43\x6F\x6D\x70\x72\x65\x73\x73\x65\x64\x1A\x00\x00\x00\x00\x00\x00\x00\x1A\x00\x00\x00\x54\x75\x69\x46\x61\x6B\x65\x44\x69\x61\x6C\x6F\x67\x53\x65\x72\x76\x69\x63\x65\x55\x49\x2E\x63\x70\x70\x02\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x4E\x61\x6D\x65\x16\x00\x00\x00\x00\x00\x00\x00\x16\x00\x00\x00\x54\x75\x69\x46\x61\x6B\x65\x44\x69\x61\x6C\x6F\x67\x53\x65\x72\x76\x69\x63\x65\x55\x49\x02\x00\x00\x00\x00\x00\x00\x00\x0D\x00\x00\x00\x00\x00\x00\x00\x0D\x00\x00\x00\x4E\x6F\x72\x6D\x61\x6C\x49\x6E\x63\x6C\x75\x64\x65\x13\x00\x00\x00\x00\x00\x00\x00\x13\x00\x00\x00\x2E\x2E\x2F\x2E\x2E\x2F\x2E\x2E\x2F\x2E\x2E\x2F\x47\x61\x63\x55\x49\x2E\x68\x02\x00\x00\x00\x00\x00\x00\x00\x11\x00\x00\x00\x00\x00\x00\x00\x11\x00\x00\x00\x52\x65\x66\x6C\x65\x63\x74\x69\x6F\x6E\x49\x6E\x63\x6C\x75\x64\x65\x3C\x00\x00\x00\x00\x00\x00\x00\x3C\x00\x00\x00\x2E\x2E\x2F\x2E\x2E\x2F\x2E\x2E\x2F\x2E\x2E\x2F\x52\x65\x66\x6C\x65\x63\x74\x69\x6F\x6E\x2F\x54\x79\x70\x65\x44\x65\x73\x63\x72\x69\x70\x74\x6F\x72\x73\x2F\x47\x75\x69\x52\x65\x66\x6C\x65\x63\x74\x69\x6F\x6E\x50\x6C\x75\x67\x69\x6E\x2E\x68\x02\x00\x00\x00\x00\x00\x00\x00\x0C\x00\x00\x00\x00\x00\x00\x00\x0C\x00\x00\x00\x53\x6F\x75\x72\x63\x65\x46\x6F\x6C\x64\x65\x72\x06\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x53\x6F\x75\x72\x63\x65\x00\x00\x00\x00\x00\x00\x00\x00\x14\x00\x00\x00\x00\x00\x00\x00\x14\x00\x00\x00\x4D\x65\x73\x73\x61\x67\x65\x42\x6F\x78\x43\x6F\x6D\x70\x6F\x6E\x65\x6E\x74\x73\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0B\x00\x00\x00\x00\x00\x00\x00\x0B\x00\x00\x00\x50\x72\x65\x63\x6F\x6D\x70\x69\x6C\x65\x64\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x0F\x00\x00\x00\x00\x00\x00\x00\x0F\x00\x00\x00\x43\x6C\x61\x73\x73\x4E\x61\x6D\x65\x52\x65\x63\x6F\x72\x64\x0B\x00\x00\x00\x00\x00\x00\x00\x26\x00\x00\x00\x00\x00\x00\x00\x26\x00\x00\x00\x74\x75\x69\x5F\x63\x6F\x6E\x74\x72\x6F\x6C\x73\x3A\x3A\x54\x75\x69\x43\x6F\x6C\x6F\x72\x43\x6F\x6D\x70\x6F\x6E\x65\x6E\x74\x43\x6F\x6E\x74\x72\x6F\x6C\x23\x00\x00\x00\x00",
+				"\x00\x00\x00\x23\x00\x00\x00\x74\x75\x69\x5F\x63\x6F\x6E\x74\x72\x6F\x6C\x73\x3A\x3A\x54\x75\x69\x43\x6F\x6C\x6F\x72\x44\x69\x61\x6C\x6F\x67\x43\x6F\x6E\x74\x72\x6F\x6C\x22\x00\x00\x00\x00\x00\x00\x00\x22\x00\x00\x00\x74\x75\x69\x5F\x63\x6F\x6E\x74\x72\x6F\x6C\x73\x3A\x3A\x54\x75\x69\x43\x6F\x6C\x6F\x72\x44\x69\x61\x6C\x6F\x67\x57\x69\x6E\x64\x6F\x77\x21\x00\x00\x00\x00\x00\x00\x00\x21\x00\x00\x00\x74\x75\x69\x5F\x63\x6F\x6E\x74\x72\x6F\x6C\x73\x3A\x3A\x54\x75\x69\x46\x69\x6C\x65\x44\x69\x61\x6C\x6F\x67\x57\x69\x6E\x64\x6F\x77\x22\x00\x00\x00\x00\x00\x00\x00\x22\x00\x00\x00\x74\x75\x69\x5F\x63\x6F\x6E\x74\x72\x6F\x6C\x73\x3A\x3A\x54\x75\x69\x46\x69\x6C\x65\x50\x69\x63\x6B\x65\x72\x43\x6F\x6E\x74\x72\x6F\x6C\x20\x00\x00\x00\x00\x00\x00\x00\x20\x00\x00\x00\x74\x75\x69\x5F\x63\x6F\x6E\x74\x72\x6F\x6C\x73\x3A\x3A\x54\x75\x69\x46\x6F\x6E\x74\x4E\x61\x6D\x65\x43\x6F\x6E\x74\x72\x6F\x6C\x20\x00\x00\x00\x00\x00\x00\x00\x20\x00\x00\x00\x74\x75\x69\x5F\x63\x6F\x6E\x74\x72\x6F\x6C\x73\x3A\x3A\x54\x75\x69\x46\x6F\x6E\x74\x53\x69\x7A\x65\x43\x6F\x6E\x74\x72\x6F\x6C\x25\x00\x00\x00\x00\x00\x00\x00\x25\x00\x00\x00\x74\x75\x69\x5F\x63\x6F\x6E\x74\x72\x6F\x6C\x73\x3A\x3A\x54\x75\x69\x46\x75\x6C\x6C\x46\x6F\x6E\x74\x44\x69\x61\x6C\x6F\x67\x57\x69\x6E\x64\x6F\x77\x27\x00\x00\x00\x00\x00\x00\x00\x27\x00\x00\x00\x74\x75\x69\x5F\x63\x6F\x6E\x74\x72\x6F\x6C\x73\x3A\x3A\x54\x75\x69\x53\x69\x6D\x70\x6C\x65\x46\x6F\x6E\x74\x44\x69\x61\x6C\x6F\x67\x57\x69\x6E\x64\x6F\x77\x29\x00\x00\x00\x00\x00\x00\x00\x29\x00\x00\x00\x74\x75\x69\x5F\x63\x6F\x6E\x74\x72\x6F\x6C\x73\x3A\x3A\x54\x75\x69\x4D\x65\x73\x73\x61\x67\x65\x42\x6F\x78\x42\x75\x74\x74\x6F\x6E\x54\x65\x6D\x70\x6C\x61\x74\x65\x21\x00\x00\x00\x00\x00\x00\x00\x21\x00\x00\x00\x74\x75\x69\x5F\x63\x6F\x6E\x74\x72\x6F\x6C\x73\x3A\x3A\x54\x75\x69\x4D\x65\x73\x73\x61\x67\x65\x42\x6F\x78\x57\x69\x6E\x64\x6F\x77\x00\x00\x00\x00\x00\x00\x00\x00",
+				};
+
+			class TuiFakeDialogServiceUIResourceLoaderPlugin : public Object, public IGuiPlugin
+			{
+			public:
+
+				GUI_PLUGIN_NAME(GacGen_TuiFakeDialogServiceUIResourceLoader)
+				{
+					GUI_PLUGIN_DEPEND(GacUI_Res_Resource);
+					GUI_PLUGIN_DEPEND(GacUI_Res_TypeResolvers);
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+					GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
+					GUI_PLUGIN_DEPEND(GacUI_Compiler_WorkflowTypeResolvers);
+#endif
+				}
+
+				void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
+				{
+					if (controllerRelatedPlugins)
+					{
+						List<GuiResourceError> errors;
+						MemoryStream resourceStream;
+						TuiFakeDialogServiceUIResourceReader::ReadToStream(resourceStream);
+						resourceStream.SeekFromBegin(0);
+						GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
+					}
+				}
+
+				void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
+				{
+				}
+			};
+			GUI_REGISTER_PLUGIN(TuiFakeDialogServiceUIResourceLoaderPlugin)
+		}
+	}
+}
+
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\TUIDIALOGS\TUIFAKEDIALOGSERVICE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace controls;
+
+/***********************************************************************
+FakeTuiDialogService
+***********************************************************************/
+
+		controls::GuiWindow* FakeTuiDialogService::CreateMessageBoxDialog(Ptr<IMessageBoxDialogViewModel> viewModel)
+		{
+			return new tui_controls::TuiMessageBoxWindow(viewModel);
+		}
+
+		controls::GuiWindow* FakeTuiDialogService::CreateColorDialog(Ptr<IColorDialogViewModel> viewModel)
+		{
+			return new tui_controls::TuiColorDialogWindow(viewModel);
+		}
+
+		controls::GuiWindow* FakeTuiDialogService::CreateSimpleFontDialog(Ptr<ISimpleFontDialogViewModel> viewModel)
+		{
+			return new tui_controls::TuiSimpleFontDialogWindow(viewModel);
+		}
+
+		controls::GuiWindow* FakeTuiDialogService::CreateFullFontDialog(Ptr<IFullFontDialogViewModel> viewModel)
+		{
+			return new tui_controls::TuiFullFontDialogWindow(viewModel);
+		}
+
+		controls::GuiWindow* FakeTuiDialogService::CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel)
+		{
+			auto dialog = new tui_controls::TuiFileDialogWindow(viewModel);
+			dialog->MakeOpenFileDialog();
+			return dialog;
+		}
+
+		controls::GuiWindow* FakeTuiDialogService::CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel)
+		{
+			auto dialog = new tui_controls::TuiFileDialogWindow(viewModel);
+			dialog->MakeSaveFileDialog();
+			return dialog;
+		}
+
+		FakeTuiDialogService::FakeTuiDialogService()
+		{
+		}
+
+		FakeTuiDialogService::~FakeTuiDialogService()
+		{
+		}
 	}
 }
 

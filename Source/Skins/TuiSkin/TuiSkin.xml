@@ -1,0 +1,71 @@
+<Folder>
+  <Script name="Palette">
+    <Workflow><![CDATA[
+    module TuiPalette;
+    using presentation::*;
+    namespace tuiskin
+    {
+      struct ColorPackage
+      {
+        ControlBackground : Color;
+        ControlText : Color;
+        ControlBorder : Color;
+        ControlBorderDisabled : Color;
+        ControlBorderFocused : Color;
+        LabelText : Color;
+        MenuBackground : Color;
+        MenuText : Color;
+        MenuTextDisabled : Color;
+        MenuBackgroundHighlighted : Color;
+        MenuTextHighlighted : Color;
+        ItemBackground : Color;
+        ItemText : Color;
+        ItemTextDisabled : Color;
+        ItemBackgroundHighlighted : Color;
+        ItemTextHighlighted : Color;
+        ItemBackgroundSelected : Color;
+        ItemTextSelected : Color;
+        ButtonBackground : Color;
+        ButtonText : Color;
+        ButtonIcon : Color;
+        ButtonTextDisabled : Color;
+        ButtonBackgroundHighlighted : Color;
+        ButtonTextHighlighted : Color;
+        ButtonBackgroundPressed : Color;
+        ButtonTextPressed : Color;
+      }
+      var tuiColors : ColorPackage = {};
+      func InstallColorPackage(colors : ColorPackage) : void
+      {
+        tuiColors = colors;
+      }
+
+      func CreateBaselineDocument() : DocumentModel^
+      {
+        var document = new DocumentModel^();
+        var normal = new DocumentStyle^();
+        normal.styles = new DocumentStyleProperties^();
+        normal.styles.color = tuiColors.ControlText;
+        normal.styles.backgroundColor = tuiColors.ControlBackground;
+        document.styles["#Default-Override"] = normal;
+        var selection = new DocumentStyle^();
+        selection.styles = new DocumentStyleProperties^();
+        selection.styles.color = tuiColors.ItemTextSelected;
+        selection.styles.backgroundColor = tuiColors.ItemBackgroundSelected;
+        document.styles["#Selection-Override"] = selection;
+        return document;
+      }
+    }
+  ]]></Workflow>
+  </Script>
+  <Instance name="TuiSkinThemeResource" content="File">Index.xml</Instance>
+  <InstanceStyle name="Style" content="File">Style.xml</InstanceStyle>
+  <Folder name="Window" content="Link">Template_Window.xml</Folder>
+  <Folder name="Button" content="Link">Template_Button.xml</Folder>
+  <Folder name="Tab" content="Link">Template_Tab.xml</Folder>
+  <Folder name="Scroll" content="Link">Template_Scroll.xml</Folder>
+  <Folder name="List" content="Link">Template_List.xml</Folder>
+  <Folder name="Document" content="Link">Template_Document.xml</Folder>
+  <Folder name="Misc" content="Link">Template_Misc.xml</Folder>
+  <Folder name="Toolstrip" content="Link">Template_Toolstrip.xml</Folder>
+</Folder>

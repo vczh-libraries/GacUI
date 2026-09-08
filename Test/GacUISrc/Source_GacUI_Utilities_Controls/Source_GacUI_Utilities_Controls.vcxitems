@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -15,20 +15,31 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\GuiFakeDialogService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\TuiFakeDialogService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUI.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUI.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIResource.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUIResource.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\GuiUtilitiesRegistration.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService_Controls.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\GuiFakeDialogService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\TuiFakeDialogService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIIncludes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUIIncludes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService_Controls.h" />
   </ItemGroup>
 </Project>

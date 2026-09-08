@@ -1,0 +1,40 @@
+<Folder>
+  <Instance name="TabHeaderButtonTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiTabHeaderButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="itemBackground" />
+        <Bounds AlignmentToParent="left:1 top:0 right:1 bottom:0">
+          <SolidLabel ref.Style="itemText" Text-bind="self.Text" Font-bind="{fontFamily:&quot;TuiFont&quot; size:1 bold:((cast (TabPage*) self.Context).OwnerTab.Focused ?? false) underline:(self.State != ButtonState::Normal)}" />
+        </Bounds>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="TabHeaderTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiTabHeaderTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ref.Parameter Name="CurrentTabPage" Class="presentation::controls::GuiTabPage" />
+      <ref.Members><![CDATA[prop Commands : ITabCommandExecutor* = null {}]]></ref.Members>
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CheckBox ControlTemplate="tuiskin::TuiTabHeaderButtonTemplate" AutoFocus="false" AutoSelection="false" Context-ref="CurrentTabPage" Text-bind="CurrentTabPage.Text" Alt-bind="CurrentTabPage.Alt" Selected-bind="CurrentTabPage.OwnerTab.SelectedPage == CurrentTabPage">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          <ev.Clicked-eval><![CDATA[{ self.Commands.ShowTab(CurrentTabPage.OwnerTab.Pages.IndexOf(CurrentTabPage), true); }]]></ev.Clicked-eval>
+        </CheckBox>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="TabTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiTabTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <TabTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container" TabOrder="LeftToRight">
+        <SolidBackground ref.Style="background" />
+        <Bounds AlignmentToParent-bind="{left:0 top:(header.CachedBounds.y2-header.CachedBounds.y1-1) right:0 bottom:0}">
+          <elements:TuiBorder Color-bind="self.VisuallyEnabled ? tuiskin::tuiColors.ItemBackgroundSelected : tuiskin::tuiColors.ItemBackground" />
+          <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1" />
+        </Bounds>
+        <RepeatFlow ref.Name="header" AlignmentToParent="left:2 top:0 right:2 bottom:-1" ItemTemplate="tuiskin::TuiTabHeaderTemplate" ItemSource-bind="self.TabPages">
+          <ev.ItemInserted-eval><![CDATA[{
+            (cast (tuiskin::TuiTabHeaderTemplate*) header.FlowItems[arguments.itemIndex].Children[0]).Commands = self.Commands;
+          }]]></ev.ItemInserted-eval>
+        </RepeatFlow>
+      </TabTemplate>
+    </Instance>
+  </Instance>
+</Folder>

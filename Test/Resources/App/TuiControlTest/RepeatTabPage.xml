@@ -1,0 +1,105 @@
+<Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiRepeatTabPage" xmlns:demo="tuidemo::*">
+  <TabPage ref.Name="self" Text="Repeat">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="1" MinSizeLimitation="LimitToElementAndChildren">
+      <att.Rows>
+        <_>composeType:Percentage percentage:1.0</_>
+        <_>composeType:Absolute absolute:1</_>
+        <_>composeType:Absolute absolute:1</_>
+        <_>composeType:Absolute absolute:1</_>
+      </att.Rows>
+      <att.Columns>
+        <_>composeType:Percentage percentage:1.0</_>
+        <_>composeType:Absolute absolute:1</_>
+        <_>composeType:Absolute absolute:1</_>
+      </att.Columns>
+      <Cell Site="row:0 column:0">
+        <Tab>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          <att.Pages>
+            <demo:TuiEnglishNumbersControllerTabPage ref.Name="repeatStackTabPage" Text="RepeatStack" Alt="S">
+              <att.ContentComposition-set>
+                <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  <RepeatStack AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                    <att.Direction>Vertical</att.Direction>
+                    <att.Padding>0</att.Padding>
+                    <att.ExtraMargin>left:1 top:0 right:1 bottom:0</att.ExtraMargin>
+                    <att.ItemTemplate>tuidemo::TuiRepeatItemTemplate</att.ItemTemplate>
+                    <att.ItemSource-eval>repeatStackTabPage.ItemsToBind</att.ItemSource-eval>
+                  </RepeatStack>
+                </ScrollContainer>
+              </att.ContentComposition-set>
+            </demo:TuiEnglishNumbersControllerTabPage>
+            <demo:TuiEnglishNumbersControllerTabPage ref.Name="repeatFlowTabPage" Text="RepeatFlow" Alt="F">
+              <att.ContentComposition-set>
+                <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  <RepeatFlow AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                    <att.RowPadding>0</att.RowPadding>
+                    <att.ColumnPadding>1</att.ColumnPadding>
+                    <att.ExtraMargin>left:1 top:0 right:1 bottom:0</att.ExtraMargin>
+                    <att.ItemTemplate>tuidemo::TuiRepeatItemTemplate</att.ItemTemplate>
+                    <att.ItemSource-eval>repeatFlowTabPage.ItemsToBind</att.ItemSource-eval>
+                  </RepeatFlow>
+                </ScrollContainer>
+              </att.ContentComposition-set>
+            </demo:TuiEnglishNumbersControllerTabPage>
+            <demo:TuiEnglishNumbersControllerTabPage ref.Name="sharedSizeFlowTabPage" Text="SharedSize (RepeatFlow)" Alt="F">
+              <att.ContentComposition-set>
+                <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  <SharedSizeRoot AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                    <RepeatFlow AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                      <att.RowPadding>0</att.RowPadding>
+                      <att.ColumnPadding>1</att.ColumnPadding>
+                      <att.ExtraMargin>left:1 top:0 right:1 bottom:0</att.ExtraMargin>
+                      <att.ItemTemplate>tuidemo::TuiSharedSizeItemTemplate</att.ItemTemplate>
+                      <att.ItemSource-eval>sharedSizeFlowTabPage.ItemsToBind</att.ItemSource-eval>
+                    </RepeatFlow>
+                  </SharedSizeRoot>
+                </ScrollContainer>
+              </att.ContentComposition-set>
+            </demo:TuiEnglishNumbersControllerTabPage>
+            <demo:TuiEnglishNumbersControllerTabPage ref.Name="sharedSizeListTabPage" Text="SharedSize (TextList)" Alt="L">
+              <att.ContentComposition-set>
+                <SharedSizeRoot AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="tuidemo::TuiMyTextItem^">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                    <att.ItemTemplate>tuidemo::TuiSharedSizeTextItemTemplate</att.ItemTemplate>
+                    <att.TextProperty>Name</att.TextProperty>
+                    <att.ItemSource-eval>sharedSizeListTabPage.ItemsToBind</att.ItemSource-eval>
+                  </BindableTextList>
+                </SharedSizeRoot>
+              </att.ContentComposition-set>
+            </demo:TuiEnglishNumbersControllerTabPage>
+          </att.Pages>
+        </Tab>
+      </Cell>
+      <Cell Site="row:1 column:0">
+        <HScroll Alt="H" TotalSize="100" PageSize="10">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+        </HScroll>
+      </Cell>
+      <Cell Site="row:2 column:0">
+        <HTracker ref.Name="hTracker" Alt="H" TotalSize="10">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+        </HTracker>
+      </Cell>
+      <Cell Site="row:3 column:0">
+        <ProgressBar TotalSize="10" Position-bind="hTracker.Position">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+        </ProgressBar>
+      </Cell>
+      <Cell Site="row:0 column:1">
+        <VScroll Alt="V" TotalSize="50" PageSize="10">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+        </VScroll>
+      </Cell>
+      <Cell Site="row:0 column:2">
+        <VTracker Alt="V" TotalSize="5">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+        </VTracker>
+      </Cell>
+    </Table>
+  </TabPage>
+</Instance>

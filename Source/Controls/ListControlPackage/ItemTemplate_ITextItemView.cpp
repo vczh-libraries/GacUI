@@ -1,4 +1,5 @@
 #include "ItemTemplate_ITextItemView.h"
+#include "../../PlatformProviders/TUI/TuiApplication.h"
 #include "ItemProvider_ITextItemView.h"
 #include "../GuiButtonControls.h"
 #include "../../GraphicsComposition/GuiGraphicsTableComposition.h"
@@ -63,7 +64,7 @@ DefaultTextListItemTemplate
 		else
 		{
 			AddChild(textComposition);
-			textComposition->SetAlignmentToParent(Margin(5, 2, 0, 2));
+			textComposition->SetAlignmentToParent(GetTuiApplication() ? Margin(1, 0, 0, 0) : Margin(5, 2, 0, 2));
 		}
 
 		FontChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnFontChanged);

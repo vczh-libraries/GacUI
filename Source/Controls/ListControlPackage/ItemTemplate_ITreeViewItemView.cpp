@@ -1,4 +1,5 @@
 #include "ItemTemplate_ITreeViewItemView.h"
+#include "../../PlatformProviders/TUI/TuiApplication.h"
 #include "ItemProvider_ITreeViewItemView.h"
 #include "../GuiButtonControls.h"
 #include "../../GraphicsComposition/GuiGraphicsTableComposition.h"
@@ -29,12 +30,13 @@ DefaultTreeItemTemplate
 		table->SetColumnOption(2, GuiCellOption::MinSizeOption());
 		table->SetColumnOption(3, GuiCellOption::MinSizeOption());
 		table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-		table->SetCellPadding(2);
+		table->SetCellPadding(GetTuiApplication() ? 0 : 2);
+		if (GetTuiApplication()) table->SetRowOption(2, GuiCellOption::AbsoluteOption(0));
 		{
 			GuiCellComposition* cell = new GuiCellComposition;
 			table->AddChild(cell);
 			cell->SetSite(0, 1, 3, 1);
-			cell->SetPreferredMinSize(Size(16, 16));
+			cell->SetPreferredMinSize(GetTuiApplication() ? Size(2, 1) : Size(16, 16));
 
 			expandingButton = new GuiSelectableButton(theme::ThemeName::TreeItemExpander);
 			if (auto controlTemplate = dynamic_cast<templates::GuiTreeViewTemplate*>(listControl->TypedControlTemplateObject(true)))
@@ -55,17 +57,19 @@ DefaultTreeItemTemplate
 			GuiCellComposition* cell = new GuiCellComposition;
 			table->AddChild(cell);
 			cell->SetSite(1, 2, 1, 1);
-			cell->SetPreferredMinSize(Size(16, 16));
-
-			imageElement = GuiImageFrameElement::Create();
-			imageElement->SetStretch(true);
-			cell->SetOwnedElement(Ptr(imageElement));
+			if (!GetTuiApplication())
+			{
+				cell->SetPreferredMinSize(Size(16, 16));
+				imageElement = GuiImageFrameElement::Create();
+				imageElement->SetStretch(true);
+				cell->SetOwnedElement(Ptr(imageElement));
+			}
 		}
 		{
 			GuiCellComposition* cell = new GuiCellComposition;
 			table->AddChild(cell);
 			cell->SetSite(0, 3, 3, 1);
-			cell->SetPreferredMinSize(Size(192, 0));
+			cell->SetPreferredMinSize(GetTuiApplication() ? Size(1, 1) : Size(192, 0));
 
 			textElement = GuiSolidLabelElement::Create();
 			textElement->SetAlignments(Alignment::Left, Alignment::Center);
@@ -121,11 +125,12 @@ DefaultTreeItemTemplate
 
 	void DefaultTreeItemTemplate::OnLevelChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 	{
-		table->SetColumnOption(0, GuiCellOption::AbsoluteOption(GetLevel() * 12));
+		table->SetColumnOption(0, GuiCellOption::AbsoluteOption(GetLevel() * (GetTuiApplication() ? 2 : 12)));
 	}
 
 	void DefaultTreeItemTemplate::OnImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 	{
+		if (!imageElement) return;
 		if (auto imageData = GetImage())
 		{
 			imageElement->SetImage(imageData->GetImage(), imageData->GetFrameIndex());

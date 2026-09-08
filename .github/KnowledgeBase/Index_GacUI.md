@@ -24,6 +24,14 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 
 ### Design Explanation
 
+#### Terminal Platform Provider
+
+- SetupTuiWindowsRenderer starts a hosted application over the VlppOS TUI owner-thread pump.
+- Shared terminal classes implement cell geometry, rendering, paragraphs and input while platform adapters retain OS service plumbing.
+- TuiSkin, fake TUI dialogs and the TuiControlTest showcase have independent resources and generated inventories.
+
+[Design Explanation](./KB_GacUI_Design_TuiPlatformProvider.md)
+
 #### GacGen Resource Compilation and GacBuild Orchestration
 
 - `GacGen` compiles one GacUI XML resource for a selected x86 or x64 target, producing Workflow, C++, resource binaries, optional RPC bindings, and architecture-specific cache artifacts.

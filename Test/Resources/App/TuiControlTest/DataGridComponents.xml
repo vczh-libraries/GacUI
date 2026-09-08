@@ -1,0 +1,233 @@
+<Folder>
+  <Folder name="GenderComponents">
+    <Instance name="GenderDisplayerResource">
+      <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiGenderDisplayer">
+        <ref.Members><![CDATA[
+            prop Gender : TuiMyGender = Male {}
+            prop TextColor : Color = tuiskin::TuiTheme::GetColorPackage().ItemText {}
+          ]]></ref.Members>
+        <CustomControl ref.Name="self">
+          <Label TextColor-bind="self.TextColor" Text-bind="ToString(self.Gender)">
+            <att.BoundsComposition-set AlignmentToParent="left:1 top:0 right:1 bottom:0" />
+          </Label>
+        </CustomControl>
+      </Instance>
+    </Instance>
+    <Instance name="GenderVisualizerResource">
+      <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiGenderVisualizer" xmlns:demo="tuidemo::*">
+        <GridVisualizerTemplate ref.Name="self">
+          <demo:TuiGenderDisplayer TextColor-bind="self.PrimaryTextColor" Font-bind="self.Font" Gender-bind="(cast TuiMyGender self.CellValue) ?? TuiMyGender::Male">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          </demo:TuiGenderDisplayer>
+        </GridVisualizerTemplate>
+      </Instance>
+    </Instance>
+    <Instance name="GenderItemTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiGenderItemTemplate" xmlns:demo="tuidemo::*">
+        <ref.Parameter Name="SelectedGender" Class="tuidemo::TuiMyGender" />
+        <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+          <demo:TuiGenderDisplayer TextColor-bind="self.TextColor" Font-bind="self.Font" Gender-eval="SelectedGender">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          </demo:TuiGenderDisplayer>
+        </TextListItemTemplate>
+      </Instance>
+    </Instance>
+    <Instance name="GenderEditorResource">
+      <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiGenderEditor" xmlns:demo="tuidemo::*">
+        <ref.Members><![CDATA[
+            var items : TuiMyGender[] = 
+            {
+              Male of TuiMyGender
+              Female of TuiMyGender
+            };
+          ]]></ref.Members>
+        <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem" FocusControl-ref="comboBox">
+          <ComboBox ref.Name="comboBox" ItemTemplate="demo:TuiGenderItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+            <att.ListControl>
+              <BindableTextList ItemSource-eval="self.items" ItemTemplate="demo:TuiGenderItemTemplate" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" />
+            </att.ListControl>
+          </ComboBox>
+        </GridEditorTemplate>
+      </Instance>
+    </Instance>
+  </Folder>
+  <Folder name="CategoryComponents">
+    <Instance name="CategoryDisplayerResource">
+      <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiCategoryDisplayer">
+        <ref.Members><![CDATA[
+            prop Category : TuiMyCategory = Black {}
+            prop TextColor : Color = tuiskin::TuiTheme::GetColorPackage().ItemText {}
+          ]]></ref.Members>
+        <CustomControl ref.Name="self">
+          <Table AlignmentToParent="left:1 top:0 right:1 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+            <att.Rows>
+              <_>composeType:MinSize</_>
+            </att.Rows>
+            <att.Columns>
+              <_>composeType:Absolute absolute:1</_>
+              <_>composeType:Percentage percentage:1.0</_>
+            </att.Columns>
+            <Cell Site="row:0 column:0">
+              <SolidBackground Color-bind="ToColor(self.Category)" />
+            </Cell>
+            <Cell Site="row:0 column:1">
+              <Label TextColor-bind="self.TextColor" Text-bind="ToString(self.Category)">
+                <att.BoundsComposition-set AlignmentToParent="left:1 top:0 right:0 bottom:0" />
+              </Label>
+            </Cell>
+          </Table>
+        </CustomControl>
+      </Instance>
+    </Instance>
+    <Instance name="CategoryVisualizerResource">
+      <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiCategoryVisualizer" xmlns:demo="tuidemo::*">
+        <GridVisualizerTemplate ref.Name="self">
+          <demo:TuiCategoryDisplayer TextColor-bind="self.PrimaryTextColor" Category-bind="(cast TuiMyCategory self.CellValue) ?? TuiMyCategory::Black" Font-bind="self.Font">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          </demo:TuiCategoryDisplayer>
+        </GridVisualizerTemplate>
+      </Instance>
+    </Instance>
+    <Instance name="CategoryItemTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiCategoryItemTemplate" xmlns:demo="tuidemo::*">
+        <ref.Parameter Name="SelectedCategory" Class="tuidemo::TuiMyCategory" />
+        <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+          <demo:TuiCategoryDisplayer TextColor-bind="self.TextColor" Category-eval="SelectedCategory" Font-bind="self.Font">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          </demo:TuiCategoryDisplayer>
+        </TextListItemTemplate>
+      </Instance>
+    </Instance>
+    <Instance name="CategoryEditorResource">
+      <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiCategoryEditor" xmlns:demo="tuidemo::*">
+        <ref.Members><![CDATA[
+            var items : TuiMyCategory[] = 
+            {
+              Black of TuiMyCategory
+              Red of TuiMyCategory
+              Lime of TuiMyCategory
+              Blue of TuiMyCategory
+              White of TuiMyCategory
+            };
+          ]]></ref.Members>
+        <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem" FocusControl-ref="comboBox">
+          <ComboBox ref.Name="comboBox" ItemTemplate="demo:TuiCategoryItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+            <att.ListControl>
+              <BindableTextList ItemSource-eval="self.items" ItemTemplate="demo:TuiCategoryItemTemplate" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                <att.BoundsComposition-set PreferredMinSize="x:14" />
+              </BindableTextList>
+            </att.ListControl>
+          </ComboBox>
+        </GridEditorTemplate>
+      </Instance>
+    </Instance>
+  </Folder>
+  <Instance name="TextEditorResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiTextEditor">
+      <GridEditorTemplate ref.Name="self" CellValue-bind="textBox.Text" FocusControl-ref="textBox">
+        <SinglelineTextBox ref.Name="textBox" Text-bind="(cast string self.CellValue) ?? ''">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+        </SinglelineTextBox>
+      </GridEditorTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="DateEditorResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiDateEditor">
+      <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedDate" FocusControl-ref="comboBox">
+        <DateComboBox ref.Name="comboBox" SelectedDate-bind="(cast DateTime self.CellValue) ?? (cast DateTime '2000-01-01 00:00:00.000')">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+        </DateComboBox>
+      </GridEditorTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="DateFilterResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiDateFilter">
+      <ref.Members><![CDATA[
+          @cpp:Private
+          var callback : IDataProcessorCallback* = null;
+          
+          @cpp:Private
+          func UpdateFilter() : void
+          {
+            if (callback is not null)
+            {
+              callback.OnProcessorChanged();
+            }
+          }
+
+          prop Filter : IDataFilter^ = null {const, not observe}
+        ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+          SetFilter(
+            new IDataFilter^
+            {
+              override func SetCallback(value : IDataProcessorCallback*) : void
+              {
+                callback = value;
+              }
+            
+              override func Filter(row : object) : bool
+              {
+                var date = (cast (TuiMyDataItem^) row).Birthday;
+                if (checkFrom.Selected)
+                {
+                  if (Sys::Compare(date, dateFrom.SelectedDate) < 0)
+                  {
+                    return false;
+                  }
+                }
+                if (checkTo.Selected)
+                {
+                  if (Sys::Compare(date, dateTo.SelectedDate) > 0)
+                  {
+                    return false;
+                  }
+                }
+                return true;
+              }
+            }
+          );
+        ]]></ref.Ctor>
+      <CustomControl ref.Name="self">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="0" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <CheckBox ref.Name="checkFrom" Text="From:" ev.SelectedChanged-eval="self.UpdateFilter();" />
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <DateComboBox ref.Name="dateFrom" Enabled-bind="checkFrom.Selected" SelectedDate="1988-01-01 00:00:00.000" ev.SelectedDateChanged-eval="self.UpdateFilter();">
+              <att.BoundsComposition-set PreferredMinSize="x:16" />
+            </DateComboBox>
+          </Cell>
+          <Cell Site="row:1 column:0">
+            <CheckBox ref.Name="checkTo" Text="To:" ev.SelectedChanged-eval="self.UpdateFilter();" />
+          </Cell>
+          <Cell Site="row:1 column:1">
+            <DateComboBox ref.Name="dateTo" Enabled-bind="checkTo.Selected" SelectedDate="2000-01-01 00:00:00.000" ev.SelectedDateChanged-eval="self.UpdateFilter();">
+              <att.BoundsComposition-set PreferredMinSize="x:16" />
+            </DateComboBox>
+          </Cell>
+        </Table>
+      </CustomControl>
+    </Instance>
+  </Instance>
+  <Instance name="TuiCellFocusTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiCellFocusTemplate">
+      <GridVisualizerTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <Bounds AlignmentToParent="left:0 top:0 right:-1 bottom:0" PreferredMinSize="x:1 y:1" Visible-bind="self.Selected">
+          <SolidLabel Text="&gt;" Color-bind="self.PrimaryTextColor" Font="fontFamily:&quot;TuiFont&quot; size:1 bold:true" />
+        </Bounds>
+        <Bounds ref.Name="container" AlignmentToParent="left:1 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" />
+      </GridVisualizerTemplate>
+    </Instance>
+  </Instance>
+</Folder>

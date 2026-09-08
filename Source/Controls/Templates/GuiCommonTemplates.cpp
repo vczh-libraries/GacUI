@@ -1,4 +1,5 @@
 #include "GuiCommonTemplates.h"
+#include "../../PlatformProviders/TUI/TuiApplication.h"
 #include "GuiThemeStyleFactory.h"
 #include "../ListControlPackage/GuiComboControls.h"
 #include "../ListControlPackage/GuiTextListControls.h"
@@ -202,7 +203,7 @@ GuiCommonDatePickerLook
 					}
 					comboYear = new GuiComboBoxListControl(theme::ThemeName::ComboBox, listYears);
 					comboYear->SetAlt(L"Y");
-					comboYear->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 2, 0));
+					comboYear->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, GetTuiApplication() ? 1 : 2, 0));
 					comboYear->SelectedIndexChanged.AttachMethod(this, &GuiCommonDatePickerLook::comboYearMonth_SelectedIndexChanged);
 				}
 				{
@@ -210,7 +211,7 @@ GuiCommonDatePickerLook
 					listMonths->SetHorizontalAlwaysVisible(false);
 					comboMonth = new GuiComboBoxListControl(theme::ThemeName::ComboBox, listMonths);
 					comboMonth->SetAlt(L"M");
-					comboMonth->GetBoundsComposition()->SetAlignmentToParent(Margin(2, 0, 0, 0));
+					comboMonth->GetBoundsComposition()->SetAlignmentToParent(Margin(GetTuiApplication() ? 1 : 2, 0, 0, 0));
 					comboMonth->SelectedIndexChanged.AttachMethod(this, &GuiCommonDatePickerLook::comboYearMonth_SelectedIndexChanged);
 				}
 				{
@@ -237,7 +238,7 @@ GuiCommonDatePickerLook
 				{
 					dayTable = new GuiTableComposition;
 					dayTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					dayTable->SetCellPadding(4);
+					dayTable->SetCellPadding(GetTuiApplication() ? 0 : 4);
 					dayTable->SetRowsAndColumns(DayRows + DayRowStart, DaysOfWeek);
 
 					for (vint i = 0; i < DayRowStart; i++)

@@ -103,7 +103,7 @@ namespace vl
 				/// <returns>The shortcut builder for this command.</returns>
 				WString										GetShortcutBuilder();
 				/// <summary>Set the shortcut builder for this command. When the command is attached to a window as a component without a shortcut, the command will try to convert the shortcut builder to a shortcut key item.</summary>
-				/// <param name="value">The shortcut builder for this command.</param>
+				/// <param name="value">The shortcut builder for this command. An empty string removes the shortcut.</param>
 				void										SetShortcutBuilder(const WString& value);
 				/// <summary>Get the enablility for this command.</summary>
 				/// <returns>The enablility for this command.</returns>

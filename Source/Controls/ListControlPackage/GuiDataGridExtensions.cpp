@@ -1,4 +1,6 @@
 #include "GuiDataGridExtensions.h"
+#include "TuiItemTemplates.h"
+#include "../../PlatformProviders/TUI/TuiApplication.h"
 #include "GuiListViewControls.h"
 #include "../../GraphicsComposition/GuiGraphicsTableComposition.h"
 
@@ -64,6 +66,7 @@ DataVisualizerBase
 						visualizerTemplate->SetRowValue(itemProvider->GetBindingValue(row));
 						visualizerTemplate->SetCellValue(dataGridView->GetBindingCellValue(row, column));
 					}
+					TuiUpdateGridCellColors(visualizerTemplate);
 				}
 
 				void DataVisualizerBase::SetSelected(bool value)
@@ -71,6 +74,7 @@ DataVisualizerBase
 					if (visualizerTemplate)
 					{
 						visualizerTemplate->SetSelected(value);
+						TuiUpdateGridCellColors(visualizerTemplate);
 					}
 				}
 
@@ -239,6 +243,7 @@ MainColumnVisualizerTemplate
 
 				void MainColumnVisualizerTemplate::OnSmallImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
+					if (!image) return;
 					auto imageData = GetSmallImage();
 					if (imageData)
 					{
@@ -260,7 +265,9 @@ MainColumnVisualizerTemplate
 					table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
 					table->SetColumnOption(0, GuiCellOption::MinSizeOption());
 					table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
-					table->SetCellPadding(2);
+					table->SetCellPadding(GetTuiApplication() ? 0 : 2);
+					if (GetTuiApplication()) table->SetRowOption(2, GuiCellOption::AbsoluteOption(0));
+					if (!GetTuiApplication())
 					{
 						GuiCellComposition* cell = new GuiCellComposition;
 						table->AddChild(cell);
@@ -279,7 +286,7 @@ MainColumnVisualizerTemplate
 						auto textBounds = new GuiBoundsComposition;
 						cell->AddChild(textBounds);
 						textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-						textBounds->SetAlignmentToParent(Margin(0, 0, 8, 0));
+						textBounds->SetAlignmentToParent(GetTuiApplication() ? Margin(1, 0, 1, 0) : Margin(0, 0, 8, 0));
 
 						text = GuiSolidLabelElement::Create();
 						text->SetAlignments(Alignment::Left, Alignment::Center);
@@ -332,7 +339,7 @@ SubColumnVisualizerTemplate
 					auto textBounds = new GuiBoundsComposition;
 					AddChild(textBounds);
 					textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-					textBounds->SetAlignmentToParent(Margin(8, 0, 8, 0));
+					textBounds->SetAlignmentToParent(GetTuiApplication() ? Margin(1, 0, 1, 0) : Margin(8, 0, 8, 0));
 
 					text = GuiSolidLabelElement::Create();
 					text->SetVerticalAlignment(Alignment::Center);
@@ -387,9 +394,9 @@ HyperlinkVisualizerTemplate
 				}
 
 				HyperlinkVisualizerTemplate::HyperlinkVisualizerTemplate()
-					:SubColumnVisualizerTemplate(true)
+					:SubColumnVisualizerTemplate(!GetTuiApplication())
 				{
-					text->SetColor(Color(0, 0, 255));
+					if (!GetTuiApplication()) text->SetColor(Color(0, 0, 255));
 					text->SetEllipse(true);
 					GetEventReceiver()->mouseEnter.AttachMethod(this, &HyperlinkVisualizerTemplate::label_MouseEnter);
 					GetEventReceiver()->mouseLeave.AttachMethod(this, &HyperlinkVisualizerTemplate::label_MouseLeave);
@@ -414,6 +421,22 @@ CellBorderVisualizerTemplate
 					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 					focusComposition = new GuiBoundsComposition();
+					if (GetTuiApplication())
+					{
+						auto focus = Ptr(GuiSolidLabelElement::Create());
+						focus->SetText(L">");
+						auto font = GetFont();
+						font.bold = true;
+						focus->SetFont(font);
+						focusComposition->SetOwnedElement(focus);
+						focusComposition->SetAlignmentToParent(Margin(0, 0, -1, 0));
+						focusComposition->SetPreferredMinSize(Size(1, 1));
+						PrimaryTextColorChanged.AttachLambda([this, focus](GuiGraphicsComposition*, GuiEventArgs&)
+						{
+							focus->SetColor(GetPrimaryTextColor());
+						});
+					}
+					else
 					{
 						auto focus = Ptr(GuiFocusRectangleElement::Create());
 						focusComposition->SetOwnedElement(focus);
@@ -422,7 +445,7 @@ CellBorderVisualizerTemplate
 					auto container = new GuiBoundsComposition();
 					{
 						container->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						container->SetAlignmentToParent(Margin(2, 2, 2, 2));
+						container->SetAlignmentToParent(GetTuiApplication() ? Margin(1, 0, 0, 0) : Margin(2, 2, 2, 2));
 					}
 
 					AddChild(focusComposition);
@@ -456,12 +479,14 @@ CellBorderVisualizerTemplate
 						border1 = GuiSolidBorderElement::Create();
 						bounds1->SetOwnedElement(Ptr(border1));
 						bounds1->SetAlignmentToParent(Margin(-1, 0, 0, 0));
+						if (GetTuiApplication()) bounds1->SetPreferredMinSize(Size(1, 1));
 					}
 					auto bounds2 = new GuiBoundsComposition;
 					{
 						border2 = GuiSolidBorderElement::Create();
 						bounds2->SetOwnedElement(Ptr(border2));
 						bounds2->SetAlignmentToParent(Margin(0, -1, 0, 0));
+						if (GetTuiApplication()) bounds2->SetPreferredMinSize(Size(1, 1));
 					}
 					auto container = new GuiBoundsComposition();
 					{

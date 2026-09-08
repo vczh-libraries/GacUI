@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Utilities">
@@ -46,6 +46,34 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAutomationService_Controls.h">
       <Filter>Utilities\SharedServices</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Utilities\FakeServices\TuiDialogs">
+      <UniqueIdentifier>{213caa05-4db1-4d57-8a3a-3f830de6d56f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\FakeServices\TuiDialogs\Source">
+      <UniqueIdentifier>{f295a9d2-4028-4f56-8285-4b7da6555d67}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\TuiFakeDialogService.cpp">
+      <Filter>Utilities\FakeServices\TuiDialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUI.cpp">
+      <Filter>Utilities\FakeServices\TuiDialogs\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUIResource.cpp">
+      <Filter>Utilities\FakeServices\TuiDialogs\Source</Filter>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\TuiFakeDialogService.h">
+      <Filter>Utilities\FakeServices\TuiDialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUI.h">
+      <Filter>Utilities\FakeServices\TuiDialogs\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUIIncludes.h">
+      <Filter>Utilities\FakeServices\TuiDialogs\Source</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

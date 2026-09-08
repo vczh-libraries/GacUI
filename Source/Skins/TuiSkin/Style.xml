@@ -1,0 +1,12 @@
+<Styles>
+  <Style ref.Path="(//Bounds + //Table + //RepeatStack + //RepeatFlow)" MinSizeLimitation="LimitToElementAndChildren" />
+  <Style ref.Path="//*.background" Color-eval="tuiskin::tuiColors.ControlBackground" />
+  <Style ref.Path="//*.border" Color-bind="not self.VisuallyEnabled ? tuiskin::tuiColors.ControlBorderDisabled : self.Focused ? tuiskin::tuiColors.ControlBorderFocused : tuiskin::tuiColors.ControlBorder" />
+  <Style ref.Path="//*.buttonBackground" Color-bind="not self.VisuallyEnabled ? tuiskin::tuiColors.ButtonBackground : self.State == ButtonState::Pressed ? tuiskin::tuiColors.ButtonBackgroundPressed : self.State == ButtonState::Active ? tuiskin::tuiColors.ButtonBackgroundHighlighted : tuiskin::tuiColors.ButtonBackground" />
+  <Style ref.Path="//*.buttonText" Color-bind="not self.VisuallyEnabled ? tuiskin::tuiColors.ButtonTextDisabled : self.State == ButtonState::Pressed ? tuiskin::tuiColors.ButtonTextPressed : self.State == ButtonState::Active ? tuiskin::tuiColors.ButtonTextHighlighted : tuiskin::tuiColors.ButtonText" />
+  <Style ref.Path="//*.buttonIcon" Color-bind="not self.VisuallyEnabled ? tuiskin::tuiColors.ButtonTextDisabled : self.State == ButtonState::Pressed ? tuiskin::tuiColors.ButtonTextPressed : self.State == ButtonState::Active ? tuiskin::tuiColors.ButtonTextHighlighted : tuiskin::tuiColors.ButtonIcon" />
+  <Style ref.Path="//*.itemBackground" Color-bind="self.Selected ? tuiskin::tuiColors.ItemBackgroundSelected : self.VisuallyEnabled and self.State != ButtonState::Normal ? tuiskin::tuiColors.ItemBackgroundHighlighted : tuiskin::tuiColors.ItemBackground" />
+  <Style ref.Path="//*.itemText" Color-bind="not self.VisuallyEnabled ? tuiskin::tuiColors.ItemTextDisabled : self.Selected ? tuiskin::tuiColors.ItemTextSelected : self.State != ButtonState::Normal ? tuiskin::tuiColors.ItemTextHighlighted : tuiskin::tuiColors.ItemText" />
+  <Style ref.Path="//*.menuBackground" Color-bind="self.VisuallyEnabled and self.State != ButtonState::Normal ? tuiskin::tuiColors.MenuBackgroundHighlighted : tuiskin::tuiColors.MenuBackground" />
+  <Style ref.Path="//*.menuText" Color-bind="not self.VisuallyEnabled ? tuiskin::tuiColors.MenuTextDisabled : self.State != ButtonState::Normal ? tuiskin::tuiColors.MenuTextHighlighted : tuiskin::tuiColors.MenuText" />
+</Styles>

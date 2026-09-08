@@ -835,6 +835,11 @@ interface presentation::ISimpleFontDialogViewModel : presentation::ICommonFontDi
 
 }
 
+interface presentation::ITuiApplication : system::Interface {
+    function Stop() : system::Void;
+
+}
+
 @ValueType
 struct presentation::Margin {
     property bottom : system::Int64;
@@ -1983,6 +1988,9 @@ class presentation::controls::GuiApplication : system::ReferenceType {
     function GetLocale() : system::Locale;
     function GetMainWindow() : presentation::controls::GuiWindow*;
     function GetTooltipOwner() : presentation::controls::GuiControl*;
+    @InvokeTemplate:::vl::presentation::GetTuiApplication($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::presentation::GetTuiApplication)
+    static function GetTuiApplication() : presentation::ITuiApplication*;
     function GetWindowFromNative(nativeWindow : presentation::INativeWindow*) : presentation::controls::GuiWindow*;
     function GetWindows() : system::ReadonlyList<presentation::controls::GuiWindow*>^;
     function InvokeAsync(proc : system::Function<system::Void>^) : system::Void;
@@ -4459,6 +4467,30 @@ enum presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition {
     CaretMoveUp = 6,
 }
 
+class presentation::elements::TuiBorderElement : presentation::elements::IGuiGraphicsElement {
+    property Color : presentation::Color { get:GetColor set:SetColor }
+    property LineStyle : presentation::elements::TuiLineStyle { get:GetLineStyle set:SetLineStyle }
+    property Shape : presentation::elements::ElementShape { get:GetShape set:SetShape }
+
+    function GetColor() : presentation::Color;
+    function GetLineStyle() : presentation::elements::TuiLineStyle;
+    function GetShape() : presentation::elements::ElementShape;
+    function SetColor(value : presentation::Color) : system::Void;
+    function SetLineStyle(value : presentation::elements::TuiLineStyle) : system::Void;
+    function SetShape(value : presentation::elements::ElementShape) : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::Element_Constructor<::vl::presentation::elements::TuiBorderElement>($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::Element_Constructor<::vl::presentation::elements::TuiBorderElement>)
+    constructor () : presentation::elements::TuiBorderElement^;
+}
+
+@ValueType
+enum presentation::elements::TuiLineStyle {
+    Double = 2,
+    Thick = 1,
+    Thin = 0,
+}
+
 class presentation::helper_types::LocalizedStrings : system::ReferenceType {
     static function FirstOrEmpty(formats : system::Enumerable<system::String>^) : system::String;
 
@@ -5512,6 +5544,37 @@ class presentation::templates::GuiWindowTemplate : presentation::templates::GuiC
     function SetTooltipTemplate(value : system::Function<presentation::templates::GuiWindowTemplate*, system::Object>^) : system::Void;
 
     constructor () : presentation::templates::GuiWindowTemplate*;
+}
+
+class presentation::templates::TuiListItemBackgroundTemplate : presentation::templates::GuiSelectableButtonTemplate {
+    event GridRowChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        GridRow,
+    }
+    event SelectedBackgroundColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedBackgroundColor,
+    }
+    event SelectedTextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedTextColor,
+    }
+    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TextColor,
+    }
+
+    property GridRow : system::Boolean { get:GetGridRow set:SetGridRow event:GridRowChanged }
+    property SelectedBackgroundColor : presentation::Color { get:GetSelectedBackgroundColor set:SetSelectedBackgroundColor event:SelectedBackgroundColorChanged }
+    property SelectedTextColor : presentation::Color { get:GetSelectedTextColor set:SetSelectedTextColor event:SelectedTextColorChanged }
+    property TextColor : presentation::Color { get:GetTextColor set:SetTextColor event:TextColorChanged }
+
+    function GetGridRow() : system::Boolean;
+    function GetSelectedBackgroundColor() : presentation::Color;
+    function GetSelectedTextColor() : presentation::Color;
+    function GetTextColor() : presentation::Color;
+    function SetGridRow(value : system::Boolean) : system::Void;
+    function SetSelectedBackgroundColor(value : presentation::Color) : system::Void;
+    function SetSelectedTextColor(value : presentation::Color) : system::Void;
+    function SetTextColor(value : presentation::Color) : system::Void;
+
+    constructor () : presentation::templates::TuiListItemBackgroundTemplate*;
 }
 
 interface presentation::theme::ITheme : system::Interface {

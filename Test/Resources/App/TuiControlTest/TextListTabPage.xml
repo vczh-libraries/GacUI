@@ -1,0 +1,206 @@
+<Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiTextListTabPage" xmlns:x="presentation::controls::GuiSelectableButton::*">
+  <ref.Members><![CDATA[
+      var counter : int = 0;
+      var itemsToBind : observe TuiMyTextItem^[] = {};
+    ]]></ref.Members>
+  <TabPage ref.Name="self" Text="TextList">
+    <x:MutexGroupController ref.Name="mutexGroupController" />
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="1">
+      <att.Rows>
+        <_>composeType:MinSize</_>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Rows>
+      <att.Columns>
+        <_>composeType:Percentage percentage:1.0</_>
+        <_>composeType:MinSize</_>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Columns>
+      <Cell Site="row:0 column:0 columnSpan:3">
+        <Stack Direction="Horizontal" Padding="1" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem>
+            <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="0">
+              <att.BoundsComposition-set PreferredMinSize="x:16" />
+              <att.ListControl>
+                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.Items>
+                    <TextItem Text="Text" />
+                    <TextItem Text="Check" />
+                    <TextItem Text="Radio" />
+                  </att.Items>
+                </TextList>
+              </att.ListControl>
+              <ev.SelectedIndexChanged-eval><![CDATA[
+              {
+                switch (comboView.SelectedIndex)
+                {
+                case 0:
+                  {
+                    textList.View = Text;
+                    bindableTextList.View = Text;
+                  }
+                case 1:
+                  {
+                    textList.View = Check;
+                    bindableTextList.View = Check;
+                  }
+                case 2:
+                  {
+                    textList.View = Radio;
+                    bindableTextList.View = Radio;
+                  }
+                }
+              }
+            ]]></ev.SelectedIndexChanged-eval>
+            </ComboBox>
+          </StackItem>
+          <StackItem>
+            <Label Text="Choose Text, Check, or Radio independently of selection." />
+          </StackItem>
+        </Stack>
+      </Cell>
+      <Cell Site="row:1 column:0 ">
+        <TextList ref.Name="textList" Alt="L" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+        </TextList>
+      </Cell>
+      <Cell Site="row:1 column:1 ">
+        <GroupBox Text="Operations">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          <Stack Direction="Vertical" Padding="1" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+            <StackItem>
+              <Button Alt="A" Text="Add 10 items">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                <ev.Clicked-eval><![CDATA[
+                    {
+                      for (i in range [0, 9])
+                      {
+                        var textItem = new TextItem^(cast string (self.counter + i));
+                        textList.Items.Add(textItem);
+                      }
+                    
+                      for (i in range [0, 9])
+                      {
+                        var textItem = new tuidemo::TuiMyTextItem^();
+                        textItem.Name = cast string (self.counter + i);
+                        self.itemsToBind.Add(textItem);
+                      }
+                    
+                      self.counter = self.counter + 10;
+                    }
+                  ]]></ev.Clicked-eval>
+              </Button>
+            </StackItem>
+            <StackItem>
+              <Button Alt="O" Text="Remove odd items">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                <ev.Clicked-eval><![CDATA[
+                    {
+                      {
+                        var i = 0;
+                        while (i < textList.Items.Count)
+                        {
+                          textList.Items.RemoveAt(i);
+                          i = i + 1;
+                        }
+                      }
+                    
+                      {
+                        var i = 0;
+                        while (i < self.itemsToBind.Count)
+                        {
+                          self.itemsToBind.RemoveAt(i);
+                          i = i + 1;
+                        }
+                      }
+                    }
+                  ]]></ev.Clicked-eval>
+              </Button>
+            </StackItem>
+            <StackItem>
+              <Button Alt="E" Text="Remove even items">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                <ev.Clicked-eval><![CDATA[
+                    {
+                      {
+                        var i = 1;
+                        while (i < textList.Items.Count)
+                        {
+                          textList.Items.RemoveAt(i);
+                          i = i + 1;
+                        }
+                      }
+                    
+                      {
+                        var i = 1;
+                        while (i < self.itemsToBind.Count)
+                        {
+                          self.itemsToBind.RemoveAt(i);
+                          i = i + 1;
+                        }
+                      }
+                    }
+                  ]]></ev.Clicked-eval>
+              </Button>
+            </StackItem>
+            <StackItem>
+              <Button Alt="C" Text="Clear">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                <ev.Clicked-eval><![CDATA[
+                    {
+                      textList.Items.Clear();
+                      self.itemsToBind.Clear();
+                    }
+                  ]]></ev.Clicked-eval>
+              </Button>
+            </StackItem>
+            <StackItem>
+              <Button Alt="X" Text="Rotate Item Source --&gt;">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                <ev.Clicked-eval><![CDATA[
+                    {
+                      if (bindableTextList.ItemSource is not null)
+                      {
+                        bindableTextList.ItemSource = null;
+                      }
+                      else
+                      {
+                        bindableTextList.ItemSource = self.itemsToBind;
+                      }
+                    }
+                  ]]></ev.Clicked-eval>
+              </Button>
+            </StackItem>
+            <StackItem>
+              <CheckBox Text="Dummy">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              </CheckBox>
+            </StackItem>
+            <StackItem>
+              <CheckBox Text="Dummy">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              </CheckBox>
+            </StackItem>
+            <StackItem>
+              <RadioButton Text="Dummy" GroupController-ref="mutexGroupController">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              </RadioButton>
+            </StackItem>
+            <StackItem>
+              <RadioButton Text="Dummy" GroupController-ref="mutexGroupController">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              </RadioButton>
+            </StackItem>
+          </Stack>
+        </GroupBox>
+      </Cell>
+      <Cell Site="row:1 column:2 ">
+        <BindableTextList ref.Name="bindableTextList" Alt="B" env.ItemType="tuidemo::TuiMyTextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          <att.ItemSource-eval>self.itemsToBind</att.ItemSource-eval>
+          <att.TextProperty>Name</att.TextProperty>
+          <att.CheckedProperty>Checked</att.CheckedProperty>
+        </BindableTextList>
+      </Cell>
+    </Table>
+  </TabPage>
+</Instance>

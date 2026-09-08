@@ -1,0 +1,120 @@
+<Folder>
+  <Instance name="ItemBackgroundTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiItemBackgroundTemplate" xmlns:x="tuiskin::*" xmlns:tui="presentation::templates::*" ref.Styles="res://TuiSkin/Style">
+      <tui:TuiListItemBackgroundTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container" TextColor-bind="not self.VisuallyEnabled ? tuiskin::tuiColors.ItemTextDisabled : self.Selected and not self.GridRow ? tuiskin::tuiColors.ItemTextSelected : self.Selected or self.State != ButtonState::Normal ? tuiskin::tuiColors.ItemTextHighlighted : tuiskin::tuiColors.ItemText" SelectedTextColor-eval="tuiskin::tuiColors.ItemTextSelected" SelectedBackgroundColor-eval="tuiskin::tuiColors.ItemBackgroundSelected">
+        <SolidBackground Color-bind="self.Selected and not self.GridRow ? tuiskin::tuiColors.ItemBackgroundSelected : self.Selected or self.VisuallyEnabled and self.State != ButtonState::Normal ? tuiskin::tuiColors.ItemBackgroundHighlighted : tuiskin::tuiColors.ItemBackground" />
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+      </tui:TuiListItemBackgroundTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="TextListTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiTextListTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <TextListTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" TextColor-eval="tuiskin::tuiColors.ItemText">
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+        <SolidBackground ref.Style="background" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <elements:TuiBorder ref.Style="border" />
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <att.HScrollTemplate>tuiskin::TuiHScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>tuiskin::TuiVScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>1</att.DefaultScrollSize>
+          </CommonScrollViewLook>
+        </Bounds>
+        <att.BackgroundTemplate>tuiskin::TuiItemBackgroundTemplate</att.BackgroundTemplate>
+        <att.CheckBulletTemplate>tuiskin::TuiCheckBoxTemplate</att.CheckBulletTemplate>
+        <att.RadioBulletTemplate>tuiskin::TuiRadioButtonTemplate</att.RadioBulletTemplate>
+      </TextListTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="ListViewTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiListViewTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ListViewTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" PrimaryTextColor-eval="tuiskin::tuiColors.ItemText" SecondaryTextColor-eval="tuiskin::tuiColors.LabelText" ItemSeparatorColor-eval="tuiskin::tuiColors.ControlBorder">
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+        <SolidBackground ref.Style="background" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <elements:TuiBorder ref.Style="border" />
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <att.HScrollTemplate>tuiskin::TuiHScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>tuiskin::TuiVScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>1</att.DefaultScrollSize>
+          </CommonScrollViewLook>
+        </Bounds>
+        <att.BackgroundTemplate>tuiskin::TuiItemBackgroundTemplate</att.BackgroundTemplate>
+        <att.ColumnHeaderTemplate>tuiskin::TuiListViewColumnHeaderTemplate</att.ColumnHeaderTemplate>
+      </ListViewTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="TreeViewTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiTreeViewTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <TreeViewTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" TextColor-eval="tuiskin::tuiColors.ItemText">
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+        <SolidBackground ref.Style="background" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <elements:TuiBorder ref.Style="border" />
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <att.HScrollTemplate>tuiskin::TuiHScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>tuiskin::TuiVScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>1</att.DefaultScrollSize>
+          </CommonScrollViewLook>
+        </Bounds>
+        <att.BackgroundTemplate>tuiskin::TuiItemBackgroundTemplate</att.BackgroundTemplate>
+        <att.ExpandingDecoratorTemplate>tuiskin::TuiExpandingDecoratorTemplate</att.ExpandingDecoratorTemplate>
+      </TreeViewTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="ExpandingDecoratorTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiExpandingDecoratorTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidLabel Text-bind="self.Selected ? &quot;▼&quot; : &quot;▶&quot;" Color-eval="tuiskin::tuiColors.LabelText" />
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="ComboBoxTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiComboBoxTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <DateComboBoxTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container">
+        <att.SubMenuTemplate>tuiskin::TuiToolstripMenuTemplate</att.SubMenuTemplate>
+        <att.DatePickerTemplate>tuiskin::TuiDatePickerTemplate</att.DatePickerTemplate>
+        <SolidBackground ref.Style="background" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <elements:TuiBorder ref.Style="border" />
+        </Bounds>
+        <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:2 bottom:1">
+          <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" Visible-bind="self.TextVisible">
+            <SolidLabel Text-bind="self.Text" Font-bind="{fontFamily:&quot;TuiFont&quot; size:1 bold:self.Focused underline:(self.State != ButtonState::Normal)}" Color-bind="self.VisuallyEnabled ? tuiskin::tuiColors.ControlText : tuiskin::tuiColors.ButtonTextDisabled" Ellipse="true" />
+          </Bounds>
+        </Bounds>
+        <Bounds AlignmentToParent="left:-1 top:1 right:1 bottom:1">
+          <SolidBackground ref.Style="buttonBackground" />
+          <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <SolidLabel Text="▼" ref.Style="buttonIcon" />
+          </Bounds>
+        </Bounds>
+      </DateComboBoxTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="ListViewColumnHeaderTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiListViewColumnHeaderTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ListViewColumnHeaderTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container" SubMenuHost-ref="buttonArrow">
+        <att.SubMenuTemplate>tuiskin::TuiToolstripMenuTemplate</att.SubMenuTemplate>
+        <SolidBackground ref.Style="buttonBackground" />
+        <Bounds ref.Name="container" AlignmentToParent="left:1 top:0 right:2 bottom:0">
+          <SolidLabel Text-bind="self.Text" ref.Style="buttonText" Ellipse="true" Font-bind="self.Font" />
+        </Bounds>
+        <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0">
+          <SolidLabel Text-bind="self.SortingState == ColumnSortingState::Ascending ? &quot;▲&quot; : self.SortingState == ColumnSortingState::Descending ? &quot;▼&quot; : &quot; &quot;" ref.Style="buttonText" />
+        </Bounds>
+        <Bounds AlignmentToParent="left:-1 top:0 right:1 bottom:0">
+          <Button ref.Name="buttonArrow" ControlTemplate="tuiskin::TuiBottomScrollButtonTemplate" AutoFocus="false" Visible-bind="self.SubMenuExisting">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          </Button>
+        </Bounds>
+      </ListViewColumnHeaderTemplate>
+    </Instance>
+  </Instance>
+</Folder>

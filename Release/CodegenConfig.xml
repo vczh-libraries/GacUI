@@ -27,6 +27,7 @@
       <except pattern="\Compiler\" />
       <except pattern="\Skins\" />
       <except pattern="GuiFakeDialogServiceUIReflection" />
+      <except pattern="TuiFakeDialogServiceUIReflection" />
     </category>
     <category name="windows" pattern="\Source\PlatformProviders\Windows\"/>
     <category name="windows" pattern="\Source\Utilities\AutomationService\Windows\"/>
@@ -39,11 +40,16 @@
     <category name="unittest_r" pattern="\Source\UnitTestUtilities\SnapshotViewer\Source\GuiUnitTestSnapshotViewerReflection"/>
     <category name="reflection" pattern="\Source\Reflection\"/>
     <category name="reflection" pattern="GuiFakeDialogServiceUIReflection"/>
+    <category name="reflection" pattern="TuiFakeDialogServiceUIReflection"/>
     <category name="compiler" pattern="\Source\Compiler\"/>
     <category name="darkskin" pattern="\Skins\DarkSkin\Source\">
       <except pattern="Reflection"/>
     </category>
     <category name="darkskin_r" pattern="\Skins\DarkSkin\Source\DarkSkinReflection"/>
+    <category name="tuiskin" pattern="\Skins\TuiSkin\Source\">
+      <except pattern="Reflection"/>
+    </category>
+    <category name="tuiskin_r" pattern="\Skins\TuiSkin\Source\TuiSkinReflection"/>
     <category name="test_remoting_helpers" pattern="\Test\RemotingHelpers\">
       <except pattern="\Windows\" />
       <except pattern=".Windows." />
@@ -71,6 +77,8 @@
     <codepair category="compiler" filename="GacUICompiler" generate="true"/>
     <codepair category="darkskin" filename="DarkSkin" generate="true"/>
     <codepair category="darkskin_r" filename="DarkSkinReflection" generate="true"/>
+    <codepair category="tuiskin" filename="TuiSkin" generate="true"/>
+    <codepair category="tuiskin_r" filename="TuiSkinReflection" generate="true"/>
     <codepair category="test_remoting_helpers" filename="Test.RemotingHelpers" generate="true"/>
   </output>
 </codegen>

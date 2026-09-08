@@ -254,7 +254,7 @@ Each arm in `TuiMergeablePixel` is independently `None`, `ThinLine`, `ThickLine`
 
 This API works with Unicode scalars, while `vl::presentation::NativeWindowCharInfo::code` works with native `wchar_t` units. Convert character input before measuring it when the native encoding can use multiple units.
 
-Windows uses `GetStringTypeW(CT_CTYPE1/CT_CTYPE3)`: invalid scalars, controls and nonspacing/diacritic/vowel marks return 0; halfwidth returns 1; supplementary scalars and fullwidth/ideograph/Hiragana/Katakana return 2; other scalars return 1. This approximates console layout.
+Windows uses `GetStringTypeW(CT_CTYPE1/CT_CTYPE3)`: invalid scalars, controls and nonspacing/vowel marks return 0; halfwidth returns 1; supplementary scalars and fullwidth/ideograph/Hiragana/Katakana return 2; other scalars return 1. `C3_DIACRITIC` alone does not imply zero width: spacing ASCII circumflex and grave accent carry that flag and occupy one cell. This approximates console layout.
 
 Linux/macOS use `wcwidth` under a cached environment `newlocale(LC_CTYPE_MASK, "", nullptr)`, temporarily selected using `uselocale` and restored on the calling thread. Negative widths become 0. No process-global `setlocale` or generated Unicode-width table is used. Results depend on platform/locale and may differ from the terminal/font.
 

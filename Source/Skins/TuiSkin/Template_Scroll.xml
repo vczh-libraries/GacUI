@@ -1,0 +1,190 @@
+<Folder>
+  <Instance name="LeftScrollButtonTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiLeftScrollButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="buttonBackground" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidLabel Text="◀" ref.Style="buttonIcon" />
+        </Bounds>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="RightScrollButtonTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiRightScrollButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="buttonBackground" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidLabel Text="▶" ref.Style="buttonIcon" />
+        </Bounds>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="TopScrollButtonTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiTopScrollButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="buttonBackground" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidLabel Text="▲" ref.Style="buttonIcon" />
+        </Bounds>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="BottomScrollButtonTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiBottomScrollButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="buttonBackground" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidLabel Text="▼" ref.Style="buttonIcon" />
+        </Bounds>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="HandleScrollButtonTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiHandleScrollButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="buttonBackground" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidLabel Text="█" ref.Style="buttonText" />
+        </Bounds>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="HScrollTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiHScrollTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ref.Ctor><![CDATA[{
+        behavior.AttachScrollTemplate(self);
+        behavior.AttachDecreaseButton(buttonDecrease);
+        behavior.AttachIncreaseButton(buttonIncrease);
+        behavior.AttachHorizontalScrollHandle(handle);
+      }]]></ref.Ctor>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="y:1">
+        <CommonScrollBehavior ref.Name="behavior" />
+        <SolidBackground Color-eval="tuiskin::tuiColors.ControlBorderDisabled" />
+        <SideAligned MaxLength="1" MaxRatio="0.5" Direction="Left">
+          <Button ref.Name="buttonDecrease" AutoFocus="false" ControlTemplate="tuiskin::TuiLeftScrollButtonTemplate">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          </Button>
+        </SideAligned>
+        <SideAligned MaxLength="1" MaxRatio="0.5" Direction="Right">
+          <Button ref.Name="buttonIncrease" AutoFocus="false" ControlTemplate="tuiskin::TuiRightScrollButtonTemplate">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          </Button>
+        </SideAligned>
+        <Bounds AlignmentToParent="left:1 top:0 right:1 bottom:0" MinSizeLimitation="NoLimit">
+          <PartialView ref.Name="handle" PreferredMinSize="x:1">
+            <att.WidthPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.WidthPageSize-bind>
+            <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
+            <Button AutoFocus="false" ControlTemplate="tuiskin::TuiHandleScrollButtonTemplate">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+            </Button>
+          </PartialView>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="HTrackerTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiHTrackerTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ref.Ctor><![CDATA[{
+        behavior.AttachScrollTemplate(self);
+        behavior.AttachHorizontalTrackerHandle(handle);
+      }]]></ref.Ctor>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="y:1">
+        <CommonScrollBehavior ref.Name="behavior" />
+        <SolidBackground Color-eval="tuiskin::tuiColors.ControlBorderDisabled" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="NoLimit">
+          <PartialView ref.Name="handle" PreferredMinSize="x:1">
+            <att.WidthPageSize-bind>0.0</att.WidthPageSize-bind>
+            <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
+            <Button AutoFocus="false" ControlTemplate="tuiskin::TuiHandleScrollButtonTemplate">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+            </Button>
+          </PartialView>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="VScrollTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiVScrollTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ref.Ctor><![CDATA[{
+        behavior.AttachScrollTemplate(self);
+        behavior.AttachDecreaseButton(buttonDecrease);
+        behavior.AttachIncreaseButton(buttonIncrease);
+        behavior.AttachVerticalScrollHandle(handle);
+      }]]></ref.Ctor>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:1">
+        <CommonScrollBehavior ref.Name="behavior" />
+        <SolidBackground Color-eval="tuiskin::tuiColors.ControlBorderDisabled" />
+        <SideAligned MaxLength="1" MaxRatio="0.5" Direction="Top">
+          <Button ref.Name="buttonDecrease" AutoFocus="false" ControlTemplate="tuiskin::TuiTopScrollButtonTemplate">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          </Button>
+        </SideAligned>
+        <SideAligned MaxLength="1" MaxRatio="0.5" Direction="Bottom">
+          <Button ref.Name="buttonIncrease" AutoFocus="false" ControlTemplate="tuiskin::TuiBottomScrollButtonTemplate">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          </Button>
+        </SideAligned>
+        <Bounds AlignmentToParent="left:0 top:1 right:0 bottom:1" MinSizeLimitation="NoLimit">
+          <PartialView ref.Name="handle" PreferredMinSize="y:1">
+            <att.HeightPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.HeightPageSize-bind>
+            <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
+            <Button AutoFocus="false" ControlTemplate="tuiskin::TuiHandleScrollButtonTemplate">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+            </Button>
+          </PartialView>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="VTrackerTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiVTrackerTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ref.Ctor><![CDATA[{
+        behavior.AttachScrollTemplate(self);
+        behavior.AttachVerticalTrackerHandle(handle);
+      }]]></ref.Ctor>
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:1">
+        <CommonScrollBehavior ref.Name="behavior" />
+        <SolidBackground Color-eval="tuiskin::tuiColors.ControlBorderDisabled" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="NoLimit">
+          <PartialView ref.Name="handle" PreferredMinSize="y:1">
+            <att.HeightPageSize-bind>0.0</att.HeightPageSize-bind>
+            <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
+            <Button AutoFocus="false" ControlTemplate="tuiskin::TuiHandleScrollButtonTemplate">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+            </Button>
+          </PartialView>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="ProgressBarTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiProgressBarTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container" PreferredMinSize="y:1">
+        <SolidBackground Color-eval="tuiskin::tuiColors.ControlBorderDisabled" />
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <PartialView WidthPageSize-bind="self.TotalSize == self.PageSize ? 1.0 : (cast double self.Position) / (self.TotalSize - self.PageSize)">
+            <SolidBackground Color-eval="tuiskin::tuiColors.ControlBorderFocused" />
+          </PartialView>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="ScrollViewTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiScrollViewTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ScrollViewTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
+        <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
+        <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
+        <SolidBackground ref.Style="background" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <elements:TuiBorder ref.Style="border" />
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <att.HScrollTemplate>tuiskin::TuiHScrollTemplate</att.HScrollTemplate>
+            <att.VScrollTemplate>tuiskin::TuiVScrollTemplate</att.VScrollTemplate>
+            <att.DefaultScrollSize>1</att.DefaultScrollSize>
+          </CommonScrollViewLook>
+        </Bounds>
+      </ScrollViewTemplate>
+    </Instance>
+  </Instance>
+</Folder>

@@ -1,0 +1,1093 @@
+<Folder>
+  <Script name="RefreshViewModelResource">
+    <Workflow><![CDATA[
+      module refresh_viewmodel;
+      using system::*;
+      using presentation::*;
+
+      namespace tuidemo
+      {
+        class TuiRefreshItem
+        {
+          prop Name : string = "" {not observe}
+          prop Title : string = "" {not observe}
+          prop Sub1 : string = "One" {not observe}
+          prop Sub2 : string = "Two" {not observe}
+          prop Sub3 : string = "Three" {not observe}
+          prop Selected : bool = false {not observe}
+          prop Children : observe TuiRefreshItem^[] = {} {const, not observe}
+          prop DoNotUse : object = null {not observe}
+
+          new (name:string, title:string)
+          {
+            Name = name;
+            Title = title;
+          }
+
+          new (name:string, title:string, children:TuiRefreshItem^{})
+          {
+            Name = name;
+            Title = title;
+            for (child in children)
+            {
+              Children.Add(child);
+            }
+          }
+        }
+      }
+    ]]></Workflow>
+  </Script>
+  <Instance name="RefreshTextListTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiRefreshTextListTabPage">
+      <TabPage ref.Name="self" Text="TextList">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0 ">
+            <Flow AlignmentToParent="left:0 top:0 right:0 bottom:0" RowPadding="0" ColumnPadding="1" MinSizeLimitation="LimitToElementAndChildren">
+              <FlowItem>
+                <Button Text="Check First">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  textList.Items[0].Checked = true;
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Uncheck First">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  textList.Items[0].Checked = false;
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button ref.Name="buttonRead" Text="Read (false)">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  if (textList.Items[0].Checked)
+                  {
+                    buttonRead.Text = "Read (true)";
+                  }
+                  else
+                  {
+                    buttonRead.Text = "Read (false)";
+                  }
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+            </Flow>
+          </Cell>
+          <Cell Site="row:1 column:0 ">
+            <TextList ref.Name="textList" MultiSelect="true" View="Check">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              <att.Items>
+                <_ Text="First" />
+                <_ Text="Second" />
+                <_ Text="Third" />
+                <_ Text="Fourth" />
+                <_ Text="Fifth" />
+                <_ Text="Sixth" />
+              </att.Items>
+            </TextList>
+          </Cell>
+          <Cell Site="row:2 column:0 ">
+            <Stack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren"></Stack>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+  <Instance name="RefreshBindableTextListTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiRefreshBindableTextListTabPage">
+      <ref.Members><![CDATA[
+        var items : observe TuiRefreshItem^[] = {
+          new TuiRefreshItem^("First", "1st")
+          new TuiRefreshItem^("Second", "2nd")
+          new TuiRefreshItem^("Third", "3rd")
+        };
+      ]]></ref.Members>
+      <TabPage ref.Name="self" Text="BindableTextList">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0 ">
+            <Flow AlignmentToParent="left:0 top:0 right:0 bottom:0" RowPadding="0" ColumnPadding="1" MinSizeLimitation="LimitToElementAndChildren">
+              <FlowItem>
+                <Button Text="Use Name">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  textList.TextProperty = func(value:object):string
+                  {
+                    return (cast (TuiRefreshItem^) value).Name;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Use Title">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  textList.TextProperty = func(value:object):string
+                  {
+                    return (cast (TuiRefreshItem^) value).Title;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Check First">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  self.items[0].Selected = true;
+                  textList.NotifyItemDataModified(0, 1);
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Uncheck First">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  self.items[0].Selected = false;
+                  textList.NotifyItemDataModified(0, 1);
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button ref.Name="buttonRead" Text="Read (false)">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  if (self.items[0].Selected)
+                  {
+                    buttonRead.Text = "Read (true)";
+                  }
+                  else
+                  {
+                    buttonRead.Text = "Read (false)";
+                  }
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+            </Flow>
+          </Cell>
+          <Cell Site="row:1 column:0 ">
+            <BindableTextList ref.Name="textList" MultiSelect="true" View="Check" env.ItemType="tuidemo::TuiRefreshItem^">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              <att.ItemSource-eval>self.items</att.ItemSource-eval>
+              <att.TextProperty>Name</att.TextProperty>
+              <att.CheckedProperty>Selected</att.CheckedProperty>
+            </BindableTextList>
+          </Cell>
+          <Cell Site="row:2 column:0 ">
+            <Stack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren"></Stack>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+  <Instance name="RefreshListViewTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiRefreshListViewTabPage">
+      <TabPage ref.Name="self" Text="ListView">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0 ">
+            <Flow AlignmentToParent="left:0 top:0 right:0 bottom:0" RowPadding="0" ColumnPadding="1" MinSizeLimitation="LimitToElementAndChildren">
+              <FlowItem>
+                <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="5">
+                  <att.BoundsComposition-set PreferredMinSize="x:16" />
+                  <att.ListControl>
+                    <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                      <att.Items>
+                        <TextItem Text="BigIcon" />
+                        <TextItem Text="SmallIcon" />
+                        <TextItem Text="List" />
+                        <TextItem Text="Tile" />
+                        <TextItem Text="Information" />
+                        <TextItem Text="Detail" />
+                      </att.Items>
+                    </TextList>
+                  </att.ListControl>
+                  <ev.SelectedIndexChanged-eval><![CDATA[
+                  {
+                    switch (comboView.SelectedIndex)
+                    {
+                      case 0:
+                      {
+                        listView.View = BigIcon;
+                      }
+                      case 1:
+                      {
+                        listView.View = SmallIcon;
+                      }
+                      case 2:
+                      {
+                        listView.View = ListViewView::List;
+                      }
+                      case 3:
+                      {
+                        listView.View = Tile;
+                      }
+                      case 4:
+                      {
+                        listView.View = Information;
+                      }
+                      case 5:
+                      {
+                        listView.View = Detail;
+                      }
+                    }
+                  }
+                ]]></ev.SelectedIndexChanged-eval>
+                </ComboBox>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="*MainColumn">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var s = listView.Items[0].Text;
+                  listView.Items[0].Text = s == "First" ? "MainColumn" : "First";
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="*SubColumn">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var s = listView.Items[0].SubItems[0];
+                  listView.Items[0].SubItems[0] = s == "One" ? "SubColumn" : "One";
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="*DataColumn">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var s = listView.DataColumns[0];
+                  var c = listView.DataColumns.Count;
+                  if (c == 3)
+                  {
+                    if (s == 0)
+                    {
+                      listView.DataColumns[0] = 1;
+                    }
+                    else
+                    {
+                      listView.DataColumns.RemoveAt(2);
+                    }
+                  }
+                  else
+                  {
+                    if (s == 0)
+                    {
+                      listView.DataColumns.Add(2);
+                    }
+                    else
+                    {
+                      listView.DataColumns[0] = 0;
+                    }
+                  }
+                  var projection = "[";
+                  for (i in range [0, listView.DataColumns.Count - 1])
+                  {
+                    if (i > 0) { projection = projection & ","; }
+                    projection = projection & cast string listView.DataColumns[i];
+                  }
+                  dataProjection.Text = "DataColumns: " & projection & "]";
+
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="*Column">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var s = listView.Columns[1].Text;
+                  var c = listView.Columns.Count;
+                  if (c == 4)
+                  {
+                    if (s == "Category")
+                    {
+                      listView.Columns[1].Text = "What?";
+                      listView.Columns[2].Text = "Wait?";
+                    }
+                    else
+                    {
+                      listView.Columns.RemoveAt(1);
+                    }
+                  }
+                  else
+                  {
+                    if (s == "Size")
+                    {
+                      var column = new ListViewColumn^();
+                      column.Text = "Category"; column.Size = 15;
+                      listView.Columns.Insert(1, column);
+                    }
+                    else
+                    {
+                      listView.Columns[1].Text = "Size";
+                    }
+                  }
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+            </Flow>
+          </Cell>
+          <Cell Site="row:1 column:0 ">
+            <ListView ref.Name="listView">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              <att.Columns>
+                <_ Text="Id" Size="15" />
+                <_ Text="Category" Size="15" />
+                <_ Text="Size" Size="15" />
+                <_ Text="File" Size="32" />
+              </att.Columns>
+              <att.DataColumns>
+                <_>0</_>
+                <_>1</_>
+                <_>2</_>
+              </att.DataColumns>
+              <att.Items>
+                <_ Text="First">
+                  <att.SubItems>
+                    <_>One</_>
+                    <_>Two</_>
+                    <_>Three</_>
+                  </att.SubItems>
+                </_>
+                <_ Text="Second">
+                  <att.SubItems>
+                    <_>One</_>
+                    <_>Two</_>
+                    <_>Three</_>
+                  </att.SubItems>
+                </_>
+                <_ Text="Third">
+                  <att.SubItems>
+                    <_>One</_>
+                    <_>Two</_>
+                    <_>Three</_>
+                  </att.SubItems>
+                </_>
+                <_ Text="Fourth">
+                  <att.SubItems>
+                    <_>One</_>
+                    <_>Two</_>
+                    <_>Three</_>
+                  </att.SubItems>
+                </_>
+              </att.Items>
+            </ListView>
+          </Cell>
+          <Cell Site="row:2 column:0 ">
+            <Stack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <StackItem>
+                <Label ref.Name="dataProjection" Text="DataColumns: [0,1,2]" />
+              </StackItem>
+              <StackItem>
+                <Label Text="Effective view: Detail" />
+              </StackItem>
+              <StackItem>
+                <Label Text="Item identities: First=Task; Second=Reminder; Third/Fourth=Tip" />
+              </StackItem>
+            </Stack>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+  <Instance name="RefreshBindableListViewTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiRefreshBindableListViewTabPage">
+      <ref.Members><![CDATA[
+        var items : observe TuiRefreshItem^[] = {
+          new TuiRefreshItem^("First", "1st")
+          new TuiRefreshItem^("Second", "2nd")
+          new TuiRefreshItem^("Third", "3rd")
+          new TuiRefreshItem^("Fourth", "4th")
+        };
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+        }
+      ]]></ref.Ctor>
+      <TabPage ref.Name="self" Text="BindableListView">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0 ">
+            <Flow AlignmentToParent="left:0 top:0 right:0 bottom:0" RowPadding="0" ColumnPadding="1" MinSizeLimitation="LimitToElementAndChildren">
+              <FlowItem>
+                <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="5">
+                  <att.BoundsComposition-set PreferredMinSize="x:16" />
+                  <att.ListControl>
+                    <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                      <att.Items>
+                        <TextItem Text="BigIcon" />
+                        <TextItem Text="SmallIcon" />
+                        <TextItem Text="List" />
+                        <TextItem Text="Tile" />
+                        <TextItem Text="Information" />
+                        <TextItem Text="Detail" />
+                      </att.Items>
+                    </TextList>
+                  </att.ListControl>
+                  <ev.SelectedIndexChanged-eval><![CDATA[
+                  {
+                    switch (comboView.SelectedIndex)
+                    {
+                      case 0:
+                      {
+                        listView.View = BigIcon;
+                      }
+                      case 1:
+                      {
+                        listView.View = SmallIcon;
+                      }
+                      case 2:
+                      {
+                        listView.View = ListViewView::List;
+                      }
+                      case 3:
+                      {
+                        listView.View = Tile;
+                      }
+                      case 4:
+                      {
+                        listView.View = Information;
+                      }
+                      case 5:
+                      {
+                        listView.View = Detail;
+                      }
+                    }
+                  }
+                ]]></ev.SelectedIndexChanged-eval>
+                </ComboBox>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Use Name">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  listView.Columns[0].TextProperty = func(value:object):string
+                  {
+                    return (cast (TuiRefreshItem^) value).Name;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Use Title">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  listView.Columns[0].TextProperty = func(value:object):string
+                  {
+                    return (cast (TuiRefreshItem^) value).Title;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="*Sub1">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var s = self.items[0].Sub1;
+                  self.items[0].Sub1 = s == "One" ? "SubColumn" : "One";
+                  listView.NotifyItemDataModified(0, 1);
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="*DataColumn">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var s = listView.DataColumns[0];
+                  var c = listView.DataColumns.Count;
+                  if (c == 3)
+                  {
+                    if (s == 0)
+                    {
+                      listView.DataColumns[0] = 1;
+                    }
+                    else
+                    {
+                      listView.DataColumns.RemoveAt(2);
+                    }
+                  }
+                  else
+                  {
+                    if (s == 0)
+                    {
+                      listView.DataColumns.Add(2);
+                    }
+                    else
+                    {
+                      listView.DataColumns[0] = 0;
+                    }
+                  }
+                  var projection = "[";
+                  for (i in range [0, listView.DataColumns.Count - 1])
+                  {
+                    if (i > 0) { projection = projection & ","; }
+                    projection = projection & cast string listView.DataColumns[i];
+                  }
+                  dataProjection.Text = "DataColumns: " & projection & "]";
+
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="*Column">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var s = listView.Columns[1].Text;
+                  var c = listView.Columns.Count;
+                  if (c == 4)
+                  {
+                    if (s == "Category")
+                    {
+                      listView.Columns[1].Text = "What?";
+                      listView.Columns[2].Text = "Wait?";
+                    }
+                    else
+                    {
+                      listView.Columns.RemoveAt(1);
+                    }
+                  }
+                  else
+                  {
+                    if (s == "Size")
+                    {
+                      var column = new ListViewColumn^();
+                      column.Text = "Category"; column.Size = 15;
+                      column.TextProperty = func(value:object):string
+                      {
+                        return (cast (TuiRefreshItem^) value).Sub1;
+                      };
+                      listView.Columns.Insert(1, column);
+                    }
+                    else
+                    {
+                      listView.Columns[1].Text = "Size";
+                    }
+                  }
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+            </Flow>
+          </Cell>
+          <Cell Site="row:1 column:0 ">
+            <BindableListView ref.Name="listView" env.ItemType="tuidemo::TuiRefreshItem^">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              <att.ItemSource-eval>self.items</att.ItemSource-eval>
+              <att.Columns>
+                <_ Text="Id" Size="15" TextProperty="Name" />
+                <_ Text="Category" Size="15" TextProperty="Sub1" />
+                <_ Text="Size" Size="15" TextProperty="Sub2" />
+                <_ Text="File" Size="32" TextProperty="Sub3" />
+              </att.Columns>
+              <att.DataColumns>
+                <_>0</_>
+                <_>1</_>
+                <_>2</_>
+              </att.DataColumns>
+            </BindableListView>
+          </Cell>
+          <Cell Site="row:2 column:0 ">
+            <Stack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <StackItem>
+                <Label ref.Name="dataProjection" Text="DataColumns: [0,1,2]" />
+              </StackItem>
+              <StackItem>
+                <Label Text="Effective view: Detail" />
+              </StackItem>
+              <StackItem>
+                <Label Text="Item identities: First=Task; Second=Reminder; Third/Fourth=Tip" />
+              </StackItem>
+            </Stack>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+  <Instance name="RefreshTreeViewTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiRefreshTreeViewTabPage">
+      <TabPage ref.Name="self" Text="TreeView">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0 ">
+            <Flow AlignmentToParent="left:0 top:0 right:0 bottom:0" RowPadding="0" ColumnPadding="1" MinSizeLimitation="LimitToElementAndChildren">
+              <FlowItem>
+                <Button Text="*First">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var node = treeView.Nodes.RootNode.GetChild(0);
+                  var data = treeView.Nodes.GetTreeViewData(cast * node);
+                  data.text = data.text == "First" ? "One" : "First";
+                  treeView.Nodes.UpdateTreeViewData(cast * node);
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="*First/Second">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var node = treeView.Nodes.RootNode.GetChild(0).GetChild(1);
+                  var data = treeView.Nodes.GetTreeViewData(cast * node);
+                  data.text = data.text == "Second (1)" ? "Two (1)" : "Second (1)";
+                  treeView.Nodes.UpdateTreeViewData(cast * node);
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+            </Flow>
+          </Cell>
+          <Cell Site="row:1 column:0 ">
+            <TreeView ref.Name="treeView">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              <att.Nodes>
+                <TreeNode Text="First">
+                  <TreeNode Text="First (1)" />
+                  <TreeNode Text="Second (1)" />
+                  <TreeNode Text="Third (1)" />
+                </TreeNode>
+                <TreeNode Text="Second">
+                  <TreeNode Text="First (2)" />
+                  <TreeNode Text="Second (2)" />
+                  <TreeNode Text="Third (2)" />
+                </TreeNode>
+                <TreeNode Text="Third" />
+                <TreeNode Text="Fourth" />
+              </att.Nodes>
+            </TreeView>
+          </Cell>
+          <Cell Site="row:2 column:0 ">
+            <Stack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <StackItem>
+                <Label Text="Item identities: First=Task; Second=Reminder; Third/Fourth=Tip" />
+              </StackItem>
+            </Stack>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+  <Instance name="RefreshBindableTreeViewTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiRefreshBindableTreeViewTabPage">
+      <ref.Members><![CDATA[
+        var rootItem : TuiRefreshItem^ = new TuiRefreshItem^("", "", {
+          new TuiRefreshItem^("First", "1st", {
+            new TuiRefreshItem^("First (1)", "1st (1)")
+            new TuiRefreshItem^("Second (1)", "2nd (1)")
+            new TuiRefreshItem^("Third (1)", "3rd (1)")
+          })
+          new TuiRefreshItem^("Second", "2nd", {
+            new TuiRefreshItem^("First (2)", "1st (2)")
+            new TuiRefreshItem^("Second (2)", "2nd (2)")
+            new TuiRefreshItem^("Third (2)", "3rd (2)")
+          })
+          new TuiRefreshItem^("Third", "3rd")
+          new TuiRefreshItem^("Fourth", "4th")
+        });
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+
+
+        }
+      ]]></ref.Ctor>
+      <TabPage ref.Name="self" Text="BindableTreeView">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0 ">
+            <Flow AlignmentToParent="left:0 top:0 right:0 bottom:0" RowPadding="0" ColumnPadding="1" MinSizeLimitation="LimitToElementAndChildren">
+              <FlowItem>
+                <Button Text="Use Name">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  treeView.TextProperty = func(value:object):string
+                  {
+                    return (cast (TuiRefreshItem^) value).Name;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Use Title">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  treeView.TextProperty = func(value:object):string
+                  {
+                    return (cast (TuiRefreshItem^) value).Title;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="*First">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var data = self.rootItem.Children[0];
+                  data.Name = data.Name == "First" ? "One" : "First";
+                  data.Title = data.Title == "1st" ? "One" : "1st";
+                  treeView.NotifyNodeDataModified(data);
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="*First/Second">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var data = self.rootItem.Children[0].Children[1];
+                  data.Name = data.Name == "Second (1)" ? "Two (1)" : "Second (1)";
+                  data.Title = data.Title == "2nd (1)" ? "Two (1)" : "2nd (1)";
+                  treeView.NotifyNodeDataModified(data);
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+            </Flow>
+          </Cell>
+          <Cell Site="row:1 column:0 ">
+            <BindableTreeView ref.Name="treeView" env.ItemType="tuidemo::TuiRefreshItem^">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              <att.ItemSource-eval>self.rootItem</att.ItemSource-eval>
+              <att.ReverseMappingProperty>DoNotUse</att.ReverseMappingProperty>
+              <att.TextProperty>Name</att.TextProperty>
+              <att.ChildrenProperty>Children</att.ChildrenProperty>
+            </BindableTreeView>
+          </Cell>
+          <Cell Site="row:2 column:0 ">
+            <Stack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <StackItem>
+                <Label Text="Item identities: First=Task; Second=Reminder; Third/Fourth=Tip" />
+              </StackItem>
+            </Stack>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+  <Instance name="RefreshBindableDataGridTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiRefreshBindableDataGridTabPage" xmlns:demo="tuidemo::*">
+      <ref.Members><![CDATA[
+        var items : observe TuiRefreshItem^[] = {
+          new TuiRefreshItem^("First", "1st")
+          new TuiRefreshItem^("Second", "2nd")
+          new TuiRefreshItem^("Third", "3rd")
+          new TuiRefreshItem^("Fourth", "4th")
+        };
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+        }
+      ]]></ref.Ctor>
+      <TabPage ref.Name="self" Text="BindableDataGrid">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0 ">
+            <Flow AlignmentToParent="left:0 top:0 right:0 bottom:0" RowPadding="0" ColumnPadding="1" MinSizeLimitation="LimitToElementAndChildren">
+              <FlowItem>
+                <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="6">
+                  <att.BoundsComposition-set PreferredMinSize="x:16" />
+                  <att.ListControl>
+                    <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                      <att.Items>
+                        <TextItem Text="BigIcon" />
+                        <TextItem Text="SmallIcon" />
+                        <TextItem Text="List" />
+                        <TextItem Text="Tile" />
+                        <TextItem Text="Information" />
+                        <TextItem Text="Detail" />
+                        <TextItem Text="DataGrid" />
+                      </att.Items>
+                    </TextList>
+                  </att.ListControl>
+                  <ev.SelectedIndexChanged-eval><![CDATA[
+                  {
+                    switch (comboView.SelectedIndex)
+                    {
+                      case 0:
+                      {
+                        dataGrid.View = BigIcon;
+                      }
+                      case 1:
+                      {
+                        dataGrid.View = SmallIcon;
+                      }
+                      case 2:
+                      {
+                        dataGrid.View = ListViewView::List;
+                      }
+                      case 3:
+                      {
+                        dataGrid.View = Tile;
+                      }
+                      case 4:
+                      {
+                        dataGrid.View = Information;
+                      }
+                      case 5:
+                      {
+                        dataGrid.View = Detail;
+                      }
+                      case 6:
+                      {
+                        dataGrid.SetViewToDefault();
+                      }
+                    }
+                  }
+                ]]></ev.SelectedIndexChanged-eval>
+                </ComboBox>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Use Name">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  dataGrid.Columns[0].TextProperty = func(value:object):string
+                  {
+                    return (cast (TuiRefreshItem^) value).Name;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Use Title">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  dataGrid.Columns[0].TextProperty = func(value:object):string
+                  {
+                    return (cast (TuiRefreshItem^) value).Title;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="*Sub1">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var s = self.items[0].Sub1;
+                  self.items[0].Sub1 = s == "One" ? "SubColumn" : "One";
+                  dataGrid.NotifyItemDataModified(0, 1);
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="*DataColumn">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var s = dataGrid.DataColumns[0];
+                  var c = dataGrid.DataColumns.Count;
+                  if (c == 3)
+                  {
+                    if (s == 0)
+                    {
+                      dataGrid.DataColumns[0] = 1;
+                    }
+                    else
+                    {
+                      dataGrid.DataColumns.RemoveAt(2);
+                    }
+                  }
+                  else
+                  {
+                    if (s == 0)
+                    {
+                      dataGrid.DataColumns.Add(2);
+                    }
+                    else
+                    {
+                      dataGrid.DataColumns[0] = 0;
+                    }
+                  }
+                  var projection = "[";
+                  for (i in range [0, dataGrid.DataColumns.Count - 1])
+                  {
+                    if (i > 0) { projection = projection & ","; }
+                    projection = projection & cast string dataGrid.DataColumns[i];
+                  }
+                  dataProjection.Text = "DataColumns: " & projection & "]";
+
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="*Column">
+                  <ev.Clicked-eval><![CDATA[
+                {
+                  var s = dataGrid.Columns[1].Text;
+                  var c = dataGrid.Columns.Count;
+                  if (c == 4)
+                  {
+                    if (s == "Category")
+                    {
+                      dataGrid.Columns[1].Text = "What?";
+                      dataGrid.Columns[2].Text = "Wait?";
+                    }
+                    else
+                    {
+                      dataGrid.Columns.RemoveAt(1);
+                    }
+                  }
+                  else
+                  {
+                    if (s == "Size")
+                    {
+                      var column = new DataColumn^();
+                      column.Text = "Category"; column.Size = 15;
+                      column.TextProperty = func(value:object):string
+                      {
+                        return (cast (TuiRefreshItem^) value).Sub1;
+                      };
+                      column.ValueProperty = func(value:object, field:object, update:bool):object
+                      {
+                        var item = cast (TuiRefreshItem^) value;
+                        if (update)
+                        {
+                          item.Sub1 = cast * field;
+                          return null;
+                        }
+                        else
+                        {
+                          return item.Sub1;
+                        }
+                      };
+                      dataGrid.Columns.Insert(1, column);
+                    }
+                    else
+                    {
+                      dataGrid.Columns[1].Text = "Size";
+                    }
+                  }
+                }
+              ]]></ev.Clicked-eval>
+                </Button>
+              </FlowItem>
+            </Flow>
+          </Cell>
+          <Cell Site="row:1 column:0 ">
+            <BindableDataGrid ref.Name="dataGrid" env.ItemType="tuidemo::TuiRefreshItem^">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              <att.ItemSource-eval>self.items</att.ItemSource-eval>
+              <att.Columns>
+                <_ Text="Id" Size="15" TextProperty="Name" ValueProperty="Name" />
+                <_ Text="Category" Size="15" TextProperty="Sub1" ValueProperty="Sub1" />
+                <_ Text="Size" Size="15" TextProperty="Sub2" ValueProperty="Sub2" />
+                <_ Text="File" Size="32" TextProperty="Sub3" ValueProperty="Sub3">
+                  <att.VisualizerFactory>HyperlinkVisualizerTemplate;tuidemo::TuiCellFocusTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
+                  <att.EditorFactory>demo:TuiTextEditor</att.EditorFactory>
+                </_>
+              </att.Columns>
+              <att.DataColumns>
+                <_>0</_>
+                <_>1</_>
+                <_>2</_>
+              </att.DataColumns>
+            </BindableDataGrid>
+          </Cell>
+          <Cell Site="row:2 column:0 ">
+            <Stack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <StackItem>
+                <Label ref.Name="dataProjection" Text="DataColumns: [0,1,2]" />
+              </StackItem>
+              <StackItem>
+                <Label Text-bind="comboView.SelectedIndex == 6 ? &quot;Effective view: DataGrid&quot; : &quot;Effective view: Detail&quot;" />
+              </StackItem>
+              <StackItem>
+                <Label Text="Item identities: First=Task; Second=Reminder; Third/Fourth=Tip" />
+              </StackItem>
+            </Stack>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiTestWindow" xmlns:demo="tuidemo::*">
+      <Window ref.Name="self" Text="TuiMainWindow" ClientSize="x:100 y:30">
+        <Tab>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          <att.Pages>
+            <demo:TuiRefreshTextListTabPage />
+            <demo:TuiRefreshBindableTextListTabPage />
+            <demo:TuiRefreshListViewTabPage />
+            <demo:TuiRefreshBindableListViewTabPage />
+            <demo:TuiRefreshTreeViewTabPage />
+            <demo:TuiRefreshBindableTreeViewTabPage />
+            <demo:TuiRefreshBindableDataGridTabPage />
+          </att.Pages>
+        </Tab>
+      </Window>
+    </Instance>
+  </Instance>
+</Folder>

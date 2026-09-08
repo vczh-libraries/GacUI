@@ -1,4 +1,4 @@
-#include "GuiFakeDialogServiceUIIncludes.h"
+﻿#include "GuiFakeDialogServiceUIIncludes.h"
 
 namespace vl
 {

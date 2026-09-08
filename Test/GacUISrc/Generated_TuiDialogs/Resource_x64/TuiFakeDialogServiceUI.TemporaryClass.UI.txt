@@ -1,0 +1,1231 @@
+﻿================================(1/12)================================
+module <instance>tui_controls::TuiColorComponentControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiColorComponentControl : ::presentation::controls::GuiCustomControl
+    {
+        @cpp:Private
+        var <prop>Value : int = 0;
+
+        func GetValue() : (int)
+        {
+            return <prop>Value;
+        }
+
+        func SetValue(<value> : int) : (void)
+        {
+            if ((<prop>Value != <value>))
+            {
+                (<prop>Value = <value>);
+                ValueChanged();
+            }
+        }
+
+        event ValueChanged();
+
+        prop Value : int{GetValue, SetValue : ValueChanged}
+
+        @cpp:Private
+        var <prop>TextBoxAlt : string = "";
+
+        func GetTextBoxAlt() : (string)
+        {
+            return <prop>TextBoxAlt;
+        }
+
+        func SetTextBoxAlt(<value> : string) : (void)
+        {
+            if ((<prop>TextBoxAlt != <value>))
+            {
+                (<prop>TextBoxAlt = <value>);
+                TextBoxAltChanged();
+            }
+        }
+
+        event TextBoxAltChanged();
+
+        prop TextBoxAlt : string{GetTextBoxAlt, SetTextBoxAlt : TextBoxAltChanged}
+
+        new* ()
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(2/12)================================
+module <instance>tui_controls::TuiColorDialogControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiColorDialogControl : ::presentation::controls::GuiCustomControl
+    {
+        @cpp:Private
+        var <prop>Value : Color = (cast (Color) "#FFFFFF");
+
+        func GetValue() : (Color)
+        {
+            return <prop>Value;
+        }
+
+        func SetValue(<value> : Color) : (void)
+        {
+            if ((<prop>Value != <value>))
+            {
+                (<prop>Value = <value>);
+                ValueChanged();
+            }
+        }
+
+        event ValueChanged();
+
+        prop Value : Color{GetValue, SetValue : ValueChanged}
+
+        func ReadColor() : (Color)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::tui_controls::ITuiDialogStringsStrings^ = ::tui_controls::TuiDialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::tui_controls::ITuiDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::tui_controls::ITuiDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::tui_controls::ITuiDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IColorDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IColorDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IColorDialogViewModel^)
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(3/12)================================
+module <instance>tui_controls::TuiColorDialogWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiColorDialogWindow : ::presentation::controls::GuiWindow
+    {
+        @cpp:Private
+        var <prop>Strings : ::tui_controls::ITuiDialogStringsStrings^ = ::tui_controls::TuiDialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::tui_controls::ITuiDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::tui_controls::ITuiDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::tui_controls::ITuiDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IColorDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IColorDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IColorDialogViewModel^)
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(4/12)================================
+module <instance>tui_controls::TuiFileDialogWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiFileDialogWindow : ::presentation::controls::GuiWindow
+    {
+        func MakeOpenFileDialog() : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        func MakeSaveFileDialog() : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::tui_controls::ITuiDialogStringsStrings^ = ::tui_controls::TuiDialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::tui_controls::ITuiDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::tui_controls::ITuiDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::tui_controls::ITuiDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IFileDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IFileDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IFileDialogViewModel^)
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(5/12)================================
+module <instance>tui_controls::TuiFilePickerControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiFilePickerControl : ::presentation::controls::GuiCustomControl
+    {
+        prop Selection : string{}{GetSelection}
+
+        event RequestClose();
+
+        func GetSelectedFiles() : (IFileDialogFile^{})
+        {
+            raise "Not Implemented";
+        }
+
+        func GetSelection() : (string{})
+        {
+            raise "Not Implemented";
+        }
+
+        func LocateSelectedFolderInTreeView() : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        func CreateFileFilter(filter : IFileDialogFilter^) : (IDataFilter^)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::tui_controls::ITuiDialogStringsStrings^ = ::tui_controls::TuiDialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::tui_controls::ITuiDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::tui_controls::ITuiDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::tui_controls::ITuiDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IFileDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IFileDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IFileDialogViewModel^)
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(6/12)================================
+module <instance>tui_controls::TuiFontNameControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiFontNameControl : ::presentation::controls::GuiCustomControl
+    {
+        @cpp:Private
+        var <prop>Value : string = "";
+
+        func GetValue() : (string)
+        {
+            return <prop>Value;
+        }
+
+        func SetValue(<value> : string) : (void)
+        {
+            if ((<prop>Value != <value>))
+            {
+                (<prop>Value = <value>);
+                ValueChanged();
+            }
+        }
+
+        event ValueChanged();
+
+        prop Value : string{GetValue, SetValue : ValueChanged}
+
+        @cpp:Private
+        var <prop>Legal : bool = true;
+
+        func GetLegal() : (bool)
+        {
+            return <prop>Legal;
+        }
+
+        func SetLegal(<value> : bool) : (void)
+        {
+            if ((<prop>Legal != <value>))
+            {
+                (<prop>Legal = <value>);
+                LegalChanged();
+            }
+        }
+
+        event LegalChanged();
+
+        prop Legal : bool{GetLegal, SetLegal : LegalChanged}
+
+        func InitValue(value : string) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::tui_controls::ITuiDialogStringsStrings^ = ::tui_controls::TuiDialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::tui_controls::ITuiDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::tui_controls::ITuiDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::tui_controls::ITuiDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::ICommonFontDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::ICommonFontDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::ICommonFontDialogViewModel^)
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(7/12)================================
+module <instance>tui_controls::TuiFontSizeControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiFontSizeControl : ::presentation::controls::GuiCustomControl
+    {
+        @cpp:Private
+        var <prop>Value : int = 1;
+
+        func GetValue() : (int)
+        {
+            return <prop>Value;
+        }
+
+        func SetValue(<value> : int) : (void)
+        {
+            if ((<prop>Value != <value>))
+            {
+                (<prop>Value = <value>);
+                ValueChanged();
+            }
+        }
+
+        event ValueChanged();
+
+        prop Value : int{GetValue, SetValue : ValueChanged}
+
+        @cpp:Private
+        var <prop>Legal : bool = true;
+
+        func GetLegal() : (bool)
+        {
+            return <prop>Legal;
+        }
+
+        func SetLegal(<value> : bool) : (void)
+        {
+            if ((<prop>Legal != <value>))
+            {
+                (<prop>Legal = <value>);
+                LegalChanged();
+            }
+        }
+
+        event LegalChanged();
+
+        prop Legal : bool{GetLegal, SetLegal : LegalChanged}
+
+        func InitValue(value : int) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::tui_controls::ITuiDialogStringsStrings^ = ::tui_controls::TuiDialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::tui_controls::ITuiDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::tui_controls::ITuiDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::tui_controls::ITuiDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        new* ()
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(8/12)================================
+module <instance>tui_controls::TuiFullFontDialogWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiFullFontDialogWindow : ::presentation::controls::GuiWindow
+    {
+        @cpp:Private
+        var <prop>Strings : ::tui_controls::ITuiDialogStringsStrings^ = ::tui_controls::TuiDialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::tui_controls::ITuiDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::tui_controls::ITuiDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::tui_controls::ITuiDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IFullFontDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IFullFontDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IFullFontDialogViewModel^)
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(9/12)================================
+module <instance>tui_controls::TuiSimpleFontDialogWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiSimpleFontDialogWindow : ::presentation::controls::GuiWindow
+    {
+        @cpp:Private
+        var <prop>Strings : ::tui_controls::ITuiDialogStringsStrings^ = ::tui_controls::TuiDialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::tui_controls::ITuiDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::tui_controls::ITuiDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::tui_controls::ITuiDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::ISimpleFontDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::ISimpleFontDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::ISimpleFontDialogViewModel^)
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(10/12)================================
+module <instance>tui_controls::TuiMessageBoxButtonTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiMessageBoxButtonTemplate : ::presentation::templates::GuiControlTemplate
+    {
+        @cpp:Private
+        var <prop>ButtonControl : GuiButton* = null;
+
+        func GetButtonControl() : (GuiButton*)
+        {
+            return <prop>ButtonControl;
+        }
+
+        @cpp:Protected
+        func SetButtonControl(<value> : GuiButton*) : (void)
+        {
+            if ((<prop>ButtonControl != <value>))
+            {
+                (<prop>ButtonControl = <value>);
+                ButtonControlChanged();
+            }
+        }
+
+        event ButtonControlChanged();
+
+        prop ButtonControl : GuiButton*{GetButtonControl : ButtonControlChanged}
+
+        func GetButtonText(button : INativeDialogService::MessageBoxButtonsOutput, strings : ITuiDialogStringsStrings^) : (string)
+        {
+            raise "Not Implemented";
+        }
+
+        func GetButtonAlt(button : INativeDialogService::MessageBoxButtonsOutput) : (string)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::tui_controls::ITuiDialogStringsStrings^ = ::tui_controls::TuiDialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::tui_controls::ITuiDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::tui_controls::ITuiDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::tui_controls::ITuiDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetAction() : (presentation::IMessageBoxDialogAction^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop Action : presentation::IMessageBoxDialogAction^{GetAction}
+
+        new* (<ctor-parameter>Action : presentation::IMessageBoxDialogAction^)
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(11/12)================================
+module <instance>tui_controls::TuiMessageBoxWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tui_controls
+{
+    class TuiMessageBoxWindow : ::presentation::controls::GuiWindow
+    {
+        func GetIconText(icon : INativeDialogService::MessageBoxIcons) : (string)
+        {
+            raise "Not Implemented";
+        }
+
+        func GetViewModel() : (presentation::IMessageBoxDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IMessageBoxDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IMessageBoxDialogViewModel^)
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(12/12)================================
+module <localized-strings>tui_controls::TuiDialogStrings;
+
+namespace tui_controls
+{
+    interface ITuiDialogStringsStrings
+    {
+        func Abort() : (::system::String);
+
+        func Blue() : (::system::String);
+
+        func Bold() : (::system::String);
+
+        func Cancel() : (::system::String);
+
+        func Color() : (::system::String);
+
+        func ColorDialogTitle() : (::system::String);
+
+        func Continue() : (::system::String);
+
+        func FileDialogAskCreateFile() : (::system::String);
+
+        func FileDialogAskOverrideFile() : (::system::String);
+
+        func FileDialogErrorEmptySelection() : (::system::String);
+
+        func FileDialogErrorFileExpected() : (::system::String);
+
+        func FileDialogErrorFileNotExist() : (::system::String);
+
+        func FileDialogErrorFolderNotExist() : (::system::String);
+
+        func FileDialogErrorMultipleSelectionNotEnabled() : (::system::String);
+
+        func FileDialogFileName() : (::system::String);
+
+        func FileDialogOpen() : (::system::String);
+
+        func FileDialogSave() : (::system::String);
+
+        func FileDialogTextLoadingFiles() : (::system::String);
+
+        func FileDialogTextLoadingFolders() : (::system::String);
+
+        func FontColorGroup() : (::system::String);
+
+        func FontColorGroup2() : (::system::String);
+
+        func FontDialogTitle() : (::system::String);
+
+        func FontEffectGroup() : (::system::String);
+
+        func FontNameGroup() : (::system::String);
+
+        func FontPreviewGroup() : (::system::String);
+
+        func FontSizeGroup() : (::system::String);
+
+        func Green() : (::system::String);
+
+        func HAA() : (::system::String);
+
+        func Ignore() : (::system::String);
+
+        func Italic() : (::system::String);
+
+        func No() : (::system::String);
+
+        func OK() : (::system::String);
+
+        func Red() : (::system::String);
+
+        func Retry() : (::system::String);
+
+        func Strikeline() : (::system::String);
+
+        func TryAgain() : (::system::String);
+
+        func Underline() : (::system::String);
+
+        func VAA() : (::system::String);
+
+        func Yes() : (::system::String);
+    }
+}
+
+namespace tui_controls
+{
+    var <ls>TuiDialogStrings : ITuiDialogStringsStrings^[::system::Locale] = {};
+}
+
+namespace tui_controls
+{
+    class TuiDialogStrings
+    {
+        static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (::tui_controls::ITuiDialogStringsStrings^)
+        {
+            return new (::tui_controls::ITuiDialogStringsStrings^)
+            {
+                override func Abort() : (::system::String)
+                {
+                    return "Abort";
+                }
+
+                override func Blue() : (::system::String)
+                {
+                    return "Blue:";
+                }
+
+                override func Bold() : (::system::String)
+                {
+                    return "Bold";
+                }
+
+                override func Cancel() : (::system::String)
+                {
+                    return "Cancel";
+                }
+
+                override func Color() : (::system::String)
+                {
+                    return "Color:";
+                }
+
+                override func ColorDialogTitle() : (::system::String)
+                {
+                    return "Choose Color";
+                }
+
+                override func Continue() : (::system::String)
+                {
+                    return "Continue";
+                }
+
+                override func FileDialogAskCreateFile() : (::system::String)
+                {
+                    return "Do you want to create the following file(s):";
+                }
+
+                override func FileDialogAskOverrideFile() : (::system::String)
+                {
+                    return "Do you want to override the following file(s):";
+                }
+
+                override func FileDialogErrorEmptySelection() : (::system::String)
+                {
+                    return "At least one file must be selected.";
+                }
+
+                override func FileDialogErrorFileExpected() : (::system::String)
+                {
+                    return "File(s) expected but folder(s) selected:";
+                }
+
+                override func FileDialogErrorFileNotExist() : (::system::String)
+                {
+                    return "File(s) not exist:";
+                }
+
+                override func FileDialogErrorFolderNotExist() : (::system::String)
+                {
+                    return "Folder not exist:";
+                }
+
+                override func FileDialogErrorMultipleSelectionNotEnabled() : (::system::String)
+                {
+                    return "Multiple selection is not enabled in this dialog.";
+                }
+
+                override func FileDialogFileName() : (::system::String)
+                {
+                    return "File Name:";
+                }
+
+                override func FileDialogOpen() : (::system::String)
+                {
+                    return "Open";
+                }
+
+                override func FileDialogSave() : (::system::String)
+                {
+                    return "Save";
+                }
+
+                override func FileDialogTextLoadingFiles() : (::system::String)
+                {
+                    return "(Loading Folders and Files...)";
+                }
+
+                override func FileDialogTextLoadingFolders() : (::system::String)
+                {
+                    return "(Loading...)";
+                }
+
+                override func FontColorGroup() : (::system::String)
+                {
+                    return "Color:";
+                }
+
+                override func FontColorGroup2() : (::system::String)
+                {
+                    return "Pick a Color:";
+                }
+
+                override func FontDialogTitle() : (::system::String)
+                {
+                    return "Choose Font";
+                }
+
+                override func FontEffectGroup() : (::system::String)
+                {
+                    return "Effect:";
+                }
+
+                override func FontNameGroup() : (::system::String)
+                {
+                    return "Font:";
+                }
+
+                override func FontPreviewGroup() : (::system::String)
+                {
+                    return "Preview:";
+                }
+
+                override func FontSizeGroup() : (::system::String)
+                {
+                    return "Size:";
+                }
+
+                override func Green() : (::system::String)
+                {
+                    return "Green:";
+                }
+
+                override func HAA() : (::system::String)
+                {
+                    return "Horizontal Antialias";
+                }
+
+                override func Ignore() : (::system::String)
+                {
+                    return "Ignore";
+                }
+
+                override func Italic() : (::system::String)
+                {
+                    return "Italic";
+                }
+
+                override func No() : (::system::String)
+                {
+                    return "No";
+                }
+
+                override func OK() : (::system::String)
+                {
+                    return "OK";
+                }
+
+                override func Red() : (::system::String)
+                {
+                    return "Red:";
+                }
+
+                override func Retry() : (::system::String)
+                {
+                    return "Retry";
+                }
+
+                override func Strikeline() : (::system::String)
+                {
+                    return "Strike-through";
+                }
+
+                override func TryAgain() : (::system::String)
+                {
+                    return "Try Again";
+                }
+
+                override func Underline() : (::system::String)
+                {
+                    return "Underline";
+                }
+
+                override func VAA() : (::system::String)
+                {
+                    return "Vertical Antialias";
+                }
+
+                override func Yes() : (::system::String)
+                {
+                    return "Yes";
+                }
+            };
+        }
+
+        static func Install(<ls>locale : ::system::Locale, <ls>impl : ITuiDialogStringsStrings^) : (void)
+        {
+            if (<ls>TuiDialogStrings.Keys.Contains(<ls>locale))
+            {
+                raise (("Localized strings \"tui_controls::TuiDialogStrings\" has already registered for locale \"" & <ls>locale) & "\".");
+            }
+            <ls>TuiDialogStrings.Set(<ls>locale, <ls>impl);
+        }
+
+        static func Get(<ls>locale : ::system::Locale) : (ITuiDialogStringsStrings^)
+        {
+            if (<ls>TuiDialogStrings.Keys.Contains(<ls>locale))
+            {
+                return <ls>TuiDialogStrings[<ls>locale];
+            }
+            return <ls>TuiDialogStrings[(cast (::system::Locale) "en-US")];
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+namespace tui_controls
+{
+    static
+    {
+        ::tui_controls::TuiDialogStrings::Install((cast (::system::Locale) "en-US"), TuiDialogStrings::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
+    }
+}
+

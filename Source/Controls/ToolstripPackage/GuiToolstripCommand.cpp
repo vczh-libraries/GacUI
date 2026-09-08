@@ -247,7 +247,15 @@ GuiToolstripCommand
 
 			void GuiToolstripCommand::SetShortcutBuilder(const WString& value)
 			{
-				BuildShortcut(value);
+				if (value.Length() == 0)
+				{
+					shortcutBuilder = nullptr;
+					ReplaceShortcut(nullptr);
+				}
+				else
+				{
+					BuildShortcut(value);
+				}
 			}
 
 			bool GuiToolstripCommand::GetEnabled()

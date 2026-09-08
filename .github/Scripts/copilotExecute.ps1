@@ -2,7 +2,8 @@ param(
     [string]$Mode = $null,
     [string]$Executable = $null,
     [string]$Configuration = $null,
-    [string]$Platform = $null
+    [string]$Platform = $null,
+    [switch]$Interactive
 )
 
 if ([string]::IsNullOrEmpty($Mode)) {
@@ -14,6 +15,10 @@ if ([string]::IsNullOrEmpty($Executable)) {
 
 if (($Mode -ne "CLI") -and ($Mode -ne "UnitTest")) {
     throw "Invalid mode: $Mode. Allowed values are CLI or UnitTest."
+}
+
+if ($Interactive -and ($Mode -ne "CLI")) {
+    throw "Interactive execution is available only in CLI mode."
 }
 
 if (([string]::IsNullOrEmpty($Configuration)) -ne ([string]::IsNullOrEmpty($Platform))) {
@@ -67,6 +72,19 @@ if ($Mode -eq "UnitTest") {
   }
   Rename-Item -Path $logFileUnfinished -NewName $logFile -Force
   Remove-Item -Path $logFileUnfinished, $logFileMemoryLeaks -Force -ErrorAction SilentlyContinue
+} elseif ($Interactive) {
+  # TUI backends require inherited console handles, without a PowerShell output pipe.
+  $interactiveArguments = @{
+    FilePath = $latestFile.Path
+    NoNewWindow = $true
+    Wait = $true
+    PassThru = $true
+  }
+  if (-not [string]::IsNullOrWhiteSpace($debugArgs)) {
+    $interactiveArguments.ArgumentList = $debugArgs
+  }
+  $interactiveProcess = Start-Process @interactiveArguments
+  exit $interactiveProcess.ExitCode
 } else {
   $commandLine = "`"$($latestFile.Path)`" $debugArgs"
   & { $commandLine; & cmd.exe /S /C $commandLine 2>&1 }

@@ -4,6 +4,7 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 #include "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
+#include "../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUIReflection.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 
 using namespace vl;
@@ -41,6 +42,7 @@ void GuiMain()
 #define FULLCONTROLTEST_BINARY	L"../GacUISrc/Generated_FullControlTest/Resource_x86/FullControlTest.UI.bin"
 #endif
 	LoadGuiFakeDialogServiceUITypes();
+	LoadTuiFakeDialogServiceUITypes();
 	{
 		FileStream fileStream(GetResourcePath() + DARKSKIN_BINARY, FileStream::ReadOnly);
 		GetResourceManager()->LoadResourceOrPending(fileStream, GuiResourceUsage::InstanceClass);

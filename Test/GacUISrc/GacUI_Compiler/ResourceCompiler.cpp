@@ -279,13 +279,16 @@ void MergeCppFiles(
 
 		if (file.Exists())
 		{
-			auto originalCode = file.ReadAllTextByBom();
-			if (originalCode == code)
+			WString originalCode;
+			BomEncoder::Encoding encoding;
+			bool containsBom;
+			CHECK_ERROR(file.ReadAllTextWithEncodingTesting(originalCode, encoding, containsBom), L"Cannot read generated C++ file.");
+			if (originalCode == code && encoding == BomEncoder::Utf8 && containsBom)
 			{
 				continue;
 			}
 		}
 
-		file.WriteAllText(code, false, BomEncoder::Mbcs);
+		file.WriteAllText(code, true, BomEncoder::Utf8);
 	}
 }

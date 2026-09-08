@@ -57,6 +57,7 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
     <Import Project="..\Generated_DarkSkin\Generated_DarkSkin.vcxitems" Label="Shared" />
+    <Import Project="..\Generated_TuiSkin\Generated_TuiSkin.vcxitems" Label="Shared" />
     <Import Project="..\Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems" Label="Shared" />
     <Import Project="..\Source_GacUI_Utilities_Reflection\Source_GacUI_Utilities_Reflection.vcxitems" Label="Shared" />
   </ImportGroup>

@@ -158,6 +158,7 @@ Templates
 			F(GuiMenuTemplate,					GuiWindowTemplate)			\
 			F(GuiButtonTemplate,				GuiControlTemplate)			\
 			F(GuiSelectableButtonTemplate,		GuiButtonTemplate)			\
+			F(TuiListItemBackgroundTemplate,		GuiSelectableButtonTemplate)	\
 			F(GuiToolstripButtonTemplate,		GuiSelectableButtonTemplate)\
 			F(GuiListViewColumnHeaderTemplate,	GuiToolstripButtonTemplate)	\
 			F(GuiComboBoxTemplate,				GuiToolstripButtonTemplate)	\
@@ -204,6 +205,12 @@ Control Template
 
 #define GuiSelectableButtonTemplate_PROPERTIES(F)\
 				F(GuiSelectableButtonTemplate, bool, Selected, false)\
+
+#define TuiListItemBackgroundTemplate_PROPERTIES(F)\
+				F(TuiListItemBackgroundTemplate, Color, TextColor, {})\
+				F(TuiListItemBackgroundTemplate, Color, SelectedTextColor, {})\
+				F(TuiListItemBackgroundTemplate, Color, SelectedBackgroundColor, {})\
+				F(TuiListItemBackgroundTemplate, bool, GridRow, false)\
 
 #define GuiToolstripButtonTemplate_PROPERTIES(F)\
 				F(GuiToolstripButtonTemplate, TemplateProperty<GuiMenuTemplate>, SubMenuTemplate, {})\

@@ -1,0 +1,200 @@
+<Folder>
+  <Instance name="TuiFontNameControlComponent">
+    <Instance ref.CodeBehind="false" ref.Class="tui_controls::TuiFontNameControl">
+      <ref.LocalizedStrings Name="Strings" Class="tui_controls::TuiDialogStrings" Default="true" />
+      <ref.Parameter Name="ViewModel" Class="presentation::ICommonFontDialogViewModel" />
+      <ref.Members><![CDATA[
+        prop Value : string = "" {}
+        prop Legal : bool = true {}
+        func InitValue(value: string) : void {}
+      ]]></ref.Members>
+      <CustomControl ref.Name="self" Value-bind="textBox.Text" Legal-bind="self.Value == &quot;TuiFont&quot;">
+        <GroupBox Text-str="FontNameGroup()">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          <SinglelineTextBox ref.Name="textBox" Text="TuiFont" EditMode="Selectable" Alt="F">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          </SinglelineTextBox>
+        </GroupBox>
+      </CustomControl>
+    </Instance>
+  </Instance>
+  <Instance name="TuiFontSizeControlComponent">
+    <Instance ref.CodeBehind="false" ref.Class="tui_controls::TuiFontSizeControl">
+      <ref.LocalizedStrings Name="Strings" Class="tui_controls::TuiDialogStrings" Default="true" />
+      <ref.Members><![CDATA[
+        prop Value : int = 1 {}
+        prop Legal : bool = true {}
+        func InitValue(value: int) : void {}
+      ]]></ref.Members>
+      <CustomControl ref.Name="self" Value-bind="cast int textBox.Text ?? -1" Legal-bind="self.Value == 1">
+        <GroupBox Text-str="FontSizeGroup()">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          <SinglelineTextBox ref.Name="textBox" Text="1" EditMode="Selectable" Alt="S">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          </SinglelineTextBox>
+        </GroupBox>
+      </CustomControl>
+    </Instance>
+  </Instance>
+  <Instance name="TuiSimpleFontDialogWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="tui_controls::TuiSimpleFontDialogWindow" xmlns:g="tui_controls::*">
+      <ref.LocalizedStrings Name="Strings" Class="tui_controls::TuiDialogStrings" Default="true" />
+      <ref.Parameter Name="ViewModel" Class="presentation::ISimpleFontDialogViewModel" />
+      <ref.Ctor><![CDATA[
+        {
+          nameControl.InitValue(ViewModel.FontFamily);
+          sizeControl.InitValue(ViewModel.FontSize);
+        }
+      ]]></ref.Ctor>
+      <Window ref.Name="self" ClientSize="x:46 y:12" ShowInTaskBar="false" MaximizedBox="false" MinimizedBox="false" IconVisible="false" Text-str="FontDialogTitle()">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="1">
+          <att.Rows>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0 columnSpan:3">
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+              <att.Rows>
+                <_>composeType:MinSize</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Columns>
+              <Cell Site="row:0 column:0 ">
+                <g:TuiFontNameControl ref.Name="nameControl" ViewModel-eval="ViewModel">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                </g:TuiFontNameControl>
+              </Cell>
+              <Cell Site="row:0 column:1 ">
+                <g:TuiFontSizeControl ref.Name="sizeControl">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                </g:TuiFontSizeControl>
+              </Cell>
+              <Cell Site="row:2 column:0 columnSpan:2">
+                <GroupBox Text-str="FontPreviewGroup()">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  <Label Text="ABCxyz 你好">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  </Label>
+                </GroupBox>
+              </Cell>
+            </Table>
+          </Cell>
+          <Cell Site="row:1 column:1 ">
+            <Button Text-str="OK()" Alt="O">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              <ev.Clicked-eval><![CDATA[{ViewModel.Confirmed = true; ViewModel.FontFamily = "TuiFont"; ViewModel.FontSize = 1; self.Close();}]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:2 ">
+            <Button Text-str="Cancel()" Alt="C">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              <ev.Clicked-eval><![CDATA[{self.Close();}]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
+  <Instance name="TuiFullFontDialogWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="tui_controls::TuiFullFontDialogWindow" xmlns:g="tui_controls::*">
+      <ref.LocalizedStrings Name="Strings" Class="tui_controls::TuiDialogStrings" Default="true" />
+      <ref.Parameter Name="ViewModel" Class="presentation::IFullFontDialogViewModel" />
+      <ref.Ctor><![CDATA[
+        {
+          nameControl.InitValue(ViewModel.Font.fontFamily);
+          sizeControl.InitValue(ViewModel.Font.size);
+          checkBold.Selected = ViewModel.Font.bold;
+          checkItalic.Selected = ViewModel.Font.italic;
+          checkUnderline.Selected = ViewModel.Font.underline;
+          checkStrikeline.Selected = ViewModel.Font.strikeline;
+        }
+      ]]></ref.Ctor>
+      <Window ref.Name="self" ClientSize="x:62 y:15" ShowInTaskBar="false" MaximizedBox="false" MinimizedBox="false" IconVisible="false" Text-str="FontDialogTitle()">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="1">
+          <att.Rows>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0 columnSpan:3">
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+              <att.Rows>
+                <_>composeType:MinSize</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Columns>
+              <Cell Site="row:0 column:0 ">
+                <g:TuiFontNameControl ref.Name="nameControl" ViewModel-eval="ViewModel">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                </g:TuiFontNameControl>
+              </Cell>
+              <Cell Site="row:0 column:1 ">
+                <g:TuiFontSizeControl ref.Name="sizeControl">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                </g:TuiFontSizeControl>
+              </Cell>
+              <Cell Site="row:1 column:0 columnSpan:2">
+                <Stack Direction="Horizontal" Padding="1" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <StackItem>
+                    <CheckBox ref.Name="checkBold" Text-str="Bold()" Alt="B" />
+                  </StackItem>
+                  <StackItem>
+                    <CheckBox ref.Name="checkItalic" Text-str="Italic()" Alt="I" />
+                  </StackItem>
+                  <StackItem>
+                    <CheckBox ref.Name="checkUnderline" Text-str="Underline()" Alt="U" />
+                  </StackItem>
+                  <StackItem>
+                    <CheckBox ref.Name="checkStrikeline" Text-str="Strikeline()" Alt="T" />
+                  </StackItem>
+                </Stack>
+              </Cell>
+              <Cell Site="row:2 column:0 columnSpan:2">
+                <GroupBox Text-str="FontPreviewGroup()">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  <Label Text="ABCxyz 你好" Font-bind="{fontFamily: &quot;TuiFont&quot; size:1 bold:checkBold.Selected italic:checkItalic.Selected underline:checkUnderline.Selected strikeline:checkStrikeline.Selected}" TextColor-bind="ViewModel.Color">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  </Label>
+                </GroupBox>
+              </Cell>
+            </Table>
+          </Cell>
+          <Cell Site="row:1 column:0 ">
+            <Button Text="Pick a Color" Alt="K">
+              <ev.Clicked-eval><![CDATA[{ViewModel.SelectColor(self);}]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:1 ">
+            <Button Text-str="OK()" Alt="O">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              <ev.Clicked-eval><![CDATA[{ViewModel.Confirmed = true; ViewModel.Font = {fontFamily:"TuiFont" size:1 bold:checkBold.Selected italic:checkItalic.Selected underline:checkUnderline.Selected strikeline:checkStrikeline.Selected antialias:ViewModel.Font.antialias verticalAntialias:ViewModel.Font.verticalAntialias}; self.Close();}]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:2 ">
+            <Button Text-str="Cancel()" Alt="C">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+              <ev.Clicked-eval><![CDATA[{self.Close();}]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
+</Folder>

@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.2.11415.280
@@ -116,6 +116,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RemotingTest_Rendering_Win3
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RemotingTest_RvmHost", "RemotingTest_RvmHost\RemotingTest_RvmHost.vcxproj", "{3C1C26F1-0A18-4751-B984-EE28EEA11359}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Generated_TuiSkin", "Generated_TuiSkin\Generated_TuiSkin.vcxitems", "{4F97DA85-AC49-4314-B0F6-4534016847D8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Generated_TuiControlTest", "Generated_TuiControlTest\Generated_TuiControlTest.vcxitems", "{6F196E34-BD65-40C8-B05F-A6E510E942CA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest_Tui", "CppTest_Tui\CppTest_Tui.vcxproj", "{C5EB4B61-3CE7-4D19-ABCF-73BC9AA99478}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -124,6 +130,14 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C5EB4B61-3CE7-4D19-ABCF-73BC9AA99478}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C5EB4B61-3CE7-4D19-ABCF-73BC9AA99478}.Debug|Win32.Build.0 = Debug|Win32
+		{C5EB4B61-3CE7-4D19-ABCF-73BC9AA99478}.Debug|x64.ActiveCfg = Debug|x64
+		{C5EB4B61-3CE7-4D19-ABCF-73BC9AA99478}.Debug|x64.Build.0 = Debug|x64
+		{C5EB4B61-3CE7-4D19-ABCF-73BC9AA99478}.Release|Win32.ActiveCfg = Release|Win32
+		{C5EB4B61-3CE7-4D19-ABCF-73BC9AA99478}.Release|Win32.Build.0 = Release|Win32
+		{C5EB4B61-3CE7-4D19-ABCF-73BC9AA99478}.Release|x64.ActiveCfg = Release|x64
+		{C5EB4B61-3CE7-4D19-ABCF-73BC9AA99478}.Release|x64.Build.0 = Release|x64
 		{456FDC57-9687-4607-86A6-D43B7E72E740}.Debug|Win32.ActiveCfg = Debug|Win32
 		{456FDC57-9687-4607-86A6-D43B7E72E740}.Debug|Win32.Build.0 = Debug|Win32
 		{456FDC57-9687-4607-86A6-D43B7E72E740}.Debug|x64.ActiveCfg = Debug|x64
@@ -313,6 +327,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{4F97DA85-AC49-4314-B0F6-4534016847D8} = {1A152782-BECB-4D33-AD39-F54D3B234262}
+		{6F196E34-BD65-40C8-B05F-A6E510E942CA} = {1A152782-BECB-4D33-AD39-F54D3B234262}
+		{C5EB4B61-3CE7-4D19-ABCF-73BC9AA99478} = {F5C3C996-E0C1-41AB-BAB4-22D1AC513EA4}
 		{CF702B13-73B3-47F2-8AFC-89D1C25B007E} = {1A152782-BECB-4D33-AD39-F54D3B234262}
 		{4A3FAA16-FD8E-4DE4-804A-95F0F45CBD82} = {1A152782-BECB-4D33-AD39-F54D3B234262}
 		{A2A0D66D-5528-4A86-B0FF-8ACC908E7DE4} = {A88BF65F-88CD-425B-9BA0-CA78D3540972}
@@ -364,6 +381,12 @@ Global
 		SolutionGuid = {23701A6D-5A6A-4396-9B46-EC3D6DD7B20F}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Generated_TuiSkin\Generated_TuiSkin.vcxitems*{04d56a3c-3a31-4cbd-b1f1-955fa5848057}*SharedItemsImports = 4
+		Generated_TuiSkin\Generated_TuiSkin.vcxitems*{338e42de-9928-40b7-9f76-ea990f15d248}*SharedItemsImports = 4
+		Generated_TuiSkin\Generated_TuiSkin.vcxitems*{4c523741-6f2c-49cc-a9e8-719ae6892db8}*SharedItemsImports = 4
+		Generated_TuiSkin\Generated_TuiSkin.vcxitems*{4f97da85-ac49-4314-b0f6-4534016847d8}*SharedItemsImports = 9
+		Generated_TuiControlTest\Generated_TuiControlTest.vcxitems*{6f196e34-bd65-40c8-b05f-a6e510e942ca}*SharedItemsImports = 9
+		Generated_TuiControlTest\Generated_TuiControlTest.vcxitems*{c5eb4b61-3ce7-4d19-abcf-73bc9aa99478}*SharedItemsImports = 4
 		Generated_DarkSkin\Generated_DarkSkin.vcxitems*{04d56a3c-3a31-4cbd-b1f1-955fa5848057}*SharedItemsImports = 4
 		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{04d56a3c-3a31-4cbd-b1f1-955fa5848057}*SharedItemsImports = 4
 		Source_GacUI_UnitTest_Controls\Source_GacUI_UnitTest_Controls.vcxitems*{07ce9594-f378-4175-b287-6deb74f16c1c}*SharedItemsImports = 4

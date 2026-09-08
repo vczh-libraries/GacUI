@@ -1,0 +1,73 @@
+<Folder>
+  <Instance name="ToolstripTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiToolstripTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color-eval="tuiskin::tuiColors.MenuBackground" />
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="ToolstripMenuTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiToolstripMenuTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <MenuTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container">
+        <SolidBackground Color-eval="tuiskin::tuiColors.MenuBackground" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <elements:TuiBorder Color-eval="tuiskin::tuiColors.ControlBorder" />
+          <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1" />
+        </Bounds>
+      </MenuTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="MenuSplitterTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiMenuSplitterTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="y:1">
+        <elements:TuiBorder Color-eval="tuiskin::tuiColors.MenuText" />
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="MenuBarButtonTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiMenuBarButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ToolstripButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>tuiskin::TuiToolstripMenuTemplate</att.SubMenuTemplate>
+        <SolidBackground ref.Style="menuBackground" />
+        <Bounds AlignmentToParent="left:1 top:0 right:1 bottom:0">
+          <SolidLabel ref.Style="menuText" Text-bind="self.Text" Font-bind="{fontFamily:self.Font.fontFamily size:1 bold:self.Focused underline:(self.State != ButtonState::Normal)}" />
+        </Bounds>
+      </ToolstripButtonTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="MenuItemButtonTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiMenuItemButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ToolstripButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>tuiskin::TuiToolstripMenuTemplate</att.SubMenuTemplate>
+        <SolidBackground ref.Style="menuBackground" />
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Absolute absolute:2</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Absolute absolute:2</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <SolidLabel ref.Style="menuText" Text-bind="self.Selected ? &quot;✓&quot; : &quot;&quot;" />
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <SharedSizeItem Group="MenuItem-Text" SharedWidth="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <SolidLabel ref.Style="menuText" Text-bind="self.Text" Font-bind="{fontFamily:self.Font.fontFamily size:1 bold:self.Focused underline:(self.State != ButtonState::Normal)}" />
+            </SharedSizeItem>
+          </Cell>
+          <Cell Site="row:0 column:2">
+            <SharedSizeItem Group="MenuItem-Shortcut" SharedWidth="true" AlignmentToParent="left:1 top:0 right:1 bottom:0">
+              <SolidLabel ref.Style="menuText" Text-bind="self.ShortcutText" />
+            </SharedSizeItem>
+          </Cell>
+          <Cell Site="row:0 column:3">
+            <SolidLabel ref.Style="menuText" Text-bind="self.SubMenuExisting ? &quot;▶&quot; : &quot;&quot;" HorizontalAlignment="Right" />
+          </Cell>
+        </Table>
+      </ToolstripButtonTemplate>
+    </Instance>
+  </Instance>
+</Folder>

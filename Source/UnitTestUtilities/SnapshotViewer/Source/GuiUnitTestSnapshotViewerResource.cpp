@@ -1,4 +1,4 @@
-#include "GuiUnitTestSnapshotViewerIncludes.h"
+﻿#include "GuiUnitTestSnapshotViewerIncludes.h"
 
 namespace vl
 {

@@ -24,6 +24,8 @@ cd SOLUTION-ROOT
 
 `-Mode` and `-Executable` are required.
 
+For a TUI application, open Windows Terminal in the solution folder and add `-Interactive` to CLI mode. This opt-in path inherits the terminal's input/output handles and waits for the application to exit without redirecting its output. For example, use `copilotExecute.ps1 -Mode CLI -Executable CppTest_Tui -Configuration Debug -Platform x64 -Interactive`. Ordinary CLI and UnitTest execution remain unchanged.
+
 `-Configuration` and `-Platform` arguments are available to specify the target configuration:
 - When both arguments are omitted, the last build configuration will be picked up.
 - Both arguments should be provided together or omitted together.

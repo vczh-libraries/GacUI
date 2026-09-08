@@ -1,4 +1,6 @@
 #include "GuiListControls.h"
+#include "TuiItemTemplates.h"
+#include "../../PlatformProviders/TUI/TuiApplication.h"
 #include "../Templates/GuiControlTemplates.h"
 #include "../../Application/GraphicsHost/GuiGraphicsHost.h"
 #include "../GuiButtonControls.h"
@@ -20,11 +22,13 @@ GuiListControl::ItemCallback
 			GuiListControl::ItemStyleRecord GuiListControl::ItemCallback::InstallStyle(ItemStyle* style, vint itemIndex)
 			{
 				templates::GuiTemplate* bounds = style;
+				GuiSelectableButton* tuiBackground = nullptr;
 				if (listControl->GetDisplayItemBackground())
 				{
 					style->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
 					auto backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
+					if (GetTuiApplication()) tuiBackground = backgroundButton;
 					if (auto backgroundStyle = listControl->TypedControlTemplateObject(true)->GetBackgroundTemplate())
 					{
 						backgroundButton->SetControlTemplate(backgroundStyle);
@@ -46,6 +50,7 @@ GuiListControl::ItemCallback
 				}
 
 				listControl->OnStyleInstalled(itemIndex, style, false);
+				if (tuiBackground) list::TuiInitializeItemBackground(style, tuiBackground);
 				return { style,bounds };
 			}
 

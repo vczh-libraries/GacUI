@@ -1,0 +1,57 @@
+<Folder>
+  <Instance name="DatePickerTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiDatePickerTabPage">
+      <TabPage ref.Name="self" Text="DatePicker">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="1" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <DatePicker ref.Name="dp1" Alt="D">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+            </DatePicker>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <DatePicker ref.Name="dp2" Alt="D">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+            </DatePicker>
+          </Cell>
+          <Cell Site="row:1 column:0">
+            <DateComboBox ref.Name="dc1" Alt="D">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+            </DateComboBox>
+          </Cell>
+          <Cell Site="row:1 column:1">
+            <DateComboBox ref.Name="dc2" Alt="D">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+            </DateComboBox>
+          </Cell>
+          <Cell Site="row:2 column:0 columnSpan:2">
+            <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical" Padding="0">
+              <StackItem>
+                <SolidLabel Font-bind="self.DisplayFont" Color-eval="tuiskin::TuiTheme::GetColorPackage().ControlText" Text-format="DP1: $(dp1.Date)" />
+              </StackItem>
+              <StackItem>
+                <SolidLabel Font-bind="self.DisplayFont" Color-eval="tuiskin::TuiTheme::GetColorPackage().ControlText" Text-format="DP2: $(dp2.Date)" />
+              </StackItem>
+              <StackItem>
+                <SolidLabel Font-bind="self.DisplayFont" Color-eval="tuiskin::TuiTheme::GetColorPackage().ControlText" Text-format="DC1: $(dc1.SelectedDate)" />
+              </StackItem>
+              <StackItem>
+                <SolidLabel Font-bind="self.DisplayFont" Color-eval="tuiskin::TuiTheme::GetColorPackage().ControlText" Text-format="DC2: $(dc2.SelectedDate)" />
+              </StackItem>
+            </Stack>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+</Folder>

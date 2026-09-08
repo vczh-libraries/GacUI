@@ -1,0 +1,66 @@
+<Folder>
+  <Instance name="CustomControlTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiCustomControlTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren"></ControlTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="SystemFrameWindowTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiSystemFrameWindowTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <WindowTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container" CustomFrameEnabled="false">
+        <SolidBackground ref.Style="background" />
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+      </WindowTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="TooltipTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiTooltipTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <WindowTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container">
+        <SolidBackground ref.Style="background" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <elements:TuiBorder Color-eval="tuiskin::tuiColors.ControlBorder" />
+        </Bounds>
+        <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1" />
+      </WindowTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="CustomFrameWindowTemplateResource">
+    <Instance xmlns:elements="presentation::elements::*Element" ref.CodeBehind="false" ref.Class="tuiskin::TuiCustomFrameWindowTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
+      <WindowTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container" CustomFrameEnabled="true">
+        <SolidBackground ref.Style="background" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" Visible-bind="self.Border or self.SizeBox">
+          <elements:TuiBorder Color-eval="tuiskin::tuiColors.ControlBorder" LineStyle-bind="self.SizeBox ? TuiLineStyle::Double : TuiLineStyle::Thick" />
+        </Bounds>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <_>composeType:Absolute absolute:1</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:Absolute absolute:1</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Absolute absolute:1</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:Absolute absolute:1</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0" AssociatedHitTestResult-bind="self.SizeBox ? BorderLeftTop : NoDecision" />
+          <Cell Site="row:0 column:1" AssociatedHitTestResult-bind="self.SizeBox ? BorderTop : NoDecision" />
+          <Cell Site="row:0 column:2" AssociatedHitTestResult-bind="self.SizeBox ? BorderRightTop : NoDecision" />
+          <Cell Site="row:1 column:0" AssociatedHitTestResult-bind="self.SizeBox ? BorderLeft : NoDecision" />
+          <Cell Site="row:1 column:2" AssociatedHitTestResult-bind="self.SizeBox ? BorderRight : NoDecision" />
+          <Cell Site="row:2 column:0" AssociatedHitTestResult-bind="self.SizeBox ? BorderLeftBottom : NoDecision" />
+          <Cell Site="row:2 column:1" AssociatedHitTestResult-bind="self.SizeBox ? BorderBottom : NoDecision" />
+          <Cell Site="row:2 column:2" AssociatedHitTestResult-bind="self.SizeBox ? BorderRightBottom : NoDecision" />
+        </Table>
+        <Bounds ref.Name="container" AlignmentToParent-bind="{left:(self.Border or self.SizeBox ? 1 : 0) top:(self.TitleBar or self.Border or self.SizeBox ? 1 : 0) right:(self.Border or self.SizeBox ? 1 : 0) bottom:(self.Border or self.SizeBox ? 1 : 0)}" AssociatedHitTestResult="Client" />
+        <Bounds AlignmentToParent="left:2 top:0 right:2 bottom:-1" Visible-bind="self.TitleBar" PreferredMinSize="y:1" AssociatedHitTestResult="Title">
+          <SolidBackground ref.Style="background" />
+          <Bounds AlignmentToParent="left:1 top:0 right:3 bottom:0">
+            <SolidLabel Text-bind="self.Text" Color-eval="tuiskin::tuiColors.ControlText" Font="fontFamily:&quot;TuiFont&quot; size:1 bold:true" Ellipse="true" />
+          </Bounds>
+          <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0" AssociatedHitTestResult="ButtonClose">
+            <SolidLabel Text="[x]" Color-eval="tuiskin::tuiColors.ButtonText" />
+          </Bounds>
+        </Bounds>
+      </WindowTemplate>
+    </Instance>
+  </Instance>
+</Folder>

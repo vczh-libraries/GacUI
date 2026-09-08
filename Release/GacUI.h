@@ -11239,7 +11239,7 @@ namespace vl
 				/// <returns>The shortcut builder for this command.</returns>
 				WString										GetShortcutBuilder();
 				/// <summary>Set the shortcut builder for this command. When the command is attached to a window as a component without a shortcut, the command will try to convert the shortcut builder to a shortcut key item.</summary>
-				/// <param name="value">The shortcut builder for this command.</param>
+				/// <param name="value">The shortcut builder for this command. An empty string removes the shortcut.</param>
 				void										SetShortcutBuilder(const WString& value);
 				/// <summary>Get the enablility for this command.</summary>
 				/// <returns>The enablility for this command.</returns>
@@ -13093,6 +13093,7 @@ Templates
 			F(GuiMenuTemplate,					GuiWindowTemplate)			\
 			F(GuiButtonTemplate,				GuiControlTemplate)			\
 			F(GuiSelectableButtonTemplate,		GuiButtonTemplate)			\
+			F(TuiListItemBackgroundTemplate,		GuiSelectableButtonTemplate)	\
 			F(GuiToolstripButtonTemplate,		GuiSelectableButtonTemplate)\
 			F(GuiListViewColumnHeaderTemplate,	GuiToolstripButtonTemplate)	\
 			F(GuiComboBoxTemplate,				GuiToolstripButtonTemplate)	\
@@ -13139,6 +13140,12 @@ Control Template
 
 #define GuiSelectableButtonTemplate_PROPERTIES(F)\
 				F(GuiSelectableButtonTemplate, bool, Selected, false)\
+
+#define TuiListItemBackgroundTemplate_PROPERTIES(F)\
+				F(TuiListItemBackgroundTemplate, Color, TextColor, {})\
+				F(TuiListItemBackgroundTemplate, Color, SelectedTextColor, {})\
+				F(TuiListItemBackgroundTemplate, Color, SelectedBackgroundColor, {})\
+				F(TuiListItemBackgroundTemplate, bool, GridRow, false)\
 
 #define GuiToolstripButtonTemplate_PROPERTIES(F)\
 				F(GuiToolstripButtonTemplate, TemplateProperty<GuiMenuTemplate>, SubMenuTemplate, {})\
@@ -13302,6 +13309,7 @@ Template Declarations
 }
 
 #endif
+
 
 /***********************************************************************
 .\CONTROLS\GUIBUTTONCONTROLS.H
@@ -24511,6 +24519,1345 @@ External Functions
 #endif
 
 /***********************************************************************
+.\UTILITIES\FAKESERVICES\DIALOGS\GUIFAKEDIALOGSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKEDIALOGSERVICE
+#define VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKEDIALOGSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			class GuiWindow;
+		}
+
+		/// <summary>
+		/// UI implementations for <see cref="INativeDialogService"/>.
+		/// </summary>
+		class FakeDialogService : public FakeDialogServiceBase
+		{
+		protected:
+
+			controls::GuiWindow*	CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateColorDialog(Ptr<IColorDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateSimpleFontDialog(Ptr<ISimpleFontDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateFullFontDialog(Ptr<IFullFontDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel) override;
+
+		public:
+			FakeDialogService();
+			~FakeDialogService();
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\UTILITIES\SHAREDSERVICES\GUISHAREDASYNCSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDASYNCSERVICE
+#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDASYNCSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		/// <summary>
+		/// A general <see cref="INativeAsyncService/> implementation.
+		/// </summary>
+		class SharedAsyncService : public INativeAsyncService
+		{
+		protected:
+			struct TaskItem
+			{
+				Semaphore*							semaphore;
+				Func<void()>						proc;
+
+				TaskItem();
+				TaskItem(Semaphore* _semaphore, const Func<void()>& _proc);
+				~TaskItem();
+			};
+
+			class DelayItem : public Object, public INativeDelay
+			{
+			public:
+				DelayItem(SharedAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds);
+				~DelayItem();
+
+				SharedAsyncService*					service;
+				Func<void()>						proc;
+				ExecuteStatus						status;
+				DateTime							executeUtcTime;
+				bool								executeInMainThread;
+
+				ExecuteStatus						GetStatus()override;
+				bool								Delay(vint milliseconds)override;
+				bool								Cancel()override;
+			};
+		protected:
+			vint									mainThreadId;
+			SpinLock								taskListLock;
+			collections::List<TaskItem>				taskItems;
+			collections::List<Ptr<DelayItem>>		delayItems;
+		public:
+			SharedAsyncService();
+			~SharedAsyncService();
+
+			void									ExecuteAsyncTasks();
+			bool									IsInMainThread(INativeWindow* window)override;
+			void									InvokeAsync(const Func<void()>& proc)override;
+			void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
+			bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
+			Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
+			Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\UTILITIES\SHAREDSERVICES\GUISHAREDAUTOMATIONSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE
+#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		/*
+		* Schema of /Dom:
+		* --------------------------------------------------------------------------------
+		* {
+		*   Title: string;
+		*   Window: remoteprotocol::WindowSizingConfig;
+		*   Dom: remoteprotocol::RenderingDom;
+		*   Elements: [{
+		*     Id: number;
+		*     Type: remoteprotocol::RenderingType;
+		*     Data: remoteprotocol::UnitTest_ElementDescVariant;
+		*   }];
+		*   fatalError?: string;
+		* }
+		* --------------------------------------------------------------------------------
+		*/
+		extern Ptr<glr::json::JsonNode>			DumpRemoteProtocolRenderingDom(
+													const WString& title,
+													const remoteprotocol::WindowSizingConfig& windowSizingConfig,
+													Ptr<remoteprotocol::RenderingDom> renderingDom,
+													collections::Dictionary<vint, collections::Pair<remoteprotocol::RendererType, Nullable<remoteprotocol::UnitTest_ElementDescVariant>>>& elementData
+													);
+
+		extern WString							DumpJsonToString(Ptr<glr::json::JsonNode> json);
+
+		struct IoCommandState
+		{
+			Nullable<NativePoint>				mousePosition;
+			collections::SortedList<VKEY>		pressingKeys;
+			bool								leftPressing = false;
+			bool								middlePressing = false;
+			bool								rightPressing = false;
+			bool								mouse4Pressing = false;
+			bool								mouse5Pressing = false;
+			bool								capslockToggled = false;
+		};
+
+		/*
+		* Predefined Commands:
+		* --------------------------------------------------------------------------------
+		* !Type:<TEXT>
+		*   Type <TEXT> to the focused control
+		* !Exit
+		*   Try to quit the application, it could be blocked by the application itself
+		* !KeyDown:Key1+Key2+...+KeyN
+		*   Key1 down, Key2 down, ..., KeyN down
+		* !KeyUp:Key1+Key2+...+KeyN
+		*   KeyN up, ..., Key2 up, Key1 up
+		* !KeyPress:Key1+Key2+...+KeyN
+		*   Key1 down, Key2 down, ..., KeyN down, KeyN up, ..., Key2 up, Key1 up
+		* !MouseMove:X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?
+		* !(Left|Middle|Right|Mouse4|Mouse5)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?
+		*   Click means Down/Up
+		*   DbClick means Down/Up/Down/DbClick/Up
+		* !MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?(,win|command|super)?
+		*   WindowMouseInfo_::wheel = ticks * 120 * direction (1 or -1)
+		* 
+		* --------------------------------------------------------------------------------
+		* 
+		* If the command satisfies the syntax, queue event handlers and then return "Queued"
+		* Otherwise, return "Syntax Error!" followed by command descriptions in this comment
+		* This function will crash if any event handler throws
+		* Event handlers are queued with INativeAsyncService::InvokeInMainThread after the command is parsed
+		*   therefore the returned "Queued" only means the command was accepted, not that it has finished executing
+		* 
+		* All coordinates are GuiCoordinate
+		*   INativeWindow::Convert should be used to convert them to NativeCoordinate before calling the event handlers
+		* 
+		* During calling the event handlers
+		*   ctrl/shift/alt/osSuper should be set accordingly
+		*   the state argument is for remembering whatever is needed
+		*   RunIOCommandOnNativeWindow assume it is the only source of IO interactions
+		*/
+		extern WString							RunIOCommandOnNativeWindow(
+													IoCommandState* state,
+													INativeController* nativeController,
+													INativeWindow* nativeWindow,
+													collections::List<INativeWindowListener*>& listeners,
+													WString command
+													);
+
+		class AutomationServiceBase : public Object, public INativeAutomationService
+		{
+		protected:
+			IoCommandState						ioCommandState;
+			bool								stopped = false;
+
+			virtual Nullable<WString>			GetNativeWindowId(INativeWindow* window) = 0;
+			virtual INativeWindow*				GetNativeWindow(Nullable<WString> windowId) = 0;
+
+			virtual WString						DumpControlTreeInternal() { return WString::Empty; }
+			virtual WString						DumpDomTreeInternal() { return WString::Empty; }
+			virtual WString						RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) { return WString::Empty; }
+		public:
+			AutomationServiceBase() = default;
+			~AutomationServiceBase() = default;
+
+			bool Available() override
+			{
+				return true;
+			}
+
+			void Stop() override
+			{
+				stopped = true;
+			}
+
+			bool CanDumpControlTree() override
+			{
+				return false;
+			}
+
+			WString DumpControlTree() override
+			{
+				return !stopped && CanDumpControlTree() ? DumpControlTreeInternal() : WString::Empty;
+			}
+
+			bool CanDumpDomTree() override
+			{
+				return false;
+			}
+
+			WString DumpDomTree() override
+			{
+				return !stopped && CanDumpDomTree() ? DumpDomTreeInternal() : WString::Empty;
+			}
+
+			IOCommandAvailability CanRunIOCommands() override
+			{
+				return IOCommandAvailability::Disabled;
+			}
+
+			WString RunIOCommand(Nullable<WString> windowId, const WString& ioCommand) override
+			{
+				auto availability = stopped ? IOCommandAvailability::Disabled : CanRunIOCommands();
+				switch (availability)
+				{
+				case IOCommandAvailability::Enabled:
+					return RunIOCommandInternal(windowId, ioCommand);
+				case IOCommandAvailability::ExitOnly:
+					return ioCommand == L"!Exit" ? RunIOCommandInternal(windowId, ioCommand) : WString::Unmanaged(L"!Application stopped responding.");
+				default:
+					return WString::Empty;
+				}
+			}
+		};
+
+		class AutomationServiceRenderer : public AutomationServiceBase
+		{
+		private:
+			remote_renderer::GuiRemoteRendererSingle*	renderer = nullptr;
+			SpinLock									lockFatalError; // covers fatalError
+			Nullable<WString>							fatalError;
+
+			Nullable<WString>							CopyFatalError();
+			
+		protected:
+			Nullable<WString> GetNativeWindowId(INativeWindow* window) override
+			{
+				return {};
+			}
+
+			INativeWindow* GetNativeWindow(Nullable<WString> windowId) override
+			{
+				return GetCurrentController()->WindowService()->GetMainWindow();
+			}
+
+			WString DumpDomTreeInternal() override;
+
+		public:
+			AutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* _renderer)
+				:renderer(_renderer)
+			{
+			}
+
+			bool CanDumpDomTree() override
+			{
+				return true;
+			}
+
+			void SetFatalError(Nullable<WString> value);
+			IOCommandAvailability CanRunIOCommands() override;
+		};
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\UTILITIES\SHAREDSERVICES\GUISHAREDAUTOMATIONSERVICE_CONTROLS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE_CONTROLS
+#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE_CONTROLS
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			class GuiWindow;
+		}
+
+		class AutomationService : public AutomationServiceBase
+		{
+		protected:
+
+			WString								DumpControlTreeInternal() override;
+
+		public:
+			AutomationService();
+			~AutomationService();
+
+			bool								CanDumpControlTree() override;
+		};
+
+		class AutomationServiceHosted : public AutomationServiceBase
+		{
+		protected:
+			WString								windowManagement = WString::Unmanaged(L"Hosted");
+			
+			Nullable<WString>					GetNativeWindowId(INativeWindow* window) override;
+			INativeWindow*						GetNativeWindow(Nullable<WString> windowId) override;
+			WString								DumpControlTreeInternal() override;
+
+		public:
+			AutomationServiceHosted();
+			~AutomationServiceHosted();
+
+			bool								CanDumpControlTree() override;
+		};
+
+		class RemoteProtocolAutomationService : public AutomationServiceHosted
+		{
+		protected:
+			WString								RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override;
+
+		public:
+			RemoteProtocolAutomationService();
+			~RemoteProtocolAutomationService();
+
+			INativeAutomationService::IOCommandAvailability
+												CanRunIOCommands() override;
+		};
+
+		/*
+		* Schema of /Controls:
+		* --------------------------------------------------------------------------------
+		* {
+		*   WindowManagement: "MultiWindow" | "Hosted" | "HostedRemoteProtocol";
+		*   MainWindow: WindowDump;
+		* 
+		*   // sub windows are normal window
+		*   // no ordering
+		*   // available for "MultiWindow"
+		*   // otherwise sub windows become child objects of the main window
+		*   SubWindows?: WindowDump[];
+		*
+		*   // popups are usually dropdowns, tooltips or menus
+		*   // no ordering
+		*   // available for "MultiWindow"
+		*   // otherwise popups become child objects of the main window
+		*   Popups?: WindowDump[];
+		* }
+		* 
+		* interface WindowDump
+		* {
+		*   // windowId is used to identify a window
+		*   // for "MultiWindow"
+		*   //   URL `.../IO/<windowId>` is used to send commands to a specific window
+		*   // for other modes
+		*   //   URL `.../IO` is used to send commands to the main window
+		*   //   since sub windows and popups are all child objects of the main window
+		*   //   the main window is responsible for window management, dispatching IO commands to the correct target
+		*   // /IO parses the command synchronously and returns "Syntax Error!" or "Queued"
+		*   //   "Queued" only means the command was accepted, not that it has finished executing
+		*   windowId?: string;
+		* 
+		*   // bounds defines the valid coordinate space for IO commands
+		*   // IO commands use the client area of a native window as the coordinate space
+		*   // such native window is a OS native window
+		*   // for a window that owns a OS native window, the valid coordinate space is the client area
+		*   // for a window that doesn't own a OS native window, the valid coordinate space is the partial rectangle of the main window client area
+		* 
+		*   // (x1,y1) always (0,0) for main window or when "MultiWindow"
+		*   bounds: { x1: number, y1: number, x2: number, y2: number };
+		* 
+		*   // available for main window in "Hosted" and "HostedRemoteProtocol"
+		*   // ordered from bottom to top
+		*   subWindowsInZOrder?: WindowDump[];
+		* 
+		*   title: string;
+		* 
+		*   // begins with GuiWindow::GetBoundsComposition()
+		*   composition: CompositionDump;
+		* }
+		* 
+		* interface CompositionDump
+		* {
+		*   // GuiGraphicsComposition::GetCachedBounds() converted to global bounds then offseted by "offset"
+		*   bounds: { x1: number, y1: number, x2: number, y2: number };
+		* 
+		*   // available when the composition is or inherits from:
+		*   //   GuiTableComposition			: "Table:rows*columns"
+		*   //   GuiCellComposition				: "Cell:(row,column)*(rowSpan,columnSpan)"
+		*   //     available only when its parent composition is GuiTableComposition
+		*   //   GuiRowSplitterComposition		: "RowSplitter:rowsToTheTop"
+		*   //   GuiColumnSplitterComposition	: "ColumnSplitter:columnsToTheLeft"
+		*   //   GuiStackComposition			: "Stack"
+		*   //   GuiStackItemComposition		: "StackItem:index"
+		*   //     available only when its parent composition is GuiStackComposition
+		*   //     index is defined by stack->GetStackItems().IndexOf(stackItem)
+		*   //   GuiFlowComposition: "Flow"
+		*   //   GuiFlowItemComposition			: "FlowItem:index"
+		*   //     available only when its parent composition is GuiFlowComposition
+		*   //     index is defined by flow->GetFlowItems().IndexOf(flowItem)
+		*   layout?: string;
+		*
+		*   // available when GuiGraphicsComposition::GetAssociatedCursor is not null
+		*   cursor?: string;
+		* 
+		*   // available when GuiGraphicsComposition::GetOwnedElement is not null and is or inherits from:
+		*   //   GuiSolidBorderElement			: "Border:color,shape
+		*   //   Gui3DBorderElement:			: "3DBorder:color1,color2"
+		*   //   Gui3DSplitterElement:			: "3DSplitter:color1,color2,direction"
+		*   //   GuiSolidBackground				: "Background:color,shape
+		*   //   GuiGradientBackgroundElement	: "Gradient:color1,color2,direction,shape"
+		*   //   GuiInnerShadowElement			: "InnerShadow:color,thickness"
+		*   //   GuiSolidLabelElement			: "Label:color,fontProperties.fontFamily,fontProperties.size(,WrapLine)?(,Ellipse)?(,Multiline)?"
+		*   //   GuiImageFrameElement			: "Image"
+		*   //   GuiPolygonElement				: "Polygon"
+		*   //   GuiDocumentElement				: "Document:Selection(caretBegin.row,caretBegin.column)-(caretEnd.row,caretEnd.column)(,PasswordChar=char)?(,WrapLine)?"
+		*   //
+		*   // Color is in #RRGGBBAA format
+		*   // elementText is only available for GuiSolidLabelElement, storing its text
+		*   // elementDocument is only availaboe for GuiDocumentElement, storing its document in XML representation
+		*   //   The XML representation is done by calling GenerateToStream(XmlPrint(SaveToXml))
+		*   element?: string;
+		*   elementText?: string;
+		*   elementDocument?: string;
+		* 
+		*   // available when GuiGraphicsComposition::GetAssociatedControl is not null
+		*   // storing PrintControlThemeName(GuiControl::GetControlThemeName())
+		*   control?: string;
+		*
+		*   children?: CompositionDump[];
+		* }
+		* --------------------------------------------------------------------------------
+		* 
+		* This function construct the WindowDump part (without subWindowsInZOrder)
+		*/
+		extern Ptr<glr::json::JsonNode>			DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId, Point offset);
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\UTILITIES\SHAREDSERVICES\GUISHAREDCALLBACKSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDCALLBACKSERVICE
+#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDCALLBACKSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		/// <summary>
+		/// A general <see cref="INativeCallbackService/> implementation.
+		/// </summary>
+		class SharedCallbackService
+			: public Object
+			, public INativeCallbackService
+			, public INativeCallbackInvoker
+		{
+		protected:
+			collections::List<INativeControllerListener*>	listeners;
+
+		public:
+			SharedCallbackService();
+			~SharedCallbackService();
+
+			bool											InstallListener(INativeControllerListener* listener) override;
+			bool											UninstallListener(INativeControllerListener* listener) override;
+			INativeCallbackInvoker*							Invoker() override;
+
+			void											InvokeGlobalTimer() override;
+			void											InvokeClipboardUpdated() override;
+			void											InvokeGlobalShortcutKeyActivated(vint id) override;
+			void											InvokeNativeWindowCreated(INativeWindow* window) override;
+			void											InvokeNativeWindowDestroying(INativeWindow* window) override;
+			void											InvokeEnvironmentChanged() override;
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDCONTROLLER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Hosted Window
+
+Interfaces:
+  GuiHostedController
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIHOSTEDCONTROLLER
+#define VCZH_PRESENTATION_GUIHOSTEDCONTROLLER
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class AutomationServiceHosted;
+
+/***********************************************************************
+GuiHostedController
+***********************************************************************/
+
+		class GuiHostedController
+			: public Object
+			, protected hosted_window_manager::WindowManager<GuiHostedWindow*>
+			, protected INativeWindowListener
+			, protected INativeControllerListener
+			, public INativeController
+			, protected INativeAsyncService
+			, protected INativeScreenService
+			, protected INativeScreen
+			, protected INativeWindowService
+			, protected IGuiHostedApplication
+		{
+			friend class GuiHostedWindow;
+			friend class elements::GuiHostedGraphicsResourceManager;
+			friend class AutomationServiceHosted;
+		protected:
+			SharedCallbackService										callbackService;
+			hosted_window_manager::WindowManager<GuiHostedWindow*>*		wmManager = nullptr;
+			bool														windowsUpdatedInLastFrame = false;
+			bool														idleNotifiedSinceLastRendering = true; // avoid emitting before the first rendering
+			INativeController*											nativeController = nullptr;
+			elements::GuiHostedGraphicsResourceManager*					hostedResourceManager = nullptr;
+			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
+
+			INativeWindow*												nativeWindow = nullptr;
+			bool														nativeWindowDestroyed = false;
+
+			GuiHostedWindow*											mainWindow = nullptr;
+			GuiHostedWindow*											capturingWindow = nullptr;
+			GuiHostedWindow*											enteringWindow = nullptr;
+
+			NativePoint													hoveringLocation{ -1,-1 };
+			GuiHostedWindow*											hoveringWindow = nullptr;
+			GuiHostedWindow*											lastFocusedWindow = nullptr;
+
+			enum class WindowManagerOperation
+			{
+				None,
+				Title,
+				BorderLeft,
+				BorderRight,
+				BorderTop,
+				BorderBottom,
+				BorderLeftTop,
+				BorderRightTop,
+				BorderLeftBottom,
+				BorderRightBottom,
+			};
+			WindowManagerOperation										wmOperation = WindowManagerOperation::None;
+			GuiHostedWindow*											wmWindow = nullptr;
+			NativePoint													wmRelative;
+
+			NativePoint						GetPointInClientSpace(NativePoint location);
+			GuiHostedWindow*				HitTestInClientSpace(NativePoint location);
+			void							UpdateHoveringWindow(Nullable<NativePoint> location);
+			void							UpdateEnteringWindow(GuiHostedWindow* window);
+
+			// =============================================================
+			// WindowManager<GuiHostedWindow*>
+			// =============================================================
+
+			void							OnOpened(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnClosed(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnEnabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnDisabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnGotFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnLostFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnActivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnDeactivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+
+			// =============================================================
+			// INativeWindowListener
+			// =============================================================
+
+			HitTestResult					HitTest(NativePoint location) override;
+			void							Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder) override;
+			void							Moved() override;
+			void							DpiChanged(bool preparing) override;
+			void							GotFocus() override;
+			void							LostFocus() override;
+			void							Opened() override;
+			void							BeforeClosing(bool& cancel) override;
+			void							AfterClosing() override;
+			void							Paint() override;
+			
+			GuiHostedWindow*				GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info);
+			GuiHostedWindow*				GetSelectedWindow_MouseMoving(const NativeWindowMouseInfo& info);
+			GuiHostedWindow*				GetSelectedWindow_Other(const NativeWindowMouseInfo& info);
+
+			void							PreAction_LeftButtonDown(const NativeWindowMouseInfo& info);
+			void							PreAction_MouseDown(const NativeWindowMouseInfo& info);
+			void							PreAction_MouseMoving(const NativeWindowMouseInfo& info);
+			void							PreAction_Other(const NativeWindowMouseInfo& info);
+
+			void							PostAction_LeftButtonUp(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
+			void							PostAction_Other(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
+
+			template<
+				void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
+				GuiHostedWindow* (GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
+				void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
+				void (INativeWindowListener::* Callback)(NativeMouseButton, const NativeWindowMouseInfo&)
+				>
+			void							HandleMouseButtonCallback(NativeMouseButton button, const NativeWindowMouseInfo& info);
+
+			template<
+				void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
+				GuiHostedWindow* (GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
+				void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
+				void (INativeWindowListener::* Callback)(const NativeWindowMouseInfo&)
+				>
+			void							HandleMouseCallback(const NativeWindowMouseInfo& info);
+
+			template<
+				typename TInfo,
+				void (INativeWindowListener::* Callback)(const TInfo&)
+			>
+			void							HandleKeyboardCallback(const TInfo& info);
+
+			void							MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
+			void							MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
+			void							MouseDoubleClick(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
+			void							HorizontalWheel(const NativeWindowMouseInfo& info) override;
+			void							VerticalWheel(const NativeWindowMouseInfo& info) override;
+			void							MouseMoving(const NativeWindowMouseInfo& info) override;
+			void							MouseEntered() override;
+			void							MouseLeaved() override;
+
+			void							KeyDown(const NativeWindowKeyInfo& info) override;
+			void							KeyUp(const NativeWindowKeyInfo& info) override;
+			void							Char(const NativeWindowCharInfo& info) override;
+
+			// =============================================================
+			// INativeControllerListener
+			// =============================================================
+
+			void							GlobalTimer() override;
+			void							EnvironmentChanged() override;
+			void							ClipboardUpdated() override;
+			void							GlobalShortcutKeyActivated(vint id) override;
+			void							NativeWindowDestroying(INativeWindow* window) override;
+
+			// =============================================================
+			// INativeAsyncService
+			// =============================================================
+
+			bool							IsInMainThread(INativeWindow* window) override;
+			void							InvokeAsync(const Func<void()>& proc) override;
+			void							InvokeInMainThread(INativeWindow* window, const Func<void()>& proc) override;
+			bool							InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds) override;
+			Ptr<INativeDelay>				DelayExecute(const Func<void()>& proc, vint milliseconds) override;
+			Ptr<INativeDelay>				DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds) override;
+
+			// =============================================================
+			// INativeScreenService
+			// =============================================================
+
+			vint							GetScreenCount() override;
+			INativeScreen*					GetScreen(vint index) override;
+			INativeScreen*					GetScreen(INativeWindow* window) override;
+
+			// =============================================================
+			// INativeScreen
+			// =============================================================
+
+			NativeRect						GetBounds() override;
+			NativeRect						GetClientBounds() override;
+			WString							GetName() override;
+			bool							IsPrimary() override;
+			double							GetScalingX() override;
+			double							GetScalingY() override;
+
+			// =============================================================
+			// INativeWindowService
+			// =============================================================
+			
+			const NativeWindowFrameConfig&	GetMainWindowFrameConfig() override;
+			const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig() override;
+			INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
+			void							DestroyNativeWindow(INativeWindow* window) override;
+			INativeWindow*					GetMainWindow() override;
+			INativeWindow*					GetWindow(NativePoint location) override;
+
+			void							SettingHostedWindowsBeforeRunning();
+			void							DestroyHostedWindowsAfterRunning();
+			void							Run(INativeWindow* window) override;
+			bool							RunOneCycle() override;
+
+			// =============================================================
+			// IGuiHostedApplication
+			// =============================================================
+
+			INativeWindow*					GetNativeWindowHost() override;
+			INativeController*				GetNativeController() override;
+		public:
+			GuiHostedController(INativeController* _nativeController);
+			~GuiHostedController();
+
+			IGuiHostedApplication*			GetHostedApplication();
+			void							Initialize();
+			void							Finalize();
+			void							RequestRefresh();
+
+			// =============================================================
+			// INativeController
+			// =============================================================
+
+			INativeCallbackService*			CallbackService() override;
+			INativeResourceService*			ResourceService() override;
+			INativeAsyncService*			AsyncService() override;
+			INativeClipboardService*		ClipboardService() override;
+			INativeImageService*			ImageService() override;
+			INativeInputService*			InputService() override;
+			INativeDialogService*			DialogService() override;
+			INativeAutomationService*		AutomationService() override;
+			WString							GetExecutablePath() override;
+			
+			INativeScreenService*			ScreenService() override;
+			INativeWindowService*			WindowService() override;
+		};
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEEVENTS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+Interfaces:
+  GuiRemoteEvent
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEEVENT
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEEVENT
+
+
+namespace vl::presentation
+{
+	class GuiRemoteController;
+
+/***********************************************************************
+GuiRemoteMessages
+***********************************************************************/
+
+	class GuiRemoteMessages : public Object
+	{
+	protected:
+		GuiRemoteController*						remote;
+		vint										id = 0;
+
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)										collections::Dictionary<vint, RESPONSE> response ## NAME;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
+
+	public:
+		GuiRemoteMessages(GuiRemoteController* _remote);
+		~GuiRemoteMessages();
+
+		void										Submit(bool& disconnected);
+
+		// messages
+
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					void Request ## NAME();
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						vint Request ## NAME();
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)						void Request ## NAME(const REQUEST& arguments);
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)						vint Request ## NAME(const REQUEST& arguments);
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
+
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)\
+		void Respond ## NAME(vint id, const RESPONSE& arguments);\
+		RESPONSE Retrieve ## NAME(vint id);\
+
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
+	};
+
+/***********************************************************************
+GuiRemoteEvents
+***********************************************************************/
+
+	class GuiRemoteEvents : public Object, public virtual IGuiRemoteProtocolEvents
+	{
+	protected:
+		GuiRemoteController*						remote;
+
+	public:
+		GuiRemoteEvents(GuiRemoteController* _remote);
+		~GuiRemoteEvents();
+
+		// =============================================================
+		// IGuiRemoteProtocolEvents
+		// =============================================================
+
+		// messages
+
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)										void Respond ## NAME(vint id, const RESPONSE& arguments) override;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
+
+		void	ClearResponses();
+
+		// events
+
+#define EVENT_NOREQ(NAME, REQUEST)					void On ## NAME() override;
+#define EVENT_REQ(NAME, REQUEST)					void On ## NAME(const REQUEST& arguments) override;
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
+		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_REQ
+#undef EVENT_NOREQ
+	};
+}
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEWINDOW.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+Interfaces:
+  GuiRemoteController
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEWINDOW
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEWINDOW
+
+
+namespace vl::presentation
+{
+	class GuiRemoteController;
+	class RemoteProtocolAutomationService;
+
+/***********************************************************************
+GuiRemoteWindow
+***********************************************************************/
+
+	class GuiRemoteWindow : public Object, public virtual INativeWindow
+	{
+		friend class GuiRemoteEvents;
+		friend class GuiRemoteController;
+		friend class RemoteProtocolAutomationService;
+	protected:
+		GuiRemoteController*								remote;
+		GuiRemoteMessages&									remoteMessages;
+		GuiRemoteEvents&									remoteEvents;
+		collections::List<INativeWindowListener*>			listeners;
+		INativeWindow::WindowMode							windowMode = INativeWindow::Normal;
+
+		bool												controllerDisconnected = false;
+		remoteprotocol::WindowSizingConfig					remoteWindowSizingConfig;
+		NativeSize											suggestedMinClientSize;
+		bool												sizingConfigInvalidated = false;
+		double												scalingX = 1;
+		double												scalingY = 1;
+
+		WString							styleTitle;
+		INativeCursor*					styleCursor = nullptr;
+		NativePoint						styleCaret;
+		Ptr<GuiImageData>				styleIcon;
+		bool							styleEnabled = true;
+		bool							styleTopMost = false;
+
+		bool							styleMaximizedBox = true;
+		bool							styleMinimizedBox = true;
+		bool							styleBorder = true;
+		bool							styleSizeBox = true;
+		bool							styleIconVisible = true;
+		bool							styleTitleBar = true;
+		bool							styleShowInTaskBar = true;
+		bool							styleCustomFrameMode = false;
+		
+		bool							statusVisible = false;
+		bool							statusActivated = false;
+		bool							statusCapturing = false;
+
+		void							RequestGetBounds();
+		void							Opened();
+		void							SetActivated(bool activated);
+		void							ShowWithSizeState(bool activate, INativeWindow::WindowSizeState sizeState);
+		void							SubmitStateAfterControllerConnect();
+
+		// =============================================================
+		// Events
+		// =============================================================
+
+		void							OnControllerConnect();
+		void							OnControllerDisconnect();
+		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
+		void							OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments);
+		void							OnWindowActivatedUpdated(bool activated);
+
+	public:
+		GuiRemoteWindow(GuiRemoteController* _remote);
+		~GuiRemoteWindow();
+
+		// =============================================================
+		// INativeWindow
+		// =============================================================
+
+		bool							IsActivelyRefreshing() override;
+		NativeSize						GetRenderingOffset() override;
+		Point							Convert(NativePoint value) override;
+		NativePoint						Convert(Point value) override;
+		Size							Convert(NativeSize value) override;
+		NativeSize						Convert(Size value) override;
+		Margin							Convert(NativeMargin value) override;
+		NativeMargin					Convert(Margin value) override;
+		NativeRect						GetBounds() override;
+		void							SetBounds(const NativeRect& bounds) override;
+		NativeSize						GetClientSize() override;
+		void							SetClientSize(NativeSize size) override;
+		NativeRect						GetClientBoundsInScreen() override;
+		void							SuggestMinClientSize(NativeSize size) override;
+		WString							GetTitle() override;
+		void							SetTitle(const WString& title) override;
+		INativeCursor*					GetWindowCursor() override;
+		void							SetWindowCursor(INativeCursor* cursor) override;
+		NativePoint						GetCaretPoint() override;
+		void							SetCaretPoint(NativePoint point) override;
+		INativeWindow*					GetParent() override;
+		void							SetParent(INativeWindow* parent) override;
+		WindowMode						GetWindowMode() override;
+		void							EnableCustomFrameMode() override;
+		void							DisableCustomFrameMode() override;
+		bool							IsCustomFrameModeEnabled() override;
+		NativeMargin					GetCustomFramePadding() override;
+		Ptr<GuiImageData>				GetIcon() override;
+		void							SetIcon(Ptr<GuiImageData> icon) override;
+		WindowSizeState					GetSizeState() override;
+		void							Show() override;
+		void							ShowDeactivated() override;
+		void							ShowRestored() override;
+		void							ShowMaximized() override;
+		void							ShowMinimized() override;
+		void							Hide(bool closeWindow) override;
+		bool							IsVisible() override;
+		void							Enable() override;
+		void							Disable() override;
+		bool							IsEnabled() override;
+		void							SetActivate() override;
+		bool							IsActivated() override;
+		bool							IsRenderingAsActivated() override;
+		void							ShowInTaskBar() override;
+		void							HideInTaskBar() override;
+		bool							IsAppearedInTaskBar() override;
+		void							EnableActivate() override;
+		void							DisableActivate() override;
+		bool							IsEnabledActivate() override;
+		bool							RequireCapture() override;
+		bool							ReleaseCapture() override;
+		bool							IsCapturing() override;
+		bool							GetMaximizedBox() override;
+		void							SetMaximizedBox(bool visible) override;
+		bool							GetMinimizedBox() override;
+		void							SetMinimizedBox(bool visible) override;
+		bool							GetBorder() override;
+		void							SetBorder(bool visible) override;
+		bool							GetSizeBox() override;
+		void							SetSizeBox(bool visible) override;
+		bool							GetIconVisible() override;
+		void							SetIconVisible(bool visible) override;
+		bool							GetTitleBar() override;
+		void							SetTitleBar(bool visible) override;
+		bool							GetTopMost() override;
+		void							SetTopMost(bool topmost) override;
+		void							SupressAlt() override;
+		bool							InstallListener(INativeWindowListener* listener) override;
+		bool							UninstallListener(INativeWindowListener* listener) override;
+		void							RedrawContent() override;
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTECONTROLLER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+Interfaces:
+  GuiRemoteController
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER
+
+
+namespace vl::presentation
+{
+/***********************************************************************
+GuiRemoteController
+***********************************************************************/
+
+	class GuiRemoteController
+		: public Object
+		, public INativeController
+		, protected INativeResourceService
+		, protected INativeInputService
+		, protected INativeScreenService
+		, protected INativeScreen
+		, protected INativeWindowService
+	{
+		friend class GuiRemoteMessages;
+		friend class GuiRemoteEvents;
+		friend class GuiRemoteWindow;
+		friend class GuiRemoteGraphicsImage;
+		friend class elements::GuiRemoteGraphicsRenderTarget;
+		friend class elements::GuiRemoteGraphicsResourceManager;
+		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
+		using HotKeyEntry = Tuple<bool, bool, bool, bool, VKEY>;
+		using HotKeySet = collections::SortedList<HotKeyEntry>;
+		using HotKeyIds = collections::Dictionary<vint, HotKeyEntry>;
+	protected:
+		IGuiRemoteProtocol*								remoteProtocol = nullptr;
+		GuiRemoteMessages								remoteMessages;
+		GuiRemoteEvents									remoteEvents;
+		GuiRemoteWindow									remoteWindow;
+		elements::GuiRemoteGraphicsResourceManager*		resourceManager = nullptr;
+		SharedCallbackService							callbackService;
+		SharedAsyncService								asyncService;
+		GuiRemoteGraphicsImageService					imageService;
+		bool											applicationRunning = false;
+		bool											controllerConnected = false;
+		bool											connectionForcedToStop = false;
+		bool											connectionStopped = false;
+
+		remoteprotocol::ControllerGlobalConfig			remoteGlobalConfig;
+		remoteprotocol::FontConfig						remoteFontConfig;
+		remoteprotocol::ScreenConfig					remoteScreenConfig;
+
+		vint											usedHotKeys = (vint)NativeGlobalShortcutKeyResult::ValidIdBegins;
+		HotKeySet										hotKeySet;
+		HotKeyIds										hotKeyIds;
+
+		CursorMap										cursors;
+		bool											timerEnabled = false;
+		bool											windowCreated = false;
+		bool											windowDestroyed = false;
+
+		collections::Dictionary<VKEY, WString>			keyNames;
+		collections::Dictionary<WString, VKEY>			keyCodes;
+		bool											keyInitialized = false;
+
+		// =============================================================
+		// INativeResourceService
+		// =============================================================
+
+		INativeCursor*					GetSystemCursor(INativeCursor::SystemCursorType type) override;
+		INativeCursor*					GetDefaultSystemCursor() override;
+		FontProperties					GetDefaultFont() override;
+		void							SetDefaultFont(const FontProperties& value) override;
+		void							EnumerateFonts(collections::List<WString>& fonts) override;
+		WString							GetOSSuperKeyName() override;
+
+		// =============================================================
+		// INativeInputService
+		// =============================================================
+
+		void							StartTimer() override;
+		void							StopTimer() override;
+		bool							IsTimerEnabled() override;
+		bool							IsKeyPressing(VKEY code) override;
+		bool							IsKeyToggled(VKEY code) override;
+		void							EnsureKeyInitialized();
+		void							EnsureControllerConnected();
+		WString							GetKeyName(VKEY code) override;
+		VKEY							GetKey(const WString& name) override;
+		void							UpdateGlobalShortcutKey();
+		vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key) override;
+		bool							UnregisterGlobalShortcutKey(vint id) override;
+
+		// =============================================================
+		// INativeScreenService
+		// =============================================================
+
+		vint							GetScreenCount() override;
+		INativeScreen*					GetScreen(vint index) override;
+		INativeScreen*					GetScreen(INativeWindow* window) override;
+
+		// =============================================================
+		// INativeScreen
+		// =============================================================
+
+		NativeRect						GetBounds() override;
+		NativeRect						GetClientBounds() override;
+		WString							GetName() override;
+		bool							IsPrimary() override;
+		double							GetScalingX() override;
+		double							GetScalingY() override;
+
+		// =============================================================
+		// INativeWindowService
+		// =============================================================
+			
+		const NativeWindowFrameConfig&	GetMainWindowFrameConfig() override;
+		const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig() override;
+		INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
+		void							DestroyNativeWindow(INativeWindow* window) override;
+		INativeWindow*					GetMainWindow() override;
+		INativeWindow*					GetWindow(NativePoint location) override;
+		void							Run(INativeWindow* window) override;
+		bool							RunOneCycle() override;
+
+		// =============================================================
+		// Events
+		// =============================================================
+
+		void							OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& _globalConfig);
+		void							OnControllerDisconnect();
+		void							OnControllerRequestExit();
+		void							OnControllerForceExit();
+		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
+
+	public:
+		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol);
+		~GuiRemoteController();
+
+		void									Initialize();
+		void									Finalize();
+		remoteprotocol::ControllerGlobalConfig	GetGlobalConfig();
+
+		// =============================================================
+		// INativeController
+		// =============================================================
+
+		INativeCallbackService*			CallbackService() override;
+		INativeResourceService*			ResourceService() override;
+		INativeAsyncService*			AsyncService() override;
+		INativeClipboardService*		ClipboardService() override;
+		INativeImageService*			ImageService() override;
+		INativeInputService*			InputService() override;
+		INativeDialogService*			DialogService() override;
+		INativeAutomationService*		AutomationService() override;
+		WString							GetExecutablePath() override;
+			
+		INativeScreenService*			ScreenService() override;
+		INativeWindowService*			WindowService() override;
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\CONTROLS\LISTCONTROLPACKAGE\TUIITEMTEMPLATES.H
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_CONTROLS_TUIITEMTEMPLATES
+#define VCZH_PRESENTATION_CONTROLS_TUIITEMTEMPLATES
+
+
+namespace vl::presentation::controls::list
+{
+	extern templates::TuiListItemBackgroundTemplate*	TuiGetItemBackground(compositions::GuiGraphicsComposition* item);
+	extern Color										TuiGetItemTextColor(compositions::GuiGraphicsComposition* item, Color fallback);
+	extern void											TuiUpdateGridCellColors(templates::GuiGridVisualizerTemplate* cell);
+	extern void											TuiInitializeItemBackground(templates::GuiListItemTemplate* item, GuiSelectableButton* background);
+}
+
+#endif
+
+
+/***********************************************************************
+.\GRAPHICSELEMENT\TUIGRAPHICSELEMENT.H
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_ELEMENTS_TUIGRAPHICSELEMENT
+#define VCZH_PRESENTATION_ELEMENTS_TUIGRAPHICSELEMENT
+
+
+namespace vl::presentation::elements
+{
+	enum class TuiLineStyle
+	{
+		Thin,
+		Thick,
+		Double,
+	};
+
+	class TuiBorderElement : public GuiElementBase<TuiBorderElement>
+	{
+		friend class GuiElementBase<TuiBorderElement>;
+		static constexpr const wchar_t* ElementTypeName = L"TuiBorder";
+	protected:
+		Color			color;
+		ElementShape	shape;
+		TuiLineStyle	lineStyle = TuiLineStyle::Thin;
+	public:
+		Color			GetColor();
+		void			SetColor(Color value);
+		ElementShape	GetShape();
+		void			SetShape(ElementShape value);
+		TuiLineStyle	GetLineStyle();
+		void			SetLineStyle(TuiLineStyle value);
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\TUI\TUIAPPLICATION.H
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_TUIAPPLICATION
+#define VCZH_PRESENTATION_TUIAPPLICATION
+
+
+namespace vl::presentation
+{
+	class ITuiApplication : public virtual Interface, public Description<ITuiApplication>
+	{
+	public:
+		virtual void	Stop() = 0;
+	};
+
+	extern ITuiApplication*			GetTuiApplication();
+	extern void						SetTuiApplication(ITuiApplication* application);
+}
+
+#endif
+
+
+/***********************************************************************
 .\GACUI.H
 ***********************************************************************/
 /***********************************************************************
@@ -24584,6 +25931,7 @@ extern int SetupHostedWindowsGDIRenderer();
 extern int SetupHostedWindowsDirect2DRenderer();
 extern int SetupRawWindowsGDIRenderer();
 extern int SetupRawWindowsDirect2DRenderer();
+extern int SetupTuiWindowsRenderer();
 
 // Gtk
 extern int SetupGtkRenderer();
@@ -24601,52 +25949,25 @@ extern int SetupOSXHostedCoreGraphicsRenderer();
 
 #endif
 
+
 /***********************************************************************
-.\UTILITIES\FAKESERVICES\DIALOGS\GUIFAKEDIALOGSERVICE.H
+.\UTILITIES\AUTOMATIONSERVICE\MINIHTTPAUTOMATIONSERVICE.H
 ***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Default Service Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKEDIALOGSERVICE
-#define VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKEDIALOGSERVICE
+#ifndef VCZH_PRESENTATION_REMOTING_MINIHTTPAUTOMATIONSERVICE
+#define VCZH_PRESENTATION_REMOTING_MINIHTTPAUTOMATIONSERVICE
 
 
-namespace vl
+namespace vl::presentation::remoting
 {
-	namespace presentation
-	{
-		namespace controls
-		{
-			class GuiWindow;
-		}
-
-		/// <summary>
-		/// UI implementations for <see cref="INativeDialogService"/>.
-		/// </summary>
-		class FakeDialogService : public FakeDialogServiceBase
-		{
-		protected:
-
-			controls::GuiWindow*	CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel) override;
-			controls::GuiWindow*	CreateColorDialog(Ptr<IColorDialogViewModel> viewModel) override;
-			controls::GuiWindow*	CreateSimpleFontDialog(Ptr<ISimpleFontDialogViewModel> viewModel) override;
-			controls::GuiWindow*	CreateFullFontDialog(Ptr<IFullFontDialogViewModel> viewModel) override;
-			controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel) override;
-			controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel) override;
-
-		public:
-			FakeDialogService();
-			~FakeDialogService();
-		};
-	}
+	extern void StartMiniHttpAutomationService(
+		Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> socketServer,
+		const WString& applicationName
+		);
+	extern void StopMiniHttpAutomationService();
 }
 
 #endif
+
 
 /***********************************************************************
 .\UTILITIES\FAKESERVICES\DIALOGS\SOURCE\GUIFAKEDIALOGSERVICEUI.H
@@ -27781,288 +29102,3196 @@ https://github.com/vczh-libraries
 
 
 /***********************************************************************
-.\UTILITIES\SHAREDSERVICES\GUISHAREDASYNCSERVICE.H
+.\PLATFORMPROVIDERS\TUI\TUITEXTLAYOUT.H
 ***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Default Service Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDASYNCSERVICE
-#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDASYNCSERVICE
+#ifndef VCZH_PRESENTATION_ELEMENTS_TUITEXTLAYOUT
+#define VCZH_PRESENTATION_ELEMENTS_TUITEXTLAYOUT
 
 
-namespace vl
+namespace vl::presentation::elements
 {
-	namespace presentation
+	class TuiGraphicsRenderTarget;
+
+	struct TuiTextCell
 	{
-		/// <summary>
-		/// A general <see cref="INativeAsyncService/> implementation.
-		/// </summary>
-		class SharedAsyncService : public INativeAsyncService
-		{
-		protected:
-			struct TaskItem
-			{
-				Semaphore*							semaphore;
-				Func<void()>						proc;
+		vint													start = 0;
+		vint													length = 0;
+		char32_t												code = 0;
+		Rect													bounds;
+		vint													line = 0;
+		Nullable<IGuiGraphicsParagraph::InlineObjectProperties>	inlineObject;
+	};
 
-				TaskItem();
-				TaskItem(Semaphore* _semaphore, const Func<void()>& _proc);
-				~TaskItem();
-			};
-
-			class DelayItem : public Object, public INativeDelay
-			{
-			public:
-				DelayItem(SharedAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds);
-				~DelayItem();
-
-				SharedAsyncService*					service;
-				Func<void()>						proc;
-				ExecuteStatus						status;
-				DateTime							executeUtcTime;
-				bool								executeInMainThread;
-
-				ExecuteStatus						GetStatus()override;
-				bool								Delay(vint milliseconds)override;
-				bool								Cancel()override;
-			};
-		protected:
-			vint									mainThreadId;
-			SpinLock								taskListLock;
-			collections::List<TaskItem>				taskItems;
-			collections::List<Ptr<DelayItem>>		delayItems;
-		public:
-			SharedAsyncService();
-			~SharedAsyncService();
-
-			void									ExecuteAsyncTasks();
-			bool									IsInMainThread(INativeWindow* window)override;
-			void									InvokeAsync(const Func<void()>& proc)override;
-			void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
-			bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
-			Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
-			Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\UTILITIES\SHAREDSERVICES\GUISHAREDAUTOMATIONSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Default Service Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE
-#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE
-
-
-namespace vl
-{
-	namespace presentation
+	struct TuiTextLine
 	{
-		/*
-		* Schema of /Dom:
-		* --------------------------------------------------------------------------------
-		* {
-		*   Title: string;
-		*   Window: remoteprotocol::WindowSizingConfig;
-		*   Dom: remoteprotocol::RenderingDom;
-		*   Elements: [{
-		*     Id: number;
-		*     Type: remoteprotocol::RenderingType;
-		*     Data: remoteprotocol::UnitTest_ElementDescVariant;
-		*   }];
-		*   fatalError?: string;
-		* }
-		* --------------------------------------------------------------------------------
-		*/
-		extern Ptr<glr::json::JsonNode>			DumpRemoteProtocolRenderingDom(
-													const WString& title,
-													const remoteprotocol::WindowSizingConfig& windowSizingConfig,
-													Ptr<remoteprotocol::RenderingDom> renderingDom,
-													collections::Dictionary<vint, collections::Pair<remoteprotocol::RendererType, Nullable<remoteprotocol::UnitTest_ElementDescVariant>>>& elementData
-													);
+		vint													firstCell = 0;
+		vint													lastCell = 0;
+		vint													start = 0;
+		vint													end = 0;
+		Rect													bounds;
+	};
 
-		extern WString							DumpJsonToString(Ptr<glr::json::JsonNode> json);
+	class TuiGraphicsParagraph : public Object, public IGuiGraphicsParagraph
+	{
+	protected:
+		IGuiGraphicsLayoutProvider*								provider;
+		TuiGraphicsRenderTarget*								renderTarget;
+		IGuiGraphicsParagraphCallback*							callback;
+		WString													text;
+		collections::Array<TextStyle>							styles;
+		collections::Array<Color>								colors;
+		collections::Array<Color>								backgrounds;
+		collections::Dictionary<vint, collections::Pair<vint, InlineObjectProperties>> inlineObjects;
+		collections::List<TuiTextCell>							cells;
+		collections::List<TuiTextLine>							lines;
+		collections::Dictionary<vint, vint>						caretToCell;
+		bool													dirty = true;
+		bool													wrapLine = false;
+		vint													maxWidth = -1;
+		Alignment												alignment = Alignment::Left;
+		Size													size;
+		vint													caretPosition = -1;
+		Color													caretColor;
+		bool													caretFrontSide = true;
+		bool													caretVisible = false;
 
-		struct IoCommandState
-		{
-			Nullable<NativePoint>				mousePosition;
-			collections::SortedList<VKEY>		pressingKeys;
-			bool								leftPressing = false;
-			bool								middlePressing = false;
-			bool								rightPressing = false;
-			bool								mouse4Pressing = false;
-			bool								mouse5Pressing = false;
-			bool								capslockToggled = false;
-		};
+		bool													ValidRange(vint start, vint length);
+		void													EnsureLayout();
+		vint													FindLine(vint caret, bool frontSide);
+	public:
+		TuiGraphicsParagraph(const WString& text, IGuiGraphicsLayoutProvider* provider, TuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback);
+		IGuiGraphicsLayoutProvider*								GetProvider() override;
+		IGuiGraphicsRenderTarget*								GetRenderTarget() override;
+		bool													GetWrapLine() override;
+		void													SetWrapLine(bool value) override;
+		vint													GetMaxWidth() override;
+		void													SetMaxWidth(vint value) override;
+		Alignment												GetParagraphAlignment() override;
+		void													SetParagraphAlignment(Alignment value) override;
+		bool													SetFont(vint start, vint length, const WString& value) override;
+		bool													SetSize(vint start, vint length, vint value) override;
+		bool													SetStyle(vint start, vint length, TextStyle value) override;
+		bool													SetColor(vint start, vint length, Color value) override;
+		bool													SetBackgroundColor(vint start, vint length, Color value) override;
+		Size													GetSize() override;
+		bool													EnableCaret(vint caret, Color color, bool frontSide) override;
+		void													DisableCaret() override;
+		bool													BlinkCaret() override;
+		bool													IsValidCaret(vint caret) override;
+		bool													IsValidTextPos(vint textPos) override;
+		bool													SetInlineObject(vint start, vint length, const InlineObjectProperties& properties) override;
+		bool													ResetInlineObject(vint start, vint length) override;
+		void													Render(Rect bounds) override;
+		vint													GetCaret(vint comparingCaret, CaretRelativePosition position, bool& preferFrontSide) override;
+		Rect													GetCaretBounds(vint caret, bool frontSide) override;
+		vint													GetCaretFromPoint(Point point) override;
+		Nullable<InlineObjectProperties>						GetInlineObjectFromPoint(Point point, vint& start, vint& length) override;
+		vint													GetNearestCaretFromTextPos(vint textPos, bool frontSide) override;
+	};
 
-		/*
-		* Predefined Commands:
-		* --------------------------------------------------------------------------------
-		* !Type:<TEXT>
-		*   Type <TEXT> to the focused control
-		* !Exit
-		*   Try to quit the application, it could be blocked by the application itself
-		* !KeyDown:Key1+Key2+...+KeyN
-		*   Key1 down, Key2 down, ..., KeyN down
-		* !KeyUp:Key1+Key2+...+KeyN
-		*   KeyN up, ..., Key2 up, Key1 up
-		* !KeyPress:Key1+Key2+...+KeyN
-		*   Key1 down, Key2 down, ..., KeyN down, KeyN up, ..., Key2 up, Key1 up
-		* !MouseMove:X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?
-		* !(Left|Middle|Right|Mouse4|Mouse5)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?
-		*   Click means Down/Up
-		*   DbClick means Down/Up/Down/DbClick/Up
-		* !MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?(,win|command|super)?
-		*   WindowMouseInfo_::wheel = ticks * 120 * direction (1 or -1)
-		* 
-		* --------------------------------------------------------------------------------
-		* 
-		* If the command satisfies the syntax, queue event handlers and then return "Queued"
-		* Otherwise, return "Syntax Error!" followed by command descriptions in this comment
-		* This function will crash if any event handler throws
-		* Event handlers are queued with INativeAsyncService::InvokeInMainThread after the command is parsed
-		*   therefore the returned "Queued" only means the command was accepted, not that it has finished executing
-		* 
-		* All coordinates are GuiCoordinate
-		*   INativeWindow::Convert should be used to convert them to NativeCoordinate before calling the event handlers
-		* 
-		* During calling the event handlers
-		*   ctrl/shift/alt/osSuper should be set accordingly
-		*   the state argument is for remembering whatever is needed
-		*   RunIOCommandOnNativeWindow assume it is the only source of IO interactions
-		*/
-		extern WString							RunIOCommandOnNativeWindow(
-													IoCommandState* state,
-													INativeController* nativeController,
-													INativeWindow* nativeWindow,
-													collections::List<INativeWindowListener*>& listeners,
-													WString command
-													);
+	class TuiGraphicsLayoutProvider : public Object, public IGuiGraphicsLayoutProvider
+	{
+	public:
+		Ptr<IGuiGraphicsParagraph>								CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback) override;
+	};
 
-		class AutomationServiceBase : public Object, public INativeAutomationService
-		{
-		protected:
-			IoCommandState						ioCommandState;
-			bool								stopped = false;
-
-			virtual Nullable<WString>			GetNativeWindowId(INativeWindow* window) = 0;
-			virtual INativeWindow*				GetNativeWindow(Nullable<WString> windowId) = 0;
-
-			virtual WString						DumpControlTreeInternal() { return WString::Empty; }
-			virtual WString						DumpDomTreeInternal() { return WString::Empty; }
-			virtual WString						RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) { return WString::Empty; }
-		public:
-			AutomationServiceBase() = default;
-			~AutomationServiceBase() = default;
-
-			bool Available() override
-			{
-				return true;
-			}
-
-			void Stop() override
-			{
-				stopped = true;
-			}
-
-			bool CanDumpControlTree() override
-			{
-				return false;
-			}
-
-			WString DumpControlTree() override
-			{
-				return !stopped && CanDumpControlTree() ? DumpControlTreeInternal() : WString::Empty;
-			}
-
-			bool CanDumpDomTree() override
-			{
-				return false;
-			}
-
-			WString DumpDomTree() override
-			{
-				return !stopped && CanDumpDomTree() ? DumpDomTreeInternal() : WString::Empty;
-			}
-
-			IOCommandAvailability CanRunIOCommands() override
-			{
-				return IOCommandAvailability::Disabled;
-			}
-
-			WString RunIOCommand(Nullable<WString> windowId, const WString& ioCommand) override
-			{
-				auto availability = stopped ? IOCommandAvailability::Disabled : CanRunIOCommands();
-				switch (availability)
-				{
-				case IOCommandAvailability::Enabled:
-					return RunIOCommandInternal(windowId, ioCommand);
-				case IOCommandAvailability::ExitOnly:
-					return ioCommand == L"!Exit" ? RunIOCommandInternal(windowId, ioCommand) : WString::Unmanaged(L"!Application stopped responding.");
-				default:
-					return WString::Empty;
-				}
-			}
-		};
-
-		class AutomationServiceRenderer : public AutomationServiceBase
-		{
-		private:
-			remote_renderer::GuiRemoteRendererSingle*	renderer = nullptr;
-			SpinLock									lockFatalError; // covers fatalError
-			Nullable<WString>							fatalError;
-
-			Nullable<WString>							CopyFatalError();
-			
-		protected:
-			Nullable<WString> GetNativeWindowId(INativeWindow* window) override
-			{
-				return {};
-			}
-
-			INativeWindow* GetNativeWindow(Nullable<WString> windowId) override
-			{
-				return GetCurrentController()->WindowService()->GetMainWindow();
-			}
-
-			WString DumpDomTreeInternal() override;
-
-		public:
-			AutomationServiceRenderer(remote_renderer::GuiRemoteRendererSingle* _renderer)
-				:renderer(_renderer)
-			{
-			}
-
-			bool CanDumpDomTree() override
-			{
-				return true;
-			}
-
-			void SetFatalError(Nullable<WString> value);
-			IOCommandAvailability CanRunIOCommands() override;
-		};
-	}
+	extern char32_t						TuiReadScalar(const WString& text, vint start, vint& length);
+	extern WString						TuiEllipsizeText(const WString& text, vint width);
+	extern console::TuiTextStyle			TuiGetTextStyle(IGuiGraphicsParagraph::TextStyle style);
 }
 
 #endif
 
 
 /***********************************************************************
-.\UTILITIES\SHAREDSERVICES\GUISHAREDAUTOMATIONSERVICE_CONTROLS.H
+.\PLATFORMPROVIDERS\TUI\TUIGRAPHICS.H
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_ELEMENTS_TUIGRAPHICS
+#define VCZH_PRESENTATION_ELEMENTS_TUIGRAPHICS
+
+
+namespace vl::presentation::elements
+{
+	class TuiGraphicsRenderTarget : public GuiGraphicsRenderTarget
+	{
+	protected:
+		INativeWindow*							window;
+		collections::Array<console::TuiPixel>	borderBuffer;
+		Rect									GetVisibleClipper();
+		void									StartRenderingOnNativeWindow() override;
+		RenderTargetFailure						StopRenderingOnNativeWindow() override;
+		Size									GetCanvasSize() override;
+		void									AfterPushedClipper(Rect clipper, Rect validArea, reflection::DescriptableObject* generator) override;
+		void									AfterPushedClipperAndBecameInvalid(Rect clipper, reflection::DescriptableObject* generator) override;
+		void									AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override;
+		void									AfterPoppedClipper(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override;
+	public:
+		TuiGraphicsRenderTarget(INativeWindow* window);
+		bool									CanDraw();
+		void									Fill(Rect bounds, Color color);
+		void									Border(Rect bounds, Color color, TuiLineStyle style, ElementShape shape);
+		void									Print(Point location, char32_t code, Color foreground, Color background, console::TuiTextStyle style);
+		void									Caret(Point location, Color color);
+	};
+
+	class TuiGraphicsResourceManager : public GuiGraphicsResourceManager, public INativeControllerListener
+	{
+	protected:
+		Ptr<TuiGraphicsRenderTarget>			renderTarget;
+		TuiGraphicsLayoutProvider				layoutProvider;
+	public:
+		IGuiGraphicsRenderTarget*				GetRenderTarget(INativeWindow* window) override;
+		void									RecreateRenderTarget(INativeWindow* window) override;
+		void									ResizeRenderTarget(INativeWindow* window) override;
+		IGuiGraphicsLayoutProvider*				GetLayoutProvider() override;
+		Ptr<IGuiGraphicsElement>				CreateRawElement() override;
+		void									NativeWindowCreated(INativeWindow* window) override;
+		void									NativeWindowDestroying(INativeWindow* window) override;
+	};
+
+	extern console::TuiColor					TuiBlend(Color color, console::TuiColor background);
+	extern void									RegisterTuiRenderers();
+}
+
+#endif
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\TUI\TUIWINDOW.H
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_TUIWINDOW
+#define VCZH_PRESENTATION_TUIWINDOW
+
+
+namespace vl::presentation
+{
+	class TuiControllerBase;
+
+	class TuiWindow : public Object, public INativeWindow
+	{
+		friend class TuiControllerBase;
+	protected:
+		TuiControllerBase*							controller;
+		collections::List<INativeWindowListener*>	listeners;
+		NativeSize									clientSize;
+		WString										title;
+		INativeCursor*								cursor = nullptr;
+		NativePoint									caret;
+		Ptr<GuiImageData>							icon;
+		bool										visible = false;
+		bool										enabled = true;
+		bool										capturing = false;
+	public:
+		TuiWindow(TuiControllerBase* controller);
+		~TuiWindow();
+		void										Dispatch(const Func<void(INativeWindowListener*)>& callback, bool duringFinalization = false);
+		bool										IsActivelyRefreshing() override;
+		NativeSize									GetRenderingOffset() override;
+		Point										Convert(NativePoint value) override;
+		NativePoint									Convert(Point value) override;
+		Size										Convert(NativeSize value) override;
+		NativeSize									Convert(Size value) override;
+		Margin										Convert(NativeMargin value) override;
+		NativeMargin								Convert(Margin value) override;
+		NativeRect									GetBounds() override;
+		void										SetBounds(const NativeRect& bounds) override;
+		NativeSize									GetClientSize() override;
+		void										SetClientSize(NativeSize size) override;
+		NativeRect									GetClientBoundsInScreen() override;
+		void										SuggestMinClientSize(NativeSize size) override;
+		WString										GetTitle() override;
+		void										SetTitle(const WString& value) override;
+		INativeCursor*								GetWindowCursor() override;
+		void										SetWindowCursor(INativeCursor* value) override;
+		NativePoint									GetCaretPoint() override;
+		void										SetCaretPoint(NativePoint value) override;
+		INativeWindow*								GetParent() override;
+		void										SetParent(INativeWindow* parent) override;
+		WindowMode									GetWindowMode() override;
+		void										EnableCustomFrameMode() override;
+		void										DisableCustomFrameMode() override;
+		bool										IsCustomFrameModeEnabled() override;
+		NativeMargin								GetCustomFramePadding() override;
+		Ptr<GuiImageData>							GetIcon() override;
+		void										SetIcon(Ptr<GuiImageData> value) override;
+		WindowSizeState								GetSizeState() override;
+		void										Show() override;
+		void										ShowDeactivated() override;
+		void										ShowRestored() override;
+		void										ShowMaximized() override;
+		void										ShowMinimized() override;
+		void										Hide(bool closeWindow) override;
+		bool										IsVisible() override;
+		void										Enable() override;
+		void										Disable() override;
+		bool										IsEnabled() override;
+		void										SetActivate() override;
+		bool										IsActivated() override;
+		bool										IsRenderingAsActivated() override;
+		bool										IsAppearedInTaskBar() override;
+		bool										IsEnabledActivate() override;
+		void										ShowInTaskBar() override;
+		void										HideInTaskBar() override;
+		void										EnableActivate() override;
+		void										DisableActivate() override;
+		void										SupressAlt() override;
+		bool										RequireCapture() override;
+		bool										ReleaseCapture() override;
+		bool										IsCapturing() override;
+		bool										GetMaximizedBox() override;
+		void										SetMaximizedBox(bool value) override;
+		bool										GetMinimizedBox() override;
+		void										SetMinimizedBox(bool value) override;
+		bool										GetBorder() override;
+		void										SetBorder(bool value) override;
+		bool										GetSizeBox() override;
+		void										SetSizeBox(bool value) override;
+		bool										GetIconVisible() override;
+		void										SetIconVisible(bool value) override;
+		bool										GetTitleBar() override;
+		void										SetTitleBar(bool value) override;
+		bool										GetTopMost() override;
+		void										SetTopMost(bool value) override;
+		bool										InstallListener(INativeWindowListener* listener) override;
+		bool										UninstallListener(INativeWindowListener* listener) override;
+		void										RedrawContent() override;
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\TUI\TUICONTROLLER.H
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_TUICONTROLLER
+#define VCZH_PRESENTATION_TUICONTROLLER
+
+
+namespace vl::presentation
+{
+	class TuiControllerBase
+		: public Object
+		, public INativeController
+		, public ITuiApplication
+		, public console::ITuiCallback
+		, protected INativeControllerListener
+		, protected INativeResourceService
+		, protected INativeInputService
+		, protected INativeScreenService
+		, protected INativeScreen
+		, protected INativeWindowService
+	{
+	protected:
+		INativeController*				nativeServices;
+		SharedCallbackService			callbackService;
+		SharedAsyncService				asyncService;
+		Ptr<TuiWindow>					window;
+		FontProperties					defaultFont;
+		NativeWindowFrameConfig			frameConfig;
+		bool							timerEnabled = false;
+
+		virtual void					PumpPlatformEvents() = 0;
+		void							Starting() override;
+	public:
+		TuiControllerBase(INativeController* nativeServices);
+		~TuiControllerBase();
+		ITuiApplication*				GetTuiApplication();
+		virtual void					ApplyTitle(const WString& title) = 0;
+		INativeCallbackService*			CallbackService() override;
+		INativeResourceService*			ResourceService() override;
+		INativeAsyncService*			AsyncService() override;
+		INativeClipboardService*		ClipboardService() override;
+		INativeImageService*			ImageService() override;
+		INativeInputService*			InputService() override;
+		INativeDialogService*			DialogService() override;
+		INativeAutomationService*		AutomationService() override;
+		WString							GetExecutablePath() override;
+		INativeScreenService*			ScreenService() override;
+		INativeWindowService*			WindowService() override;
+		INativeCursor*					GetSystemCursor(INativeCursor::SystemCursorType type) override;
+		INativeCursor*					GetDefaultSystemCursor() override;
+		FontProperties					GetDefaultFont() override;
+		void							SetDefaultFont(const FontProperties& value) override;
+		void							EnumerateFonts(collections::List<WString>& fonts) override;
+		WString							GetOSSuperKeyName() override;
+		void							StartTimer() override;
+		void							StopTimer() override;
+		bool							IsTimerEnabled() override;
+		bool							IsKeyPressing(VKEY code) override;
+		bool							IsKeyToggled(VKEY code) override;
+		WString							GetKeyName(VKEY code) override;
+		VKEY							GetKey(const WString& name) override;
+		vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key) override;
+		bool							UnregisterGlobalShortcutKey(vint id) override;
+		vint							GetScreenCount() override;
+		INativeScreen*					GetScreen(vint index) override;
+		INativeScreen*					GetScreen(INativeWindow* window) override;
+		NativeRect						GetBounds() override;
+		NativeRect						GetClientBounds() override;
+		WString							GetName() override;
+		bool							IsPrimary() override;
+		double							GetScalingX() override;
+		double							GetScalingY() override;
+		const NativeWindowFrameConfig&	GetMainWindowFrameConfig() override;
+		const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig() override;
+		INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
+		void							DestroyNativeWindow(INativeWindow* value) override;
+		INativeWindow*					GetMainWindow() override;
+		INativeWindow*					GetWindow(NativePoint location) override;
+		void							Run(INativeWindow* value) override;
+		bool							RunOneCycle() override;
+		void							Stop() override;
+		void							BufferSizeChanged() override;
+		void							Timer() override;
+		void							ClipboardUpdated() override;
+		void							GlobalShortcutKeyActivated(vint id) override;
+		void							KeyDown(const NativeWindowKeyInfo& info) override;
+		void							KeyUp(const NativeWindowKeyInfo& info) override;
+		void							Char(const NativeWindowCharInfo& info) override;
+		void							MouseMove(const WindowMouseInfo& info) override;
+		void							MouseDown(NativeMouseButton button, const WindowMouseInfo& info) override;
+		void							MouseUp(NativeMouseButton button, const WindowMouseInfo& info) override;
+		void							MouseDoubleClick(NativeMouseButton button, const WindowMouseInfo& info) override;
+		void							MouseVerticalWheel(const WindowMouseInfo& info) override;
+		void							MouseHorizontalWheel(const WindowMouseInfo& info) override;
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\TUIDIALOGS\SOURCE\TUIFAKEDIALOGSERVICEUI.H
+***********************************************************************/
+/***********************************************************************
+!!!!!! DO NOT MODIFY !!!!!!
+
+Source: GacUI TuiFakeDialogServiceUI
+
+This file is generated by Workflow compiler
+https://github.com/vczh-libraries
+***********************************************************************/
+
+#ifndef VCZH_WORKFLOW_COMPILER_GENERATED_TUIFAKEDIALOGSERVICEUI
+#define VCZH_WORKFLOW_COMPILER_GENERATED_TUIFAKEDIALOGSERVICEUI
+
+
+#if defined( _MSC_VER)
+#pragma warning(push)
+#pragma warning(disable:4250)
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wparentheses-equality"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#endif
+
+namespace vl_workflow_global
+{
+	struct __vwsnf10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+	struct __vwsnf11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+	struct __vwsnf12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+	struct __vwsnf13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+	struct __vwsnf14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+	struct __vwsnf15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+	struct __vwsnf16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+	struct __vwsnf17_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+	struct __vwsnf18_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+	struct __vwsnf19_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+	struct __vwsnf1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_;
+	struct __vwsnf20_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+	struct __vwsnf21_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__;
+	struct __vwsnf22_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+	struct __vwsnf23_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+	struct __vwsnf24_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+	struct __vwsnf25_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+	struct __vwsnf26_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+	struct __vwsnf27_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindow___vwsn_instance_ctor__;
+	struct __vwsnf28_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf29_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_;
+	struct __vwsnf30_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf31_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf33_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf34_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf35_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf36_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf37_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__;
+	struct __vwsnf38_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf39_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_;
+	struct __vwsnf40_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf41_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf42_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf43_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf44_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	struct __vwsnf45_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles_;
+	struct __vwsnf46_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_;
+	struct __vwsnf47_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_;
+	struct __vwsnf48_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_;
+	struct __vwsnf49_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_;
+	struct __vwsnf4_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_;
+	struct __vwsnf50_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_;
+	struct __vwsnf51_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_;
+	struct __vwsnf52_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_;
+	struct __vwsnf53_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_;
+	struct __vwsnf54_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf55_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf56_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf57_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf58_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf59_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+	struct __vwsnf60_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf61_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf62_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf63_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf64_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf65_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf66_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf67_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+	struct __vwsnf68_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+	struct __vwsnf69_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+	struct __vwsnf6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+	struct __vwsnf70_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+	struct __vwsnf71_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+	struct __vwsnf72_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+	struct __vwsnf73_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+	struct __vwsnf74_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+	struct __vwsnf75_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_;
+	struct __vwsnf76_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_;
+	struct __vwsnf77_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_;
+	struct __vwsnf78_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxWindowConstructor___vwsn_tui_controls_TuiMessageBoxWindow_Initialize_;
+	struct __vwsnf7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+	struct __vwsnf8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+	struct __vwsnf9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+	struct __vwsno32_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+	class __vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc26_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine;
+	class __vwsnc27_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_CreateFileFilter__vl_presentation_controls_list_IDataFilter;
+	class __vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc41_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings;
+	class __vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+}
+
+namespace tui_controls
+{
+	class ITuiDialogStringsStrings;
+	class TuiColorComponentControlConstructor;
+	class TuiColorComponentControl;
+	class TuiColorDialogControlConstructor;
+	class TuiColorDialogControl;
+	class TuiColorDialogWindowConstructor;
+	class TuiColorDialogWindow;
+	class TuiDialogStrings;
+	class TuiFileDialogWindowConstructor;
+	class TuiFileDialogWindow;
+	class TuiFilePickerControlConstructor;
+	class TuiFilePickerControl;
+	class TuiFontNameControlConstructor;
+	class TuiFontNameControl;
+	class TuiFontSizeControlConstructor;
+	class TuiFontSizeControl;
+	class TuiFullFontDialogWindowConstructor;
+	class TuiFullFontDialogWindow;
+	class TuiMessageBoxButtonTemplateConstructor;
+	class TuiMessageBoxButtonTemplate;
+	class TuiMessageBoxWindowConstructor;
+	class TuiMessageBoxWindow;
+	class TuiSimpleFontDialogWindowConstructor;
+	class TuiSimpleFontDialogWindow;
+
+	class ITuiDialogStringsStrings : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<ITuiDialogStringsStrings>
+	{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ITuiDialogStringsStrings>;
+#endif
+	public:
+		virtual ::vl::WString Abort() = 0;
+		virtual ::vl::WString Blue() = 0;
+		virtual ::vl::WString Bold() = 0;
+		virtual ::vl::WString Cancel() = 0;
+		virtual ::vl::WString Color() = 0;
+		virtual ::vl::WString ColorDialogTitle() = 0;
+		virtual ::vl::WString Continue() = 0;
+		virtual ::vl::WString FileDialogAskCreateFile() = 0;
+		virtual ::vl::WString FileDialogAskOverrideFile() = 0;
+		virtual ::vl::WString FileDialogErrorEmptySelection() = 0;
+		virtual ::vl::WString FileDialogErrorFileExpected() = 0;
+		virtual ::vl::WString FileDialogErrorFileNotExist() = 0;
+		virtual ::vl::WString FileDialogErrorFolderNotExist() = 0;
+		virtual ::vl::WString FileDialogErrorMultipleSelectionNotEnabled() = 0;
+		virtual ::vl::WString FileDialogFileName() = 0;
+		virtual ::vl::WString FileDialogOpen() = 0;
+		virtual ::vl::WString FileDialogSave() = 0;
+		virtual ::vl::WString FileDialogTextLoadingFiles() = 0;
+		virtual ::vl::WString FileDialogTextLoadingFolders() = 0;
+		virtual ::vl::WString FontColorGroup() = 0;
+		virtual ::vl::WString FontColorGroup2() = 0;
+		virtual ::vl::WString FontDialogTitle() = 0;
+		virtual ::vl::WString FontEffectGroup() = 0;
+		virtual ::vl::WString FontNameGroup() = 0;
+		virtual ::vl::WString FontPreviewGroup() = 0;
+		virtual ::vl::WString FontSizeGroup() = 0;
+		virtual ::vl::WString Green() = 0;
+		virtual ::vl::WString HAA() = 0;
+		virtual ::vl::WString Ignore() = 0;
+		virtual ::vl::WString Italic() = 0;
+		virtual ::vl::WString No() = 0;
+		virtual ::vl::WString OK() = 0;
+		virtual ::vl::WString Red() = 0;
+		virtual ::vl::WString Retry() = 0;
+		virtual ::vl::WString Strikeline() = 0;
+		virtual ::vl::WString TryAgain() = 0;
+		virtual ::vl::WString Underline() = 0;
+		virtual ::vl::WString VAA() = 0;
+		virtual ::vl::WString Yes() = 0;
+	};
+
+	class TuiColorComponentControlConstructor : public ::vl::Object, public ::vl::reflection::Description<TuiColorComponentControlConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf4_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiColorComponentControlConstructor>;
+#endif
+	protected:
+		::tui_controls::TuiColorComponentControl* self;
+		::vl::presentation::controls::GuiSinglelineTextBox* textBox;
+		::vl::presentation::controls::GuiScroll* tracker;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		void __vwsn_tui_controls_TuiColorComponentControl_Initialize(::tui_controls::TuiColorComponentControl* __vwsn_this_);
+	public:
+		TuiColorComponentControlConstructor();
+	};
+
+	class TuiColorComponentControl : public ::vl::presentation::controls::GuiCustomControl, public ::tui_controls::TuiColorComponentControlConstructor, public ::vl::reflection::Description<TuiColorComponentControl>
+	{
+		friend class ::tui_controls::TuiColorComponentControlConstructor;
+		friend class ::vl_workflow_global::__vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf4_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiColorComponentControl>;
+#endif
+	public:
+		::vl::vint __vwsn_prop_Value;
+		::vl::vint GetValue();
+		void SetValue(::vl::vint __vwsn_value_);
+		::vl::Event<void()> ValueChanged;
+		::vl::WString __vwsn_prop_TextBoxAlt;
+		::vl::WString GetTextBoxAlt();
+		void SetTextBoxAlt(const ::vl::WString& __vwsn_value_);
+		::vl::Event<void()> TextBoxAltChanged;
+		TuiColorComponentControl();
+		~TuiColorComponentControl();
+	};
+
+	class TuiColorDialogControlConstructor : public ::vl::Object, public ::vl::reflection::Description<TuiColorDialogControlConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiColorDialogControlConstructor>;
+#endif
+	protected:
+		::tui_controls::TuiColorDialogControl* self;
+		::vl::Ptr<::vl::presentation::IColorDialogViewModel> ViewModel;
+		::tui_controls::TuiColorComponentControl* colorRed;
+		::tui_controls::TuiColorComponentControl* colorGreen;
+		::tui_controls::TuiColorComponentControl* colorBlue;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_12;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_13;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_14;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_15;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_16;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_18;
+		void __vwsn_tui_controls_TuiColorDialogControl_Initialize(::tui_controls::TuiColorDialogControl* __vwsn_this_);
+	public:
+		TuiColorDialogControlConstructor();
+	};
+
+	class TuiColorDialogControl : public ::vl::presentation::controls::GuiCustomControl, public ::tui_controls::TuiColorDialogControlConstructor, public ::vl::reflection::Description<TuiColorDialogControl>
+	{
+		friend class ::tui_controls::TuiColorDialogControlConstructor;
+		friend class ::vl_workflow_global::__vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiColorDialogControl>;
+#endif
+	public:
+		::vl::presentation::Color __vwsn_prop_Value;
+		::vl::presentation::Color GetValue();
+		void SetValue(::vl::presentation::Color __vwsn_value_);
+		::vl::Event<void()> ValueChanged;
+		::vl::presentation::Color ReadColor();
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_prop_Strings;
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> GetStrings();
+		void SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_);
+		::vl::Event<void()> StringsChanged;
+	private:
+		::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
+		::vl::Ptr<::vl::presentation::IColorDialogViewModel> GetViewModel();
+		TuiColorDialogControl(::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_ctor_parameter_ViewModel);
+		~TuiColorDialogControl();
+	};
+
+	class TuiColorDialogWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<TuiColorDialogWindowConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf17_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf18_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf19_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiColorDialogWindowConstructor>;
+#endif
+	protected:
+		::tui_controls::TuiColorDialogWindow* self;
+		::vl::Ptr<::vl::presentation::IColorDialogViewModel> ViewModel;
+		::tui_controls::TuiColorDialogControl* colorControl;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_8;
+		void __vwsn_tui_controls_TuiColorDialogWindow_Initialize(::tui_controls::TuiColorDialogWindow* __vwsn_this_);
+	public:
+		TuiColorDialogWindowConstructor();
+	};
+
+	class TuiColorDialogWindow : public ::vl::presentation::controls::GuiWindow, public ::tui_controls::TuiColorDialogWindowConstructor, public ::vl::reflection::Description<TuiColorDialogWindow>
+	{
+		friend class ::tui_controls::TuiColorDialogWindowConstructor;
+		friend class ::vl_workflow_global::__vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf17_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf18_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf19_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiColorDialogWindow>;
+#endif
+	public:
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_prop_Strings;
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> GetStrings();
+		void SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_);
+		::vl::Event<void()> StringsChanged;
+	private:
+		::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
+		::vl::Ptr<::vl::presentation::IColorDialogViewModel> GetViewModel();
+		TuiColorDialogWindow(::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_ctor_parameter_ViewModel);
+		~TuiColorDialogWindow();
+	};
+
+	class TuiDialogStrings : public ::vl::Object, public ::vl::reflection::Description<TuiDialogStrings>
+	{
+		friend class ::vl_workflow_global::__vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiDialogStrings>;
+#endif
+	public:
+		static ::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_ls_en_US_BuildStrings(::vl::Locale __vwsn_ls_locale);
+		static void Install(::vl::Locale __vwsn_ls_locale, ::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_ls_impl);
+		static ::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> Get(::vl::Locale __vwsn_ls_locale);
+		TuiDialogStrings();
+	};
+
+	class TuiFileDialogWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<TuiFileDialogWindowConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf20_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf21_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf22_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf23_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf24_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf25_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf26_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiFileDialogWindowConstructor>;
+#endif
+	protected:
+		::tui_controls::TuiFileDialogWindow* self;
+		::vl::Ptr<::vl::presentation::IFileDialogViewModel> ViewModel;
+		::tui_controls::TuiFilePickerControl* filePickerControl;
+		::vl::presentation::controls::GuiButton* buttonOK;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
+		void __vwsn_tui_controls_TuiFileDialogWindow_Initialize(::tui_controls::TuiFileDialogWindow* __vwsn_this_);
+	public:
+		TuiFileDialogWindowConstructor();
+	};
+
+	class TuiFileDialogWindow : public ::vl::presentation::controls::GuiWindow, public ::tui_controls::TuiFileDialogWindowConstructor, public ::vl::reflection::Description<TuiFileDialogWindow>
+	{
+		friend struct ::vl_workflow_global::__vwsnf27_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindow___vwsn_instance_ctor__;
+		friend class ::tui_controls::TuiFileDialogWindowConstructor;
+		friend class ::vl_workflow_global::__vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf20_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf21_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf22_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf23_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf24_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf25_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf26_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiFileDialogWindow>;
+#endif
+	public:
+		void MakeOpenFileDialog();
+		void MakeSaveFileDialog();
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_prop_Strings;
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> GetStrings();
+		void SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_);
+		::vl::Event<void()> StringsChanged;
+	private:
+		::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
+		::vl::Ptr<::vl::presentation::IFileDialogViewModel> GetViewModel();
+		TuiFileDialogWindow(::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_ctor_parameter_ViewModel);
+		void __vwsn_instance_ctor_();
+		~TuiFileDialogWindow();
+	};
+
+	class TuiFilePickerControlConstructor : public ::vl::Object, public ::vl::reflection::Description<TuiFilePickerControlConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf28_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf29_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf30_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf31_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf33_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf34_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf35_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf36_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf37_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf38_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf39_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf40_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf41_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf42_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf43_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf44_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsno32_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiFilePickerControlConstructor>;
+#endif
+	protected:
+		::tui_controls::TuiFilePickerControl* self;
+		::vl::Ptr<::vl::presentation::IFileDialogViewModel> ViewModel;
+		::vl::presentation::controls::GuiSinglelineTextBox* textBox;
+		::vl::presentation::controls::GuiBindableTreeView* treeView;
+		::vl::presentation::controls::GuiBindableDataGrid* dataGrid;
+		::vl::presentation::controls::GuiComboBoxListControl* comboBox;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
+		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_12;
+		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_13;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_14;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_15;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_16;
+		::vl::presentation::controls::GuiBindableTextList* __vwsn_precompile_17;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_18;
+		::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_precompile_19;
+		void __vwsn_tui_controls_TuiFilePickerControl_Initialize(::tui_controls::TuiFilePickerControl* __vwsn_this_);
+	public:
+		TuiFilePickerControlConstructor();
+	};
+
+	class TuiFilePickerControl : public ::vl::presentation::controls::GuiCustomControl, public ::tui_controls::TuiFilePickerControlConstructor, public ::vl::reflection::Description<TuiFilePickerControl>
+	{
+		friend class ::vl_workflow_global::__vwsnc26_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine;
+		friend class ::vl_workflow_global::__vwsnc27_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_CreateFileFilter__vl_presentation_controls_list_IDataFilter;
+		friend struct ::vl_workflow_global::__vwsnf45_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles_;
+		friend class ::tui_controls::TuiFilePickerControlConstructor;
+		friend class ::vl_workflow_global::__vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf28_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf29_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf30_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf31_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf33_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf34_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf35_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf36_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf37_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf38_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf39_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf40_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf41_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf42_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf43_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf44_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsno32_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiFilePickerControl>;
+#endif
+	public:
+		::vl::Event<void()> RequestClose;
+		::vl::collections::LazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>> GetSelectedFiles();
+		::vl::collections::LazyList<::vl::WString> GetSelection();
+		void LocateSelectedFolderInTreeView();
+		::vl::Ptr<::vl::presentation::controls::list::IDataFilter> CreateFileFilter(::vl::Ptr<::vl::presentation::IFileDialogFilter> filter);
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_prop_Strings;
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> GetStrings();
+		void SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_);
+		::vl::Event<void()> StringsChanged;
+	private:
+		::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
+		::vl::Ptr<::vl::presentation::IFileDialogViewModel> GetViewModel();
+		TuiFilePickerControl(::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_ctor_parameter_ViewModel);
+		void __vwsn_instance_ctor_();
+		~TuiFilePickerControl();
+	};
+
+	class TuiFontNameControlConstructor : public ::vl::Object, public ::vl::reflection::Description<TuiFontNameControlConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf46_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf47_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf48_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf49_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiFontNameControlConstructor>;
+#endif
+	protected:
+		::tui_controls::TuiFontNameControl* self;
+		::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel> ViewModel;
+		::vl::presentation::controls::GuiSinglelineTextBox* textBox;
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		void __vwsn_tui_controls_TuiFontNameControl_Initialize(::tui_controls::TuiFontNameControl* __vwsn_this_);
+	public:
+		TuiFontNameControlConstructor();
+	};
+
+	class TuiFontNameControl : public ::vl::presentation::controls::GuiCustomControl, public ::tui_controls::TuiFontNameControlConstructor, public ::vl::reflection::Description<TuiFontNameControl>
+	{
+		friend class ::tui_controls::TuiFontNameControlConstructor;
+		friend class ::vl_workflow_global::__vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf46_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf47_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf48_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf49_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiFontNameControl>;
+#endif
+	public:
+		::vl::WString __vwsn_prop_Value;
+		::vl::WString GetValue();
+		void SetValue(const ::vl::WString& __vwsn_value_);
+		::vl::Event<void()> ValueChanged;
+		bool __vwsn_prop_Legal;
+		bool GetLegal();
+		void SetLegal(bool __vwsn_value_);
+		::vl::Event<void()> LegalChanged;
+		void InitValue(const ::vl::WString& value);
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_prop_Strings;
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> GetStrings();
+		void SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_);
+		::vl::Event<void()> StringsChanged;
+	private:
+		::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
+		::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel> GetViewModel();
+		TuiFontNameControl(::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel> __vwsn_ctor_parameter_ViewModel);
+		~TuiFontNameControl();
+	};
+
+	class TuiFontSizeControlConstructor : public ::vl::Object, public ::vl::reflection::Description<TuiFontSizeControlConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf50_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf51_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf52_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf53_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiFontSizeControlConstructor>;
+#endif
+	protected:
+		::tui_controls::TuiFontSizeControl* self;
+		::vl::presentation::controls::GuiSinglelineTextBox* textBox;
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		void __vwsn_tui_controls_TuiFontSizeControl_Initialize(::tui_controls::TuiFontSizeControl* __vwsn_this_);
+	public:
+		TuiFontSizeControlConstructor();
+	};
+
+	class TuiFontSizeControl : public ::vl::presentation::controls::GuiCustomControl, public ::tui_controls::TuiFontSizeControlConstructor, public ::vl::reflection::Description<TuiFontSizeControl>
+	{
+		friend class ::tui_controls::TuiFontSizeControlConstructor;
+		friend class ::vl_workflow_global::__vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf50_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf51_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf52_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf53_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiFontSizeControl>;
+#endif
+	public:
+		::vl::vint __vwsn_prop_Value;
+		::vl::vint GetValue();
+		void SetValue(::vl::vint __vwsn_value_);
+		::vl::Event<void()> ValueChanged;
+		bool __vwsn_prop_Legal;
+		bool GetLegal();
+		void SetLegal(bool __vwsn_value_);
+		::vl::Event<void()> LegalChanged;
+		void InitValue(::vl::vint value);
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_prop_Strings;
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> GetStrings();
+		void SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_);
+		::vl::Event<void()> StringsChanged;
+		TuiFontSizeControl();
+		~TuiFontSizeControl();
+	};
+
+	class TuiFullFontDialogWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<TuiFullFontDialogWindowConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc41_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf54_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf55_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf56_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf57_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf58_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf59_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf60_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf61_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf62_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf63_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf64_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf65_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf66_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf67_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiFullFontDialogWindowConstructor>;
+#endif
+	protected:
+		::tui_controls::TuiFullFontDialogWindow* self;
+		::vl::Ptr<::vl::presentation::IFullFontDialogViewModel> ViewModel;
+		::tui_controls::TuiFontNameControl* nameControl;
+		::tui_controls::TuiFontSizeControl* sizeControl;
+		::vl::presentation::controls::GuiSelectableButton* checkBold;
+		::vl::presentation::controls::GuiSelectableButton* checkItalic;
+		::vl::presentation::controls::GuiSelectableButton* checkUnderline;
+		::vl::presentation::controls::GuiSelectableButton* checkStrikeline;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_11;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_12;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_13;
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_14;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_15;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_16;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_18;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_19;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_20;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_21;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_23;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_24;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_25;
+		void __vwsn_tui_controls_TuiFullFontDialogWindow_Initialize(::tui_controls::TuiFullFontDialogWindow* __vwsn_this_);
+	public:
+		TuiFullFontDialogWindowConstructor();
+	};
+
+	class TuiFullFontDialogWindow : public ::vl::presentation::controls::GuiWindow, public ::tui_controls::TuiFullFontDialogWindowConstructor, public ::vl::reflection::Description<TuiFullFontDialogWindow>
+	{
+		friend class ::tui_controls::TuiFullFontDialogWindowConstructor;
+		friend class ::vl_workflow_global::__vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc41_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf54_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf55_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf56_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf57_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf58_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf59_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf60_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf61_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf62_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf63_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf64_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf65_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf66_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf67_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiFullFontDialogWindow>;
+#endif
+	public:
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_prop_Strings;
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> GetStrings();
+		void SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_);
+		::vl::Event<void()> StringsChanged;
+	private:
+		::vl::Ptr<::vl::presentation::IFullFontDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
+		::vl::Ptr<::vl::presentation::IFullFontDialogViewModel> GetViewModel();
+		TuiFullFontDialogWindow(::vl::Ptr<::vl::presentation::IFullFontDialogViewModel> __vwsn_ctor_parameter_ViewModel);
+		void __vwsn_instance_ctor_();
+		~TuiFullFontDialogWindow();
+	};
+
+	class TuiMessageBoxButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<TuiMessageBoxButtonTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf75_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf76_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf77_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiMessageBoxButtonTemplateConstructor>;
+#endif
+	protected:
+		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> Action;
+		::tui_controls::TuiMessageBoxButtonTemplate* self;
+		::vl::presentation::controls::GuiButton* buttonControl;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		void __vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize(::tui_controls::TuiMessageBoxButtonTemplate* __vwsn_this_);
+	public:
+		TuiMessageBoxButtonTemplateConstructor();
+	};
+
+	class TuiMessageBoxButtonTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::tui_controls::TuiMessageBoxButtonTemplateConstructor, public ::vl::reflection::Description<TuiMessageBoxButtonTemplate>
+	{
+		friend class ::tui_controls::TuiMessageBoxButtonTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf75_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf76_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf77_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiMessageBoxButtonTemplate>;
+#endif
+	public:
+		::vl::presentation::controls::GuiButton* __vwsn_prop_ButtonControl;
+		::vl::presentation::controls::GuiButton* GetButtonControl();
+		void SetButtonControl(::vl::presentation::controls::GuiButton* __vwsn_value_);
+		::vl::Event<void()> ButtonControlChanged;
+		::vl::WString GetButtonText(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button, ::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> strings);
+		::vl::WString GetButtonAlt(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button);
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_prop_Strings;
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> GetStrings();
+		void SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_);
+		::vl::Event<void()> StringsChanged;
+	private:
+		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_parameter_Action;
+	public:
+		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> GetAction();
+		TuiMessageBoxButtonTemplate(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_ctor_parameter_Action);
+		void __vwsn_instance_ctor_();
+		~TuiMessageBoxButtonTemplate();
+	};
+
+	class TuiMessageBoxWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<TuiMessageBoxWindowConstructor>
+	{
+		friend struct ::vl_workflow_global::__vwsnf78_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxWindowConstructor___vwsn_tui_controls_TuiMessageBoxWindow_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiMessageBoxWindowConstructor>;
+#endif
+	protected:
+		::tui_controls::TuiMessageBoxWindow* self;
+		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> ViewModel;
+		::vl::presentation::compositions::GuiRepeatStackComposition* buttonStack;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::presentation::controls::GuiScrollContainer* __vwsn_precompile_4;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8;
+		void __vwsn_tui_controls_TuiMessageBoxWindow_Initialize(::tui_controls::TuiMessageBoxWindow* __vwsn_this_);
+	public:
+		TuiMessageBoxWindowConstructor();
+	};
+
+	class TuiMessageBoxWindow : public ::vl::presentation::controls::GuiWindow, public ::tui_controls::TuiMessageBoxWindowConstructor, public ::vl::reflection::Description<TuiMessageBoxWindow>
+	{
+		friend class ::tui_controls::TuiMessageBoxWindowConstructor;
+		friend struct ::vl_workflow_global::__vwsnf78_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxWindowConstructor___vwsn_tui_controls_TuiMessageBoxWindow_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiMessageBoxWindow>;
+#endif
+	public:
+		::vl::WString GetIconText(::vl::presentation::INativeDialogService::MessageBoxIcons icon);
+	private:
+		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
+		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> GetViewModel();
+		TuiMessageBoxWindow(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_ctor_parameter_ViewModel);
+		void __vwsn_instance_ctor_();
+		~TuiMessageBoxWindow();
+	};
+
+	class TuiSimpleFontDialogWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<TuiSimpleFontDialogWindowConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf68_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf69_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf70_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf71_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf72_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf73_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf74_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiSimpleFontDialogWindowConstructor>;
+#endif
+	protected:
+		::tui_controls::TuiSimpleFontDialogWindow* self;
+		::vl::Ptr<::vl::presentation::ISimpleFontDialogViewModel> ViewModel;
+		::tui_controls::TuiFontNameControl* nameControl;
+		::tui_controls::TuiFontSizeControl* sizeControl;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_8;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_11;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_12;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_13;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_14;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_15;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_16;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17;
+		void __vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize(::tui_controls::TuiSimpleFontDialogWindow* __vwsn_this_);
+	public:
+		TuiSimpleFontDialogWindowConstructor();
+	};
+
+	class TuiSimpleFontDialogWindow : public ::vl::presentation::controls::GuiWindow, public ::tui_controls::TuiSimpleFontDialogWindowConstructor, public ::vl::reflection::Description<TuiSimpleFontDialogWindow>
+	{
+		friend class ::tui_controls::TuiSimpleFontDialogWindowConstructor;
+		friend class ::vl_workflow_global::__vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf68_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf69_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf70_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf71_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf72_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf73_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf74_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiSimpleFontDialogWindow>;
+#endif
+	public:
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_prop_Strings;
+		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> GetStrings();
+		void SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_);
+		::vl::Event<void()> StringsChanged;
+	private:
+		::vl::Ptr<::vl::presentation::ISimpleFontDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
+		::vl::Ptr<::vl::presentation::ISimpleFontDialogViewModel> GetViewModel();
+		TuiSimpleFontDialogWindow(::vl::Ptr<::vl::presentation::ISimpleFontDialogViewModel> __vwsn_ctor_parameter_ViewModel);
+		void __vwsn_instance_ctor_();
+		~TuiSimpleFontDialogWindow();
+	};
+
+}
+/***********************************************************************
+Global Variables and Functions
+***********************************************************************/
+
+namespace vl_workflow_global
+{
+	class TuiFakeDialogServiceUI
+	{
+	public:
+
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_ls_TuiDialogStrings;
+
+		static TuiFakeDialogServiceUI& Instance();
+	};
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	struct __vwsnf10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_
+	{
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnf10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_
+	{
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnf11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_
+	{
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnf12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_
+	{
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnf13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_
+	{
+		::tui_controls::TuiColorDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_
+	{
+		::tui_controls::TuiColorDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_
+	{
+		::tui_controls::TuiColorDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf17_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_
+	{
+		::tui_controls::TuiColorDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf17_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf18_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_
+	{
+		::tui_controls::TuiColorDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf18_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf19_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_
+	{
+		::tui_controls::TuiColorDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf19_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize_(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_
+	{
+		::tui_controls::TuiColorComponentControlConstructor* __vwsnthis_0;
+
+		__vwsnf1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf20_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFileDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf20_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf21_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__
+	{
+		::tui_controls::TuiFileDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf21_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf22_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFileDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf22_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf23_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFileDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf23_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf24_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFileDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf24_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf25_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFileDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf25_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf26_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFileDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf26_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize_(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf27_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindow___vwsn_instance_ctor__
+	{
+		::tui_controls::TuiFileDialogWindow* __vwsnthis_0;
+
+		__vwsnf27_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindow___vwsn_instance_ctor__(::tui_controls::TuiFileDialogWindow* __vwsnctorthis_0);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf28_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf28_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		::vl::Ptr<::vl::reflection::description::IValueEnumerable> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf29_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf29_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_
+	{
+		::tui_controls::TuiColorComponentControlConstructor* __vwsnthis_0;
+
+		__vwsnf2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf30_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf30_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf31_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf31_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf33_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf33_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf34_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf34_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const;
+	};
+
+	struct __vwsnf35_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf35_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf36_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf36_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemMouseEventArgs* arguments) const;
+	};
+
+	struct __vwsnf37_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__
+	{
+		::vl::collections::LazyList<::vl::WString> selection;
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf37_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__(::vl::collections::LazyList<::vl::WString> __vwsnctor_selection, ::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf38_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf38_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf39_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf39_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const;
+	};
+
+	struct __vwsnf3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_
+	{
+		::tui_controls::TuiColorComponentControlConstructor* __vwsnthis_0;
+
+		__vwsnf3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf40_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf40_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf41_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf41_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf42_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf42_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf43_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf43_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf44_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnf44_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf45_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles_
+	{
+		::tui_controls::TuiFilePickerControl* __vwsnthis_0;
+
+		__vwsnf45_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles_(::tui_controls::TuiFilePickerControl* __vwsnctorthis_0);
+
+		::vl::Ptr<::vl::reflection::description::ICoroutine> operator()(::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsn_co_impl_) const;
+	};
+
+	struct __vwsnf46_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_
+	{
+		::tui_controls::TuiFontNameControlConstructor* __vwsnthis_0;
+
+		__vwsnf46_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf47_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_
+	{
+		::tui_controls::TuiFontNameControlConstructor* __vwsnthis_0;
+
+		__vwsnf47_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf48_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_
+	{
+		::tui_controls::TuiFontNameControlConstructor* __vwsnthis_0;
+
+		__vwsnf48_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf49_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_
+	{
+		::tui_controls::TuiFontNameControlConstructor* __vwsnthis_0;
+
+		__vwsnf49_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize_(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf4_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_
+	{
+		::tui_controls::TuiColorComponentControlConstructor* __vwsnthis_0;
+
+		__vwsnf4_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize_(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf50_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_
+	{
+		::tui_controls::TuiFontSizeControlConstructor* __vwsnthis_0;
+
+		__vwsnf50_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf51_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_
+	{
+		::tui_controls::TuiFontSizeControlConstructor* __vwsnthis_0;
+
+		__vwsnf51_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf52_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_
+	{
+		::tui_controls::TuiFontSizeControlConstructor* __vwsnthis_0;
+
+		__vwsnf52_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf53_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_
+	{
+		::tui_controls::TuiFontSizeControlConstructor* __vwsnthis_0;
+
+		__vwsnf53_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize_(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf54_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf54_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf55_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf55_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf56_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf56_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf57_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf57_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf58_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf58_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf59_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf59_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_
+	{
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnf5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf60_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf60_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf61_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf61_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf62_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf62_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf63_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf63_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf64_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf64_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf65_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf65_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf66_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf66_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf67_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf67_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize_(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf68_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf68_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf69_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf69_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_
+	{
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnf6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf70_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf70_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf71_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf71_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf72_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf72_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf73_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf73_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf74_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_
+	{
+		::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnf74_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize_(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf75_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_
+	{
+		::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf75_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_(::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf76_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_
+	{
+		::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf76_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_(::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf77_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_
+	{
+		::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf77_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize_(::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf78_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxWindowConstructor___vwsn_tui_controls_TuiMessageBoxWindow_Initialize_
+	{
+		::tui_controls::TuiMessageBoxWindowConstructor* __vwsnthis_0;
+
+		__vwsnf78_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxWindowConstructor___vwsn_tui_controls_TuiMessageBoxWindow_Initialize_(::tui_controls::TuiMessageBoxWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+	};
+
+	struct __vwsnf7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_
+	{
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnf7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_
+	{
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnf8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_
+	{
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnf9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize_(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsno32_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_
+	{
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsno32_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize_(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsno_1) const;
+	};
+
+	class __vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnc10_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiColorDialogControl* __vwsn_bind_cache_0 = nullptr;
+		::tui_controls::TuiColorDialogControl* __vwsn_bind_cache_1 = nullptr;
+		::tui_controls::TuiColorDialogControl* __vwsn_bind_cache_2 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_2_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_1_0();
+		void __vwsn_bind_callback_2_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnc11_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiColorDialogControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_2;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_0_1();
+		void __vwsn_bind_callback_0_2();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnc12_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiApplication* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorDialogWindow* __vwsn_this_;
+		::tui_controls::TuiColorDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc13_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiColorDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorDialogWindow* __vwsn_this_;
+		::tui_controls::TuiColorDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc14_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiColorDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorDialogWindow* __vwsn_this_;
+		::tui_controls::TuiColorDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc15_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiColorDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc16_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogWindowConstructor___vwsn_tui_controls_TuiColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiApplication* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFileDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc17_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0);
+
+		::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_bind_cache_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFileDialogWindow* __vwsn_this_;
+		::tui_controls::TuiFileDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc18_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFileDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFileDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFileDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc19_TuiFakeDialogServiceUI_tui_controls_TuiFileDialogWindowConstructor___vwsn_tui_controls_TuiFileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFileDialogWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiApplication* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorComponentControlConstructor* __vwsnthis_0;
+
+		__vwsnc1_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiColorComponentControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnc20_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_bind_cache_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnc21_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_bind_cache_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFilePickerControl* __vwsn_this_;
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnc22_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFilePickerControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFilePickerControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnc23_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiComboBoxListControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnc24_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiBindableTreeView* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFilePickerControlConstructor* __vwsnthis_0;
+
+		__vwsnc25_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControlConstructor___vwsn_tui_controls_TuiFilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFilePickerControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiApplication* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc26_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine : public ::vl::Object, public virtual ::vl::reflection::description::ICoroutine
+	{
+	public:
+		::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsn_co_impl_;
+		::tui_controls::TuiFilePickerControl* __vwsnthis_0;
+
+		__vwsnc26_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine(::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsnctor___vwsn_co_impl_, ::tui_controls::TuiFilePickerControl* __vwsnctorthis_0);
+
+		::vl::Ptr<::vl::presentation::IFileDialogFile> __vwsn_co0_file;
+		::vl::vint __vwsn_co1_item = 0;
+		::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsn_co2_for_enumerable_item;
+		::vl::Ptr<::vl::reflection::description::IValueEnumerator> __vwsn_co3_for_enumerator_item;
+		::vl::vint __vwsn_co_state_ = 0;
+		::vl::vint __vwsn_co_state_before_pause_ = 0;
+		::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_prop_Failure;
+		::vl::Ptr<::vl::reflection::description::IValueException> GetFailure() override;
+		void SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_);
+		::vl::reflection::description::CoroutineStatus __vwsn_prop_Status = static_cast<::vl::reflection::description::CoroutineStatus>(0);
+		::vl::reflection::description::CoroutineStatus GetStatus() override;
+		void SetStatus(::vl::reflection::description::CoroutineStatus __vwsn_value_);
+		void Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_co_result_) override;
+	};
+
+	class __vwsnc27_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_CreateFileFilter__vl_presentation_controls_list_IDataFilter : public ::vl::Object, public virtual ::vl::presentation::controls::list::IDataFilter
+	{
+	public:
+		::vl::Ptr<::vl::presentation::IFileDialogFilter> filter;
+		::tui_controls::TuiFilePickerControl* __vwsnthis_0;
+
+		__vwsnc27_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_CreateFileFilter__vl_presentation_controls_list_IDataFilter(::vl::Ptr<::vl::presentation::IFileDialogFilter> __vwsnctor_filter, ::tui_controls::TuiFilePickerControl* __vwsnctorthis_0);
+
+		void SetCallback(::vl::presentation::controls::list::IDataProcessorCallback* value) override;
+		bool Filter(const ::vl::reflection::description::Value& row) override;
+	};
+
+	class __vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFontNameControl* __vwsn_this_;
+		::tui_controls::TuiFontNameControlConstructor* __vwsnthis_0;
+
+		__vwsnc28_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontNameControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFontNameControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFontNameControlConstructor* __vwsnthis_0;
+
+		__vwsnc29_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiSinglelineTextBox* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorComponentControlConstructor* __vwsnthis_0;
+
+		__vwsnc2_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiColorComponentControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFontNameControlConstructor* __vwsnthis_0;
+
+		__vwsnc30_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFontNameControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFontNameControlConstructor* __vwsnthis_0;
+
+		__vwsnc31_TuiFakeDialogServiceUI_tui_controls_TuiFontNameControlConstructor___vwsn_tui_controls_TuiFontNameControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontNameControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiApplication* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFontSizeControl* __vwsn_this_;
+		::tui_controls::TuiFontSizeControlConstructor* __vwsnthis_0;
+
+		__vwsnc32_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontSizeControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFontSizeControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFontSizeControlConstructor* __vwsnthis_0;
+
+		__vwsnc33_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiSinglelineTextBox* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFontSizeControlConstructor* __vwsnthis_0;
+
+		__vwsnc34_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFontSizeControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFontSizeControlConstructor* __vwsnthis_0;
+
+		__vwsnc35_TuiFakeDialogServiceUI_tui_controls_TuiFontSizeControlConstructor___vwsn_tui_controls_TuiFontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFontSizeControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiApplication* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_this_;
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc36_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_this_;
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc37_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_this_;
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc38_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_this_;
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc39_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorComponentControlConstructor* __vwsnthis_0;
+
+		__vwsnc3_TuiFakeDialogServiceUI_tui_controls_TuiColorComponentControlConstructor___vwsn_tui_controls_TuiColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorComponentControlConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiScroll* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc40_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiSelectableButton* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::controls::GuiSelectableButton* __vwsn_bind_cache_1 = nullptr;
+		::vl::presentation::controls::GuiSelectableButton* __vwsn_bind_cache_2 = nullptr;
+		::vl::presentation::controls::GuiSelectableButton* __vwsn_bind_cache_3 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_2_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_3_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc41_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc41_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_this_;
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc42_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_this_;
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc43_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_this_;
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc44_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_this_;
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc45_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiFullFontDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc46_TuiFakeDialogServiceUI_tui_controls_TuiFullFontDialogWindowConstructor___vwsn_tui_controls_TuiFullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiFullFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiApplication* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiSimpleFontDialogWindow* __vwsn_this_;
+		::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc47_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiSimpleFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiSimpleFontDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiSimpleFontDialogWindow* __vwsn_this_;
+		::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc48_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiSimpleFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiSimpleFontDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiSimpleFontDialogWindow* __vwsn_this_;
+		::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc49_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiSimpleFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiSimpleFontDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorDialogControl* __vwsn_this_;
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnc4_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiColorDialogControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiSimpleFontDialogWindow* __vwsn_this_;
+		::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc50_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiSimpleFontDialogWindow* __vwsnctor___vwsn_this_, ::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiSimpleFontDialogWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnthis_0;
+
+		__vwsnc51_TuiFakeDialogServiceUI_tui_controls_TuiSimpleFontDialogWindowConstructor___vwsn_tui_controls_TuiSimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiSimpleFontDialogWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiApplication* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc52_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiMessageBoxButtonTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc53_TuiFakeDialogServiceUI_tui_controls_TuiMessageBoxButtonTemplateConstructor___vwsn_tui_controls_TuiMessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiMessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiApplication* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings : public ::vl::Object, public virtual ::tui_controls::ITuiDialogStringsStrings
+	{
+	public:
+		__vwsnc54_TuiFakeDialogServiceUI_tui_controls_TuiDialogStrings___vwsn_ls_en_US_BuildStrings__tui_controls_ITuiDialogStringsStrings();
+
+		::vl::WString Abort() override;
+		::vl::WString Blue() override;
+		::vl::WString Bold() override;
+		::vl::WString Cancel() override;
+		::vl::WString Color() override;
+		::vl::WString ColorDialogTitle() override;
+		::vl::WString Continue() override;
+		::vl::WString FileDialogAskCreateFile() override;
+		::vl::WString FileDialogAskOverrideFile() override;
+		::vl::WString FileDialogErrorEmptySelection() override;
+		::vl::WString FileDialogErrorFileExpected() override;
+		::vl::WString FileDialogErrorFileNotExist() override;
+		::vl::WString FileDialogErrorFolderNotExist() override;
+		::vl::WString FileDialogErrorMultipleSelectionNotEnabled() override;
+		::vl::WString FileDialogFileName() override;
+		::vl::WString FileDialogOpen() override;
+		::vl::WString FileDialogSave() override;
+		::vl::WString FileDialogTextLoadingFiles() override;
+		::vl::WString FileDialogTextLoadingFolders() override;
+		::vl::WString FontColorGroup() override;
+		::vl::WString FontColorGroup2() override;
+		::vl::WString FontDialogTitle() override;
+		::vl::WString FontEffectGroup() override;
+		::vl::WString FontNameGroup() override;
+		::vl::WString FontPreviewGroup() override;
+		::vl::WString FontSizeGroup() override;
+		::vl::WString Green() override;
+		::vl::WString HAA() override;
+		::vl::WString Ignore() override;
+		::vl::WString Italic() override;
+		::vl::WString No() override;
+		::vl::WString OK() override;
+		::vl::WString Red() override;
+		::vl::WString Retry() override;
+		::vl::WString Strikeline() override;
+		::vl::WString TryAgain() override;
+		::vl::WString Underline() override;
+		::vl::WString VAA() override;
+		::vl::WString Yes() override;
+	};
+
+	class __vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorDialogControl* __vwsn_this_;
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnc5_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiColorDialogControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorDialogControl* __vwsn_this_;
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnc6_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiColorDialogControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorDialogControl* __vwsn_this_;
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnc7_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControl* __vwsnctor___vwsn_this_, ::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiColorDialogControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnc8_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiColorDialogControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::tui_controls::TuiColorDialogControlConstructor* __vwsnthis_0;
+
+		__vwsnc9_TuiFakeDialogServiceUI_tui_controls_TuiColorDialogControlConstructor___vwsn_tui_controls_TuiColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::tui_controls::TuiColorDialogControlConstructor* __vwsnctorthis_0);
+
+		::tui_controls::TuiColorDialogControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+}
+
+#if defined( _MSC_VER)
+#pragma warning(pop)
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+
+#endif
+
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\TUIDIALOGS\SOURCE\TUIFAKEDIALOGSERVICEUIINCLUDES.H
+***********************************************************************/
+/***********************************************************************
+!!!!!! DO NOT MODIFY !!!!!!
+
+Source: GacUI TuiFakeDialogServiceUI
+
+This file is generated by Workflow compiler
+https://github.com/vczh-libraries
+***********************************************************************/
+
+#ifndef VCZH_WORKFLOW_COMPILER_GENERATED_TUIFAKEDIALOGSERVICEUIINCLUDES
+#define VCZH_WORKFLOW_COMPILER_GENERATED_TUIFAKEDIALOGSERVICEUIINCLUDES
+
+
+#endif
+
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\TUIDIALOGS\TUIFAKEDIALOGSERVICE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -28072,8 +32301,8 @@ GacUI::Native Window::Default Service Implementation
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE_CONTROLS
-#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDAUTOMATIONSERVICE_CONTROLS
+#ifndef VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKETUIDIALOGSERVICE
+#define VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKETUIDIALOGSERVICE
 
 
 namespace vl
@@ -28085,931 +32314,25 @@ namespace vl
 			class GuiWindow;
 		}
 
-		class AutomationService : public AutomationServiceBase
-		{
-		protected:
-
-			WString								DumpControlTreeInternal() override;
-
-		public:
-			AutomationService();
-			~AutomationService();
-
-			bool								CanDumpControlTree() override;
-		};
-
-		class AutomationServiceHosted : public AutomationServiceBase
-		{
-		protected:
-			WString								windowManagement = WString::Unmanaged(L"Hosted");
-			
-			Nullable<WString>					GetNativeWindowId(INativeWindow* window) override;
-			INativeWindow*						GetNativeWindow(Nullable<WString> windowId) override;
-			WString								DumpControlTreeInternal() override;
-
-		public:
-			AutomationServiceHosted();
-			~AutomationServiceHosted();
-
-			bool								CanDumpControlTree() override;
-		};
-
-		class RemoteProtocolAutomationService : public AutomationServiceHosted
-		{
-		protected:
-			WString								RunIOCommandInternal(Nullable<WString> windowId, const WString& ioCommand) override;
-
-		public:
-			RemoteProtocolAutomationService();
-			~RemoteProtocolAutomationService();
-
-			INativeAutomationService::IOCommandAvailability
-												CanRunIOCommands() override;
-		};
-
-		/*
-		* Schema of /Controls:
-		* --------------------------------------------------------------------------------
-		* {
-		*   WindowManagement: "MultiWindow" | "Hosted" | "HostedRemoteProtocol";
-		*   MainWindow: WindowDump;
-		* 
-		*   // sub windows are normal window
-		*   // no ordering
-		*   // available for "MultiWindow"
-		*   // otherwise sub windows become child objects of the main window
-		*   SubWindows?: WindowDump[];
-		*
-		*   // popups are usually dropdowns, tooltips or menus
-		*   // no ordering
-		*   // available for "MultiWindow"
-		*   // otherwise popups become child objects of the main window
-		*   Popups?: WindowDump[];
-		* }
-		* 
-		* interface WindowDump
-		* {
-		*   // windowId is used to identify a window
-		*   // for "MultiWindow"
-		*   //   URL `.../IO/<windowId>` is used to send commands to a specific window
-		*   // for other modes
-		*   //   URL `.../IO` is used to send commands to the main window
-		*   //   since sub windows and popups are all child objects of the main window
-		*   //   the main window is responsible for window management, dispatching IO commands to the correct target
-		*   // /IO parses the command synchronously and returns "Syntax Error!" or "Queued"
-		*   //   "Queued" only means the command was accepted, not that it has finished executing
-		*   windowId?: string;
-		* 
-		*   // bounds defines the valid coordinate space for IO commands
-		*   // IO commands use the client area of a native window as the coordinate space
-		*   // such native window is a OS native window
-		*   // for a window that owns a OS native window, the valid coordinate space is the client area
-		*   // for a window that doesn't own a OS native window, the valid coordinate space is the partial rectangle of the main window client area
-		* 
-		*   // (x1,y1) always (0,0) for main window or when "MultiWindow"
-		*   bounds: { x1: number, y1: number, x2: number, y2: number };
-		* 
-		*   // available for main window in "Hosted" and "HostedRemoteProtocol"
-		*   // ordered from bottom to top
-		*   subWindowsInZOrder?: WindowDump[];
-		* 
-		*   title: string;
-		* 
-		*   // begins with GuiWindow::GetBoundsComposition()
-		*   composition: CompositionDump;
-		* }
-		* 
-		* interface CompositionDump
-		* {
-		*   // GuiGraphicsComposition::GetCachedBounds() converted to global bounds then offseted by "offset"
-		*   bounds: { x1: number, y1: number, x2: number, y2: number };
-		* 
-		*   // available when the composition is or inherits from:
-		*   //   GuiTableComposition			: "Table:rows*columns"
-		*   //   GuiCellComposition				: "Cell:(row,column)*(rowSpan,columnSpan)"
-		*   //     available only when its parent composition is GuiTableComposition
-		*   //   GuiRowSplitterComposition		: "RowSplitter:rowsToTheTop"
-		*   //   GuiColumnSplitterComposition	: "ColumnSplitter:columnsToTheLeft"
-		*   //   GuiStackComposition			: "Stack"
-		*   //   GuiStackItemComposition		: "StackItem:index"
-		*   //     available only when its parent composition is GuiStackComposition
-		*   //     index is defined by stack->GetStackItems().IndexOf(stackItem)
-		*   //   GuiFlowComposition: "Flow"
-		*   //   GuiFlowItemComposition			: "FlowItem:index"
-		*   //     available only when its parent composition is GuiFlowComposition
-		*   //     index is defined by flow->GetFlowItems().IndexOf(flowItem)
-		*   layout?: string;
-		*
-		*   // available when GuiGraphicsComposition::GetAssociatedCursor is not null
-		*   cursor?: string;
-		* 
-		*   // available when GuiGraphicsComposition::GetOwnedElement is not null and is or inherits from:
-		*   //   GuiSolidBorderElement			: "Border:color,shape
-		*   //   Gui3DBorderElement:			: "3DBorder:color1,color2"
-		*   //   Gui3DSplitterElement:			: "3DSplitter:color1,color2,direction"
-		*   //   GuiSolidBackground				: "Background:color,shape
-		*   //   GuiGradientBackgroundElement	: "Gradient:color1,color2,direction,shape"
-		*   //   GuiInnerShadowElement			: "InnerShadow:color,thickness"
-		*   //   GuiSolidLabelElement			: "Label:color,fontProperties.fontFamily,fontProperties.size(,WrapLine)?(,Ellipse)?(,Multiline)?"
-		*   //   GuiImageFrameElement			: "Image"
-		*   //   GuiPolygonElement				: "Polygon"
-		*   //   GuiDocumentElement				: "Document:Selection(caretBegin.row,caretBegin.column)-(caretEnd.row,caretEnd.column)(,PasswordChar=char)?(,WrapLine)?"
-		*   //
-		*   // Color is in #RRGGBBAA format
-		*   // elementText is only available for GuiSolidLabelElement, storing its text
-		*   // elementDocument is only availaboe for GuiDocumentElement, storing its document in XML representation
-		*   //   The XML representation is done by calling GenerateToStream(XmlPrint(SaveToXml))
-		*   element?: string;
-		*   elementText?: string;
-		*   elementDocument?: string;
-		* 
-		*   // available when GuiGraphicsComposition::GetAssociatedControl is not null
-		*   // storing PrintControlThemeName(GuiControl::GetControlThemeName())
-		*   control?: string;
-		*
-		*   children?: CompositionDump[];
-		* }
-		* --------------------------------------------------------------------------------
-		* 
-		* This function construct the WindowDump part (without subWindowsInZOrder)
-		*/
-		extern Ptr<glr::json::JsonNode>			DumpWindowClientArea(controls::GuiWindow* window, Nullable<WString> windowId, Point offset);
-	}
-}
-
-#endif
-
-
-/***********************************************************************
-.\UTILITIES\SHAREDSERVICES\GUISHAREDCALLBACKSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Default Service Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDCALLBACKSERVICE
-#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDCALLBACKSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
 		/// <summary>
-		/// A general <see cref="INativeCallbackService/> implementation.
+		/// UI implementations for <see cref="INativeDialogService"/>.
 		/// </summary>
-		class SharedCallbackService
-			: public Object
-			, public INativeCallbackService
-			, public INativeCallbackInvoker
+		class FakeTuiDialogService : public FakeDialogServiceBase
 		{
 		protected:
-			collections::List<INativeControllerListener*>	listeners;
+
+			controls::GuiWindow*	CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateColorDialog(Ptr<IColorDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateSimpleFontDialog(Ptr<ISimpleFontDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateFullFontDialog(Ptr<IFullFontDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel) override;
 
 		public:
-			SharedCallbackService();
-			~SharedCallbackService();
-
-			bool											InstallListener(INativeControllerListener* listener) override;
-			bool											UninstallListener(INativeControllerListener* listener) override;
-			INativeCallbackInvoker*							Invoker() override;
-
-			void											InvokeGlobalTimer() override;
-			void											InvokeClipboardUpdated() override;
-			void											InvokeGlobalShortcutKeyActivated(vint id) override;
-			void											InvokeNativeWindowCreated(INativeWindow* window) override;
-			void											InvokeNativeWindowDestroying(INativeWindow* window) override;
-			void											InvokeEnvironmentChanged() override;
+			FakeTuiDialogService();
+			~FakeTuiDialogService();
 		};
 	}
 }
 
 #endif
-
-/***********************************************************************
-.\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDCONTROLLER.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Hosted Window
-
-Interfaces:
-  GuiHostedController
-
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_GUIHOSTEDCONTROLLER
-#define VCZH_PRESENTATION_GUIHOSTEDCONTROLLER
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		class AutomationServiceHosted;
-
-/***********************************************************************
-GuiHostedController
-***********************************************************************/
-
-		class GuiHostedController
-			: public Object
-			, protected hosted_window_manager::WindowManager<GuiHostedWindow*>
-			, protected INativeWindowListener
-			, protected INativeControllerListener
-			, public INativeController
-			, protected INativeAsyncService
-			, protected INativeScreenService
-			, protected INativeScreen
-			, protected INativeWindowService
-			, protected IGuiHostedApplication
-		{
-			friend class GuiHostedWindow;
-			friend class elements::GuiHostedGraphicsResourceManager;
-			friend class AutomationServiceHosted;
-		protected:
-			SharedCallbackService										callbackService;
-			hosted_window_manager::WindowManager<GuiHostedWindow*>*		wmManager = nullptr;
-			bool														windowsUpdatedInLastFrame = false;
-			bool														idleNotifiedSinceLastRendering = true; // avoid emitting before the first rendering
-			INativeController*											nativeController = nullptr;
-			elements::GuiHostedGraphicsResourceManager*					hostedResourceManager = nullptr;
-			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
-
-			INativeWindow*												nativeWindow = nullptr;
-			bool														nativeWindowDestroyed = false;
-
-			GuiHostedWindow*											mainWindow = nullptr;
-			GuiHostedWindow*											capturingWindow = nullptr;
-			GuiHostedWindow*											enteringWindow = nullptr;
-
-			NativePoint													hoveringLocation{ -1,-1 };
-			GuiHostedWindow*											hoveringWindow = nullptr;
-			GuiHostedWindow*											lastFocusedWindow = nullptr;
-
-			enum class WindowManagerOperation
-			{
-				None,
-				Title,
-				BorderLeft,
-				BorderRight,
-				BorderTop,
-				BorderBottom,
-				BorderLeftTop,
-				BorderRightTop,
-				BorderLeftBottom,
-				BorderRightBottom,
-			};
-			WindowManagerOperation										wmOperation = WindowManagerOperation::None;
-			GuiHostedWindow*											wmWindow = nullptr;
-			NativePoint													wmRelative;
-
-			NativePoint						GetPointInClientSpace(NativePoint location);
-			GuiHostedWindow*				HitTestInClientSpace(NativePoint location);
-			void							UpdateHoveringWindow(Nullable<NativePoint> location);
-			void							UpdateEnteringWindow(GuiHostedWindow* window);
-
-			// =============================================================
-			// WindowManager<GuiHostedWindow*>
-			// =============================================================
-
-			void							OnOpened(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnClosed(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnEnabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnDisabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnGotFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnLostFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnActivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnDeactivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-
-			// =============================================================
-			// INativeWindowListener
-			// =============================================================
-
-			HitTestResult					HitTest(NativePoint location) override;
-			void							Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder) override;
-			void							Moved() override;
-			void							DpiChanged(bool preparing) override;
-			void							GotFocus() override;
-			void							LostFocus() override;
-			void							Opened() override;
-			void							BeforeClosing(bool& cancel) override;
-			void							AfterClosing() override;
-			void							Paint() override;
-			
-			GuiHostedWindow*				GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info);
-			GuiHostedWindow*				GetSelectedWindow_MouseMoving(const NativeWindowMouseInfo& info);
-			GuiHostedWindow*				GetSelectedWindow_Other(const NativeWindowMouseInfo& info);
-
-			void							PreAction_LeftButtonDown(const NativeWindowMouseInfo& info);
-			void							PreAction_MouseDown(const NativeWindowMouseInfo& info);
-			void							PreAction_MouseMoving(const NativeWindowMouseInfo& info);
-			void							PreAction_Other(const NativeWindowMouseInfo& info);
-
-			void							PostAction_LeftButtonUp(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
-			void							PostAction_Other(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
-
-			template<
-				void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
-				GuiHostedWindow* (GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
-				void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
-				void (INativeWindowListener::* Callback)(NativeMouseButton, const NativeWindowMouseInfo&)
-				>
-			void							HandleMouseButtonCallback(NativeMouseButton button, const NativeWindowMouseInfo& info);
-
-			template<
-				void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
-				GuiHostedWindow* (GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
-				void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
-				void (INativeWindowListener::* Callback)(const NativeWindowMouseInfo&)
-				>
-			void							HandleMouseCallback(const NativeWindowMouseInfo& info);
-
-			template<
-				typename TInfo,
-				void (INativeWindowListener::* Callback)(const TInfo&)
-			>
-			void							HandleKeyboardCallback(const TInfo& info);
-
-			void							MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
-			void							MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
-			void							MouseDoubleClick(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
-			void							HorizontalWheel(const NativeWindowMouseInfo& info) override;
-			void							VerticalWheel(const NativeWindowMouseInfo& info) override;
-			void							MouseMoving(const NativeWindowMouseInfo& info) override;
-			void							MouseEntered() override;
-			void							MouseLeaved() override;
-
-			void							KeyDown(const NativeWindowKeyInfo& info) override;
-			void							KeyUp(const NativeWindowKeyInfo& info) override;
-			void							Char(const NativeWindowCharInfo& info) override;
-
-			// =============================================================
-			// INativeControllerListener
-			// =============================================================
-
-			void							GlobalTimer() override;
-			void							EnvironmentChanged() override;
-			void							ClipboardUpdated() override;
-			void							GlobalShortcutKeyActivated(vint id) override;
-			void							NativeWindowDestroying(INativeWindow* window) override;
-
-			// =============================================================
-			// INativeAsyncService
-			// =============================================================
-
-			bool							IsInMainThread(INativeWindow* window) override;
-			void							InvokeAsync(const Func<void()>& proc) override;
-			void							InvokeInMainThread(INativeWindow* window, const Func<void()>& proc) override;
-			bool							InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds) override;
-			Ptr<INativeDelay>				DelayExecute(const Func<void()>& proc, vint milliseconds) override;
-			Ptr<INativeDelay>				DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds) override;
-
-			// =============================================================
-			// INativeScreenService
-			// =============================================================
-
-			vint							GetScreenCount() override;
-			INativeScreen*					GetScreen(vint index) override;
-			INativeScreen*					GetScreen(INativeWindow* window) override;
-
-			// =============================================================
-			// INativeScreen
-			// =============================================================
-
-			NativeRect						GetBounds() override;
-			NativeRect						GetClientBounds() override;
-			WString							GetName() override;
-			bool							IsPrimary() override;
-			double							GetScalingX() override;
-			double							GetScalingY() override;
-
-			// =============================================================
-			// INativeWindowService
-			// =============================================================
-			
-			const NativeWindowFrameConfig&	GetMainWindowFrameConfig() override;
-			const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig() override;
-			INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
-			void							DestroyNativeWindow(INativeWindow* window) override;
-			INativeWindow*					GetMainWindow() override;
-			INativeWindow*					GetWindow(NativePoint location) override;
-
-			void							SettingHostedWindowsBeforeRunning();
-			void							DestroyHostedWindowsAfterRunning();
-			void							Run(INativeWindow* window) override;
-			bool							RunOneCycle() override;
-
-			// =============================================================
-			// IGuiHostedApplication
-			// =============================================================
-
-			INativeWindow*					GetNativeWindowHost() override;
-			INativeController*				GetNativeController() override;
-		public:
-			GuiHostedController(INativeController* _nativeController);
-			~GuiHostedController();
-
-			IGuiHostedApplication*			GetHostedApplication();
-			void							Initialize();
-			void							Finalize();
-			void							RequestRefresh();
-
-			// =============================================================
-			// INativeController
-			// =============================================================
-
-			INativeCallbackService*			CallbackService() override;
-			INativeResourceService*			ResourceService() override;
-			INativeAsyncService*			AsyncService() override;
-			INativeClipboardService*		ClipboardService() override;
-			INativeImageService*			ImageService() override;
-			INativeInputService*			InputService() override;
-			INativeDialogService*			DialogService() override;
-			INativeAutomationService*		AutomationService() override;
-			WString							GetExecutablePath() override;
-			
-			INativeScreenService*			ScreenService() override;
-			INativeWindowService*			WindowService() override;
-		};
-	}
-}
-
-#endif
-
-
-/***********************************************************************
-.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEEVENTS.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Remote Window
-
-Interfaces:
-  GuiRemoteEvent
-
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEEVENT
-#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEEVENT
-
-
-namespace vl::presentation
-{
-	class GuiRemoteController;
-
-/***********************************************************************
-GuiRemoteMessages
-***********************************************************************/
-
-	class GuiRemoteMessages : public Object
-	{
-	protected:
-		GuiRemoteController*						remote;
-		vint										id = 0;
-
-#define MESSAGE_NORES(NAME, RESPONSE)
-#define MESSAGE_RES(NAME, RESPONSE)										collections::Dictionary<vint, RESPONSE> response ## NAME;
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_RES
-#undef MESSAGE_NORES
-
-	public:
-		GuiRemoteMessages(GuiRemoteController* _remote);
-		~GuiRemoteMessages();
-
-		void										Submit(bool& disconnected);
-
-		// messages
-
-#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					void Request ## NAME();
-#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						vint Request ## NAME();
-#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)						void Request ## NAME(const REQUEST& arguments);
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)						vint Request ## NAME(const REQUEST& arguments);
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_REQ_RES
-#undef MESSAGE_REQ_NORES
-#undef MESSAGE_NOREQ_RES
-#undef MESSAGE_NOREQ_NORES
-
-#define MESSAGE_NORES(NAME, RESPONSE)
-#define MESSAGE_RES(NAME, RESPONSE)\
-		void Respond ## NAME(vint id, const RESPONSE& arguments);\
-		RESPONSE Retrieve ## NAME(vint id);\
-
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
-			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_RES
-#undef MESSAGE_NORES
-	};
-
-/***********************************************************************
-GuiRemoteEvents
-***********************************************************************/
-
-	class GuiRemoteEvents : public Object, public virtual IGuiRemoteProtocolEvents
-	{
-	protected:
-		GuiRemoteController*						remote;
-
-	public:
-		GuiRemoteEvents(GuiRemoteController* _remote);
-		~GuiRemoteEvents();
-
-		// =============================================================
-		// IGuiRemoteProtocolEvents
-		// =============================================================
-
-		// messages
-
-#define MESSAGE_NORES(NAME, RESPONSE)
-#define MESSAGE_RES(NAME, RESPONSE)										void Respond ## NAME(vint id, const RESPONSE& arguments) override;
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_RES
-#undef MESSAGE_NORES
-
-		void	ClearResponses();
-
-		// events
-
-#define EVENT_NOREQ(NAME, REQUEST)					void On ## NAME() override;
-#define EVENT_REQ(NAME, REQUEST)					void On ## NAME(const REQUEST& arguments) override;
-#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
-		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
-#undef EVENT_HANDLER
-#undef EVENT_REQ
-#undef EVENT_NOREQ
-	};
-}
-
-#endif
-
-/***********************************************************************
-.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEWINDOW.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Remote Window
-
-Interfaces:
-  GuiRemoteController
-
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEWINDOW
-#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEWINDOW
-
-
-namespace vl::presentation
-{
-	class GuiRemoteController;
-	class RemoteProtocolAutomationService;
-
-/***********************************************************************
-GuiRemoteWindow
-***********************************************************************/
-
-	class GuiRemoteWindow : public Object, public virtual INativeWindow
-	{
-		friend class GuiRemoteEvents;
-		friend class GuiRemoteController;
-		friend class RemoteProtocolAutomationService;
-	protected:
-		GuiRemoteController*								remote;
-		GuiRemoteMessages&									remoteMessages;
-		GuiRemoteEvents&									remoteEvents;
-		collections::List<INativeWindowListener*>			listeners;
-		INativeWindow::WindowMode							windowMode = INativeWindow::Normal;
-
-		bool												controllerDisconnected = false;
-		remoteprotocol::WindowSizingConfig					remoteWindowSizingConfig;
-		NativeSize											suggestedMinClientSize;
-		bool												sizingConfigInvalidated = false;
-		double												scalingX = 1;
-		double												scalingY = 1;
-
-		WString							styleTitle;
-		INativeCursor*					styleCursor = nullptr;
-		NativePoint						styleCaret;
-		Ptr<GuiImageData>				styleIcon;
-		bool							styleEnabled = true;
-		bool							styleTopMost = false;
-
-		bool							styleMaximizedBox = true;
-		bool							styleMinimizedBox = true;
-		bool							styleBorder = true;
-		bool							styleSizeBox = true;
-		bool							styleIconVisible = true;
-		bool							styleTitleBar = true;
-		bool							styleShowInTaskBar = true;
-		bool							styleCustomFrameMode = false;
-		
-		bool							statusVisible = false;
-		bool							statusActivated = false;
-		bool							statusCapturing = false;
-
-		void							RequestGetBounds();
-		void							Opened();
-		void							SetActivated(bool activated);
-		void							ShowWithSizeState(bool activate, INativeWindow::WindowSizeState sizeState);
-		void							SubmitStateAfterControllerConnect();
-
-		// =============================================================
-		// Events
-		// =============================================================
-
-		void							OnControllerConnect();
-		void							OnControllerDisconnect();
-		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
-		void							OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments);
-		void							OnWindowActivatedUpdated(bool activated);
-
-	public:
-		GuiRemoteWindow(GuiRemoteController* _remote);
-		~GuiRemoteWindow();
-
-		// =============================================================
-		// INativeWindow
-		// =============================================================
-
-		bool							IsActivelyRefreshing() override;
-		NativeSize						GetRenderingOffset() override;
-		Point							Convert(NativePoint value) override;
-		NativePoint						Convert(Point value) override;
-		Size							Convert(NativeSize value) override;
-		NativeSize						Convert(Size value) override;
-		Margin							Convert(NativeMargin value) override;
-		NativeMargin					Convert(Margin value) override;
-		NativeRect						GetBounds() override;
-		void							SetBounds(const NativeRect& bounds) override;
-		NativeSize						GetClientSize() override;
-		void							SetClientSize(NativeSize size) override;
-		NativeRect						GetClientBoundsInScreen() override;
-		void							SuggestMinClientSize(NativeSize size) override;
-		WString							GetTitle() override;
-		void							SetTitle(const WString& title) override;
-		INativeCursor*					GetWindowCursor() override;
-		void							SetWindowCursor(INativeCursor* cursor) override;
-		NativePoint						GetCaretPoint() override;
-		void							SetCaretPoint(NativePoint point) override;
-		INativeWindow*					GetParent() override;
-		void							SetParent(INativeWindow* parent) override;
-		WindowMode						GetWindowMode() override;
-		void							EnableCustomFrameMode() override;
-		void							DisableCustomFrameMode() override;
-		bool							IsCustomFrameModeEnabled() override;
-		NativeMargin					GetCustomFramePadding() override;
-		Ptr<GuiImageData>				GetIcon() override;
-		void							SetIcon(Ptr<GuiImageData> icon) override;
-		WindowSizeState					GetSizeState() override;
-		void							Show() override;
-		void							ShowDeactivated() override;
-		void							ShowRestored() override;
-		void							ShowMaximized() override;
-		void							ShowMinimized() override;
-		void							Hide(bool closeWindow) override;
-		bool							IsVisible() override;
-		void							Enable() override;
-		void							Disable() override;
-		bool							IsEnabled() override;
-		void							SetActivate() override;
-		bool							IsActivated() override;
-		bool							IsRenderingAsActivated() override;
-		void							ShowInTaskBar() override;
-		void							HideInTaskBar() override;
-		bool							IsAppearedInTaskBar() override;
-		void							EnableActivate() override;
-		void							DisableActivate() override;
-		bool							IsEnabledActivate() override;
-		bool							RequireCapture() override;
-		bool							ReleaseCapture() override;
-		bool							IsCapturing() override;
-		bool							GetMaximizedBox() override;
-		void							SetMaximizedBox(bool visible) override;
-		bool							GetMinimizedBox() override;
-		void							SetMinimizedBox(bool visible) override;
-		bool							GetBorder() override;
-		void							SetBorder(bool visible) override;
-		bool							GetSizeBox() override;
-		void							SetSizeBox(bool visible) override;
-		bool							GetIconVisible() override;
-		void							SetIconVisible(bool visible) override;
-		bool							GetTitleBar() override;
-		void							SetTitleBar(bool visible) override;
-		bool							GetTopMost() override;
-		void							SetTopMost(bool topmost) override;
-		void							SupressAlt() override;
-		bool							InstallListener(INativeWindowListener* listener) override;
-		bool							UninstallListener(INativeWindowListener* listener) override;
-		void							RedrawContent() override;
-	};
-}
-
-#endif
-
-
-/***********************************************************************
-.\PLATFORMPROVIDERS\REMOTE\GUIREMOTECONTROLLER.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Remote Window
-
-Interfaces:
-  GuiRemoteController
-
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER
-#define VCZH_PRESENTATION_GUIREMOTECONTROLLER
-
-
-namespace vl::presentation
-{
-/***********************************************************************
-GuiRemoteController
-***********************************************************************/
-
-	class GuiRemoteController
-		: public Object
-		, public INativeController
-		, protected INativeResourceService
-		, protected INativeInputService
-		, protected INativeScreenService
-		, protected INativeScreen
-		, protected INativeWindowService
-	{
-		friend class GuiRemoteMessages;
-		friend class GuiRemoteEvents;
-		friend class GuiRemoteWindow;
-		friend class GuiRemoteGraphicsImage;
-		friend class elements::GuiRemoteGraphicsRenderTarget;
-		friend class elements::GuiRemoteGraphicsResourceManager;
-		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
-		using HotKeyEntry = Tuple<bool, bool, bool, bool, VKEY>;
-		using HotKeySet = collections::SortedList<HotKeyEntry>;
-		using HotKeyIds = collections::Dictionary<vint, HotKeyEntry>;
-	protected:
-		IGuiRemoteProtocol*								remoteProtocol = nullptr;
-		GuiRemoteMessages								remoteMessages;
-		GuiRemoteEvents									remoteEvents;
-		GuiRemoteWindow									remoteWindow;
-		elements::GuiRemoteGraphicsResourceManager*		resourceManager = nullptr;
-		SharedCallbackService							callbackService;
-		SharedAsyncService								asyncService;
-		GuiRemoteGraphicsImageService					imageService;
-		bool											applicationRunning = false;
-		bool											controllerConnected = false;
-		bool											connectionForcedToStop = false;
-		bool											connectionStopped = false;
-
-		remoteprotocol::ControllerGlobalConfig			remoteGlobalConfig;
-		remoteprotocol::FontConfig						remoteFontConfig;
-		remoteprotocol::ScreenConfig					remoteScreenConfig;
-
-		vint											usedHotKeys = (vint)NativeGlobalShortcutKeyResult::ValidIdBegins;
-		HotKeySet										hotKeySet;
-		HotKeyIds										hotKeyIds;
-
-		CursorMap										cursors;
-		bool											timerEnabled = false;
-		bool											windowCreated = false;
-		bool											windowDestroyed = false;
-
-		collections::Dictionary<VKEY, WString>			keyNames;
-		collections::Dictionary<WString, VKEY>			keyCodes;
-		bool											keyInitialized = false;
-
-		// =============================================================
-		// INativeResourceService
-		// =============================================================
-
-		INativeCursor*					GetSystemCursor(INativeCursor::SystemCursorType type) override;
-		INativeCursor*					GetDefaultSystemCursor() override;
-		FontProperties					GetDefaultFont() override;
-		void							SetDefaultFont(const FontProperties& value) override;
-		void							EnumerateFonts(collections::List<WString>& fonts) override;
-		WString							GetOSSuperKeyName() override;
-
-		// =============================================================
-		// INativeInputService
-		// =============================================================
-
-		void							StartTimer() override;
-		void							StopTimer() override;
-		bool							IsTimerEnabled() override;
-		bool							IsKeyPressing(VKEY code) override;
-		bool							IsKeyToggled(VKEY code) override;
-		void							EnsureKeyInitialized();
-		void							EnsureControllerConnected();
-		WString							GetKeyName(VKEY code) override;
-		VKEY							GetKey(const WString& name) override;
-		void							UpdateGlobalShortcutKey();
-		vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key) override;
-		bool							UnregisterGlobalShortcutKey(vint id) override;
-
-		// =============================================================
-		// INativeScreenService
-		// =============================================================
-
-		vint							GetScreenCount() override;
-		INativeScreen*					GetScreen(vint index) override;
-		INativeScreen*					GetScreen(INativeWindow* window) override;
-
-		// =============================================================
-		// INativeScreen
-		// =============================================================
-
-		NativeRect						GetBounds() override;
-		NativeRect						GetClientBounds() override;
-		WString							GetName() override;
-		bool							IsPrimary() override;
-		double							GetScalingX() override;
-		double							GetScalingY() override;
-
-		// =============================================================
-		// INativeWindowService
-		// =============================================================
-			
-		const NativeWindowFrameConfig&	GetMainWindowFrameConfig() override;
-		const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig() override;
-		INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
-		void							DestroyNativeWindow(INativeWindow* window) override;
-		INativeWindow*					GetMainWindow() override;
-		INativeWindow*					GetWindow(NativePoint location) override;
-		void							Run(INativeWindow* window) override;
-		bool							RunOneCycle() override;
-
-		// =============================================================
-		// Events
-		// =============================================================
-
-		void							OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& _globalConfig);
-		void							OnControllerDisconnect();
-		void							OnControllerRequestExit();
-		void							OnControllerForceExit();
-		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
-
-	public:
-		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol);
-		~GuiRemoteController();
-
-		void									Initialize();
-		void									Finalize();
-		remoteprotocol::ControllerGlobalConfig	GetGlobalConfig();
-
-		// =============================================================
-		// INativeController
-		// =============================================================
-
-		INativeCallbackService*			CallbackService() override;
-		INativeResourceService*			ResourceService() override;
-		INativeAsyncService*			AsyncService() override;
-		INativeClipboardService*		ClipboardService() override;
-		INativeImageService*			ImageService() override;
-		INativeInputService*			InputService() override;
-		INativeDialogService*			DialogService() override;
-		INativeAutomationService*		AutomationService() override;
-		WString							GetExecutablePath() override;
-			
-		INativeScreenService*			ScreenService() override;
-		INativeWindowService*			WindowService() override;
-	};
-}
-
-#endif
-
-
-/***********************************************************************
-.\UTILITIES\AUTOMATIONSERVICE\MINIHTTPAUTOMATIONSERVICE.H
-***********************************************************************/
-#ifndef VCZH_PRESENTATION_REMOTING_MINIHTTPAUTOMATIONSERVICE
-#define VCZH_PRESENTATION_REMOTING_MINIHTTPAUTOMATIONSERVICE
-
-
-namespace vl::presentation::remoting
-{
-	extern void StartMiniHttpAutomationService(
-		Ptr<inter_process::async_tcp_socket::IAsyncSocketServer> socketServer,
-		const WString& applicationName
-		);
-	extern void StopMiniHttpAutomationService();
-}
-
-#endif
-

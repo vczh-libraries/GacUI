@@ -2,6 +2,7 @@
 #include "../../Application/GraphicsHost/GuiGraphicsHost.h"
 #include "../../Resources/GuiDocumentEditor.h"
 #include "../../Application/Controls/GuiApplication.h"
+#include "../../PlatformProviders/TUI/TuiApplication.h"
 
 namespace vl
 {
@@ -74,11 +75,28 @@ GuiDocumentCommonInterface
 			{
 				if (bounds != Rect())
 				{
-					bounds.x1 -= 15;
-					bounds.y1 -= 15;
-					bounds.x2 += 15;
-					bounds.y2 += 15;
-					EnsureRectVisible(bounds);
+					if (GetTuiApplication() && documentComposition->GetRelatedGraphicsHost())
+					{
+						// Request current layout before queuing caret visibility after a large paste.
+						documentControl->GetBoundsComposition()->ForceCalculateSizeImmediately();
+					}
+					auto margin = GetTuiApplication() ? 1 : 15;
+					bounds.x1 -= margin;
+					bounds.y1 -= margin;
+					bounds.x2 += margin;
+					bounds.y2 += margin;
+					if (GetTuiApplication())
+					{
+						// CalculateView updates scrollbar ranges through the same main-thread queue.
+						documentControl->TryDelayExecuteIfNotDeleted([this, bounds]()
+						{
+							EnsureRectVisible(bounds);
+						});
+					}
+					else
+					{
+						EnsureRectVisible(bounds);
+					}
 				}
 			}
 
@@ -272,7 +290,7 @@ GuiDocumentCommonInterface
 				documentComposition = new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(Ptr(documentElement));
 				documentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-				documentComposition->SetAlignmentToParent(Margin(2, 2, 2, 2));
+				documentComposition->SetAlignmentToParent(GetTuiApplication() ? Margin(0, 0, 0, 0) : Margin(2, 2, 2, 2));
 				_container->AddChild(documentComposition);
 				ReplaceMouseArea(_mouseArea);
 

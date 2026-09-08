@@ -1,0 +1,60 @@
+﻿================================(1/1)================================
+module TuiPalette;
+using presentation::*;
+
+namespace tuiskin
+{
+    struct ColorPackage
+    {
+        ControlBackground : Color;
+        ControlText : Color;
+        ControlBorder : Color;
+        ControlBorderDisabled : Color;
+        ControlBorderFocused : Color;
+        LabelText : Color;
+        MenuBackground : Color;
+        MenuText : Color;
+        MenuTextDisabled : Color;
+        MenuBackgroundHighlighted : Color;
+        MenuTextHighlighted : Color;
+        ItemBackground : Color;
+        ItemText : Color;
+        ItemTextDisabled : Color;
+        ItemBackgroundHighlighted : Color;
+        ItemTextHighlighted : Color;
+        ItemBackgroundSelected : Color;
+        ItemTextSelected : Color;
+        ButtonBackground : Color;
+        ButtonText : Color;
+        ButtonIcon : Color;
+        ButtonTextDisabled : Color;
+        ButtonBackgroundHighlighted : Color;
+        ButtonTextHighlighted : Color;
+        ButtonBackgroundPressed : Color;
+        ButtonTextPressed : Color;
+    }
+
+    var tuiColors : ColorPackage = {};
+
+    func InstallColorPackage(colors : ColorPackage) : (void)
+    {
+        (tuiColors = colors);
+    }
+
+    func CreateBaselineDocument() : (DocumentModel^)
+    {
+        var document = new (DocumentModel^)();
+        var normal = new (DocumentStyle^)();
+        (normal.styles = new (DocumentStyleProperties^)());
+        (normal.styles.color = tuiColors.ControlText);
+        (normal.styles.backgroundColor = tuiColors.ControlBackground);
+        (document.styles["#Default-Override"] = normal);
+        var selection = new (DocumentStyle^)();
+        (selection.styles = new (DocumentStyleProperties^)());
+        (selection.styles.color = tuiColors.ItemTextSelected);
+        (selection.styles.backgroundColor = tuiColors.ItemBackgroundSelected);
+        (document.styles["#Selection-Override"] = selection);
+        return document;
+    }
+}
+

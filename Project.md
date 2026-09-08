@@ -17,12 +17,18 @@ If you encounter any error that prevent these files from being generated,
 always fix the root cause.
 - `REPO-ROOT/Test/Resources/Metadata`
 - `REPO-ROOT/Test/GacUISrc/Generated_DarkSkin`
+- `REPO-ROOT/Test/GacUISrc/Generated_TuiSkin/Source_x86` and `Source_x64`
+- `REPO-ROOT/Test/GacUISrc/Generated_TuiSkin/Resource_x86` and `Resource_x64`
+- `REPO-ROOT/Test/GacUISrc/Generated_TuiDialogs`
+- `REPO-ROOT/Test/GacUISrc/Generated_TuiControlTest/Source_x86` and `Source_x64`
+- `REPO-ROOT/Test/GacUISrc/Generated_TuiControlTest/Resource_x86` and `Resource_x64`
 - `REPO-ROOT/Test/GacUISrc/Generated_Dialogs`
 - `REPO-ROOT/Test/GacUISrc/Generated_FullControlTest`
 - `REPO-ROOT/Test/GacUISrc/Generated_RemoteProtocolTest`
 - `REPO-ROOT/Test/GacUISrc/Generated_RemoteViewModelTest`
 - `REPO-ROOT/Test/GacUISrc/Generated_UnitTestViewer`
 - `REPO-ROOT/Source/Utilities/FakeServices/Dialogs/Source`
+- `REPO-ROOT/Source/Utilities/FakeServices/TuiDialogs/Source`
 - `REPO-ROOT/Source/UnitTestUtilities/SnapshotViewer/Source`
 - `REPO-ROOT/Source/Compiler/InstanceQuery/Generated`
 - `REPO-ROOT/Source/Compiler/RemoteProtocol/Generated`
@@ -187,6 +193,7 @@ Keep test apps simple without introducing unnecessary "gracefully recovering".
 
 Automation HTTP service for GUI applications are available for Windows:
 - `CppTest`                       : Run FullControlTest in hosted mode, built without reflection (`VCZH_DEBUG_NO_REFLECTION`).
+- `CppTest_Tui`                   : Run TuiControlTest in Windows Terminal using TuiSkin and the hosted TUI provider, built without reflection. It has no automation endpoint. Follow [DebugTuiControlTestSop.md](.github/Jobs/DebugTuiControlTestSop.md).
 - `CppTest_Rvm`                   : Run RemoteViewModelTest in hosted mode after acquiring its service from `RemotingTest_RvmHost`; `/Cli:<path>` auto-launches that host with `/Cli`.
 - `CppTest_Metaonly`              : Run FullControlTest, built with metaonly reflection (`VCZH_DEBUG_METAONLY_REFLECTION`).
 - `CppTest_Reflection`            : Run FullControlTest, built with full reflection.
@@ -203,6 +210,7 @@ After building Debug x64, use the repository-relative launchers under `Test`:
 - Both launchers use `Test/GacUISrc/x64/Debug`, start visible processes for interactive testing, and return their `System.Diagnostics.Process` objects for inspection or cleanup.
 
 FullControlTest means `Generated_FullControlTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/FullControlTest/Resource.xml`.
+TuiControlTest means `Generated_TuiControlTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/TuiControlTest/Resource.xml`. Its skin is `Generated_TuiSkin.vcxitems`, with manually maintained `TuiSkinConfig.h/.cpp`. GacUI_Compiler also generates `Source/Utilities/FakeServices/TuiDialogs/Source`; run the same metadata generation steps after these resource changes. The release pipeline mirrors TuiSkin XML/configuration into `Source/Skins/TuiSkin` and publishes `TuiSkin`/`TuiSkinReflection`.
 RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteProtocolTest/Resource.xml`.
 RemoteViewModelTest means `Generated_RemoteViewModelTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteViewModelTest/Resource.xml`.
 When `FakeDialogService` is used, all system dialogs are replaced by `REPO-ROOT/Source/Utilities/FakeServices/Dialogs/Resource.xml`.

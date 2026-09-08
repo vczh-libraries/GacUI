@@ -1,0 +1,392 @@
+<Resource>
+  <Folder name="GacGenConfig">
+    <Folder name="Cpp">
+      <Text name="SourceFolder">Source</Text>
+      <Text name="NormalInclude">GacUI.h</Text>
+      <Text name="Name">TuiControlTest</Text>
+    </Folder>
+  </Folder>
+  <InstanceStyle name="WindowManagerContentStyles">
+    <Styles>
+      <Style ref.Path="//Window" ControlThemeName="CustomFrameWindow" MaximizedBox-bind="checkMax.Selected" MinimizedBox-bind="checkMin.Selected" Border-bind="checkBorder.Selected" SizeBox-bind="checkSizeBox.Selected" IconVisible-bind="checkIcon.Selected" TitleBar-bind="checkTitle.Selected" />
+      <Style ref.Path="//*.windowManagerContent" Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" Padding="0" MinSizeLimitation="LimitToElementAndChildren">
+        <StackItem>
+          <CheckBox ref.Name="checkFrame" Text="Customized Frame" Selected-eval="self.ControlThemeName == ThemeName::CustomFrameWindow" Enabled-bind="self.FrameConfig.CustomFrameEnabled == BoolOption::Customizable">
+            <ev.SelectedChanged-eval><![CDATA[
+              {
+                if (checkFrame.Selected)
+                {
+                  self.ControlThemeName = CustomFrameWindow;
+                }
+                else
+                {
+                  self.ControlThemeName = SystemFrameWindow;
+                }
+              }
+            ]]></ev.SelectedChanged-eval>
+          </CheckBox>
+        </StackItem>
+        <StackItem>
+          <CheckBox ref.Name="checkMax" Text="MaximizedBox" Selected-eval="self.MaximizedBox" Enabled-bind="self.FrameConfig.MaximizedBoxOption == BoolOption::Customizable" />
+        </StackItem>
+        <StackItem>
+          <CheckBox ref.Name="checkMin" Text="MinimizedBox" Selected-eval="self.MinimizedBox" Enabled-bind="self.FrameConfig.MinimizedBoxOption == BoolOption::Customizable" />
+        </StackItem>
+        <StackItem>
+          <CheckBox ref.Name="checkBorder" Text="Border" Selected-eval="self.Border" Enabled-bind="self.FrameConfig.BorderOption == BoolOption::Customizable" />
+        </StackItem>
+        <StackItem>
+          <CheckBox ref.Name="checkSizeBox" Text="SizeBox" Selected-eval="self.SizeBox" Enabled-bind="self.FrameConfig.SizeBoxOption == BoolOption::Customizable" />
+        </StackItem>
+        <StackItem>
+          <CheckBox ref.Name="checkIcon" Text="IconVisible" Selected-eval="self.IconVisible" Enabled-bind="self.FrameConfig.IconVisibleOption == BoolOption::Customizable" />
+        </StackItem>
+        <StackItem>
+          <CheckBox ref.Name="checkTitle" Text="TitleBar" Selected-eval="self.TitleBar" Enabled-bind="self.FrameConfig.TitleBarOption == BoolOption::Customizable" />
+        </StackItem>
+        <StackItem>
+          <Button Text="Open New Window">
+            <ev.Clicked-eval><![CDATA[
+              {
+                var subWindow = new TuiSubWindow*();
+                self.openedSubWindows.Add(cast (TuiSubWindow^) subWindow);
+                subWindow.MoveToScreenCenter();
+                subWindow.ShowWithOwner(self);
+              }
+            ]]></ev.Clicked-eval>
+          </Button>
+        </StackItem>
+      </Style>
+    </Styles>
+  </InstanceStyle>
+  <Instance name="SubWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiSubWindow" ref.Styles="res://WindowManagerContentStyles">
+      <ref.Members><![CDATA[
+        var openedSubWindows: GuiWindow^[] = {};
+      ]]></ref.Members>
+      <Window ref.Name="self" Text-eval="Sys::LoremIpsumTitle(20)" ClientSize="x:48 y:22">
+        <Stack ref.Style="windowManagerContent" />
+      </Window>
+    </Instance>
+  </Instance>
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiMainWindow" xmlns:demo="tuidemo::*" ref.Styles="res://WindowManagerContentStyles">
+      <ref.Members><![CDATA[
+        var openedSubWindows: GuiWindow^[] = {};
+        prop invocationCount : int = 0 {}
+
+        func ShowMouseModifiers(alt: bool, osSuper: bool): void
+        {
+          var altText = "0";
+          var superText = "0";
+          if (alt) { altText = "1"; }
+          if (osSuper) { superText = "1"; }
+          labelMouseModifiers.Text = "Alt: " & altText & "; Super: " & superText;
+        }
+
+        func MouseButtonName(button: NativeMouseButton): string
+        {
+	          if (button == NativeMouseButton::Left) { return "Left"; }
+	          if (button == NativeMouseButton::Middle) { return "Middle"; }
+	          if (button == NativeMouseButton::Right) { return "Right"; }
+	          if (button == NativeMouseButton::Mouse4) { return "Mouse4"; }
+          return "Mouse5";
+        }
+      ]]></ref.Members>
+      <Window ref.Name="self" ControlThemeName="SystemFrameWindow" Text="Complete Control Showcase (TUI)" ClientSize="x:120 y:40">
+        <MessageDialog ref.Name="dialogLocalShortcut" Title-eval="self.Text" Text="You pressed Ctrl+Q!" />
+        <MessageDialog ref.Name="dialogLocalSuperShortcut" Title-eval="self.Text" Text="You pressed Ctrl+Alt+Win+Q!" />
+        <MessageDialog ref.Name="dialogGlobalShortcut" Title-eval="self.Text" Text="You pressed Ctrl+Shift+Alt+Win+Q!" />
+        <ToolstripCommand ref.Name="commandLocalShortcut" ShortcutBuilder="Ctrl+Q">
+          <ev.Executed-eval><![CDATA[{
+            dialogLocalShortcut.ShowDialog();
+          }]]></ev.Executed-eval>
+        </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandLocalSuperShortcut" ShortcutBuilder="Ctrl+Alt+Win+Q">
+          <ev.Executed-eval><![CDATA[{
+            dialogLocalSuperShortcut.ShowDialog();
+          }]]></ev.Executed-eval>
+        </ToolstripCommand>
+        <ToolstripCommand ref.Name="commandGlobalShortcut" ShortcutBuilder="global:Ctrl+Shift+Alt+Command+Q">
+          <ev.Executed-eval><![CDATA[{
+            dialogGlobalShortcut.ShowDialog();
+          }]]></ev.Executed-eval>
+        </ToolstripCommand>
+        <att.BoundsComposition-set PreferredMinSize="x:80 y:25" />
+        <Tab>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+          <att.Pages>
+            <TabPage Alt="L" Text="List">
+              <Tab>
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                <att.Pages>
+                  <demo:TuiTextListTabPage Alt="T" />
+                  <demo:TuiListViewTabPage Alt="L" />
+                  <demo:TuiTreeViewTabPage Alt="T" />
+                  <demo:TuiDataGridTabPage Alt="D" />
+                </att.Pages>
+              </Tab>
+            </TabPage>
+            <TabPage Alt="L" Text="Refresh List">
+              <Tab>
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                <att.Pages>
+                  <demo:TuiRefreshTextListTabPage Alt="T" />
+                  <demo:TuiRefreshBindableTextListTabPage Alt="BT" />
+                  <demo:TuiRefreshListViewTabPage Alt="L" />
+                  <demo:TuiRefreshBindableListViewTabPage Alt="BL" />
+                  <demo:TuiRefreshTreeViewTabPage Alt="T" />
+                  <demo:TuiRefreshBindableTreeViewTabPage Alt="BT" />
+                  <demo:TuiRefreshBindableDataGridTabPage Alt="D" />
+                </att.Pages>
+              </Tab>
+            </TabPage>
+            <TabPage Alt="L" Text="Layout">
+              <Tab>
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                <att.Pages>
+                  <demo:TuiRepeatTabPage Alt="R" />
+                  <demo:TuiResponsiveTabPage Alt="R" />
+                </att.Pages>
+              </Tab>
+            </TabPage>
+            <TabPage Alt="L" Text="Control">
+              <Tab>
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                <att.Pages>
+                  <TabPage Alt="D" Text-bind="editorToolstrip.Text">
+                    <demo:TuiDocumentEditorToolstrip ref.Name="editorToolstrip">
+                      <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                    </demo:TuiDocumentEditorToolstrip>
+                  </TabPage>
+                  <demo:TuiTextBoxTabPage Alt="T" />
+                  <demo:TuiEmbeddedControlsSubTabPage Alt="E" />
+                </att.Pages>
+              </Tab>
+            </TabPage>
+            <TabPage Alt="M" Text="Misc">
+              <Tab>
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                <att.Pages>
+                  <demo:TuiLocalizedStringsTabPage Alt="L" />
+                  <demo:TuiLocalizedDialogsTabPage Alt="L" />
+                  <demo:TuiDatePickerTabPage Alt="D" />
+                </att.Pages>
+              </Tab>
+            </TabPage>
+            <TabPage Alt="W" Text="Window Manager">
+              <Stack ref.Style="windowManagerContent">
+                <StackItem>
+                  <Label Text-bind="commandLocalShortcut.Shortcut.Name" />
+                </StackItem>
+                <StackItem>
+                  <Label Text-bind="commandLocalSuperShortcut.Shortcut.Name" />
+                </StackItem>
+                <StackItem>
+                  <Label Text-bind="commandGlobalShortcut.Shortcut.Name" />
+                </StackItem>
+                <StackItem>
+                  <Label ref.Name="labelMouseButton" Text="Click here with any mouse button.">
+                    <att.BoundsComposition-set PreferredMinSize="y:1" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                      <ev.mouseDown-eval><![CDATA[{
+                        labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button down!";
+                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                      }]]></ev.mouseDown-eval>
+                      <ev.mouseUp-eval><![CDATA[{
+                        labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button up!";
+                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                      }]]></ev.mouseUp-eval>
+                      <ev.mouseMove-eval><![CDATA[{
+                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                }]]></ev.mouseMove-eval>
+                      <ev.mouseDoubleClick-eval><![CDATA[{
+                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                }]]></ev.mouseDoubleClick-eval>
+                      <ev.verticalWheel-eval><![CDATA[{
+                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                }]]></ev.verticalWheel-eval>
+                      <ev.horizontalWheel-eval><![CDATA[{
+                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                }]]></ev.horizontalWheel-eval>
+                    </att.BoundsComposition-set>
+                  </Label>
+                </StackItem>
+                <StackItem>
+                  <Label ref.Name="labelMouseModifiers" Text="Alt: 0; Super: 0" />
+                </StackItem>
+              </Stack>
+            </TabPage>
+            <TabPage Alt="X" Text="Exit">
+              <Stack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" Padding="0" MinSizeLimitation="LimitToElementAndChildren">
+                <StackItem>
+                  <Button Text="self.Hide() (InvokeInMainThread)">
+                    <ev.Clicked-eval><![CDATA[{
+                      GuiApplication::GetApplication().InvokeInMainThread(self, func():void
+                      {
+                        self.Hide(); self.invocationCount = self.invocationCount + 1;
+                      });
+                    }]]></ev.Clicked-eval>
+                  </Button>
+                </StackItem>
+                <StackItem>
+                  <Button Text="self.Hide()">
+                    <ev.Clicked-eval><![CDATA[{
+                      self.Hide(); self.invocationCount = self.invocationCount + 1;
+                    }]]></ev.Clicked-eval>
+                  </Button>
+                </StackItem>
+                <StackItem>
+                  <Button Text="self.Close() (InvokeInMainThread)">
+                    <ev.Clicked-eval><![CDATA[{
+                      GuiApplication::GetApplication().InvokeInMainThread(self, func():void
+                      {
+                        self.Close(); self.invocationCount = self.invocationCount + 1;
+                      });
+                    }]]></ev.Clicked-eval>
+                  </Button>
+                </StackItem>
+                <StackItem>
+                  <Button Text="self.Close()">
+                    <ev.Clicked-eval><![CDATA[{
+                      self.Close(); self.invocationCount = self.invocationCount + 1;
+                    }]]></ev.Clicked-eval>
+                  </Button>
+                </StackItem>
+                <StackItem>
+                  <Label Text="Physical main-window Hide/Close are no-ops. Use Stop TUI to exit." />
+                </StackItem>
+                <StackItem>
+                  <Label Text-format="Invocations completed: $(self.invocationCount)" />
+                </StackItem>
+                <StackItem>
+                  <Button Text="Stop TUI">
+                    <ev.Clicked-eval><![CDATA[{GuiApplication::GetTuiApplication().Stop();}]]></ev.Clicked-eval>
+                  </Button>
+                </StackItem>
+                <StackItem>
+                  <Button Text="Stop TUI (InvokeInMainThread)">
+                    <ev.Clicked-eval><![CDATA[{GuiApplication::GetApplication().InvokeInMainThread(self, func():void {GuiApplication::GetTuiApplication().Stop();});}]]></ev.Clicked-eval>
+                  </Button>
+                </StackItem>
+              </Stack>
+            </TabPage>
+          </att.Pages>
+        </Tab>
+      </Window>
+    </Instance>
+  </Instance>
+  <Instance name="TextListTabPageResource" content="File">TextListTabPage.xml</Instance>
+  <Instance name="ListViewTabPageResource" content="File">ListViewTabPage.xml</Instance>
+  <Instance name="TreeViewTabPageResource" content="File">TreeViewTabPage.xml</Instance>
+  <Instance name="DataGridTabPageResource" content="File">DataGridTabPage.xml</Instance>
+  <Folder name="DataGridComponents" content="Link">DataGridComponents.xml</Folder>
+  <Folder name="RefreshListTabPages" content="Link">RefreshListTabPages.xml</Folder>
+  <Instance name="RepeatTabPageResource" content="File">RepeatTabPage.xml</Instance>
+  <Folder name="TuiResponsiveTabPage" content="Link">ResponsiveTabPage.xml</Folder>
+  <Folder name="RepeatComponents" content="Link">RepeatComponents.xml</Folder>
+  <Folder name="TextBoxComponents" content="Link">TextBoxTabPage.xml</Folder>
+  <Folder name="DocumentComponents" content="Link">DocumentComponents.xml</Folder>
+  <Folder name="TuiDocumentEditorBase" content="Link">DocumentEditorBase.xml</Folder>
+  <Folder name="TuiDocumentEditorToolstrip" content="Link">DocumentEditorToolstrip.xml</Folder>
+  <Folder name="SideDocuments" content="Link">SideDocuments.xml</Folder>
+  <Folder name="TuiEmbeddedControlsSubTabPage" content="Link">EmbeddedControlsSubTabPage.xml</Folder>
+  <Folder name="TuiLocalizedStringsTabPage" content="Link">LocalizedStringsTabPage.xml</Folder>
+  <Folder name="TuiLocalizedDialogsTabPage" content="Link">LocalizedDialogsTabPage.xml</Folder>
+  <Folder name="LocalizedComponents" content="Link">LocalizedComponents.xml</Folder>
+  <Folder name="TuiDatePickerTabPage" content="Link">DatePickerTabPage.xml</Folder>
+  <Script name="ListViewDataResource" content="File">ListViewData.xml</Script>
+  <Script name="ViewModelResource">
+    <Workflow><![CDATA[
+        module viewmodel;
+        
+        using system::*;
+        using presentation::*;
+        
+        namespace tuidemo
+        {
+          class TuiMyTextItem
+          {
+            prop Name : string = "" {not observe}
+            prop Checked : bool = false {not observe}
+          }
+          
+          enum TuiMyCategory
+          {
+            Black = 0,
+            Red = 1,
+            Lime = 2,
+            Blue = 3,
+            White = 4,
+          }
+          
+          enum TuiMyGender
+          {
+            Male = 0,
+            Female = 1,
+          }
+          
+          class TuiMyDataItem
+          {
+            prop Name : string = "" {not observe}
+            prop Gender : TuiMyGender = Male {not observe}
+            prop Category : TuiMyCategory = White {not observe}
+            prop Birthday : DateTime = (cast DateTime "2000-01-01 00:00:00.000") {not observe}
+            prop Website : string = "" {not observe}
+            
+            new()
+            {
+            }
+            
+            new(name : string, gender : TuiMyGender, category : TuiMyCategory, birthday : DateTime, website : string)
+            {
+              Name = name;
+              Gender = gender;
+              Category = category;
+              Birthday = birthday;
+              Website = website;
+            }
+          }
+          
+          func ToString(value : TuiMyCategory) : string
+          {
+            switch (value)
+            {
+              case Black:   { return "Black";  }
+              case Red:     { return "Red";    }
+              case Lime:    { return "Lime";   }
+              case Blue:    { return "Blue";   }
+              case White:   { return "White";  }
+            }
+            return "";
+          }
+          
+          func ToColor(value : TuiMyCategory) : Color
+          {
+            switch (value)
+            {
+              case Red:     { return cast Color "#FF0000"; }
+              case Lime:    { return cast Color "#00FF00"; }
+              case Blue:    { return cast Color "#0000FF"; }
+              case White:   { return cast Color "#FFFFFF"; }
+            }
+            return cast Color "#000000";
+          }
+          
+          func ToString(value : TuiMyGender) : string
+          {
+            switch (value)
+            {
+              case Male:    { return "Male";   }
+              case Female:  { return "Female"; }
+            }
+            return "";
+          }
+          
+          func ToString(value : DateTime) : string
+          {
+            return $"$(value.month)/$(value.day)/$(value.year)";
+          }
+        }
+      ]]></Workflow>
+  </Script>
+</Resource>

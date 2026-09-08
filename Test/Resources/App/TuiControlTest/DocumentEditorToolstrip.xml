@@ -1,0 +1,77 @@
+<Folder>
+  <Instance name="DocumentEditorToolstripResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiDocumentEditorToolstrip" xmlns:demo="tuidemo::*">
+      <demo:TuiDocumentEditorBase ref.Name="self" Text="Document Editor (Toolstrip)">
+        <att.MenuContainer-set>
+          <ToolstripMenuBar>
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+            <MenuBarButton Text="File" Alt="F">
+              <att.SubMenu-set>
+                <MenuItemButton Command-eval="self.commandLoadPrivate" Alt="O" />
+                <MenuItemButton Text="Save as" Alt="S">
+                  <att.SubMenu-set>
+                    <MenuItemButton Command-eval="self.commandSavePrivate" Alt="P" />
+                    <MenuItemButton Command-eval="self.commandSaveRtf" Alt="R" />
+                    <MenuItemButton Command-eval="self.commandSaveHtml" Alt="H" />
+                  </att.SubMenu-set>
+                </MenuItemButton>
+              </att.SubMenu-set>
+            </MenuBarButton>
+            <MenuBarButton Text="Edit" Alt="E">
+              <att.SubMenu-set>
+                <ToolstripGroupContainer>
+                  <ToolstripGroup>
+                    <MenuItemButton Command-eval="self.commandUndo" Alt="U" />
+                    <MenuItemButton Command-eval="self.commandRedo" Alt="R" />
+                  </ToolstripGroup>
+                  <ToolstripGroup>
+                    <MenuItemButton Command-eval="self.commandCopy" Alt="C" />
+                    <MenuItemButton Command-eval="self.commandCut" Alt="X" />
+                    <MenuItemButton Command-eval="self.commandPaste" Alt="P" />
+                  </ToolstripGroup>
+                  <MenuItemButton Command-eval="self.commandDelete" Alt="D" />
+                  <ToolstripGroup>
+                    <MenuItemButton Command-eval="self.commandSelect" Alt="A" />
+                    <MenuItemButton Text="Object" Alt="O">
+                      <att.SubMenu-set>
+                        <MenuItemButton Command-eval="self.commandInsertImage" Alt="I" />
+                        <MenuItemButton Command-eval="self.commandEditHyperlink" Alt="L" />
+                        <MenuItemButton Command-eval="self.commandRemoveHyperlink" Alt="R" />
+                      </att.SubMenu-set>
+                    </MenuItemButton>
+                    <MenuItemButton Text="Paragram Alignment" Alt="P">
+                      <att.SubMenu-set>
+                        <MenuItemButton Command-eval="self.commandAlignDefault" Alt="D" />
+                        <MenuItemButton Command-eval="self.commandAlignLeft" Alt="L" />
+                        <MenuItemButton Command-eval="self.commandAlignCenter" Alt="C" />
+                        <MenuItemButton Command-eval="self.commandAlignRight" Alt="R" />
+                      </att.SubMenu-set>
+                    </MenuItemButton>
+                  </ToolstripGroup>
+                </ToolstripGroupContainer>
+              </att.SubMenu-set>
+            </MenuBarButton>
+            <MenuBarButton Text="View" Alt="V">
+              <att.SubMenu-set>
+                <MenuItemButton Command-eval="self.commandViewOnly" Alt="V" />
+                <MenuItemButton Command-eval="self.commandSelectable" Alt="S" />
+                <MenuItemButton Command-eval="self.commandEditable" Alt="E" />
+              </att.SubMenu-set>
+            </MenuBarButton>
+            <MenuBarButton Text="Format" Alt="O">
+              <att.SubMenu-set>
+                <MenuItemButton Command-eval="self.commandBold" Alt="B" />
+                <MenuItemButton Command-eval="self.commandItalic" Alt="I" />
+                <MenuItemButton Command-eval="self.commandUnderline" Alt="U" />
+                <MenuItemButton Command-eval="self.commandStrike" Alt="S" />
+                <MenuItemButton Command-eval="self.commandFont" Alt="F" />
+                <MenuItemButton Command-eval="self.commandColor" Alt="C" />
+                <MenuItemButton Command-eval="self.commandBackColor" Alt="K" />
+              </att.SubMenu-set>
+            </MenuBarButton>
+          </ToolstripMenuBar>
+        </att.MenuContainer-set>
+      </demo:TuiDocumentEditorBase>
+    </Instance>
+  </Instance>
+</Folder>

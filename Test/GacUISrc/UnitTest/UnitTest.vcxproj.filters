@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -412,5 +412,15 @@
     <Image Include="..\..\Resources\UnitTestResources\cake.jpeg">
       <Filter>Resource Files\UnitTestResources</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files\TUI">
+      <UniqueIdentifier>{24a9423a-db2d-4507-a030-7f115e7acddb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="TestTuiProvider.cpp">
+      <Filter>Source Files\TUI</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

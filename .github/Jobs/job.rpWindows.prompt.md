@@ -4,6 +4,7 @@
 
 - Makesure test apps build and work as expected.
 - `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` have details of verification.
+- `CppTest_Tui` uses [DebugTuiControlTestSop.md](DebugTuiControlTestSop.md) for its separate Windows Terminal page/function coverage and verification record. It starts no automation endpoint and has no transport or renderer replacement matrix.
 - You must fix any issue you see during verification.
 
 ## Maintain a Test Matrix Card

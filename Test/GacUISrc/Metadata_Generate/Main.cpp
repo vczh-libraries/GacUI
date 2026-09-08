@@ -1,10 +1,13 @@
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 #include "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
+#include "../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUIReflection.h"
 #include "../../../Source/UnitTestUtilities/SnapshotViewer/Source/GuiUnitTestSnapshotViewerReflection.h"
 #ifdef VCZH_64
 #include "../Generated_DarkSkin/Source_x64/DarkSkinReflection.h"
+#include "../Generated_TuiSkin/Source_x64/TuiSkinReflection.h"
 #else
 #include "../Generated_DarkSkin/Source_x86/DarkSkinReflection.h"
+#include "../Generated_TuiSkin/Source_x86/TuiSkinReflection.h"
 #endif
 #ifdef VCZH_MSVC
 #define _WINSOCKAPI_
@@ -119,7 +122,9 @@ int main(int argc, char* argv[])
 	}
 
 	LoadGuiFakeDialogServiceUITypes();
+	LoadTuiFakeDialogServiceUITypes();
 	LoadDarkSkinTypes();
+	LoadTuiSkinTypes();
 	LoadGuiUnitTestSnapshotViewerTypes();
 
 	{

@@ -13,3 +13,4 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.cpp"
 #include "..\..\Source\Reflection\TypeDescriptors\GuiReflectionTemplates.cpp"
 #include "..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIReflection.cpp"
+#include "..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUIReflection.cpp"
