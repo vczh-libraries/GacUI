@@ -41,6 +41,11 @@
   - There is no need to keep a distance if they are stacking horizontally, as TuiSkin requires the control has one pixel to before and after the text.
   - There is no need to keep a distance between two objects with borders, since borders are rendered by characters, they are visibly having a distance.
 
+- Dialogs and forms use zero table/stack padding between rows, and exactly one explicit blank row before the final action row. Size message, color and font content from its minimum height instead of retaining a large initial client height or an unused percentage row. Keep real textbox/list/group borders and useful list/preview areas. Explicit blank lines in the content are part of the text and must remain.
+- Center the natural-width message action group across the entire dialog with percentage/minimum/percentage columns. Other dialog action groups start at the left. Message text uses a normal multiline label without a surrounding scroll-container border; preserve the separate icon label and default action lookup.
+- Center form labels vertically while keeping their text left aligned, using local layout or an explicitly assigned template. A three-row table with percentage/minimum/percentage rows can center a label of its natural height in a bordered textbox's cell without changing every label's defaults.
+- A preferred minimum height of one does not prevent a tracker from stretching. Center an HTracker in an absolute one-cell middle row between equal percentage rows, and stretch it horizontally only. Its enclosing RGB component can still accommodate a three-cell bordered textbox. Do not place the actual text/control into either percentage spacer row.
+
 ## Best Practice for Creating/Updating Official TuiSkin
 
 - Exclude ribbon and toolbar since they requires image.

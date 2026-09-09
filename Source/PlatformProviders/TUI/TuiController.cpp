@@ -198,6 +198,7 @@ namespace vl::presentation
 	void TuiControllerBase::Run(INativeWindow* value)
 	{
 		CHECK_ERROR(value == window.Obj(), L"TuiControllerBase::Run#Unexpected native window.");
+		BufferSizeChanged();
 		value->Show();
 		while (RunOneCycle()) {}
 	}

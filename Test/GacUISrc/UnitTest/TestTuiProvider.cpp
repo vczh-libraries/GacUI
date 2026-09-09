@@ -1,6 +1,8 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/TUI/TuiController.h"
 #include "../../../Source/PlatformProviders/TUI/TuiGraphics.h"
+#include "../../../Source/PlatformProviders/Hosted/GuiHostedController.h"
+#include "../../../Source/PlatformProviders/Hosted/GuiHostedGraphics.h"
 #include "../../../Source/Controls/ListControlPackage/TuiItemTemplates.h"
 #include "../Generated_TuiSkin/TuiSkinConfig.h"
 #include "../../../Source/UnitTestUtilities/GuiUnitTestUtilities.h"
@@ -165,9 +167,11 @@ namespace tui_provider_tests
 		void Closed() override { closed(); }
 	};
 
-	void TuiRunTest(const Func<void(TuiTestBackend*, TuiTestController*)>& test)
+	void TuiRunTest(const Func<void(TuiTestBackend*, TuiTestController*)>& test, Size size = Size(16, 8))
 	{
 		auto backend = Ptr(new TuiTestBackend);
+		backend->width = size.x;
+		backend->height = size.y;
 		ScopedTuiBackend scoped(backend);
 		TuiTestController controller;
 		controller.test = [&]() { test(backend.Obj(), &controller); };
@@ -644,9 +648,14 @@ TEST_FILE
 			List<WString> events;
 			bool veto = true;
 			TuiTestClosingListener listener;
+			TuiTestClosingListener removed;
+			removed.before = [](bool&) { TEST_ASSERT(false); };
+			removed.after = []() { TEST_ASSERT(false); };
+			removed.closed = []() { TEST_ASSERT(false); };
 			listener.before = [&](bool& cancel)
 			{
 				events.Add(L"BeforeClosing");
+				window->UninstallListener(&removed);
 				TEST_ASSERT(window->IsVisible() && !TUI::IsStopRequested());
 				window->Hide(closeWindow);
 				cancel = veto;
@@ -665,6 +674,7 @@ TEST_FILE
 				window->UninstallListener(&listener);
 			};
 			window->InstallListener(&listener);
+			window->InstallListener(&removed);
 			window->Hide(closeWindow);
 			TEST_ASSERT(events.Count() == 1 && events[0] == L"BeforeClosing");
 			TEST_ASSERT(window->IsVisible() && !TUI::IsStopRequested());
@@ -677,6 +687,130 @@ TEST_FILE
 			TEST_ASSERT(events.Count() == 4);
 			controller->DestroyNativeWindow(window);
 		});
+	});
+
+	TEST_CASE(L"TUI hosted startup, child dismissal and direct or queued main closing")
+	{
+		for (auto size : { Size(100, 30), Size(80, 25) })
+		for (bool closeWindow : { false, true })
+		for (bool queued : { false, true })
+		TuiRunTest([=](TuiTestBackend* backend, TuiTestController* controller)
+		{
+			GuiHostedController hosted(controller);
+			hosted.Initialize();
+			auto physical = controller->GetMainWindow();
+			auto main = hosted.WindowService()->CreateNativeWindow(INativeWindow::Normal);
+			main->SetClientSize(NativeSize(120, 40));
+			vint queries = 0;
+			vint ready = 0;
+			vint closed = 0;
+			bool veto = true;
+			TuiTestClosingListener listener;
+			listener.before = [&](bool& cancel) { queries++; cancel = veto; };
+			listener.after = [&]() { ready++; TEST_ASSERT(!TUI::IsStopRequested()); };
+			listener.closed = [&]() { closed++; };
+			main->InstallListener(&listener);
+			controller->AsyncService()->InvokeInMainThread(physical, [&]()
+			{
+				TEST_ASSERT(main->GetClientSize() == NativeSize(size.x, size.y));
+				TEST_ASSERT(physical->GetClientSize() == main->GetClientSize());
+				TEST_ASSERT(physical->IsVisible());
+				auto child = hosted.WindowService()->CreateNativeWindow(INativeWindow::Normal);
+				child->Show();
+				child->Hide(closeWindow);
+				TEST_ASSERT(!child->IsVisible() && !TUI::IsStopRequested());
+				hosted.WindowService()->DestroyNativeWindow(child);
+				main->Hide(closeWindow);
+				TEST_ASSERT(queries == 1 && ready == 0 && closed == 0);
+				TEST_ASSERT(main->IsVisible() && !TUI::IsStopRequested());
+				veto = false;
+				if (queued)
+				{
+					hosted.AsyncService()->InvokeInMainThread(main, [&]() { main->Hide(closeWindow); });
+				}
+				else
+				{
+					main->Hide(closeWindow);
+				}
+			});
+			controller->InputService()->StartTimer();
+			hosted.WindowService()->Run(main);
+			TEST_ASSERT(queries == 2 && ready == 1 && closed == 1);
+			TEST_ASSERT(TUI::IsStopRequested() && !physical->IsVisible());
+			hosted.Finalize();
+		}, size);
+	});
+
+	TEST_CASE(L"TUI application main closing respects hosted modal interception")
+	{
+		using namespace vl::presentation::unittest;
+		GacUIUnitTest_SetGuiMainProxy([](auto, auto)
+		{
+			TuiRunTest([](TuiTestBackend* backend, TuiTestController* controller)
+			{
+				using namespace controls;
+				auto previousResources = GetGuiGraphicsResourceManager();
+				auto previousController = GetNativeController();
+				auto previousHosted = GetHostedApplication();
+				GuiHostedController hosted(controller);
+				TuiGraphicsResourceManager resources;
+				GuiHostedGraphicsResourceManager hostedResources(&hosted, &resources);
+				SetNativeController(&hosted);
+				SetHostedApplication(nullptr);
+				SetHostedApplication(hosted.GetHostedApplication());
+				SetTuiApplication(controller);
+				SetGuiGraphicsResourceManager(&hostedResources);
+				controller->CallbackService()->InstallListener(&resources);
+				RegisterTuiRenderers();
+				hosted.Initialize();
+				tuiskin::SetColorPackage(tuiskin::CreateDefaultColorPackage());
+				auto skin = Ptr(new tuiskin::TuiTheme);
+				theme::RegisterTheme(skin);
+				{
+					GuiWindow main(theme::ThemeName::SystemFrameWindow);
+					GuiWindow modal(theme::ThemeName::Window);
+					main.GetBoundsComposition()->SetMinSizeLimitation(compositions::GuiGraphicsComposition::NoLimit);
+					main.SetClientSize(Size(120, 40));
+					vint queries = 0;
+					vint ready = 0;
+					vint closed = 0;
+					bool veto = true;
+					main.WindowClosing.AttachLambda([&](auto, compositions::GuiRequestEventArgs& args) { queries++; args.cancel = veto; });
+					main.WindowReadyToClose.AttachLambda([&](auto, auto&) { ready++; });
+					main.WindowClosed.AttachLambda([&](auto, auto&) { closed++; });
+					GetApplication()->InvokeInMainThread(&main, [&]()
+					{
+						main.ForceCalculateSizeImmediately();
+						TEST_ASSERT(main.GetClientSize() == Size(100, 30));
+						TEST_ASSERT(main.GetBoundsComposition()->GetCachedBounds().GetSize() == Size(100, 30));
+						modal.ShowModal(&main, []() {});
+						TEST_ASSERT(modal.GetOpening());
+						main.Hide();
+						TEST_ASSERT(!modal.GetOpening() && main.GetOpening());
+						TEST_ASSERT(queries == 0 && ready == 0 && !TUI::IsStopRequested());
+						GetApplication()->InvokeInMainThread(&main, [&]()
+						{
+							main.Hide();
+							TEST_ASSERT(queries == 1 && ready == 0 && !TUI::IsStopRequested());
+							veto = false;
+							main.Close();
+						});
+					});
+					controller->InputService()->StartTimer();
+					GetApplication()->Run(&main);
+					TEST_ASSERT(queries == 2 && ready == 1 && closed == 1);
+				}
+				theme::UnregisterTheme(skin->Name);
+				hosted.Finalize();
+				controller->CallbackService()->UninstallListener(&resources);
+				SetGuiGraphicsResourceManager(previousResources);
+				SetTuiApplication(nullptr);
+				SetHostedApplication(nullptr);
+				SetHostedApplication(previousHosted);
+				SetNativeController(previousController);
+			}, Size(100, 30));
+		});
+		GacUIUnitTest_Start(L"Tui/Closing");
 	});
 
 	TEST_CASE(L"TUI registered renderers reuse label paragraphs and layouts")

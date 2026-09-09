@@ -10287,7 +10287,11 @@ class tui_controls::TuiColorComponentControlConstructor : system::ReferenceType 
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_4 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
     property self : tui_controls::TuiColorComponentControl*;
     @system::workflow_attributes::att_cpp_Protected()
@@ -10344,35 +10348,59 @@ class tui_controls::TuiColorDialogControlConstructor : system::ReferenceType {
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_12 : presentation::compositions::GuiTableComposition*;
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_13 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_14 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_14 : presentation::controls::GuiLabel*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_15 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_15 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_16 : presentation::elements::GuiSolidBackgroundElement^;
+    property __vwsn_precompile_16 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_17 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_17 : presentation::compositions::GuiTableComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_18 : presentation::elements::GuiSolidLabelElement^;
+    property __vwsn_precompile_18 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_2 : presentation::controls::GuiLabel*;
+    property __vwsn_precompile_19 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::compositions::GuiTableComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_20 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_21 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_22 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_23 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_24 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_25 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_26 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_27 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_28 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_29 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_30 : presentation::elements::GuiSolidLabelElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_4 : presentation::controls::GuiLabel*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_6 : presentation::controls::GuiLabel*;
+    property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_7 : presentation::compositions::GuiTableComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_8 : presentation::controls::GuiLabel*;
+    property __vwsn_precompile_8 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_9 : presentation::controls::GuiLabel*;
     @system::workflow_attributes::att_cpp_Protected()
     property colorBlue : tui_controls::TuiColorComponentControl*;
     @system::workflow_attributes::att_cpp_Protected()
@@ -10545,27 +10573,39 @@ class tui_controls::TuiFilePickerControlConstructor : system::ReferenceType {
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_10 : presentation::controls::GuiLabel*;
+    property __vwsn_precompile_10 : presentation::compositions::GuiTableComposition*;
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_12 : presentation::controls::GuiLabel*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_13 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_13 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_14 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_15 : presentation::controls::GuiLabel*;
+    property __vwsn_precompile_15 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_16 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_16 : presentation::compositions::GuiGraphicsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_17 : presentation::controls::GuiBindableTextList*;
+    property __vwsn_precompile_17 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_18 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_18 : presentation::compositions::GuiTableComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_19 : presentation::IFileDialogViewModel^;
+    property __vwsn_precompile_19 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_2 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_20 : presentation::controls::GuiLabel*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_21 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_22 : presentation::compositions::GuiCellComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_23 : presentation::controls::GuiBindableTextList*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_24 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_25 : presentation::IFileDialogViewModel^;
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
@@ -10885,13 +10925,13 @@ class tui_controls::TuiMessageBoxWindowConstructor : system::ReferenceType {
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_4 : presentation::controls::GuiScrollContainer*;
+    property __vwsn_precompile_4 : presentation::controls::GuiLabel*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_5 : presentation::controls::GuiLabel*;
+    property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_7 : presentation::compositions::GuiTableComposition*;
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_8 : presentation::compositions::GuiCellComposition*;
     @system::workflow_attributes::att_cpp_Protected()

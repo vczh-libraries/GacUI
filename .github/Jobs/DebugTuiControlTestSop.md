@@ -12,11 +12,21 @@ Keep these baseline limitations explicit: the four private-format/RTF/HTML callb
 
 ## Startup, platform services and teardown
 
-Before Show, terminal takeover must not paint application cells. After Show, verify title, cell geometry, one physical terminal window, hosted popups/dialogs, and opaque surfaces. Programmatic main-window sizing records the requested dimensions but does not resize Windows Terminal. Resizing the terminal replaces the stored dimensions, relayouts, and clips to the physical viewport.
+Start fresh at 100x30 and 80x25 before manually resizing. The first visible main layout and physical/hosted bounds must match the terminal, despite the resource declaring 120x40. Before Show, terminal takeover must not paint application cells. After Show, verify title, cell geometry, one physical terminal window, hosted popups/dialogs, and opaque surfaces. Programmatic main-window sizing records the requested dimensions but does not resize Windows Terminal. Resizing the terminal replaces the stored dimensions, relayouts, and clips to the physical viewport.
 
 Open child and modal windows, overlap them, move/resize them, and close them. Exposed cells must repaint. Check clipboard copy/paste with another app, asynchronous file enumeration, caret blinking and global shortcuts. All owner-thread work must continue during modal pumping.
 
-Use both Stop buttons on separate fresh runs. After each normal exit, require restoration of terminal contents, cursor visibility, colors and input modes; type into the shell to verify usable input. Repeat after opening/closing dialogs. Terminal-tab close and forced termination do not satisfy this check.
+Exercise each direct/queued Hide and Close button and both Stop buttons on separate fresh runs. For Hide/Close, first enable cancellation and require one query with no ready notification or stop, then disable cancellation and retry. Accepted requests must return normally from GuiApplication::Run through WindowService()->Run. Closing with a hosted modal open must preserve its existing focus/dismiss interception and keep the main app running; closing an ordinary child must also leave it responsive. After each normal exit, require restoration of terminal contents, cursor visibility, colors and input modes; type into the shell to verify usable input. Repeat after opening/closing dialogs. Terminal-tab close and forced termination do not satisfy this check.
+
+## Follow-up regression checks
+
+Inspect borderless ordinary popups, tooltips and combo/date content dropdowns, retaining actual menu and content-control borders. Ordinary/date combos stay one row. Scrollbar/tracker handles paint uniformly and disabled handles blend into their tracks. Header sorting glyphs precede the title with its text color; the following header's first cell resizes the preceding column. Focus uses bold plus underline for buttons, check/radio, combos, menus and tab headers; ALT labels have opaque white backgrounds and black text. Recheck all of these after shrinking and restoring the viewport.
+
+In DataGrid view, hover/select every cell and change rows: both the row highlight and cell fill must preserve the entire bottom separator's normal background and glyph, including intersections and space beyond the last column. Repeat editing, column resize and scrolling/recycling. Detail/TextList/TreeView keep their full one-row selection. Name/Website editors retain caret Left/Right and Shift selection, with Up/Down a no-op. Gender/Category combos keep arrow/Home/End/Page navigation, boundaries and repeats inside the editor with the popup collapsed and expanded; highlight changes commit only through the existing Enter/mouse path. Dismiss the editor and verify grid navigation returns. Compare CppTest for shared control behavior.
+
+Type and paste literal TAB in each tab-enabled editor; require exactly one U+0009 without focus traversal. At default interval four, X in tab-X, a-tab-X, abc-tab-X and abcd-tab-X starts at columns 4, 4, 4 and 8. Repeat with interval eight, wide characters, wrapping, alignment, horizontal scrolling, selection, undo and clipboard. No Tab pages retain TAB/Shift+TAB traversal without insertion. The provider regression separately checks paragraph/label geometry and caching; injected events do not establish native terminal typing.
+
+Repeat the Window Manager local/global shortcut checks independently. The Windows TUI controller owns its service window, clipboard/input/image services and owner-thread pump; deterministic service/label-cache tests supplement actual startup, clipboard, caret and global-hotkey checks. Returning from document pages must not leave hidden document shortcuts intercepting a dialog or another page. Keep native input failures and unobserved font/cursor/color appearance explicitly unverified.
 
 ## List / TextList
 
@@ -158,6 +168,14 @@ Verify the heading, complete four-row table, and initial combo selection. Scroll
 
 Switch en-US to zh-CN and back. Require the title, selector label, date/time/number/currency strings, and all three sentence entries to update. The number value remains 2147483647 and currency value 1342177.28 under their locale formatting; changing locale alone must not change the stored date/time. Check the literal dollar characters in sentence results and correct CJK cell boundaries. Visit Dialogs and require its shared locale selector to reflect the application locale.
 
+## Compact dialog and form layout checks
+
+At 120x40, 80x25 and after restoring the larger viewport, inspect all Message/Color/simple Font/full Font/Open/Save dialogs and their launch forms. Require zero blank rows between compact fields and exactly one explicit blank row before final actions; keep textbox, group and list borders. First-column labels must align vertically with bordered textbox content while retaining left alignment, and labels beside one-row combos must remain one row. Keep results adjacent to their label/list and preserve scrolling, keyboard focus and returned values.
+
+Message content must be a readable borderless label, preserving short, multiline and CJK content and explicit blank lines. Exercise one-, two- and three-button English/Chinese messages with/without icons: the natural-width buttons remain centered across the dialog at every localized width. Other dialog actions start at the left, including the full-font Pick a Color action. Include multiline file-validation prompts.
+
+Count each RGB tracker as exactly one rendered cell row centered beside its textbox, with vertically centered labels. Drag it, use keyboard steps and reach 0/255; type RGB 12,34,56, accept/reopen, then change/cancel and require preserved color semantics. Recheck font effects/nested color and file enumeration/selection/nested prompts.
+
 ## Misc / Dialogs / MessageDialog
 
 `LocalizedDialogsTabPage.xml`, `LocalizedComponents.xml`, and the localized dialog-string injection. Keep the shared locale selector and `Title / Text / Input / DefaultButton / Icon / Output` form with `Show Dialog`.
@@ -198,9 +216,9 @@ Adapt FCT `Verify Shortcuts and Mouse Buttons`. Open a child and then a grandchi
 
 The `Exit` tab in `Resource.xml`. Preserve the four vertically arranged, exactly named `self.Hide()` / `self.Close()` buttons, with and without `(InvokeInMainThread)`, so the page is immediately recognizable.
 
-Adapt FCT `Close the Application`. Click each original button and require the terminal/application to remain active and responsive; queued operations must actually run, so update a visible invocation readout when their callbacks execute. On separate fresh runs, use each Stop button and require normal teardown and restored terminal contents, cursor, colors, input mode, and usable shell input. Repeat after opening/closing hosted dialogs and changing pages. Do not substitute terminal-tab close, force termination, or a remote renderer's Force Exit for normal application stopping.
+Adapt FCT `Close the Application`. With `Cancel Hide/Close requests` selected, click each original button and require the app to remain responsive, its invocation/query readouts to advance once and its ready count to remain zero. With cancellation cleared, test each button on a fresh run: one WindowClosing and one WindowReadyToClose must precede normal loop exit. Queued operations must reach the same path. Include canceled-then-accepted retry, reentrant close and listener removal in provider regressions. On separate fresh runs, use each Stop button and require normal teardown and restored terminal contents, cursor, colors, input mode, and usable shell input. Repeat after opening/closing hosted dialogs and changing pages. Do not substitute terminal-tab close, force termination, or a remote renderer's Force Exit for normal application stopping.
 
-## Verification record
+## Verification record (historical, before follow-up 3)
 
 Record the build, terminal version, viewport, page/function, exact observed result and any unobservable input. A successful build or deterministic buffer test does not establish a visual result.
 
@@ -240,3 +258,17 @@ Record the build, terminal version, viewport, page/function, exact observed resu
 The records above describe performed checks, not a blanket pass of every procedure. Classic ReadConsoleOutputCharacterW exposes supplementary glyph cells as replacement characters in this environment; native clipboard inspection confirms the underlying document text retains the complete surrogate pair.
 
 Inherited fake-service limitation: GuiFakeDialogServiceBase_ColorDialog.cpp does not use customColorOptions or customColors. The TUI dialog retains the same current-color/accept/cancel behavior; a custom-color palette is not implemented by this shared service.
+
+## Follow-up 3 verification (2026-09-09)
+
+| Check | Fresh result |
+| --- | --- |
+| Generation/build/metadata | Both resource architectures completed without UI errors. Debug Win32/x64 builds have 0 warnings/errors; both Metadata_Generate runs and x64 Metadata_Test pass |
+| Unit coverage | 90/90 files, 1,748/1,748 cases; no leak dump. Existing GUI snapshots unchanged. New provider tests cover first-layout bounds, both close flags, all direct/queued hosted paths, cancellation, notification order, reentrancy, detachment and modal interception |
+| Startup/resize | Rebuilt showcase initially fills 100x30 and 80x25 without manual resize. A separate dialog run shrinks 120x40 to 80x25 and restores 120x40; pages, scrolling and hit positions remain usable |
+| Message dialogs | Seven button sets return expected first defaults in Chinese at 120x40 and English at 80x25. Second/third defaults return TryAgain/Continue. All icon choices preserve CJK text. Message content has no inner border; action groups are naturally centered with one gap. Chinese overwrite question and filename retain separate lines |
+| Color dialogs | RGB label/content alignment observed; CDB measures all three actual trackers as 38x1. Arrow, Home/End and drag changes reach/clamp endpoints. Typed 12,34,56 returns #0C2238, reopening retains it, and later cancel preserves it |
+| Font/file dialogs and forms | English/Chinese font previews, compact effects and Pick a Color are retained. Nested color closes back to full font. File labels are centered; results are adjacent and one blank row precedes actions. At 80x25 the form scrolls to every field/action, and the picker retains useful lists. Existing-path selection, empty-selection and Chinese overwrite prompts work; cancel preserves results |
+| Ordinary close and Stop | Four vetoed direct/queued Hide/Close calls increment invocation/query counts once each, with ready zero. Fresh accepted direct Hide, queued Hide, direct Close, queued Close and both Stop paths all exit 0. Closing after dialog use also exits 0 |
+| Console restoration | Every accepted exit restores shell input/output modes 484/7, attributes 7 and cursor size/visibility 25/true; the restored shell accepts a command and reports exit 0 |
+| Observation limits | Live console buffers, console event replay and CDB were used. OpenInputDesktop fails with error 5; physical input and displayed font/cursor/RGB fidelity remain unverified. These results do not relabel the preceding historical runs |

@@ -211,6 +211,19 @@ namespace vl::presentation
 
 	void TuiWindow::Hide(bool closeWindow)
 	{
+		if (closing || TUI::IsStopRequested()) return;
+		closing = true;
+		bool cancel = false;
+		Dispatch([&](auto listener) { listener->BeforeClosing(cancel); }, true);
+		if (cancel)
+		{
+			closing = false;
+			return;
+		}
+		Dispatch([](auto listener) { listener->AfterClosing(); }, true);
+		visible = false;
+		Dispatch([](auto listener) { listener->Closed(); }, true);
+		controller->Stop();
 	}
 
 	bool TuiWindow::IsVisible()

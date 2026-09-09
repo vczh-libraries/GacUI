@@ -21,6 +21,7 @@ namespace vl::presentation
 		bool										visible = false;
 		bool										enabled = true;
 		bool										capturing = false;
+		bool										closing = false;
 	public:
 		TuiWindow(TuiControllerBase* controller);
 		~TuiWindow();

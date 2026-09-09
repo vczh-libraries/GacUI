@@ -170,6 +170,7 @@
               <_>composeType:MinSize</_>
               <_>composeType:MinSize</_>
               <_>composeType:MinSize</_>
+              <_>composeType:Absolute absolute:1</_>
               <_>composeType:MinSize</_>
             </att.Rows>
             <att.Columns>
@@ -178,22 +179,106 @@
               <_>composeType:Percentage percentage:1.0</_>
             </att.Columns>
             <Cell Site="row:0 column:0">
-              <Label Text="Title:" />
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+                <att.Rows>
+                  <_>composeType:Percentage percentage:1.0</_>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Rows>
+                <att.Columns>
+                  <_>composeType:MinSize</_>
+                </att.Columns>
+                <Cell Site="row:1 column:0">
+                  <Label Text="Title:">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  </Label>
+                </Cell>
+              </Table>
             </Cell>
             <Cell Site="row:1 column:0">
-              <Label Text="Text:" />
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+                <att.Rows>
+                  <_>composeType:Percentage percentage:1.0</_>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Rows>
+                <att.Columns>
+                  <_>composeType:MinSize</_>
+                </att.Columns>
+                <Cell Site="row:1 column:0">
+                  <Label Text="Text:">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  </Label>
+                </Cell>
+              </Table>
             </Cell>
             <Cell Site="row:2 column:0">
-              <Label Text="Input:" />
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+                <att.Rows>
+                  <_>composeType:Percentage percentage:1.0</_>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Rows>
+                <att.Columns>
+                  <_>composeType:MinSize</_>
+                </att.Columns>
+                <Cell Site="row:1 column:0">
+                  <Label Text="Input:">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  </Label>
+                </Cell>
+              </Table>
             </Cell>
             <Cell Site="row:3 column:0">
-              <Label Text="DefaultButton:" />
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+                <att.Rows>
+                  <_>composeType:Percentage percentage:1.0</_>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Rows>
+                <att.Columns>
+                  <_>composeType:MinSize</_>
+                </att.Columns>
+                <Cell Site="row:1 column:0">
+                  <Label Text="DefaultButton:">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  </Label>
+                </Cell>
+              </Table>
             </Cell>
             <Cell Site="row:4 column:0">
-              <Label Text="Icon:" />
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+                <att.Rows>
+                  <_>composeType:Percentage percentage:1.0</_>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Rows>
+                <att.Columns>
+                  <_>composeType:MinSize</_>
+                </att.Columns>
+                <Cell Site="row:1 column:0">
+                  <Label Text="Icon:">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  </Label>
+                </Cell>
+              </Table>
             </Cell>
             <Cell Site="row:5 column:0">
-              <Label Text="Output:" />
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+                <att.Rows>
+                  <_>composeType:Percentage percentage:1.0</_>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Rows>
+                <att.Columns>
+                  <_>composeType:MinSize</_>
+                </att.Columns>
+                <Cell Site="row:1 column:0">
+                  <Label Text="Output:">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                  </Label>
+                </Cell>
+              </Table>
             </Cell>
             <Cell Site="row:0 column:1">
               <SinglelineTextBox ref.Name="txtTitle" Text="The Title">
@@ -232,7 +317,7 @@
             <Cell Site="row:5 column:1">
               <Label ref.Name="lblOutput" />
             </Cell>
-            <Cell Site="row:6 column:1">
+            <Cell Site="row:7 column:1">
               <Button Text="Show Dialog">
                 <ev.Clicked-eval><![CDATA[
                 {
@@ -262,6 +347,7 @@
         <Table CellPadding="0" BorderVisible="false" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:Absolute absolute:2</_>
+            <_>composeType:Absolute absolute:1</_>
             <_>composeType:MinSize</_>
           </att.Rows>
           <att.Columns>
@@ -274,7 +360,7 @@
           <Cell Site="row:0 column:1">
             <Label Text-format="$(self.SampleColor)  RGB: $(self.SampleColor.r), $(self.SampleColor.g), $(self.SampleColor.b)" />
           </Cell>
-          <Cell Site="row:1 column:0">
+          <Cell Site="row:2 column:0">
             <Button Text="Show Dialog">
               <ev.Clicked-eval><![CDATA[
                 {
@@ -299,6 +385,7 @@
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
+            <_>composeType:Absolute absolute:1</_>
             <_>composeType:MinSize</_>
           </att.Rows>
           <att.Columns>
@@ -311,7 +398,7 @@
           <Cell Site="row:1 column:0">
             <CheckBox ref.Name="checkEffect" Text="Effect" Selected="false" />
           </Cell>
-          <Cell Site="row:2 column:0">
+          <Cell Site="row:3 column:0">
             <Button Text="Show Dialog">
               <ev.Clicked-eval><![CDATA[
                 {
@@ -361,7 +448,7 @@
         <SaveFileDialog ref.Name="dialogSave" />
         <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
-          <Stack Direction="Vertical" Padding="1" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <Stack Direction="Vertical" Padding="0" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
             <StackItem>
               <Table CellPadding="0" BorderVisible="false" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                 <att.Rows>
@@ -380,22 +467,106 @@
                   <_>composeType:Percentage percentage:1.0</_>
                 </att.Columns>
                 <Cell Site="row:0 column:0">
-                  <Label Text="Title:" />
+                  <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+                    <att.Rows>
+                      <_>composeType:Percentage percentage:1.0</_>
+                      <_>composeType:MinSize</_>
+                      <_>composeType:Percentage percentage:1.0</_>
+                    </att.Rows>
+                    <att.Columns>
+                      <_>composeType:MinSize</_>
+                    </att.Columns>
+                    <Cell Site="row:1 column:0">
+                      <Label Text="Title:">
+                        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                      </Label>
+                    </Cell>
+                  </Table>
                 </Cell>
                 <Cell Site="row:1 column:0">
-                  <Label Text="Directory:" />
+                  <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+                    <att.Rows>
+                      <_>composeType:Percentage percentage:1.0</_>
+                      <_>composeType:MinSize</_>
+                      <_>composeType:Percentage percentage:1.0</_>
+                    </att.Rows>
+                    <att.Columns>
+                      <_>composeType:MinSize</_>
+                    </att.Columns>
+                    <Cell Site="row:1 column:0">
+                      <Label Text="Directory:">
+                        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                      </Label>
+                    </Cell>
+                  </Table>
                 </Cell>
                 <Cell Site="row:2 column:0">
-                  <Label Text="FileName:" />
+                  <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+                    <att.Rows>
+                      <_>composeType:Percentage percentage:1.0</_>
+                      <_>composeType:MinSize</_>
+                      <_>composeType:Percentage percentage:1.0</_>
+                    </att.Rows>
+                    <att.Columns>
+                      <_>composeType:MinSize</_>
+                    </att.Columns>
+                    <Cell Site="row:1 column:0">
+                      <Label Text="FileName:">
+                        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                      </Label>
+                    </Cell>
+                  </Table>
                 </Cell>
                 <Cell Site="row:3 column:0">
-                  <Label Text="Filter:" />
+                  <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+                    <att.Rows>
+                      <_>composeType:Percentage percentage:1.0</_>
+                      <_>composeType:MinSize</_>
+                      <_>composeType:Percentage percentage:1.0</_>
+                    </att.Rows>
+                    <att.Columns>
+                      <_>composeType:MinSize</_>
+                    </att.Columns>
+                    <Cell Site="row:1 column:0">
+                      <Label Text="Filter:">
+                        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                      </Label>
+                    </Cell>
+                  </Table>
                 </Cell>
                 <Cell Site="row:4 column:0">
-                  <Label Text="FilterIndex:" />
+                  <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+                    <att.Rows>
+                      <_>composeType:Percentage percentage:1.0</_>
+                      <_>composeType:MinSize</_>
+                      <_>composeType:Percentage percentage:1.0</_>
+                    </att.Rows>
+                    <att.Columns>
+                      <_>composeType:MinSize</_>
+                    </att.Columns>
+                    <Cell Site="row:1 column:0">
+                      <Label Text="FilterIndex:">
+                        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                      </Label>
+                    </Cell>
+                  </Table>
                 </Cell>
                 <Cell Site="row:5 column:0">
-                  <Label Text="DefaultExtension:" />
+                  <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+                    <att.Rows>
+                      <_>composeType:Percentage percentage:1.0</_>
+                      <_>composeType:MinSize</_>
+                      <_>composeType:Percentage percentage:1.0</_>
+                    </att.Rows>
+                    <att.Columns>
+                      <_>composeType:MinSize</_>
+                    </att.Columns>
+                    <Cell Site="row:1 column:0">
+                      <Label Text="DefaultExtension:">
+                        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                      </Label>
+                    </Cell>
+                  </Table>
                 </Cell>
                 <Cell Site="row:0 column:1">
                   <SinglelineTextBox ref.Name="txtTitle" Text="The Title">
@@ -469,8 +640,9 @@
                 <att.TextProperty-eval>[cast string $1]</att.TextProperty-eval>
               </BindableTextList>
             </StackItem>
+            <StackItem PreferredMinSize="y:1" />
             <StackItem>
-              <Stack Direction="Horizontal" Padding="1" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <Stack Direction="Horizontal" Padding="0" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                 <StackItem>
                   <Button Text="Show Open File Dialog">
                     <ev.Clicked-eval><![CDATA[

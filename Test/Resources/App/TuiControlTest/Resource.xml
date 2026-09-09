@@ -74,6 +74,8 @@
       <ref.Members><![CDATA[
         var openedSubWindows: GuiWindow^[] = {};
         prop invocationCount : int = 0 {}
+        prop closingCount : int = 0 {}
+        prop readyToCloseCount : int = 0 {}
 
         func ShowMouseModifiers(alt: bool, osSuper: bool): void
         {
@@ -94,6 +96,13 @@
         }
       ]]></ref.Members>
       <Window ref.Name="self" ControlThemeName="SystemFrameWindow" Text="Complete Control Showcase (TUI)" ClientSize="x:120 y:40">
+        <ev.WindowClosing-eval><![CDATA[{
+          self.closingCount = self.closingCount + 1;
+          arguments.cancel = checkCancelClose.Selected;
+        }]]></ev.WindowClosing-eval>
+        <ev.WindowReadyToClose-eval><![CDATA[{
+          self.readyToCloseCount = self.readyToCloseCount + 1;
+        }]]></ev.WindowReadyToClose-eval>
         <MessageDialog ref.Name="dialogLocalShortcut" Title-eval="self.Text" Text="You pressed Ctrl+Q!" />
         <MessageDialog ref.Name="dialogLocalSuperShortcut" Title-eval="self.Text" Text="You pressed Ctrl+Alt+Win+Q!" />
         <MessageDialog ref.Name="dialogGlobalShortcut" Title-eval="self.Text" Text="You pressed Ctrl+Shift+Alt+Win+F8!" />
@@ -253,10 +262,13 @@
                   </Button>
                 </StackItem>
                 <StackItem>
-                  <Label Text="Physical main-window Hide/Close are no-ops. Use Stop TUI to exit." />
+                  <CheckBox ref.Name="checkCancelClose" Text="Cancel Hide/Close requests" Selected="false" />
                 </StackItem>
                 <StackItem>
-                  <Label Text-format="Invocations completed: $(self.invocationCount)" />
+                  <Label Text="Hide/Close query WindowClosing; accepted requests stop TUI after WindowReadyToClose." />
+                </StackItem>
+                <StackItem>
+                  <Label Text-format="Invocations completed: $(self.invocationCount); closing queries: $(self.closingCount); ready: $(self.readyToCloseCount)" />
                 </StackItem>
                 <StackItem>
                   <Button Text="Stop TUI">

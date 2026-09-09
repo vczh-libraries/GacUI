@@ -6,9 +6,9 @@
         prop TextBoxAlt : string = "" {}
       ]]></ref.Members>
       <CustomControl ref.Name="self" Value-bind="tracker.Position">
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="1">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
           <att.Rows>
-            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
           </att.Rows>
           <att.Columns>
             <_>composeType:Absolute absolute:6</_>
@@ -21,9 +21,21 @@
             </SinglelineTextBox>
           </Cell>
           <Cell Site="row:0 column:1 ">
-            <HTracker ref.Name="tracker" TotalSize="256" PageSize="1" SmallMove="1" BigMove="16">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
-            </HTracker>
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+              <att.Rows>
+                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:Absolute absolute:1</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Columns>
+              <Cell Site="row:1 column:0">
+                <HTracker ref.Name="tracker" TotalSize="256" PageSize="1" SmallMove="1" BigMove="16">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                </HTracker>
+              </Cell>
+            </Table>
           </Cell>
         </Table>
       </CustomControl>
@@ -51,23 +63,79 @@
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
-            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
           </att.Rows>
           <att.Columns>
             <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
           <Cell Site="row:0 column:0 ">
-            <Label Text-str="Red()" />
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+              <att.Rows>
+                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:MinSize</_>
+              </att.Columns>
+              <Cell Site="row:1 column:0">
+                <Label Text-str="Red()">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                </Label>
+              </Cell>
+            </Table>
           </Cell>
           <Cell Site="row:1 column:0 ">
-            <Label Text-str="Green()" />
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+              <att.Rows>
+                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:MinSize</_>
+              </att.Columns>
+              <Cell Site="row:1 column:0">
+                <Label Text-str="Green()">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                </Label>
+              </Cell>
+            </Table>
           </Cell>
           <Cell Site="row:2 column:0 ">
-            <Label Text-str="Blue()" />
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+              <att.Rows>
+                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:MinSize</_>
+              </att.Columns>
+              <Cell Site="row:1 column:0">
+                <Label Text-str="Blue()">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                </Label>
+              </Cell>
+            </Table>
           </Cell>
           <Cell Site="row:3 column:0 ">
-            <Label Text-str="Color()" />
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+              <att.Rows>
+                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:MinSize</_>
+              </att.Columns>
+              <Cell Site="row:1 column:0">
+                <Label Text-str="Color()">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
+                </Label>
+              </Cell>
+            </Table>
           </Cell>
           <Cell Site="row:0 column:1 ">
             <g:TuiColorComponentControl ref.Name="colorRed" Value-eval="cast int ViewModel.Color.r" TextBoxAlt="R">
@@ -84,7 +152,7 @@
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
             </g:TuiColorComponentControl>
           </Cell>
-          <Cell Site="row:3 column:1 ">
+          <Cell Site="row:3 column:1 " PreferredMinSize="y:1">
             <SolidBackground Color-bind="self.Value" />
             <Bounds AlignmentToParent="left:1 top:0 right:1 bottom:0">
               <SolidLabel Text-bind="cast string self.Value" Color-bind="{r:(cast UInt8 (255 - cast int self.Value.r)) g:(cast UInt8 (255 - cast int self.Value.g)) b:(cast UInt8 (255 - cast int self.Value.b))}" />
@@ -98,29 +166,30 @@
     <Instance ref.CodeBehind="false" ref.Class="tui_controls::TuiColorDialogWindow" xmlns:g="tui_controls::*">
       <ref.LocalizedStrings Name="Strings" Class="tui_controls::TuiDialogStrings" Default="true" />
       <ref.Parameter Name="ViewModel" Class="presentation::IColorDialogViewModel" />
-      <Window ref.Name="self" ClientSize="x:52 y:15" ShowInTaskBar="false" MaximizedBox="false" MinimizedBox="false" IconVisible="false" Text-str="ColorDialogTitle()">
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="1">
+      <Window ref.Name="self" ClientSize="x:52 y:1" ShowInTaskBar="false" MaximizedBox="false" MinimizedBox="false" IconVisible="false" Text-str="ColorDialogTitle()">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
           <att.Rows>
-            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Absolute absolute:1</_>
             <_>composeType:MinSize</_>
           </att.Rows>
           <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
-            <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
           </att.Columns>
           <Cell Site="row:0 column:0 columnSpan:3">
             <g:TuiColorDialogControl ref.Name="colorControl" ViewModel-eval="ViewModel">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
             </g:TuiColorDialogControl>
           </Cell>
-          <Cell Site="row:1 column:1 ">
+          <Cell Site="row:2 column:0 ">
             <Button Text-str="OK()" Alt="O">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
               <ev.Clicked-eval><![CDATA[{ViewModel.Confirmed = true; ViewModel.Color = colorControl.Value; self.Close();}]]></ev.Clicked-eval>
             </Button>
           </Cell>
-          <Cell Site="row:1 column:2 ">
+          <Cell Site="row:2 column:1 ">
             <Button Text-str="Cancel()" Alt="C">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
               <ev.Clicked-eval><![CDATA[{self.Close();}]]></ev.Clicked-eval>

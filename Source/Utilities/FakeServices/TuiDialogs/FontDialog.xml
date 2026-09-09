@@ -46,23 +46,24 @@
           sizeControl.InitValue(ViewModel.FontSize);
         }
       ]]></ref.Ctor>
-      <Window ref.Name="self" ClientSize="x:46 y:12" ShowInTaskBar="false" MaximizedBox="false" MinimizedBox="false" IconVisible="false" Text-str="FontDialogTitle()">
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="1">
+      <Window ref.Name="self" ClientSize="x:46 y:1" ShowInTaskBar="false" MaximizedBox="false" MinimizedBox="false" IconVisible="false" Text-str="FontDialogTitle()">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
           <att.Rows>
-            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Absolute absolute:1</_>
             <_>composeType:MinSize</_>
           </att.Rows>
           <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
-            <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
           </att.Columns>
           <Cell Site="row:0 column:0 columnSpan:3">
             <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
               <att.Rows>
                 <_>composeType:MinSize</_>
                 <_>composeType:MinSize</_>
-                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:MinSize</_>
               </att.Rows>
               <att.Columns>
                 <_>composeType:Percentage percentage:1.0</_>
@@ -88,13 +89,13 @@
               </Cell>
             </Table>
           </Cell>
-          <Cell Site="row:1 column:1 ">
+          <Cell Site="row:2 column:0 ">
             <Button Text-str="OK()" Alt="O">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
               <ev.Clicked-eval><![CDATA[{ViewModel.Confirmed = true; ViewModel.FontFamily = "TuiFont"; ViewModel.FontSize = 1; self.Close();}]]></ev.Clicked-eval>
             </Button>
           </Cell>
-          <Cell Site="row:1 column:2 ">
+          <Cell Site="row:2 column:1 ">
             <Button Text-str="Cancel()" Alt="C">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
               <ev.Clicked-eval><![CDATA[{self.Close();}]]></ev.Clicked-eval>
@@ -118,23 +119,25 @@
           checkStrikeline.Selected = ViewModel.Font.strikeline;
         }
       ]]></ref.Ctor>
-      <Window ref.Name="self" ClientSize="x:62 y:15" ShowInTaskBar="false" MaximizedBox="false" MinimizedBox="false" IconVisible="false" Text-str="FontDialogTitle()">
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="1">
+      <Window ref.Name="self" ClientSize="x:62 y:1" ShowInTaskBar="false" MaximizedBox="false" MinimizedBox="false" IconVisible="false" Text-str="FontDialogTitle()">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
           <att.Rows>
-            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Absolute absolute:1</_>
             <_>composeType:MinSize</_>
           </att.Rows>
           <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
-            <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
           </att.Columns>
-          <Cell Site="row:0 column:0 columnSpan:3">
+          <Cell Site="row:0 column:0 columnSpan:4">
             <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
               <att.Rows>
                 <_>composeType:MinSize</_>
                 <_>composeType:MinSize</_>
-                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:MinSize</_>
               </att.Rows>
               <att.Columns>
                 <_>composeType:Percentage percentage:1.0</_>
@@ -151,7 +154,7 @@
                 </g:TuiFontSizeControl>
               </Cell>
               <Cell Site="row:1 column:0 columnSpan:2">
-                <Stack Direction="Horizontal" Padding="1" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                <Stack Direction="Horizontal" Padding="0" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                   <StackItem>
                     <CheckBox ref.Name="checkBold" Text-str="Bold()" Alt="B" />
                   </StackItem>
@@ -176,18 +179,18 @@
               </Cell>
             </Table>
           </Cell>
-          <Cell Site="row:1 column:0 ">
+          <Cell Site="row:2 column:0 ">
             <Button Text="Pick a Color" Alt="K">
               <ev.Clicked-eval><![CDATA[{ViewModel.SelectColor(self);}]]></ev.Clicked-eval>
             </Button>
           </Cell>
-          <Cell Site="row:1 column:1 ">
+          <Cell Site="row:2 column:1 ">
             <Button Text-str="OK()" Alt="O">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
               <ev.Clicked-eval><![CDATA[{ViewModel.Confirmed = true; ViewModel.Font = {fontFamily:"TuiFont" size:1 bold:checkBold.Selected italic:checkItalic.Selected underline:checkUnderline.Selected strikeline:checkStrikeline.Selected antialias:ViewModel.Font.antialias verticalAntialias:ViewModel.Font.verticalAntialias}; self.Close();}]]></ev.Clicked-eval>
             </Button>
           </Cell>
-          <Cell Site="row:1 column:2 ">
+          <Cell Site="row:2 column:2 ">
             <Button Text-str="Cancel()" Alt="C">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
               <ev.Clicked-eval><![CDATA[{self.Close();}]]></ev.Clicked-eval>

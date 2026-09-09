@@ -143,11 +143,15 @@ Reproduce startup bounds and physical close notifications with the injected TUI 
 
 The baseline Debug x64 solution build passed with zero warnings/errors. The new startup regression fails at `window->GetClientSize() == NativeSize(16, 8)` after the application stores 120x40 and enters the native Run loop. The existing no-op Hide expectation has been removed from the independent input/geometry test. A separate close regression requires cancellation, ordered notifications, reentrant calls, listener detachment and eventual stop for both Hide flags. Source inspection confirms the current Hide body is empty.
 
+After applying only startup synchronization, the next unit run reaches the new close case and exits unsuccessfully before a summary. The live pre-layout/pre-close Debug x64 showcase was launched through the interactive wrapper in Windows Terminal at 100x30 (CppTest_Tui PID 11728). Console-event input opens the Chinese message dialog: its message is bordered, contains extra empty rows, and its single action is at the left. The color dialog has five-row RGB components with labels above textbox content and actions at the right. On Exit, direct Hide advances the invocation count to one but leaves the process running. These are live console-buffer and injected-console-input observations. OpenInputDesktop returns null/error 5 and GetForegroundWindow returns null; physical native input and displayed font/cursor/RGB appearance are not verified.
+
+CDB with source lines enabled confirms that the captured/rethrown `UnitTestAssertError::message` is `Assertion failure: events.Count() == 1 && events[0] == L"BeforeClosing"`. Stop TUI exits the baseline process normally; the restored PowerShell accepts a command and prints `TUI_EXIT: 0`.
+
 # PROPOSALS
 
-- No.1 Synchronize startup bounds, implement cancellable physical closing and compact TUI layouts
+- No.1 Synchronize startup bounds, implement cancellable physical closing and compact TUI layouts [CONFIRMED]
 
-## No.1 Synchronize startup bounds, implement cancellable physical closing and compact TUI layouts
+## No.1 Synchronize startup bounds, implement cancellable physical closing and compact TUI layouts [CONFIRMED]
 
 At the native Run boundary, reapply the actual buffer size through the existing BufferSizeChanged path after hosted properties have been copied and before Show. Keep later programmatic stored sizing unchanged. Physical Hide requests BeforeClosing, honors cancellation, sends AfterClosing then Closed after clearing visibility, and only then calls the existing owner-thread Stop. Guard reentrant closing while retaining the existing snapshot/listener-membership dispatch and normal destruction path. Hosted child/modal handling stays in its existing owner.
 
@@ -155,4 +159,22 @@ Use content-sized dialog rows, zero blanket padding, one explicit action gap, a 
 
 ### CODE CHANGE
 
-Planned changes: TuiController.cpp, TuiWindow.h/.cpp, TestTuiProvider.cpp; authored TuiDialogs and TuiControlTest XML followed by resource/metadata regeneration; GacUILayout.md, provider KB/index and DebugTuiControlTestSop.md. Validate generated resources and actual hosted first-frame/close behavior, both metadata architectures, the full selected unit suite and terminal checks. Release/tooling/website implementation remains the final stage after committing and pushing this stage.
+Implemented the native Run synchronization and guarded physical closing in TuiController.cpp and TuiWindow.h/.cpp. TestTuiProvider.cpp separates geometry/input from shutdown, verifies both physical Hide flags with cancellation/reentrancy/detachment, tests all direct/queued hosted paths at 100x30 and 80x25, and exercises real GuiWindow modal interception and first-layout bounds with TUI graphics. Hosted tests call protected controller operations through WindowService(), matching the public API.
+
+Both final resource architectures generated without UI errors. Debug Win32/x64 builds and their metadata generation, plus x64 metadata validation, passed. Compilation corrected the new composition assertion to GetCachedBounds(). The first unit run passed the physical and eight hosted closing combinations, then exposed a fixture error: SetHostedApplication requires clearing the existing unit-test hosted application before installing the nested TUI host. The fixture now clears/restores that registration explicitly; production hosted code is unchanged.
+
+The next fixture assertion incorrectly used GuiControl::GetVisible() (composition visibility) to check window dismissal. CDB confirms main closing reaches GuiWindow::BeforeClosing through the single physical/hosted path. The test now uses GuiControlHost::GetOpening(), which reads native-window visibility, for both modal and main windows.
+
+Authored TuiDialogs and TuiControlTest XML now use compact content rows, centered message actions, left-aligned other actions, centered field labels and one-cell RGB tracker rows. Exit adds a veto checkbox and close-query/ready counters. Resource generation precedes both metadata architectures and the final full unit suite. GacUILayout.md, the provider KB/index and the SOP describe the new contracts and retain historical records. Release/tooling/website implementation remains the final stage after committing and pushing this stage.
+
+### CONFIRMED
+
+The final Debug x64 unit run passed 90/90 files and 1,748/1,748 cases with no memory-leak dump. Both final Debug architectures build with zero warnings/errors; Metadata_Generate passed in Win32/x64 and Metadata_Test passed in x64. GacUI_Compiler completed both resource architectures with exit 0 and no UI error files. Existing GUI snapshots are unchanged; the new Tui/Closing test contributes its generated record.
+
+Live Windows Terminal checks used rebuilt Win32 PID 13292 and x64 fresh processes at 100x30/80x25, plus a 120x40 → 80x25 → 120x40 dialog run (PID 17588). Initial layouts fill both non-resource viewport sizes. All seven message sets returned the expected first default in Chinese at 120x40 and English at 80x25; second/third defaults returned SelectTryAgain/SelectContinue. All four icon choices retained CJK text. The Chinese overwrite prompt kept its question and filename on separate unbordered rows, with one gap and centered actions.
+
+RGB labels align with textbox contents. CDB measured each actual tracker as 38x1 cells; live attributes show its strip on only that content row. Arrow keys move one, Home/End reach 0/255, and dragging changes/clamps values at both ends. Entering 12,34,56 yields #0C2238, reopening retains it, and canceling later edits preserves it. Both font variants retain their previews and compact left actions; full font retains effects and its nested Pick a Color. File forms scroll to adjacent result labels/lists and their one-gap actions. The picker retains useful lists and accepts the relative filename Code\VczhLibraries\GacUI\Project.md under C:\ as the exact existing path; an earlier absolute filename input was discarded because that field is combined with its current directory. Empty selection and Chinese overwrite prompts dismiss back to their owner; cancel preserves prior results.
+
+All four vetoed Exit requests advanced invocation/query counters once to four while ready stayed zero. Accepted direct Hide (13292), queued Hide (9868), queued Close (19348), direct Close (16812), direct Stop (12944) and queued Stop (9276) each completed normally with exit 0. Direct Close after the final dialog run also returned 0. Each restored the shell's input/output modes 484/7, attributes 7 and visible 25-percent cursor, and accepted a command in the restored shell. Provider tests establish the once-only query/ready/closed ordering, reentrancy, detachment and modal interception.
+
+These live checks use console event replay and buffer/debugger inspection. Input-desktop access fails with error 5, so physical keyboard/mouse input and final displayed font styles/cursor/RGB fidelity remain unverified. Prior follow-up records remain historical; current procedures were audited against follow-ups 1/2/3. The release/tooling/website stage follows this commit.

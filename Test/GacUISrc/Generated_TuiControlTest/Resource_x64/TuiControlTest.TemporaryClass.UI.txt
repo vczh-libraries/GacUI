@@ -129,6 +129,48 @@ namespace tuidemo
 
         prop invocationCount : int{GetinvocationCount, SetinvocationCount : invocationCountChanged}
 
+        @cpp:Private
+        var <prop>closingCount : int = 0;
+
+        func GetclosingCount() : (int)
+        {
+            return <prop>closingCount;
+        }
+
+        func SetclosingCount(<value> : int) : (void)
+        {
+            if ((<prop>closingCount != <value>))
+            {
+                (<prop>closingCount = <value>);
+                closingCountChanged();
+            }
+        }
+
+        event closingCountChanged();
+
+        prop closingCount : int{GetclosingCount, SetclosingCount : closingCountChanged}
+
+        @cpp:Private
+        var <prop>readyToCloseCount : int = 0;
+
+        func GetreadyToCloseCount() : (int)
+        {
+            return <prop>readyToCloseCount;
+        }
+
+        func SetreadyToCloseCount(<value> : int) : (void)
+        {
+            if ((<prop>readyToCloseCount != <value>))
+            {
+                (<prop>readyToCloseCount = <value>);
+                readyToCloseCountChanged();
+            }
+        }
+
+        event readyToCloseCountChanged();
+
+        prop readyToCloseCount : int{GetreadyToCloseCount, SetreadyToCloseCount : readyToCloseCountChanged}
+
         func ShowMouseModifiers(alt : bool, osSuper : bool) : (void)
         {
             raise "Not Implemented";

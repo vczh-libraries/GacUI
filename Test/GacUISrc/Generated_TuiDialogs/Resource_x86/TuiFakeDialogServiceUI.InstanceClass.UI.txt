@@ -46,7 +46,13 @@ namespace tui_controls
         var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>4 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <tui_controls-TuiColorComponentControl>Initialize(<this> : ::tui_controls::TuiColorComponentControl*) : (::system::Void)
@@ -54,7 +60,7 @@ namespace tui_controls
             (self = <this>);
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.CellPadding = 1 of (::system::Int32));
+                (<precompile>0.CellPadding = 0 of (::system::Int32));
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -64,7 +70,7 @@ namespace tui_controls
             }
             {
                 <precompile>0.SetRowsAndColumns(1, 2);
-                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(0, {composeType : Absolute; absolute : 6;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
@@ -90,6 +96,27 @@ namespace tui_controls
             {
                 <precompile>3.SetSite(0, 1, 1, 1);
             }
+            (<precompile>4 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>4.CellPadding = 0 of (::system::Int32));
+            }
+            {
+                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>4.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>4.SetRowsAndColumns(3, 1);
+                <precompile>4.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>4.SetRowOption(1, {composeType : Absolute; absolute : 1;} of (::presentation::compositions::GuiCellOption));
+                <precompile>4.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>4.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>5.SetSite(1, 0, 1, 1);
+            }
             {
                 (tracker = new (::presentation::controls::GuiScroll*)(::presentation::theme::ThemeName::HTracker));
                 tracker.SetPageSize(0);
@@ -107,12 +134,18 @@ namespace tui_controls
             {
                 (tracker.TotalSize = 256 of (::system::Int32));
             }
-            (<precompile>4 = tracker.BoundsComposition);
+            (<precompile>6 = tracker.BoundsComposition);
             {
-                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>3.AddChild(tracker.BoundsComposition);
+                <precompile>5.AddChild(tracker.BoundsComposition);
+            }
+            {
+                <precompile>4.AddChild(<precompile>5);
+            }
+            {
+                <precompile>3.AddChild(<precompile>4);
             }
             {
                 <precompile>0.AddChild(<precompile>3);
@@ -488,7 +521,7 @@ namespace tui_controls
         var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>2 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
@@ -497,19 +530,19 @@ namespace tui_controls
         var <precompile>4 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>6 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>7 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
-        var <precompile>8 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>8 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>9 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>9 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var <precompile>10 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -518,25 +551,61 @@ namespace tui_controls
         var <precompile>11 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>12 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>12 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         var <precompile>13 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>14 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>14 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>15 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>15 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>16 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+        var <precompile>16 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>17 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>17 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
-        var <precompile>18 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var <precompile>18 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>19 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var <precompile>20 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>21 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>22 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>23 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>24 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>25 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>26 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>27 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>28 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var <precompile>29 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>30 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
 
         @cpp:Protected
         func <tui_controls-TuiColorDialogControl>Initialize(<this> : ::tui_controls::TuiColorDialogControl*) : (::system::Void)
@@ -558,7 +627,7 @@ namespace tui_controls
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(3, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(3, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
@@ -566,14 +635,22 @@ namespace tui_controls
             {
                 <precompile>1.SetSite(0, 0, 1, 1);
             }
+            (<precompile>2 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>2 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (<precompile>2.CellPadding = 0 of (::system::Int32));
             }
             {
-                <precompile>1.AddChild(<precompile>2.BoundsComposition);
+                (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>0.AddChild(<precompile>1);
+                (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>2.SetRowsAndColumns(3, 1);
+                <precompile>2.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>2.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>2.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>2.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -582,116 +659,235 @@ namespace tui_controls
             {
                 (<precompile>4 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
+            (<precompile>5 = <precompile>4.BoundsComposition);
+            {
+                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
             {
                 <precompile>3.AddChild(<precompile>4.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>3);
-            }
-            (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>5.SetSite(2, 0, 1, 1);
+                <precompile>2.AddChild(<precompile>3);
             }
             {
-                (<precompile>6 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <precompile>1.AddChild(<precompile>2);
             }
             {
-                <precompile>5.AddChild(<precompile>6.BoundsComposition);
+                <precompile>0.AddChild(<precompile>1);
+            }
+            (<precompile>6 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>6.SetSite(1, 0, 1, 1);
+            }
+            (<precompile>7 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>7.CellPadding = 0 of (::system::Int32));
             }
             {
-                <precompile>0.AddChild(<precompile>5);
-            }
-            (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>7.SetSite(3, 0, 1, 1);
+                (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>8 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (<precompile>7.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>7.AddChild(<precompile>8.BoundsComposition);
+                <precompile>7.SetRowsAndColumns(3, 1);
+                <precompile>7.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>7.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>7.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>7.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>8 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>8.SetSite(1, 0, 1, 1);
             }
             {
-                <precompile>0.AddChild(<precompile>7);
+                (<precompile>9 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
-            (<precompile>9 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>10 = <precompile>9.BoundsComposition);
             {
-                <precompile>9.SetSite(0, 1, 1, 1);
+                (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>8.AddChild(<precompile>9.BoundsComposition);
+            }
+            {
+                <precompile>7.AddChild(<precompile>8);
+            }
+            {
+                <precompile>6.AddChild(<precompile>7);
+            }
+            {
+                <precompile>0.AddChild(<precompile>6);
+            }
+            (<precompile>11 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>11.SetSite(2, 0, 1, 1);
+            }
+            (<precompile>12 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>12.CellPadding = 0 of (::system::Int32));
+            }
+            {
+                (<precompile>12.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>12.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>12.SetRowsAndColumns(3, 1);
+                <precompile>12.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>12.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>12.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>12.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>13 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>13.SetSite(1, 0, 1, 1);
+            }
+            {
+                (<precompile>14 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            (<precompile>15 = <precompile>14.BoundsComposition);
+            {
+                (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>13.AddChild(<precompile>14.BoundsComposition);
+            }
+            {
+                <precompile>12.AddChild(<precompile>13);
+            }
+            {
+                <precompile>11.AddChild(<precompile>12);
+            }
+            {
+                <precompile>0.AddChild(<precompile>11);
+            }
+            (<precompile>16 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>16.SetSite(3, 0, 1, 1);
+            }
+            (<precompile>17 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>17.CellPadding = 0 of (::system::Int32));
+            }
+            {
+                (<precompile>17.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>17.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>17.SetRowsAndColumns(3, 1);
+                <precompile>17.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>17.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>17.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>17.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>18 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>18.SetSite(1, 0, 1, 1);
+            }
+            {
+                (<precompile>19 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            (<precompile>20 = <precompile>19.BoundsComposition);
+            {
+                (<precompile>20.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>18.AddChild(<precompile>19.BoundsComposition);
+            }
+            {
+                <precompile>17.AddChild(<precompile>18);
+            }
+            {
+                <precompile>16.AddChild(<precompile>17);
+            }
+            {
+                <precompile>0.AddChild(<precompile>16);
+            }
+            (<precompile>21 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>21.SetSite(0, 1, 1, 1);
             }
             (colorRed = new (::tui_controls::TuiColorComponentControl*)());
             <this>.SetNamedObject("colorRed", colorRed);
             {
                 (colorRed.TextBoxAlt = "R");
             }
-            (<precompile>10 = colorRed.BoundsComposition);
+            (<precompile>22 = colorRed.BoundsComposition);
             {
-                (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>22.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>9.AddChild(colorRed.BoundsComposition);
+                <precompile>21.AddChild(colorRed.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>9);
+                <precompile>0.AddChild(<precompile>21);
             }
-            (<precompile>11 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>23 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>11.SetSite(1, 1, 1, 1);
+                <precompile>23.SetSite(1, 1, 1, 1);
             }
             (colorGreen = new (::tui_controls::TuiColorComponentControl*)());
             <this>.SetNamedObject("colorGreen", colorGreen);
             {
                 (colorGreen.TextBoxAlt = "G");
             }
-            (<precompile>12 = colorGreen.BoundsComposition);
+            (<precompile>24 = colorGreen.BoundsComposition);
             {
-                (<precompile>12.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>24.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>11.AddChild(colorGreen.BoundsComposition);
+                <precompile>23.AddChild(colorGreen.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>11);
+                <precompile>0.AddChild(<precompile>23);
             }
-            (<precompile>13 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>25 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>13.SetSite(2, 1, 1, 1);
+                <precompile>25.SetSite(2, 1, 1, 1);
             }
             (colorBlue = new (::tui_controls::TuiColorComponentControl*)());
             <this>.SetNamedObject("colorBlue", colorBlue);
             {
                 (colorBlue.TextBoxAlt = "B");
             }
-            (<precompile>14 = colorBlue.BoundsComposition);
+            (<precompile>26 = colorBlue.BoundsComposition);
             {
-                (<precompile>14.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>26.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>13.AddChild(colorBlue.BoundsComposition);
+                <precompile>25.AddChild(colorBlue.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>13);
+                <precompile>0.AddChild(<precompile>25);
             }
-            (<precompile>15 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>27 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>15.SetSite(3, 1, 1, 1);
-            }
-            (<precompile>16 = new (::presentation::elements::GuiSolidBackgroundElement^)());
-            {
-                (<precompile>15.OwnedElement = <precompile>16);
-            }
-            (<precompile>17 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>17.AlignmentToParent = {left : 1; top : 0; right : 1; bottom : 0;} of (::presentation::Margin));
-            }
-            (<precompile>18 = new (::presentation::elements::GuiSolidLabelElement^)());
-            {
-                (<precompile>17.OwnedElement = <precompile>18);
+                (<precompile>27.PreferredMinSize = {y : 1;} of (::presentation::Size));
             }
             {
-                <precompile>15.AddChild(<precompile>17);
+                <precompile>27.SetSite(3, 1, 1, 1);
+            }
+            (<precompile>28 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (<precompile>27.OwnedElement = <precompile>28);
+            }
+            (<precompile>29 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>29.AlignmentToParent = {left : 1; top : 0; right : 1; bottom : 0;} of (::presentation::Margin));
+            }
+            (<precompile>30 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>29.OwnedElement = <precompile>30);
             }
             {
-                <precompile>0.AddChild(<precompile>15);
+                <precompile>27.AddChild(<precompile>29);
+            }
+            {
+                <precompile>0.AddChild(<precompile>27);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
@@ -710,79 +906,6 @@ namespace tui_controls
                     func <bind-activator>() : (::system::Void)
                     {
                         var <bind-activator-result> = <bind-cache>0.Strings.Red();
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (<this> ?? null of (::tui_controls::TuiColorDialogControl*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::tui_controls::TuiColorDialogControl*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>2.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>2.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::tui_controls::TuiColorDialogControl* = null of (::tui_controls::TuiColorDialogControl*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Strings.Green();
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -855,6 +978,79 @@ namespace tui_controls
 
                     func <bind-activator>() : (::system::Void)
                     {
+                        var <bind-activator-result> = <bind-cache>0.Strings.Green();
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::tui_controls::TuiColorDialogControl*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tui_controls::TuiColorDialogControl*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>9.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>9.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tui_controls::TuiColorDialogControl* = null of (::tui_controls::TuiColorDialogControl*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
                         var <bind-activator-result> = <bind-cache>0.Strings.Blue();
                         ValueChanged(<bind-activator-result>);
                     }
@@ -905,13 +1101,13 @@ namespace tui_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>6.Text;
+                    var <old> = <precompile>14.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>6.Text = <new>);
+                    (<precompile>14.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -978,13 +1174,13 @@ namespace tui_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>8.Text;
+                    var <old> = <precompile>19.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>8.Text = <new>);
+                    (<precompile>19.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -1060,13 +1256,13 @@ namespace tui_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>16.Color;
+                    var <old> = <precompile>28.Color;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>16.Color = <new>);
+                    (<precompile>28.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -1133,13 +1329,13 @@ namespace tui_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>18.Text;
+                    var <old> = <precompile>30.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>18.Text = <new>);
+                    (<precompile>30.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -1242,13 +1438,13 @@ namespace tui_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>18.Color;
+                    var <old> = <precompile>30.Color;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>18.Color = <new>);
+                    (<precompile>30.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -1615,11 +1811,11 @@ namespace tui_controls
                 (self.ShowInTaskBar = false);
             }
             {
-                (self.ClientSize = {x : 52; y : 15;} of (::presentation::Size));
+                (self.ClientSize = {x : 52; y : 1;} of (::presentation::Size));
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.CellPadding = 1 of (::system::Int32));
+                (<precompile>0.CellPadding = 0 of (::system::Int32));
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -1628,12 +1824,13 @@ namespace tui_controls
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>0.SetRowsAndColumns(2, 3);
-                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowsAndColumns(3, 3);
+                <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : Absolute; absolute : 1;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -1653,7 +1850,7 @@ namespace tui_controls
             }
             (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>3.SetSite(1, 1, 1, 1);
+                <precompile>3.SetSite(2, 0, 1, 1);
             }
             {
                 (<precompile>4 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -1673,7 +1870,7 @@ namespace tui_controls
             }
             (<precompile>6 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>6.SetSite(1, 2, 1, 1);
+                <precompile>6.SetSite(2, 1, 1, 1);
             }
             {
                 (<precompile>7 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -2165,11 +2362,11 @@ namespace tui_controls
                 (self.ShowInTaskBar = false);
             }
             {
-                (self.ClientSize = {x : 74; y : 24;} of (::presentation::Size));
+                (self.ClientSize = {x : 74; y : 20;} of (::presentation::Size));
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.CellPadding = 1 of (::system::Int32));
+                (<precompile>0.CellPadding = 0 of (::system::Int32));
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -2178,12 +2375,13 @@ namespace tui_controls
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>0.SetRowsAndColumns(2, 3);
+                <precompile>0.SetRowsAndColumns(3, 3);
                 <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : Absolute; absolute : 1;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -2203,7 +2401,7 @@ namespace tui_controls
             }
             (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>3.SetSite(1, 1, 1, 1);
+                <precompile>3.SetSite(2, 0, 1, 1);
             }
             {
                 (buttonOK = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -2224,7 +2422,7 @@ namespace tui_controls
             }
             (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>5.SetSite(1, 2, 1, 1);
+                <precompile>5.SetSite(2, 1, 1, 1);
             }
             {
                 (<precompile>6 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -2671,41 +2869,59 @@ namespace tui_controls
         var <precompile>9 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>10 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>10 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         var <precompile>11 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>12 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>12 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+        var <precompile>13 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>14 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>15 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>15 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>16 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>16 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
-        var <precompile>17 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+        var <precompile>17 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>18 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>18 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
-        var <precompile>19 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+        var <precompile>19 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>20 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var <precompile>21 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>22 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>23 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+
+        @cpp:Protected
+        var <precompile>24 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>25 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
 
         @cpp:Protected
         func <tui_controls-TuiFilePickerControl>Initialize(<this> : ::tui_controls::TuiFilePickerControl*) : (::system::Void)
         {
             (self = <this>);
             (ViewModel = <this>.ViewModel);
-            (<precompile>19 = self.ViewModel);
+            (<precompile>25 = self.ViewModel);
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
                 (<precompile>0.CellPadding = 0 of (::system::Int32));
@@ -2825,89 +3041,151 @@ namespace tui_controls
             {
                 <precompile>9.SetSite(2, 0, 1, 1);
             }
+            (<precompile>10 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>10 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (<precompile>10.CellPadding = 0 of (::system::Int32));
             }
             {
-                <precompile>9.AddChild(<precompile>10.BoundsComposition);
+                (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>10.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>10.SetRowsAndColumns(3, 1);
+                <precompile>10.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>10.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>10.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>10.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>11 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>11.SetSite(1, 0, 1, 1);
+            }
+            {
+                (<precompile>12 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            (<precompile>13 = <precompile>12.BoundsComposition);
+            {
+                (<precompile>13.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>11.AddChild(<precompile>12.BoundsComposition);
+            }
+            {
+                <precompile>10.AddChild(<precompile>11);
+            }
+            {
+                <precompile>9.AddChild(<precompile>10);
             }
             {
                 <precompile>0.AddChild(<precompile>9);
             }
-            (<precompile>11 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>14 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>11.SetSite(2, 1, 1, 1);
+                <precompile>14.SetSite(2, 1, 1, 1);
             }
             {
                 (textBox = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
                 <this>.SetNamedObject("textBox", textBox);
             }
-            (<precompile>13 = textBox.FocusableComposition);
-            (<precompile>12 = textBox.BoundsComposition);
+            (<precompile>16 = textBox.FocusableComposition);
+            (<precompile>15 = textBox.BoundsComposition);
             {
-                (<precompile>12.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (textBox.Alt = "S");
             }
             {
-                <precompile>11.AddChild(textBox.BoundsComposition);
-            }
-            {
-                <precompile>0.AddChild(<precompile>11);
-            }
-            (<precompile>14 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>14.SetSite(3, 0, 1, 1);
-            }
-            {
-                (<precompile>15 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
-            }
-            {
-                (<precompile>15.Text = "File type:");
-            }
-            {
-                <precompile>14.AddChild(<precompile>15.BoundsComposition);
+                <precompile>14.AddChild(textBox.BoundsComposition);
             }
             {
                 <precompile>0.AddChild(<precompile>14);
             }
-            (<precompile>16 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>17 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>16.SetSite(3, 1, 1, 1);
+                <precompile>17.SetSite(3, 0, 1, 1);
+            }
+            (<precompile>18 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>18.CellPadding = 0 of (::system::Int32));
             }
             {
-                (<precompile>17 = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+                (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>17.HorizontalAlwaysVisible = false);
+                (<precompile>18.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>17.VerticalAlwaysVisible = false);
+                <precompile>18.SetRowsAndColumns(3, 1);
+                <precompile>18.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>18.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>18.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>18.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>19 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>19.SetSite(1, 0, 1, 1);
             }
             {
-                (<precompile>17.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                (<precompile>20 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            (<precompile>21 = <precompile>20.BoundsComposition);
+            {
+                (<precompile>21.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>20.Text = "File type:");
+            }
+            {
+                <precompile>19.AddChild(<precompile>20.BoundsComposition);
+            }
+            {
+                <precompile>18.AddChild(<precompile>19);
+            }
+            {
+                <precompile>17.AddChild(<precompile>18);
+            }
+            {
+                <precompile>0.AddChild(<precompile>17);
+            }
+            (<precompile>22 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>22.SetSite(3, 1, 1, 1);
+            }
+            {
+                (<precompile>23 = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+            }
+            {
+                (<precompile>23.HorizontalAlwaysVisible = false);
+            }
+            {
+                (<precompile>23.VerticalAlwaysVisible = false);
+            }
+            {
+                (<precompile>23.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (IFileDialogFilter^) <item>);
                     return item.Name;
                 });
             }
             {
-                (comboBox = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>17));
+                (comboBox = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>23));
                 <this>.SetNamedObject("comboBox", comboBox);
             }
-            (<precompile>18 = comboBox.BoundsComposition);
+            (<precompile>24 = comboBox.BoundsComposition);
             {
-                (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>24.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (comboBox.Alt = "E");
             }
             {
-                <precompile>16.AddChild(comboBox.BoundsComposition);
+                <precompile>22.AddChild(comboBox.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>16);
+                <precompile>0.AddChild(<precompile>22);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
@@ -3163,13 +3441,13 @@ namespace tui_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>10.Text;
+                    var <old> = <precompile>12.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>10.Text = <new>);
+                    (<precompile>12.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3184,10 +3462,10 @@ namespace tui_controls
                         }
                     }
                 };
-                attach(<precompile>13.keyUp, <event-handler>);
+                attach(<precompile>16.keyUp, <event-handler>);
             }
             {
-                (<precompile>17.ItemSource = ViewModel.Filters);
+                (<precompile>23.ItemSource = ViewModel.Filters);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -3252,13 +3530,13 @@ namespace tui_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>19.SelectedFilter;
+                    var <old> = <precompile>25.SelectedFilter;
                     var <new> = (cast (::presentation::IFileDialogFilter^) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>19.SelectedFilter = <new>);
+                    (<precompile>25.SelectedFilter = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3325,13 +3603,13 @@ namespace tui_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>19.SelectedFolder;
+                    var <old> = <precompile>25.SelectedFolder;
                     var <new> = (cast (::presentation::IFileDialogFolder^) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>19.SelectedFolder = <new>);
+                    (<precompile>25.SelectedFolder = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3340,7 +3618,7 @@ namespace tui_controls
                 {
                     self.LocateSelectedFolderInTreeView();
                 };
-                attach(<precompile>19.SelectedFolderChanged, <event-handler>);
+                attach(<precompile>25.SelectedFolderChanged, <event-handler>);
             }
             {
                 var <event-handler> = func () : (::system::Void)
@@ -3350,7 +3628,7 @@ namespace tui_controls
                         dataGrid.SetViewPosition({x : 0; y : 0;});
                     }
                 };
-                attach(<precompile>19.IsLoadingFilesChanged, <event-handler>);
+                attach(<precompile>25.IsLoadingFilesChanged, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -4862,11 +5140,11 @@ namespace tui_controls
                 (self.ShowInTaskBar = false);
             }
             {
-                (self.ClientSize = {x : 62; y : 15;} of (::presentation::Size));
+                (self.ClientSize = {x : 62; y : 1;} of (::presentation::Size));
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.CellPadding = 1 of (::system::Int32));
+                (<precompile>0.CellPadding = 0 of (::system::Int32));
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -4875,16 +5153,18 @@ namespace tui_controls
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>0.SetRowsAndColumns(2, 3);
-                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowsAndColumns(3, 4);
+                <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : Absolute; absolute : 1;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(3, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>1.SetSite(0, 0, 1, 3);
+                <precompile>1.SetSite(0, 0, 1, 4);
             }
             (<precompile>2 = new (::presentation::compositions::GuiTableComposition*)());
             {
@@ -4900,7 +5180,7 @@ namespace tui_controls
                 <precompile>2.SetRowsAndColumns(3, 2);
                 <precompile>2.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>2.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>2.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>2.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>2.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>2.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
@@ -4942,7 +5222,7 @@ namespace tui_controls
             }
             (<precompile>8 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>8.Padding = 1 of (::system::Int32));
+                (<precompile>8.Padding = 0 of (::system::Int32));
             }
             {
                 (<precompile>8.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
@@ -5053,7 +5333,7 @@ namespace tui_controls
             }
             (<precompile>18 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>18.SetSite(1, 0, 1, 1);
+                <precompile>18.SetSite(2, 0, 1, 1);
             }
             {
                 (<precompile>19 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -5072,7 +5352,7 @@ namespace tui_controls
             }
             (<precompile>20 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>20.SetSite(1, 1, 1, 1);
+                <precompile>20.SetSite(2, 1, 1, 1);
             }
             {
                 (<precompile>21 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -5092,7 +5372,7 @@ namespace tui_controls
             }
             (<precompile>23 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>23.SetSite(1, 2, 1, 1);
+                <precompile>23.SetSite(2, 2, 1, 1);
             }
             {
                 (<precompile>24 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -6179,11 +6459,11 @@ namespace tui_controls
                 (self.ShowInTaskBar = false);
             }
             {
-                (self.ClientSize = {x : 46; y : 12;} of (::presentation::Size));
+                (self.ClientSize = {x : 46; y : 1;} of (::presentation::Size));
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.CellPadding = 1 of (::system::Int32));
+                (<precompile>0.CellPadding = 0 of (::system::Int32));
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -6192,12 +6472,13 @@ namespace tui_controls
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>0.SetRowsAndColumns(2, 3);
-                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowsAndColumns(3, 3);
+                <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : Absolute; absolute : 1;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -6217,7 +6498,7 @@ namespace tui_controls
                 <precompile>2.SetRowsAndColumns(3, 2);
                 <precompile>2.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>2.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>2.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>2.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>2.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>2.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
@@ -6291,7 +6572,7 @@ namespace tui_controls
             }
             (<precompile>12 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>12.SetSite(1, 1, 1, 1);
+                <precompile>12.SetSite(2, 0, 1, 1);
             }
             {
                 (<precompile>13 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -6311,7 +6592,7 @@ namespace tui_controls
             }
             (<precompile>15 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>15.SetSite(1, 2, 1, 1);
+                <precompile>15.SetSite(2, 1, 1, 1);
             }
             {
                 (<precompile>16 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -7270,16 +7551,16 @@ namespace tui_controls
         var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::controls::GuiScrollContainer* = null of (::presentation::controls::GuiScrollContainer*);
+        var <precompile>4 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>6 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>7 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         var <precompile>8 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
@@ -7305,11 +7586,11 @@ namespace tui_controls
                 (self.ShowInTaskBar = false);
             }
             {
-                (self.ClientSize = {x : 56; y : 9;} of (::presentation::Size));
+                (self.ClientSize = {x : 56; y : 1;} of (::presentation::Size));
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.CellPadding = 1 of (::system::Int32));
+                (<precompile>0.CellPadding = 0 of (::system::Int32));
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -7318,9 +7599,10 @@ namespace tui_controls
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>0.SetRowsAndColumns(2, 2);
-                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowsAndColumns(3, 2);
+                <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : Absolute; absolute : 1;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
@@ -7342,27 +7624,11 @@ namespace tui_controls
                 <precompile>3.SetSite(0, 1, 1, 1);
             }
             {
-                (<precompile>4 = new (::presentation::controls::GuiScrollContainer*)(::presentation::theme::ThemeName::ScrollView));
+                (<precompile>4 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
+            (<precompile>5 = <precompile>4.BoundsComposition);
             {
-                (<precompile>4.HorizontalAlwaysVisible = false);
-            }
-            {
-                (<precompile>4.VerticalAlwaysVisible = false);
-            }
-            (<precompile>7 = <precompile>4.BoundsComposition);
-            {
-                (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>5 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
-            }
-            (<precompile>6 = <precompile>5.BoundsComposition);
-            {
-                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>4.AddChild(<precompile>5);
+                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 <precompile>3.AddChild(<precompile>4.BoundsComposition);
@@ -7370,9 +7636,30 @@ namespace tui_controls
             {
                 <precompile>0.AddChild(<precompile>3);
             }
+            (<precompile>6 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>6.SetSite(2, 0, 1, 2);
+            }
+            (<precompile>7 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>7.CellPadding = 0 of (::system::Int32));
+            }
+            {
+                (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>7.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>7.SetRowsAndColumns(1, 3);
+                <precompile>7.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>7.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>7.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>7.SetColumnOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
             (<precompile>8 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>8.SetSite(1, 0, 1, 2);
+                <precompile>8.SetSite(0, 1, 1, 1);
             }
             (buttonStack = new (::presentation::compositions::GuiRepeatStackComposition*)());
             <this>.SetNamedObject("buttonStack", buttonStack);
@@ -7389,7 +7676,7 @@ namespace tui_controls
                 });
             }
             {
-                (buttonStack.Padding = 1 of (::system::Int32));
+                (buttonStack.Padding = 0 of (::system::Int32));
             }
             {
                 (buttonStack.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
@@ -7404,7 +7691,13 @@ namespace tui_controls
                 <precompile>8.AddChild(buttonStack);
             }
             {
-                <precompile>0.AddChild(<precompile>8);
+                <precompile>7.AddChild(<precompile>8);
+            }
+            {
+                <precompile>6.AddChild(<precompile>7);
+            }
+            {
+                <precompile>0.AddChild(<precompile>6);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
@@ -7413,7 +7706,7 @@ namespace tui_controls
                 (<precompile>2.Text = self.GetIconText(ViewModel.Icon));
             }
             {
-                (<precompile>5.Text = ViewModel.Text);
+                (<precompile>4.Text = ViewModel.Text);
             }
             {
                 (buttonStack.ItemSource = ViewModel.Buttons);

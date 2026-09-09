@@ -27,6 +27,7 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 #### Terminal Platform Provider
 
 - SetupTuiWindowsRenderer starts a hosted application over the VlppOS TUI owner-thread pump.
+- The native Run boundary fits the main window to the terminal before Show; accepted main Hide/Close requests deliver close callbacks and stop that pump, while cancellation and hosted child dismissal keep it running.
 - Shared terminal classes implement cell geometry, rendering, paragraphs and input while platform adapters retain OS service plumbing.
 - TuiSkin, fake TUI dialogs and the TuiControlTest showcase have independent resources and generated inventories.
 
