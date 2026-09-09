@@ -144,3 +144,15 @@ Reproduce startup bounds and physical close notifications with the injected TUI 
 The baseline Debug x64 solution build passed with zero warnings/errors. The new startup regression fails at `window->GetClientSize() == NativeSize(16, 8)` after the application stores 120x40 and enters the native Run loop. The existing no-op Hide expectation has been removed from the independent input/geometry test. A separate close regression requires cancellation, ordered notifications, reentrant calls, listener detachment and eventual stop for both Hide flags. Source inspection confirms the current Hide body is empty.
 
 # PROPOSALS
+
+- No.1 Synchronize startup bounds, implement cancellable physical closing and compact TUI layouts
+
+## No.1 Synchronize startup bounds, implement cancellable physical closing and compact TUI layouts
+
+At the native Run boundary, reapply the actual buffer size through the existing BufferSizeChanged path after hosted properties have been copied and before Show. Keep later programmatic stored sizing unchanged. Physical Hide requests BeforeClosing, honors cancellation, sends AfterClosing then Closed after clearing visibility, and only then calls the existing owner-thread Stop. Guard reentrant closing while retaining the existing snapshot/listener-membership dispatch and normal destruction path. Hosted child/modal handling stays in its existing owner.
+
+Use content-sized dialog rows, zero blanket padding, one explicit action gap, a natural-width centered message action stack, and left-aligned other actions. Replace only the message content scroll container with a label. Center labels and a one-cell RGB tracker with local three-row tables (percentage/minimum/percentage), retaining text alignment and bindings. Preserve useful file lists and previews. Extend the Exit demo with veto and callback counters, and update layout/provider/SOP guidance while preserving historical evidence.
+
+### CODE CHANGE
+
+Planned changes: TuiController.cpp, TuiWindow.h/.cpp, TestTuiProvider.cpp; authored TuiDialogs and TuiControlTest XML followed by resource/metadata regeneration; GacUILayout.md, provider KB/index and DebugTuiControlTestSop.md. Validate generated resources and actual hosted first-frame/close behavior, both metadata architectures, the full selected unit suite and terminal checks. Release/tooling/website implementation remains the final stage after committing and pushing this stage.
