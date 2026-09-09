@@ -73,7 +73,7 @@ So as I pray, unlimited blade works.]]></Text>
           prop TextBoxAcceptTabInput : bool = true {}
         ]]></ref.Members>
       <TabPage ref.Name="self">
-        <Table CellPadding="1" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+        <Table CellPadding="0" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -101,7 +101,7 @@ So as I pray, unlimited blade works.]]></Text>
           prop TextBoxAcceptTabInput : bool = true {}
         ]]></ref.Members>
       <TabPage ref.Name="self">
-        <Table CellPadding="1" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+        <Table CellPadding="0" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -157,7 +157,7 @@ So as I pray, unlimited blade works.]]></Text>
         <ev.OnMakeFontSmaller-eval><![CDATA[
             self.UpdateFont(ChangeFontSize(t1.DisplayFont, -5));
           ]]></ev.OnMakeFontSmaller-eval>
-        <Table CellPadding="1" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+        <Table CellPadding="0" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
             <CellOption>composeType:MinSize</CellOption>

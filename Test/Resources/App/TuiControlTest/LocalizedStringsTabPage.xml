@@ -40,7 +40,7 @@
         ]]></ref.Members>
       <ref.LocalizedStrings Name="Strings" Class="tuidemo::TuiStringResource" Default="true" />
       <TabPage ref.Name="self" Text-str="Title()">
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="1" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>

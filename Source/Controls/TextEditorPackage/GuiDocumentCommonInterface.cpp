@@ -139,31 +139,31 @@ GuiDocumentCommonInterface
 						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveUp, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
-					break;
+					return true;
 				case VKEY::KEY_DOWN:
 					{
 						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveDown, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
-					break;
+					return true;
 				case VKEY::KEY_LEFT:
 					{
 						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveLeft, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
-					break;
+					return true;
 				case VKEY::KEY_RIGHT:
 					{
 						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveRight, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
-					break;
+					return true;
 				case VKEY::KEY_HOME:
 					{
 						if (ctrl)
 						{
 							Move(TextPos(0, 0), shift, true);
-							break;
+							return true;
 						}
 
 						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineFirst, frontSide);
@@ -177,7 +177,7 @@ GuiDocumentCommonInterface
 						}
 						Move(newCaret, shift, frontSide);
 					}
-					break;
+					return true;
 				case VKEY::KEY_END:
 					{
 						if (ctrl)
@@ -185,7 +185,7 @@ GuiDocumentCommonInterface
 							vint lastIndex = documentElement->GetDocument()->paragraphs.Count() - 1;
 							auto lastParagraph = documentElement->GetDocument()->paragraphs[lastIndex];
 							Move(TextPos(lastIndex, lastParagraph->GetTextForCaret().Length()), shift, false);
-							break;
+							return true;
 						}
 
 						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineLast, frontSide);
@@ -201,14 +201,14 @@ GuiDocumentCommonInterface
 						}
 						Move(newCaret, shift, frontSide);
 					}
-					break;
+					return true;
 				case VKEY::KEY_PRIOR:
 				case VKEY::KEY_NEXT:
 					{
-						if (config.paragraphMode == GuiDocumentParagraphMode::Singleline) break;
-						if (!documentMouseArea) break;
+						if (config.paragraphMode == GuiDocumentParagraphMode::Singleline) return true;
+						if (!documentMouseArea) return true;
 						vint page = documentMouseArea->GetCachedBounds().Height();
-						if (page <= 0) break;
+						if (page <= 0) return true;
 
 						Rect caretBounds = documentElement->GetCaretBounds(currentCaret, frontSide);
 						vint x = caretBounds.x1;
@@ -218,7 +218,7 @@ GuiDocumentCommonInterface
 						TextPos newCaret = documentElement->CalculateCaretFromPoint(Point(x, y));
 						Move(newCaret, shift, frontSide);
 					}
-					break;
+					return true;
 				case VKEY::KEY_BACK:
 					if (editMode == GuiDocumentEditMode::Editable)
 					{

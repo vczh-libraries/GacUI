@@ -1,4 +1,4 @@
-﻿================================(1/85)================================
+﻿================================(1/87)================================
 module <constructor>tuiskin::TuiTheme;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -325,7 +325,7 @@ namespace tuiskin
     }
 }
 
-================================(2/85)================================
+================================(2/87)================================
 module <instance>tuiskin::TuiTheme;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -352,6 +352,11 @@ namespace tuiskin
     @cpp:Friend(typeof(TuiThemeConstructor))
     class TuiTheme : ::presentation::theme::ThemeTemplates, TuiThemeConstructor
     {
+        static func CreateBaselineDocument() : (DocumentModel^)
+        {
+            return tuiskin::CreateBaselineDocument();
+        }
+
         static func GetColorPackage() : (ColorPackage)
         {
             return tuiColors;
@@ -372,7 +377,7 @@ namespace tuiskin
     }
 }
 
-================================(3/85)================================
+================================(3/87)================================
 module <constructor>tuiskin::TuiButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -753,9 +758,13 @@ namespace tuiskin
 
                     var <bind-cache>1 : ::tuiskin::TuiButtonTemplate* = null of (::tuiskin::TuiButtonTemplate*);
 
+                    var <bind-cache>2 : ::tuiskin::TuiButtonTemplate* = null of (::tuiskin::TuiButtonTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -763,7 +772,7 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : <bind-cache>0.Focused; underline : (<bind-cache>1.State != ButtonState::Normal);} of (::presentation::FontProperties);
+                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : <bind-cache>0.Focused; underline : (<bind-cache>1.Focused or (<bind-cache>2.State != ButtonState::Normal));} of (::presentation::FontProperties);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -777,6 +786,11 @@ namespace tuiskin
                         <bind-activator>();
                     }
 
+                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
                     override func Open() : (::system::Boolean)
                     {
                         if ((!<bind-opened>))
@@ -784,8 +798,10 @@ namespace tuiskin
                             (<bind-opened> = true);
                             (<bind-cache>0 = (self ?? null of (::tuiskin::TuiButtonTemplate*)));
                             (<bind-cache>1 = (self ?? null of (::tuiskin::TuiButtonTemplate*)));
+                            (<bind-cache>2 = (self ?? null of (::tuiskin::TuiButtonTemplate*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.StateChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.FocusedChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.StateChanged, <bind-callback>2_0) ?? null));
                             return true;
                         }
                         return false;
@@ -813,13 +829,20 @@ namespace tuiskin
                             }
                             if (<bind-handler>1_0 is not null)
                             {
-                                detach(<bind-cache>1.StateChanged, <bind-handler>1_0);
+                                detach(<bind-cache>1.FocusedChanged, <bind-handler>1_0);
                                 (<bind-handler>1_0 = null);
+                            }
+                            if (<bind-handler>2_0 is not null)
+                            {
+                                detach(<bind-cache>2.StateChanged, <bind-handler>2_0);
+                                (<bind-handler>2_0 = null);
                             }
                             (<bind-cache>0 = null of (::tuiskin::TuiButtonTemplate*));
                             (<bind-cache>1 = null of (::tuiskin::TuiButtonTemplate*));
+                            (<bind-cache>2 = null of (::tuiskin::TuiButtonTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -848,7 +871,7 @@ namespace tuiskin
     }
 }
 
-================================(4/85)================================
+================================(4/87)================================
 module <instance>tuiskin::TuiButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -890,7 +913,7 @@ namespace tuiskin
     }
 }
 
-================================(5/85)================================
+================================(5/87)================================
 module <constructor>tuiskin::TuiCheckBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1147,9 +1170,13 @@ namespace tuiskin
 
                     var <bind-cache>1 : ::tuiskin::TuiCheckBoxTemplate* = null of (::tuiskin::TuiCheckBoxTemplate*);
 
+                    var <bind-cache>2 : ::tuiskin::TuiCheckBoxTemplate* = null of (::tuiskin::TuiCheckBoxTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -1157,7 +1184,7 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : <bind-cache>0.Focused; underline : (<bind-cache>1.State != ButtonState::Normal);} of (::presentation::FontProperties);
+                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : <bind-cache>0.Focused; underline : (<bind-cache>1.Focused or (<bind-cache>2.State != ButtonState::Normal));} of (::presentation::FontProperties);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -1171,6 +1198,11 @@ namespace tuiskin
                         <bind-activator>();
                     }
 
+                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
                     override func Open() : (::system::Boolean)
                     {
                         if ((!<bind-opened>))
@@ -1178,8 +1210,10 @@ namespace tuiskin
                             (<bind-opened> = true);
                             (<bind-cache>0 = (self ?? null of (::tuiskin::TuiCheckBoxTemplate*)));
                             (<bind-cache>1 = (self ?? null of (::tuiskin::TuiCheckBoxTemplate*)));
+                            (<bind-cache>2 = (self ?? null of (::tuiskin::TuiCheckBoxTemplate*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.StateChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.FocusedChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.StateChanged, <bind-callback>2_0) ?? null));
                             return true;
                         }
                         return false;
@@ -1207,13 +1241,20 @@ namespace tuiskin
                             }
                             if (<bind-handler>1_0 is not null)
                             {
-                                detach(<bind-cache>1.StateChanged, <bind-handler>1_0);
+                                detach(<bind-cache>1.FocusedChanged, <bind-handler>1_0);
                                 (<bind-handler>1_0 = null);
+                            }
+                            if (<bind-handler>2_0 is not null)
+                            {
+                                detach(<bind-cache>2.StateChanged, <bind-handler>2_0);
+                                (<bind-handler>2_0 = null);
                             }
                             (<bind-cache>0 = null of (::tuiskin::TuiCheckBoxTemplate*));
                             (<bind-cache>1 = null of (::tuiskin::TuiCheckBoxTemplate*));
+                            (<bind-cache>2 = null of (::tuiskin::TuiCheckBoxTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -1384,9 +1425,13 @@ namespace tuiskin
 
                     var <bind-cache>1 : ::tuiskin::TuiCheckBoxTemplate* = null of (::tuiskin::TuiCheckBoxTemplate*);
 
+                    var <bind-cache>2 : ::tuiskin::TuiCheckBoxTemplate* = null of (::tuiskin::TuiCheckBoxTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -1394,7 +1439,7 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : <bind-cache>0.Focused; underline : (<bind-cache>1.State != ButtonState::Normal);} of (::presentation::FontProperties);
+                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : <bind-cache>0.Focused; underline : (<bind-cache>1.Focused or (<bind-cache>2.State != ButtonState::Normal));} of (::presentation::FontProperties);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -1408,6 +1453,11 @@ namespace tuiskin
                         <bind-activator>();
                     }
 
+                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
                     override func Open() : (::system::Boolean)
                     {
                         if ((!<bind-opened>))
@@ -1415,8 +1465,10 @@ namespace tuiskin
                             (<bind-opened> = true);
                             (<bind-cache>0 = (self ?? null of (::tuiskin::TuiCheckBoxTemplate*)));
                             (<bind-cache>1 = (self ?? null of (::tuiskin::TuiCheckBoxTemplate*)));
+                            (<bind-cache>2 = (self ?? null of (::tuiskin::TuiCheckBoxTemplate*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.StateChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.FocusedChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.StateChanged, <bind-callback>2_0) ?? null));
                             return true;
                         }
                         return false;
@@ -1444,13 +1496,20 @@ namespace tuiskin
                             }
                             if (<bind-handler>1_0 is not null)
                             {
-                                detach(<bind-cache>1.StateChanged, <bind-handler>1_0);
+                                detach(<bind-cache>1.FocusedChanged, <bind-handler>1_0);
                                 (<bind-handler>1_0 = null);
+                            }
+                            if (<bind-handler>2_0 is not null)
+                            {
+                                detach(<bind-cache>2.StateChanged, <bind-handler>2_0);
+                                (<bind-handler>2_0 = null);
                             }
                             (<bind-cache>0 = null of (::tuiskin::TuiCheckBoxTemplate*));
                             (<bind-cache>1 = null of (::tuiskin::TuiCheckBoxTemplate*));
+                            (<bind-cache>2 = null of (::tuiskin::TuiCheckBoxTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -1479,7 +1538,7 @@ namespace tuiskin
     }
 }
 
-================================(6/85)================================
+================================(6/87)================================
 module <instance>tuiskin::TuiCheckBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1521,7 +1580,7 @@ namespace tuiskin
     }
 }
 
-================================(7/85)================================
+================================(7/87)================================
 module <constructor>tuiskin::TuiRadioButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1778,9 +1837,13 @@ namespace tuiskin
 
                     var <bind-cache>1 : ::tuiskin::TuiRadioButtonTemplate* = null of (::tuiskin::TuiRadioButtonTemplate*);
 
+                    var <bind-cache>2 : ::tuiskin::TuiRadioButtonTemplate* = null of (::tuiskin::TuiRadioButtonTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -1788,7 +1851,7 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : <bind-cache>0.Focused; underline : (<bind-cache>1.State != ButtonState::Normal);} of (::presentation::FontProperties);
+                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : <bind-cache>0.Focused; underline : (<bind-cache>1.Focused or (<bind-cache>2.State != ButtonState::Normal));} of (::presentation::FontProperties);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -1802,6 +1865,11 @@ namespace tuiskin
                         <bind-activator>();
                     }
 
+                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
                     override func Open() : (::system::Boolean)
                     {
                         if ((!<bind-opened>))
@@ -1809,8 +1877,10 @@ namespace tuiskin
                             (<bind-opened> = true);
                             (<bind-cache>0 = (self ?? null of (::tuiskin::TuiRadioButtonTemplate*)));
                             (<bind-cache>1 = (self ?? null of (::tuiskin::TuiRadioButtonTemplate*)));
+                            (<bind-cache>2 = (self ?? null of (::tuiskin::TuiRadioButtonTemplate*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.StateChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.FocusedChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.StateChanged, <bind-callback>2_0) ?? null));
                             return true;
                         }
                         return false;
@@ -1838,13 +1908,20 @@ namespace tuiskin
                             }
                             if (<bind-handler>1_0 is not null)
                             {
-                                detach(<bind-cache>1.StateChanged, <bind-handler>1_0);
+                                detach(<bind-cache>1.FocusedChanged, <bind-handler>1_0);
                                 (<bind-handler>1_0 = null);
+                            }
+                            if (<bind-handler>2_0 is not null)
+                            {
+                                detach(<bind-cache>2.StateChanged, <bind-handler>2_0);
+                                (<bind-handler>2_0 = null);
                             }
                             (<bind-cache>0 = null of (::tuiskin::TuiRadioButtonTemplate*));
                             (<bind-cache>1 = null of (::tuiskin::TuiRadioButtonTemplate*));
+                            (<bind-cache>2 = null of (::tuiskin::TuiRadioButtonTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -2015,9 +2092,13 @@ namespace tuiskin
 
                     var <bind-cache>1 : ::tuiskin::TuiRadioButtonTemplate* = null of (::tuiskin::TuiRadioButtonTemplate*);
 
+                    var <bind-cache>2 : ::tuiskin::TuiRadioButtonTemplate* = null of (::tuiskin::TuiRadioButtonTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -2025,7 +2106,7 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : <bind-cache>0.Focused; underline : (<bind-cache>1.State != ButtonState::Normal);} of (::presentation::FontProperties);
+                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : <bind-cache>0.Focused; underline : (<bind-cache>1.Focused or (<bind-cache>2.State != ButtonState::Normal));} of (::presentation::FontProperties);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -2039,6 +2120,11 @@ namespace tuiskin
                         <bind-activator>();
                     }
 
+                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
                     override func Open() : (::system::Boolean)
                     {
                         if ((!<bind-opened>))
@@ -2046,8 +2132,10 @@ namespace tuiskin
                             (<bind-opened> = true);
                             (<bind-cache>0 = (self ?? null of (::tuiskin::TuiRadioButtonTemplate*)));
                             (<bind-cache>1 = (self ?? null of (::tuiskin::TuiRadioButtonTemplate*)));
+                            (<bind-cache>2 = (self ?? null of (::tuiskin::TuiRadioButtonTemplate*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.StateChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.FocusedChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.StateChanged, <bind-callback>2_0) ?? null));
                             return true;
                         }
                         return false;
@@ -2075,13 +2163,20 @@ namespace tuiskin
                             }
                             if (<bind-handler>1_0 is not null)
                             {
-                                detach(<bind-cache>1.StateChanged, <bind-handler>1_0);
+                                detach(<bind-cache>1.FocusedChanged, <bind-handler>1_0);
                                 (<bind-handler>1_0 = null);
+                            }
+                            if (<bind-handler>2_0 is not null)
+                            {
+                                detach(<bind-cache>2.StateChanged, <bind-handler>2_0);
+                                (<bind-handler>2_0 = null);
                             }
                             (<bind-cache>0 = null of (::tuiskin::TuiRadioButtonTemplate*));
                             (<bind-cache>1 = null of (::tuiskin::TuiRadioButtonTemplate*));
+                            (<bind-cache>2 = null of (::tuiskin::TuiRadioButtonTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -2110,7 +2205,7 @@ namespace tuiskin
     }
 }
 
-================================(8/85)================================
+================================(8/87)================================
 module <instance>tuiskin::TuiRadioButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2152,7 +2247,7 @@ namespace tuiskin
     }
 }
 
-================================(9/85)================================
+================================(9/87)================================
 module <constructor>tuiskin::TuiDocumentLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2212,7 +2307,7 @@ namespace tuiskin
     }
 }
 
-================================(10/85)================================
+================================(10/87)================================
 module <instance>tuiskin::TuiDocumentLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2254,7 +2349,7 @@ namespace tuiskin
     }
 }
 
-================================(11/85)================================
+================================(11/87)================================
 module <constructor>tuiskin::TuiDocumentTextBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2442,7 +2537,7 @@ namespace tuiskin
     }
 }
 
-================================(12/85)================================
+================================(12/87)================================
 module <instance>tuiskin::TuiDocumentTextBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2484,7 +2579,7 @@ namespace tuiskin
     }
 }
 
-================================(13/85)================================
+================================(13/87)================================
 module <constructor>tuiskin::TuiDocumentViewerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2691,7 +2786,7 @@ namespace tuiskin
     }
 }
 
-================================(14/85)================================
+================================(14/87)================================
 module <instance>tuiskin::TuiDocumentViewerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2733,7 +2828,7 @@ namespace tuiskin
     }
 }
 
-================================(15/85)================================
+================================(15/87)================================
 module <constructor>tuiskin::TuiComboBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2769,25 +2864,19 @@ namespace tuiskin
         var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::elements::TuiBorderElement^ = null of (::presentation::elements::TuiBorderElement^);
+        var <precompile>2 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
 
         @cpp:Protected
         var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var <precompile>4 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
         var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>8 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var <precompile>6 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
 
         @cpp:Protected
         var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -2808,7 +2897,7 @@ namespace tuiskin
                 (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
                 {
                     {
-                        return new (::tuiskin::TuiToolstripMenuTemplate*)();
+                        return new (::tuiskin::TuiContentMenuTemplate*)();
                     }
                 });
             }
@@ -2819,6 +2908,14 @@ namespace tuiskin
             {
                 (self.OwnedElement = <precompile>0);
             }
+            (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
+            {
+                (container.AlignmentToParent = {left : 1; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
             (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
                 (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -2826,74 +2923,49 @@ namespace tuiskin
             {
                 (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>2 = new (::presentation::elements::TuiBorderElement^)());
+            (<precompile>2 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>2.Ellipse = true);
+            }
             {
                 (<precompile>1.OwnedElement = <precompile>2);
             }
             {
-                self.AddChild(<precompile>1);
-            }
-            (container = new (::presentation::compositions::GuiBoundsComposition*)());
-            <this>.SetNamedObject("container", container);
-            {
-                (container.AlignmentToParent = {left : 1; top : 1; right : 2; bottom : 1;} of (::presentation::Margin));
-            }
-            {
-                (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>3 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>3.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>4 = new (::presentation::elements::GuiSolidLabelElement^)());
-            {
-                (<precompile>4.Ellipse = true);
-            }
-            {
-                (<precompile>3.OwnedElement = <precompile>4);
-            }
-            {
-                container.AddChild(<precompile>3);
+                container.AddChild(<precompile>1);
             }
             {
                 self.AddChild(container);
             }
+            (<precompile>3 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>3.AlignmentToParent = {left : (-1); top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>3.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>4 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (<precompile>3.OwnedElement = <precompile>4);
+            }
             (<precompile>5 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>5.AlignmentToParent = {left : (-1); top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>5.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>6 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            (<precompile>6 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>6.Text = "▼");
+            }
             {
                 (<precompile>5.OwnedElement = <precompile>6);
             }
-            (<precompile>7 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                <precompile>3.AddChild(<precompile>5);
             }
             {
-                (<precompile>7.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>8 = new (::presentation::elements::GuiSolidLabelElement^)());
-            {
-                (<precompile>8.Text = "▼");
-            }
-            {
-                (<precompile>7.OwnedElement = <precompile>8);
-            }
-            {
-                <precompile>5.AddChild(<precompile>7);
-            }
-            {
-                self.AddChild(<precompile>5);
-            }
-            {
-                (<precompile>0.Color = tuiskin::tuiColors.ControlBackground);
+                self.AddChild(<precompile>3);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -2902,9 +2974,13 @@ namespace tuiskin
 
                     var <bind-cache>1 : ::tuiskin::TuiComboBoxTemplate* = null of (::tuiskin::TuiComboBoxTemplate*);
 
+                    var <bind-cache>2 : ::tuiskin::TuiComboBoxTemplate* = null of (::tuiskin::TuiComboBoxTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -2912,7 +2988,7 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (!<bind-cache>0.VisuallyEnabled) ? tuiskin::tuiColors.ControlBorderDisabled : <bind-cache>1.Focused ? tuiskin::tuiColors.ControlBorderFocused : tuiskin::tuiColors.ControlBorder of (::presentation::Color);
+                        var <bind-activator-result> = (!<bind-cache>0.VisuallyEnabled) ? tuiskin::tuiColors.ButtonBackground : (<bind-cache>1.State == ButtonState::Pressed) ? tuiskin::tuiColors.ButtonBackgroundPressed : (<bind-cache>2.State == ButtonState::Active) ? tuiskin::tuiColors.ButtonBackgroundHighlighted : tuiskin::tuiColors.ButtonBackground of (::presentation::Color);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -2926,6 +3002,11 @@ namespace tuiskin
                         <bind-activator>();
                     }
 
+                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
                     override func Open() : (::system::Boolean)
                     {
                         if ((!<bind-opened>))
@@ -2933,8 +3014,10 @@ namespace tuiskin
                             (<bind-opened> = true);
                             (<bind-cache>0 = (self ?? null of (::tuiskin::TuiComboBoxTemplate*)));
                             (<bind-cache>1 = (self ?? null of (::tuiskin::TuiComboBoxTemplate*)));
+                            (<bind-cache>2 = (self ?? null of (::tuiskin::TuiComboBoxTemplate*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.FocusedChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.StateChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.StateChanged, <bind-callback>2_0) ?? null));
                             return true;
                         }
                         return false;
@@ -2962,13 +3045,20 @@ namespace tuiskin
                             }
                             if (<bind-handler>1_0 is not null)
                             {
-                                detach(<bind-cache>1.FocusedChanged, <bind-handler>1_0);
+                                detach(<bind-cache>1.StateChanged, <bind-handler>1_0);
                                 (<bind-handler>1_0 = null);
+                            }
+                            if (<bind-handler>2_0 is not null)
+                            {
+                                detach(<bind-cache>2.StateChanged, <bind-handler>2_0);
+                                (<bind-handler>2_0 = null);
                             }
                             (<bind-cache>0 = null of (::tuiskin::TuiComboBoxTemplate*));
                             (<bind-cache>1 = null of (::tuiskin::TuiComboBoxTemplate*));
+                            (<bind-cache>2 = null of (::tuiskin::TuiComboBoxTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -2976,13 +3066,13 @@ namespace tuiskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>2.Color;
+                    var <old> = <precompile>0.Color;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>2.Color = <new>);
+                    (<precompile>0.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3049,13 +3139,13 @@ namespace tuiskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>4.Text;
+                    var <old> = <precompile>2.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>4.Text = <new>);
+                    (<precompile>2.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3064,7 +3154,15 @@ namespace tuiskin
                 {
                     var <bind-cache>0 : ::tuiskin::TuiComboBoxTemplate* = null of (::tuiskin::TuiComboBoxTemplate*);
 
+                    var <bind-cache>1 : ::tuiskin::TuiComboBoxTemplate* = null of (::tuiskin::TuiComboBoxTemplate*);
+
+                    var <bind-cache>2 : ::tuiskin::TuiComboBoxTemplate* = null of (::tuiskin::TuiComboBoxTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -3072,11 +3170,21 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.VisuallyEnabled ? tuiskin::tuiColors.ControlText : tuiskin::tuiColors.ButtonTextDisabled of (::presentation::Color);
+                        var <bind-activator-result> = (!<bind-cache>0.VisuallyEnabled) ? tuiskin::tuiColors.ButtonTextDisabled : (<bind-cache>1.State == ButtonState::Pressed) ? tuiskin::tuiColors.ButtonTextPressed : (<bind-cache>2.State == ButtonState::Active) ? tuiskin::tuiColors.ButtonTextHighlighted : tuiskin::tuiColors.ButtonText of (::presentation::Color);
                         ValueChanged(<bind-activator-result>);
                     }
 
                     func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                     {
                         <bind-activator>();
                     }
@@ -3087,7 +3195,11 @@ namespace tuiskin
                         {
                             (<bind-opened> = true);
                             (<bind-cache>0 = (self ?? null of (::tuiskin::TuiComboBoxTemplate*)));
+                            (<bind-cache>1 = (self ?? null of (::tuiskin::TuiComboBoxTemplate*)));
+                            (<bind-cache>2 = (self ?? null of (::tuiskin::TuiComboBoxTemplate*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.StateChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.StateChanged, <bind-callback>2_0) ?? null));
                             return true;
                         }
                         return false;
@@ -3113,8 +3225,22 @@ namespace tuiskin
                                 detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
                                 (<bind-handler>0_0 = null);
                             }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.StateChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            if (<bind-handler>2_0 is not null)
+                            {
+                                detach(<bind-cache>2.StateChanged, <bind-handler>2_0);
+                                (<bind-handler>2_0 = null);
+                            }
                             (<bind-cache>0 = null of (::tuiskin::TuiComboBoxTemplate*));
+                            (<bind-cache>1 = null of (::tuiskin::TuiComboBoxTemplate*));
+                            (<bind-cache>2 = null of (::tuiskin::TuiComboBoxTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -3122,13 +3248,13 @@ namespace tuiskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>4.Color;
+                    var <old> = <precompile>2.Color;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>4.Color = <new>);
+                    (<precompile>2.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3139,9 +3265,13 @@ namespace tuiskin
 
                     var <bind-cache>1 : ::tuiskin::TuiComboBoxTemplate* = null of (::tuiskin::TuiComboBoxTemplate*);
 
+                    var <bind-cache>2 : ::tuiskin::TuiComboBoxTemplate* = null of (::tuiskin::TuiComboBoxTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -3149,7 +3279,7 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : <bind-cache>0.Focused; underline : (<bind-cache>1.State != ButtonState::Normal);} of (::presentation::FontProperties);
+                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : <bind-cache>0.Focused; underline : (<bind-cache>1.Focused or (<bind-cache>2.State != ButtonState::Normal));} of (::presentation::FontProperties);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -3163,6 +3293,11 @@ namespace tuiskin
                         <bind-activator>();
                     }
 
+                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
                     override func Open() : (::system::Boolean)
                     {
                         if ((!<bind-opened>))
@@ -3170,8 +3305,10 @@ namespace tuiskin
                             (<bind-opened> = true);
                             (<bind-cache>0 = (self ?? null of (::tuiskin::TuiComboBoxTemplate*)));
                             (<bind-cache>1 = (self ?? null of (::tuiskin::TuiComboBoxTemplate*)));
+                            (<bind-cache>2 = (self ?? null of (::tuiskin::TuiComboBoxTemplate*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.FocusedChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.StateChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.FocusedChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.StateChanged, <bind-callback>2_0) ?? null));
                             return true;
                         }
                         return false;
@@ -3199,13 +3336,20 @@ namespace tuiskin
                             }
                             if (<bind-handler>1_0 is not null)
                             {
-                                detach(<bind-cache>1.StateChanged, <bind-handler>1_0);
+                                detach(<bind-cache>1.FocusedChanged, <bind-handler>1_0);
                                 (<bind-handler>1_0 = null);
+                            }
+                            if (<bind-handler>2_0 is not null)
+                            {
+                                detach(<bind-cache>2.StateChanged, <bind-handler>2_0);
+                                (<bind-handler>2_0 = null);
                             }
                             (<bind-cache>0 = null of (::tuiskin::TuiComboBoxTemplate*));
                             (<bind-cache>1 = null of (::tuiskin::TuiComboBoxTemplate*));
+                            (<bind-cache>2 = null of (::tuiskin::TuiComboBoxTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -3213,13 +3357,13 @@ namespace tuiskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>4.Font;
+                    var <old> = <precompile>2.Font;
                     var <new> = (cast (::presentation::FontProperties) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>4.Font = <new>);
+                    (<precompile>2.Font = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3286,13 +3430,13 @@ namespace tuiskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>3.Visible;
+                    var <old> = <precompile>1.Visible;
                     var <new> = (cast (::system::Boolean) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>3.Visible = <new>);
+                    (<precompile>1.Visible = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3395,13 +3539,13 @@ namespace tuiskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>6.Color;
+                    var <old> = <precompile>4.Color;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>6.Color = <new>);
+                    (<precompile>4.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3504,13 +3648,13 @@ namespace tuiskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>8.Color;
+                    var <old> = <precompile>6.Color;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>8.Color = <new>);
+                    (<precompile>6.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3525,7 +3669,7 @@ namespace tuiskin
     }
 }
 
-================================(16/85)================================
+================================(16/87)================================
 module <instance>tuiskin::TuiComboBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3567,7 +3711,103 @@ namespace tuiskin
     }
 }
 
-================================(17/85)================================
+================================(17/87)================================
+module <constructor>tuiskin::TuiContentMenuTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tuiskin
+{
+    class TuiContentMenuTemplateConstructor
+    {
+        @cpp:Protected
+        var self : ::tuiskin::TuiContentMenuTemplate* = null of (::tuiskin::TuiContentMenuTemplate*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        func <tuiskin-TuiContentMenuTemplate>Initialize(<this> : ::tuiskin::TuiContentMenuTemplate*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>0 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (self.OwnedElement = <precompile>0);
+            }
+            {
+                (<precompile>0.Color = tuiskin::tuiColors.ControlBackground);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(18/87)================================
+module <instance>tuiskin::TuiContentMenuTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace tuiskin
+{
+    @cpp:Friend(typeof(TuiContentMenuTemplateConstructor))
+    class TuiContentMenuTemplate : ::presentation::templates::GuiMenuTemplate, TuiContentMenuTemplateConstructor
+    {
+        new* ()
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("tuiskin::TuiContentMenuTemplate");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<tuiskin-TuiContentMenuTemplate>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(19/87)================================
 module <constructor>tuiskin::TuiExpandingDecoratorTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3694,7 +3934,7 @@ namespace tuiskin
     }
 }
 
-================================(18/85)================================
+================================(20/87)================================
 module <instance>tuiskin::TuiExpandingDecoratorTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3736,7 +3976,7 @@ namespace tuiskin
     }
 }
 
-================================(19/85)================================
+================================(21/87)================================
 module <constructor>tuiskin::TuiItemBackgroundTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4100,7 +4340,7 @@ namespace tuiskin
     }
 }
 
-================================(20/85)================================
+================================(22/87)================================
 module <instance>tuiskin::TuiItemBackgroundTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4142,7 +4382,7 @@ namespace tuiskin
     }
 }
 
-================================(21/85)================================
+================================(23/87)================================
 module <constructor>tuiskin::TuiListViewColumnHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4203,7 +4443,7 @@ namespace tuiskin
                 (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
                 {
                     {
-                        return new (::tuiskin::TuiToolstripMenuTemplate*)();
+                        return new (::tuiskin::TuiContentMenuTemplate*)();
                     }
                 });
             }
@@ -4216,9 +4456,6 @@ namespace tuiskin
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
             <this>.SetNamedObject("container", container);
-            {
-                (container.AlignmentToParent = {left : 1; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
-            }
             {
                 (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
@@ -4234,7 +4471,7 @@ namespace tuiskin
             }
             (<precompile>2 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>2.AlignmentToParent = {left : (-1); top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>2.AlignmentToParent = {left : 1; top : 0; right : (-1); bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -4248,7 +4485,7 @@ namespace tuiskin
             }
             (<precompile>4 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>4.AlignmentToParent = {left : (-1); top : 0; right : 1; bottom : 0;} of (::presentation::Margin));
+                (<precompile>4.AlignmentToParent = {left : (-1); top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>4.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -4659,6 +4896,97 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
+                        var <bind-activator-result> = {left : (<bind-cache>0.SortingState == ColumnSortingState::NotSorted) ? 1 : 2; top : 0; right : <bind-cache>1.SubMenuExisting ? 2 : 0; bottom : 0;} of (::presentation::Margin);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::tuiskin::TuiListViewColumnHeaderTemplate*)));
+                            (<bind-cache>1 = (self ?? null of (::tuiskin::TuiListViewColumnHeaderTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.SortingStateChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.SubMenuExistingChanged, <bind-callback>1_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.SortingStateChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.SubMenuExistingChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tuiskin::TuiListViewColumnHeaderTemplate*));
+                            (<bind-cache>1 = null of (::tuiskin::TuiListViewColumnHeaderTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = container.AlignmentToParent;
+                    var <new> = (cast (::presentation::Margin) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (container.AlignmentToParent = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tuiskin::TuiListViewColumnHeaderTemplate* = null of (::tuiskin::TuiListViewColumnHeaderTemplate*);
+
+                    var <bind-cache>1 : ::tuiskin::TuiListViewColumnHeaderTemplate* = null of (::tuiskin::TuiListViewColumnHeaderTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
                         var <bind-activator-result> = (<bind-cache>0.SortingState == ColumnSortingState::Ascending) ? "▲" : (<bind-cache>1.SortingState == ColumnSortingState::Descending) ? "▼" : " " of (::system::String);
                         ValueChanged(<bind-activator-result>);
                     }
@@ -4855,6 +5183,79 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
+                        var <bind-activator-result> = (<bind-cache>0.SortingState != ColumnSortingState::NotSorted) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::tuiskin::TuiListViewColumnHeaderTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.SortingStateChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.SortingStateChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tuiskin::TuiListViewColumnHeaderTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>2.Visible;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>2.Visible = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tuiskin::TuiListViewColumnHeaderTemplate* = null of (::tuiskin::TuiListViewColumnHeaderTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
                         var <bind-activator-result> = <bind-cache>0.SubMenuExisting of (::system::Boolean);
                         ValueChanged(<bind-activator-result>);
                     }
@@ -4929,7 +5330,7 @@ namespace tuiskin
     }
 }
 
-================================(22/85)================================
+================================(24/87)================================
 module <instance>tuiskin::TuiListViewColumnHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4971,7 +5372,7 @@ namespace tuiskin
     }
 }
 
-================================(23/85)================================
+================================(25/87)================================
 module <constructor>tuiskin::TuiListViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5197,7 +5598,7 @@ namespace tuiskin
     }
 }
 
-================================(24/85)================================
+================================(26/87)================================
 module <instance>tuiskin::TuiListViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5239,7 +5640,7 @@ namespace tuiskin
     }
 }
 
-================================(25/85)================================
+================================(27/87)================================
 module <constructor>tuiskin::TuiTextListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5467,7 +5868,7 @@ namespace tuiskin
     }
 }
 
-================================(26/85)================================
+================================(28/87)================================
 module <instance>tuiskin::TuiTextListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5509,7 +5910,7 @@ namespace tuiskin
     }
 }
 
-================================(27/85)================================
+================================(29/87)================================
 module <constructor>tuiskin::TuiTreeViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5729,7 +6130,7 @@ namespace tuiskin
     }
 }
 
-================================(28/85)================================
+================================(30/87)================================
 module <instance>tuiskin::TuiTreeViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5771,7 +6172,7 @@ namespace tuiskin
     }
 }
 
-================================(29/85)================================
+================================(31/87)================================
 module <constructor>tuiskin::TuiDateButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5948,7 +6349,7 @@ namespace tuiskin
     }
 }
 
-================================(30/85)================================
+================================(32/87)================================
 module <instance>tuiskin::TuiDateButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5990,7 +6391,7 @@ namespace tuiskin
     }
 }
 
-================================(31/85)================================
+================================(33/87)================================
 module <constructor>tuiskin::TuiDatePickerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6434,7 +6835,7 @@ namespace tuiskin
     }
 }
 
-================================(32/85)================================
+================================(34/87)================================
 module <instance>tuiskin::TuiDatePickerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6476,7 +6877,7 @@ namespace tuiskin
     }
 }
 
-================================(33/85)================================
+================================(35/87)================================
 module <constructor>tuiskin::TuiGroupBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6742,7 +7143,7 @@ namespace tuiskin
     }
 }
 
-================================(34/85)================================
+================================(36/87)================================
 module <instance>tuiskin::TuiGroupBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6784,7 +7185,7 @@ namespace tuiskin
     }
 }
 
-================================(35/85)================================
+================================(37/87)================================
 module <constructor>tuiskin::TuiLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7078,7 +7479,7 @@ namespace tuiskin
     }
 }
 
-================================(36/85)================================
+================================(38/87)================================
 module <instance>tuiskin::TuiLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7120,7 +7521,7 @@ namespace tuiskin
     }
 }
 
-================================(37/85)================================
+================================(39/87)================================
 module <constructor>tuiskin::TuiShortcutKeyTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7150,7 +7551,13 @@ namespace tuiskin
         var self : ::tuiskin::TuiShortcutKeyTemplate* = null of (::tuiskin::TuiShortcutKeyTemplate*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
 
         @cpp:Protected
         func <tuiskin-TuiShortcutKeyTemplate>Initialize(<this> : ::tuiskin::TuiShortcutKeyTemplate*) : (::system::Void)
@@ -7159,9 +7566,26 @@ namespace tuiskin
             {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>0 = new (::presentation::elements::GuiSolidLabelElement^)());
+            (<precompile>0 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
                 (self.OwnedElement = <precompile>0);
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>2 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>1.OwnedElement = <precompile>2);
+            }
+            {
+                self.AddChild(<precompile>1);
+            }
+            {
+                (<precompile>0.Color = tuiskin::tuiColors.ShortcutKeyBackground);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -7226,13 +7650,13 @@ namespace tuiskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>0.Text;
+                    var <old> = <precompile>2.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>0.Text = <new>);
+                    (<precompile>2.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -7299,13 +7723,13 @@ namespace tuiskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>0.Color;
+                    var <old> = <precompile>2.Color;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>0.Color = <new>);
+                    (<precompile>2.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -7372,18 +7796,18 @@ namespace tuiskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>0.Font;
+                    var <old> = <precompile>2.Font;
                     var <new> = (cast (::presentation::FontProperties) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>0.Font = <new>);
+                    (<precompile>2.Font = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                (self.DefaultTextColor = tuiskin::tuiColors.ControlText);
+                (self.DefaultTextColor = tuiskin::tuiColors.ShortcutKeyText);
             }
         }
 
@@ -7393,7 +7817,7 @@ namespace tuiskin
     }
 }
 
-================================(38/85)================================
+================================(40/87)================================
 module <instance>tuiskin::TuiShortcutKeyTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7435,7 +7859,7 @@ namespace tuiskin
     }
 }
 
-================================(39/85)================================
+================================(41/87)================================
 module <constructor>tuiskin::TuiBottomScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7727,7 +8151,7 @@ namespace tuiskin
     }
 }
 
-================================(40/85)================================
+================================(42/87)================================
 module <instance>tuiskin::TuiBottomScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7769,7 +8193,7 @@ namespace tuiskin
     }
 }
 
-================================(41/85)================================
+================================(43/87)================================
 module <constructor>tuiskin::TuiHScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8155,7 +8579,7 @@ namespace tuiskin
     }
 }
 
-================================(42/85)================================
+================================(44/87)================================
 module <instance>tuiskin::TuiHScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8206,7 +8630,7 @@ namespace tuiskin
     }
 }
 
-================================(43/85)================================
+================================(45/87)================================
 module <constructor>tuiskin::TuiHTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8468,7 +8892,7 @@ namespace tuiskin
     }
 }
 
-================================(44/85)================================
+================================(46/87)================================
 module <instance>tuiskin::TuiHTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8517,7 +8941,7 @@ namespace tuiskin
     }
 }
 
-================================(45/85)================================
+================================(47/87)================================
 module <constructor>tuiskin::TuiHandleScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8550,12 +8974,6 @@ namespace tuiskin
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>2 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
-
-        @cpp:Protected
         func <tuiskin-TuiHandleScrollButtonTemplate>Initialize(<this> : ::tuiskin::TuiHandleScrollButtonTemplate*) : (::system::Void)
         {
             (self = <this>);
@@ -8565,23 +8983,6 @@ namespace tuiskin
             (<precompile>0 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
                 (self.OwnedElement = <precompile>0);
-            }
-            (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>2 = new (::presentation::elements::GuiSolidLabelElement^)());
-            {
-                (<precompile>2.Text = "█");
-            }
-            {
-                (<precompile>1.OwnedElement = <precompile>2);
-            }
-            {
-                self.AddChild(<precompile>1);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -8604,7 +9005,7 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (!<bind-cache>0.VisuallyEnabled) ? tuiskin::tuiColors.ButtonBackground : (<bind-cache>1.State == ButtonState::Pressed) ? tuiskin::tuiColors.ButtonBackgroundPressed : (<bind-cache>2.State == ButtonState::Active) ? tuiskin::tuiColors.ButtonBackgroundHighlighted : tuiskin::tuiColors.ButtonBackground of (::presentation::Color);
+                        var <bind-activator-result> = (!<bind-cache>0.VisuallyEnabled) ? tuiskin::tuiColors.ControlBorderDisabled : (<bind-cache>1.State == ButtonState::Pressed) ? tuiskin::tuiColors.ButtonBackgroundPressed : (<bind-cache>2.State == ButtonState::Active) ? tuiskin::tuiColors.ButtonBackgroundHighlighted : tuiskin::tuiColors.ControlBorder of (::presentation::Color);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -8692,115 +9093,6 @@ namespace tuiskin
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::tuiskin::TuiHandleScrollButtonTemplate* = null of (::tuiskin::TuiHandleScrollButtonTemplate*);
-
-                    var <bind-cache>1 : ::tuiskin::TuiHandleScrollButtonTemplate* = null of (::tuiskin::TuiHandleScrollButtonTemplate*);
-
-                    var <bind-cache>2 : ::tuiskin::TuiHandleScrollButtonTemplate* = null of (::tuiskin::TuiHandleScrollButtonTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = (!<bind-cache>0.VisuallyEnabled) ? tuiskin::tuiColors.ButtonTextDisabled : (<bind-cache>1.State == ButtonState::Pressed) ? tuiskin::tuiColors.ButtonTextPressed : (<bind-cache>2.State == ButtonState::Active) ? tuiskin::tuiColors.ButtonTextHighlighted : tuiskin::tuiColors.ButtonText of (::presentation::Color);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::tuiskin::TuiHandleScrollButtonTemplate*)));
-                            (<bind-cache>1 = (self ?? null of (::tuiskin::TuiHandleScrollButtonTemplate*)));
-                            (<bind-cache>2 = (self ?? null of (::tuiskin::TuiHandleScrollButtonTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.StateChanged, <bind-callback>1_0) ?? null));
-                            (<bind-handler>2_0 = (attach(<bind-cache>2.StateChanged, <bind-callback>2_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            if (<bind-handler>1_0 is not null)
-                            {
-                                detach(<bind-cache>1.StateChanged, <bind-handler>1_0);
-                                (<bind-handler>1_0 = null);
-                            }
-                            if (<bind-handler>2_0 is not null)
-                            {
-                                detach(<bind-cache>2.StateChanged, <bind-handler>2_0);
-                                (<bind-handler>2_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::tuiskin::TuiHandleScrollButtonTemplate*));
-                            (<bind-cache>1 = null of (::tuiskin::TuiHandleScrollButtonTemplate*));
-                            (<bind-cache>2 = null of (::tuiskin::TuiHandleScrollButtonTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>2.Color;
-                    var <new> = (cast (::presentation::Color) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>2.Color = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
         }
 
         new ()
@@ -8809,7 +9101,7 @@ namespace tuiskin
     }
 }
 
-================================(46/85)================================
+================================(48/87)================================
 module <instance>tuiskin::TuiHandleScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8851,7 +9143,7 @@ namespace tuiskin
     }
 }
 
-================================(47/85)================================
+================================(49/87)================================
 module <constructor>tuiskin::TuiLeftScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9143,7 +9435,7 @@ namespace tuiskin
     }
 }
 
-================================(48/85)================================
+================================(50/87)================================
 module <instance>tuiskin::TuiLeftScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9185,7 +9477,7 @@ namespace tuiskin
     }
 }
 
-================================(49/85)================================
+================================(51/87)================================
 module <constructor>tuiskin::TuiProgressBarTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9421,7 +9713,7 @@ namespace tuiskin
     }
 }
 
-================================(50/85)================================
+================================(52/87)================================
 module <instance>tuiskin::TuiProgressBarTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9463,7 +9755,7 @@ namespace tuiskin
     }
 }
 
-================================(51/85)================================
+================================(53/87)================================
 module <constructor>tuiskin::TuiRightScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9755,7 +10047,7 @@ namespace tuiskin
     }
 }
 
-================================(52/85)================================
+================================(54/87)================================
 module <instance>tuiskin::TuiRightScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9797,7 +10089,7 @@ namespace tuiskin
     }
 }
 
-================================(53/85)================================
+================================(55/87)================================
 module <constructor>tuiskin::TuiScrollViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9998,7 +10290,7 @@ namespace tuiskin
     }
 }
 
-================================(54/85)================================
+================================(56/87)================================
 module <instance>tuiskin::TuiScrollViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10040,7 +10332,7 @@ namespace tuiskin
     }
 }
 
-================================(55/85)================================
+================================(57/87)================================
 module <constructor>tuiskin::TuiTopScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10332,7 +10624,7 @@ namespace tuiskin
     }
 }
 
-================================(56/85)================================
+================================(58/87)================================
 module <instance>tuiskin::TuiTopScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10374,7 +10666,7 @@ namespace tuiskin
     }
 }
 
-================================(57/85)================================
+================================(59/87)================================
 module <constructor>tuiskin::TuiVScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10760,7 +11052,7 @@ namespace tuiskin
     }
 }
 
-================================(58/85)================================
+================================(60/87)================================
 module <instance>tuiskin::TuiVScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10811,7 +11103,7 @@ namespace tuiskin
     }
 }
 
-================================(59/85)================================
+================================(61/87)================================
 module <constructor>tuiskin::TuiVTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11073,7 +11365,7 @@ namespace tuiskin
     }
 }
 
-================================(60/85)================================
+================================(62/87)================================
 module <instance>tuiskin::TuiVTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11122,7 +11414,7 @@ namespace tuiskin
     }
 }
 
-================================(61/85)================================
+================================(63/87)================================
 module <constructor>tuiskin::TuiTabHeaderButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11485,11 +11777,19 @@ namespace tuiskin
 
                     var <bind-cache>2 : ::tuiskin::TuiTabHeaderButtonTemplate* = null of (::tuiskin::TuiTabHeaderButtonTemplate*);
 
+                    var <bind-cache>3 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+
+                    var <bind-cache>4 : ::tuiskin::TuiTabHeaderButtonTemplate* = null of (::tuiskin::TuiTabHeaderButtonTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>3_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>4_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -11497,7 +11797,7 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : (<bind-cache>1.Focused ?? false); underline : (<bind-cache>2.State != ButtonState::Normal);} of (::presentation::FontProperties);
+                        var <bind-activator-result> = {fontFamily : "TuiFont"; size : 1; bold : (<bind-cache>1.Focused ?? false); underline : ((<bind-cache>3.Focused ?? false) or (<bind-cache>4.State != ButtonState::Normal));} of (::presentation::FontProperties);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -11520,6 +11820,23 @@ namespace tuiskin
 
                     func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                     {
+                        if (<bind-handler>3_0 is not null)
+                        {
+                            detach(<bind-cache>3.FocusedChanged, <bind-handler>3_0);
+                            (<bind-handler>3_0 = null);
+                        }
+                        (<bind-cache>3 = ((cast (TabPage*) <bind-cache>2.Context).OwnerTab ?? null of (::presentation::controls::GuiTab*)));
+                        (<bind-handler>3_0 = (attach(<bind-cache>3.FocusedChanged, <bind-callback>3_0) ?? null));
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>3_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>4_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
                         <bind-activator>();
                     }
 
@@ -11530,10 +11847,14 @@ namespace tuiskin
                             (<bind-opened> = true);
                             (<bind-cache>0 = (self ?? null of (::tuiskin::TuiTabHeaderButtonTemplate*)));
                             (<bind-cache>2 = (self ?? null of (::tuiskin::TuiTabHeaderButtonTemplate*)));
+                            (<bind-cache>4 = (self ?? null of (::tuiskin::TuiTabHeaderButtonTemplate*)));
                             (<bind-cache>1 = ((cast (TabPage*) <bind-cache>0.Context).OwnerTab ?? null of (::presentation::controls::GuiTab*)));
+                            (<bind-cache>3 = ((cast (TabPage*) <bind-cache>2.Context).OwnerTab ?? null of (::presentation::controls::GuiTab*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.ContextChanged, <bind-callback>0_0) ?? null));
                             (<bind-handler>1_0 = (attach(<bind-cache>1.FocusedChanged, <bind-callback>1_0) ?? null));
-                            (<bind-handler>2_0 = (attach(<bind-cache>2.StateChanged, <bind-callback>2_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.ContextChanged, <bind-callback>2_0) ?? null));
+                            (<bind-handler>3_0 = (attach(<bind-cache>3.FocusedChanged, <bind-callback>3_0) ?? null));
+                            (<bind-handler>4_0 = (attach(<bind-cache>4.StateChanged, <bind-callback>4_0) ?? null));
                             return true;
                         }
                         return false;
@@ -11566,15 +11887,29 @@ namespace tuiskin
                             }
                             if (<bind-handler>2_0 is not null)
                             {
-                                detach(<bind-cache>2.StateChanged, <bind-handler>2_0);
+                                detach(<bind-cache>2.ContextChanged, <bind-handler>2_0);
                                 (<bind-handler>2_0 = null);
+                            }
+                            if (<bind-handler>3_0 is not null)
+                            {
+                                detach(<bind-cache>3.FocusedChanged, <bind-handler>3_0);
+                                (<bind-handler>3_0 = null);
+                            }
+                            if (<bind-handler>4_0 is not null)
+                            {
+                                detach(<bind-cache>4.StateChanged, <bind-handler>4_0);
+                                (<bind-handler>4_0 = null);
                             }
                             (<bind-cache>0 = null of (::tuiskin::TuiTabHeaderButtonTemplate*));
                             (<bind-cache>1 = null of (::presentation::controls::GuiTab*));
                             (<bind-cache>2 = null of (::tuiskin::TuiTabHeaderButtonTemplate*));
+                            (<bind-cache>3 = null of (::presentation::controls::GuiTab*));
+                            (<bind-cache>4 = null of (::tuiskin::TuiTabHeaderButtonTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>3_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>4_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -11600,7 +11935,7 @@ namespace tuiskin
     }
 }
 
-================================(62/85)================================
+================================(64/87)================================
 module <instance>tuiskin::TuiTabHeaderButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11642,7 +11977,7 @@ namespace tuiskin
     }
 }
 
-================================(63/85)================================
+================================(65/87)================================
 module <constructor>tuiskin::TuiTabHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11949,7 +12284,7 @@ namespace tuiskin
     }
 }
 
-================================(64/85)================================
+================================(66/87)================================
 module <instance>tuiskin::TuiTabHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12023,7 +12358,7 @@ namespace tuiskin
     }
 }
 
-================================(65/85)================================
+================================(67/87)================================
 module <constructor>tuiskin::TuiTabTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12384,7 +12719,7 @@ namespace tuiskin
     }
 }
 
-================================(66/85)================================
+================================(68/87)================================
 module <instance>tuiskin::TuiTabTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12426,7 +12761,7 @@ namespace tuiskin
     }
 }
 
-================================(67/85)================================
+================================(69/87)================================
 module <constructor>tuiskin::TuiMenuBarButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12761,11 +13096,15 @@ namespace tuiskin
 
                     var <bind-cache>2 : ::tuiskin::TuiMenuBarButtonTemplate* = null of (::tuiskin::TuiMenuBarButtonTemplate*);
 
+                    var <bind-cache>3 : ::tuiskin::TuiMenuBarButtonTemplate* = null of (::tuiskin::TuiMenuBarButtonTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>3_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -12773,7 +13112,7 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = {fontFamily : <bind-cache>0.Font.fontFamily; size : 1; bold : <bind-cache>1.Focused; underline : (<bind-cache>2.State != ButtonState::Normal);} of (::presentation::FontProperties);
+                        var <bind-activator-result> = {fontFamily : <bind-cache>0.Font.fontFamily; size : 1; bold : <bind-cache>1.Focused; underline : (<bind-cache>2.Focused or (<bind-cache>3.State != ButtonState::Normal));} of (::presentation::FontProperties);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -12792,6 +13131,11 @@ namespace tuiskin
                         <bind-activator>();
                     }
 
+                    func <bind-callback>3_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
                     override func Open() : (::system::Boolean)
                     {
                         if ((!<bind-opened>))
@@ -12800,9 +13144,11 @@ namespace tuiskin
                             (<bind-cache>0 = (self ?? null of (::tuiskin::TuiMenuBarButtonTemplate*)));
                             (<bind-cache>1 = (self ?? null of (::tuiskin::TuiMenuBarButtonTemplate*)));
                             (<bind-cache>2 = (self ?? null of (::tuiskin::TuiMenuBarButtonTemplate*)));
+                            (<bind-cache>3 = (self ?? null of (::tuiskin::TuiMenuBarButtonTemplate*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
                             (<bind-handler>1_0 = (attach(<bind-cache>1.FocusedChanged, <bind-callback>1_0) ?? null));
-                            (<bind-handler>2_0 = (attach(<bind-cache>2.StateChanged, <bind-callback>2_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.FocusedChanged, <bind-callback>2_0) ?? null));
+                            (<bind-handler>3_0 = (attach(<bind-cache>3.StateChanged, <bind-callback>3_0) ?? null));
                             return true;
                         }
                         return false;
@@ -12835,15 +13181,22 @@ namespace tuiskin
                             }
                             if (<bind-handler>2_0 is not null)
                             {
-                                detach(<bind-cache>2.StateChanged, <bind-handler>2_0);
+                                detach(<bind-cache>2.FocusedChanged, <bind-handler>2_0);
                                 (<bind-handler>2_0 = null);
+                            }
+                            if (<bind-handler>3_0 is not null)
+                            {
+                                detach(<bind-cache>3.StateChanged, <bind-handler>3_0);
+                                (<bind-handler>3_0 = null);
                             }
                             (<bind-cache>0 = null of (::tuiskin::TuiMenuBarButtonTemplate*));
                             (<bind-cache>1 = null of (::tuiskin::TuiMenuBarButtonTemplate*));
                             (<bind-cache>2 = null of (::tuiskin::TuiMenuBarButtonTemplate*));
+                            (<bind-cache>3 = null of (::tuiskin::TuiMenuBarButtonTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>3_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -12869,7 +13222,7 @@ namespace tuiskin
     }
 }
 
-================================(68/85)================================
+================================(70/87)================================
 module <instance>tuiskin::TuiMenuBarButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12911,7 +13264,7 @@ namespace tuiskin
     }
 }
 
-================================(69/85)================================
+================================(71/87)================================
 module <constructor>tuiskin::TuiMenuItemButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13514,11 +13867,15 @@ namespace tuiskin
 
                     var <bind-cache>2 : ::tuiskin::TuiMenuItemButtonTemplate* = null of (::tuiskin::TuiMenuItemButtonTemplate*);
 
+                    var <bind-cache>3 : ::tuiskin::TuiMenuItemButtonTemplate* = null of (::tuiskin::TuiMenuItemButtonTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>3_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -13526,7 +13883,7 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = {fontFamily : <bind-cache>0.Font.fontFamily; size : 1; bold : <bind-cache>1.Focused; underline : (<bind-cache>2.State != ButtonState::Normal);} of (::presentation::FontProperties);
+                        var <bind-activator-result> = {fontFamily : <bind-cache>0.Font.fontFamily; size : 1; bold : <bind-cache>1.Focused; underline : (<bind-cache>2.Focused or (<bind-cache>3.State != ButtonState::Normal));} of (::presentation::FontProperties);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -13545,6 +13902,11 @@ namespace tuiskin
                         <bind-activator>();
                     }
 
+                    func <bind-callback>3_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
                     override func Open() : (::system::Boolean)
                     {
                         if ((!<bind-opened>))
@@ -13553,9 +13915,11 @@ namespace tuiskin
                             (<bind-cache>0 = (self ?? null of (::tuiskin::TuiMenuItemButtonTemplate*)));
                             (<bind-cache>1 = (self ?? null of (::tuiskin::TuiMenuItemButtonTemplate*)));
                             (<bind-cache>2 = (self ?? null of (::tuiskin::TuiMenuItemButtonTemplate*)));
+                            (<bind-cache>3 = (self ?? null of (::tuiskin::TuiMenuItemButtonTemplate*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
                             (<bind-handler>1_0 = (attach(<bind-cache>1.FocusedChanged, <bind-callback>1_0) ?? null));
-                            (<bind-handler>2_0 = (attach(<bind-cache>2.StateChanged, <bind-callback>2_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.FocusedChanged, <bind-callback>2_0) ?? null));
+                            (<bind-handler>3_0 = (attach(<bind-cache>3.StateChanged, <bind-callback>3_0) ?? null));
                             return true;
                         }
                         return false;
@@ -13588,15 +13952,22 @@ namespace tuiskin
                             }
                             if (<bind-handler>2_0 is not null)
                             {
-                                detach(<bind-cache>2.StateChanged, <bind-handler>2_0);
+                                detach(<bind-cache>2.FocusedChanged, <bind-handler>2_0);
                                 (<bind-handler>2_0 = null);
+                            }
+                            if (<bind-handler>3_0 is not null)
+                            {
+                                detach(<bind-cache>3.StateChanged, <bind-handler>3_0);
+                                (<bind-handler>3_0 = null);
                             }
                             (<bind-cache>0 = null of (::tuiskin::TuiMenuItemButtonTemplate*));
                             (<bind-cache>1 = null of (::tuiskin::TuiMenuItemButtonTemplate*));
                             (<bind-cache>2 = null of (::tuiskin::TuiMenuItemButtonTemplate*));
+                            (<bind-cache>3 = null of (::tuiskin::TuiMenuItemButtonTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>3_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -13950,7 +14321,7 @@ namespace tuiskin
     }
 }
 
-================================(70/85)================================
+================================(72/87)================================
 module <instance>tuiskin::TuiMenuItemButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13992,7 +14363,7 @@ namespace tuiskin
     }
 }
 
-================================(71/85)================================
+================================(73/87)================================
 module <constructor>tuiskin::TuiMenuSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14049,7 +14420,7 @@ namespace tuiskin
     }
 }
 
-================================(72/85)================================
+================================(74/87)================================
 module <instance>tuiskin::TuiMenuSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14091,7 +14462,7 @@ namespace tuiskin
     }
 }
 
-================================(73/85)================================
+================================(75/87)================================
 module <constructor>tuiskin::TuiToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14185,7 +14556,7 @@ namespace tuiskin
     }
 }
 
-================================(74/85)================================
+================================(76/87)================================
 module <instance>tuiskin::TuiToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14227,7 +14598,7 @@ namespace tuiskin
     }
 }
 
-================================(75/85)================================
+================================(77/87)================================
 module <constructor>tuiskin::TuiToolstripTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14281,7 +14652,7 @@ namespace tuiskin
     }
 }
 
-================================(76/85)================================
+================================(78/87)================================
 module <instance>tuiskin::TuiToolstripTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14323,7 +14694,7 @@ namespace tuiskin
     }
 }
 
-================================(77/85)================================
+================================(79/87)================================
 module <constructor>tuiskin::TuiCustomControlTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14367,7 +14738,7 @@ namespace tuiskin
     }
 }
 
-================================(78/85)================================
+================================(80/87)================================
 module <instance>tuiskin::TuiCustomControlTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14409,7 +14780,7 @@ namespace tuiskin
     }
 }
 
-================================(79/85)================================
+================================(81/87)================================
 module <constructor>tuiskin::TuiCustomFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15806,7 +16177,7 @@ namespace tuiskin
     }
 }
 
-================================(80/85)================================
+================================(82/87)================================
 module <instance>tuiskin::TuiCustomFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15848,7 +16219,7 @@ namespace tuiskin
     }
 }
 
-================================(81/85)================================
+================================(83/87)================================
 module <constructor>tuiskin::TuiSystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15922,7 +16293,7 @@ namespace tuiskin
     }
 }
 
-================================(82/85)================================
+================================(84/87)================================
 module <instance>tuiskin::TuiSystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15964,7 +16335,7 @@ namespace tuiskin
     }
 }
 
-================================(83/85)================================
+================================(85/87)================================
 module <constructor>tuiskin::TuiTooltipTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15997,12 +16368,6 @@ namespace tuiskin
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>2 : ::presentation::elements::TuiBorderElement^ = null of (::presentation::elements::TuiBorderElement^);
-
-        @cpp:Protected
         var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -16016,24 +16381,10 @@ namespace tuiskin
             {
                 (self.OwnedElement = <precompile>0);
             }
-            (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>2 = new (::presentation::elements::TuiBorderElement^)());
-            {
-                (<precompile>1.OwnedElement = <precompile>2);
-            }
-            {
-                self.AddChild(<precompile>1);
-            }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
             <this>.SetNamedObject("container", container);
             {
-                (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+                (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -16043,9 +16394,6 @@ namespace tuiskin
             }
             {
                 (<precompile>0.Color = tuiskin::tuiColors.ControlBackground);
-            }
-            {
-                (<precompile>2.Color = tuiskin::tuiColors.ControlBorder);
             }
             {
                 (self.ContainerComposition = container);
@@ -16058,7 +16406,7 @@ namespace tuiskin
     }
 }
 
-================================(84/85)================================
+================================(86/87)================================
 module <instance>tuiskin::TuiTooltipTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16100,7 +16448,7 @@ namespace tuiskin
     }
 }
 
-================================(85/85)================================
+================================(87/87)================================
 module TuiPalette;
 using presentation::*;
 
@@ -16114,6 +16462,8 @@ namespace tuiskin
         ControlBorderDisabled : Color;
         ControlBorderFocused : Color;
         LabelText : Color;
+        ShortcutKeyBackground : Color;
+        ShortcutKeyText : Color;
         MenuBackground : Color;
         MenuText : Color;
         MenuTextDisabled : Color;

@@ -195,8 +195,6 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnInitialize()
 				{
-					// In-place terminal editors need a text row between their two border rows.
-					if (GetTuiApplication()) SetPreferredMinSize(Size(0, 3));
 					{
 						textTable = new GuiTableComposition;
 						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -342,21 +340,32 @@ DefaultDataGridItemTemplate
 					currentEditor = editor;
 					if (currentEditor)
 					{
-						auto cell = textTable->GetSitedCell(0, column);
+						GuiGraphicsComposition* editorParent = textTable->GetSitedCell(0, column);
+						auto visualizer = dataVisualizers[column]->GetTemplate();
+						GuiBoundsComposition* hiddenComposition = visualizer;
+						auto editorMargin = Margin(0, 0, 0, 0);
+						if (GetTuiApplication())
+						{
+							if (auto border = dynamic_cast<CellBorderVisualizerTemplate*>(visualizer))
+							{
+								hiddenComposition = dynamic_cast<GuiBoundsComposition*>(border->GetContainerComposition());
+								editorMargin = hiddenComposition->GetAlignmentToParent();
+							}
+						}
 						auto* editorBounds = currentEditor->GetTemplate();
 						editorBounds->SetFont(GetFont());
 						editorBounds->SetContext(GetContext());
-						if (editorBounds->GetParent() && editorBounds->GetParent() != cell)
+						if (editorBounds->GetParent() && editorBounds->GetParent() != editorParent)
 						{
 							editorBounds->GetParent()->RemoveChild(editorBounds);
 						}
-						editorBounds->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						cell->AddChild(editorBounds);
+						editorBounds->SetAlignmentToParent(editorMargin);
+						editorParent->AddChild(editorBounds);
 						if (auto focusControl = currentEditor->GetTemplate()->GetFocusControl())
 						{
 							focusControl->SetFocused();
 						}
-						dataVisualizers[column]->GetTemplate()->SetVisible(false);
+						hiddenComposition->SetVisible(false);
 					}
 				}
 
@@ -366,7 +375,15 @@ DefaultDataGridItemTemplate
 					{
 						for (vint i = 0; i < dataVisualizers.Count(); i++)
 						{
-							dataVisualizers[i]->GetTemplate()->SetVisible(true);
+							auto visualizer = dataVisualizers[i]->GetTemplate();
+							visualizer->SetVisible(true);
+							if (GetTuiApplication())
+							{
+								if (auto border = dynamic_cast<CellBorderVisualizerTemplate*>(visualizer))
+								{
+									border->GetContainerComposition()->SetVisible(true);
+								}
+							}
 						}
 						auto composition = currentEditor->GetTemplate();
 						if (composition->GetParent())
@@ -677,7 +694,7 @@ GuiVirtualDataGrid
 						}
 						else if (column >= listViewItemView->GetColumnCount())
 						{
-							column = listViewItemView->GetColumnCount();
+							column = listViewItemView->GetColumnCount() - 1;
 						}
 						SelectCell({ selectedCell.row, column }, false);
 					}

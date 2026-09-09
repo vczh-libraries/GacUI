@@ -115,8 +115,8 @@ ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition
 				void ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition::Layout_CalculateTotalSize(Size& full, Size& minimum)
 				{
 					TBase::ArrangerRepeatComposition::Layout_CalculateTotalSize(full, minimum);
-					full.x += arranger->SplitterWidth;
-					minimum.x += arranger->SplitterWidth;
+					full.x += arranger->splitterWidth;
+					minimum.x += arranger->splitterWidth;
 				}
 
 				ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition::ColumnItemArrangerRepeatComposition(ListViewColumnItemArranger* _arranger)
@@ -185,6 +185,7 @@ ListViewColumnItemArranger
 							Rect bounds=buttonBounds->GetCachedBounds();
 							Rect newBounds(bounds.LeftTop(), Size(bounds.Width()+offset, bounds.Height()));
 							buttonBounds->SetExpectedBounds(newBounds);
+							columnHeaders->ForceCalculateSizeImmediately();
 
 							vint finalSize=buttonBounds->GetCachedBounds().Width();
 							columnItemView->SetColumnSize(index, finalSize);
@@ -212,10 +213,10 @@ ListViewColumnItemArranger
 
 				vint ListViewColumnItemArranger::GetColumnsWidth()
 				{
-					vint width=columnHeaders->GetCachedBounds().Width()-SplitterWidth;
-					if(width<SplitterWidth)
+					vint width=columnHeaders->GetCachedBounds().Width()-splitterWidth;
+					if(width<splitterWidth)
 					{
-						width=SplitterWidth;
+						width=splitterWidth;
 					}
 					return width;
 				}
@@ -269,7 +270,7 @@ ListViewColumnItemArranger
 								splitterComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 								splitterComposition->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeWE));
 								splitterComposition->SetAlignmentToParent(Margin(0, 0, -1, 0));
-								splitterComposition->SetPreferredMinSize(Size(SplitterWidth, 0));
+								splitterComposition->SetPreferredMinSize(Size(splitterWidth, 0));
 								columnHeaderSplitters.Add(splitterComposition);
 
 								splitterComposition->GetEventReceiver()->mouseDown.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterMouseDown);
@@ -286,7 +287,8 @@ ListViewColumnItemArranger
 								columnHeaderButtons.Add(button);
 								if (i > 0)
 								{
-									button->GetContainerComposition()->AddChild(columnHeaderSplitters[i - 1]);
+									auto splitterParent = GetTuiApplication() ? button->GetBoundsComposition() : button->GetContainerComposition();
+									splitterParent->AddChild(columnHeaderSplitters[i - 1]);
 								}
 
 								GuiStackItemComposition* item = new GuiStackItemComposition;
@@ -355,7 +357,7 @@ ListViewColumnItemArranger
 				Size ListViewColumnItemArranger::GetTotalSize()
 				{
 					Size size = TBase::GetTotalSize();
-					size.x += SplitterWidth;
+					size.x += splitterWidth;
 					return size;
 				}
 
@@ -363,6 +365,7 @@ ListViewColumnItemArranger
 				{
 					TBase::AttachListControl(value);
 					listView = dynamic_cast<GuiListViewBase*>(value);
+					splitterWidth = GetTuiApplication() ? 1 : 8;
 					if (listView)
 					{
 						listViewItemView = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier)));

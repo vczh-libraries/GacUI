@@ -96,7 +96,7 @@
       <Window ref.Name="self" ControlThemeName="SystemFrameWindow" Text="Complete Control Showcase (TUI)" ClientSize="x:120 y:40">
         <MessageDialog ref.Name="dialogLocalShortcut" Title-eval="self.Text" Text="You pressed Ctrl+Q!" />
         <MessageDialog ref.Name="dialogLocalSuperShortcut" Title-eval="self.Text" Text="You pressed Ctrl+Alt+Win+Q!" />
-        <MessageDialog ref.Name="dialogGlobalShortcut" Title-eval="self.Text" Text="You pressed Ctrl+Shift+Alt+Win+Q!" />
+        <MessageDialog ref.Name="dialogGlobalShortcut" Title-eval="self.Text" Text="You pressed Ctrl+Shift+Alt+Win+F8!" />
         <ToolstripCommand ref.Name="commandLocalShortcut" ShortcutBuilder="Ctrl+Q">
           <ev.Executed-eval><![CDATA[{
             dialogLocalShortcut.ShowDialog();
@@ -107,12 +107,12 @@
             dialogLocalSuperShortcut.ShowDialog();
           }]]></ev.Executed-eval>
         </ToolstripCommand>
-        <ToolstripCommand ref.Name="commandGlobalShortcut" ShortcutBuilder="global:Ctrl+Shift+Alt+Command+Q">
+        <ToolstripCommand ref.Name="commandGlobalShortcut" ShortcutBuilder="global:Ctrl+Shift+Alt+Command+F8">
           <ev.Executed-eval><![CDATA[{
             dialogGlobalShortcut.ShowDialog();
           }]]></ev.Executed-eval>
         </ToolstripCommand>
-        <att.BoundsComposition-set PreferredMinSize="x:80 y:25" />
+        <att.BoundsComposition-set PreferredMinSize="x:80 y:25" MinSizeLimitation="NoLimit" />
         <Tab>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
           <att.Pages>

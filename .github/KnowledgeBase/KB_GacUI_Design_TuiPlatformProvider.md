@@ -4,13 +4,13 @@ The implementation uses VlppOS TUI as the physical renderer and event pump, with
 
 ## Ownership and initialization
 
-`TuiWindowsController` derives from `TuiControllerBase` in `Source/PlatformProviders/TUI/TuiController.h`. Start the ordinary Windows native controller first to supply Windows services, install the TUI callback, and call the blocking `vl::console::TUI::Start` on the application thread.
+`TuiWindowsController` derives from `TuiControllerBase` in `Source/PlatformProviders/TUI/TuiController.h`. The portable controller has no native-controller dependency and leaves platform service accessors abstract. Initialize COM, construct the Windows TUI controller and its owned services, install the TUI callback, and call the blocking `vl::console::TUI::Start` on the application thread.
 
 `ITuiCallback::Starting` runs after terminal takeover. It constructs a `GuiHostedController` around the TUI controller and a `GuiHostedGraphicsResourceManager` around `TuiGraphicsResourceManager`. Publish native, hosted, TUI and graphics globals before initializing the hosted controller and calling `GuiApplicationMain`. This ensures `GuiInitializeUtilities` chooses `FakeTuiDialogService`.
 
 The nested native-window `Run` loop calls Show before pumping `TUI::RunOneCycle` on that same thread. Without Show, the hosted renderer remains correctly suppressed and the terminal stays blank. Do not call a second `TUI::Start` or move the event loop to a worker. The window constructor reads the current TUI buffer dimensions because the initial `BufferSizeChanged` callback normally follows `Starting`, which is already running the nested application. Native destruction sends both Destroying and Destroyed notifications.
 
-On normal exit, application utilities finalize while `GetTuiApplication()` is still valid. Finalize hosted windows, uninstall the graphics listener, clear the graphics/TUI/hosted globals and restore the service controller. Request TUI stop. After the outer Start returns, uninstall the TUI callback, destroy the TUI adapter, and finally stop Windows services and COM.
+On normal exit, application utilities finalize while `GetTuiApplication()` is still valid. Finalize hosted windows, uninstall the graphics listener and restore the previously published native, hosted, TUI and graphics globals. Request TUI stop. On exceptional startup, restore the globals and detach listeners without finalizing windows after the application object has unwound; propagate the original error. GuiHostedController removes its constructor-installed listener in its destructor. After the outer Start returns or rethrows, uninstall the TUI callback, destroy the owned TUI services/window, and uninitialize COM.
 
 `ITuiApplication::Stop()` requests owner-thread termination. Main-window `Hide` and `Close` intentionally remain no-ops; copying a GUI Exit handler would keep the loop alive. Workflow accesses the stop interface through the reflected `GuiApplication::GetTuiApplication` static function. Ordinary non-TUI startup leaves the accessor null.
 
@@ -18,11 +18,15 @@ On normal exit, application utilities finalize while `GetTuiApplication()` is st
 
 The shared adapter owns `SharedAsyncService` and `SharedCallbackService`. Its 16 ms TUI timer executes queued and delayed async work, then invokes the global timer used by GacUI rendering and caret blinking. Windows message dispatch is nonblocking and integrated into this pump. The ordinary Windows async service cannot be reused unchanged because its usual native window loop is not running.
 
-Windows still owns its service window (GodWindow), clipboard notifications, image decoding, cursors, key names/states, global shortcut registration and executable path. The adapter forwards clipboard/global-shortcut notifications to its own callback service. That service window is not another GacUI native window. Never pass a TuiWindow to code which casts an INativeWindow to WindowsForm.
+`TuiWindowsController` owns a message-only service HWND, `TuiWindowsInputService`, `TuiWindowsResourceService`, `WindowsClipboardService` and `WindowsImageService`. The first two subclass the ordinary Windows services, overriding terminal timers and fonts while retaining key names/states, hotkey registration, cursors and the OS modifier name. The HWND stores its controller in `GWLP_USERDATA`; its own window procedure routes clipboard/hotkey messages to the portable callback service without using `windowsController` or `GodProc`. Teardown stops the timer, detaches clipboard/input owners, destroys the HWND and unregisters its class. This is not another GacUI native window. Never pass a TuiWindow to WindowsForm code.
 
 The resource adapter exposes only `TuiFont`, size 1. Font style bits are retained; family, size, DPI and antialiasing do not change cell metrics. ImageService remains available for resource decoding and the showcase's textual image objects. It does not imply that ImageFrame or document image runs have a renderer. AutomationService returns null.
 
 Future Wayland/Cocoa adapters should reuse the shared controller, window, graphics and paragraph classes. Supply the platform native-service controller, implement `PumpPlatformEvents` and `ApplyTitle`, and keep any required native service windows/handles in that platform's adapter. Recheck the platform input/clipboard/global-shortcut service assumptions individually.
+
+Windows image frames and encoders use their owning WindowsImageService WIC factory. GetNativeController exposes the underlying installed controller for save/restore; GetCurrentController is a substitutable facade and must not be saved as the replacement native controller. Stop the Windows TUI timer only while TUI is active; TUI::Start destroys its backend before returning or rethrowing.
+
+The TUI and GUI showcases must use distinct OS global chords. The TUI demonstration uses Ctrl+Shift+Alt+Win+F8, while FullControlTest uses Ctrl+Shift+Alt+Win+Q; an occupied registration remains an error. Local console modifiers use a different backend path, and synthetic forwarding does not establish physical terminal delivery.
 
 ## Physical geometry and hosted windows
 
@@ -33,6 +37,8 @@ The physical window rejects custom frames and reports all GacUI frame options di
 `Console::SetTitle` cannot run during takeover because ordinary Console output is disabled. The Windows adapter applies stored titles with `SetConsoleTitleW`. Do not re-enable ordinary console output to set the title. Future adapters own their title implementation.
 
 Input uses the existing VlppOS `vl::presentation` key, character and mouse types. KeyDown/KeyUp and native wchar_t Char units are forwarded separately. Text is not synthesized from KeyDown. Mouse positions are cells, wheel signs and modifiers are retained, and Alt is independent of OS Super. Future POSIX adapters may deliver fewer key-up/modifier/button combinations.
+
+The showcase main bounds use NoLimit with their explicit 80x25 preference. This stops larger hidden-page minimum sizes from enlarging the hosted main window beyond the physical terminal; aligned children still lay out in the available viewport.
 
 ## Rendering
 
@@ -46,11 +52,15 @@ TUI XML instances use `<TuiBorder/>` directly. The compiler's default XML namesp
 
 Paint alpha is composed against destination RGB. Transparent paint preserves existing cells. Text explicitly supplies the existing destination background when it has no background override; TuiPrintOptions requires a background value. Opaque backgrounds clear covered cells, including repairing width-two pairs. TuiSkin supplies opaque normal surfaces.
 
+Graphics element IDs are cached by GuiElementBase for the process, so new IDs must be allocated across resource-manager lifetimes. Per-manager counters collide when a TUI-only element is initialized before a later GUI renderer introduces other element types. Renderer factory ownership remains local to each resource manager.
+
 ## Text and inline objects
 
 `TuiTextLayout` shares scalar decoding and layout between SolidLabel and paragraphs. It decodes UTF-16 pairs on Windows, preserves native-string offsets, treats CRLF as one break and tabs as four-column stops, and gets scalar widths from TUI::MeasureChar. Text rows have height one. Wide scalars are never emitted as isolated surrogate units or clipped halves. Unsupported zero-width/nonprintable scalars occupy no standalone terminal cell.
 
 Paragraphs implement wrapping/alignment, native-offset caret navigation/hit testing, style and foreground/background spans, inline-object ranges and caret display. Inline ranges are atomic for caret navigation. Their baseline determines line ascent/descent; stick-to-previous/next conditions keep the adjacent scalar with the object when the group fits a row. Callback-reported inline sizes invalidate layout, and render iteration uses a copy of the cells so callbacks can trigger layout/resize without invalidating an iterator. Embedded compositions remain ordinary GuiDocumentItems with their real input behavior. Labels use scalar-aware per-line ellipsis and retain natural text metrics for minimum-size calculation.
+
+Label rendering retains its display paragraph until normalized/ellipsized text or render target changes. Width, wrapping, alignment, style and color use paragraph setters; unchanged layout inputs retain the layout. Natural unwrapped/unellipsized source metrics are cached independently, including when a source change leaves the displayed ellipsis identical. Concrete TuiBorder, SolidBorder and SolidBackground renderers use the same clipped drawing methods.
 
 SetInlineObject must accept property reapplication to the exact same range with matching callback/image identity; document style and layout refreshes depend on this. Intersecting ranges still fail. OnRenderInlineObject receives coordinates relative to the paragraph, while drawing uses the supplied render origin. The document renderer adds paragraph offsets itself.
 
@@ -64,7 +74,7 @@ Authored TuiSkin XML lives in `Test/Resources/App/TuiSkin`. Its ThemeTemplates i
 
 Standard text/tree/detail-list item templates and default DataGrid visualizers branch on GetTuiApplication. TUI branches use cell spacing, omit image elements and use a text focus indicator. `TuiListItemBackgroundTemplate` publishes normal/disabled/selected text and selected-background colors. Helpers in `Source/Controls/ListControlPackage/TuiItemTemplates.cpp` propagate them to realized items and grid cells, including recycled cells. The existing GUI branches retain their metrics and behavior. Standard ListView view requests normalize to Detail, while DataGrid's separate editable view remains available.
 
-Cell layouts must propagate content minimum sizes through checkbox/radio stacks and scroll-container tables. Do not split a one-cell text row between two percentage rows: rounding each half can double its height. Default grid rows reserve three cells for bordered in-place editors, and grid separator bounds have a one-cell minimum. Document controls use zero internal padding and a one-cell caret scroll margin in TUI mode; GUI pixel metrics remain unchanged.
+Cell layouts must propagate content minimum sizes through checkbox/radio stacks and scroll-container tables. Do not split a one-cell text row between two percentage rows: rounding each half can double its height. Grid rows derive their height from visualizers/editors and keep a one-cell bottom/right separator. While editing a TUI CellBorderVisualizerTemplate, keep its outer separator visible, hide only its content container, and copy that container's inset to the editor. Keep the editor owned by the original cell so replacing a visualizer cannot destroy it. Embedded text editors use an explicitly assigned borderless one-row template, and ordinary/date combos are one row; do not reserve three rows for bordered editors. Document controls use zero internal padding and a one-cell caret scroll margin in TUI mode; GUI pixel metrics remain unchanged.
 
 The showcase binds document-editor shortcuts to document focus so hidden editors do not intercept another page or dialog's clipboard keys. An empty GuiToolstripCommand ShortcutBuilder unregisters its chord and clears the stored builder; reattaching a cleared command must not recreate the old shortcut.
 

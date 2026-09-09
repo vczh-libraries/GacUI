@@ -1193,6 +1193,7 @@ GuiHostedController
 
 		GuiHostedController::~GuiHostedController()
 		{
+			nativeController->CallbackService()->UninstallListener(this);
 		}
 
 		IGuiHostedApplication* GuiHostedController::GetHostedApplication()

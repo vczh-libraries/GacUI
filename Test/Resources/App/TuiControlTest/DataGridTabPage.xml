@@ -16,7 +16,7 @@
       }
     ]]></ref.Ctor>
   <TabPage ref.Name="self" Text="BindableDataGrid">
-    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="1">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
       <att.Rows>
         <_>composeType:MinSize</_>
         <_>composeType:Percentage percentage:1.0</_>
@@ -132,7 +132,7 @@
               <att.Sorter>[Sys::Compare($1.Birthday, $2.Birthday)]</att.Sorter>
               <att.Filter-eval>dateFilter.Filter</att.Filter-eval>
               <att.Popup>
-                <ToolstripMenu>
+                <ToolstripMenu ControlTemplate="tuiskin::TuiContentMenuTemplate">
                   <demo:TuiDateFilter ref.Name="dateFilter">
                     <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
                   </demo:TuiDateFilter>

@@ -13,55 +13,29 @@ namespace vl::presentation
 		, public INativeController
 		, public ITuiApplication
 		, public console::ITuiCallback
-		, protected INativeControllerListener
-		, protected INativeResourceService
-		, protected INativeInputService
 		, protected INativeScreenService
 		, protected INativeScreen
 		, protected INativeWindowService
 	{
 	protected:
-		INativeController*				nativeServices;
 		SharedCallbackService			callbackService;
 		SharedAsyncService				asyncService;
 		Ptr<TuiWindow>					window;
-		FontProperties					defaultFont;
 		NativeWindowFrameConfig			frameConfig;
-		bool							timerEnabled = false;
 
 		virtual void					PumpPlatformEvents() = 0;
 		void							Starting() override;
 	public:
-		TuiControllerBase(INativeController* nativeServices);
+		TuiControllerBase();
 		~TuiControllerBase();
 		ITuiApplication*				GetTuiApplication();
 		virtual void					ApplyTitle(const WString& title) = 0;
 		INativeCallbackService*			CallbackService() override;
-		INativeResourceService*			ResourceService() override;
 		INativeAsyncService*			AsyncService() override;
-		INativeClipboardService*		ClipboardService() override;
-		INativeImageService*			ImageService() override;
-		INativeInputService*			InputService() override;
 		INativeDialogService*			DialogService() override;
 		INativeAutomationService*		AutomationService() override;
-		WString							GetExecutablePath() override;
 		INativeScreenService*			ScreenService() override;
 		INativeWindowService*			WindowService() override;
-		INativeCursor*					GetSystemCursor(INativeCursor::SystemCursorType type) override;
-		INativeCursor*					GetDefaultSystemCursor() override;
-		FontProperties					GetDefaultFont() override;
-		void							SetDefaultFont(const FontProperties& value) override;
-		void							EnumerateFonts(collections::List<WString>& fonts) override;
-		WString							GetOSSuperKeyName() override;
-		void							StartTimer() override;
-		void							StopTimer() override;
-		bool							IsTimerEnabled() override;
-		bool							IsKeyPressing(VKEY code) override;
-		bool							IsKeyToggled(VKEY code) override;
-		WString							GetKeyName(VKEY code) override;
-		VKEY							GetKey(const WString& name) override;
-		vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key) override;
-		bool							UnregisterGlobalShortcutKey(vint id) override;
 		vint							GetScreenCount() override;
 		INativeScreen*					GetScreen(vint index) override;
 		INativeScreen*					GetScreen(INativeWindow* window) override;
@@ -82,8 +56,8 @@ namespace vl::presentation
 		void							Stop() override;
 		void							BufferSizeChanged() override;
 		void							Timer() override;
-		void							ClipboardUpdated() override;
-		void							GlobalShortcutKeyActivated(vint id) override;
+		void							ClipboardUpdated();
+		void							GlobalShortcutKeyActivated(vint id);
 		void							KeyDown(const NativeWindowKeyInfo& info) override;
 		void							KeyUp(const NativeWindowKeyInfo& info) override;
 		void							Char(const NativeWindowCharInfo& info) override;

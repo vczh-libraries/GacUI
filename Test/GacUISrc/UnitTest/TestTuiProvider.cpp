@@ -45,21 +45,31 @@ namespace tui_provider_tests
 		}
 	};
 
-	class TuiTestNativeServices : public Object, public INativeController
+	class TuiTestResourceService : public Object, public INativeResourceService
 	{
 	public:
-		SharedCallbackService callbacks;
-		INativeCallbackService* CallbackService() override { return &callbacks; }
-		INativeResourceService* ResourceService() override { return nullptr; }
-		INativeAsyncService* AsyncService() override { return nullptr; }
-		INativeClipboardService* ClipboardService() override { return nullptr; }
-		INativeImageService* ImageService() override { return nullptr; }
-		INativeScreenService* ScreenService() override { return nullptr; }
-		INativeWindowService* WindowService() override { return nullptr; }
-		INativeInputService* InputService() override { return nullptr; }
-		INativeDialogService* DialogService() override { return nullptr; }
-		INativeAutomationService* AutomationService() override { return nullptr; }
-		WString GetExecutablePath() override { return L"TuiTest"; }
+		FontProperties font;
+		INativeCursor* GetSystemCursor(INativeCursor::SystemCursorType) override { return nullptr; }
+		INativeCursor* GetDefaultSystemCursor() override { return nullptr; }
+		FontProperties GetDefaultFont() override { auto result = font; result.fontFamily = L"TuiFont"; result.size = 1; return result; }
+		void SetDefaultFont(const FontProperties& value) override { font = value; }
+		void EnumerateFonts(List<WString>& fonts) override { fonts.Add(L"TuiFont"); }
+		WString GetOSSuperKeyName() override { return L"Super"; }
+	};
+
+	class TuiTestInputService : public Object, public INativeInputService
+	{
+	public:
+		bool enabled = false;
+		void StartTimer() override { enabled = true; TUI::StartTimer(16); }
+		void StopTimer() override { enabled = false; TUI::StopTimer(); }
+		bool IsTimerEnabled() override { return enabled; }
+		bool IsKeyPressing(VKEY) override { return false; }
+		bool IsKeyToggled(VKEY) override { return false; }
+		WString GetKeyName(VKEY) override { return L"TestKey"; }
+		VKEY GetKey(const WString&) override { return VKEY::KEY_UNKNOWN; }
+		vint RegisterGlobalShortcutKey(bool, bool, bool, bool, VKEY) override { return 1; }
+		bool UnregisterGlobalShortcutKey(vint) override { return true; }
 	};
 
 	class TuiTestController : public TuiControllerBase
@@ -68,10 +78,46 @@ namespace tui_provider_tests
 		Func<void()> test;
 		WString title;
 		vint pumps = 0;
-		TuiTestController(INativeController* services) : TuiControllerBase(services) {}
+		TuiTestResourceService resources;
+		TuiTestInputService input;
+		INativeResourceService* ResourceService() override { return &resources; }
+		INativeInputService* InputService() override { return &input; }
+		INativeClipboardService* ClipboardService() override { return nullptr; }
+		INativeImageService* ImageService() override { return nullptr; }
+		WString GetExecutablePath() override { return L"TuiTest"; }
 		void Starting() override { test(); Stop(); }
 		void PumpPlatformEvents() override { pumps++; }
 		void ApplyTitle(const WString& value) override { title = value; }
+	};
+
+	class TuiCountingParagraph : public TuiGraphicsParagraph
+	{
+	public:
+		vint layouts = 0;
+		TuiCountingParagraph(const WString& text, IGuiGraphicsLayoutProvider* provider, TuiGraphicsRenderTarget* target, IGuiGraphicsParagraphCallback* callback)
+			: TuiGraphicsParagraph(text, provider, target, callback) {}
+		Size GetSize() override { if (dirty) layouts++; return TuiGraphicsParagraph::GetSize(); }
+		void Render(Rect bounds) override { if (dirty) layouts++; TuiGraphicsParagraph::Render(bounds); }
+	};
+
+	class TuiCountingLayoutProvider : public TuiGraphicsLayoutProvider
+	{
+	public:
+		vint creations = 0;
+		Ptr<TuiCountingParagraph> last;
+		Ptr<IGuiGraphicsParagraph> CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* target, IGuiGraphicsParagraphCallback* callback) override
+		{
+			creations++;
+			last = Ptr(new TuiCountingParagraph(text, this, dynamic_cast<TuiGraphicsRenderTarget*>(target), callback));
+			return last;
+		}
+	};
+
+	class TuiCountingResources : public TuiGraphicsResourceManager
+	{
+	public:
+		TuiCountingLayoutProvider provider;
+		IGuiGraphicsLayoutProvider* GetLayoutProvider() override { return &provider; }
 	};
 
 	class TuiTestWindowListener : public INativeWindowListener
@@ -109,8 +155,7 @@ namespace tui_provider_tests
 	{
 		auto backend = Ptr(new TuiTestBackend);
 		ScopedTuiBackend scoped(backend);
-		TuiTestNativeServices services;
-		TuiTestController controller(&services);
+		TuiTestController controller;
 		controller.test = [&]() { test(backend.Obj(), &controller); };
 		TEST_ASSERT(TUI::InstallListener(&controller));
 		TUI::Start({});
@@ -319,7 +364,7 @@ TEST_FILE
 				invoked++;
 			});
 			controller->AsyncService()->DelayExecuteInMainThread([&]() { invoked++; }, 0);
-			controller->StartTimer();
+			controller->InputService()->StartTimer();
 			for (vint i = 0; i < 20 && invoked != 2; i++) controller->RunOneCycle();
 			TEST_ASSERT(invoked == 2 && timer.ticks > 0);
 			controller->Stop();
@@ -345,10 +390,136 @@ TEST_FILE
 				invoked = true;
 				controller->Stop();
 			});
-			controller->StartTimer();
+			controller->InputService()->StartTimer();
 			controller->Run(window);
 			TEST_ASSERT(invoked);
 			controller->DestroyNativeWindow(window);
+		});
+	});
+
+	TEST_CASE(L"TUI registered renderers reuse label paragraphs and layouts")
+	{
+		TuiRunTest([](TuiTestBackend* backend, TuiTestController* controller)
+		{
+			auto previousResources = GetGuiGraphicsResourceManager();
+			TuiCountingResources resources;
+			SetGuiGraphicsResourceManager(&resources);
+			RegisterTuiRenderers();
+			auto window = controller->CreateNativeWindow(INativeWindow::Normal);
+			window->Show();
+			TuiGraphicsRenderTarget target(window);
+			TuiGraphicsRenderTarget replacement(window);
+			target.StartHostedRendering();
+			target.StartRendering();
+			{
+				auto background = Ptr(GuiSolidBackgroundElement::Create());
+				auto border = Ptr(GuiSolidBorderElement::Create());
+				auto tuiBorder = Ptr(TuiBorderElement::Create());
+				background->SetColor(Color(10, 20, 30));
+				border->SetColor(Color(100, 110, 120));
+				tuiBorder->SetColor(Color(130, 140, 150));
+				tuiBorder->SetLineStyle(TuiLineStyle::Double);
+				background->GetRenderer()->SetRenderTarget(&target);
+				border->GetRenderer()->SetRenderTarget(&target);
+				tuiBorder->GetRenderer()->SetRenderTarget(&target);
+				background->GetRenderer()->Render(Rect(0, 0, 16, 8));
+				border->GetRenderer()->Render(Rect(0, 0, 4, 4));
+				tuiBorder->GetRenderer()->Render(Rect(5, 0, 9, 4));
+				TEST_ASSERT(TUI::GetBuffer()[0].GetChar32() == U'\u250C');
+				TEST_ASSERT(TUI::GetBuffer()[5].GetChar32() == U'\u2554');
+				TEST_ASSERT(TUI::GetBuffer()[7 * 16 + 15].backgroundColor.r == 10);
+
+				auto label = Ptr(GuiSolidLabelElement::Create());
+				auto renderer = label->GetRenderer();
+				TEST_ASSERT(renderer->GetMinSize() == Size(0, 1));
+				renderer->SetRenderTarget(&target);
+				label->SetText(L"ABCD");
+				label->SetColor(Color(200, 210, 220));
+				auto paragraph = resources.provider.last;
+				auto creations = resources.provider.creations;
+				renderer->Render(Rect(0, 0, 6, 3));
+				TEST_ASSERT(renderer->GetMinSize() == Size(4, 1));
+				auto layouts = paragraph->layouts;
+				renderer->Render(Rect(0, 0, 6, 3));
+				TEST_ASSERT(resources.provider.creations == creations && paragraph->layouts == layouts);
+				label->SetColor(Color(230, 240, 250));
+				auto font = label->GetFont();
+				font.bold = true;
+				font.underline = true;
+				label->SetFont(font);
+				renderer->Render(Rect(0, 0, 6, 3));
+				TEST_ASSERT(resources.provider.creations == creations && paragraph->layouts == layouts);
+				TEST_ASSERT(TUI::GetBuffer()[0].foregroundColor.r == 230);
+				TEST_ASSERT(TUI::GetBuffer()[0].character.style.bold && TUI::GetBuffer()[0].character.style.underline);
+				label->SetHorizontalAlignment(Alignment::Right);
+				label->SetVerticalAlignment(Alignment::Bottom);
+				renderer->Render(Rect(0, 0, 6, 3));
+				TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 2].GetChar32() == U'A');
+				TEST_ASSERT(resources.provider.last == paragraph && paragraph->layouts == layouts + 1);
+				label->SetHorizontalAlignment(Alignment::Center);
+				label->SetVerticalAlignment(Alignment::Center);
+				renderer->Render(Rect(0, 0, 6, 3));
+				TEST_ASSERT(TUI::GetBuffer()[16 + 1].GetChar32() == U'A');
+				label->SetHorizontalAlignment(Alignment::Left);
+				label->SetVerticalAlignment(Alignment::Top);
+				label->SetWrapLine(true);
+				label->SetWrapLineHeightCalculation(true);
+				renderer->Render(Rect(0, 0, 2, 4));
+				TEST_ASSERT(resources.provider.last == paragraph && renderer->GetMinSize() == Size(0, 2));
+				label->SetWrapLineHeightCalculation(false);
+				TEST_ASSERT(renderer->GetMinSize() == Size(0, 0));
+				label->SetWrapLine(false);
+				renderer->Render(Rect(0, 0, 8, 4));
+				TEST_ASSERT(resources.provider.last == paragraph && renderer->GetMinSize() == Size(4, 1));
+
+				label->SetText(L"A\r\nZ");
+				TEST_ASSERT(renderer->GetMinSize() == Size(4, 1));
+				label->SetMultiline(true);
+				TEST_ASSERT(renderer->GetMinSize() == Size(1, 2));
+				label->SetText(L"A\t\x4E2D\U0001F600\r\nZ");
+				TEST_ASSERT(renderer->GetMinSize() == Size(8, 2));
+				renderer->Render(Rect(0, 0, 8, 3));
+				TEST_ASSERT(TUI::GetBuffer()[4].GetChar32() == U'\u4E2D');
+				TEST_ASSERT(TUI::GetBuffer()[5].glyph == TuiPixelGlyph::WideCharContinuation);
+				TEST_ASSERT(TUI::GetBuffer()[6].GetChar32() == U'\U0001F600');
+				TEST_ASSERT(TUI::GetBuffer()[7].glyph == TuiPixelGlyph::WideCharContinuation);
+				label->SetText(L"\u4E2D");
+				label->SetEllipse(true);
+				renderer->Render(Rect(0, 0, 0, 2));
+				paragraph = resources.provider.last;
+				label->SetText(L"\u4E2D\r\n\u4E2D");
+				TEST_ASSERT(renderer->GetMinSize() == Size(0, 2));
+				label->SetText(L"\u4E2D");
+				renderer->Render(Rect(0, 0, 1, 2));
+				paragraph = resources.provider.last;
+				label->SetText(L"\u4E2D\u6587");
+				TEST_ASSERT(resources.provider.last == paragraph);
+				renderer->Render(Rect(0, 0, 2, 2));
+				TEST_ASSERT(resources.provider.last == paragraph);
+				label->SetEllipse(false);
+				TEST_ASSERT(renderer->GetMinSize() == Size(4, 1));
+				label->SetEllipse(true);
+				paragraph = resources.provider.last;
+				renderer->Render(Rect(0, 0, 3, 2));
+				TEST_ASSERT(resources.provider.last != paragraph);
+				paragraph = resources.provider.last;
+				renderer->SetRenderTarget(&replacement);
+				TEST_ASSERT(resources.provider.last != paragraph && resources.provider.last->GetRenderTarget() == &replacement);
+				renderer->SetRenderTarget(&target);
+				label->SetEllipse(false);
+				label->SetText(L"ABCDE");
+				target.Fill(Rect(0, 0, 16, 8), Color(0, 0, 0));
+				target.PushClipper(Rect(2, 1, 4, 2), nullptr);
+				renderer->Render(Rect(0, 1, 8, 3));
+				TEST_ASSERT(TUI::GetBuffer()[16 + 1].GetChar32() == 0);
+				TEST_ASSERT(TUI::GetBuffer()[16 + 2].GetChar32() == U'C');
+				TEST_ASSERT(TUI::GetBuffer()[16 + 4].GetChar32() == 0);
+				target.PopClipper(nullptr);
+			}
+			target.StopRendering();
+			target.StopHostedRendering();
+			controller->DestroyNativeWindow(window);
+			SetGuiGraphicsResourceManager(previousResources);
 		});
 	});
 

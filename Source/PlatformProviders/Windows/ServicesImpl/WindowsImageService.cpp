@@ -20,7 +20,7 @@ WindowsImageFrame
 
 			void WindowsImageFrame::Initialize(IWICBitmapSource* bitmapSource)
 			{
-				IWICImagingFactory* factory=GetWICImagingFactory();
+				auto factory = dynamic_cast<WindowsImageService*>(image->GetImageService())->GetImagingFactory();
 				ComPtr<IWICFormatConverter> converter;
 				{
 					IWICFormatConverter* formatConverter=0;
@@ -290,7 +290,7 @@ WindowsImage
 
 			void WindowsImage::SaveToStream(stream::IStream& imageStream, FormatType formatType)
 			{
-				auto factory = GetWICImagingFactory();
+				auto factory = dynamic_cast<WindowsImageService*>(imageService)->GetImagingFactory();
 				GUID formatGUID;
 				HRESULT hr;
 
@@ -450,7 +450,7 @@ WindowsBitmapImage
 
 			void WindowsBitmapImage::SaveToStream(stream::IStream& imageStream, FormatType formatType)
 			{
-				auto factory = GetWICImagingFactory();
+				auto factory = dynamic_cast<WindowsImageService*>(imageService)->GetImagingFactory();
 				if (formatType == INativeImage::Unknown)
 				{
 					formatType = INativeImage::Bmp;
@@ -621,7 +621,7 @@ Helper Functions
 
 			WindowsImageService* GetWindowsImageService()
 			{
-				return  dynamic_cast<WindowsImageService*>(GetWindowsNativeController()->ImageService());
+				return  dynamic_cast<WindowsImageService*>(GetNativeController()->ImageService());
 			}
 
 			IWICImagingFactory* GetWICImagingFactory()

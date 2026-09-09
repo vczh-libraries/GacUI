@@ -158,9 +158,9 @@ Windows Terminal console-buffer inspection confirms baseline three-row combos an
 
 # PROPOSALS
 
-- No.1 Coordinate terminal services, rendering caches and compact control templates
+- No.1 [CONFIRMED] Coordinate terminal services, rendering caches and compact control templates
 
-## No.1 Coordinate terminal services, rendering caches and compact control templates
+## No.1 [CONFIRMED] Coordinate terminal services, rendering caches and compact control templates
 
 Keep terminal window/event/async behavior in the portable controller, with abstract platform service accessors. The Windows controller will own Windows-derived input/resource services, clipboard/image services and its own explicitly owned hidden service window. Route clipboard and global hotkey messages using the window's controller pointer, detach native owners before destroying the HWND, and restore the previously published controller. Preserve terminal timers and size-one fonts in the Windows service overrides. Adapt the injected test controller with deterministic standalone services.
 
@@ -174,4 +174,70 @@ Add all authored TuiSkin/TuiControlTest XML files exactly once to both compiler 
 
 ### CODE CHANGE
 
-Implementation and verification pending.
+- Portable provider: remove the native-controller parameter, forwarding pointer, and input/resource-service inheritance from TuiControllerBase. Keep shared callbacks, async work, terminal windows and the owner-thread pump portable. Adapt the injected test controller to standalone services.
+- Windows provider: own Windows-derived input/resource services, clipboard/image services and a message-only service HWND. Route clipboard/hotkey notifications through GWLP_USERDATA. Preserve 16 ms terminal timers and size-one TuiFont metrics; detach native owners, listeners and COM on teardown.
+- Controller/resource lifetime: save the actual installed native controller through GetNativeController, restore all published globals on normal/exceptional return, and pair GuiHostedController's constructor listener in its destructor. Do not finalize hosted windows after GuiApplicationMain has already unwound its application. Stop the terminal timer only while the backend exists. Windows image frames/encoders use their owning WIC service.
+- Rendering: replace the conditional element renderer with concrete border, solid-border and solid-background renderers. Reuse a label's display paragraph and layout through width, wrapping, alignment, color and style setters; replace it for effective-text or render-target changes. Cache natural source metrics independently. Allocate new graphics element IDs across resource-manager lifetimes because GuiElementBase caches IDs for the process.
+- Shared controls: clamp DataGrid Right to the final valid column. Consume document navigation keys after moving the caret, preserving existing singleline Enter and immediate CellValue semantics. Synchronize header layout before reading resized bounds. TUI splitters occupy the following header's first cell; GUI splitters retain their eight-pixel metrics.
+- Compact grid editors: remove the fixed three-row TUI reservation. Keep a CellBorderVisualizerTemplate's outer separator visible, hide only its content, and copy that content inset to the editor. Keep editor ownership in the original data cell so visualizer replacement cannot destroy it. Restore the visualizer content on dismissal.
+- Authored skin/showcase: separate opaque borderless content popups from bordered menus; compact ordinary/date combos; paint uniform scrollbar/tracker handles; move sorting before the header title; add white/black ALT palette defaults and bold-plus-underline focus. Remove redundant padding on the six named pages. Assign the grid's dedicated borderless textbox template and initialize custom combo selected-item colors. Give the Birthday filter its explicit content-menu template. Prevent hidden-page minimum sizes from enlarging the physical main window with NoLimit on the showcase's outer bounds.
+- Startup chord: the TUI global demonstration now uses Ctrl+Shift+Alt+Win+F8; ordinary FullControlTest retains Q. The local Ctrl+Alt+Win+Q command is unchanged because an Alt limitation was not established and replacing Alt while retaining unobservable Win would not solve it.
+- Inventory/documentation: list all 33 authored XML files exactly once in both compiler project inventories without changing compilation order. Update GacUILayout.md, the TUI provider knowledge base and shortcut instructions. Regenerate outputs through the existing compiler entry point.
+
+### CONFIRMED
+
+The proposal fixes the reproduced boundary/editor/resize/startup defects and implements the coordinated provider, renderer and resource changes. It is the sole proposal and is retained.
+
+**Automated validation**
+
+- The baseline full suite reproduced the new invalid-right-boundary assertion. The mouse-selection regression passed, so no speculative generic focus change was made.
+- The final Debug x64 full UnitTest run returned zero: **90/90 files and 1743/1743 cases passed**. The completed raw Execute.log contains no skipped/failed cases or memory-leak dump. An earlier complete x64 run also passed after the final production C++ editor-placement change.
+- All eight provider cases passed, including actual registered renderer creation, paragraph/layout reuse, clipping, wide-character repair, resize, deterministic input/async/timer behavior and explicit stopping.
+- Shared regressions cover mouse selection, valid column boundaries, caret navigation/selection/replacement, unchanged singleline Enter, Escape dismissal and restored grid navigation, plus first/middle/last column growth/shrink with horizontal scrolling.
+- Final GacUI_Compiler execution generated all existing resources for both architectures and returned zero, with no UI.errors.txt or leak output. Both generated TuiControlTest.cpp files contain F8, the explicit borderless filter and NoLimit main bounds.
+- The required post-generation sequence passed: Debug Win32 solution build (zero warnings/errors, 37.20 seconds), Metadata_Generate Win32, Debug x64 solution build (zero warnings/errors, 34.82 seconds), Metadata_Generate x64, Metadata_Test x64. Every command used the repository wrapper.
+- Both project XML files parse; all 33 authored XML resources occur exactly once with valid filters. GacUI_Compiler/Main.cpp is unchanged.
+- Existing GUI frame/JSON snapshots match HEAD. Ten generated compiler text logs reorder unchanged declaration blocks; new regression snapshots come from the test runner. The authored diff has no whitespace errors. Four new generated compiler text snapshots retain the generator's extra blank line at EOF; they were not hand-edited.
+
+**Runtime comparison**
+
+| Issue | Evidence and result |
+|---|---|
+| Starting both showcases | CDB confirmed the second application fails in both orders when Q is occupied: RegisterHotKey returns 0, GetLastError=1409, modifiers=0xf, key=81, id=1. The null shortcut is read by the generated shortcut-name subscription through This<IGuiShortcutKeyItem>, AddSubscription and MainWindow initialization. With TUI F8 and GUI Q, both applications remained interactive in both startup orders. |
+| Header resizing | GUI first/middle/last columns grew and shrank with their original hit regions; the initial GUI drag already worked. TUI uses the actual first cell of the next header and now grows/shrinks first/middle/last columns. Repeated TUI checks after horizontal scrolling at 80x25 preserved header/cell alignment. |
+| Mouse/grid navigation | GUI non-editor mouse selection followed by Right moved the focus rectangle. Updated TUI non-editor selection followed by Right moved the cell indicator. Shared tests protect mouse focus and first/last boundaries. The confirmed invalid-column and editor-event defects are fixed. |
+| Text editor navigation | Both applications moved the caret with End/Left and replaced a Shift-selected character without selecting another cell. GUI produced 涼宮 春X日 then 涼宮 春Y日. Enter left the singleline editor open; Escape dismissed it and grid navigation resumed. |
+| Custom combo values | GUI Category initially displayed Lime and retained Black after selection/reopening; its selected-item path was already visible. TUI Gender changed Female to Male and Category changed Lime to Black, with visible closed/custom-editor values retained after page revisiting and ItemSource removal/restoration. |
+| Local/global shortcuts | Distinct Q/F8 registrations were held while both applications ran and released on exit. A synthetic WM_HOTKEY reached the TUI-owned service HWND and displayed the exact F8 dialog. Physical shortcut delivery is limited as described below. |
+
+**Terminal geometry, rendering and services**
+
+- Used real Windows Terminal and the CLI wrapper with -Interactive. The final executable fit 120x40, shrank to exactly 80x25 with intact outer/inner right and bottom borders, and returned to 120x40.
+- Inspected TextList, both ListView panes, independently expanded TreeView, compact BindableDataGrid, all four TextBox leaves and Localization at the small viewport. Standalone textboxes retain their borders; document panes wrap and scroll independently. The Tab-enabled textbox inserted a four-cell tab without changing its sibling.
+- Both zh-CN and en-US retained all twelve formatted localization entries, including literal-dollar sentences, after resizing and page changes.
+- Grid content meets its separator before/during/after text and custom-combo editing. The Refresh List File editor changed Three to ThreXe at the moved caret and retained it on reopening.
+- Plain/custom combo dropdowns retain only their content control's own border. Date popups are borderless. The final Birthday filter is an opaque two-row popup without an extra frame; checking From enables its date text and opens a calendar inside the viewport. Nested File/Save As and Edit menus retain their frames. Dismissal repaints the underlying controls.
+- Sorting renders before Birthday's title and separately from its working submenu arrow. Header resizing remains usable after scrolling.
+- Read-only CDB inspection confirmed TrueColor mode and a 16 ms timer. Horizontal/vertical multi-cell handles use RGB(128,128,128) throughout against RGB(64,64,64) tracks. One-cell trackers use the same colors. Content-fit disabled handle cells use RGB(64,64,64). Dragging moves handles to the other end without leaving the old glyph. Legacy console attributes map both grays to one palette slot and cannot distinguish these RGB values.
+- Synthetic Alt display produced black foreground and white background (native attribute 240). After moving the pointer away, focused button, checkbox, radio, combo and tab-header text had bold=true and underline=true in live TuiPixel styles.
+- Copy/paste between independent TUI textboxes produced ArcherArcher. CDB confirmed an actual clipboard notification stack: TuiControllerBase::ClipboardUpdated <- TuiWindowsController::ServiceWindowProc <- USER32 dispatch <- PumpPlatformEvents <- RunOneCycle. This notification came from the control copy operation.
+- Queued Hide/Close callbacks visibly completed (Invocations completed: 4). The queued Stop path exited under CDB with code 0 and no leak output; its restored shell accepted echo TUISTOPOK.
+- A separate final direct Stop run exited under CDB with code 0 and no leak output. The launch shell measured identical state before/after: input mode 503, output mode 7, cursor visible=true and Gray/Black console colors; it printed RESTORED True and then accepted echo TUIFINALOK. The F8 registration was available afterward.
+
+**Verification limits**
+
+The computer-use service exposes no usable capture/input surface for these Terminal/CppTest windows, and desktop capture fails with an invalid handle. Physical font/RGB appearance, real Ctrl/Alt/Shift/Win delivery, native global activation, and the exhaustive physical hover/disabled matrix remain unverified. SendInput returned zero with error 5 (access denied); synthetic console records and service messages establish forwarding only.
+
+The owning VlppOS Windows decoder preserves Ctrl/Shift/Alt from console records but does not populate osSuper. No physical Alt limitation was proven, so the requested Alt-to-Shift fallback was not applied. The local Win chord remains subject to that documented backend limitation.
+
+A synthetic Down probe did not establish a focused menu item; its focus binding was reviewed but that runtime observation is not marked passed. The GUI Gender editor uses an image-only selected composition, whose exact selected value was not exposed by the HTTP tree. TUI item-source replacement/page revisiting was checked, but the small fixed dataset did not exercise every requested scroll-recycling permutation. Tooltip and every explicit disabled/hover state were not exhaustively observed. These limits remain follow-up verification, not claimed passes.
+
+### INVESTIGATION NOTES
+
+- The trial replacement global chord T was also occupied on this machine. CDB and an independent registration probe returned 1409; Q and F8 could register after the showcases stopped. F8 is the final authored/generated chord.
+- Debugging showed textbox focus was already correct. ProcessKey moved the caret and then returned false, allowing the grid to process the same navigation key. Trial preview/Enter-propagation approaches were discarded; final Enter behavior is unchanged.
+- The registered-renderer test exposed a process-static element-ID collision when a later GUI resource manager began allocating IDs from zero. A test-only forwarding registry would not solve later manager lifetimes; the process-wide allocation fix passed the full GUI suite.
+- Exception debugging exposed facade-pointer restoration, StopTimer after backend destruction, and hosted-window finalization after application unwinding. The final ownership changes preserve the original error while detaching listeners and restoring globals.
+- At 80x25, the old main bounds preferred 80x25 but inherited a cached child minimum of 98x27 and actual bounds of 98x28. The final authored NoLimit change fixes the physical viewport, confirmed in the regenerated executable.
+- An attempted debugger-injected setter call in an earlier probe used an incorrect implicit this argument. That probe was terminated; this was a debugger experiment failure and is not a normal Stop result. Subsequent verification used read-only debugger inspection and actual control input.
+- Intermediate builds caught Unicode character-literal encoding, protected listener conversion and container-type cast errors; these were corrected. The first splitter test used an assertion-only idle frame, which the test framework rejects. Its assertions now run in the next real drag/close action. Final builds and the full suite pass.

@@ -214,4 +214,113 @@
       <Filter>Resource Files\RemoteViewModelTest</Filter>
     </Xml>
   </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Resource Files\TuiControlTest">
+      <UniqueIdentifier>{db4860d1-0890-4442-8327-3955b54b9ee3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\TuiSkin">
+      <UniqueIdentifier>{17b6629e-dd41-4c05-bf60-dfc613a2b5c8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Resources\App\TuiSkin\Index.xml">
+      <Filter>Resource Files\TuiSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiSkin\Resource.xml">
+      <Filter>Resource Files\TuiSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiSkin\Style.xml">
+      <Filter>Resource Files\TuiSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Button.xml">
+      <Filter>Resource Files\TuiSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Document.xml">
+      <Filter>Resource Files\TuiSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_List.xml">
+      <Filter>Resource Files\TuiSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Misc.xml">
+      <Filter>Resource Files\TuiSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Scroll.xml">
+      <Filter>Resource Files\TuiSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Tab.xml">
+      <Filter>Resource Files\TuiSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Toolstrip.xml">
+      <Filter>Resource Files\TuiSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Window.xml">
+      <Filter>Resource Files\TuiSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiSkin\TuiSkin.xml">
+      <Filter>Resource Files\TuiSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\DataGridComponents.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\DataGridTabPage.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\DatePickerTabPage.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\DocumentComponents.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\DocumentEditorBase.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\DocumentEditorToolstrip.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\EmbeddedControlsSubTabPage.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\ListViewData.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\ListViewTabPage.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\LocalizedComponents.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\LocalizedDialogsTabPage.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\LocalizedStringsTabPage.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\RefreshListTabPages.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\RepeatComponents.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\RepeatTabPage.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\Resource.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\ResponsiveTabPage.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\SideDocuments.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\TextBoxTabPage.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\TextListTabPage.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\TuiControlTest\TreeViewTabPage.xml">
+      <Filter>Resource Files\TuiControlTest</Filter>
+    </Xml>
+  </ItemGroup>
 </Project>

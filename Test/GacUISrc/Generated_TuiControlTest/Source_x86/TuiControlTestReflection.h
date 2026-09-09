@@ -78,6 +78,8 @@ namespace vl
 			DECL_TYPE_INFO(::tuidemo::TuiGenderItemTemplateConstructor)
 			DECL_TYPE_INFO(::tuidemo::TuiGenderVisualizer)
 			DECL_TYPE_INFO(::tuidemo::TuiGenderVisualizerConstructor)
+			DECL_TYPE_INFO(::tuidemo::TuiGridTextBoxTemplate)
+			DECL_TYPE_INFO(::tuidemo::TuiGridTextBoxTemplateConstructor)
 			DECL_TYPE_INFO(::tuidemo::TuiHyperlinkWindow)
 			DECL_TYPE_INFO(::tuidemo::TuiHyperlinkWindowConstructor)
 			DECL_TYPE_INFO(::tuidemo::TuiListViewTabPage)

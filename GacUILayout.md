@@ -35,7 +35,7 @@
 ## Best Practice for TUI Based Layout
 
 - Usually there should be no distance between objects, no matter vertically or horizontally.
-  - For any two objects without visible borders, keep one pixel between them when they are stacking vertically.
+  - Adjacent text rows and buttons can stack without blank rows. Add vertical spacing only to separate distinct groups.
     - There is always no need to leave one pixel between objects with borders in one or both, because borders in TUI already have a visible distance due to the representing character.
     - There is always no need to leave one pixel between objects stacking horizontally.
   - There is no need to keep a distance if they are stacking horizontally, as TuiSkin requires the control has one pixel to before and after the text.
@@ -107,15 +107,23 @@
     - When there is a sizable box, use double line.
     - When there is a border, use thick line.
     - When there is no box, there is no line.
-      - But just like drakskin, dropdown menu style should maintain a thin line, which mean they have their own window template for dropdown.
+      - Actual menus retain their own thin border. Ordinary popups, tooltips and combo/date/filter content dropdowns use opaque borderless templates; content controls keep their own borders.
 - Unlike darkskin, scroll bars, buttons and menu items will have no border.
   - Two spaces are added around the control text, so that buttons, or menu buttons in a menu bar, could just be stacked together without spaces between them horizontally.
   - Do not add spaces around the text, instead use 1 pixel of distance in layout, which will be rendered with a space.
 - Group box will be a round line, the group header is directly on the top border from the 3rd pixel.
-- Focused control is represented by its border color when there is a border, and by bold text when there is text.
+- Focused control is represented by its border color when there is a border, and by bold plus underline when there is text. Include button, check/radio, combo and menu text; tab headers use `OwnerTab.Focused`.
   - Main window won't have difference because it is always activated.
 - For buttons and menus, highlighted state renders underline on its text.
   - Pressed buttons also need underline on its text.
 - Tab consists of tab buttons and a container. The container has a thin border in `ItemBackgroundSelected`, or `ItemBackground` when disabled.
   - The row of horizontally aligned tab headers, or the last row when there is multiple, is directly on the top border from the 3rd pixel.
 - Any container control do not need a margin between the content to the border, meaning its `ContainerComposition` is located from (1,1), meanwhile the left-top position is defined as (0,0).
+
+- Ordinary and date combos occupy one row, with button state colors, horizontal text insets and a separate dropdown arrow. Preserve selected-item compositions and `TextVisible`.
+- ALT sequence labels use an opaque `ShortcutKeyBackground` (white by default) and `ShortcutKeyText` (black by default).
+- Paint the whole scrollbar/tracker handle uniformly. Disabled handles blend into the track.
+- Put a header sorting glyph before its title, using the title text color. Keep the right submenu button separate and reserve the following header's first cell for resizing the preceding column.
+- `Table.CellPadding` adds both outer and inter-cell spacing. Use zero around already bordered lists/textboxes and between compact form rows; retain only insets inside actual borders.
+- For a physical terminal main window, keep the outer bounds independent of child minimum sizes (`MinSizeLimitation="NoLimit"`). Aligned page contents must use the available viewport and scrolling; a hidden page must not enlarge the main window beyond the terminal.
+- Embedded grid text editors should use an explicitly assigned borderless one-row template. Derive row heights from content and retain bottom/right separators; do not reserve rows for the ordinary bordered textbox template.

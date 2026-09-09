@@ -421,6 +421,19 @@ namespace gacuisrc_unittest
             (columnCompanies = new (::presentation::controls::list::DataColumn^)());
             <this>.SetNamedObject("columnCompanies", columnCompanies);
             {
+                (columnCompanies.Sorter = new (::presentation::controls::list::IDataSorter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Compare(<row1> : ::system::Object, <row2> : ::system::Object) : (::system::Int64)
+                    {
+                        return [Sys::Compare(ToString($1.Company), ToString($2.Company))] of ((func (DataGridItem^, DataGridItem^) : (::system::Int64)))((cast (DataGridItem^) <row1>), (cast (DataGridItem^) <row2>));
+                    }
+                });
+            }
+            {
                 (columnCompanies.EditorFactory = new (::presentation::controls::list::DataEditorFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridEditorTemplate*)
                 {
                     {
@@ -440,19 +453,6 @@ namespace gacuisrc_unittest
                     else
                     {
                         return item.Company;
-                    }
-                });
-            }
-            {
-                (columnCompanies.Sorter = new (::presentation::controls::list::IDataSorter^)
-                {
-                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
-                    {
-                    }
-
-                    override func Compare(<row1> : ::system::Object, <row2> : ::system::Object) : (::system::Int64)
-                    {
-                        return [Sys::Compare(ToString($1.Company), ToString($2.Company))] of ((func (DataGridItem^, DataGridItem^) : (::system::Int64)))((cast (DataGridItem^) <row1>), (cast (DataGridItem^) <row2>));
                     }
                 });
             }

@@ -23,7 +23,10 @@ GuiGraphicsResourceManager
 			vint GuiGraphicsResourceManager::RegisterElementType(const WString& elementTypeName)
 			{
 				CHECK_ERROR(!elementTypes.Contains(elementTypeName), L"GuiGraphicsResourceManager::RegisterElementType(const WString&)#This element type has already been registered.");
-				return elementTypes.Add(elementTypeName);
+				elementTypes.Add(elementTypeName);
+				// GuiElementBase caches type IDs across resource-manager lifetimes.
+				static vint nextElementType = 0;
+				return nextElementType++;
 			}
 
 			void GuiGraphicsResourceManager::RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory)

@@ -71,7 +71,7 @@ ListViewColumnItemArranger
 					typedef collections::List<GuiListViewColumnHeader*>					ColumnHeaderButtonList;
 					typedef collections::List<compositions::GuiBoundsComposition*>		ColumnHeaderSplitterList;
 				public:
-					static const vint							SplitterWidth = 8;
+					vint											splitterWidth = 8;
 				protected:
 					class ColumnItemViewCallback : public Object, public virtual IColumnItemViewCallback
 					{

@@ -1,4 +1,11 @@
 <Folder>
+  <Instance name="GridTextBoxTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiGridTextBoxTemplate">
+      <DocumentLabelTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" CaretColor-eval="tuiskin::TuiTheme::GetColorPackage().ControlText" BaselineDocument-eval="tuiskin::TuiTheme::CreateBaselineDocument()">
+        <SolidBackground Color-eval="tuiskin::TuiTheme::GetColorPackage().ControlBackground" />
+      </DocumentLabelTemplate>
+    </Instance>
+  </Instance>
   <Folder name="GenderComponents">
     <Instance name="GenderDisplayerResource">
       <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiGenderDisplayer">
@@ -25,7 +32,7 @@
     <Instance name="GenderItemTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiGenderItemTemplate" xmlns:demo="tuidemo::*">
         <ref.Parameter Name="SelectedGender" Class="tuidemo::TuiMyGender" />
-        <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" TextColor-eval="tuiskin::TuiTheme::GetColorPackage().ButtonText">
           <demo:TuiGenderDisplayer TextColor-bind="self.TextColor" Font-bind="self.Font" Gender-eval="SelectedGender">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
           </demo:TuiGenderDisplayer>
@@ -42,7 +49,7 @@
             };
           ]]></ref.Members>
         <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem" FocusControl-ref="comboBox">
-          <ComboBox ref.Name="comboBox" ItemTemplate="demo:TuiGenderItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
+          <ComboBox ref.Name="comboBox" Font-bind="{fontFamily:&quot;TuiFont&quot; size:1 bold:comboBox.Focused underline:comboBox.Focused}" ItemTemplate="demo:TuiGenderItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
             <att.ListControl>
               <BindableTextList ItemSource-eval="self.items" ItemTemplate="demo:TuiGenderItemTemplate" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" />
@@ -92,7 +99,7 @@
     <Instance name="CategoryItemTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiCategoryItemTemplate" xmlns:demo="tuidemo::*">
         <ref.Parameter Name="SelectedCategory" Class="tuidemo::TuiMyCategory" />
-        <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" TextColor-eval="tuiskin::TuiTheme::GetColorPackage().ButtonText">
           <demo:TuiCategoryDisplayer TextColor-bind="self.TextColor" Category-eval="SelectedCategory" Font-bind="self.Font">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
           </demo:TuiCategoryDisplayer>
@@ -112,7 +119,7 @@
             };
           ]]></ref.Members>
         <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem" FocusControl-ref="comboBox">
-          <ComboBox ref.Name="comboBox" ItemTemplate="demo:TuiCategoryItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
+          <ComboBox ref.Name="comboBox" Font-bind="{fontFamily:&quot;TuiFont&quot; size:1 bold:comboBox.Focused underline:comboBox.Focused}" ItemTemplate="demo:TuiCategoryItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
             <att.ListControl>
               <BindableTextList ItemSource-eval="self.items" ItemTemplate="demo:TuiCategoryItemTemplate" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
@@ -127,7 +134,7 @@
   <Instance name="TextEditorResource">
     <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiTextEditor">
       <GridEditorTemplate ref.Name="self" CellValue-bind="textBox.Text" FocusControl-ref="textBox">
-        <SinglelineTextBox ref.Name="textBox" Text-bind="(cast string self.CellValue) ?? ''">
+        <SinglelineTextBox ControlTemplate="tuidemo::TuiGridTextBoxTemplate" ref.Name="textBox" Text-bind="(cast string self.CellValue) ?? ''">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
         </SinglelineTextBox>
       </GridEditorTemplate>

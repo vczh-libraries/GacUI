@@ -356,6 +356,11 @@ Native Window Provider
 			return substitutableController;
 		}
 
+		INativeController* GetNativeController()
+		{
+			return nativeController;
+		}
+
 		void SetNativeController(INativeController* controller)
 		{
 			nativeController = controller;

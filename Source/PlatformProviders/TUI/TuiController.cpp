@@ -26,20 +26,17 @@ namespace vl::presentation
 		return result;
 	}
 
-	TuiControllerBase::TuiControllerBase(INativeController* services)
-		: nativeServices(services)
+	TuiControllerBase::TuiControllerBase()
 	{
 		frameConfig = {
 			BoolOption::AlwaysFalse, BoolOption::AlwaysFalse, BoolOption::AlwaysFalse,
 			BoolOption::AlwaysFalse, BoolOption::AlwaysFalse, BoolOption::AlwaysFalse,
 			BoolOption::AlwaysFalse
 		};
-		nativeServices->CallbackService()->InstallListener(this);
 	}
 
 	TuiControllerBase::~TuiControllerBase()
 	{
-		nativeServices->CallbackService()->UninstallListener(this);
 	}
 
 	ITuiApplication* TuiControllerBase::GetTuiApplication()
@@ -49,6 +46,10 @@ namespace vl::presentation
 
 	void TuiControllerBase::Starting()
 	{
+		auto previousController = GetNativeController();
+		auto previousHostedApplication = GetHostedApplication();
+		auto previousTuiApplication = presentation::GetTuiApplication();
+		auto previousResources = GetGuiGraphicsResourceManager();
 		GuiHostedController hostedController(this);
 		TuiGraphicsResourceManager resourceManager;
 		GuiHostedGraphicsResourceManager hostedResources(&hostedController, &resourceManager);
@@ -57,16 +58,28 @@ namespace vl::presentation
 		SetTuiApplication(GetTuiApplication());
 		SetGuiGraphicsResourceManager(&hostedResources);
 		callbackService.InstallListener(&resourceManager);
-		RegisterTuiRenderers();
-		hostedController.Initialize();
-		GuiApplicationMain();
-		hostedController.Finalize();
-		callbackService.UninstallListener(&resourceManager);
-		SetGuiGraphicsResourceManager(nullptr);
-		SetTuiApplication(nullptr);
-		SetHostedApplication(nullptr);
-		SetNativeController(nativeServices);
-		TUI::Stop();
+		auto restoreGlobals = [&]()
+		{
+			callbackService.UninstallListener(&resourceManager);
+			SetGuiGraphicsResourceManager(previousResources);
+			SetTuiApplication(previousTuiApplication);
+			SetHostedApplication(previousHostedApplication);
+			SetNativeController(previousController);
+			TUI::Stop();
+		};
+		try
+		{
+			RegisterTuiRenderers();
+			hostedController.Initialize();
+			GuiApplicationMain();
+			hostedController.Finalize();
+		}
+		catch (...)
+		{
+			restoreGlobals();
+			throw;
+		}
+		restoreGlobals();
 	}
 
 	INativeCallbackService* TuiControllerBase::CallbackService()
@@ -74,29 +87,9 @@ namespace vl::presentation
 		return &callbackService;
 	}
 
-	INativeResourceService* TuiControllerBase::ResourceService()
-	{
-		return this;
-	}
-
 	INativeAsyncService* TuiControllerBase::AsyncService()
 	{
 		return &asyncService;
-	}
-
-	INativeClipboardService* TuiControllerBase::ClipboardService()
-	{
-		return nativeServices->ClipboardService();
-	}
-
-	INativeImageService* TuiControllerBase::ImageService()
-	{
-		return nativeServices->ImageService();
-	}
-
-	INativeInputService* TuiControllerBase::InputService()
-	{
-		return this;
 	}
 
 	INativeDialogService* TuiControllerBase::DialogService()
@@ -109,11 +102,6 @@ namespace vl::presentation
 		return nullptr;
 	}
 
-	WString TuiControllerBase::GetExecutablePath()
-	{
-		return nativeServices->GetExecutablePath();
-	}
-
 	INativeScreenService* TuiControllerBase::ScreenService()
 	{
 		return this;
@@ -122,88 +110,6 @@ namespace vl::presentation
 	INativeWindowService* TuiControllerBase::WindowService()
 	{
 		return this;
-	}
-
-	INativeCursor* TuiControllerBase::GetSystemCursor(INativeCursor::SystemCursorType type)
-	{
-		return nativeServices->ResourceService()->GetSystemCursor(type);
-	}
-
-	INativeCursor* TuiControllerBase::GetDefaultSystemCursor()
-	{
-		return nativeServices->ResourceService()->GetDefaultSystemCursor();
-	}
-
-	FontProperties TuiControllerBase::GetDefaultFont()
-	{
-		auto font = defaultFont;
-		font.fontFamily = L"TuiFont";
-		font.size = 1;
-		return font;
-	}
-
-	void TuiControllerBase::SetDefaultFont(const FontProperties& value)
-	{
-		defaultFont = value;
-		defaultFont.fontFamily = L"TuiFont";
-		defaultFont.size = 1;
-	}
-
-	void TuiControllerBase::EnumerateFonts(collections::List<WString>& fonts)
-	{
-		fonts.Add(L"TuiFont");
-	}
-
-	WString TuiControllerBase::GetOSSuperKeyName()
-	{
-		return nativeServices->ResourceService()->GetOSSuperKeyName();
-	}
-
-	void TuiControllerBase::StartTimer()
-	{
-		timerEnabled = true;
-		TUI::StartTimer(16);
-	}
-
-	void TuiControllerBase::StopTimer()
-	{
-		timerEnabled = false;
-		TUI::StopTimer();
-	}
-
-	bool TuiControllerBase::IsTimerEnabled()
-	{
-		return timerEnabled;
-	}
-
-	bool TuiControllerBase::IsKeyPressing(VKEY code)
-	{
-		return nativeServices->InputService()->IsKeyPressing(code);
-	}
-
-	bool TuiControllerBase::IsKeyToggled(VKEY code)
-	{
-		return nativeServices->InputService()->IsKeyToggled(code);
-	}
-
-	WString TuiControllerBase::GetKeyName(VKEY code)
-	{
-		return nativeServices->InputService()->GetKeyName(code);
-	}
-
-	VKEY TuiControllerBase::GetKey(const WString& name)
-	{
-		return nativeServices->InputService()->GetKey(name);
-	}
-
-	vint TuiControllerBase::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key)
-	{
-		return nativeServices->InputService()->RegisterGlobalShortcutKey(ctrl, shift, alt, osSuper, key);
-	}
-
-	bool TuiControllerBase::UnregisterGlobalShortcutKey(vint id)
-	{
-		return nativeServices->InputService()->UnregisterGlobalShortcutKey(id);
 	}
 
 	vint TuiControllerBase::GetScreenCount()
@@ -320,7 +226,7 @@ namespace vl::presentation
 		PumpPlatformEvents();
 		if (TUI::IsStopRequested()) return;
 		asyncService.ExecuteAsyncTasks();
-		if (!TUI::IsStopRequested() && timerEnabled) callbackService.InvokeGlobalTimer();
+		if (!TUI::IsStopRequested() && InputService()->IsTimerEnabled()) callbackService.InvokeGlobalTimer();
 	}
 
 	void TuiControllerBase::ClipboardUpdated()

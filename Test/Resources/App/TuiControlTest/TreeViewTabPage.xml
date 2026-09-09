@@ -6,7 +6,7 @@
       bindableTreeView.ItemSource = nodesToBind;
     ]]></ref.Ctor>
   <TabPage ref.Name="self" Text="TreeView">
-    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="1">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
       <att.Rows>
         <_>composeType:MinSize</_>
         <_>composeType:Percentage percentage:1.0</_>

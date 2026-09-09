@@ -1,5 +1,9 @@
 <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiTheme" xmlns:x="tuiskin::*">
   <ref.Members><![CDATA[
+    static func CreateBaselineDocument() : DocumentModel^
+    {
+      return tuiskin::CreateBaselineDocument();
+    }
     static func GetColorPackage() : ColorPackage
     {
       return tuiColors;

@@ -11009,6 +11009,8 @@ struct tuiskin::ColorPackage {
     property MenuText : presentation::Color;
     property MenuTextDisabled : presentation::Color;
     property MenuTextHighlighted : presentation::Color;
+    property ShortcutKeyBackground : presentation::Color;
+    property ShortcutKeyText : presentation::Color;
 }
 
 @FullName:tuiskin::TuiBottomScrollButtonTemplate
@@ -11103,19 +11105,15 @@ class tuiskin::TuiComboBoxTemplateConstructor : system::ReferenceType {
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_3 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_4 : presentation::elements::GuiSolidLabelElement^;
+    property __vwsn_precompile_4 : presentation::elements::GuiSolidBackgroundElement^;
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_5 : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_6 : presentation::elements::GuiSolidBackgroundElement^;
-    @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
-    @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_8 : presentation::elements::GuiSolidLabelElement^;
+    property __vwsn_precompile_6 : presentation::elements::GuiSolidLabelElement^;
     @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
@@ -11125,6 +11123,25 @@ class tuiskin::TuiComboBoxTemplateConstructor : system::ReferenceType {
     function __vwsn_tuiskin_TuiComboBoxTemplate_Initialize(__vwsn_this_ : tuiskin::TuiComboBoxTemplate*) : system::Void;
 
     constructor () : tuiskin::TuiComboBoxTemplateConstructor^;
+}
+
+@FullName:tuiskin::TuiContentMenuTemplate
+@system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiContentMenuTemplateConstructor)
+class tuiskin::TuiContentMenuTemplate : presentation::templates::GuiMenuTemplate, tuiskin::TuiContentMenuTemplateConstructor {
+    constructor () : tuiskin::TuiContentMenuTemplate*;
+}
+
+@FullName:tuiskin::TuiContentMenuTemplateConstructor
+class tuiskin::TuiContentMenuTemplateConstructor : system::ReferenceType {
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property self : tuiskin::TuiContentMenuTemplate*;
+
+    @system::workflow_attributes::att_cpp_Protected()
+    function __vwsn_tuiskin_TuiContentMenuTemplate_Initialize(__vwsn_this_ : tuiskin::TuiContentMenuTemplate*) : system::Void;
+
+    constructor () : tuiskin::TuiContentMenuTemplateConstructor^;
 }
 
 @FullName:tuiskin::TuiCustomControlTemplate
@@ -11440,10 +11457,6 @@ class tuiskin::TuiHandleScrollButtonTemplate : presentation::templates::GuiButto
 class tuiskin::TuiHandleScrollButtonTemplateConstructor : system::ReferenceType {
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
-    @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
-    @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
     @system::workflow_attributes::att_cpp_Protected()
     property self : tuiskin::TuiHandleScrollButtonTemplate*;
 
@@ -11770,7 +11783,11 @@ class tuiskin::TuiShortcutKeyTemplate : presentation::templates::GuiLabelTemplat
 @FullName:tuiskin::TuiShortcutKeyTemplateConstructor
 class tuiskin::TuiShortcutKeyTemplateConstructor : system::ReferenceType {
     @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_0 : presentation::elements::GuiSolidLabelElement^;
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidLabelElement^;
     @system::workflow_attributes::att_cpp_Protected()
     property self : tuiskin::TuiShortcutKeyTemplate*;
 
@@ -11917,6 +11934,7 @@ class tuiskin::TuiTextListTemplateConstructor : system::ReferenceType {
 @FullName:tuiskin::TuiTheme
 @system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiThemeConstructor)
 class tuiskin::TuiTheme : presentation::theme::ThemeTemplates, tuiskin::TuiThemeConstructor {
+    static function CreateBaselineDocument() : presentation::DocumentModel^;
     static function GetColorPackage() : tuiskin::ColorPackage;
 
     constructor () : tuiskin::TuiTheme*;
@@ -11987,10 +12005,6 @@ class tuiskin::TuiTooltipTemplate : presentation::templates::GuiWindowTemplate, 
 class tuiskin::TuiTooltipTemplateConstructor : system::ReferenceType {
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
-    @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
-    @system::workflow_attributes::att_cpp_Protected()
-    property __vwsn_precompile_2 : presentation::elements::TuiBorderElement^;
     @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()

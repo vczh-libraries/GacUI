@@ -42,10 +42,7 @@
   <Instance name="HandleScrollButtonTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiHandleScrollButtonTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground ref.Style="buttonBackground" />
-        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidLabel Text="█" ref.Style="buttonText" />
-        </Bounds>
+        <SolidBackground Color-bind="not self.VisuallyEnabled ? tuiskin::tuiColors.ControlBorderDisabled : self.State == ButtonState::Pressed ? tuiskin::tuiColors.ButtonBackgroundPressed : self.State == ButtonState::Active ? tuiskin::tuiColors.ButtonBackgroundHighlighted : tuiskin::tuiColors.ControlBorder" />
       </ButtonTemplate>
     </Instance>
   </Instance>

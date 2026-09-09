@@ -1,0 +1,393 @@
+﻿{
+  "createdElements": [
+    [1, "SolidBackground"],
+    [2, "SolidBorder"],
+    [3, "SolidBackground"],
+    [4, "SolidBorder"],
+    [5, "FocusRectangle"],
+    [6, "SolidLabel"],
+    [7, "Polygon"],
+    [8, "SolidBackground"],
+    [9, "SolidBorder"],
+    [10, "FocusRectangle"],
+    [11, "SolidLabel"],
+    [12, "Polygon"],
+    [13, "Polygon"],
+    [14, "SolidBackground"],
+    [15, "SolidBorder"],
+    [16, "FocusRectangle"],
+    [17, "SolidLabel"],
+    [18, "Polygon"],
+    [19, "ImageFrame"],
+    [20, "SolidLabel"],
+    [21, "SolidBackground"],
+    [22, "SolidBorder"],
+    [23, "SolidBackground"],
+    [24, "SolidBorder"],
+    [25, "SolidBackground"],
+    [26, "FocusRectangle"],
+    [27, "SolidLabel"],
+    [28, "SolidBackground"],
+    [29, "SolidBorder"],
+    [30, "SolidBackground"],
+    [31, "FocusRectangle"],
+    [32, "SolidLabel"],
+    [33, "SolidBackground"],
+    [34, "SolidBorder"],
+    [35, "SolidBackground"],
+    [36, "SolidBorder"],
+    [37, "SolidBackground"],
+    [38, "FocusRectangle"],
+    [39, "SolidLabel"],
+    [40, "SolidBackground"],
+    [41, "SolidBorder"],
+    [42, "SolidBackground"],
+    [43, "FocusRectangle"],
+    [44, "SolidLabel"],
+    [45, "SolidBackground"],
+    [46, "SolidBorder"],
+    [47, "SolidBackground"],
+    [48, "SolidBorder"],
+    [49, "Polygon"],
+    [50, "Polygon"],
+    [51, "SolidBackground"],
+    [52, "SolidBackground"],
+    [53, "SolidBorder"],
+    [54, "Polygon"],
+    [55, "Polygon"],
+    [56, "SolidBackground"],
+    [57, "SolidBackground"],
+    [58, "SolidBorder"],
+    [59, "SolidBorder"],
+    [60, "Polygon"],
+    [61, "Polygon"],
+    [62, "SolidLabel"],
+    [63, "SolidBackground"],
+    [64, "Polygon"],
+    [65, "SolidBackground"],
+    [66, "SolidBorder"],
+    [67, "SolidBorder"],
+    [68, "Polygon"],
+    [69, "Polygon"],
+    [70, "SolidLabel"],
+    [71, "SolidBackground"],
+    [72, "Polygon"],
+    [73, "SolidBackground"],
+    [74, "SolidBorder"],
+    [75, "SolidBorder"],
+    [76, "Polygon"],
+    [77, "Polygon"],
+    [78, "SolidLabel"],
+    [79, "SolidBackground"],
+    [80, "Polygon"],
+    [81, "SolidBackground"],
+    [82, "SolidBorder"],
+    [83, "SolidBorder"],
+    [84, "Polygon"],
+    [85, "Polygon"],
+    [86, "SolidLabel"],
+    [87, "SolidBackground"],
+    [88, "Polygon"],
+    [89, "SolidBackground"],
+    [90, "SolidBorder"],
+    [91, "SolidBorder"],
+    [92, "FocusRectangle"],
+    [93, "ImageFrame"],
+    [94, "SolidLabel"],
+    [95, "SolidBorder"],
+    [96, "SolidBorder"],
+    [97, "FocusRectangle"],
+    [98, "SolidLabel"],
+    [99, "SolidBorder"],
+    [100, "SolidBorder"],
+    [101, "FocusRectangle"],
+    [102, "SolidLabel"],
+    [103, "SolidBorder"],
+    [104, "SolidBorder"],
+    [105, "FocusRectangle"],
+    [106, "SolidLabel"],
+    [107, "SolidBackground"],
+    [108, "SolidBorder"],
+    [109, "SolidBorder"],
+    [110, "FocusRectangle"],
+    [111, "ImageFrame"],
+    [112, "SolidLabel"],
+    [113, "SolidBorder"],
+    [114, "SolidBorder"],
+    [115, "FocusRectangle"],
+    [116, "SolidLabel"],
+    [117, "SolidBorder"],
+    [118, "SolidBorder"],
+    [119, "FocusRectangle"],
+    [120, "SolidLabel"],
+    [121, "SolidBorder"],
+    [122, "SolidBorder"],
+    [123, "FocusRectangle"],
+    [124, "SolidLabel"],
+    [125, "SolidBackground"],
+    [126, "SolidBorder"],
+    [127, "SolidBorder"],
+    [128, "FocusRectangle"],
+    [129, "ImageFrame"],
+    [130, "SolidLabel"],
+    [131, "SolidBorder"],
+    [132, "SolidBorder"],
+    [133, "FocusRectangle"],
+    [134, "SolidLabel"],
+    [135, "SolidBorder"],
+    [136, "SolidBorder"],
+    [137, "FocusRectangle"],
+    [138, "SolidLabel"],
+    [139, "SolidBorder"],
+    [140, "SolidBorder"],
+    [141, "FocusRectangle"],
+    [142, "SolidLabel"],
+    [143, "SolidBackground"],
+    [144, "SolidBorder"],
+    [145, "SolidBorder"],
+    [146, "FocusRectangle"],
+    [147, "ImageFrame"],
+    [148, "SolidLabel"],
+    [149, "SolidBorder"],
+    [150, "SolidBorder"],
+    [151, "FocusRectangle"],
+    [152, "SolidLabel"],
+    [153, "SolidBorder"],
+    [154, "SolidBorder"],
+    [155, "FocusRectangle"],
+    [156, "SolidLabel"],
+    [157, "SolidBorder"],
+    [158, "SolidBorder"],
+    [159, "FocusRectangle"],
+    [160, "SolidLabel"],
+    [161, "SolidBackground"],
+    [162, "SolidBorder"],
+    [163, "SolidBorder"],
+    [164, "FocusRectangle"],
+    [165, "ImageFrame"],
+    [166, "SolidLabel"],
+    [167, "SolidBorder"],
+    [168, "SolidBorder"],
+    [169, "FocusRectangle"],
+    [170, "SolidLabel"],
+    [171, "SolidBorder"],
+    [172, "SolidBorder"],
+    [173, "FocusRectangle"],
+    [174, "SolidLabel"],
+    [175, "SolidBorder"],
+    [176, "SolidBorder"],
+    [177, "FocusRectangle"],
+    [178, "SolidLabel"],
+    [179, "SolidBackground"],
+    [180, "SolidBorder"],
+    [181, "SolidBorder"],
+    [182, "FocusRectangle"],
+    [183, "ImageFrame"],
+    [184, "SolidLabel"],
+    [185, "SolidBorder"],
+    [186, "SolidBorder"],
+    [187, "FocusRectangle"],
+    [188, "SolidLabel"],
+    [189, "SolidBorder"],
+    [190, "SolidBorder"],
+    [191, "FocusRectangle"],
+    [192, "SolidLabel"],
+    [193, "SolidBorder"],
+    [194, "SolidBorder"],
+    [195, "FocusRectangle"],
+    [196, "SolidLabel"]
+  ],
+  "imageCreations": [],
+  "imageMetadatas": [],
+  "frames": [
+    {
+      "frameId": 6,
+      "frameName": "Grow column 0",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 11,
+      "frameName": "Shrink column 0",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 15,
+      "frameName": "Grow column 1",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 19,
+      "frameName": "Shrink column 1",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 23,
+      "frameName": "Grow column 3",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 27,
+      "frameName": "Shrink column 3",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 31,
+      "frameName": "Done",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    }
+  ]
+}

@@ -16,10 +16,7 @@
     <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiTooltipTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <WindowTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container">
         <SolidBackground ref.Style="background" />
-        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <TuiBorder Color-eval="tuiskin::tuiColors.ControlBorder" />
-        </Bounds>
-        <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1" />
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" />
       </WindowTemplate>
     </Instance>
   </Instance>

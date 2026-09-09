@@ -158,6 +158,52 @@ TEST_FILE
 
 	TEST_CATEGORY(L"GuiBindableDataGrid")
 	{
+		TEST_CASE(L"ResizeColumnSplitters")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				for (vint index : { 0, 1, 3 })
+				{
+					protocol->OnNextIdleFrame(L"Grow column " + itow(index), [=]()
+					{
+						auto grid = FindObjectByName<GuiBindableDataGrid>(GetApplication()->GetMainWindow(), L"dataGrid");
+						if (index != 0) TEST_ASSERT(grid->GetColumns()[index == 1 ? 0 : 1]->GetSize() == 160);
+						auto arranger = dynamic_cast<list::ListViewColumnItemArranger*>(grid->GetArranger());
+						if (index == 3) grid->GetHorizontalScroll()->SetPosition(grid->GetHorizontalScroll()->GetTotalSize());
+						grid->GetBoundsComposition()->ForceCalculateSizeImmediately();
+						auto location = protocol->LocationOf(arranger->GetColumnSplitters()[index]);
+						protocol->_LDown(location);
+						location.x.value += 30;
+						protocol->MouseMove(location);
+						protocol->_LUp();
+					});
+					protocol->OnNextIdleFrame(L"Shrink column " + itow(index), [=]()
+					{
+						auto grid = FindObjectByName<GuiBindableDataGrid>(GetApplication()->GetMainWindow(), L"dataGrid");
+						TEST_ASSERT(grid->GetColumns()[index]->GetSize() == 180);
+						if (index == 3) grid->GetHorizontalScroll()->SetPosition(grid->GetHorizontalScroll()->GetTotalSize());
+						grid->GetBoundsComposition()->ForceCalculateSizeImmediately();
+						auto arranger = dynamic_cast<list::ListViewColumnItemArranger*>(grid->GetArranger());
+						auto location = protocol->LocationOf(arranger->GetColumnSplitters()[index]);
+						protocol->_LDown(location);
+						location.x.value -= 20;
+						protocol->MouseMove(location);
+						protocol->_LUp();
+					});
+				}
+				protocol->OnNextIdleFrame(L"Done", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto grid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					TEST_ASSERT(grid->GetColumns()[3]->GetSize() == 160);
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/ColumnUI/ResizeColumnSplitters"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"), resourceDataGrid);
+		});
+
 		TEST_CASE(L"SortByColumn")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)

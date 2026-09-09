@@ -12,6 +12,8 @@ namespace tuiskin
 		colors.ControlBorderDisabled = vl::presentation::Color(0x40, 0x40, 0x40);
 		colors.ControlBorderFocused = vl::presentation::Color(0x87, 0xCE, 0xFA);
 		colors.LabelText = vl::presentation::Color(0x80, 0x80, 0x80);
+		colors.ShortcutKeyBackground = vl::presentation::Color(0xFF, 0xFF, 0xFF);
+		colors.ShortcutKeyText = vl::presentation::Color(0x00, 0x00, 0x00);
 		colors.MenuBackground = vl::presentation::Color(0x40, 0x40, 0x40);
 		colors.MenuText = vl::presentation::Color(0xFF, 0xFF, 0xFF);
 		colors.MenuTextDisabled = vl::presentation::Color(0x80, 0x80, 0x80);

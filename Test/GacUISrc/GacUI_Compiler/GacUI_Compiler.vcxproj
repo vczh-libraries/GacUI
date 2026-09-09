@@ -233,6 +233,41 @@
     <Xml Include="..\..\Resources\App\RemoteViewModelTest\Resource.xml" />
     <Xml Include="..\..\Resources\App\UI1_StyleTemplate.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Resources\App\TuiSkin\Index.xml" />
+    <Xml Include="..\..\Resources\App\TuiSkin\Resource.xml" />
+    <Xml Include="..\..\Resources\App\TuiSkin\Style.xml" />
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Button.xml" />
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Document.xml" />
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_List.xml" />
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Misc.xml" />
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Scroll.xml" />
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Tab.xml" />
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Toolstrip.xml" />
+    <Xml Include="..\..\Resources\App\TuiSkin\Template_Window.xml" />
+    <Xml Include="..\..\Resources\App\TuiSkin\TuiSkin.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\DataGridComponents.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\DataGridTabPage.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\DatePickerTabPage.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\DocumentComponents.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\DocumentEditorBase.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\DocumentEditorToolstrip.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\EmbeddedControlsSubTabPage.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\ListViewData.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\ListViewTabPage.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\LocalizedComponents.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\LocalizedDialogsTabPage.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\LocalizedStringsTabPage.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\RefreshListTabPages.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\RepeatComponents.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\RepeatTabPage.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\Resource.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\ResponsiveTabPage.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\SideDocuments.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\TextBoxTabPage.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\TextListTabPage.xml" />
+    <Xml Include="..\..\Resources\App\TuiControlTest\TreeViewTabPage.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

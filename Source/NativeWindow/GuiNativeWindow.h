@@ -1797,6 +1797,10 @@ Native Window Controller
 		/// <param name="controller">The global native system service controller.</param>
 		extern void							SetNativeController(INativeController* controller);
 
+		/// <summary>Get the underlying controller installed by SetNativeController, without the service-substitution facade.</summary>
+		/// <returns>The installed controller, or null if none is installed.</returns>
+		extern INativeController*			GetNativeController();
+
 #define GUI_SUBSTITUTABLE_SERVICES(F)	\
 		F(Clipboard)					\
 		F(Dialog)						\
