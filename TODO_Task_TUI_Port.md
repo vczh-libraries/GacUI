@@ -6,9 +6,11 @@
 - TUI has been completed and verified on Windows:
   - `TODO_Task_TUI.md`
   - `TODO_Task_TUI_FollowUp_1.md`.
+  - `TODO_Task_TUI_FollowUp_2.md`.
 - The goal of this request is to make sure it also works on Linux/macOS:
   - Port the new test app, make sure it could be synced in the future in `syncProj.sh`, and started by `test.sh --app:tui`.
   - Update `GacUI/.github/Jobs/job.rpXPlat.prompt.md` for the new test app. The SOP is in `GacUI/.github/Jobs/DebugTuiControlTestSop.md`.
     - If it has already been updated, verify this document again.
   - Make sure the ported test app passed tests following `GacUI/.github/Jobs/DebugTuiControlTestSop.md`.
+  - Check out `TuiWindowsController.Windows.(h|cpp)` to understand how to use the shared `TuiControllerBase`.
 - commit and push once finishing.
