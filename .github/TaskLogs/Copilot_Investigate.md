@@ -150,6 +150,7 @@ CDB with source lines enabled confirms that the captured/rethrown `UnitTestAsser
 # PROPOSALS
 
 - No.1 Synchronize startup bounds, implement cancellable physical closing and compact TUI layouts [CONFIRMED]
+- No.2 Package the TUI tutorial and document local startup
 
 ## No.1 Synchronize startup bounds, implement cancellable physical closing and compact TUI layouts [CONFIRMED]
 
@@ -178,3 +179,15 @@ RGB labels align with textbox contents. CDB measured each actual tracker as 38x1
 All four vetoed Exit requests advanced invocation/query counters once to four while ready stayed zero. Accepted direct Hide (13292), queued Hide (9868), queued Close (19348), direct Close (16812), direct Stop (12944) and queued Stop (9276) each completed normally with exit 0. Direct Close after the final dialog run also returned 0. Each restored the shell's input/output modes 484/7, attributes 7 and visible 25-percent cursor, and accepted a command in the restored shell. Provider tests establish the once-only query/ready/closed ordering, reentrancy, detachment and modal interception.
 
 These live checks use console event replay and buffer/debugger inspection. Input-desktop access fails with error 5, so physical keyboard/mouse input and final displayed font styles/cursor/RGB fidelity remain unverified. Prior follow-up records remain historical; current procedures were audited against follow-ups 1/2/3. The release/tooling/website stage follows this commit.
+
+## No.2 Package the TUI tutorial and document local startup
+
+GacUI implementation commit 062d670ef is pushed; Tools, Release and WebsiteSource are clean and aligned with their remotes before this stage. The parent AGENTS.md matches Tools/MonoRepo.md. Owning instructions, release scripts, project inventories and WebsiteSource article/navigation/export guidance have been read.
+
+Refresh GacUI through the existing Release-GacUI operation, including GacGen, both skin architectures and the final CodePack. Extend BuildRelease.ps1 to copy TuiSkin pairs and authored TuiControlTest resources. Apply repeatable deployment settings for GacUI.h plus Skins/TuiSkin/TuiSkin.h, and Cpp/Resource ../../../UIRes/TuiSkin.bin. Add the TuiSkin project beside BlackSkin for all four configurations. Inventory guarded WinMain.cpp/TuiMain.cpp and packaged TuiSkin.cpp in GacUILite, and compile both startup files directly in the console project under GACUILITE_TUI_APPLICATION. The TUI plugin depends on GacGen_TuiSkinResourceLoader and initializes its palette before the theme. Main loads the non-code resource before constructing TuiMainWindow.
+
+Add a GacUI TUI startup article/navigation, update introduction/download guidance and audit the demo list against actual tutorials. Keep terminal additions outside remote-protocol sections. Run Build.ps1 -Project Release, repeat resource deployment/generation, build ControlTemplate x64 Debug/Release and alternate individual GUI/TUI builds through supplied wrappers. Check packaged startup/dialog/exit behavior. Run WebsiteSource build/tests and sequential main/doc downloads plus markdown export; inspect rendered navigation/topic/demo and exported markdown locally. Do not publish or distribute manuals.
+
+### CODE CHANGE
+
+Planned: Tools/Tools/BuildRelease.ps1; Release/Tutorial/Lib/GacUILite startup/project/filter files; the new Release/Tutorial/GacUI_ControlTemplate/TuiSkin project and solution registration; generated upstream/downstream package outputs; WebsiteSource articles/reference navigation. Record validation and commit/push all affected repositories after this final stage.
