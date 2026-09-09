@@ -226,6 +226,87 @@ TEST_FILE
 				);
 		});
 
+		TEST_CASE(L"NavigateAfterMouseSelection")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					LClickDataCell(protocol, dataGrid, 1, 1);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 1));
+				});
+				protocol->OnNextIdleFrame(L"Clicked 1,1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					TEST_ASSERT(dataGrid->GetFocused());
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 2));
+				});
+				protocol->OnNextIdleFrame(L"Moved right", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					protocol->KeyPress(VKEY::KEY_LEFT);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 1));
+					protocol->KeyPress(VKEY::KEY_DOWN);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(2, 1));
+				});
+				protocol->OnNextIdleFrame(L"Moved left and down", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					protocol->KeyPress(VKEY::KEY_UP);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 1));
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/Properties/NavigateAfterMouseSelection"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceDataGridStringProperty
+				);
+		});
+
+		TEST_CASE(L"NavigateColumnBoundaries")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SelectCell({ 1,0 }, false);
+					dataGrid->SetFocused();
+				});
+				protocol->OnNextIdleFrame(L"First column", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					protocol->KeyPress(VKEY::KEY_LEFT);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 0));
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 2));
+				});
+				protocol->OnNextIdleFrame(L"Last column", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 2));
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/Properties/NavigateColumnBoundaries"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceDataGridStringProperty
+				);
+		});
+
 		TEST_CASE(L"SelectCellByKey")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)

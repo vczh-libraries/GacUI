@@ -352,6 +352,62 @@ TEST_FILE
 		});
 	});
 
+	TEST_CASE(L"TUI nested and empty clippers restore drawing across resize")
+	{
+		TuiRunTest([](TuiTestBackend* backend, TuiTestController* controller)
+		{
+			auto window = controller->CreateNativeWindow(INativeWindow::Normal);
+			window->Show();
+			TuiGraphicsRenderTarget target(window);
+			target.StartHostedRendering();
+			target.StartRendering();
+			target.PushClipper(Rect(2, 1, 10, 6), nullptr);
+			target.PushClipper(Rect(4, 2, 8, 5), nullptr);
+			target.Fill(Rect(0, 0, 16, 8), Color(200, 10, 20));
+			TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 4].backgroundColor.r == 200);
+			TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 3].backgroundColor.r == 0);
+			target.PushClipper(Rect(12, 6, 15, 8), nullptr);
+			target.Fill(Rect(0, 0, 16, 8), Color(100, 100, 100));
+			target.Caret(Point(4, 2), Color(100, 100, 100));
+			TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 4].backgroundColor.r == 200);
+			target.PopClipper(nullptr);
+			target.Fill(Rect(0, 0, 16, 8), Color(20, 30, 40));
+			TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 4].backgroundColor.r == 20);
+			target.PopClipper(nullptr);
+			target.Border(Rect(0, 1, 12, 7), Color(255, 255, 255), TuiLineStyle::Double, {});
+			TEST_ASSERT(TUI::GetBuffer()[16 + 2].GetChar32() == U'\u2550');
+			TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 2].GetChar32() == 0);
+			target.Print(Point(1, 3), U'\u4E2D', Color(255, 255, 255), Color(), {});
+			target.Print(Point(9, 3), U'\u4E2D', Color(255, 255, 255), Color(), {});
+			TEST_ASSERT(TUI::GetBuffer()[3 * 16 + 2].GetChar32() == 0);
+			TEST_ASSERT(TUI::GetBuffer()[3 * 16 + 9].GetChar32() == 0);
+			target.Print(Point(2, 3), U'\u4E2D', Color(255, 255, 255), Color(), {});
+			TEST_ASSERT(TUI::GetBuffer()[3 * 16 + 3].glyph == TuiPixelGlyph::WideCharContinuation);
+			target.Caret(Point(10, 4), Color(150, 160, 170));
+			TEST_ASSERT(TUI::GetBuffer()[4 * 16 + 10].backgroundColor.r == 0);
+			target.Caret(Point(2, 4), Color(150, 160, 170));
+			TEST_ASSERT(TUI::GetBuffer()[4 * 16 + 2].backgroundColor.r == 150);
+			target.PopClipper(nullptr);
+
+			TuiBackendEvent resize;
+			resize.type = TuiBackendEventType::Resize;
+			resize.width = 6;
+			resize.height = 4;
+			backend->events.Add(resize);
+			controller->RunOneCycle();
+			target.Fill(Rect(0, 0, 16, 8), Color(30, 40, 50));
+			target.Border(Rect(0, 0, 8, 6), Color(255, 255, 255), TuiLineStyle::Thin, {});
+			TEST_ASSERT(TUI::GetBufferWidth() == 6 && TUI::GetBufferHeight() == 4);
+			TEST_ASSERT(TUI::GetBuffer()[5].GetChar32() == U'\u2500');
+			TEST_ASSERT(TUI::GetBuffer()[3 * 6].GetChar32() == U'\u2502');
+			TEST_ASSERT(TUI::GetBuffer()[3 * 6 + 5].GetChar32() == 0);
+			TEST_ASSERT(TUI::GetBuffer()[3 * 6 + 5].backgroundColor.r == 30);
+			target.StopRendering();
+			target.StopHostedRendering();
+			controller->DestroyNativeWindow(window);
+		});
+	});
+
 	TEST_CASE(L"TUI composed frame, clipping, border merging, alpha and wide-cell repair")
 	{
 		TuiRunTest([](TuiTestBackend* backend, TuiTestController* controller)
