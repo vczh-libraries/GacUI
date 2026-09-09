@@ -1,6 +1,8 @@
 - Based on what OS you are on:
   - On Linux, you are working on VlppOS, GacUI and wGac.
+    - When porting to Linux, Windows verification should have been done.
   - On macOS, you are working on VlppOS, GacUI and iGac.
+    - When porting to macOS, Windows and Linux verification should have been done.
   - VlppOS and GacUI are already verified on windows, but if you find any issue in the current OS during verification, fix them.
   - wGac/iGac is updated but never verified, you are going to take care of any issue in them.
 - TUI has been completed and verified on Windows:
@@ -14,4 +16,5 @@
     - If it has already been updated, verify this document again.
   - Make sure the ported test app passed tests following `GacUI/.github/Jobs/DebugTuiControlTestSop.md`.
   - Check out `TuiWindowsController.Windows.(h|cpp)` to understand how to use the shared `TuiControllerBase`.
+- TUI in VlppOS did not respond to `osSuper` in IO structs, but it has been done on Windows. Verify if the behavior works cross platform and fix it if not.
 - commit and push once finishing.
