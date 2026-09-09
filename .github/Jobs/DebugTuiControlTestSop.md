@@ -272,3 +272,22 @@ Inherited fake-service limitation: GuiFakeDialogServiceBase_ColorDialog.cpp does
 | Ordinary close and Stop | Four vetoed direct/queued Hide/Close calls increment invocation/query counts once each, with ready zero. Fresh accepted direct Hide, queued Hide, direct Close, queued Close and both Stop paths all exit 0. Closing after dialog use also exits 0 |
 | Console restoration | Every accepted exit restores shell input/output modes 484/7, attributes 7 and cursor size/visibility 25/true; the restored shell accepts a command and reports exit 0 |
 | Observation limits | Live console buffers, console event replay and CDB were used. OpenInputDesktop fails with error 5; physical input and displayed font/cursor/RGB fidelity remain unverified. These results do not relabel the preceding historical runs |
+
+## Packaged tutorial checks (follow-up 3)
+
+The Release tutorial lives in `../Release/Tutorial/GacUI_ControlTemplate/TuiSkin`. Run its interactive wrapper from that project directory so `../UIRes/TuiSkin.bin` resolves correctly:
+
+```powershell
+& C:\Code\VczhLibraries\Release\.github\Scripts\copilotExecute.ps1 -Mode CLI -Executable TuiSkin -Configuration Debug -Platform x64 -Interactive
+```
+
+Use the actual checkout's absolute wrapper path. The wrapper must support `-Interactive` and walk parent directories to find `GacUI_ControlTemplate.sln`; the owning templates are in `../Tools/Copilot/Scripts`. Keep console handles inherited and application output unredirected. Repeat the startup, resize, document/dialog and shutdown checks above against the packaged executable and binary resource.
+
+| Check | Packaged result, 2026-09-09 |
+| --- | --- |
+| ControlTemplate builds | Debug/Release x64 solution builds passed with zero warnings/errors. Individual Debug x64 builds passed in TuiSkin → BlackSkin → TuiSkin → WindowSkin order |
+| Startup and packaged resources | Debug x64 starts at 100x30; Debug Win32 and Release x64 start at 80x25. Dialog checks resize to 120x40, shrink to 80x25 and restore the larger viewport. Embedded document text loads from TuiSkin.bin |
+| Startup selection | CDB resolves wmain and DefaultTuiSkinPlugin::Load in TuiSkin, with no WinMain/DefaultSkinPlugin::Load. BlackSkin and WindowSkin resolve the GUI entry/plugin, create their expected native windows and exit 0 through WM_CLOSE |
+| Localized dialogs | Chinese three-action message preserves CJK text and returns default SelectCancel; actions are centered with one gap. RGB 12/34/56 accepts as #0C2238 and survives reopen/cancel. English simple/full font previews and nested color picker work. File enumeration and the borderless validation prompt return to their owner |
+| Closing and restoration | Four vetoed Hide/Close requests produce invocation/query counts 4/4 and ready 0. Fresh direct/queued Hide/Close and both Stop paths all exit 0. Direct Close after dialogs exits 0 under CDB without a leak dump. Settled shell modes 484/7, attributes 7 and cursor 25/visible are restored; the shell accepts commands |
+| Observation limits | Console event replay, stable live-buffer inspection and CDB establish these results. Physical input and final displayed font/cursor/RGB fidelity remain unverified |

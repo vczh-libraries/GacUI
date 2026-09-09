@@ -1,11 +1,11 @@
 function GetSolutionDir {
-    $currentDir = Get-Location
+    $currentDir = Get-Item -LiteralPath (Get-Location).Path
     $solutionFolder = $null
 
     while ($currentDir -ne $null) {
-        $solutionFiles = Get-ChildItem -Path $currentDir.Path -Filter "*.sln" -ErrorAction SilentlyContinue
+        $solutionFiles = Get-ChildItem -LiteralPath $currentDir.FullName -Filter "*.sln" -ErrorAction SilentlyContinue
         if ($solutionFiles.Count -gt 0) {
-            $solutionFolder = $currentDir.Path
+            $solutionFolder = $currentDir.FullName
             Write-Host "Found solution folder: $solutionFolder"
             break
         }
