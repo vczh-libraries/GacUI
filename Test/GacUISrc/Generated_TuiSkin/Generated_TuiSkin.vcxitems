@@ -89,4 +89,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
   </ItemGroup>
-<ItemGroup><ClInclude Include="$(MSBuildThisFileDirectory)TuiSkinConfig.h"/><ClCompile Include="$(MSBuildThisFileDirectory)TuiSkinConfig.cpp"/></ItemGroup></Project>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)TuiSkinConfig.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)TuiSkinConfig.cpp" />
+  </ItemGroup>
+</Project>

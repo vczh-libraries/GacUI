@@ -8552,6 +8552,7 @@ namespace vl
 				bool							right = false;
 				bool							discardSequence = false;
 				vuint8_t						controlString = 0;
+				bool							kittyKeyboard = false;
 
 				void							QueueKey(presentation::NativeWindowKeyInfo info, Nullable<char32_t> text);
 				void							DecodeSequence(vint end, vuint64_t now);

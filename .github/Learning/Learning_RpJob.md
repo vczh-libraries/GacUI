@@ -22,6 +22,11 @@
 
 ## Linux (wGac repo specific)
 
+- For TUI, use a real terminal and distinguish native terminal-generated keys/mouse from raw byte replay. Kitty X11 under XWayland allows native XTest input and actual window captures; byte injection alone does not prove Super delivery.
+- TUI controls have natural cell-sized hit targets. Click the actual short Hide/Close caption, use the current dropdown arrow, and locate localized dialog actions again after resizing. Drag an existing dialog by its visible border into a smaller viewport when necessary.
+- The hyperlink entry dialog starts empty on every invocation. Verify cancel/edit by activating the retained link in Preview, rather than expecting URL prepopulation. Shared file create/overwrite prompts use OK/Cancel, not Yes/No.
+- Keep desktop clipboard reads running while the TUI selection owner is alive. Test an external non-text selection followed by UTF-8 text to verify Paste-enable notifications as well as transfer.
+
 ## macOS (iGac repo specific)
 
 - Cocoa fatal prompts are Core Foundation notifications owned by `UserNotificationCenter`, not windows owned by the renderer process. Inspect that process's prompt for the exact Core title/message, then choose its `No` button before querying retained renderer DOM.
@@ -32,3 +37,5 @@
 - `sample` can confirm a Core blocked in `RpcJsonDispatcherClient::PopReceivedMessage` during a suspended stdio-host call without an LLDB launch. Killing that host must release the caller promptly; retain process handles and the sample to distinguish a blocked-call test from idle loss.
 - A temporary HTTP proxy for the native MiniHTTP host must preserve its persistent GET/POST sockets and disable the proxy server's idle keep-alive timeout. A default Node proxy retired the idle POST socket: the next delivered RPC was acknowledged but its reply failed, leaving Core in the documented already-acknowledged-call gap. The direct connection passed, and preserving frontend keep-alive with timeout zero passed another RPC after 27 seconds idle and normal shutdown. Use direct connections for normal matrix operations and reserve the proxy for controlled failure injection.
 - When a browser or Node host uses a different proxy port, rewrite the forwarded `Host` header to Core's actual loopback port. MiniHTTP routing validates that port; forwarding `Host: localhost:8898` to Core on 8888 returns 404 even when the path is correct.
+
+- For TUI caret checks, observe both an interior position and the final text position; a working timer can still leave the final block caret clipped by document minimum bounds. Paste lines wider than the viewport as well as many short lines: a horizontal scrollbar revealed during rendering can reduce the vertical page after the first caret scroll. Record the immediate first paste before using Ctrl+End or resizing.

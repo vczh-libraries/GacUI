@@ -188,6 +188,60 @@ using namespace tui_provider_tests;
 
 TEST_FILE
 {
+	TEST_CASE(L"TUI document minimum bounds include the final block caret")
+	{
+		TuiRunTest([](TuiTestBackend*, TuiTestController* controller)
+		{
+			auto previousResources = GetGuiGraphicsResourceManager();
+			auto previousController = GetNativeController();
+			TuiGraphicsResourceManager resources;
+			SetGuiGraphicsResourceManager(&resources);
+			SetNativeController(controller);
+			SetTuiApplication(controller);
+			RegisterTuiRenderers();
+			auto window = controller->CreateNativeWindow(INativeWindow::Normal);
+			window->Show();
+			TuiGraphicsRenderTarget target(window);
+			target.StartHostedRendering();
+			target.StartRendering();
+			for (WString text : {L"", L"Archer", L"\u4F60\u597D\U0001F600", L"a\tX"})
+			{
+				auto document = Ptr(new DocumentModel);
+				auto paragraph = Ptr(new DocumentParagraphRun);
+				auto run = Ptr(new DocumentTextRun);
+				run->text = text;
+				paragraph->runs.Add(run);
+				document->paragraphs.Add(paragraph);
+				auto element = Ptr(GuiDocumentElement::Create());
+				element->SetDocument(document);
+				element->SetWrapLine(false);
+				element->SetParagraphPadding(false);
+				auto renderer = element->GetRenderer();
+				renderer->SetRenderTarget(&target);
+				renderer->Render(Rect(0, 0, 16, 1));
+				element->SetCaret(TextPos(0, text.Length()), TextPos(0, text.Length()), true);
+				element->SetCaretColor(Color(255, 255, 255));
+				element->SetCaretVisible(true);
+				auto caret = element->GetCaretBounds(TextPos(0, text.Length()), true);
+				auto bounds = Rect(Point(), renderer->GetMinSize());
+				TEST_ASSERT(bounds.Contains(caret.LeftTop()));
+				target.Fill(Rect(0, 0, 16, 8), Color(0, 0, 0));
+				renderer->Render(bounds);
+				TEST_ASSERT(TUI::GetBuffer()[caret.x1].backgroundColor == TuiColor(255, 255, 255));
+				element->BlinkCaret();
+				target.Fill(Rect(0, 0, 16, 8), Color(0, 0, 0));
+				renderer->Render(bounds);
+				TEST_ASSERT(TUI::GetBuffer()[caret.x1].backgroundColor == TuiColor(0, 0, 0));
+			}
+			target.StopRendering();
+			target.StopHostedRendering();
+			controller->DestroyNativeWindow(window);
+			SetTuiApplication(nullptr);
+			SetNativeController(previousController);
+			SetGuiGraphicsResourceManager(previousResources);
+		});
+	});
+
 	TEST_CASE(L"TUI grid selection preserves separator backgrounds in the composed row")
 	{
 		using namespace vl::presentation::unittest;

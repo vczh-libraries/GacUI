@@ -26,7 +26,12 @@ GuiDocumentViewer
 			class GuiDocumentViewer : public GuiScrollContainer, public GuiDocumentCommonInterface, public Description<GuiDocumentViewer>
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentViewerTemplate, GuiScrollContainer)
+				using IEventHandler = compositions::IGuiGraphicsEventHandler;
 			protected:
+				Ptr<IEventHandler>						hPageSizeChangedHandler;
+				Ptr<IEventHandler>						vPageSizeChangedHandler;
+
+				void										OnPageSizeChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 
 				void										UpdateDisplayFont()override;
 				Point										GetDocumentViewPosition()override;

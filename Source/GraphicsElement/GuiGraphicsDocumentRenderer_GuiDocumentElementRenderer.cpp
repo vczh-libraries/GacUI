@@ -1,4 +1,5 @@
 #include "GuiGraphicsDocumentRenderer.h"
+#include "../PlatformProviders/TUI/TuiApplication.h"
 
 namespace vl
 {
@@ -72,6 +73,9 @@ GuiDocumentElementRenderer
 			void GuiDocumentElementRenderer::FixMinSize()
 			{
 				minSize = { lastTotalWidth,lastTotalHeightWithoutParagraphDistance };
+				// A terminal caret occupies a whole cell after the final character.
+				// Keep that cell inside a document measured to its minimum width.
+				if (GetTuiApplication()) minSize.x++;
 				if (pgCache.GetParagraphCount() > 0)
 				{
 					minSize.y += paragraphDistance * (pgCache.GetParagraphCount() - 1);

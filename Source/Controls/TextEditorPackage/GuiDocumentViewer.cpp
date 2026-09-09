@@ -1,4 +1,5 @@
 #include "GuiDocumentViewer.h"
+#include "../../PlatformProviders/TUI/TuiApplication.h"
 
 namespace vl
 {
@@ -14,12 +15,19 @@ GuiDocumentViewer
 
 			void GuiDocumentViewer::BeforeControlTemplateUninstalled_()
 			{
+				auto ct = TypedControlTemplateObject(true);
+				if (auto scroll = ct->GetHorizontalScroll()) scroll->PageSizeChanged.Detach(hPageSizeChangedHandler);
+				if (auto scroll = ct->GetVerticalScroll()) scroll->PageSizeChanged.Detach(vPageSizeChangedHandler);
+				hPageSizeChangedHandler = nullptr;
+				vPageSizeChangedHandler = nullptr;
 				ReplaceMouseArea(nullptr);
 			}
 
 			void GuiDocumentViewer::AfterControlTemplateInstalled_(bool initialize)
 			{
 				auto ct = TypedControlTemplateObject(true);
+				if (auto scroll = ct->GetHorizontalScroll()) hPageSizeChangedHandler = scroll->PageSizeChanged.AttachMethod(this, &GuiDocumentViewer::OnPageSizeChanged);
+				if (auto scroll = ct->GetVerticalScroll()) vPageSizeChangedHandler = scroll->PageSizeChanged.AttachMethod(this, &GuiDocumentViewer::OnPageSizeChanged);
 				baselineDocument = ct->GetBaselineDocument();
 				if (documentElement)
 				{
@@ -27,6 +35,13 @@ GuiDocumentViewer
 					SetDocument(GetDocument());
 				}
 				ReplaceMouseArea(containerComposition->GetParent());
+			}
+
+			void GuiDocumentViewer::OnPageSizeChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				// Rendering a long pasted line can reveal a scrollbar after the
+				// initial caret scroll. Follow the caret in the final cell viewport.
+				if (GetTuiApplication() && GetFocused()) EnsureCaretVisible();
 			}
 
 			void GuiDocumentViewer::UpdateDisplayFont()

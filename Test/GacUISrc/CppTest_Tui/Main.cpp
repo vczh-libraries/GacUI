@@ -1,4 +1,10 @@
+#include <Vlpp.h>
+
+#if defined VCZH_MSVC
 #include "../Generated_TuiSkin/TuiSkinConfig.h"
+#else
+#include "Skins/TuiSkin/TuiSkin.h"
+#endif
 #include "TuiControlTest.h"
 
 using namespace vl;
@@ -13,6 +19,7 @@ void GuiMain()
 	controls::GetApplication()->Run(&window);
 }
 
+#if defined VCZH_MSVC
 int wmain()
 {
 	auto result = SetupTuiWindowsRenderer();
@@ -21,3 +28,4 @@ int wmain()
 #endif
 	return result;
 }
+#endif

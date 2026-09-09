@@ -1,8 +1,18 @@
-# TuiControlTest Windows Terminal SOP
+# TuiControlTest Terminal SOP
 
 Run `CppTest_Tui` in Windows Terminal after building `Test/GacUISrc/GacUISrc.sln`. The title is `Complete Control Showcase (TUI)`. Begin at 120 columns by 40 rows; repeat layout checks at 80 by 25 and after restoring the larger viewport. One GacUI pixel is one terminal cell.
 
 From `Test/GacUISrc` in Windows Terminal, run `& C:\Code\VczhLibraries\GacUI\.github\Scripts\copilotExecute.ps1 -Mode CLI -Executable CppTest_Tui -Configuration Debug -Platform x64 -Interactive`. Adjust the absolute repository path for another checkout. The interactive flag preserves native console handles. This app has no HTTP automation endpoint, Core process, renderer process, or renderer-replacement procedure. Terminal font and color settings belong to Windows Terminal.
+
+## Linux and macOS launch
+
+On Linux use sibling `wGac`. The corresponding macOS port belongs in sibling `iGac` and must be implemented and verified on a macOS host. Refresh the owning upstream releases, then run `./import.sh`, `./syncProj.sh`, and `./build.sh` from that platform repository. Start `./test.sh --app:tui` in a foreground interactive terminal. The target is `Test_TuiControlTest` under `WGacTuiControlTest` or `MacTuiControlTest`. Keep stdin/stdout attached; `--unblock`, `--hosted`, and `--port` do not apply. Complete the same page checks below and maintain `TestMatrix_Tui.md` in the platform repository.
+
+Use the host terminal wherever the shared procedures say Windows Terminal, and native paths for file fixtures. The OS modifier label is `Super` on Linux and `Command` on macOS. Validate shortcut labels using those names. The shared showcase currently retains the literal `Win` spelling in its success-message text on all platforms. The Windows-specific console-record and CDB evidence below remains historical Windows evidence.
+
+POSIX terminals supporting the Kitty keyboard protocol can report Super independently of Alt. The backend requests disambiguated keys and restores the prior keyboard mode on exit; legacy terminal Meta remains Alt. SGR mouse input has no Super bit, and the existing wGac input service does not register global hotkeys. Disambiguation mode does not report standalone modifier keys, so the current POSIX adapter cannot show access-key overlays from Alt alone; use mouse/arrow menu navigation and record that limitation. The existing POSIX locale implementation also keeps en-US date/number formatting while translated resource strings follow the selected locale. Record these unavailable paths explicitly. Injected CSI/SGR bytes prove decoding and application behavior, while real terminal-generated input is required to establish host delivery. A passed decoder test does not establish macOS verification.
+
+On Linux, the TUI clipboard uses an unmapped X11 selection owner because a separate Wayland client cannot borrow the terminal's focus serial. With `DISPLAY` available, verify text with another desktop app through X11/XWayland. Without an X display, document the process-local clipboard limitation and use the terminal's ordinary paste action for external text. Rich document/image clipboard objects are retained inside the app; external transfer is UTF-8 text. Keep the app running while another client reads its selection.
 
 ## Rules for every operation
 

@@ -20,6 +20,7 @@
 You need to maintain test card in:
 - `<wGac-or-iGac>/TestMatrix_NativeRenderer.md` for `DebugRemoteProtocolWithNativeRenderer.md`
 - `<wGac-or-iGac>/TestMatrix_GacJS.md` for `DebugRemoteProtocolWithGacJS.md`
+- `<wGac-or-iGac>/TestMatrix_Tui.md` for `DebugTuiControlTestSop.md`; keep one row per current SOP section plus build/sync and unit-test results. Record native input separately from terminal-byte replay and explicitly record terminal or platform limitations.
 
 If these files already exist, delete them, and recreate them following the `### Test Matrix Card` section in each document.
 During verification, test matrix cards should be updated in time:
@@ -48,12 +49,18 @@ In `GacUI` there are GacUI XML Resources to build C++ code:
 - `FullControlTest`
 - `RemoteProtocolTest`
 - `RemoteViewModelTest`
+- `TuiControlTest` (with the separate released `TuiSkin` pair imported into `Import/Skins/TuiSkin`)
 XML resources and assets will be copied from `GacUI/Test/Resources/App/<APP-NAME>` to `Apps/<APP-NAME>/Resources`, but C++ files are generated from them locally.
 
 In `GacUI` there are important test apps:
 - `CppTest`, a test app with with `FullControlTest` running, no network protocol is involved.
   - `test.sh --app:fct (--hosted)?`
   - Its portable counterpart is `%FullControlTest`.
+- `CppTest_Tui`, the hosted terminal showcase using `TuiControllerBase` and `TuiSkin`.
+  - `test.sh --app:tui` runs `%TuiControlTest` in the foreground with inherited interactive stdin/stdout.
+  - Reject `--unblock`, `--hosted`, and renderer-only `--port` for this app. There is no HTTP automation endpoint, remote Core, or renderer replacement.
+  - `syncProj.sh` regenerates `Apps/TuiControlTest` and copies `CppTest_Tui/Main.cpp` to the portable `GuiMain.cpp`; keep only the platform entry point local.
+  - Follow `DebugTuiControlTestSop.md`, including terminal sizes, input capabilities, dialogs and every normal shutdown path.
 - `CppTest_Rvm`, a test app with actual UI, connecting to a view model implementation hosted in `RemotingTest_RvmHost`.
   - `test.sh --app:rvmt`
   - `test_core.sh --app:cpptest_rvm --protocol:minihttp` starts this requester and then full-builds and starts its manual host.
@@ -112,7 +119,7 @@ Try to limit changes in `GacUI` to only include making release or fixing cross-p
 - Unless there are fundamental issues to fix.
 - You need to figure out why the code is just work in `GacUI` on Windows. Having correct answers to this question help you figure out root cause efficiently and precisely.
 
-Follow `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` to make sure all test apps are behaving expectedly.
+Follow `DebugRemoteProtocolWithNativeRenderer.md`, `DebugRemoteProtocolWithGacJS.md`, and `DebugTuiControlTestSop.md` to make sure all test apps are behaving expectedly. TUI is an independent terminal matrix; it does not multiply the remote application/transport matrix.
 Without explicitly instructed, the complete matrix of all combinations of test apps, test UI loaded with remote protocol, and available network protocol choices, should be verified.
 
 ## Finishing

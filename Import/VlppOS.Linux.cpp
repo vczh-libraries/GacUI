@@ -52,6 +52,10 @@ LinuxFileSystemImpl
 
 			WString ConcatPath(const WString& fullPath, const WString& relativePath) const override
 			{
+				if (relativePath.Length() > 0 && relativePath[0] == GetPathDelimiter())
+				{
+					return relativePath;
+				}
 				auto delimiter = WString::FromChar(GetPathDelimiter());
 				if (IsRoot(fullPath))
 				{
@@ -5916,7 +5920,7 @@ namespace vl
 						CHECK_ERROR(signalResult == 0, L"vl::console::TUI failed to install its SIGWINCH handler.");
 						CHECK_ERROR(maskResult == 0, L"vl::console::TUI failed to restore the owner thread signal mask.");
 
-						const char sequence[] = "\x1B[?1049h\x1B[?25l\x1B[?1003h\x1B[?1006h";
+						const char sequence[] = "\x1B[?1049h\x1B[?25l\x1B[?1003h\x1B[?1006h\x1B[>1u\x1B[?u";
 						WriteAll(STDOUT_FILENO, sequence, sizeof(sequence) - 1);
 						if (options.colorMode != TuiColorMode::Auto) return options.colorMode;
 						auto colorTerm = getenv("COLORTERM");
@@ -5935,7 +5939,7 @@ namespace vl
 				void Stop() override
 				{
 					if (!started) return;
-					const char sequence[] = "\x1B[?1006l\x1B[?1003l\x1B[0m\x1B[?25h\x1B[?1049l";
+					const char sequence[] = "\x1B[<u\x1B[?1006l\x1B[?1003l\x1B[0m\x1B[?25h\x1B[?1049l";
 					auto ignored = write(STDOUT_FILENO, sequence, sizeof(sequence) - 1);
 					(void)ignored;
 					if (termiosChanged) tcsetattr(STDIN_FILENO, TCSANOW, &savedTermios);
