@@ -7,6 +7,7 @@
   - `TODO_Task_TUI.md`
   - `TODO_Task_TUI_FollowUp_1.md`.
   - `TODO_Task_TUI_FollowUp_2.md`.
+  - `TODO_Task_TUI_FollowUp_3.md`.
 - The goal of this request is to make sure it also works on Linux/macOS:
   - Port the new test app, make sure it could be synced in the future in `syncProj.sh`, and started by `test.sh --app:tui`.
   - Update `GacUI/.github/Jobs/job.rpXPlat.prompt.md` for the new test app. The SOP is in `GacUI/.github/Jobs/DebugTuiControlTestSop.md`.
