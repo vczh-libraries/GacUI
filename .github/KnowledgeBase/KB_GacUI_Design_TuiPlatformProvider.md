@@ -38,6 +38,8 @@ The physical window rejects custom frames and reports all GacUI frame options di
 
 Input uses the existing VlppOS `vl::presentation` key, character and mouse types. KeyDown/KeyUp and native wchar_t Char units are forwarded separately. Text is not synthesized from KeyDown. Mouse positions are cells, wheel signs and modifiers are retained, and Alt is independent of OS Super. Future POSIX adapters may deliver fewer key-up/modifier/button combinations.
 
+On Windows Terminal, VlppOS decodes the host's per-record right/left Win extension bits (`0x0200`/`0x0400`) into `osSuper`; the portable provider forwards that value unchanged. Do not infer keyboard modifiers from the Window Manager mouse readout, or replace local Win shortcuts with global registrations. Hosts that omit those bits still cannot expose Win through this decoder. See [the VlppOS input contract](./KB_VlppOS_TerminalUserInterface.md#key-events-and-production-decoders).
+
 The showcase main bounds use NoLimit with their explicit 80x25 preference. This stops larger hidden-page minimum sizes from enlarging the hosted main window beyond the physical terminal; aligned children still lay out in the available viewport.
 
 ## Rendering

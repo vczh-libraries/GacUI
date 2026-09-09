@@ -181,7 +181,9 @@ POSIX enables all-motion mode 1003 and SGR mode 1006. Coordinates must be positi
 
 Use `KeyDown/KeyUp` for key actions and `Char` for text. Printable input may produce both; consumers must not act twice.
 
-Windows translates `wVirtualKeyCode` in 1..255 directly, otherwise UNKNOWN. Each `wRepeatCount` unit emits KeyDown followed by its nonzero native character. The first press is not a repeat; later units and down records while held are repeats. One KeyUp clears held state without text. Start/Stop clears decoder state. Ctrl/Shift/Alt/Caps Lock come from the record; OS Super is unobservable. [Microsoft key record contract](https://learn.microsoft.com/en-us/windows/console/key-event-record-str).
+Windows translates `wVirtualKeyCode` in 1..255 directly, otherwise UNKNOWN. Each `wRepeatCount` unit emits KeyDown followed by its nonzero native character. The first press is not a repeat; later units and down records while held are repeats. One KeyUp clears held state without text. Start/Stop clears decoder state. Ctrl/Shift/Alt/Caps Lock come from the record. [Microsoft key record contract](https://learn.microsoft.com/en-us/windows/console/key-event-record-str).
+
+Windows Terminal extends `dwControlKeyState` with right Win `0x0200` and left Win `0x0400`, as defined in its [ControlKeyStates.hpp](https://github.com/microsoft/terminal/blob/v1.24.11911.0/src/cascadia/TerminalCore/ControlKeyStates.hpp). The Windows decoder maps either bit to `osSuper` in key and mouse records and copies it into each accompanying Char event. These flags are host extensions, absent from the public console flag list. Native Windows Terminal 1.24.11911.0 tracing observed Q with Ctrl+Alt+left Win as `0x040A` and right Win as `0x020A`, without separate Win-key transitions. Read each event's bits directly; asynchronous key polling would substitute current state for queued event state. Hosts that omit these bits continue to report false; the decoder does not synthesize missing Win transitions or make intercepted OS chords available.
 
 The production POSIX decoder in [TUI.Input.cpp](../../Source/TUI/TUI.Input.cpp) retains incomplete bytes and decoded events across reads:
 

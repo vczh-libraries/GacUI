@@ -98,6 +98,10 @@ For every bug, you need to verify if this is a TUI only issue or a general GacUI
 
 # UPDATES
 
+## UPDATE
+
+I would like you to update VlppOS to fix the osSuper issue and see if ctrl+alt+win+q issue will be resolved by that.
+
 # TEST
 
 Native shortcut reproduction is the first priority. Establish successful native input and trace console records, decoded modifiers, hosted forwarding and command matching before changing shortcut behavior. Synthetic payload tests are supplementary evidence only. Reproduce and verify the grid separator, TAB insertion/configuration and shared combo navigation issues using the task's full acceptance criteria.
@@ -115,6 +119,7 @@ Fresh Windows Terminal PID 4636 and CppTest_Tui PID 3384 were launched through t
 - No.1 Consume navigation at the combo-list boundary [CONFIRMED]
 - No.2 Configure terminal tab stops consistently [CONFIRMED]
 - No.3 Preserve DataGrid separator backgrounds [CONFIRMED]
+- No.4 Decode Windows Terminal's per-record Win modifier extensions
 
 ## No.1 Consume navigation at the combo-list boundary [CONFIRMED]
 
@@ -176,6 +181,32 @@ GUI Control / TextBox: the supplied Char path accepts literal tabs in Singleline
 
 GacUI_Compiler Debug x64 completed with exit code 0. Both x86/x64 TuiSkin outputs contain the additional inset row background; no *.UI.errors.txt or deleted generated outputs remain. Debug Win32 and x64 solution builds both passed with zero warnings/errors. Metadata_Generate passed in Win32 and x64, followed by Metadata_Test x64 (exit 0). The unfiltered Debug x64 UnitTest run passed 90/90 files and 1745/1745 cases; both affected test files were selected, none were skipped, and no memory-leak dump followed the summary.
 
-## Outstanding acceptance [UNVERIFIED]
+## Outstanding acceptance at the end of the September 8 investigation [HISTORICAL]
 
 This request is not fully resolved. A final native-input prerequisite check still returns OpenInputDesktop=null/error 5 and GetForegroundWindow=null, despite successful window resizing. Ctrl+Alt+Win+Q has not been reproduced with successful native input, so no keyboard decoder or shortcut fix has been made. Local/global shortcut activation, modifier orders/releases, concurrent global registrations and physical TAB-versus-paste comparisons remain unverified. The interactive-desktop request is still unanswered. Alt is documented in console keyboard records, but native Win delivery must be observed before choosing an upstream fix. Exhaustive scrolling/recycling checks were not completed; the verified viewport-clipping observations must not be read as those checks passing.
+
+## No.4 Decode Windows Terminal's per-record Win modifier extensions
+
+The September 9 continuation has an accessible input desktop. Windows Terminal 1.24.11911.0 hosts the prescribed CppTest_Tui Debug x64 launch at 120x40. SetForegroundWindow succeeds and every native SendInput reports one event inserted, error zero. Ctrl+Q displays its exact success dialog. After dismissal, Ctrl+Alt+left-Win+Q produces no dialog. CDB at the production WindowsTuiInputDecoder::DecodeKey records Q down/up with dwControlKeyState=0x040A; Ctrl+Alt+Q without Win records 0x000A. No separate Win down/up record arrives in this sequence.
+
+Microsoft Terminal's matching release source defines RIGHT_WIN_PRESSED=0x0200 and LEFT_WIN_PRESSED=0x0400 in [ControlKeyStates.hpp](https://github.com/microsoft/terminal/blob/v1.24.11911.0/src/cascadia/TerminalCore/ControlKeyStates.hpp). These extensions are absent from the public KEY_EVENT_RECORD flag list and the installed Windows SDK header, but are present in the actual terminal records. This corrects the earlier conclusion that the current record method cannot supply Win. Decode these event-local bits directly; avoid asynchronous key polling and the timing mismatch it would introduce for queued records.
+
+### CODE CHANGE
+
+In VlppOS Source/TUI/TUI.Windows.cpp, name the Windows Terminal extension mask in the existing internal namespace, populate key and mouse osSuper from each record, and copy key osSuper into its accompanying Char event. Preserve Ctrl/Alt independence, repeats, transition order, native character units, lifecycle and public declarations. Add Windows decoder regressions to Test/Source/TestTui.cpp for left/right/both Win, Alt combinations, repeated keys, modifier releases and unchanged queued events. Require a failing regression before the fix, upstream build/tests, regenerated VlppOS release/downstream import, GacUI build/tests, and matching native shortcut success with both Win keys and changed press/release order. Preserve the separate local and global commands.
+
+The upstream regression failed before the change at `key.keyInfo.osSuper == (superMask != 0) && key.keyInfo.alt == (altMask != 0)`. The right-Win native trace likewise records `mods=0x020A`, followed by `TuiControllerBase::KeyDown` receiving Q with ctrl=1, shift=0, alt=1, osSuper=0. Extend GacUI's existing provider test to assert independent Alt/Super forwarding for keys, characters and mouse events; native command activation remains the end-to-end acceptance check.
+
+### Verified decoder and replay; native acceptance pending
+
+VlppOS Debug x64 builds with zero warnings/errors and all 16 files / 299 cases pass without a leak dump. CodePack regenerated only Release/VlppOS.Windows.cpp; the GacUI import is byte-identical (SHA-256 302AFB7C053271098E0A8D40F3B73C12DDD1F0FFF765AEAD2DF07E583912468C). The complete GacUI Debug x64 solution builds with zero warnings/errors. Production TuiPlayground in Windows Terminal accepts native HELP, Enter dismissal, Tab to History, Shift+Tab back to Canvas, and EXIT; every SendInput succeeds and the process exits normally.
+
+During downstream native acceptance, the desktop became inaccessible again: OpenInputDesktop=null/error 5, SetForegroundWindow=false and all eight SendInput calls returned zero/error 5. This after-fix attempt delivered no native input. The rebuilt TUI and GUI showcases were ready concurrently; an unlock request is pending.
+
+As a separate replay check, the six-record sequence was reconstructed from the observed down/up, virtual-key, character and modifier fields of the successful before-fix native left-Win sequence and written to the rebuilt TUI console. CDB sees the same Q down/up flags 0x040A, then forwarding with ctrl=1, shift=0, alt=1, osSuper=1. The application displays exactly `You pressed Ctrl+Alt+Win+Q!`. This verifies the corrected decoder-to-handler path for the observed fields; it is a replay, not a successful native after-fix run. The upstream change and generated release are committed as VlppOS `905cd9a`.
+
+The final unfiltered GacUI Debug x64 UnitTest run passes 90/90 files and 1745/1745 cases, including the extended provider forwarding test. No skipped cases, assertion failures or Debug memory-leak dump appear in the completed log. Both upstream and downstream builds have zero warnings/errors. No further source changes followed these runs.
+
+The final native prerequisite probe still returns OpenInputDesktop=null/error 5 and GetForegroundWindow=null. Therefore native after-fix activation with both Win keys, varied modifier orders/releases, the GUI comparison and concurrent/restarted global shortcut activation remain unverified. No.4 remains unmarked pending that acceptance, although the ignored Win bits, failing regression and corrected replay are established. The before-fix native traces directly demonstrate that Alt is recognized independently and Windows Terminal supplies Win in the current console-record input path.
+
+Cleanup dismissed the replay dialog and exited CppTest_Tui through Stop TUI using console input records. The GUI cleanup request mistakenly used `application/json; charset=utf-8` instead of the endpoint's required `application/json; charset=utf8`, and timed out. Native dialog inspection found `abort() has been called`; CDB identified the HTTP request handler's catch-all `std::terminate` at WindowsAutomationService.Windows.cpp:167. The existing GetUtf8Body header check rejects that spelling. This was an invalid automation request, not a shortcut result. After capturing the stack and detaching CDB, the dialog's Abort button closed the GUI process; its execution wrapper returned 1. No HTTP or GUI source change was made as part of the Win decoder fix.

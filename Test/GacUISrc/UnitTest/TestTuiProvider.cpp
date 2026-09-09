@@ -556,6 +556,29 @@ TEST_FILE
 			TEST_ASSERT(listener.wheel == -120);
 			TEST_ASSERT(window->GetClientSize() == NativeSize(10, 5) && listener.moved >= 2);
 
+			for (bool osSuper : { true, false })
+			for (bool alt : { true, false })
+			{
+				key.keyInfo.code = VKEY::KEY_Q;
+				key.keyInfo.ctrl = true;
+				key.keyInfo.alt = alt;
+				key.keyInfo.osSuper = osSuper;
+				backend->events.Add(key);
+				character.charInfo.ctrl = true;
+				character.charInfo.alt = alt;
+				character.charInfo.osSuper = osSuper;
+				backend->events.Add(character);
+				mouse.type = TuiBackendEventType::MouseMove;
+				mouse.mouseInfo.alt = alt;
+				mouse.mouseInfo.osSuper = osSuper;
+				backend->events.Add(mouse);
+				for (vint i = 0; i < 3; i++) controller->RunOneCycle();
+				TEST_ASSERT(listener.key.code == VKEY::KEY_Q && listener.key.ctrl);
+				TEST_ASSERT(listener.key.alt == alt && listener.key.osSuper == osSuper);
+				TEST_ASSERT(listener.character.ctrl && listener.character.alt == alt && listener.character.osSuper == osSuper);
+				TEST_ASSERT(listener.position.alt == alt && listener.position.osSuper == osSuper);
+			}
+
 			TuiTestTimerListener timer;
 			controller->CallbackService()->InstallListener(&timer);
 			vint invoked = 0;
