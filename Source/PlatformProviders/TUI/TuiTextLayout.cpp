@@ -1,5 +1,6 @@
 #include "TuiTextLayout.h"
 #include "TuiGraphics.h"
+#include <algorithm>
 
 namespace vl::presentation::elements
 {

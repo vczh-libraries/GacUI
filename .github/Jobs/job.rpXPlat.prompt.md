@@ -61,6 +61,7 @@ In `GacUI` there are important test apps:
   - Reject `--unblock`, `--hosted`, and renderer-only `--port` for this app. There is no HTTP automation endpoint, remote Core, or renderer replacement.
   - `syncProj.sh` regenerates `Apps/TuiControlTest` and copies `CppTest_Tui/Main.cpp` to the portable `GuiMain.cpp`; keep only the platform entry point local.
   - Follow `DebugTuiControlTestSop.md`, including terminal sizes, input capabilities, dialogs and every normal shutdown path.
+  - On macOS, `%TuiControlTest` is a foreground executable, not a Cocoa app bundle. `Mac/TUI/TuiCocoaController` reuses Cocoa clipboard/image/key-name/global-shortcut services with explicit callback ownership and a nonblocking AppKit pump under the TUI timer. Native terminal Command delivery and Carbon global registration are separate checks.
 - `CppTest_Rvm`, a test app with actual UI, connecting to a view model implementation hosted in `RemotingTest_RvmHost`.
   - `test.sh --app:rvmt`
   - `test_core.sh --app:cpptest_rvm --protocol:minihttp` starts this requester and then full-builds and starts its manual host.

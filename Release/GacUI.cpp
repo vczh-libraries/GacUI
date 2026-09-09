@@ -67398,6 +67398,7 @@ TuiGraphicsResourceManager
 /***********************************************************************
 .\PLATFORMPROVIDERS\TUI\TUIGRAPHICSRENDERERS.CPP
 ***********************************************************************/
+#include <algorithm>
 
 namespace vl::presentation::elements
 {

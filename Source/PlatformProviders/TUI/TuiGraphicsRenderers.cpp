@@ -1,5 +1,6 @@
 #include "TuiGraphics.h"
 #include "../../GraphicsElement/GuiGraphicsDocumentRenderer.h"
+#include <algorithm>
 
 namespace vl::presentation::elements
 {

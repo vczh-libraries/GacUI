@@ -6,6 +6,7 @@
 #include "../../../Source/Controls/ListControlPackage/TuiItemTemplates.h"
 #include "../Generated_TuiSkin/TuiSkinConfig.h"
 #include "../../../Source/UnitTestUtilities/GuiUnitTestUtilities.h"
+#include <algorithm>
 
 using namespace vl;
 using namespace vl::collections;

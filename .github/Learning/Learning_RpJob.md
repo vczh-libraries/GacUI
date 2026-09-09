@@ -29,6 +29,10 @@
 
 ## macOS (iGac repo specific)
 
+- On a locked macOS desktop, Quartz events can reach the password field while terminal remote-control commands still work. Do not infer terminal focus or native Command/global-hotkey delivery from successful injection. Keep physical input and displayed appearance unverified; Kitty test key generation, buffer inspection and raw CSI/SGR replay cover distinct narrower paths.
+- A rapid repeated SGR click can become a double-click, which is not another button Clicked event. Space repeated clicks on the same target beyond the double-click interval and inspect every intermediate counter. Match modal action rows explicitly: an underlying Open/Save tab or partially visible launch button can also contain the action word.
+- Dismiss a DataGrid editor by selecting another real cell/row; blank space may leave it active. File-dialog text uses semicolon-separated paths; ordinary quoted shell argument syntax is not its multi-selection syntax.
+
 - Cocoa fatal prompts are Core Foundation notifications owned by `UserNotificationCenter`, not windows owned by the renderer process. Inspect that process's prompt for the exact Core title/message, then choose its `No` button before querying retained renderer DOM.
 - Use real macOS keyboard events for Command shortcut checks. The shortcut display name is `Command`, but the native automation key-name table is not the same vocabulary. Quartz mouse events posted to the active UI exercise Cocoa's Option/Command decoding; renderer `/IO` exercises the separate generated-input path.
 - After mixing native input with renderer automation or dismissing a dialog, move the automation pointer to a fresh position before clicking the current target. Reusing the same cached coordinates can preserve stale hover state; query current bounds and wait for the expected result.
