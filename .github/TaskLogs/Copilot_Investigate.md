@@ -158,3 +158,20 @@ Windows Terminal console-buffer inspection confirms baseline three-row combos an
 
 # PROPOSALS
 
+- No.1 Coordinate terminal services, rendering caches and compact control templates
+
+## No.1 Coordinate terminal services, rendering caches and compact control templates
+
+Keep terminal window/event/async behavior in the portable controller, with abstract platform service accessors. The Windows controller will own Windows-derived input/resource services, clipboard/image services and its own explicitly owned hidden service window. Route clipboard and global hotkey messages using the window's controller pointer, detach native owners before destroying the HWND, and restore the previously published controller. Preserve terminal timers and size-one fonts in the Windows service overrides. Adapt the injected test controller with deterministic standalone services.
+
+Replace the three conditional renderer branches with concrete types. Keep the label's display paragraph until effective text or render target changes, and use existing setters for state and width changes. Cache normalized source text and its natural metrics independently of ellipsis. Use the registered graphics layout provider so tests can observe actual paragraph creation and layout reuse without production diagnostic counters. Retain clipper-stack behavior and test drawing at clip boundaries and after resize.
+
+Use borderless opaque ordinary content menus/tooltips, one-row button-like combos, uniform scroll handles and palette-driven ALT badges. Sorting belongs before the header title; reserve its right-side submenu separately. Apply bold plus underline to focused text, retain hover underlining, remove redundant table padding and give embedded grid textboxes a dedicated borderless template. Remove only the obsolete TUI minimum row reservation, retaining cell separators. Inspect selected combo item colors in the intended custom-item path and preserve standalone textbox appearance.
+
+For shared controls, synchronize layout before reading the resized header's effective width; use a one-cell splitter at the next header's outer edge only for TUI, preserving GUI dimensions. Clamp DataGrid navigation to valid columns, preserve editor key handling and restore grid focus on editor dismissal. Extend tests before treating any unconfirmed mouse-focus hypothesis as a defect. Give the TUI showcase a distinct global shortcut after confirming collision, while leaving unexpected registration failures visible. Do not substitute Alt with Shift without evidence from real input; document decoder and physical-modifier limitations separately.
+
+Add all authored TuiSkin/TuiControlTest XML files exactly once to both compiler project inventories. Update layout/provider guidance. Generate resources and metadata in the prescribed order, run the full unit suite, and compare both showcase applications through their available native surfaces.
+
+### CODE CHANGE
+
+Implementation and verification pending.
