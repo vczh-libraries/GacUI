@@ -20,7 +20,8 @@ If skin or layout issue happens because `GacUILayout.md` said so or the guidance
   - Extra lines around top/bottom of the list is unnecessary, as list boxes have a border, they would be clear.
   - TextBox/TextBox, Misc/Localization has a similar issue, remove all unnecessary empty lines between controls.
 - Empty line between data cell bottom border and content, should remove the gap.
-  - Editor specific theme name mighy need to add so that the text box editor won't have border.
+  - I think this was designed like this because text editor has 3 pixel height. So a different look of text editor should be used.
+  - In TUI's `DataGridComponents.xml` make a dedicated control template for `demo::TextEditor`'s text box.
 
 ## TUI Platform Provider
 
@@ -46,3 +47,7 @@ For every bug, you need to verify if this is a TUI only issue or a general GacUI
 - Shortcut key `ctrl+win+alt+q` not working, this is a TUI only issue, make sure it is the limitation of CLI preventing you from using `ALT`:
   - If so change it to `ctrl+win+shift+q`.
   - Otherwise this would be a bug.
+
+## MISC
+
+- `TuiSkin` and `TuiControlTest` resource files should be added to `GacUI_Compiler`, just like `DarkSkin` and `FullControlTest`, but it doesn't affect compiling, so no need to run `GacUI_Compiler`.
