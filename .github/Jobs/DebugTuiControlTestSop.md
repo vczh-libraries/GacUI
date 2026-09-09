@@ -16,6 +16,8 @@ Start fresh at 100x30 and 80x25 before manually resizing. The first visible main
 
 Open child and modal windows, overlap them, move/resize them, and close them. Exposed cells must repaint. Check clipboard copy/paste with another app, asynchronous file enumeration, caret blinking and global shortcuts. All owner-thread work must continue during modal pumping.
 
+For child title bars, inspect short, long, empty and CJK captions with SizeBox enabled/disabled and TitleBar toggled. The double/thick top border must continue from the caption's immediate trailing space to the close button. An empty caption must not erase a blank strip. Long captions must ellipsize without covering the button; dragging the title/border region and clicking Close must still work. Caption buttons have no spacer between them when multiple commands are supported; the current hosted manager supports Close only.
+
 Exercise each direct/queued Hide and Close button and both Stop buttons on separate fresh runs. For Hide/Close, first enable cancellation and require one query with no ready notification or stop, then disable cancellation and retry. Accepted requests must return normally from GuiApplication::Run through WindowService()->Run. Closing with a hosted modal open must preserve its existing focus/dismiss interception and keep the main app running; closing an ordinary child must also leave it responsive. After each normal exit, require restoration of terminal contents, cursor visibility, colors and input modes; type into the shell to verify usable input. Repeat after opening/closing dialogs. Terminal-tab close and forced termination do not satisfy this check.
 
 ## Follow-up regression checks
@@ -172,7 +174,7 @@ Switch en-US to zh-CN and back. Require the title, selector label, date/time/num
 
 At 120x40, 80x25 and after restoring the larger viewport, inspect all Message/Color/simple Font/full Font/Open/Save dialogs and their launch forms. Require zero blank rows between compact fields and exactly one explicit blank row before final actions; keep textbox, group and list borders. First-column labels must align vertically with bordered textbox content while retaining left alignment, and labels beside one-row combos must remain one row. Keep results adjacent to their label/list and preserve scrolling, keyboard focus and returned values.
 
-Message content must be a readable borderless label, preserving short, multiline and CJK content and explicit blank lines. Exercise one-, two- and three-button English/Chinese messages with/without icons: the natural-width buttons remain centered across the dialog at every localized width. Other dialog actions start at the left, including the full-font Pick a Color action. Include multiline file-validation prompts.
+Message content must be a readable borderless label, preserving short, multiline and CJK content and explicit blank lines. Exercise one-, two- and three-button English/Chinese messages with/without icons: the natural-width buttons remain centered across the dialog at every localized width. Color, simple/full Font and Open/Save File dialog actions align to the right, including the full-font Pick a Color action, with one explicit blank row above. Include multiline file-validation prompts.
 
 Count each RGB tracker as exactly one rendered cell row centered beside its textbox, with vertically centered labels. Drag it, use keyboard steps and reach 0/255; type RGB 12,34,56, accept/reopen, then change/cancel and require preserved color semantics. Recheck font effects/nested color and file enumeration/selection/nested prompts.
 
@@ -261,6 +263,8 @@ Inherited fake-service limitation: GuiFakeDialogServiceBase_ColorDialog.cpp does
 
 ## Follow-up 3 verification (2026-09-09)
 
+This record predates the continuation that corrects non-message actions to right alignment. Its layout results remain historical; fresh continuation results are recorded separately below.
+
 | Check | Fresh result |
 | --- | --- |
 | Generation/build/metadata | Both resource architectures completed without UI errors. Debug Win32/x64 builds have 0 warnings/errors; both Metadata_Generate runs and x64 Metadata_Test pass |
@@ -294,3 +298,18 @@ Use the actual checkout's absolute wrapper path. The wrapper must support `-Inte
 | Closing and restoration | Four vetoed Hide/Close requests produce invocation/query counts 4/4 and ready 0. Fresh direct/queued Hide/Close and both Stop paths all exit 0. Direct Close after dialogs exits 0 under CDB without a leak dump. Settled shell modes 484/7, attributes 7 and cursor 25/visible are restored; the shell accepts commands |
 | Final regenerated package | Win32 Release starts at 100x30, loads embedded document text/tables and shows a borderless Chinese message with centered action and one gap. Enter returns SelectOK. A vetoed Close stays live, then the accepted retry returns 0 through the wrapper and restores the usable shell |
 | Observation limits | Console event replay, stable live-buffer inspection and CDB establish these results. Physical input and final displayed font/cursor/RGB fidelity remain unverified |
+
+## Follow-up 3 continuation verification (2026-09-09)
+
+This continuation corrects the preceding non-message action alignment and adds the missing child title border. The preceding records remain historical.
+
+| Check | Continuation result |
+| --- | --- |
+| Generation/build/metadata | Full GacUI_Compiler completed both architectures and merging with exit 0; no UI error files. Debug Win32/x64 builds passed with zero warnings/errors, both metadata generators passed and x64 metadata validation passed |
+| Full unit suite | Finished Debug x64 log reports 90/90 files and 1,748/1,748 cases with no leak dump. Existing GUI snapshots are unchanged |
+| Child captions | Debug x64 PID 12120 at 120x40 preserves the thick border after short/CJK captions; empty captions leave the full border and long captions ellipsize before Close. At 80x25 border dragging and clicking the moved Close target work. Window Manager children retain double/thick borders across SizeBox changes and restore their caption after TitleBar is toggled |
+| Dialog actions | Chinese at 120x40 and English at 80x25: Color, simple/full Font, Open and Save groups align right, including Pick a Color. Exactly one blank row precedes actions; message groups remain centered |
+| Dialog behavior | RGB 12/34/56 accepts as #0C2238 and survives reopen/cancel. Both font previews retain ABCxyz 你好; nested Color returns to full Font. File enumeration, nested empty-selection validation and an exact existing-path result work. Save cancellation returns to its form |
+| Resize/normal close | 120x40 → 80x25 → 120x40 retains usable forms, scrolling and hit targets. Main Close after all dialogs returns 0 through the wrapper and restores usable shell input, modes 484/7, attributes 7 and visible 25-percent cursor |
+| Win32 smoke | A separate Debug Win32 process starts directly at 80x25, preserves the CJK message caption border/centered action and right-aligned Chinese Color actions, then returns 0 through normal Close with the console state restored |
+| Observation limits | Stable console buffers and console-event replay establish these checks. Physical keyboard/mouse and final displayed font/cursor/RGB fidelity remain unverified |

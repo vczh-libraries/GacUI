@@ -271,9 +271,9 @@
             <_>composeType:MinSize</_>
           </att.Rows>
           <att.Columns>
-            <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
           </att.Columns>
           <Cell Site="row:0 column:0 columnSpan:3">
             <g:TuiFilePickerControl ref.Name="filePickerControl" ViewModel-eval="ViewModel">
@@ -288,7 +288,7 @@
               ]]></ev.RequestClose-eval>
             </g:TuiFilePickerControl>
           </Cell>
-          <Cell Site="row:2 column:0 ">
+          <Cell Site="row:2 column:1 ">
             <Button ref.Name="buttonOK" Enabled-bind="not ViewModel.IsLoadingFiles" Alt="O">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
               <ev.Clicked-eval><![CDATA[
@@ -301,7 +301,7 @@
               ]]></ev.Clicked-eval>
             </Button>
           </Cell>
-          <Cell Site="row:2 column:1 ">
+          <Cell Site="row:2 column:2 ">
             <Button Text-str="Cancel()" Alt="C">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
               <ev.Clicked-eval><![CDATA[

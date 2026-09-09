@@ -14942,19 +14942,16 @@ namespace tuiskin
         var <precompile>12 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+        var <precompile>13 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>14 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>14 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
 
         @cpp:Protected
-        var <precompile>15 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var <precompile>15 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>16 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>17 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var <precompile>16 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
 
         @cpp:Protected
         var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -15086,49 +15083,45 @@ namespace tuiskin
             {
                 (<precompile>12.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>13 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            (<precompile>13 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>12.OwnedElement = <precompile>13);
-            }
-            (<precompile>14 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>14.AlignmentToParent = {left : 1; top : 0; right : 3; bottom : 0;} of (::presentation::Margin));
+                (<precompile>13.AlignmentToParent = {left : 0; top : 0; right : 3; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>14.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>13.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>15 = new (::presentation::elements::GuiSolidLabelElement^)());
+            (<precompile>14 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>15.Ellipse = true);
-            }
-            {
-                (<precompile>15.Font = {fontFamily : "TuiFont"; size : 1; bold : true;} of (::presentation::FontProperties));
+                (<precompile>14.Ellipse = true);
             }
             {
-                (<precompile>14.OwnedElement = <precompile>15);
+                (<precompile>14.Font = {fontFamily : "TuiFont"; size : 1; bold : true;} of (::presentation::FontProperties));
             }
             {
-                <precompile>12.AddChild(<precompile>14);
-            }
-            (<precompile>16 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>16.AssociatedHitTestResult = ButtonClose of (::presentation::INativeWindowListener::HitTestResult));
+                (<precompile>13.OwnedElement = <precompile>14);
             }
             {
-                (<precompile>16.AlignmentToParent = {left : (-1); top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                <precompile>12.AddChild(<precompile>13);
+            }
+            (<precompile>15 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>15.AssociatedHitTestResult = ButtonClose of (::presentation::INativeWindowListener::HitTestResult));
             }
             {
-                (<precompile>16.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>17 = new (::presentation::elements::GuiSolidLabelElement^)());
-            {
-                (<precompile>17.Text = "[x]");
+                (<precompile>15.AlignmentToParent = {left : (-1); top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>16.OwnedElement = <precompile>17);
+                (<precompile>15.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>16 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>16.Text = "[x]");
             }
             {
-                <precompile>12.AddChild(<precompile>16);
+                (<precompile>15.OwnedElement = <precompile>16);
+            }
+            {
+                <precompile>12.AddChild(<precompile>15);
             }
             {
                 self.AddChild(<precompile>12);
@@ -16105,14 +16098,15 @@ namespace tuiskin
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                (<precompile>13.Color = tuiskin::tuiColors.ControlBackground);
-            }
-            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
                     var <bind-cache>0 : ::tuiskin::TuiCustomFrameWindowTemplate* = null of (::tuiskin::TuiCustomFrameWindowTemplate*);
 
+                    var <bind-cache>1 : ::tuiskin::TuiCustomFrameWindowTemplate* = null of (::tuiskin::TuiCustomFrameWindowTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -16120,11 +16114,16 @@ namespace tuiskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.Text of (::system::String);
+                        var <bind-activator-result> = (<bind-cache>0.Text == "") ? "" : ((" " & <bind-cache>1.Text) & " ") of (::system::String);
                         ValueChanged(<bind-activator-result>);
                     }
 
                     func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                     {
                         <bind-activator>();
                     }
@@ -16135,7 +16134,9 @@ namespace tuiskin
                         {
                             (<bind-opened> = true);
                             (<bind-cache>0 = (self ?? null of (::tuiskin::TuiCustomFrameWindowTemplate*)));
+                            (<bind-cache>1 = (self ?? null of (::tuiskin::TuiCustomFrameWindowTemplate*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.TextChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.TextChanged, <bind-callback>1_0) ?? null));
                             return true;
                         }
                         return false;
@@ -16161,8 +16162,15 @@ namespace tuiskin
                                 detach(<bind-cache>0.TextChanged, <bind-handler>0_0);
                                 (<bind-handler>0_0 = null);
                             }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.TextChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
                             (<bind-cache>0 = null of (::tuiskin::TuiCustomFrameWindowTemplate*));
+                            (<bind-cache>1 = null of (::tuiskin::TuiCustomFrameWindowTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -16170,21 +16178,21 @@ namespace tuiskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>15.Text;
+                    var <old> = <precompile>14.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>15.Text = <new>);
+                    (<precompile>14.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                (<precompile>15.Color = tuiskin::tuiColors.ControlText);
+                (<precompile>14.Color = tuiskin::tuiColors.ControlText);
             }
             {
-                (<precompile>17.Color = tuiskin::tuiColors.ButtonText);
+                (<precompile>16.Color = tuiskin::tuiColors.ButtonText);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)

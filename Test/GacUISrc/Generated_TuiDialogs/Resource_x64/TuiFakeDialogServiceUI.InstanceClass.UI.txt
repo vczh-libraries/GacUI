@@ -1828,9 +1828,9 @@ namespace tui_controls
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : Absolute; absolute : 1;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -1850,7 +1850,7 @@ namespace tui_controls
             }
             (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>3.SetSite(2, 0, 1, 1);
+                <precompile>3.SetSite(2, 1, 1, 1);
             }
             {
                 (<precompile>4 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -1870,7 +1870,7 @@ namespace tui_controls
             }
             (<precompile>6 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>6.SetSite(2, 1, 1, 1);
+                <precompile>6.SetSite(2, 2, 1, 1);
             }
             {
                 (<precompile>7 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -2379,9 +2379,9 @@ namespace tui_controls
                 <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : Absolute; absolute : 1;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -2401,7 +2401,7 @@ namespace tui_controls
             }
             (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>3.SetSite(2, 0, 1, 1);
+                <precompile>3.SetSite(2, 1, 1, 1);
             }
             {
                 (buttonOK = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -2422,7 +2422,7 @@ namespace tui_controls
             }
             (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>5.SetSite(2, 1, 1, 1);
+                <precompile>5.SetSite(2, 2, 1, 1);
             }
             {
                 (<precompile>6 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -5157,10 +5157,10 @@ namespace tui_controls
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : Absolute; absolute : 1;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(3, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(3, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -5333,7 +5333,7 @@ namespace tui_controls
             }
             (<precompile>18 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>18.SetSite(2, 0, 1, 1);
+                <precompile>18.SetSite(2, 1, 1, 1);
             }
             {
                 (<precompile>19 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -5352,7 +5352,7 @@ namespace tui_controls
             }
             (<precompile>20 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>20.SetSite(2, 1, 1, 1);
+                <precompile>20.SetSite(2, 2, 1, 1);
             }
             {
                 (<precompile>21 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -5372,7 +5372,7 @@ namespace tui_controls
             }
             (<precompile>23 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>23.SetSite(2, 2, 1, 1);
+                <precompile>23.SetSite(2, 3, 1, 1);
             }
             {
                 (<precompile>24 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -6476,9 +6476,9 @@ namespace tui_controls
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : Absolute; absolute : 1;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -6572,7 +6572,7 @@ namespace tui_controls
             }
             (<precompile>12 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>12.SetSite(2, 0, 1, 1);
+                <precompile>12.SetSite(2, 1, 1, 1);
             }
             {
                 (<precompile>13 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -6592,7 +6592,7 @@ namespace tui_controls
             }
             (<precompile>15 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>15.SetSite(2, 1, 1, 1);
+                <precompile>15.SetSite(2, 2, 1, 1);
             }
             {
                 (<precompile>16 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));

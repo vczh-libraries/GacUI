@@ -174,22 +174,22 @@
             <_>composeType:MinSize</_>
           </att.Rows>
           <att.Columns>
-            <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
           </att.Columns>
           <Cell Site="row:0 column:0 columnSpan:3">
             <g:TuiColorDialogControl ref.Name="colorControl" ViewModel-eval="ViewModel">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
             </g:TuiColorDialogControl>
           </Cell>
-          <Cell Site="row:2 column:0 ">
+          <Cell Site="row:2 column:1 ">
             <Button Text-str="OK()" Alt="O">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
               <ev.Clicked-eval><![CDATA[{ViewModel.Confirmed = true; ViewModel.Color = colorControl.Value; self.Close();}]]></ev.Clicked-eval>
             </Button>
           </Cell>
-          <Cell Site="row:2 column:1 ">
+          <Cell Site="row:2 column:2 ">
             <Button Text-str="Cancel()" Alt="C">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
               <ev.Clicked-eval><![CDATA[{self.Close();}]]></ev.Clicked-eval>

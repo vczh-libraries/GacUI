@@ -1,6 +1,8 @@
 `TODO_Task_TUI.md` was completed but multiple issues are found.
 If skin or layout issue happens because `GacUILayout.md` said so or the guidance is not clear enough, fix this document.
 
+The continuation corrects the original non-message action alignment to the right. The investigation log preserves the original request and prior verification history.
+
 Extra requirements for making commits:
 - `## Release` should be in the last step.
 - Before beginning `## Release`, all local changes in affected repos should be committed and pushed first.
@@ -9,7 +11,7 @@ Extra requirements for making commits:
 
 - Message/Color/Font/File dialog no need to have empty lines, except one above buttons.
 - The message in the message box should not have a border, just put a label there it is fine.
-- Message box buttons should align to center horizontally. (other dialogs have button aligned left, that is correct)
+- Message box buttons should align to center horizontally. Color/Font/File dialog buttons should align to the right.
 - Color dialog scroll bars are too big:
   - Both label and scroll bar should align to center vertically in their cell.
   - Scroll bars should have 1 pixel in height.
@@ -20,14 +22,14 @@ Extra requirements for making commits:
 - In `MessageBox.xml`, replace the message's bordered `ScrollContainer` with a normal `Label`. Preserve explicit line breaks, the separate icon label and the message text. Center the natural-width button group across the whole dialog, retaining the named `buttonStack` and its default-button lookup. Do not remove borders from the shared scroll-container template.
 - Remove blanket `CellPadding`/stack padding and excess initial client height that introduce empty rows. A stretched percentage content row can retain blank space even after padding is removed. Keep exactly one explicit blank row before the final action row, while preserving actual textbox/list/group borders and useful preview/list areas. Content text containing blank lines must remain unchanged.
 - The color dialog's "scroll bars" are the three `HTracker` controls in `ColorDialog.xml`. `tuiskin::TuiHTrackerTemplate` in `Test/Resources/App/TuiSkin/Template_Scroll.xml` already has a one-cell preferred minimum height; the containing component currently stretches it beside a bordered textbox and adds padding. Arrange each tracker at an actual height of one cell, centered vertically, and center each RGB label within its cell. A minimum height alone does not prevent stretching.
-- The existing non-message action rows are not consistently left aligned: Color, simple/full Font and File place OK/Cancel after a leading percentage column. Apply the requested left alignment when compacting these rows; retain the full-font dialog's `Pick a Color` action. Center message actions only.
+- Right-align Color, simple/full Font and File action groups using a leading percentage column followed by minimum-width button columns; include the full-font dialog's `Pick a Color` action in that group. Center message actions only.
 - Clarify `GacUILayout.md` with these dialog/form spacing rules and how to center a one-cell control without stretching it. Keep label text left aligned while centering vertically; use local layout/template changes rather than changing every label's defaults. The existing TUI label already preserves explicit newlines.
 
 ### VERIFICATION
 
 - These are implementation requirements, not checks performed by this review. Use the repository build/run wrappers with absolute PowerShell paths from `Test/GacUISrc`. Resource changes require `GacUI_Compiler`, which generates both architectures. Check its output and `git status` for `*.UI.errors.txt`; then follow `Project.md`: build Debug Win32, run `Metadata_Generate` Win32, build Debug x64, run `Metadata_Generate` x64 and `Metadata_Test` x64. Rebuild affected consumers before UI checks. Refresh metadata before compilation too if resources need changed reflection declarations.
 - Run the required `UnitTest` project for C++ changes, including generated C++, following `.github/Guidelines/Running-UnitTest.md`. Respect existing file filters while including affected tests, and inspect completed results and Debug leak reports. Keep unrelated GUI snapshot expectations unchanged.
-- Follow `.github/Jobs/DebugTuiControlTestSop.md` in Windows Terminal using `copilotExecute.ps1 -Mode CLI -Executable CppTest_Tui -Configuration Debug -Platform x64 -Interactive`. Inspect Message, Color, simple Font, full Font, Open File and Save File at 120x40, 80x25 and after restoring the larger viewport. Require compact rows, exactly one blank row before final actions, centered message buttons and left-aligned other actions.
+- Follow `.github/Jobs/DebugTuiControlTestSop.md` in Windows Terminal using `copilotExecute.ps1 -Mode CLI -Executable CppTest_Tui -Configuration Debug -Platform x64 -Interactive`. Inspect Message, Color, simple Font, full Font, Open File and Save File at 120x40, 80x25 and after restoring the larger viewport. Require compact rows, exactly one blank row before final actions, centered message buttons and right-aligned other dialog actions.
 - Check one-, two- and three-button messages in English and Chinese, short/multiline/CJK text, and cases with/without icons. Require a borderless message, complete readable text, centered actions despite localized widths, correct default activation/results, and normal dismissal/focus return. Include multiline file-validation prompts.
 - Count each RGB tracker's rendered height as one row. Test mouse dragging, keyboard movement, 0/255 endpoints and typed RGB 12,34,56; accept/reopen and change/cancel must retain the existing color semantics. Recheck font effects and the nested color picker, file enumeration/selection and nested validation prompts after compacting their layouts.
 
