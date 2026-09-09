@@ -14,6 +14,7 @@ CPP_VCXPROJS=(
     "../../GacUISrc/Source_GacUI_ProtocolCompiler/Source_GacUI_ProtocolCompiler.vcxitems"
     "../../GacUISrc/Source_GacUI_UnitTest/Source_GacUI_UnitTest.vcxitems"
     "../../GacUISrc/Generated_DarkSkin/Generated_DarkSkin.vcxitems"
+    "../../GacUISrc/Generated_TuiSkin/Generated_TuiSkin.vcxitems"
     "../../GacUISrc/UnitTest/UnitTest.vcxproj"
     )
 CPP_REMOVES=(
@@ -23,6 +24,9 @@ CPP_REMOVES=(
     "../../GacUISrc/Generated_DarkSkin/Source_x86/DarkSkin.cpp"
     "../../GacUISrc/Generated_DarkSkin/Source_x86/DarkSkinResource.cpp"
     "../../GacUISrc/Generated_DarkSkin/Source_x86/DarkSkinReflection.cpp"
+    "../../GacUISrc/Generated_TuiSkin/Source_x86/TuiSkin.cpp"
+    "../../GacUISrc/Generated_TuiSkin/Source_x86/TuiSkinResource.cpp"
+    "../../GacUISrc/Generated_TuiSkin/Source_x86/TuiSkinReflection.cpp"
     )
 TARGETS=("${CPP_TARGET}")
 CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../../Source"

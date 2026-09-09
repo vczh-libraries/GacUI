@@ -26,8 +26,10 @@ namespace vl::presentation
 		return result;
 	}
 
-	TuiControllerBase::TuiControllerBase()
+	TuiControllerBase::TuiControllerBase(const TuiConfiguration& value)
+		: configuration(value)
 	{
+		CHECK_ERROR(configuration.tabInterval > 0, L"TuiControllerBase#Tab interval must be positive.");
 		frameConfig = {
 			BoolOption::AlwaysFalse, BoolOption::AlwaysFalse, BoolOption::AlwaysFalse,
 			BoolOption::AlwaysFalse, BoolOption::AlwaysFalse, BoolOption::AlwaysFalse,
@@ -51,7 +53,7 @@ namespace vl::presentation
 		auto previousTuiApplication = presentation::GetTuiApplication();
 		auto previousResources = GetGuiGraphicsResourceManager();
 		GuiHostedController hostedController(this);
-		TuiGraphicsResourceManager resourceManager;
+		TuiGraphicsResourceManager resourceManager(configuration);
 		GuiHostedGraphicsResourceManager hostedResources(&hostedController, &resourceManager);
 		SetNativeController(&hostedController);
 		SetHostedApplication(hostedController.GetHostedApplication());

@@ -11477,6 +11477,10 @@ class tuiskin::TuiItemBackgroundTemplateConstructor : system::ReferenceType {
     @system::workflow_attributes::att_cpp_Protected()
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
     @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    @system::workflow_attributes::att_cpp_Protected()
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidBackgroundElement^;
+    @system::workflow_attributes::att_cpp_Protected()
     property container : presentation::compositions::GuiBoundsComposition*;
     @system::workflow_attributes::att_cpp_Protected()
     property self : tuiskin::TuiItemBackgroundTemplate*;

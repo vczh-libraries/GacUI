@@ -1,5 +1,6 @@
 #include "TuiItemTemplates.h"
 #include "GuiDataGridControls.h"
+#include "GuiDataGridExtensions.h"
 #include "ItemTemplate_IListViewItemView.h"
 #include "../../PlatformProviders/TUI/TuiApplication.h"
 
@@ -32,8 +33,9 @@ namespace vl::presentation::controls::list
 			auto color = cell->GetSelected() ? background->GetSelectedTextColor() : background->GetTextColor();
 			cell->SetPrimaryTextColor(color);
 			cell->SetSecondaryTextColor(color);
-			if (!cell->GetOwnedElement()) cell->SetOwnedElement(Ptr(GuiSolidBackgroundElement::Create()));
-			if (auto element = cell->GetOwnedElement().Cast<GuiSolidBackgroundElement>())
+			auto content = dynamic_cast<CellBorderVisualizerTemplate*>(cell) ? cell->GetContainerComposition() : cell;
+			if (!content->GetOwnedElement()) content->SetOwnedElement(Ptr(GuiSolidBackgroundElement::Create()));
+			if (auto element = content->GetOwnedElement().Cast<GuiSolidBackgroundElement>())
 			{
 				element->SetColor(cell->GetSelected() ? background->GetSelectedBackgroundColor() : Color(0, 0, 0, 0));
 			}
@@ -50,7 +52,7 @@ namespace vl::presentation::controls::list
 	{
 		if (auto background = dynamic_cast<TuiListItemBackgroundTemplate*>(button->GetControlTemplateObject()))
 		{
-			background->SetGridRow(dynamic_cast<GuiVirtualDataGrid*>(item->GetAssociatedListControl()) != nullptr);
+			background->SetGridRow(dynamic_cast<DefaultDataGridItemTemplate*>(item) != nullptr);
 			button->SetEnabled(item->GetVisuallyEnabled());
 			item->VisuallyEnabledChanged.AttachLambda([=](GuiGraphicsComposition*, GuiEventArgs&)
 			{

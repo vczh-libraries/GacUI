@@ -37,8 +37,9 @@ namespace vl::presentation::windows
 		if (console::TUI::IsInUse()) console::TUI::StopTimer();
 	}
 
-	TuiWindowsController::TuiWindowsController(HINSTANCE _instance)
-		: instance(_instance)
+	TuiWindowsController::TuiWindowsController(HINSTANCE _instance, const TuiConfiguration& configuration)
+		: TuiControllerBase(configuration)
+		, instance(_instance)
 	{
 		WNDCLASSW windowClass = {};
 		windowClass.lpfnWndProc = &ServiceWindowProc;
@@ -130,7 +131,7 @@ namespace vl::presentation::windows
 	}
 }
 
-int SetupTuiWindowsRenderer()
+int SetupTuiWindowsRenderer(const vl::presentation::TuiConfiguration& configuration)
 {
 	using namespace vl;
 	using namespace vl::presentation;
@@ -139,7 +140,7 @@ int SetupTuiWindowsRenderer()
 	EnableCrossKernelCrashing();
 	try
 	{
-		TuiWindowsController controller(GetModuleHandleW(nullptr));
+		TuiWindowsController controller(GetModuleHandleW(nullptr), configuration);
 		console::TUI::InstallListener(&controller);
 		try
 		{

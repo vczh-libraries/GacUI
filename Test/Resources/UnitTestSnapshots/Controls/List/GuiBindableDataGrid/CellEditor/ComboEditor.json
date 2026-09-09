@@ -309,7 +309,7 @@
     },
     {
       "frameId": 20,
-      "frameName": "Select IBM",
+      "frameName": "Accept Borland with Enter",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -336,6 +336,60 @@
     },
     {
       "frameId": 22,
+      "frameName": "Navigate collapsed combo and reopen",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 24,
+      "frameName": "Select IBM",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 26,
       "frameName": "Exit Editor",
       "windowSize": {
         "bounds": {
@@ -362,7 +416,7 @@
       "root": null
     },
     {
-      "frameId": 25,
+      "frameId": 29,
       "frameName": "Start Editing by SelectCell",
       "windowSize": {
         "bounds": {
@@ -389,7 +443,7 @@
       "root": null
     },
     {
-      "frameId": 27,
+      "frameId": 31,
       "frameName": "Stop Editing by SelectCell",
       "windowSize": {
         "bounds": {

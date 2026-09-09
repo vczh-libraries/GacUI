@@ -2,10 +2,12 @@
 #define VCZH_PRESENTATION_ELEMENTS_TUITEXTLAYOUT
 
 #include "../../GraphicsElement/GuiGraphicsResourceManager.h"
+#include "TuiApplication.h"
 
 namespace vl::presentation::elements
 {
 	class TuiGraphicsRenderTarget;
+	class TuiGraphicsLayoutProvider;
 
 	struct TuiTextCell
 	{
@@ -29,7 +31,7 @@ namespace vl::presentation::elements
 	class TuiGraphicsParagraph : public Object, public IGuiGraphicsParagraph
 	{
 	protected:
-		IGuiGraphicsLayoutProvider*								provider;
+		TuiGraphicsLayoutProvider*								provider;
 		TuiGraphicsRenderTarget*								renderTarget;
 		IGuiGraphicsParagraphCallback*							callback;
 		WString													text;
@@ -54,7 +56,7 @@ namespace vl::presentation::elements
 		void													EnsureLayout();
 		vint													FindLine(vint caret, bool frontSide);
 	public:
-		TuiGraphicsParagraph(const WString& text, IGuiGraphicsLayoutProvider* provider, TuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback);
+		TuiGraphicsParagraph(const WString& text, TuiGraphicsLayoutProvider* provider, TuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback);
 		IGuiGraphicsLayoutProvider*								GetProvider() override;
 		IGuiGraphicsRenderTarget*								GetRenderTarget() override;
 		bool													GetWrapLine() override;
@@ -86,12 +88,16 @@ namespace vl::presentation::elements
 
 	class TuiGraphicsLayoutProvider : public Object, public IGuiGraphicsLayoutProvider
 	{
+	protected:
+		TuiConfiguration				configuration;
 	public:
+		TuiGraphicsLayoutProvider(const TuiConfiguration& configuration = {});
+		const TuiConfiguration&			GetConfiguration() const;
 		Ptr<IGuiGraphicsParagraph>								CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback) override;
 	};
 
 	extern char32_t						TuiReadScalar(const WString& text, vint start, vint& length);
-	extern WString						TuiEllipsizeText(const WString& text, vint width);
+	extern WString						TuiEllipsizeText(const WString& text, vint width, vint tabInterval = 4);
 	extern console::TuiTextStyle			TuiGetTextStyle(IGuiGraphicsParagraph::TextStyle style);
 }
 

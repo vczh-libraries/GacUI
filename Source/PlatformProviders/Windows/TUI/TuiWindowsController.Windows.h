@@ -39,7 +39,7 @@ namespace vl::presentation::windows
 		static LRESULT CALLBACK		ServiceWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 		void						PumpPlatformEvents() override;
 	public:
-		TuiWindowsController(HINSTANCE instance);
+		TuiWindowsController(HINSTANCE instance, const TuiConfiguration& configuration);
 		~TuiWindowsController();
 		INativeResourceService*		ResourceService() override;
 		INativeInputService*			InputService() override;

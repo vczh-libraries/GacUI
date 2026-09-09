@@ -2,6 +2,11 @@
 
 namespace vl::presentation
 {
+	TuiConfiguration::TuiConfiguration()
+		: tabInterval(4)
+	{
+	}
+
 	ITuiApplication* tuiApplication = nullptr;
 
 	ITuiApplication* GetTuiApplication()

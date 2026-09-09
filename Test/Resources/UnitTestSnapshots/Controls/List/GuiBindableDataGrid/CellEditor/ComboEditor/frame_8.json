@@ -1,6 +1,6 @@
 ﻿{
-  "frameId": 26,
-  "frameName": "Exit Editor",
+  "frameId": 31,
+  "frameName": "Stop Editing by SelectCell",
   "windowSize": {
     "bounds": {
       "x1": {"value": 192},
@@ -317,7 +317,7 @@
         "ElementDesc_SolidBorder",
         {
           "id": 22,
-          "borderColor": "#1C97EA",
+          "borderColor": "#54545C",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -2386,38 +2386,26 @@
                                 "children": null
                               },
                               {
-                                "id": 272,
+                                "id": 276,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 68,
-                                  "bounds": {"x1": 15, "y1": 72, "x2": 162, "y2": 98},
-                                  "validArea": {"x1": 15, "y1": 72, "x2": 162, "y2": 98}
+                                  "element": 69,
+                                  "bounds": {"x1": 18, "y1": 77, "x2": 34, "y2": 93},
+                                  "validArea": {"x1": 18, "y1": 77, "x2": 34, "y2": 93}
                                 },
-                                "children": [
-                                  {
-                                    "id": 276,
-                                    "content": {
-                                      "hitTestResult": null,
-                                      "cursor": null,
-                                      "element": 69,
-                                      "bounds": {"x1": 18, "y1": 77, "x2": 34, "y2": 93},
-                                      "validArea": {"x1": 18, "y1": 77, "x2": 34, "y2": 93}
-                                    },
-                                    "children": null
-                                  },
-                                  {
-                                    "id": 280,
-                                    "content": {
-                                      "hitTestResult": null,
-                                      "cursor": null,
-                                      "element": 70,
-                                      "bounds": {"x1": 36, "y1": 75, "x2": 151, "y2": 95},
-                                      "validArea": {"x1": 36, "y1": 75, "x2": 151, "y2": 95}
-                                    },
-                                    "children": null
-                                  }
-                                ]
+                                "children": null
+                              },
+                              {
+                                "id": 280,
+                                "content": {
+                                  "hitTestResult": null,
+                                  "cursor": null,
+                                  "element": 70,
+                                  "bounds": {"x1": 36, "y1": 75, "x2": 151, "y2": 95},
+                                  "validArea": {"x1": 36, "y1": 75, "x2": 151, "y2": 95}
+                                },
+                                "children": null
                               },
                               {
                                 "id": 284,
@@ -2508,15 +2496,27 @@
                                 "children": null
                               },
                               {
-                                "id": 328,
+                                "id": 324,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 82,
-                                  "bounds": {"x1": 474, "y1": 73, "x2": 603, "y2": 97},
-                                  "validArea": {"x1": 474, "y1": 73, "x2": 603, "y2": 97}
+                                  "element": 81,
+                                  "bounds": {"x1": 465, "y1": 72, "x2": 612, "y2": 98},
+                                  "validArea": {"x1": 465, "y1": 72, "x2": 612, "y2": 98}
                                 },
-                                "children": null
+                                "children": [
+                                  {
+                                    "id": 328,
+                                    "content": {
+                                      "hitTestResult": null,
+                                      "cursor": null,
+                                      "element": 82,
+                                      "bounds": {"x1": 474, "y1": 73, "x2": 603, "y2": 97},
+                                      "validArea": {"x1": 474, "y1": 73, "x2": 603, "y2": 97}
+                                    },
+                                    "children": null
+                                  }
+                                ]
                               }
                             ]
                           },

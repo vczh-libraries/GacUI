@@ -1,6 +1,6 @@
 ﻿{
   "frameId": 20,
-  "frameName": "Select IBM",
+  "frameName": "Accept Borland with Enter",
   "windowSize": {
     "bounds": {
       "x1": {"value": 192},
@@ -1089,7 +1089,7 @@
           "ellipse": true,
           "multiline": false,
           "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "IBM",
+          "text": "Borland",
           "measuringRequest": null
         }
       ]
@@ -2043,7 +2043,7 @@
         "ElementDesc_SolidBorder",
         {
           "id": 178,
-          "borderColor": "#1C97EA",
+          "borderColor": "#54545C",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -2188,7 +2188,7 @@
         "ElementDesc_SolidBackground",
         {
           "id": 189,
-          "backgroundColor": "#333337",
+          "backgroundColor": "#3F3F46",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -2218,7 +2218,7 @@
           "ellipse": true,
           "multiline": false,
           "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "IBM",
+          "text": "Borland",
           "measuringRequest": null
         }
       ]
@@ -2229,7 +2229,7 @@
         "ElementDesc_SolidBackground",
         {
           "id": 192,
-          "backgroundColor": "#00000000",
+          "backgroundColor": "#1F1F20",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -2241,8 +2241,8 @@
         {
           "id": 193,
           "size": {"x": 5, "y": 3},
-          "borderColor": "#999999",
-          "backgroundColor": "#434346",
+          "borderColor": "#007ACC",
+          "backgroundColor": "#3F3F46",
           "points": [
             {"x": 0, "y": 0},
             {"x": 2, "y": 2},
@@ -2257,7 +2257,7 @@
         "ElementDesc_SolidBackground",
         {
           "id": 196,
-          "backgroundColor": "#00000000",
+          "backgroundColor": "#3399FF",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -2317,7 +2317,7 @@
         "ElementDesc_SolidBackground",
         {
           "id": 204,
-          "backgroundColor": "#3399FF",
+          "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]

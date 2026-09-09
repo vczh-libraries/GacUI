@@ -149,6 +149,10 @@ TEST_FILE
 					protocol->KeyPress(VKEY::KEY_LEFT);
 					TEST_ASSERT(grid->GetSelectedCell() == GridPos(0, 0) && grid->GetOpenedEditor());
 					TEST_ASSERT(textBox->GetCaretEnd() == TextPos(0, 2));
+					protocol->KeyPress(VKEY::KEY_UP);
+					protocol->KeyPress(VKEY::KEY_DOWN);
+					TEST_ASSERT(textBox->GetCaretEnd() == TextPos(0, 2));
+					TEST_ASSERT(grid->GetSelectedCell() == GridPos(0, 0) && grid->GetOpenedEditor());
 					protocol->KeyPress(VKEY::KEY_LEFT, false, true, false);
 					TEST_ASSERT(textBox->GetSelectionText() == L"+");
 					protocol->TypeString(L"x");
@@ -210,6 +214,47 @@ TEST_FILE
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					TEST_ASSERT(dataGrid->GetOpenedEditor());
 					auto combo = FindObjectByName<GuiComboBoxListControl>(dataGrid->GetOpenedEditor()->GetTemplate(), L"comboBox");
+					TEST_ASSERT(combo->GetFocused());
+					TEST_ASSERT(combo->GetSelectedIndex() == 0);
+					protocol->_KeyDown(VKEY::KEY_DOWN);
+					TEST_ASSERT(dataGrid->GetOpenedEditor() && dataGrid->GetSelectedCell() == GridPos(0, 3));
+					TEST_ASSERT(combo->GetSubMenuOpening());
+					TEST_ASSERT(combo->GetContainedListControl()->GetSelectedItemIndex() == 1);
+					protocol->_KeyDownRepeat(VKEY::KEY_DOWN);
+					TEST_ASSERT(combo->GetContainedListControl()->GetSelectedItemIndex() == 2);
+					protocol->_KeyDownRepeat(VKEY::KEY_DOWN);
+					protocol->_KeyUp(VKEY::KEY_DOWN);
+					TEST_ASSERT(dataGrid->GetOpenedEditor() && dataGrid->GetSelectedCell() == GridPos(0, 3));
+					TEST_ASSERT(combo->GetContainedListControl()->GetSelectedItemIndex() == 2);
+					TEST_ASSERT(combo->GetSelectedIndex() == 0);
+					protocol->KeyPress(VKEY::KEY_UP);
+					protocol->KeyPress(VKEY::KEY_RETURN);
+					TEST_ASSERT(dataGrid->GetOpenedEditor() && dataGrid->GetSelectedCell() == GridPos(0, 3));
+					TEST_ASSERT(!combo->GetSubMenuOpening() && combo->GetSelectedIndex() == 1);
+				});
+				protocol->OnNextIdleFrame(L"Accept Borland with Enter", [=]()
+				{
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(GetApplication()->GetMainWindow(), L"dataGrid");
+					TEST_ASSERT(dataGrid->GetOpenedEditor());
+					auto combo = FindObjectByName<GuiComboBoxListControl>(dataGrid->GetOpenedEditor()->GetTemplate(), L"comboBox");
+					TEST_ASSERT(combo->GetFocused() && !combo->GetSubMenuOpening());
+					protocol->_KeyDown(VKEY::KEY_UP);
+					TEST_ASSERT(dataGrid->GetOpenedEditor() && dataGrid->GetSelectedCell() == GridPos(0, 3));
+					TEST_ASSERT(combo->GetContainedListControl()->GetSelectedItemIndex() == 0);
+					protocol->_KeyDownRepeat(VKEY::KEY_UP);
+					protocol->_KeyUp(VKEY::KEY_UP);
+					TEST_ASSERT(dataGrid->GetOpenedEditor() && dataGrid->GetSelectedCell() == GridPos(0, 3));
+					TEST_ASSERT(combo->GetContainedListControl()->GetSelectedItemIndex() == 0);
+					TEST_ASSERT(combo->GetSelectedIndex() == 1);
+					protocol->LClick(protocol->LocationOf(combo));
+					TEST_ASSERT(combo->GetSubMenuOpening());
+					TEST_ASSERT(combo->GetContainedListControl()->GetSelectedItemIndex() == 1);
+				});
+				protocol->OnNextIdleFrame(L"Navigate collapsed combo and reopen", [=]()
+				{
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(GetApplication()->GetMainWindow(), L"dataGrid");
+					TEST_ASSERT(dataGrid->GetOpenedEditor());
+					auto combo = FindObjectByName<GuiComboBoxListControl>(dataGrid->GetOpenedEditor()->GetTemplate(), L"comboBox");
 					LClickListItem(protocol, combo->GetContainedListControl(), 2);
 				});
 				protocol->OnNextIdleFrame(L"Select IBM", [=]()
@@ -230,6 +275,8 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto combo = FindObjectByName<GuiComboBoxListControl>(dataGrid->GetOpenedEditor()->GetTemplate(), L"comboBox");
+					TEST_ASSERT(combo->GetSelectedIndex() == 2);
 					dataGrid->SelectCell(dataGrid->GetSelectedCell(), false);
 					TEST_ASSERT(!dataGrid->GetOpenedEditor());
 				});

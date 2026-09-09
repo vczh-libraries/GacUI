@@ -5,6 +5,13 @@
 
 namespace vl::presentation
 {
+	struct TuiConfiguration
+	{
+		vint			tabInterval;
+
+		TuiConfiguration();
+	};
+
 	class ITuiApplication : public virtual Interface, public Description<ITuiApplication>
 	{
 	public:

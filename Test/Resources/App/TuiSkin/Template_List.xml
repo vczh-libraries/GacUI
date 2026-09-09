@@ -9,7 +9,10 @@
   <Instance name="ItemBackgroundTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiItemBackgroundTemplate" xmlns:x="tuiskin::*" xmlns:tui="presentation::templates::*" ref.Styles="res://TuiSkin/Style">
       <tui:TuiListItemBackgroundTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container" TextColor-bind="not self.VisuallyEnabled ? tuiskin::tuiColors.ItemTextDisabled : self.Selected and not self.GridRow ? tuiskin::tuiColors.ItemTextSelected : self.Selected or self.State != ButtonState::Normal ? tuiskin::tuiColors.ItemTextHighlighted : tuiskin::tuiColors.ItemText" SelectedTextColor-eval="tuiskin::tuiColors.ItemTextSelected" SelectedBackgroundColor-eval="tuiskin::tuiColors.ItemBackgroundSelected">
-        <SolidBackground Color-bind="self.Selected and not self.GridRow ? tuiskin::tuiColors.ItemBackgroundSelected : self.Selected or self.VisuallyEnabled and self.State != ButtonState::Normal ? tuiskin::tuiColors.ItemBackgroundHighlighted : tuiskin::tuiColors.ItemBackground" />
+        <SolidBackground Color-eval="tuiskin::tuiColors.ItemBackground" />
+        <Bounds AlignmentToParent-bind="{left:0 top:0 right:0 bottom:(self.GridRow ? 1 : 0)}">
+          <SolidBackground Color-bind="self.Selected and not self.GridRow ? tuiskin::tuiColors.ItemBackgroundSelected : self.Selected or self.VisuallyEnabled and self.State != ButtonState::Normal ? tuiskin::tuiColors.ItemBackgroundHighlighted : tuiskin::tuiColors.ItemBackground" />
+        </Bounds>
         <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" />
       </tui:TuiListItemBackgroundTemplate>
     </Instance>

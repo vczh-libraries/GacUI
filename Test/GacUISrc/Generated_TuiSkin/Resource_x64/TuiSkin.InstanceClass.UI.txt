@@ -4009,6 +4009,12 @@ namespace tuiskin
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
         var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -4022,6 +4028,17 @@ namespace tuiskin
             {
                 (self.OwnedElement = <precompile>0);
             }
+            (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>2 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (<precompile>1.OwnedElement = <precompile>2);
+            }
+            {
+                self.AddChild(<precompile>1);
+            }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
             <this>.SetNamedObject("container", container);
             {
@@ -4032,6 +4049,9 @@ namespace tuiskin
             }
             {
                 self.AddChild(container);
+            }
+            {
+                (<precompile>0.Color = tuiskin::tuiColors.ItemBackground);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -4168,13 +4188,86 @@ namespace tuiskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>0.Color;
+                    var <old> = <precompile>2.Color;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>0.Color = <new>);
+                    (<precompile>2.Color = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::tuiskin::TuiItemBackgroundTemplate* = null of (::tuiskin::TuiItemBackgroundTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = {left : 0; top : 0; right : 0; bottom : <bind-cache>0.GridRow ? 1 : 0;} of (::presentation::Margin);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::tuiskin::TuiItemBackgroundTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.GridRowChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.GridRowChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::tuiskin::TuiItemBackgroundTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>1.AlignmentToParent;
+                    var <new> = (cast (::presentation::Margin) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>1.AlignmentToParent = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }

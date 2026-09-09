@@ -243,18 +243,27 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
 				if (arguments.osSuper) return;
-				if (!arguments.autoRepeatKeyDown)
+				switch (arguments.code)
 				{
-					switch (arguments.code)
+				case VKEY::KEY_RETURN:
+					if (!arguments.autoRepeatKeyDown)
 					{
-					case VKEY::KEY_RETURN:
 						DisplaySelectedContent(containedListControl->GetSelectedItemIndex());
 						GetSubMenu()->Hide();
 						arguments.handled = true;
-						break;
-					default:
-						containedListControl->SelectItemsByKey(arguments.code, arguments.ctrl, arguments.shift);
 					}
+					break;
+				case VKEY::KEY_UP:
+				case VKEY::KEY_DOWN:
+				case VKEY::KEY_LEFT:
+				case VKEY::KEY_RIGHT:
+				case VKEY::KEY_HOME:
+				case VKEY::KEY_END:
+				case VKEY::KEY_PRIOR:
+				case VKEY::KEY_NEXT:
+					arguments.handled = true;
+					containedListControl->SelectItemsByKey(arguments.code, arguments.ctrl, arguments.shift);
+					break;
 				}
 			}
 

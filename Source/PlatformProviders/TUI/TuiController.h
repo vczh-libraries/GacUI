@@ -18,6 +18,7 @@ namespace vl::presentation
 		, protected INativeWindowService
 	{
 	protected:
+		TuiConfiguration				configuration;
 		SharedCallbackService			callbackService;
 		SharedAsyncService				asyncService;
 		Ptr<TuiWindow>					window;
@@ -26,7 +27,7 @@ namespace vl::presentation
 		virtual void					PumpPlatformEvents() = 0;
 		void							Starting() override;
 	public:
-		TuiControllerBase();
+		TuiControllerBase(const TuiConfiguration& configuration = {});
 		~TuiControllerBase();
 		ITuiApplication*				GetTuiApplication();
 		virtual void					ApplyTitle(const WString& title) = 0;

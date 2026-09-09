@@ -1,6 +1,6 @@
 ﻿{
-  "frameId": 25,
-  "frameName": "Start Editing by SelectCell",
+  "frameId": 24,
+  "frameName": "Select IBM",
   "windowSize": {
     "bounds": {
       "x1": {"value": 192},
@@ -2005,77 +2005,77 @@
       ]
     ],
     [
-      208,
+      175,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 208,
+          "id": 175,
           "backgroundColor": "#1B1B1C",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      209,
+      176,
       [
         "ElementDesc_SolidBorder",
         {
-          "id": 209,
+          "id": 176,
           "borderColor": "#333337",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      210,
+      177,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 210,
+          "id": 177,
           "backgroundColor": "#252526",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      211,
+      178,
       [
         "ElementDesc_SolidBorder",
         {
-          "id": 211,
-          "borderColor": "#54545C",
+          "id": 178,
+          "borderColor": "#1C97EA",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      212,
+      179,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 212,
+          "id": 179,
           "backgroundColor": "#3D3D42",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      213,
+      180,
       [
         "ElementDesc_SolidBorder",
         {
-          "id": 213,
+          "id": 180,
           "borderColor": "#434346",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      214,
+      181,
       [
         "ElementDesc_Polygon",
         {
-          "id": 214,
+          "id": 181,
           "size": {"x": 5, "y": 9},
           "borderColor": "#555558",
           "backgroundColor": "#555558",
@@ -2088,11 +2088,11 @@
       ]
     ],
     [
-      215,
+      182,
       [
         "ElementDesc_Polygon",
         {
-          "id": 215,
+          "id": 182,
           "size": {"x": 5, "y": 9},
           "borderColor": "#555558",
           "backgroundColor": "#555558",
@@ -2105,47 +2105,47 @@
       ]
     ],
     [
-      216,
+      183,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 216,
+          "id": 183,
           "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      217,
+      184,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 217,
+          "id": 184,
           "backgroundColor": "#3D3D42",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      218,
+      185,
       [
         "ElementDesc_SolidBorder",
         {
-          "id": 218,
-          "borderColor": "#54545C",
+          "id": 185,
+          "borderColor": "#434346",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      219,
+      186,
       [
         "ElementDesc_Polygon",
         {
-          "id": 219,
+          "id": 186,
           "size": {"x": 9, "y": 5},
-          "borderColor": "#999999",
-          "backgroundColor": "#999999",
+          "borderColor": "#555558",
+          "backgroundColor": "#555558",
           "points": [
             {"x": 0, "y": 4},
             {"x": 4, "y": 0},
@@ -2155,14 +2155,14 @@
       ]
     ],
     [
-      220,
+      187,
       [
         "ElementDesc_Polygon",
         {
-          "id": 220,
+          "id": 187,
           "size": {"x": 9, "y": 5},
-          "borderColor": "#999999",
-          "backgroundColor": "#999999",
+          "borderColor": "#555558",
+          "backgroundColor": "#555558",
           "points": [
             {"x": 0, "y": 0},
             {"x": 4, "y": 4},
@@ -2172,44 +2172,44 @@
       ]
     ],
     [
-      221,
+      188,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 221,
-          "backgroundColor": "#686868",
+          "id": 188,
+          "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      222,
+      189,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 222,
+          "id": 189,
           "backgroundColor": "#333337",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      223,
+      190,
       [
         "ElementDesc_SolidBorder",
         {
-          "id": 223,
+          "id": 190,
           "borderColor": "#1C97EA",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      224,
+      191,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 224,
+          "id": 191,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Center",
@@ -2224,22 +2224,22 @@
       ]
     ],
     [
-      225,
+      192,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 225,
+          "id": 192,
           "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      226,
+      193,
       [
         "ElementDesc_Polygon",
         {
-          "id": 226,
+          "id": 193,
           "size": {"x": 5, "y": 3},
           "borderColor": "#999999",
           "backgroundColor": "#434346",
@@ -2252,22 +2252,52 @@
       ]
     ],
     [
-      227,
+      196,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 227,
+          "id": 196,
           "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      228,
+      197,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 228,
+          "id": 197,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "Borland",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      200,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 200,
+          "backgroundColor": "#00000000",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      201,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 201,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Center",
@@ -2277,6 +2307,36 @@
           "multiline": false,
           "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
           "text": "Microsoft",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      204,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 204,
+          "backgroundColor": "#3399FF",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      205,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 205,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "IBM",
           "measuringRequest": "TotalSize"
         }
       ]
@@ -2751,52 +2811,52 @@
                                 "children": null
                               },
                               {
-                                "id": 888,
+                                "id": 756,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 222,
+                                  "element": 189,
                                   "bounds": {"x1": 464, "y1": 71, "x2": 614, "y2": 100},
                                   "validArea": {"x1": 464, "y1": 71, "x2": 614, "y2": 100}
                                 },
                                 "children": [
                                   {
-                                    "id": 892,
+                                    "id": 760,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 223,
+                                      "element": 190,
                                       "bounds": {"x1": 464, "y1": 71, "x2": 614, "y2": 100},
                                       "validArea": {"x1": 464, "y1": 71, "x2": 614, "y2": 100}
                                     },
                                     "children": [
                                       {
-                                        "id": 896,
+                                        "id": 764,
                                         "content": {
                                           "hitTestResult": null,
                                           "cursor": null,
-                                          "element": 224,
+                                          "element": 191,
                                           "bounds": {"x1": 467, "y1": 74, "x2": 601, "y2": 97},
                                           "validArea": {"x1": 467, "y1": 74, "x2": 601, "y2": 97}
                                         },
                                         "children": null
                                       },
                                       {
-                                        "id": 900,
+                                        "id": 768,
                                         "content": {
                                           "hitTestResult": null,
                                           "cursor": null,
-                                          "element": 225,
+                                          "element": 192,
                                           "bounds": {"x1": 604, "y1": 72, "x2": 613, "y2": 99},
                                           "validArea": {"x1": 604, "y1": 72, "x2": 613, "y2": 99}
                                         },
                                         "children": [
                                           {
-                                            "id": 904,
+                                            "id": 772,
                                             "content": {
                                               "hitTestResult": null,
                                               "cursor": null,
-                                              "element": 226,
+                                              "element": 193,
                                               "bounds": {"x1": 606, "y1": 84, "x2": 611, "y2": 87},
                                               "validArea": {"x1": 606, "y1": 84, "x2": 611, "y2": 87}
                                             },

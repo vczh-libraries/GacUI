@@ -36,8 +36,9 @@ namespace vl::presentation::elements
 		};
 	}
 
-	WString TuiEllipsizeText(const WString& text, vint width)
+	WString TuiEllipsizeText(const WString& text, vint width, vint tabInterval)
 	{
+		CHECK_ERROR(tabInterval > 0, L"TuiEllipsizeText#Tab interval must be positive.");
 		WString result;
 		for (vint start = 0; start < text.Length();)
 		{
@@ -54,7 +55,7 @@ namespace vl::presentation::elements
 					newlineLength = length;
 					break;
 				}
-				lineWidth += code == U'\t' ? 4 - lineWidth % 4 : TUI::MeasureChar(code);
+				lineWidth += code == U'\t' ? tabInterval - lineWidth % tabInterval : TUI::MeasureChar(code);
 				end += length;
 				if (lineWidth <= width - 1) visibleEnd = end;
 			}
@@ -70,7 +71,7 @@ namespace vl::presentation::elements
 TuiGraphicsParagraph
 ***********************************************************************/
 
-	TuiGraphicsParagraph::TuiGraphicsParagraph(const WString& value, IGuiGraphicsLayoutProvider* owner, TuiGraphicsRenderTarget* target, IGuiGraphicsParagraphCallback* listener)
+	TuiGraphicsParagraph::TuiGraphicsParagraph(const WString& value, TuiGraphicsLayoutProvider* owner, TuiGraphicsRenderTarget* target, IGuiGraphicsParagraphCallback* listener)
 		: provider(owner)
 		, renderTarget(target)
 		, callback(listener)
@@ -121,11 +122,12 @@ TuiGraphicsParagraph
 		{
 			return !cell.inlineObject && (cell.code == U'\r' || cell.code == U'\n');
 		};
-		auto cellWidth = [](const TuiTextCell& cell, vint x)
+		auto tabInterval = provider->GetConfiguration().tabInterval;
+		auto cellWidth = [tabInterval](const TuiTextCell& cell, vint x)
 		{
 			return cell.inlineObject
 				? std::max((vint)0, cell.inlineObject.Value().size.x)
-				: cell.code == U'\t' ? 4 - x % 4 : TUI::MeasureChar(cell.code);
+				: cell.code == U'\t' ? tabInterval - x % tabInterval : TUI::MeasureChar(cell.code);
 		};
 		auto cellBaseline = [](const TuiTextCell& cell)
 		{
@@ -536,6 +538,17 @@ TuiGraphicsParagraph
 /***********************************************************************
 TuiGraphicsLayoutProvider
 ***********************************************************************/
+
+	TuiGraphicsLayoutProvider::TuiGraphicsLayoutProvider(const TuiConfiguration& value)
+		: configuration(value)
+	{
+		CHECK_ERROR(configuration.tabInterval > 0, L"TuiGraphicsLayoutProvider#Tab interval must be positive.");
+	}
+
+	const TuiConfiguration& TuiGraphicsLayoutProvider::GetConfiguration() const
+	{
+		return configuration;
+	}
 
 	Ptr<IGuiGraphicsParagraph> TuiGraphicsLayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback)
 	{

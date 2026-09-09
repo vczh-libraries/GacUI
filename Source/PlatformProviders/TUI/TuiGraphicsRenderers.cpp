@@ -68,6 +68,7 @@ namespace vl::presentation::elements
 		void OnElementStateChanged() override
 		{
 			auto text = element->GetText();
+			auto provider = static_cast<TuiGraphicsLayoutProvider*>(GetGuiGraphicsResourceManager()->GetLayoutProvider());
 			if (!element->GetMultiline())
 			{
 				collections::Array<wchar_t> buffer(text.Length());
@@ -77,17 +78,17 @@ namespace vl::presentation::elements
 			if (sourceText != text)
 			{
 				sourceText = text;
-				TuiGraphicsLayoutProvider naturalProvider;
+				TuiGraphicsLayoutProvider naturalProvider(provider->GetConfiguration());
 				naturalSize = naturalProvider.CreateParagraph(sourceText, nullptr, nullptr)->GetSize();
 			}
 			if (element->GetEllipse() && !element->GetWrapLine() && lastWidth >= 0)
 			{
-				text = TuiEllipsizeText(text, lastWidth);
+				text = TuiEllipsizeText(text, lastWidth, provider->GetConfiguration().tabInterval);
 			}
 			if (!paragraph || displayText != text || paragraph->GetRenderTarget() != renderTarget)
 			{
 				displayText = text;
-				paragraph = GetGuiGraphicsResourceManager()->GetLayoutProvider()->CreateParagraph(text, renderTarget, nullptr);
+				paragraph = provider->CreateParagraph(text, renderTarget, nullptr);
 			}
 			paragraph->SetColor(0, text.Length(), element->GetColor());
 			auto font = element->GetFont();

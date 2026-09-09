@@ -162,6 +162,11 @@ TuiGraphicsRenderTarget
 TuiGraphicsResourceManager
 ***********************************************************************/
 
+	TuiGraphicsResourceManager::TuiGraphicsResourceManager(const TuiConfiguration& configuration)
+		: layoutProvider(configuration)
+	{
+	}
+
 	IGuiGraphicsRenderTarget* TuiGraphicsResourceManager::GetRenderTarget(INativeWindow* window)
 	{
 		return renderTarget.Obj();

@@ -34,6 +34,7 @@ namespace vl::presentation::elements
 		Ptr<TuiGraphicsRenderTarget>			renderTarget;
 		TuiGraphicsLayoutProvider				layoutProvider;
 	public:
+		TuiGraphicsResourceManager(const TuiConfiguration& configuration = {});
 		IGuiGraphicsRenderTarget*				GetRenderTarget(INativeWindow* window) override;
 		void									RecreateRenderTarget(INativeWindow* window) override;
 		void									ResizeRenderTarget(INativeWindow* window) override;

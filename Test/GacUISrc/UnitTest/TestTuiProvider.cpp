@@ -1,6 +1,9 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/TUI/TuiController.h"
 #include "../../../Source/PlatformProviders/TUI/TuiGraphics.h"
+#include "../../../Source/Controls/ListControlPackage/TuiItemTemplates.h"
+#include "../Generated_TuiSkin/TuiSkinConfig.h"
+#include "../../../Source/UnitTestUtilities/GuiUnitTestUtilities.h"
 
 using namespace vl;
 using namespace vl::collections;
@@ -94,7 +97,7 @@ namespace tui_provider_tests
 	{
 	public:
 		vint layouts = 0;
-		TuiCountingParagraph(const WString& text, IGuiGraphicsLayoutProvider* provider, TuiGraphicsRenderTarget* target, IGuiGraphicsParagraphCallback* callback)
+		TuiCountingParagraph(const WString& text, TuiGraphicsLayoutProvider* provider, TuiGraphicsRenderTarget* target, IGuiGraphicsParagraphCallback* callback)
 			: TuiGraphicsParagraph(text, provider, target, callback) {}
 		Size GetSize() override { if (dirty) layouts++; return TuiGraphicsParagraph::GetSize(); }
 		void Render(Rect bounds) override { if (dirty) layouts++; TuiGraphicsParagraph::Render(bounds); }
@@ -170,6 +173,205 @@ using namespace tui_provider_tests;
 
 TEST_FILE
 {
+	TEST_CASE(L"TUI grid selection preserves separator backgrounds in the composed row")
+	{
+		using namespace vl::presentation::unittest;
+		GacUIUnitTest_SetGuiMainProxy([](auto, auto)
+		{
+			TuiRunTest([](TuiTestBackend* backend, TuiTestController* controller)
+			{
+				using namespace compositions;
+				using namespace controls::list;
+				auto previousResources = GetGuiGraphicsResourceManager();
+				auto previousController = GetNativeController();
+				TuiGraphicsResourceManager resources;
+				SetGuiGraphicsResourceManager(&resources);
+				SetNativeController(controller);
+				SetTuiApplication(controller);
+				RegisterTuiRenderers();
+				auto colors = tuiskin::CreateDefaultColorPackage();
+				tuiskin::SetColorPackage(colors);
+				auto window = controller->CreateNativeWindow(INativeWindow::Normal);
+				resources.NativeWindowCreated(window);
+				window->Show();
+				auto target = resources.GetRenderTarget(window);
+				auto root = new GuiBoundsComposition;
+				root->SetExpectedBounds(Rect(0, 0, 16, 8));
+				{
+					GuiGraphicsHost host(nullptr, root);
+					host.SetNativeWindow(window);
+					tuiskin::TuiItemBackgroundTemplate* rows[2];
+					CellBorderVisualizerTemplate* cells[2][2];
+					for (vint r = 0; r < 2; r++)
+					{
+						auto row = new tuiskin::TuiItemBackgroundTemplate;
+						rows[r] = row;
+						row->SetGridRow(true);
+						row->SetVisuallyEnabled(true);
+						row->SetExpectedBounds(Rect(0, r * 2, 16, r * 2 + 2));
+						root->AddChild(row);
+						for (vint c = 0; c < 2; c++)
+						{
+							auto cell = new CellBorderVisualizerTemplate;
+							cells[r][c] = cell;
+							cell->SetExpectedBounds(Rect(c * 6, 0, c * 6 + 6, 2));
+							cell->SetItemSeparatorColor(colors.ControlBorder);
+							row->GetContainerComposition()->AddChild(cell);
+							auto content = new SubColumnVisualizerTemplate;
+							content->SetText(L"X");
+							content->SetFont(controller->ResourceService()->GetDefaultFont());
+							content->SetAlignmentToParent(Margin(0, 0, 0, 0));
+							cell->GetContainerComposition()->AddChild(content);
+						}
+					}
+					auto ordinaryRow = new tuiskin::TuiItemBackgroundTemplate;
+					ordinaryRow->SetExpectedBounds(Rect(0, 4, 16, 5));
+					ordinaryRow->SetSelected(true);
+					root->AddChild(ordinaryRow);
+					for (vint selected : {-1, -2, 0, 1, 2, 3, -1})
+					{
+						for (vint r = 0; r < 2; r++)
+						{
+							rows[r]->SetSelected(selected >= 0 && selected / 2 == r);
+							rows[r]->SetState(selected == -2 ? controls::ButtonState::Active : controls::ButtonState::Normal);
+							for (vint c = 0; c < 2; c++)
+							{
+								cells[r][c]->SetSelected(selected == r * 2 + c);
+								TuiUpdateGridCellColors(cells[r][c]);
+							}
+						}
+						root->ForceCalculateSizeImmediately();
+						target->StartHostedRendering();
+						target->StartRendering();
+						root->Render({});
+						target->StopRendering();
+						target->StopHostedRendering();
+						for (vint x = 0; x < 16; x++)
+						{
+							TEST_ASSERT(TUI::GetBuffer()[4 * 16 + x].backgroundColor == TuiColor(135, 206, 250));
+						}
+						for (vint r = 0; r < 2; r++)
+						{
+							for (vint x = 0; x < 16; x++)
+							{
+								auto pixel = TUI::GetBuffer()[(r * 2 + 1) * 16 + x];
+								TEST_ASSERT(pixel.backgroundColor == TuiColor(0, 0, 0));
+								if (x < 12)
+								{
+									TEST_ASSERT(pixel.glyph == TuiPixelGlyph::Mergeable);
+									TEST_ASSERT(pixel.foregroundColor == TuiColor(128, 128, 128));
+								}
+							}
+							for (vint c = 0; c < 2; c++)
+							{
+								auto color = selected == r * 2 + c ? TuiColor(135, 206, 250)
+									: rows[r]->GetSelected() || selected == -2 ? TuiColor(0, 0, 128) : TuiColor(0, 0, 0);
+								TEST_ASSERT(TUI::GetBuffer()[r * 2 * 16 + c * 6 + 2].backgroundColor == color);
+							}
+						}
+					}
+					host.SetNativeWindow(nullptr);
+				}
+				SafeDeleteComposition(root);
+				resources.NativeWindowDestroying(window);
+				controller->DestroyNativeWindow(window);
+				SetTuiApplication(nullptr);
+				SetNativeController(previousController);
+				SetGuiGraphicsResourceManager(previousResources);
+			});
+		});
+		GacUIUnitTest_Start(L"Tui/GridSeparators");
+	});
+
+	TEST_CASE(L"TUI configured tabs share paragraph and label geometry")
+	{
+		TEST_ASSERT(TuiConfiguration().tabInterval == 4);
+		for (vint interval : {4, 8})
+		{
+			TuiRunTest([=](TuiTestBackend*, TuiTestController* controller)
+			{
+				TuiConfiguration configuration;
+				configuration.tabInterval = interval;
+				TuiGraphicsResourceManager resources(configuration);
+				auto provider = static_cast<TuiGraphicsLayoutProvider*>(resources.GetLayoutProvider());
+				configuration.tabInterval = 1;
+				TEST_ASSERT(provider->GetConfiguration().tabInterval == interval);
+				auto previousResources = GetGuiGraphicsResourceManager();
+				SetGuiGraphicsResourceManager(&resources);
+				RegisterTuiRenderers();
+				auto window = controller->CreateNativeWindow(INativeWindow::Normal);
+				window->Show();
+				TuiGraphicsRenderTarget target(window);
+				target.StartHostedRendering();
+				target.StartRendering();
+				for (WString text : {L"\tX", L"a\tX", L"abc\tX", L"abcd\tX", L"\t\tX", L"\u4E2D\tX", L"\U0001F600\tX"})
+				{
+					auto paragraph = provider->CreateParagraph(text, &target, nullptr);
+					auto x = text == L"\t\tX" ? interval * 2 : text == L"abcd\tX" && interval == 4 ? 8 : interval;
+					auto position = text.Length() - 1;
+					TEST_ASSERT(paragraph->GetSize() == Size(x + 1, 1));
+					TEST_ASSERT(paragraph->GetCaretBounds(position, true).LeftTop() == Point(x, 0));
+					TEST_ASSERT(paragraph->GetCaretFromPoint(Point(x, 0)) == position);
+					bool front = true;
+					TEST_ASSERT(paragraph->GetCaret(position - 1, IGuiGraphicsParagraph::CaretMoveRight, front) == position);
+					paragraph->SetBackgroundColor(position - 1, 1, Color(20, 30, 40));
+					paragraph->SetStyle(position - 1, 1, IGuiGraphicsParagraph::Underline);
+					paragraph->Render(Rect(0, 0, 16, 1));
+					if (x < 16) TEST_ASSERT(TUI::GetBuffer()[x].GetChar32() == U'X');
+					TEST_ASSERT(TUI::GetBuffer()[x - 1].backgroundColor == TuiColor(20, 30, 40));
+				}
+				{
+					auto paragraph = provider->CreateParagraph(L"a\tX", &target, nullptr);
+					paragraph->SetMaxWidth(12);
+					for (auto alignment : {Alignment::Left, Alignment::Center, Alignment::Right})
+					{
+						paragraph->SetParagraphAlignment(alignment);
+						auto offset = alignment == Alignment::Left ? 0 : alignment == Alignment::Center ? (11 - interval) / 2 : 11 - interval;
+						TEST_ASSERT(paragraph->GetCaretBounds(2, true).x1 == interval + offset);
+						paragraph->Render(Rect(2, 2, 14, 3));
+						TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 2 + interval + offset].GetChar32() == U'X');
+					}
+					paragraph->SetParagraphAlignment(Alignment::Left);
+					target.PushClipper(Rect(2, 3, 10, 4), nullptr);
+					paragraph->Render(Rect(0, 3, 12, 4));
+					target.PopClipper(nullptr);
+					TEST_ASSERT(TUI::GetBuffer()[3 * 16 + interval].GetChar32() == U'X');
+					auto multiline = provider->CreateParagraph(L"a\tX\r\na\tX", nullptr, nullptr);
+					TEST_ASSERT(multiline->GetCaretBounds(7, true).LeftTop() == Point(interval, 1));
+					multiline->SetWrapLine(true);
+					multiline->SetMaxWidth(interval);
+					TEST_ASSERT(multiline->GetSize() == Size(interval, 4));
+					TEST_ASSERT(multiline->GetCaretBounds(2, false).LeftTop() == Point(0, 1));
+					auto objectParagraph = provider->CreateParagraph(L"#\tX", nullptr, nullptr);
+					IGuiGraphicsParagraph::InlineObjectProperties object;
+					object.size = Size(interval + 1, 1);
+					TEST_ASSERT(objectParagraph->SetInlineObject(0, 1, object));
+					TEST_ASSERT(objectParagraph->GetCaretBounds(2, true).x1 == interval * 2);
+					auto label = Ptr(GuiSolidLabelElement::Create());
+					label->SetText(L"a\tX");
+					auto renderer = label->GetRenderer();
+					renderer->SetRenderTarget(&target);
+					TEST_ASSERT(renderer->GetMinSize() == Size(interval + 1, 1));
+					renderer->Render(Rect(2, 4, 14, 5));
+					TEST_ASSERT(TUI::GetBuffer()[4 * 16 + 2 + interval].GetChar32() == U'X');
+					label->SetEllipse(true);
+					renderer->Render(Rect(2, 5, 2 + interval, 6));
+					TEST_ASSERT(TUI::GetBuffer()[5 * 16 + 3].GetChar32() == U'\u2026');
+					TEST_ASSERT(TuiEllipsizeText(L"a\tX", interval + 1, interval) == L"a\tX");
+				}
+				target.StopRendering();
+				target.StopHostedRendering();
+				controller->DestroyNativeWindow(window);
+				SetGuiGraphicsResourceManager(previousResources);
+			});
+		}
+		TuiConfiguration invalid;
+		invalid.tabInterval = 0;
+		TEST_EXCEPTION(TuiGraphicsLayoutProvider provider(invalid), Error, [](const Error&) {});
+		invalid.tabInterval = -1;
+		TEST_EXCEPTION(TuiGraphicsLayoutProvider provider(invalid), Error, [](const Error&) {});
+	});
+
 	TEST_CASE(L"TUI scalar offsets, tab stops, CRLF, wrapping and caret sides")
 	{
 		TuiGraphicsLayoutProvider provider;

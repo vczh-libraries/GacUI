@@ -72,7 +72,7 @@ extern int SetupHostedWindowsGDIRenderer();
 extern int SetupHostedWindowsDirect2DRenderer();
 extern int SetupRawWindowsGDIRenderer();
 extern int SetupRawWindowsDirect2DRenderer();
-extern int SetupTuiWindowsRenderer();
+extern int SetupTuiWindowsRenderer(const vl::presentation::TuiConfiguration& configuration = {});
 
 // Gtk
 extern int SetupGtkRenderer();
