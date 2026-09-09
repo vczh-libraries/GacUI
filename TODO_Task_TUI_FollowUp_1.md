@@ -61,8 +61,8 @@ If skin or layout issue happens because `GacUILayout.md` said so or the guidance
   - e.g. in Windows implementation, it should make a new class inheriting from `TuiController`, and fill Windows specific services and other stuff.
   - `INativeInputService` and `INativeResourceService` does not need to be its base class, the Windows implementation could just make two service classesinheriting from original Windows ones.
 - Verify how clipper applies when drawing elements.
-- `TuiLabelRenderer` should not use paragraph, it is too heavy.
-  - Cache the paragraph instead of creating one on rendering.
+- `TuiLabelRenderer` should cache its paragraph to avoid unnecessary paragraph creation.
+  - Reuse the cached paragraph during rendering.
 - `TuiElementRenderer` is better to split into 3 different classes instead of having 3 `if constexpr` branches.
 
 ### DETAILS
@@ -72,13 +72,14 @@ If skin or layout issue happens because `GacUILayout.md` said so or the guidance
 - Include the Windows service-window lifecycle and notification routing. `WindowsInputService::SetOwnerHandle` in `Source/PlatformProviders/Windows/ServicesImpl/WindowsInputService.cpp` supplies the HWND used for global shortcuts; clipboard handling also needs its native owner. `GodProc` in `Source/PlatformProviders/Windows/WinNativeWindow.cpp` currently routes clipboard and hotkey messages through `windowsController`. Adapt or share that plumbing with explicit ownership, listener teardown and global-controller restoration; constructing service subclasses alone is insufficient. Never pass a `TuiWindow` to Windows code expecting a `WindowsForm`.
 - Adapt `TuiTestController` in `Test/GacUISrc/UnitTest/TestTuiProvider.cpp` to the new service arrangement while keeping its injected backend independent of Windows services and a real terminal.
 - Clipping already happens through `TuiGraphicsRenderTarget` drawing methods in `Source/PlatformProviders/TUI/TuiGraphics.cpp`, using the inherited clipper stack intersected with the current viewport. Empty clipper hooks alone are not evidence of a bug. Preserve original border geometry without inventing corners at clip boundaries, reject partial width-two glyphs, and retain the backend's repair of existing wide-character pairs.
-- Split `TuiElementRenderer` in `Source/PlatformProviders/TUI/TuiGraphicsRenderers.cpp` into concrete renderers for `TuiBorderElement`, `GuiSolidBorderElement` and `GuiSolidBackgroundElement`, preserving registrations and drawing behavior. Resolve the label design using the review comment below; document/caret/inline-object paragraph support remains required.
+- Split `TuiElementRenderer` in `Source/PlatformProviders/TUI/TuiGraphicsRenderers.cpp` into concrete renderers for `TuiBorderElement`, `GuiSolidBorderElement` and `GuiSolidBackgroundElement`, preserving registrations and drawing behavior.
+- Keep `TuiLabelRenderer` using a cached `IGuiGraphicsParagraph`. It already retains the paragraph between unchanged redraws, but currently recreates it on every element-state or render-width change. Reuse the existing paragraph through its width, wrapping, alignment, style and color setters. The implementation in `Source/PlatformProviders/TUI/TuiTextLayout.h/.cpp` has no text or render-target setter, so recreate it when the effective display text or render target changes, including text changes caused by single-line normalization or ellipsis. Cache natural unwrapped/unellipsized metrics separately and refresh them when normalized source text changes, even if the displayed ellipsis text remains identical. Preserve document/caret/inline-object paragraph behavior.
 - Update `.github/KnowledgeBase/KB_GacUI_Design_TuiPlatformProvider.md` during execution because its ownership guidance currently describes the design being replaced.
 
 ### VERIFICATION
 
 - Extend `TestTuiProvider.cpp` for nested/disjoint clippers, restoration after popping an empty clipper, partially clipped fills/borders/labels/carets, width-two text at both edges, and drawing after a buffer resize. Assert border geometry and wide-pair integrity. Exercise all three concrete renderers through element creation and render-target attachment.
-- Cover the actual label renderer, beyond the existing paragraph tests: empty text, single/multiline CRLF handling, tabs, CJK/supplementary characters, horizontal/vertical alignment, wrapping, ellipsis, natural minimum size and `WrapLineHeightCalculation`. Verify text/width/style/color changes invalidate the appropriate cached state and unchanged redraws reuse layout.
+- Cover the actual label renderer, beyond the existing paragraph tests: empty text, single/multiline CRLF handling, tabs, CJK/supplementary characters, horizontal/vertical alignment, wrapping, ellipsis, natural minimum size and `WrapLineHeightCalculation`. Verify unchanged redraws reuse both the paragraph and its layout; width/wrapping/alignment changes that keep effective text unchanged reuse the paragraph while updating layout, and style/color changes repaint without recreating it. Check replacement when effective text or render target changes, ellipsis-width changes that produce either identical or different display text, and source-text changes that preserve displayed ellipsis but change natural metrics.
 - Preserve existing deterministic window/input/async/timer tests. In Windows Terminal, check startup, titles, resize, clipboard notifications, global shortcut callbacks, queued/delayed work and caret blinking, including inside modal dialogs. Use both Stop buttons on separate runs and verify terminal input, cursor and colors restore normally. Confirm ordinary `CppTest` startup and services still work after the Windows refactor.
 
 ## Control Bugs
@@ -130,9 +131,3 @@ For every bug, you need to verify if this is a TUI only issue or a general GacUI
 - Verify this inventory change does not alter resource compilation order or add another compilation pass. Do not run code generation solely to verify the inventory edit.
 
 ## REVIEW COMMENTS
-
-### Label paragraph requirements conflict
-
-**review comment**: "should not use paragraph" conflicts with "Cache the paragraph." `TuiLabelRenderer` in `Source/PlatformProviders/TUI/TuiGraphicsRenderers.cpp` already retains a paragraph between unchanged redraws; it recreates it on element changes and render-width changes. Removing paragraph usage and improving the existing paragraph cache imply different final designs.
-
-**suggested solution**: Use a cached lightweight label layout instead of `IGuiGraphicsParagraph`, reusing or extracting scalar decoding, tab, wrapping, alignment and ellipsis logic from `Source/PlatformProviders/TUI/TuiTextLayout.*`. Preserve `TuiGraphicsParagraph` for document rendering, including caret and inline-object behavior. Rebuild label layout only when text or layout inputs change; update paint-only properties without rebuilding layout.
