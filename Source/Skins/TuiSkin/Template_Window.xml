@@ -49,9 +49,8 @@
         </Table>
         <Bounds ref.Name="container" AlignmentToParent-bind="{left:(self.Border or self.SizeBox ? 1 : 0) top:(self.TitleBar or self.Border or self.SizeBox ? 1 : 0) right:(self.Border or self.SizeBox ? 1 : 0) bottom:(self.Border or self.SizeBox ? 1 : 0)}" AssociatedHitTestResult="Client" />
         <Bounds AlignmentToParent="left:2 top:0 right:2 bottom:-1" Visible-bind="self.TitleBar" PreferredMinSize="y:1" AssociatedHitTestResult="Title">
-          <SolidBackground ref.Style="background" />
-          <Bounds AlignmentToParent="left:1 top:0 right:3 bottom:0">
-            <SolidLabel Text-bind="self.Text" Color-eval="tuiskin::tuiColors.ControlText" Font="fontFamily:&quot;TuiFont&quot; size:1 bold:true" Ellipse="true" />
+          <Bounds AlignmentToParent="left:0 top:0 right:3 bottom:0">
+            <SolidLabel Text-bind="self.Text == &quot;&quot; ? &quot;&quot; : &quot; &quot; &amp; self.Text &amp; &quot; &quot;" Color-eval="tuiskin::tuiColors.ControlText" Font="fontFamily:&quot;TuiFont&quot; size:1 bold:true" Ellipse="true" />
           </Bounds>
           <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0" AssociatedHitTestResult="ButtonClose">
             <SolidLabel Text="[x]" Color-eval="tuiskin::tuiColors.ButtonText" />
