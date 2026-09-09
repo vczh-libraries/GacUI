@@ -30,7 +30,7 @@
         <att.SubMenuTemplate>tuiskin::TuiToolstripMenuTemplate</att.SubMenuTemplate>
         <SolidBackground ref.Style="menuBackground" />
         <Bounds AlignmentToParent="left:1 top:0 right:1 bottom:0">
-          <SolidLabel ref.Style="menuText" Text-bind="self.Text" Font-bind="{fontFamily:self.Font.fontFamily size:1 bold:self.Focused underline:(self.State != ButtonState::Normal)}" />
+          <SolidLabel ref.Style="menuText" Text-bind="self.Text" Font-bind="{fontFamily:self.Font.fontFamily size:1 bold:self.Focused underline:(self.Focused or self.State != ButtonState::Normal)}" />
         </Bounds>
       </ToolstripButtonTemplate>
     </Instance>
@@ -55,7 +55,7 @@
           </Cell>
           <Cell Site="row:0 column:1">
             <SharedSizeItem Group="MenuItem-Text" SharedWidth="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-              <SolidLabel ref.Style="menuText" Text-bind="self.Text" Font-bind="{fontFamily:self.Font.fontFamily size:1 bold:self.Focused underline:(self.State != ButtonState::Normal)}" />
+              <SolidLabel ref.Style="menuText" Text-bind="self.Text" Font-bind="{fontFamily:self.Font.fontFamily size:1 bold:self.Focused underline:(self.Focused or self.State != ButtonState::Normal)}" />
             </SharedSizeItem>
           </Cell>
           <Cell Site="row:0 column:2">

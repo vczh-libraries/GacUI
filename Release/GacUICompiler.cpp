@@ -7511,6 +7511,7 @@ GuiInstanceContext
 					att->value.value =
 						L"presentation::controls::Gui*;"
 						L"presentation::elements::Gui*Element;"
+						L"presentation::elements::*Element;"
 						L"presentation::compositions::Gui*Composition;"
 						L"presentation::compositions::Gui*;"
 						L"presentation::templates::Gui*;"

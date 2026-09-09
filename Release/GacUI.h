@@ -3660,6 +3660,10 @@ Native Window Controller
 		/// <param name="controller">The global native system service controller.</param>
 		extern void							SetNativeController(INativeController* controller);
 
+		/// <summary>Get the underlying controller installed by SetNativeController, without the service-substitution facade.</summary>
+		/// <returns>The installed controller, or null if none is installed.</returns>
+		extern INativeController*			GetNativeController();
+
 #define GUI_SUBSTITUTABLE_SERVICES(F)	\
 		F(Clipboard)					\
 		F(Dialog)						\
@@ -16970,7 +16974,7 @@ ListViewColumnItemArranger
 					typedef collections::List<GuiListViewColumnHeader*>					ColumnHeaderButtonList;
 					typedef collections::List<compositions::GuiBoundsComposition*>		ColumnHeaderSplitterList;
 				public:
-					static const vint							SplitterWidth = 8;
+					vint											splitterWidth = 8;
 				protected:
 					class ColumnItemViewCallback : public Object, public virtual IColumnItemViewCallback
 					{
@@ -25844,6 +25848,13 @@ namespace vl::presentation::elements
 
 namespace vl::presentation
 {
+	struct TuiConfiguration
+	{
+		vint			tabInterval;
+
+		TuiConfiguration();
+	};
+
 	class ITuiApplication : public virtual Interface, public Description<ITuiApplication>
 	{
 	public:
@@ -25931,7 +25942,7 @@ extern int SetupHostedWindowsGDIRenderer();
 extern int SetupHostedWindowsDirect2DRenderer();
 extern int SetupRawWindowsGDIRenderer();
 extern int SetupRawWindowsDirect2DRenderer();
-extern int SetupTuiWindowsRenderer();
+extern int SetupTuiWindowsRenderer(const vl::presentation::TuiConfiguration& configuration = {});
 
 // Gtk
 extern int SetupGtkRenderer();
@@ -29111,6 +29122,7 @@ https://github.com/vczh-libraries
 namespace vl::presentation::elements
 {
 	class TuiGraphicsRenderTarget;
+	class TuiGraphicsLayoutProvider;
 
 	struct TuiTextCell
 	{
@@ -29134,7 +29146,7 @@ namespace vl::presentation::elements
 	class TuiGraphicsParagraph : public Object, public IGuiGraphicsParagraph
 	{
 	protected:
-		IGuiGraphicsLayoutProvider*								provider;
+		TuiGraphicsLayoutProvider*								provider;
 		TuiGraphicsRenderTarget*								renderTarget;
 		IGuiGraphicsParagraphCallback*							callback;
 		WString													text;
@@ -29159,7 +29171,7 @@ namespace vl::presentation::elements
 		void													EnsureLayout();
 		vint													FindLine(vint caret, bool frontSide);
 	public:
-		TuiGraphicsParagraph(const WString& text, IGuiGraphicsLayoutProvider* provider, TuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback);
+		TuiGraphicsParagraph(const WString& text, TuiGraphicsLayoutProvider* provider, TuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback);
 		IGuiGraphicsLayoutProvider*								GetProvider() override;
 		IGuiGraphicsRenderTarget*								GetRenderTarget() override;
 		bool													GetWrapLine() override;
@@ -29191,12 +29203,16 @@ namespace vl::presentation::elements
 
 	class TuiGraphicsLayoutProvider : public Object, public IGuiGraphicsLayoutProvider
 	{
+	protected:
+		TuiConfiguration				configuration;
 	public:
+		TuiGraphicsLayoutProvider(const TuiConfiguration& configuration = {});
+		const TuiConfiguration&			GetConfiguration() const;
 		Ptr<IGuiGraphicsParagraph>								CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback) override;
 	};
 
 	extern char32_t						TuiReadScalar(const WString& text, vint start, vint& length);
-	extern WString						TuiEllipsizeText(const WString& text, vint width);
+	extern WString						TuiEllipsizeText(const WString& text, vint width, vint tabInterval = 4);
 	extern console::TuiTextStyle			TuiGetTextStyle(IGuiGraphicsParagraph::TextStyle style);
 }
 
@@ -29240,6 +29256,7 @@ namespace vl::presentation::elements
 		Ptr<TuiGraphicsRenderTarget>			renderTarget;
 		TuiGraphicsLayoutProvider				layoutProvider;
 	public:
+		TuiGraphicsResourceManager(const TuiConfiguration& configuration = {});
 		IGuiGraphicsRenderTarget*				GetRenderTarget(INativeWindow* window) override;
 		void									RecreateRenderTarget(INativeWindow* window) override;
 		void									ResizeRenderTarget(INativeWindow* window) override;
@@ -29281,6 +29298,7 @@ namespace vl::presentation
 		bool										visible = false;
 		bool										enabled = true;
 		bool										capturing = false;
+		bool										closing = false;
 	public:
 		TuiWindow(TuiControllerBase* controller);
 		~TuiWindow();
@@ -29375,55 +29393,30 @@ namespace vl::presentation
 		, public INativeController
 		, public ITuiApplication
 		, public console::ITuiCallback
-		, protected INativeControllerListener
-		, protected INativeResourceService
-		, protected INativeInputService
 		, protected INativeScreenService
 		, protected INativeScreen
 		, protected INativeWindowService
 	{
 	protected:
-		INativeController*				nativeServices;
+		TuiConfiguration				configuration;
 		SharedCallbackService			callbackService;
 		SharedAsyncService				asyncService;
 		Ptr<TuiWindow>					window;
-		FontProperties					defaultFont;
 		NativeWindowFrameConfig			frameConfig;
-		bool							timerEnabled = false;
 
 		virtual void					PumpPlatformEvents() = 0;
 		void							Starting() override;
 	public:
-		TuiControllerBase(INativeController* nativeServices);
+		TuiControllerBase(const TuiConfiguration& configuration = {});
 		~TuiControllerBase();
 		ITuiApplication*				GetTuiApplication();
 		virtual void					ApplyTitle(const WString& title) = 0;
 		INativeCallbackService*			CallbackService() override;
-		INativeResourceService*			ResourceService() override;
 		INativeAsyncService*			AsyncService() override;
-		INativeClipboardService*		ClipboardService() override;
-		INativeImageService*			ImageService() override;
-		INativeInputService*			InputService() override;
 		INativeDialogService*			DialogService() override;
 		INativeAutomationService*		AutomationService() override;
-		WString							GetExecutablePath() override;
 		INativeScreenService*			ScreenService() override;
 		INativeWindowService*			WindowService() override;
-		INativeCursor*					GetSystemCursor(INativeCursor::SystemCursorType type) override;
-		INativeCursor*					GetDefaultSystemCursor() override;
-		FontProperties					GetDefaultFont() override;
-		void							SetDefaultFont(const FontProperties& value) override;
-		void							EnumerateFonts(collections::List<WString>& fonts) override;
-		WString							GetOSSuperKeyName() override;
-		void							StartTimer() override;
-		void							StopTimer() override;
-		bool							IsTimerEnabled() override;
-		bool							IsKeyPressing(VKEY code) override;
-		bool							IsKeyToggled(VKEY code) override;
-		WString							GetKeyName(VKEY code) override;
-		VKEY							GetKey(const WString& name) override;
-		vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key) override;
-		bool							UnregisterGlobalShortcutKey(vint id) override;
 		vint							GetScreenCount() override;
 		INativeScreen*					GetScreen(vint index) override;
 		INativeScreen*					GetScreen(INativeWindow* window) override;
@@ -29444,8 +29437,8 @@ namespace vl::presentation
 		void							Stop() override;
 		void							BufferSizeChanged() override;
 		void							Timer() override;
-		void							ClipboardUpdated() override;
-		void							GlobalShortcutKeyActivated(vint id) override;
+		void							ClipboardUpdated();
+		void							GlobalShortcutKeyActivated(vint id);
 		void							KeyDown(const NativeWindowKeyInfo& info) override;
 		void							KeyUp(const NativeWindowKeyInfo& info) override;
 		void							Char(const NativeWindowCharInfo& info) override;
@@ -29717,7 +29710,9 @@ namespace tui_controls
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
 		void __vwsn_tui_controls_TuiColorComponentControl_Initialize(::tui_controls::TuiColorComponentControl* __vwsn_this_);
 	public:
 		TuiColorComponentControlConstructor();
@@ -29780,23 +29775,35 @@ namespace tui_controls
 		::tui_controls::TuiColorComponentControl* colorBlue;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::presentation::controls::GuiLabel* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_2;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_4;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
-		::vl::presentation::controls::GuiLabel* __vwsn_precompile_6;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7;
-		::vl::presentation::controls::GuiLabel* __vwsn_precompile_8;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_7;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_9;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_12;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_12;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_13;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_14;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_15;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_16;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_18;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_14;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_16;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_17;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_18;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_19;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_20;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_21;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_23;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_25;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_26;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_27;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_28;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_29;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_30;
 		void __vwsn_tui_controls_TuiColorDialogControl_Initialize(::tui_controls::TuiColorDialogControl* __vwsn_this_);
 	public:
 		TuiColorDialogControlConstructor();
@@ -30030,16 +30037,22 @@ namespace tui_controls
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
 		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_8;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9;
-		::vl::presentation::controls::GuiLabel* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_10;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_12;
-		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_13;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_12;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_13;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_14;
-		::vl::presentation::controls::GuiLabel* __vwsn_precompile_15;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_16;
-		::vl::presentation::controls::GuiBindableTextList* __vwsn_precompile_17;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_18;
-		::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_precompile_19;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15;
+		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_16;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_17;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_18;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_19;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_20;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_21;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_22;
+		::vl::presentation::controls::GuiBindableTextList* __vwsn_precompile_23;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24;
+		::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_precompile_25;
 		void __vwsn_tui_controls_TuiFilePickerControl_Initialize(::tui_controls::TuiFilePickerControl* __vwsn_this_);
 	public:
 		TuiFilePickerControlConstructor();
@@ -30393,10 +30406,10 @@ namespace tui_controls
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_2;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
-		::vl::presentation::controls::GuiScrollContainer* __vwsn_precompile_4;
-		::vl::presentation::controls::GuiLabel* __vwsn_precompile_5;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_7;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8;
 		void __vwsn_tui_controls_TuiMessageBoxWindow_Initialize(::tui_controls::TuiMessageBoxWindow* __vwsn_this_);
 	public:

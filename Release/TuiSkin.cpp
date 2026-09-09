@@ -22,6 +22,8 @@ namespace tuiskin
 		colors.ControlBorderDisabled = vl::presentation::Color(0x40, 0x40, 0x40);
 		colors.ControlBorderFocused = vl::presentation::Color(0x87, 0xCE, 0xFA);
 		colors.LabelText = vl::presentation::Color(0x80, 0x80, 0x80);
+		colors.ShortcutKeyBackground = vl::presentation::Color(0xFF, 0xFF, 0xFF);
+		colors.ShortcutKeyText = vl::presentation::Color(0x00, 0x00, 0x00);
 		colors.MenuBackground = vl::presentation::Color(0x40, 0x40, 0x40);
 		colors.MenuText = vl::presentation::Color(0xFF, 0xFF, 0xFF);
 		colors.MenuTextDisabled = vl::presentation::Color(0x80, 0x80, 0x80);
@@ -137,6 +139,60 @@ Closures
 
 	void __vwsnf100_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->look)->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->look)->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf101_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::__vwsnf101_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf101_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->look)->GetDate();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::DateTime>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->look)->SetDate(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf102_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::__vwsnf102_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf102_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->look)->GetDateLocale();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Locale>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->look)->SetDateLocale(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf103_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::__vwsnf103_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf103_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->look)->GetCommands();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::controls::IDatePickerCommandExecutor*>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -148,12 +204,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf101_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::__vwsnf101_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf104_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::__vwsnf104_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf101_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf104_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetDate();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::DateTime>(__vwsn_value_);
@@ -166,12 +222,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf102_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_::__vwsnf102_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_(::tuiskin::TuiGroupBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf105_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_::__vwsnf105_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_(::tuiskin::TuiGroupBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf102_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf105_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -184,12 +240,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf103_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_::__vwsnf103_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_(::tuiskin::TuiGroupBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf106_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_::__vwsnf106_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_(::tuiskin::TuiGroupBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf103_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf106_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -202,12 +258,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf104_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_::__vwsnf104_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_(::tuiskin::TuiLabelTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf107_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_::__vwsnf107_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_(::tuiskin::TuiLabelTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf104_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf107_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -220,12 +276,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf105_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_::__vwsnf105_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_(::tuiskin::TuiLabelTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf108_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_::__vwsnf108_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_(::tuiskin::TuiLabelTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf105_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf108_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -238,66 +294,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf106_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_::__vwsnf106_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_(::tuiskin::TuiLabelTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf109_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_::__vwsnf109_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_(::tuiskin::TuiLabelTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf106_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf107_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_::__vwsnf107_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_(::tuiskin::TuiShortcutKeyTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf107_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf108_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_::__vwsnf108_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_(::tuiskin::TuiShortcutKeyTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf108_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf109_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_::__vwsnf109_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_(::tuiskin::TuiShortcutKeyTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf109_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf109_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -324,30 +326,30 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf110_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_::__vwsnf110_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_(::tuiskin::TuiBottomScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf110_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_::__vwsnf110_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_(::tuiskin::TuiShortcutKeyTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf110_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf110_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf111_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_::__vwsnf111_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_(::tuiskin::TuiBottomScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf111_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_::__vwsnf111_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_(::tuiskin::TuiShortcutKeyTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf111_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf111_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -360,44 +362,56 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf112_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::__vwsnf112_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(::tuiskin::TuiHScrollTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf112_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_::__vwsnf112_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_(::tuiskin::TuiShortcutKeyTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf112_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	void __vwsnf112_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiLeftScrollButtonTemplate());
+			return;
 		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetFont(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf113_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::__vwsnf113_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(::tuiskin::TuiHScrollTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf113_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_::__vwsnf113_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_(::tuiskin::TuiBottomScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf113_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	void __vwsnf113_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiRightScrollButtonTemplate());
+			return;
 		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf114_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::__vwsnf114_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(::tuiskin::TuiHScrollTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf114_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_::__vwsnf114_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_(::tuiskin::TuiBottomScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf114_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	void __vwsnf114_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiHandleScrollButtonTemplate());
+			return;
 		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -407,15 +421,11 @@ Closures
 	{
 	}
 
-	void __vwsnf115_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf115_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetWidthPageSize();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return;
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiLeftScrollButtonTemplate());
 		}
-		::vl::__vwsn::This(__vwsnthis_0->handle)->SetWidthPageSize(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -425,25 +435,21 @@ Closures
 	{
 	}
 
-	void __vwsnf116_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf116_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetWidthRatio();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return;
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiRightScrollButtonTemplate());
 		}
-		::vl::__vwsn::This(__vwsnthis_0->handle)->SetWidthRatio(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf117_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_::__vwsnf117_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_(::tuiskin::TuiHTrackerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf117_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::__vwsnf117_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(::tuiskin::TuiHScrollTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf117_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf117_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiHandleScrollButtonTemplate());
@@ -452,12 +458,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf118_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_::__vwsnf118_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_(::tuiskin::TuiHTrackerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf118_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::__vwsnf118_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(::tuiskin::TuiHScrollTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf118_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf118_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetWidthPageSize();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
@@ -470,12 +476,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf119_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_::__vwsnf119_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_(::tuiskin::TuiHTrackerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf119_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::__vwsnf119_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(::tuiskin::TuiHScrollTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf119_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf119_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetWidthRatio();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
@@ -502,12 +508,62 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf120_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize_::__vwsnf120_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize_(::tuiskin::TuiHandleScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf120_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_::__vwsnf120_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_(::tuiskin::TuiHTrackerTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf120_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf120_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiHandleScrollButtonTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf121_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_::__vwsnf121_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_(::tuiskin::TuiHTrackerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf121_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetWidthPageSize();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->handle)->SetWidthPageSize(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf122_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_::__vwsnf122_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_(::tuiskin::TuiHTrackerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf122_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetWidthRatio();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->handle)->SetWidthRatio(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf123_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize_::__vwsnf123_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize_(::tuiskin::TuiHandleScrollButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf123_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -520,30 +576,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf121_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize_::__vwsnf121_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize_(::tuiskin::TuiHandleScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf124_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_::__vwsnf124_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_(::tuiskin::TuiLeftScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf121_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf122_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_::__vwsnf122_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_(::tuiskin::TuiLeftScrollButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf122_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf124_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -556,12 +594,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf123_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_::__vwsnf123_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_(::tuiskin::TuiLeftScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf125_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_::__vwsnf125_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_(::tuiskin::TuiLeftScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf123_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf125_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -574,12 +612,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf124_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize_::__vwsnf124_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize_(::tuiskin::TuiProgressBarTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf126_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize_::__vwsnf126_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize_(::tuiskin::TuiProgressBarTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf124_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf126_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->GetWidthPageSize();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
@@ -592,12 +630,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf125_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_::__vwsnf125_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_(::tuiskin::TuiRightScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf127_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_::__vwsnf127_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_(::tuiskin::TuiRightScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf125_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf127_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -610,12 +648,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf126_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_::__vwsnf126_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_(::tuiskin::TuiRightScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf128_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_::__vwsnf128_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_(::tuiskin::TuiRightScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf126_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf128_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -624,34 +662,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf127_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_::__vwsnf127_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_(::tuiskin::TuiScrollViewTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf127_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiVScrollTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf128_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_::__vwsnf128_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_(::tuiskin::TuiScrollViewTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf128_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiHScrollTemplate());
-		}
 	}
 
 	//-------------------------------------------------------------------
@@ -661,15 +671,11 @@ Closures
 	{
 	}
 
-	void __vwsnf129_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf129_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return;
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiVScrollTemplate());
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -688,30 +694,26 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf130_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_::__vwsnf130_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_(::tuiskin::TuiTopScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf130_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_::__vwsnf130_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_(::tuiskin::TuiScrollViewTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf130_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf130_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return;
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiHScrollTemplate());
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf131_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_::__vwsnf131_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_(::tuiskin::TuiTopScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf131_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_::__vwsnf131_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_(::tuiskin::TuiScrollViewTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf131_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf131_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -724,30 +726,38 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf132_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_::__vwsnf132_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(::tuiskin::TuiVScrollTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf132_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_::__vwsnf132_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_(::tuiskin::TuiTopScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf132_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	void __vwsnf132_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiTopScrollButtonTemplate());
+			return;
 		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf133_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_::__vwsnf133_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(::tuiskin::TuiVScrollTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf133_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_::__vwsnf133_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_(::tuiskin::TuiTopScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf133_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	void __vwsnf133_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiBottomScrollButtonTemplate());
+			return;
 		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -760,7 +770,7 @@ Closures
 	::vl::presentation::templates::GuiControlTemplate* __vwsnf134_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiHandleScrollButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiTopScrollButtonTemplate());
 		}
 	}
 
@@ -771,15 +781,11 @@ Closures
 	{
 	}
 
-	void __vwsnf135_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf135_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetHeightPageSize();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return;
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiBottomScrollButtonTemplate());
 		}
-		::vl::__vwsn::This(__vwsnthis_0->handle)->SetHeightPageSize(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -789,25 +795,7 @@ Closures
 	{
 	}
 
-	void __vwsnf136_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetHeightRatio();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->handle)->SetHeightRatio(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf137_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_::__vwsnf137_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_(::tuiskin::TuiVTrackerTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf137_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf136_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiHandleScrollButtonTemplate());
@@ -816,12 +804,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf138_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_::__vwsnf138_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_(::tuiskin::TuiVTrackerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf137_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_::__vwsnf137_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(::tuiskin::TuiVScrollTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf138_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf137_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetHeightPageSize();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
@@ -834,12 +822,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf139_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_::__vwsnf139_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_(::tuiskin::TuiVTrackerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf138_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_::__vwsnf138_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(::tuiskin::TuiVScrollTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf139_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf138_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetHeightRatio();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
@@ -848,6 +836,20 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->handle)->SetHeightRatio(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf139_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_::__vwsnf139_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_(::tuiskin::TuiVTrackerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf139_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiHandleScrollButtonTemplate());
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -866,12 +868,48 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf140_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::__vwsnf140_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf140_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_::__vwsnf140_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_(::tuiskin::TuiVTrackerTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf140_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf140_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetHeightPageSize();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->handle)->SetHeightPageSize(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf141_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_::__vwsnf141_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_(::tuiskin::TuiVTrackerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf141_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->handle)->GetHeightRatio();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<double>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->handle)->SetHeightRatio(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf142_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::__vwsnf142_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf142_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -884,12 +922,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf141_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::__vwsnf141_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf143_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::__vwsnf143_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf141_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf143_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -902,12 +940,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf142_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::__vwsnf142_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf144_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::__vwsnf144_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf142_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf144_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -920,12 +958,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf143_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::__vwsnf143_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf145_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::__vwsnf145_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf143_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf145_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -938,12 +976,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf144_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::__vwsnf144_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf146_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::__vwsnf146_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf144_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf146_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiTabHeaderButtonTemplate());
@@ -952,12 +990,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf145_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::__vwsnf145_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf147_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::__vwsnf147_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf145_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf147_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -970,12 +1008,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf146_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::__vwsnf146_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf148_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::__vwsnf148_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf146_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf148_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetAlt();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -988,12 +1026,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf147_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::__vwsnf147_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf149_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::__vwsnf149_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf147_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf149_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1002,36 +1040,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetSelected(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf148_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::__vwsnf148_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf148_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetCommands())->ShowTab(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->CurrentTabPage)->GetOwnerTab())->GetPages()).Obj())->IndexOf(::vl::__vwsn::Box(__vwsnthis_0->CurrentTabPage)), true);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf149_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::__vwsnf149_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiTemplate* __vwsnf149_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return !__vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiTabPage>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
-			{
-				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::tuiskin::TuiTabHeaderTemplate(::vl::__vwsn::Unbox<::vl::presentation::controls::GuiTabPage*>(__vwsn_viewModel_)));
-			}
-		}
-		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
 	}
 
 	//-------------------------------------------------------------------
@@ -1050,12 +1058,42 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf150_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::__vwsnf150_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf150_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::__vwsnf150_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf150_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf150_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetCommands())->ShowTab(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->CurrentTabPage)->GetOwnerTab())->GetPages()).Obj())->IndexOf(::vl::__vwsn::Box(__vwsnthis_0->CurrentTabPage)), true);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf151_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::__vwsnf151_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnf151_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return !__vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiTabPage>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			{
+				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::tuiskin::TuiTabHeaderTemplate(::vl::__vwsn::Unbox<::vl::presentation::controls::GuiTabPage*>(__vwsn_viewModel_)));
+			}
+		}
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf152_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::__vwsnf152_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf152_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1068,12 +1106,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf151_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::__vwsnf151_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf153_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::__vwsnf153_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf151_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf153_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->GetAlignmentToParent();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Margin>(__vwsn_value_);
@@ -1086,12 +1124,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf152_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::__vwsnf152_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf154_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::__vwsnf154_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf152_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf154_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->header)->GetItemSource();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueEnumerable>>(__vwsn_value_);
@@ -1104,24 +1142,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf153_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::__vwsnf153_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf155_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::__vwsnf155_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf153_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const
+	void __vwsnf155_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::tuiskin::TuiTabHeaderTemplate>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->header)->GetFlowItems()[::vl::__vwsn::This(arguments)->itemIndex])->Children()[static_cast<::vl::vint>(0)])))->SetCommands(::vl::__vwsn::This(__vwsnthis_0->self)->GetCommands());
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf154_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::__vwsnf154_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf156_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::__vwsnf156_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiMenuTemplate* __vwsnf154_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiMenuTemplate* __vwsnf156_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::tuiskin::TuiToolstripMenuTemplate());
@@ -1130,12 +1168,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf155_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::__vwsnf155_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf157_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::__vwsnf157_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf155_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf157_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1148,12 +1186,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf156_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::__vwsnf156_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf158_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::__vwsnf158_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf156_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf158_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1166,12 +1204,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf157_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::__vwsnf157_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf159_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::__vwsnf159_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf157_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf159_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1180,38 +1218,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf158_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::__vwsnf158_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf158_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf159_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf159_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiMenuTemplate* __vwsnf159_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::tuiskin::TuiToolstripMenuTemplate());
-		}
 	}
 
 	//-------------------------------------------------------------------
@@ -1230,12 +1236,44 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf160_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf160_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf160_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::__vwsnf160_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf160_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf160_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf161_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf161_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiMenuTemplate* __vwsnf161_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::tuiskin::TuiToolstripMenuTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf162_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf162_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf162_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1248,12 +1286,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf161_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf161_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf163_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf163_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf161_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf163_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1266,12 +1304,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf162_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf162_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf164_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf164_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf162_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf164_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1284,12 +1322,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf163_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf163_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf165_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf165_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf163_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf165_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1302,12 +1340,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf164_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf164_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf166_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf166_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf164_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf166_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1320,12 +1358,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf165_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf165_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf167_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf167_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf165_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf167_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -1338,12 +1376,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf166_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf166_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf168_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf168_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf166_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf168_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1356,12 +1394,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf167_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf167_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf169_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf169_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf167_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf169_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1370,42 +1408,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9.Obj())->SetColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf168_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf168_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf168_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf169_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf169_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf169_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -1424,12 +1426,48 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf170_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf170_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf170_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf170_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf170_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf170_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf171_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::__vwsnf171_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf171_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->SetColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf172_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf172_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf172_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetLineStyle();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::elements::TuiLineStyle>(__vwsn_value_);
@@ -1442,12 +1480,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf171_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf171_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf173_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf173_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf171_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf173_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1460,12 +1498,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf172_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf172_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf174_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf174_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf172_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf174_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetAssociatedHitTestResult();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::INativeWindowListener::HitTestResult>(__vwsn_value_);
@@ -1478,12 +1516,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf173_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf173_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf175_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf175_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf173_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf175_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->GetAssociatedHitTestResult();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::INativeWindowListener::HitTestResult>(__vwsn_value_);
@@ -1496,12 +1534,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf174_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf174_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf176_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf176_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf174_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf176_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->GetAssociatedHitTestResult();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::INativeWindowListener::HitTestResult>(__vwsn_value_);
@@ -1514,12 +1552,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf175_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf175_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf177_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf177_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf175_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf177_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetAssociatedHitTestResult();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::INativeWindowListener::HitTestResult>(__vwsn_value_);
@@ -1532,12 +1570,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf176_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf176_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf178_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf178_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf176_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf178_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->GetAssociatedHitTestResult();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::INativeWindowListener::HitTestResult>(__vwsn_value_);
@@ -1550,12 +1588,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf177_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf177_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf179_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf179_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf177_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf179_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9)->GetAssociatedHitTestResult();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::INativeWindowListener::HitTestResult>(__vwsn_value_);
@@ -1564,42 +1602,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9)->SetAssociatedHitTestResult(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf178_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf178_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf178_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10)->GetAssociatedHitTestResult();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::INativeWindowListener::HitTestResult>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10)->SetAssociatedHitTestResult(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf179_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf179_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf179_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11)->GetAssociatedHitTestResult();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::INativeWindowListener::HitTestResult>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11)->SetAssociatedHitTestResult(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -1625,6 +1627,42 @@ Closures
 
 	void __vwsnf180_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10)->GetAssociatedHitTestResult();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::INativeWindowListener::HitTestResult>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10)->SetAssociatedHitTestResult(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf181_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf181_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf181_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11)->GetAssociatedHitTestResult();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::INativeWindowListener::HitTestResult>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11)->SetAssociatedHitTestResult(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf182_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf182_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf182_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->container)->GetAlignmentToParent();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Margin>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -1636,12 +1674,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf181_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf181_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf183_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf183_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf181_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf183_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_15.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1654,12 +1692,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf182_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf182_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf184_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::__vwsnf184_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf182_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf184_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -2354,7 +2392,7 @@ Closures
 	::vl::presentation::templates::GuiMenuTemplate* __vwsnf57_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::tuiskin::TuiToolstripMenuTemplate());
+			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::tuiskin::TuiContentMenuTemplate());
 		}
 	}
 
@@ -2367,13 +2405,13 @@ Closures
 
 	void __vwsnf58_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -2385,13 +2423,13 @@ Closures
 
 	void __vwsnf59_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetText();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetText(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -2417,13 +2455,13 @@ Closures
 
 	void __vwsnf60_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetColor();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetColor(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -2435,13 +2473,13 @@ Closures
 
 	void __vwsnf61_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetFont();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetFont(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetFont(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -2453,13 +2491,13 @@ Closures
 
 	void __vwsnf62_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3)->GetVisible();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3)->SetVisible(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->SetVisible(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -2471,13 +2509,13 @@ Closures
 
 	void __vwsnf63_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetColor();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->SetColor(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -2489,13 +2527,13 @@ Closures
 
 	void __vwsnf64_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->GetColor();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8.Obj())->SetColor(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -2525,13 +2563,13 @@ Closures
 
 	void __vwsnf66_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -2542,6 +2580,24 @@ Closures
 	}
 
 	void __vwsnf67_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->GetAlignmentToParent();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Margin>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->SetAlignmentToParent(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf68_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize_::__vwsnf68_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize_(::tuiskin::TuiItemBackgroundTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf68_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetTextColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2554,29 +2610,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf68_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf68_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiMenuTemplate* __vwsnf68_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::tuiskin::TuiToolstripMenuTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf69_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf69_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf69_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiMenuTemplate* __vwsnf69_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiBottomScrollButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::tuiskin::TuiContentMenuTemplate());
 		}
 	}
 
@@ -2601,7 +2643,21 @@ Closures
 	{
 	}
 
-	void __vwsnf70_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf70_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiBottomScrollButtonTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf71_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf71_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf71_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2614,12 +2670,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf71_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf71_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf72_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf72_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf71_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf72_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2632,12 +2688,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf72_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf72_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf73_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf73_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf72_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf73_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2650,12 +2706,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf73_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf73_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf74_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf74_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf73_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf74_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -2668,12 +2724,30 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf74_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf74_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf75_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf75_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf74_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf75_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->container)->GetAlignmentToParent();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Margin>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->container)->SetAlignmentToParent(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf76_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf76_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf76_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2686,12 +2760,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf75_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf75_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf77_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf77_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf75_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf77_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2704,12 +2778,30 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf76_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf76_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf78_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf78_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf76_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf78_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetVisible();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetVisible(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf79_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::__vwsnf79_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf79_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->buttonArrow)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -2718,48 +2810,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->buttonArrow)->SetVisible(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf77_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::__vwsnf77_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(::tuiskin::TuiListViewTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiListViewColumnHeaderTemplate* __vwsnf77_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiListViewColumnHeaderTemplate*>(new ::tuiskin::TuiListViewColumnHeaderTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf78_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::__vwsnf78_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(::tuiskin::TuiListViewTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf78_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::tuiskin::TuiItemBackgroundTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf79_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::__vwsnf79_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(::tuiskin::TuiListViewTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf79_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiVScrollTemplate());
-		}
 	}
 
 	//-------------------------------------------------------------------
@@ -2783,10 +2833,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf80_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiListViewColumnHeaderTemplate* __vwsnf80_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiHScrollTemplate());
+			return static_cast<::vl::presentation::templates::GuiListViewColumnHeaderTemplate*>(new ::tuiskin::TuiListViewColumnHeaderTemplate());
 		}
 	}
 
@@ -2797,7 +2847,49 @@ Closures
 	{
 	}
 
-	void __vwsnf81_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf81_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::tuiskin::TuiItemBackgroundTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf82_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::__vwsnf82_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(::tuiskin::TuiListViewTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf82_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiVScrollTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf83_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::__vwsnf83_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(::tuiskin::TuiListViewTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf83_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiHScrollTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf84_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::__vwsnf84_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(::tuiskin::TuiListViewTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf84_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2810,57 +2902,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf82_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::__vwsnf82_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(::tuiskin::TuiTextListTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf82_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::tuiskin::TuiRadioButtonTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf83_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::__vwsnf83_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(::tuiskin::TuiTextListTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf83_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::tuiskin::TuiCheckBoxTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf84_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::__vwsnf84_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(::tuiskin::TuiTextListTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf84_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::tuiskin::TuiItemBackgroundTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf85_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::__vwsnf85_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(::tuiskin::TuiTextListTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf85_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf85_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiVScrollTemplate());
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::tuiskin::TuiRadioButtonTemplate());
 		}
 	}
 
@@ -2871,10 +2921,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf86_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf86_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiHScrollTemplate());
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::tuiskin::TuiCheckBoxTemplate());
 		}
 	}
 
@@ -2885,42 +2935,38 @@ Closures
 	{
 	}
 
-	void __vwsnf87_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf88_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::__vwsnf88_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(::tuiskin::TuiTreeViewTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf88_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::tuiskin::TuiExpandingDecoratorTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf89_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::__vwsnf89_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(::tuiskin::TuiTreeViewTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf89_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf87_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::tuiskin::TuiItemBackgroundTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf88_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::__vwsnf88_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(::tuiskin::TuiTextListTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf88_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiVScrollTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf89_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::__vwsnf89_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(::tuiskin::TuiTextListTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf89_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiHScrollTemplate());
 		}
 	}
 
@@ -2940,40 +2986,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf90_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::__vwsnf90_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(::tuiskin::TuiTreeViewTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf90_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::__vwsnf90_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(::tuiskin::TuiTextListTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf90_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiVScrollTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf91_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::__vwsnf91_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(::tuiskin::TuiTreeViewTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf91_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiHScrollTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf92_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::__vwsnf92_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(::tuiskin::TuiTreeViewTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf92_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf90_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2986,12 +3004,86 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf93_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize_::__vwsnf93_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize_(::tuiskin::TuiDateButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf91_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::__vwsnf91_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(::tuiskin::TuiTreeViewTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf93_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf91_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::tuiskin::TuiExpandingDecoratorTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf92_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::__vwsnf92_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(::tuiskin::TuiTreeViewTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf92_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::tuiskin::TuiItemBackgroundTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf93_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::__vwsnf93_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(::tuiskin::TuiTreeViewTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf93_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiVScrollTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf94_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::__vwsnf94_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(::tuiskin::TuiTreeViewTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiScrollTemplate* __vwsnf94_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::tuiskin::TuiHScrollTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf95_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::__vwsnf95_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(::tuiskin::TuiTreeViewTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf95_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf96_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize_::__vwsnf96_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize_(::tuiskin::TuiDateButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf96_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -3004,62 +3096,16 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf94_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::__vwsnf94_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiTextListTemplate* __vwsnf94_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiTextListTemplate*>(new ::tuiskin::TuiTextListTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf95_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::__vwsnf95_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf95_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::tuiskin::TuiDateButtonTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf96_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::__vwsnf96_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiComboBoxTemplate* __vwsnf96_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiComboBoxTemplate*>(new ::tuiskin::TuiComboBoxTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf97_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::__vwsnf97_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf97_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiTextListTemplate* __vwsnf97_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->look)->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return;
+			return static_cast<::vl::presentation::templates::GuiTextListTemplate*>(new ::tuiskin::TuiTextListTemplate());
 		}
-		::vl::__vwsn::This(__vwsnthis_0->look)->SetFont(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3069,15 +3115,11 @@ Closures
 	{
 	}
 
-	void __vwsnf98_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiSelectableButtonTemplate* __vwsnf98_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->look)->GetDate();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::DateTime>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return;
+			return static_cast<::vl::presentation::templates::GuiSelectableButtonTemplate*>(new ::tuiskin::TuiDateButtonTemplate());
 		}
-		::vl::__vwsn::This(__vwsnthis_0->look)->SetDate(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3087,15 +3129,11 @@ Closures
 	{
 	}
 
-	void __vwsnf99_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::presentation::templates::GuiComboBoxTemplate* __vwsnf99_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->look)->GetDateLocale();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Locale>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			return;
+			return static_cast<::vl::presentation::templates::GuiComboBoxTemplate*>(new ::tuiskin::TuiComboBoxTemplate());
 		}
-		::vl::__vwsn::This(__vwsnthis_0->look)->SetDateLocale(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3118,18 +3156,25 @@ Closures
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc100_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderTop : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetBorder() || ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSizeBox());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc100_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc100_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -3140,7 +3185,9 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc100_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->BorderChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc100_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc100_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -3163,11 +3210,18 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SizeBoxChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->BorderChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SizeBoxChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -3186,7 +3240,7 @@ Closures
 
 	void __vwsnc101_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderRightTop : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderLeftTop : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3247,7 +3301,7 @@ Closures
 
 	void __vwsnc102_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderLeft : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderTop : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3308,7 +3362,7 @@ Closures
 
 	void __vwsnc103_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderRight : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderRightTop : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3369,7 +3423,7 @@ Closures
 
 	void __vwsnc104_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderLeftBottom : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderLeft : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3430,7 +3484,7 @@ Closures
 
 	void __vwsnc105_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderBottom : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderRight : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3491,7 +3545,7 @@ Closures
 
 	void __vwsnc106_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderRightBottom : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderLeftBottom : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3545,6 +3599,128 @@ Closures
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderBottom : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SizeBoxChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderRightBottom : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SizeBoxChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
 		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
 		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
 		this->__vwsn_bind_cache_3 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
@@ -3566,58 +3742,58 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = ((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetBorder() || ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSizeBox()) ? static_cast<::vl::vint>(1) : static_cast<::vl::vint>(0)); __vwsn_temp__.top = (((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetTitleBar() || ::vl::__vwsn::This(__vwsn_bind_cache_3)->GetBorder()) || ::vl::__vwsn::This(__vwsn_bind_cache_4)->GetSizeBox()) ? static_cast<::vl::vint>(1) : static_cast<::vl::vint>(0)); __vwsn_temp__.right = ((::vl::__vwsn::This(__vwsn_bind_cache_5)->GetBorder() || ::vl::__vwsn::This(__vwsn_bind_cache_6)->GetSizeBox()) ? static_cast<::vl::vint>(1) : static_cast<::vl::vint>(0)); __vwsn_temp__.bottom = ((::vl::__vwsn::This(__vwsn_bind_cache_7)->GetBorder() || ::vl::__vwsn::This(__vwsn_bind_cache_8)->GetSizeBox()) ? static_cast<::vl::vint>(1) : static_cast<::vl::vint>(0)); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_5_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_5_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_6_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_6_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_7_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_7_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_8_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_8_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -3631,21 +3807,21 @@ Closures
 			(__vwsn_bind_cache_6 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_7 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_8 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->BorderChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->TitleBarChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->BorderChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_4_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_5_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_5)->BorderChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_5_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_6_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_6)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_6_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_7_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_7)->BorderChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_7_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_8_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_8)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_8_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->BorderChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->TitleBarChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->BorderChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_4_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_5_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_5)->BorderChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_5_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_6_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_6)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_6_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_7_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_7)->BorderChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_7_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_8_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_8)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_8_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -3655,7 +3831,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc107_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -3730,142 +3906,22 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTitleBar();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TitleBarChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TitleBarChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnc10_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc10_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiCheckBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr);
 		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc10_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() || (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() != ::vl::presentation::controls::ButtonState::Normal)); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3879,6 +3935,11 @@ Closures
 		this->__vwsn_bind_activator_();
 	}
 
+	void __vwsnc10_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
 	bool __vwsnc10_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
@@ -3886,8 +3947,10 @@ Closures
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr); } }());
 			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc10_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc10_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc10_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc10_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -3915,13 +3978,142 @@ Closures
 			}
 			if (static_cast<bool>(__vwsn_bind_handler_1_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
 				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr));
 			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc110_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc110_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc110_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc110_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc110_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc110_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc110_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc110_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc111_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc111_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc111_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTitleBar();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc111_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc111_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TitleBarChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc111_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc111_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc111_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TitleBarChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -4056,15 +4248,17 @@ Closures
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr);
 		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc13_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() || (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() != ::vl::presentation::controls::ButtonState::Normal)); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -4078,6 +4272,11 @@ Closures
 		this->__vwsn_bind_activator_();
 	}
 
+	void __vwsnc13_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
 	bool __vwsnc13_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
@@ -4085,8 +4284,10 @@ Closures
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc13_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc13_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc13_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc13_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -4114,13 +4315,20 @@ Closures
 			}
 			if (static_cast<bool>(__vwsn_bind_handler_1_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
 				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr));
 			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -4255,15 +4463,17 @@ Closures
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr);
 		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc16_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() || (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() != ::vl::presentation::controls::ButtonState::Normal)); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -4277,6 +4487,11 @@ Closures
 		this->__vwsn_bind_activator_();
 	}
 
+	void __vwsnc16_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
 	bool __vwsnc16_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
@@ -4284,8 +4499,10 @@ Closures
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc16_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc16_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc16_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc16_TuiSkin_tuiskin_TuiRadioButtonTemplateConstructor___vwsn_tuiskin_TuiRadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -4313,13 +4530,20 @@ Closures
 			}
 			if (static_cast<bool>(__vwsn_bind_handler_1_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
 				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr));
 			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiRadioButtonTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -4486,15 +4710,17 @@ Closures
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr);
 		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc19_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ControlBorderDisabled : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? GLOBAL_NAME tuiColors.ControlBorderFocused : GLOBAL_NAME tuiColors.ControlBorder));
+		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonBackground : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonBackgroundPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonBackgroundHighlighted : GLOBAL_NAME tuiColors.ButtonBackground)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -4508,6 +4734,11 @@ Closures
 		this->__vwsn_bind_activator_();
 	}
 
+	void __vwsnc19_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
 	bool __vwsnc19_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
@@ -4515,8 +4746,10 @@ Closures
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr); } }());
 			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc19_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc19_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc19_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc19_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -4544,13 +4777,20 @@ Closures
 			}
 			if (static_cast<bool>(__vwsn_bind_handler_1_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
 				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr));
 			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -4716,18 +4956,32 @@ Closures
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc21_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled() ? GLOBAL_NAME tuiColors.ControlText : GLOBAL_NAME tuiColors.ButtonTextDisabled);
+		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonTextPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonTextHighlighted : GLOBAL_NAME tuiColors.ButtonText)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc21_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc21_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc21_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -4738,7 +4992,11 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr); } }());
 			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc21_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc21_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc21_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -4764,8 +5022,22 @@ Closures
 				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -4778,15 +5050,17 @@ Closures
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr);
 		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc22_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() || (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() != ::vl::presentation::controls::ButtonState::Normal)); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -4800,6 +5074,11 @@ Closures
 		this->__vwsn_bind_activator_();
 	}
 
+	void __vwsnc22_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
 	bool __vwsnc22_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
@@ -4807,8 +5086,10 @@ Closures
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr); } }());
 			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc22_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc22_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc22_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc22_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -4836,13 +5117,20 @@ Closures
 			}
 			if (static_cast<bool>(__vwsn_bind_handler_1_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
 				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr));
 			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiComboBoxTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -5287,46 +5575,18 @@ Closures
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr);
-		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr);
-		this->__vwsn_bind_cache_3 = static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr);
-		this->__vwsn_bind_cache_4 = static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_4_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ItemTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected() && (! ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetGridRow())) ? GLOBAL_NAME tuiColors.ItemTextSelected : ((::vl::__vwsn::This(__vwsn_bind_cache_3)->GetSelected() || (::vl::__vwsn::This(__vwsn_bind_cache_4)->GetState() != ::vl::presentation::controls::ButtonState::Normal)) ? GLOBAL_NAME tuiColors.ItemTextHighlighted : GLOBAL_NAME tuiColors.ItemText)));
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetGridRow() ? static_cast<::vl::vint>(1) : static_cast<::vl::vint>(0)); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -5337,15 +5597,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_3 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_4 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->GridRowChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_4_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->GridRowChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -5362,6 +5614,103 @@ Closures
 	}
 
 	bool __vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->GridRowChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiItemBackgroundTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr);
+		this->__vwsn_bind_cache_3 = static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr);
+		this->__vwsn_bind_cache_4 = static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_4_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ItemTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected() && (! ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetGridRow())) ? GLOBAL_NAME tuiColors.ItemTextSelected : ((::vl::__vwsn::This(__vwsn_bind_cache_3)->GetSelected() || (::vl::__vwsn::This(__vwsn_bind_cache_4)->GetState() != ::vl::presentation::controls::ButtonState::Normal)) ? GLOBAL_NAME tuiColors.ItemTextHighlighted : GLOBAL_NAME tuiColors.ItemText)));
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_3 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_4 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->GridRowChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_4_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -5401,99 +5750,6 @@ Closures
 			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_4_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc29_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc29_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
-		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc29_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonBackground : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonBackgroundPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonBackgroundHighlighted : GLOBAL_NAME tuiColors.ButtonBackground)));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc29_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc29_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc29_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc29_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc29_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc29_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc29_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc29_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc29_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_2_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
-				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr));
-			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -5566,18 +5822,32 @@ Closures
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc30_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
+		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonBackground : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonBackgroundPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonBackgroundHighlighted : GLOBAL_NAME tuiColors.ButtonBackground)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc30_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc30_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc30_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -5588,7 +5858,11 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc30_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc30_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc30_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc30_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -5605,85 +5879,6 @@ Closures
 	}
 
 	bool __vwsnc30_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
-		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonTextPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonTextHighlighted : GLOBAL_NAME tuiColors.ButtonText)));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -5716,7 +5911,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc32_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc32_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
@@ -5725,13 +5920,88 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
+	void __vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc31_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc32_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc32_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
 	void __vwsnc32_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
+		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonTextPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonTextHighlighted : GLOBAL_NAME tuiColors.ButtonText)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc32_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc32_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc32_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -5742,7 +6012,11 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc32_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc32_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc32_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc32_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -5765,11 +6039,25 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -5781,25 +6069,18 @@ Closures
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc33_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSortingState() == ::vl::presentation::controls::ColumnSortingState::Ascending) ? ::vl::WString::Unmanaged(L"▲") : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSortingState() == ::vl::presentation::controls::ColumnSortingState::Descending) ? ::vl::WString::Unmanaged(L"▼") : ::vl::WString::Unmanaged(L" ")));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc33_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc33_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -5810,9 +6091,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SortingStateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc33_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SortingStateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc33_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc33_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -5829,6 +6108,153 @@ Closures
 	}
 
 	bool __vwsnc33_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = ((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSortingState() == ::vl::presentation::controls::ColumnSortingState::NotSorted) ? static_cast<::vl::vint>(1) : static_cast<::vl::vint>(2)); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSubMenuExisting() ? static_cast<::vl::vint>(2) : static_cast<::vl::vint>(0)); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SortingStateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SubMenuExistingChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SortingStateChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SubMenuExistingChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSortingState() == ::vl::presentation::controls::ColumnSortingState::Ascending) ? ::vl::WString::Unmanaged(L"▲") : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSortingState() == ::vl::presentation::controls::ColumnSortingState::Descending) ? ::vl::WString::Unmanaged(L"▼") : ::vl::WString::Unmanaged(L" ")));
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SortingStateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SortingStateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -5854,7 +6280,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc36_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc36_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
@@ -5867,28 +6293,28 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc36_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonTextPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonTextHighlighted : GLOBAL_NAME tuiColors.ButtonText)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc36_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc36_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc36_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc36_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -5896,15 +6322,15 @@ Closures
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc36_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc36_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc36_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc36_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -5914,7 +6340,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc34_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc36_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -5947,7 +6373,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc37_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc37_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
@@ -5956,30 +6382,30 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc37_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSubMenuExisting();
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSortingState() != ::vl::presentation::controls::ColumnSortingState::NotSorted);
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc37_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc37_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SubMenuExistingChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SortingStateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc37_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc37_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -5989,7 +6415,68 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc37_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SortingStateChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc38_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc38_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewColumnHeaderTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc38_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSubMenuExisting();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc38_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc38_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewColumnHeaderTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SubMenuExistingChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc38_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc38_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc38_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -6008,7 +6495,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc36_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc36_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc39_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc39_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiListViewTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiListViewTemplate*>(nullptr);
@@ -6019,37 +6506,37 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc36_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc39_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ControlBorderDisabled : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? GLOBAL_NAME tuiColors.ControlBorderFocused : GLOBAL_NAME tuiColors.ControlBorder));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc36_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc39_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc36_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc39_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc36_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc39_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiListViewTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc36_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc36_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc39_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc39_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc36_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc39_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -6059,7 +6546,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc36_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc39_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -6078,253 +6565,6 @@ Closures
 			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiListViewTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc37_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc37_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTextListTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTextListTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiTextListTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc37_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ControlBorderDisabled : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? GLOBAL_NAME tuiColors.ControlBorderFocused : GLOBAL_NAME tuiColors.ControlBorder));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc37_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc37_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc37_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTextListTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTextListTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc37_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc37_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc37_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc37_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTextListTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiTextListTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc38_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc38_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTreeViewTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTreeViewTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiTreeViewTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc38_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ControlBorderDisabled : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? GLOBAL_NAME tuiColors.ControlBorderFocused : GLOBAL_NAME tuiColors.ControlBorder));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc38_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc38_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc38_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTreeViewTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTreeViewTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc38_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc38_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc38_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc38_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTreeViewTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiTreeViewTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc39_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc39_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiDateButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr);
-		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc39_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelected() ? GLOBAL_NAME tuiColors.ItemBackgroundSelected : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled() && (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() != ::vl::presentation::controls::ButtonState::Normal)) ? GLOBAL_NAME tuiColors.ItemBackgroundHighlighted : GLOBAL_NAME tuiColors.ItemBackground));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc39_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc39_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc39_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc39_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc39_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc39_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc39_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc39_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc39_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_2_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
-				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr));
-			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -6425,39 +6665,48 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc40_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc40_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc40_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc40_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTextListTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTextListTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiTextListTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc40_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc40_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
+		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ControlBorderDisabled : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? GLOBAL_NAME tuiColors.ControlBorderFocused : GLOBAL_NAME tuiColors.ControlBorder));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc40_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc40_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc40_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	void __vwsnc40_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc40_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc40_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTextListTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTextListTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc40_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc40_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc40_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc40_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -6467,18 +6716,25 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc40_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc40_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr));
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTextListTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiTextListTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -6486,39 +6742,48 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc41_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc41_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc41_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc41_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTreeViewTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTreeViewTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiTreeViewTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc41_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc41_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetDate();
+		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ControlBorderDisabled : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? GLOBAL_NAME tuiColors.ControlBorderFocused : GLOBAL_NAME tuiColors.ControlBorder));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc41_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc41_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc41_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	void __vwsnc41_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc41_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->DateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc41_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTreeViewTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTreeViewTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc41_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc41_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc41_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc41_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -6528,18 +6793,25 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc41_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc41_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->DateChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr));
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTreeViewTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiTreeViewTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -6547,39 +6819,57 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc42_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc42_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc42_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc42_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiDateButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc42_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc42_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetDateLocale();
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelected() ? GLOBAL_NAME tuiColors.ItemBackgroundSelected : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled() && (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() != ::vl::presentation::controls::ButtonState::Normal)) ? GLOBAL_NAME tuiColors.ItemBackgroundHighlighted : GLOBAL_NAME tuiColors.ItemBackground));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc42_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc42_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc42_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	void __vwsnc42_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc42_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc42_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->DateLocaleChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc42_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc42_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc42_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc42_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc42_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc42_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -6589,18 +6879,32 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc42_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc42_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->DateLocaleChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr));
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiDateButtonTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -6619,7 +6923,7 @@ Closures
 
 	void __vwsnc43_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetCommands();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -6634,7 +6938,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->CommandsChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc43_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc43_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -6657,7 +6961,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->CommandsChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr));
@@ -6672,7 +6976,7 @@ Closures
 	__vwsnc44_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc44_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::templates::GuiCommonDatePickerLook*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -6694,7 +6998,7 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->look; } catch(...){ return static_cast<::vl::presentation::templates::GuiCommonDatePickerLook*>(nullptr); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr); } }());
 			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->DateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc44_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
@@ -6721,6 +7025,189 @@ Closures
 				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->DateChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc45_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc45_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc45_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetDateLocale();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc45_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc45_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->DateLocaleChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc45_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc45_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc45_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->DateLocaleChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc46_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc46_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc46_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetCommands();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc46_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc46_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->CommandsChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc46_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc46_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc46_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->CommandsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiDatePickerTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc47_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc47_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiDatePickerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::templates::GuiCommonDatePickerLook*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc47_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetDate();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc47_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc47_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->look; } catch(...){ return static_cast<::vl::presentation::templates::GuiCommonDatePickerLook*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->DateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc47_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc47_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc47_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->DateChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
 			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::templates::GuiCommonDatePickerLook*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
@@ -6730,7 +7217,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc45_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc45_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiGroupBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc48_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc48_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiGroupBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiGroupBoxTemplate*>(nullptr);
@@ -6739,30 +7226,30 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc45_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc48_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc45_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc48_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc45_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc48_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiGroupBoxTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc45_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc48_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc45_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc48_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -6772,7 +7259,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc45_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc48_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -6791,7 +7278,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc46_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc46_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiGroupBoxTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc49_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc49_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiGroupBoxTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiGroupBoxTemplate*>(nullptr);
@@ -6800,30 +7287,30 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc46_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc49_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc46_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc49_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc46_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc49_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiGroupBoxTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc46_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc49_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc46_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc49_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -6833,7 +7320,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc46_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc49_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -6844,205 +7331,6 @@ Closures
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiGroupBoxTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc47_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc47_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiLabelTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc47_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc47_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc47_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLabelTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc47_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc47_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc47_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc48_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc48_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiLabelTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc48_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled() ? ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTextColor() : GLOBAL_NAME tuiColors.ControlBorderDisabled);
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc48_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc48_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc48_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLabelTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLabelTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc48_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TextColorChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc48_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc48_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc48_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TextColorChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc49_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc49_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiLabelTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc49_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc49_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc49_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLabelTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc49_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc49_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc49_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -7056,15 +7344,17 @@ Closures
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiButtonTemplate*>(nullptr);
 		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiButtonTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc4_TuiSkin_tuiskin_TuiButtonTemplateConstructor___vwsn_tuiskin_TuiButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() || (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() != ::vl::presentation::controls::ButtonState::Normal)); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -7078,6 +7368,11 @@ Closures
 		this->__vwsn_bind_activator_();
 	}
 
+	void __vwsnc4_TuiSkin_tuiskin_TuiButtonTemplateConstructor___vwsn_tuiskin_TuiButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
 	bool __vwsnc4_TuiSkin_tuiskin_TuiButtonTemplateConstructor___vwsn_tuiskin_TuiButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
@@ -7085,8 +7380,10 @@ Closures
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc4_TuiSkin_tuiskin_TuiButtonTemplateConstructor___vwsn_tuiskin_TuiButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc4_TuiSkin_tuiskin_TuiButtonTemplateConstructor___vwsn_tuiskin_TuiButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc4_TuiSkin_tuiskin_TuiButtonTemplateConstructor___vwsn_tuiskin_TuiButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc4_TuiSkin_tuiskin_TuiButtonTemplateConstructor___vwsn_tuiskin_TuiButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -7114,13 +7411,20 @@ Closures
 			}
 			if (static_cast<bool>(__vwsn_bind_handler_1_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
 				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiButtonTemplate*>(nullptr));
 			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiButtonTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -7128,39 +7432,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc50_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc50_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiShortcutKeyTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc50_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc50_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiLabelTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiShortcutKeyTemplate*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc50_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc50_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc50_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc50_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc50_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc50_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiShortcutKeyTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc50_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLabelTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc50_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc50_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc50_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -7170,7 +7474,206 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc50_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc50_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc51_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc51_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiLabelTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc51_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled() ? ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTextColor() : GLOBAL_NAME tuiColors.ControlBorderDisabled);
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc51_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc51_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc51_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLabelTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLabelTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc51_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TextColorChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc51_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc51_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc51_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TextColorChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc52_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc52_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiLabelTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc52_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc52_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc52_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLabelTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc52_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc52_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc52_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLabelTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc53_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc53_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiShortcutKeyTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiShortcutKeyTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc53_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc53_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc53_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiShortcutKeyTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc53_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc53_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc53_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -7189,7 +7692,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc51_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc51_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiShortcutKeyTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc54_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc54_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiShortcutKeyTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiShortcutKeyTemplate*>(nullptr);
@@ -7198,30 +7701,30 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc51_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc54_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTextColor();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc51_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc54_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc51_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc54_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiShortcutKeyTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextColorChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc51_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextColorChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc54_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc51_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc54_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -7231,7 +7734,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc51_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc54_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -7250,7 +7753,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc52_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc52_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiShortcutKeyTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc55_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc55_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiShortcutKeyTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiShortcutKeyTemplate*>(nullptr);
@@ -7259,30 +7762,30 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc52_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc55_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc52_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc55_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc52_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc55_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiShortcutKeyTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc52_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc55_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc52_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc55_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -7292,7 +7795,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc52_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc55_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -7311,7 +7814,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc53_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc53_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiBottomScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc56_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc56_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiBottomScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiBottomScrollButtonTemplate*>(nullptr);
@@ -7324,28 +7827,28 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc53_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc56_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonBackground : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonBackgroundPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonBackgroundHighlighted : GLOBAL_NAME tuiColors.ButtonBackground)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc53_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc56_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc53_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc56_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc53_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc56_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc53_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc56_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -7353,15 +7856,15 @@ Closures
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiBottomScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiBottomScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiBottomScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc53_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc53_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc53_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc56_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc56_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc56_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc53_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc56_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -7371,7 +7874,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc53_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc56_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -7404,7 +7907,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc54_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc54_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiBottomScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc57_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc57_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiBottomScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiBottomScrollButtonTemplate*>(nullptr);
@@ -7417,28 +7920,28 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc54_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc57_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonTextPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonTextHighlighted : GLOBAL_NAME tuiColors.ButtonIcon)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc54_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc57_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc54_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc57_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc54_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc57_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc54_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc57_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -7446,15 +7949,15 @@ Closures
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiBottomScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiBottomScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiBottomScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc54_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc54_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc54_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc57_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc57_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc57_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc54_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc57_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -7464,7 +7967,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc54_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc57_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -7497,7 +8000,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc55_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc55_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiHScrollTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc58_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc58_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiHScrollTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiHScrollTemplate*>(nullptr);
@@ -7508,37 +8011,37 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc55_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc58_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = (static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPageSize()) / static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTotalSize()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc55_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc58_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc55_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc58_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc55_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc58_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHScrollTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHScrollTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PageSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc55_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc55_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PageSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc58_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc58_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc55_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc58_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -7548,7 +8051,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc55_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc58_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -7574,7 +8077,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc56_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc56_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiHScrollTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc59_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc59_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiHScrollTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiHScrollTemplate*>(nullptr);
@@ -7585,37 +8088,37 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc56_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc59_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = (static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPosition()) / static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTotalSize()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc56_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc59_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc56_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc59_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc56_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc59_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHScrollTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHScrollTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc56_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc56_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc59_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc59_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc56_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc59_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -7625,7 +8128,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc56_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc59_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -7644,221 +8147,6 @@ Closures
 			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiHScrollTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc57_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc57_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiHTrackerTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc57_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = static_cast<double>(0.0);
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	bool __vwsnc57_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc57_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc57_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc58_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc58_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiHTrackerTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiHTrackerTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiHTrackerTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc58_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = (static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPosition()) / static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTotalSize()));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc58_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc58_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc58_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHTrackerTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHTrackerTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc58_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc58_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc58_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc58_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiHTrackerTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiHTrackerTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc59_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc59_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiHandleScrollButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr);
-		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc59_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonBackground : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonBackgroundPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonBackgroundHighlighted : GLOBAL_NAME tuiColors.ButtonBackground)));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc59_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc59_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc59_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc59_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc59_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc59_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc59_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc59_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc59_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_2_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
-				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr));
-			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -7927,7 +8215,129 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc60_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc60_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiHandleScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc60_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc60_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiHTrackerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc60_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = static_cast<double>(0.0);
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	bool __vwsnc60_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc60_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc60_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc61_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc61_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiHTrackerTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiHTrackerTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiHTrackerTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc61_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = (static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPosition()) / static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTotalSize()));
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc61_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc61_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc61_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHTrackerTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHTrackerTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc61_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc61_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc61_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc61_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiHTrackerTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiHTrackerTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc62_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc62_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiHandleScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr);
@@ -7940,28 +8350,28 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc60_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc62_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonTextPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonTextHighlighted : GLOBAL_NAME tuiColors.ButtonText)));
+		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ControlBorderDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonBackgroundPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonBackgroundHighlighted : GLOBAL_NAME tuiColors.ControlBorder)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc60_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc62_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc60_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc62_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc60_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc62_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc60_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc62_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -7969,15 +8379,15 @@ Closures
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc60_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc60_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc60_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc62_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc62_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc62_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc60_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc62_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -7987,7 +8397,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc60_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc62_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -8020,7 +8430,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc61_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc61_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiLeftScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc63_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc63_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiLeftScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLeftScrollButtonTemplate*>(nullptr);
@@ -8033,28 +8443,28 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc61_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc63_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonBackground : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonBackgroundPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonBackgroundHighlighted : GLOBAL_NAME tuiColors.ButtonBackground)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc61_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc63_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc61_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc63_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc61_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc63_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc61_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc63_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -8062,15 +8472,15 @@ Closures
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLeftScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLeftScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLeftScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc61_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc61_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc61_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc63_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc63_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc63_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc61_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc63_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8080,7 +8490,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc61_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc63_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -8113,7 +8523,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc62_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc62_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiLeftScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc64_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc64_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiLeftScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiLeftScrollButtonTemplate*>(nullptr);
@@ -8126,28 +8536,28 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc62_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc64_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonTextPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonTextHighlighted : GLOBAL_NAME tuiColors.ButtonIcon)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc62_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc64_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc62_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc64_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc62_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc64_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc62_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc64_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -8155,15 +8565,15 @@ Closures
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLeftScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLeftScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiLeftScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc62_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc62_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc62_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc64_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc64_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc64_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc62_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc64_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8173,7 +8583,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc62_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc64_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -8206,7 +8616,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiProgressBarTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiProgressBarTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiProgressBarTemplate*>(nullptr);
@@ -8223,38 +8633,38 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTotalSize() == ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetPageSize()) ? static_cast<double>(1.0) : (static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_2)->GetPosition()) / static_cast<double>((::vl::__vwsn::This(__vwsn_bind_cache_3)->GetTotalSize() - ::vl::__vwsn::This(__vwsn_bind_cache_4)->GetPageSize()))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -8264,17 +8674,17 @@ Closures
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiProgressBarTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_3 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiProgressBarTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_4 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiProgressBarTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->PageSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_4_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4)->PageSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->PageSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_4_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4)->PageSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8284,7 +8694,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -8331,7 +8741,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc64_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc64_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiRightScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc66_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc66_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiRightScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiRightScrollButtonTemplate*>(nullptr);
@@ -8344,28 +8754,28 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc64_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc66_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonBackground : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonBackgroundPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonBackgroundHighlighted : GLOBAL_NAME tuiColors.ButtonBackground)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc64_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc66_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc64_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc66_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc64_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc66_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc64_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc66_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -8373,15 +8783,15 @@ Closures
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiRightScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiRightScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiRightScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc64_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc64_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc64_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc66_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc66_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc66_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc64_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc66_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8391,7 +8801,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc64_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc66_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -8424,7 +8834,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc65_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc65_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiRightScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc67_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc67_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiRightScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiRightScrollButtonTemplate*>(nullptr);
@@ -8437,28 +8847,28 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc65_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc67_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonTextPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonTextHighlighted : GLOBAL_NAME tuiColors.ButtonIcon)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc65_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc67_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc65_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc67_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc65_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc67_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc65_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc67_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -8466,15 +8876,15 @@ Closures
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiRightScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiRightScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiRightScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc65_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc65_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc65_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc67_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc67_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc67_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc65_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc67_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8484,7 +8894,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc65_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc67_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -8517,7 +8927,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc66_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc66_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiScrollViewTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc68_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc68_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiScrollViewTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiScrollViewTemplate*>(nullptr);
@@ -8528,37 +8938,37 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc66_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc68_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ControlBorderDisabled : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? GLOBAL_NAME tuiColors.ControlBorderFocused : GLOBAL_NAME tuiColors.ControlBorder));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc66_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc68_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc66_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc68_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc66_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc68_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiScrollViewTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiScrollViewTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc66_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc66_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc68_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc68_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc66_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc68_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8568,7 +8978,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc66_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc68_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -8594,7 +9004,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc67_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc67_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTopScrollButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc69_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc69_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTopScrollButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr);
@@ -8607,28 +9017,28 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc67_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc69_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonBackground : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonBackgroundPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonBackgroundHighlighted : GLOBAL_NAME tuiColors.ButtonBackground)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc67_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc69_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc67_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc69_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc67_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc69_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc67_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc69_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -8636,15 +9046,15 @@ Closures
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc67_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc67_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc67_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc69_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc69_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc69_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc67_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc69_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8654,7 +9064,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc67_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc69_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -8680,176 +9090,6 @@ Closures
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc68_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc68_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTopScrollButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr);
-		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc68_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonTextPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonTextHighlighted : GLOBAL_NAME tuiColors.ButtonIcon)));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc68_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc68_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc68_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc68_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc68_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc68_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc68_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc68_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc68_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_2_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
-				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr));
-			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc69_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc69_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiVScrollTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc69_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = (static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPageSize()) / static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTotalSize()));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc69_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc69_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc69_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PageSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc69_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc69_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc69_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc69_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PageSizeChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -8918,7 +9158,100 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc70_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc70_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiVScrollTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc70_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc70_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTopScrollButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc70_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ButtonTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() == ::vl::presentation::controls::ButtonState::Pressed) ? GLOBAL_NAME tuiColors.ButtonTextPressed : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() == ::vl::presentation::controls::ButtonState::Active) ? GLOBAL_NAME tuiColors.ButtonTextHighlighted : GLOBAL_NAME tuiColors.ButtonIcon)));
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc70_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc70_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc70_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc70_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc70_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc70_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc70_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc70_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc70_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiTopScrollButtonTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc71_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc71_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiVScrollTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr);
@@ -8929,37 +9262,37 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc70_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc71_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPosition()) / static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTotalSize()));
+		auto __vwsn_bind_activator_result_ = (static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPageSize()) / static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTotalSize()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc70_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc71_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc70_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc71_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc70_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc71_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc70_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc70_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PageSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc71_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc71_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc70_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc71_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8969,7 +9302,84 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc70_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc71_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PageSizeChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc72_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc72_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiVScrollTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc72_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = (static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPosition()) / static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTotalSize()));
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc72_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc72_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc72_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiVScrollTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc72_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc72_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc72_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc72_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -8995,20 +9405,20 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc71_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc71_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiVTrackerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc73_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc73_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiVTrackerTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc71_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc73_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = static_cast<double>(0.0);
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	bool __vwsnc71_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc73_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -9018,7 +9428,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc71_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc73_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -9028,7 +9438,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc71_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc73_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -9040,7 +9450,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc72_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc72_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiVTrackerTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc74_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc74_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiVTrackerTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiVTrackerTemplate*>(nullptr);
@@ -9051,37 +9461,37 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc72_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc74_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = (static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPosition()) / static_cast<double>(::vl::__vwsn::This(__vwsn_bind_cache_1)->GetTotalSize()));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc72_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc74_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc72_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc74_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc72_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc74_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiVTrackerTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiVTrackerTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc72_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc72_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc74_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->TotalSizeChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc74_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc72_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc74_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -9091,7 +9501,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc72_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc74_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -9117,7 +9527,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc73_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc73_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr);
@@ -9130,28 +9540,28 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc73_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelected() ? GLOBAL_NAME tuiColors.ItemBackgroundSelected : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled() && (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() != ::vl::presentation::controls::ButtonState::Normal)) ? GLOBAL_NAME tuiColors.ItemBackgroundHighlighted : GLOBAL_NAME tuiColors.ItemBackground));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc73_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc73_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc73_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc73_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -9159,15 +9569,15 @@ Closures
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc73_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc73_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc73_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc73_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -9177,7 +9587,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc73_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -9210,7 +9620,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc74_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc74_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr);
@@ -9219,30 +9629,30 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc74_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc74_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc74_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc74_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc74_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -9252,7 +9662,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc74_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -9271,7 +9681,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc77_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc77_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr);
@@ -9284,28 +9694,28 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc77_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.ItemTextDisabled : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSelected() ? GLOBAL_NAME tuiColors.ItemTextSelected : ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() != ::vl::presentation::controls::ButtonState::Normal) ? GLOBAL_NAME tuiColors.ItemTextHighlighted : GLOBAL_NAME tuiColors.ItemText)));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc77_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc77_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc77_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc77_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -9313,15 +9723,15 @@ Closures
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc77_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc77_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc77_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc77_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -9331,7 +9741,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc77_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -9364,26 +9774,30 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabHeaderButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr);
 		this->__vwsn_bind_cache_1 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr);
 		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_3 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr);
+		this->__vwsn_bind_cache_4 = static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_4_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused(); } catch(...){ return false; } }(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() != ::vl::presentation::controls::ButtonState::Normal); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused(); } catch(...){ return false; } }(); __vwsn_temp__.underline = ([&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_3)->GetFocused(); } catch(...){ return false; } }() || (::vl::__vwsn::This(__vwsn_bind_cache_4)->GetState() != ::vl::presentation::controls::ButtonState::Normal)); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		if (static_cast<bool>(__vwsn_bind_handler_1_0))
 		{
@@ -9391,37 +9805,58 @@ Closures
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 		}
 		(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::presentation::controls::GuiTabPage*>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetContext()))->GetOwnerTab(); } catch(...){ return static_cast<::vl::presentation::controls::GuiTab*>(nullptr); } }());
-		(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+		(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		if (static_cast<bool>(__vwsn_bind_handler_3_0))
+		{
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3)->FocusedChanged, __vwsn_bind_handler_3_0);
+			(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+		}
+		(__vwsn_bind_cache_3 = [&](){ try{ return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::presentation::controls::GuiTabPage*>(::vl::__vwsn::This(__vwsn_bind_cache_2)->GetContext()))->GetOwnerTab(); } catch(...){ return static_cast<::vl::presentation::controls::GuiTab*>(nullptr); } }());
+		(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	void __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_4 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::presentation::controls::GuiTabPage*>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetContext()))->GetOwnerTab(); } catch(...){ return static_cast<::vl::presentation::controls::GuiTab*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ContextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_3 = [&](){ try{ return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::presentation::controls::GuiTabPage*>(::vl::__vwsn::This(__vwsn_bind_cache_2)->GetContext()))->GetOwnerTab(); } catch(...){ return static_cast<::vl::presentation::controls::GuiTab*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ContextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ContextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_4_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -9431,7 +9866,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -9448,137 +9883,29 @@ Closures
 			}
 			if (static_cast<bool>(__vwsn_bind_handler_2_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ContextChanged, __vwsn_bind_handler_2_0);
 				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_3_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3)->FocusedChanged, __vwsn_bind_handler_3_0);
+				(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_4_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_4)->StateChanged, __vwsn_bind_handler_4_0);
+				(__vwsn_bind_handler_4_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr));
 			(__vwsn_bind_cache_1 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr));
 			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_3 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr));
+			(__vwsn_bind_cache_4 = static_cast<::tuiskin::TuiTabHeaderButtonTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc77_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc77_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc77_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc77_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc77_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->CurrentTabPage; } catch(...){ return static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc77_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc77_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc77_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetAlt();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->CurrentTabPage; } catch(...){ return static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->AltChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc78_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->AltChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_4_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -9589,7 +9916,7 @@ Closures
 	__vwsnc79_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc79_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -9597,7 +9924,7 @@ Closures
 
 	void __vwsnc79_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelectedPage() == __vwsnthis_0->CurrentTabPage);
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -9611,8 +9938,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::__vwsn::This(__vwsnthis_0->CurrentTabPage)->GetOwnerTab(); } catch(...){ return static_cast<::vl::presentation::controls::GuiTab*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedPageChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc79_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->CurrentTabPage; } catch(...){ return static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc79_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -9635,10 +9962,10 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedPageChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -9652,15 +9979,17 @@ Closures
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr);
 		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc7_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString::Unmanaged(L"TuiFont"); __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() || (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() != ::vl::presentation::controls::ButtonState::Normal)); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -9674,6 +10003,11 @@ Closures
 		this->__vwsn_bind_activator_();
 	}
 
+	void __vwsnc7_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
 	bool __vwsnc7_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
@@ -9681,8 +10015,10 @@ Closures
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr); } }());
 			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc7_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc7_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc7_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc7_TuiSkin_tuiskin_TuiCheckBoxTemplateConstructor___vwsn_tuiskin_TuiCheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -9710,13 +10046,20 @@ Closures
 			}
 			if (static_cast<bool>(__vwsn_bind_handler_1_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
 				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr));
 			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiCheckBoxTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -9724,39 +10067,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc80_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc80_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc80_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc80_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTabTemplate*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc80_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc80_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled() ? GLOBAL_NAME tuiColors.ItemBackgroundSelected : GLOBAL_NAME tuiColors.ItemBackground);
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetAlt();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc80_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc80_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc80_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc80_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTabTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc80_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->CurrentTabPage; } catch(...){ return static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->AltChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc80_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc80_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc80_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -9766,7 +10109,129 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc80_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc80_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->AltChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc81_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc81_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabHeaderTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc81_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelectedPage() == __vwsnthis_0->CurrentTabPage);
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc81_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc81_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::__vwsn::This(__vwsnthis_0->CurrentTabPage)->GetOwnerTab(); } catch(...){ return static_cast<::vl::presentation::controls::GuiTab*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedPageChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc81_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc81_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc81_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedPageChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTabTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled() ? GLOBAL_NAME tuiColors.ItemBackgroundSelected : GLOBAL_NAME tuiColors.ItemBackground);
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTabTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -9785,7 +10250,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc81_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc81_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc83_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc83_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::compositions::GuiRepeatFlowComposition*>(nullptr);
@@ -9796,37 +10261,37 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc81_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc83_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = ((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetCachedBounds().y2 - ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetCachedBounds().y1) - static_cast<::vl::vint>(1)); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc81_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc83_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc81_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc83_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc81_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc83_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->header; } catch(...){ return static_cast<::vl::presentation::compositions::GuiRepeatFlowComposition*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->header; } catch(...){ return static_cast<::vl::presentation::compositions::GuiRepeatFlowComposition*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->CachedBoundsChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc81_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->CachedBoundsChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc81_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->CachedBoundsChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc83_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->CachedBoundsChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc83_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc81_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc83_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -9836,7 +10301,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc81_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc83_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -9862,7 +10327,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc84_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc84_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiTabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTabTemplate*>(nullptr);
@@ -9871,30 +10336,30 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc84_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTabPages());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc84_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc84_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiTabTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TabPagesChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TabPagesChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc84_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc84_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -9904,7 +10369,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc84_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -9915,144 +10380,6 @@ Closures
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiTabTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc83_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc83_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc83_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled() && (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal)) ? GLOBAL_NAME tuiColors.MenuBackgroundHighlighted : GLOBAL_NAME tuiColors.MenuBackground);
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc83_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc83_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc83_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc83_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc83_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc83_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc83_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc84_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc84_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc84_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc84_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc84_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc84_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc84_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc84_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -10074,7 +10401,7 @@ Closures
 
 	void __vwsnc85_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.MenuTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal) ? GLOBAL_NAME tuiColors.MenuTextHighlighted : GLOBAL_NAME tuiColors.MenuText));
+		auto __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled() && (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal)) ? GLOBAL_NAME tuiColors.MenuBackgroundHighlighted : GLOBAL_NAME tuiColors.MenuBackground);
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -10142,32 +10469,18 @@ Closures
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr);
-		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc86_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont().fontFamily; __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() != ::vl::presentation::controls::ButtonState::Normal); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc86_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc86_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc86_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -10178,11 +10491,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc86_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc86_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc86_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc86_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -10205,25 +10514,11 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_2_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
-				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr));
-			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -10231,48 +10526,48 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc87_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc87_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc87_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc87_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc87_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc87_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled() && (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal)) ? GLOBAL_NAME tuiColors.MenuBackgroundHighlighted : GLOBAL_NAME tuiColors.MenuBackground);
+		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.MenuTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal) ? GLOBAL_NAME tuiColors.MenuTextHighlighted : GLOBAL_NAME tuiColors.MenuText));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc87_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc87_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc87_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc87_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc87_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc87_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc87_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc87_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc87_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc87_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc87_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc87_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -10282,7 +10577,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc87_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc87_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -10297,8 +10592,8 @@ Closures
 				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
 				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
@@ -10308,39 +10603,66 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc88_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc88_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiMenuBarButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_3 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc88_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelected() ? ::vl::WString::Unmanaged(L"✓") : ::vl::WString::Unmanaged(L""));
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont().fontFamily; __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetFocused() || (::vl::__vwsn::This(__vwsn_bind_cache_3)->GetState() != ::vl::presentation::controls::ButtonState::Normal)); return __vwsn_temp__; }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc88_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc88_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	void __vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc88_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_3 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc88_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -10350,18 +10672,39 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc88_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->FocusedChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_3_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3)->StateChanged, __vwsn_bind_handler_3_0);
+				(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_3 = static_cast<::tuiskin::TuiMenuBarButtonTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -10382,7 +10725,7 @@ Closures
 
 	void __vwsnc89_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.MenuTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal) ? GLOBAL_NAME tuiColors.MenuTextHighlighted : GLOBAL_NAME tuiColors.MenuText));
+		auto __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled() && (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal)) ? GLOBAL_NAME tuiColors.MenuBackgroundHighlighted : GLOBAL_NAME tuiColors.MenuBackground);
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -10518,7 +10861,7 @@ Closures
 
 	void __vwsnc90_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelected() ? ::vl::WString::Unmanaged(L"✓") : ::vl::WString::Unmanaged(L""));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -10533,7 +10876,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc90_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc90_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -10556,7 +10899,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectedChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
@@ -10649,32 +10992,18 @@ Closures
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
-		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc92_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont().fontFamily; __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetState() != ::vl::presentation::controls::ButtonState::Normal); return __vwsn_temp__; }();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc92_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc92_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc92_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -10685,11 +11014,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc92_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc92_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc92_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc92_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -10712,25 +11037,11 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_2_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->StateChanged, __vwsn_bind_handler_2_0);
-				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
-			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -10742,18 +11053,25 @@ Closures
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc93_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetShortcutText();
+		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.MenuTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal) ? GLOBAL_NAME tuiColors.MenuTextHighlighted : GLOBAL_NAME tuiColors.MenuText));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc93_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc93_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -10764,7 +11082,9 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ShortcutTextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc93_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc93_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc93_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -10781,76 +11101,6 @@ Closures
 	}
 
 	bool __vwsnc93_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ShortcutTextChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.MenuTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal) ? GLOBAL_NAME tuiColors.MenuTextHighlighted : GLOBAL_NAME tuiColors.MenuText));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -10876,6 +11126,115 @@ Closures
 
 	//-------------------------------------------------------------------
 
+	__vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_3 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont().fontFamily; __vwsn_temp__.size = static_cast<::vl::vint>(1); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused(); __vwsn_temp__.underline = (::vl::__vwsn::This(__vwsn_bind_cache_2)->GetFocused() || (::vl::__vwsn::This(__vwsn_bind_cache_3)->GetState() != ::vl::presentation::controls::ButtonState::Normal)); return __vwsn_temp__; }();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_3 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc94_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_2_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2)->FocusedChanged, __vwsn_bind_handler_2_0);
+				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_3_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3)->StateChanged, __vwsn_bind_handler_3_0);
+				(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_2 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_3 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
 	__vwsnc95_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc95_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -10887,7 +11246,7 @@ Closures
 
 	void __vwsnc95_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSubMenuExisting() ? ::vl::WString::Unmanaged(L"▶") : ::vl::WString::Unmanaged(L""));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetShortcutText();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -10902,7 +11261,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SubMenuExistingChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc95_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ShortcutTextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc95_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -10925,7 +11284,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SubMenuExistingChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ShortcutTextChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
@@ -11014,39 +11373,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc97_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc97_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc97_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc97_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc97_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc97_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::elements::TuiLineStyle::Double : ::vl::presentation::elements::TuiLineStyle::Thick);
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSubMenuExisting() ? ::vl::WString::Unmanaged(L"▶") : ::vl::WString::Unmanaged(L""));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc97_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc97_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc97_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc97_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc97_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SubMenuExistingChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc97_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc97_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc97_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -11056,17 +11415,17 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc97_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc97_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SizeBoxChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SubMenuExistingChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -11075,48 +11434,48 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc98_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc98_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiCustomFrameWindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc98_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc98_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::tuiskin::TuiMenuItemButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc98_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc98_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetBorder() || ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetSizeBox());
+		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? GLOBAL_NAME tuiColors.MenuTextDisabled : ((::vl::__vwsn::This(__vwsn_bind_cache_1)->GetState() != ::vl::presentation::controls::ButtonState::Normal) ? GLOBAL_NAME tuiColors.MenuTextHighlighted : GLOBAL_NAME tuiColors.MenuText));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc98_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc98_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc98_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc98_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc98_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc98_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->BorderChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc98_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SizeBoxChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc98_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc98_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc98_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc98_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc98_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -11126,23 +11485,23 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc98_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc98_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->BorderChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			if (static_cast<bool>(__vwsn_bind_handler_1_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->SizeBoxChanged, __vwsn_bind_handler_1_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->StateChanged, __vwsn_bind_handler_1_0);
 				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiCustomFrameWindowTemplate*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::tuiskin::TuiMenuItemButtonTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
@@ -11163,7 +11522,7 @@ Closures
 
 	void __vwsnc99_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::INativeWindowListener::HitTestResult::BorderLeftTop : ::vl::presentation::INativeWindowListener::HitTestResult::NoDecision);
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSizeBox() ? ::vl::presentation::elements::TuiLineStyle::Double : ::vl::presentation::elements::TuiLineStyle::Thick);
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -11308,13 +11667,13 @@ namespace tuiskin
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc53_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf110_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc56_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf113_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc54_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf111_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc57_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf114_TuiSkin_tuiskin_TuiBottomScrollButtonTemplateConstructor___vwsn_tuiskin_TuiBottomScrollButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -11581,6 +11940,14 @@ Class (::tuiskin::TuiComboBoxTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
 		}
+		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
+		{
+			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(2); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->container)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
 		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
@@ -11588,74 +11955,49 @@ Class (::tuiskin::TuiComboBoxTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
-		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::TuiBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::TuiBorderElement>()));
+		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetEllipse(true);
+		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
 		}
 		{
-			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
-		}
-		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
-		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
-		{
-			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(2); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->container)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		(this->__vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetEllipse(true);
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_4));
-		}
-		{
-			::vl::__vwsn::This(this->container)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
+			::vl::__vwsn::This(this->container)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
 		{
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->container));
 		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = (- static_cast<::vl::vint>(1)); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(this->__vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_4));
+		}
 		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = (- static_cast<::vl::vint>(1)); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
-		(this->__vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
+		(this->__vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetText(::vl::WString::Unmanaged(L"▼"));
+		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_6));
 		}
-		(this->__vwsn_precompile_7 = new ::vl::presentation::compositions::GuiBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_5));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		(this->__vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_8.Obj())->SetText(::vl::WString::Unmanaged(L"▼"));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_8));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_7));
-		}
-		{
-			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_5));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBackground);
+			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc19_TuiSkin_tuiskin_TuiComboBoxTemplateConstructor___vwsn_tuiskin_TuiComboBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
@@ -11702,13 +12044,11 @@ Class (::tuiskin::TuiComboBoxTemplateConstructor)
 		, container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::TuiBorderElement>())
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
+		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
 		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_6(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
-		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_8(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
+		, __vwsn_precompile_6(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 	{
 	}
 
@@ -11725,6 +12065,48 @@ Class (::tuiskin::TuiComboBoxTemplate)
 	}
 
 	TuiComboBoxTemplate::~TuiComboBoxTemplate()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
+	}
+
+/***********************************************************************
+Class (::tuiskin::TuiContentMenuTemplateConstructor)
+***********************************************************************/
+
+	void TuiContentMenuTemplateConstructor::__vwsn_tuiskin_TuiContentMenuTemplate_Initialize(::tuiskin::TuiContentMenuTemplate* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		{
+			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
+		{
+			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBackground);
+		}
+	}
+
+	TuiContentMenuTemplateConstructor::TuiContentMenuTemplateConstructor()
+		: self(static_cast<::tuiskin::TuiContentMenuTemplate*>(nullptr))
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+	{
+	}
+
+/***********************************************************************
+Class (::tuiskin::TuiContentMenuTemplate)
+***********************************************************************/
+
+	TuiContentMenuTemplate::TuiContentMenuTemplate()
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"tuiskin::TuiContentMenuTemplate"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_tuiskin_TuiContentMenuTemplate_Initialize(this);
+	}
+
+	TuiContentMenuTemplate::~TuiContentMenuTemplate()
 	{
 		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
 	}
@@ -11947,16 +12329,6 @@ Class (::tuiskin::TuiCustomFrameWindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBorder);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc97_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf170_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc98_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf171_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc99_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf172_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
@@ -12002,11 +12374,21 @@ Class (::tuiskin::TuiCustomFrameWindowTemplateConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf181_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf182_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBackground);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc108_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf181_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc110_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf183_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -12016,8 +12398,8 @@ Class (::tuiskin::TuiCustomFrameWindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_17.Obj())->SetColor(GLOBAL_NAME tuiColors.ButtonText);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc109_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf182_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc111_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf184_TuiSkin_tuiskin_TuiCustomFrameWindowTemplateConstructor___vwsn_tuiskin_TuiCustomFrameWindowTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -12092,8 +12474,8 @@ Class (::tuiskin::TuiDateButtonTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->container));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc39_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf93_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc42_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf96_TuiSkin_tuiskin_TuiDateButtonTemplateConstructor___vwsn_tuiskin_TuiDateButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -12138,34 +12520,19 @@ Class (::tuiskin::TuiDatePickerTemplateConstructor)
 		(this->look = new ::vl::presentation::templates::GuiCommonDatePickerLook(GLOBAL_NAME tuiColors.ControlBackground, GLOBAL_NAME tuiColors.ControlText, GLOBAL_NAME tuiColors.LabelText));
 		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"look"), ::vl::__vwsn::Box(this->look));
 		{
-			::vl::__vwsn::This(this->look)->SetDateTextListTemplate(vl::Func(::vl_workflow_global::__vwsnf94_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->look)->SetDateTextListTemplate(vl::Func(::vl_workflow_global::__vwsnf97_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetDateButtonTemplate(vl::Func(::vl_workflow_global::__vwsnf95_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->look)->SetDateButtonTemplate(vl::Func(::vl_workflow_global::__vwsnf98_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetDateComboBoxTemplate(vl::Func(::vl_workflow_global::__vwsnf96_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->look)->SetDateComboBoxTemplate(vl::Func(::vl_workflow_global::__vwsnf99_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->look)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->look));
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc40_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf97_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc41_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf98_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc42_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf99_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc43_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
@@ -12175,6 +12542,21 @@ Class (::tuiskin::TuiDatePickerTemplateConstructor)
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc44_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf101_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc45_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf102_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc46_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf103_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc47_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf104_TuiSkin_tuiskin_TuiDatePickerTemplateConstructor___vwsn_tuiskin_TuiDatePickerTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -12537,16 +12919,16 @@ Class (::tuiskin::TuiGroupBoxTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBackground);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc45_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf102_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc48_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf105_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetColor(GLOBAL_NAME tuiColors.LabelText);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc46_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf103_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc49_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf106_TuiSkin_tuiskin_TuiGroupBoxTemplateConstructor___vwsn_tuiskin_TuiGroupBoxTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -12626,7 +13008,7 @@ Class (::tuiskin::TuiHScrollTemplateConstructor)
 			::vl::__vwsn::This(this->buttonDecrease)->SetAutoFocus(false);
 		}
 		{
-			::vl::__vwsn::This(this->buttonDecrease)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf112_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->buttonDecrease)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf115_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonDecrease)->GetBoundsComposition()));
@@ -12656,7 +13038,7 @@ Class (::tuiskin::TuiHScrollTemplateConstructor)
 			::vl::__vwsn::This(this->buttonIncrease)->SetAutoFocus(false);
 		}
 		{
-			::vl::__vwsn::This(this->buttonIncrease)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf113_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->buttonIncrease)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf116_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonIncrease)->GetBoundsComposition()));
@@ -12687,7 +13069,7 @@ Class (::tuiskin::TuiHScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAutoFocus(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf114_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf117_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition()));
@@ -12702,13 +13084,13 @@ Class (::tuiskin::TuiHScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBorderDisabled);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc55_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf115_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc58_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf118_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc56_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf116_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc59_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf119_TuiSkin_tuiskin_TuiHScrollTemplateConstructor___vwsn_tuiskin_TuiHScrollTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -12801,7 +13183,7 @@ Class (::tuiskin::TuiHTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAutoFocus(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf117_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf120_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition()));
@@ -12816,13 +13198,13 @@ Class (::tuiskin::TuiHTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBorderDisabled);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc57_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf118_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc60_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf121_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc58_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf119_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc61_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf122_TuiSkin_tuiskin_TuiHTrackerTemplateConstructor___vwsn_tuiskin_TuiHTrackerTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -12876,31 +13258,9 @@ Class (::tuiskin::TuiHandleScrollButtonTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
 		}
-		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetText(::vl::WString::Unmanaged(L"█"));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
-		}
-		{
-			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc59_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf120_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc60_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf121_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc62_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf123_TuiSkin_tuiskin_TuiHandleScrollButtonTemplateConstructor___vwsn_tuiskin_TuiHandleScrollButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -12908,8 +13268,6 @@ Class (::tuiskin::TuiHandleScrollButtonTemplateConstructor)
 	TuiHandleScrollButtonTemplateConstructor::TuiHandleScrollButtonTemplateConstructor()
 		: self(static_cast<::tuiskin::TuiHandleScrollButtonTemplate*>(nullptr))
 		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
-		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 	{
 	}
 
@@ -12944,6 +13302,17 @@ Class (::tuiskin::TuiItemBackgroundTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
 		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
+		}
+		{
+			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
 		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
@@ -12956,16 +13325,24 @@ Class (::tuiskin::TuiItemBackgroundTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->container));
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ItemBackground);
+		}
+		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc27_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf66_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf67_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->container));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc28_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf67_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc29_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf68_TuiSkin_tuiskin_TuiItemBackgroundTemplateConstructor___vwsn_tuiskin_TuiItemBackgroundTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -12980,6 +13357,8 @@ Class (::tuiskin::TuiItemBackgroundTemplateConstructor)
 		: self(static_cast<::tuiskin::TuiItemBackgroundTemplate*>(nullptr))
 		, container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
 	{
 	}
 
@@ -13018,18 +13397,18 @@ Class (::tuiskin::TuiLabelTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc47_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf104_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc50_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf107_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc48_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf105_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc51_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf108_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc49_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf106_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc52_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf109_TuiSkin_tuiskin_TuiLabelTemplateConstructor___vwsn_tuiskin_TuiLabelTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -13092,13 +13471,13 @@ Class (::tuiskin::TuiLeftScrollButtonTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc61_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf122_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc63_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf124_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc62_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf123_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc64_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf125_TuiSkin_tuiskin_TuiLeftScrollButtonTemplateConstructor___vwsn_tuiskin_TuiLeftScrollButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -13136,7 +13515,7 @@ Class (::tuiskin::TuiListViewColumnHeaderTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(vl::Func(::vl_workflow_global::__vwsnf68_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(vl::Func(::vl_workflow_global::__vwsnf69_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -13147,9 +13526,6 @@ Class (::tuiskin::TuiListViewColumnHeaderTemplateConstructor)
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
 		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
-		{
-			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(2); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
-		}
 		{
 			::vl::__vwsn::This(this->container)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
@@ -13165,7 +13541,7 @@ Class (::tuiskin::TuiListViewColumnHeaderTemplateConstructor)
 		}
 		(this->__vwsn_precompile_2 = new ::vl::presentation::compositions::GuiBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = (- static_cast<::vl::vint>(1)); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = (- static_cast<::vl::vint>(1)); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -13179,7 +13555,7 @@ Class (::tuiskin::TuiListViewColumnHeaderTemplateConstructor)
 		}
 		(this->__vwsn_precompile_4 = new ::vl::presentation::compositions::GuiBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = (- static_cast<::vl::vint>(1)); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = (- static_cast<::vl::vint>(1)); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -13196,18 +13572,13 @@ Class (::tuiskin::TuiListViewColumnHeaderTemplateConstructor)
 			::vl::__vwsn::This(this->buttonArrow)->SetAutoFocus(false);
 		}
 		{
-			::vl::__vwsn::This(this->buttonArrow)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf69_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->buttonArrow)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf70_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonArrow)->GetBoundsComposition()));
 		}
 		{
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_4));
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc29_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf70_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc30_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
@@ -13237,6 +13608,21 @@ Class (::tuiskin::TuiListViewColumnHeaderTemplateConstructor)
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc35_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf76_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc36_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf77_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc37_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf78_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc38_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf79_TuiSkin_tuiskin_TuiListViewColumnHeaderTemplateConstructor___vwsn_tuiskin_TuiListViewColumnHeaderTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -13285,10 +13671,10 @@ Class (::tuiskin::TuiListViewTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetColumnHeaderTemplate(vl::Func(::vl_workflow_global::__vwsnf77_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->self)->SetColumnHeaderTemplate(vl::Func(::vl_workflow_global::__vwsnf80_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(vl::Func(::vl_workflow_global::__vwsnf78_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(vl::Func(::vl_workflow_global::__vwsnf81_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -13311,10 +13697,10 @@ Class (::tuiskin::TuiListViewTemplateConstructor)
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint>(1)));
 		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"look"), ::vl::__vwsn::Box(this->look));
 		{
-			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf79_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf82_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetHScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf80_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->look)->SetHScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf83_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->look)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
@@ -13329,8 +13715,8 @@ Class (::tuiskin::TuiListViewTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBackground);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc36_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf81_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc39_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf84_TuiSkin_tuiskin_TuiListViewTemplateConstructor___vwsn_tuiskin_TuiListViewTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -13387,7 +13773,7 @@ Class (::tuiskin::TuiMenuBarButtonTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(vl::Func(::vl_workflow_global::__vwsnf154_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(vl::Func(::vl_workflow_global::__vwsnf156_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -13411,16 +13797,6 @@ Class (::tuiskin::TuiMenuBarButtonTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc83_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf155_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc84_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf156_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc85_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf157_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
@@ -13428,6 +13804,16 @@ Class (::tuiskin::TuiMenuBarButtonTemplateConstructor)
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc86_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf158_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc87_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf159_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc88_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf160_TuiSkin_tuiskin_TuiMenuBarButtonTemplateConstructor___vwsn_tuiskin_TuiMenuBarButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -13465,7 +13851,7 @@ Class (::tuiskin::TuiMenuItemButtonTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(vl::Func(::vl_workflow_global::__vwsnf159_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->self)->SetSubMenuTemplate(vl::Func(::vl_workflow_global::__vwsnf161_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -13566,16 +13952,6 @@ Class (::tuiskin::TuiMenuItemButtonTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc87_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf160_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc88_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf161_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc89_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf162_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
@@ -13613,6 +13989,16 @@ Class (::tuiskin::TuiMenuItemButtonTemplateConstructor)
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc96_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf169_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc97_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf170_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc98_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf171_TuiSkin_tuiskin_TuiMenuItemButtonTemplateConstructor___vwsn_tuiskin_TuiMenuItemButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -13739,8 +14125,8 @@ Class (::tuiskin::TuiProgressBarTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBorderFocused);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc63_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf124_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc65_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf126_TuiSkin_tuiskin_TuiProgressBarTemplateConstructor___vwsn_tuiskin_TuiProgressBarTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -13927,13 +14313,13 @@ Class (::tuiskin::TuiRightScrollButtonTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc64_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf125_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc66_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf127_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc65_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf126_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc67_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf128_TuiSkin_tuiskin_TuiRightScrollButtonTemplateConstructor___vwsn_tuiskin_TuiRightScrollButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -13991,10 +14377,10 @@ Class (::tuiskin::TuiScrollViewTemplateConstructor)
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint>(1)));
 		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"look"), ::vl::__vwsn::Box(this->look));
 		{
-			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf127_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf129_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetHScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf128_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->look)->SetHScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf130_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->look)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
@@ -14009,8 +14395,8 @@ Class (::tuiskin::TuiScrollViewTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBackground);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc66_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf129_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc68_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf131_TuiSkin_tuiskin_TuiScrollViewTemplateConstructor___vwsn_tuiskin_TuiScrollViewTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -14060,33 +14446,52 @@ Class (::tuiskin::TuiShortcutKeyTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
-		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
+		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
 		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiBoundsComposition());
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc50_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf107_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
+		}
+		{
+			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ShortcutKeyBackground);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc53_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf110_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc51_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf108_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc54_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf111_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc52_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf109_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc55_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf112_TuiSkin_tuiskin_TuiShortcutKeyTemplateConstructor___vwsn_tuiskin_TuiShortcutKeyTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetDefaultTextColor(GLOBAL_NAME tuiColors.ControlText);
+			::vl::__vwsn::This(this->self)->SetDefaultTextColor(GLOBAL_NAME tuiColors.ShortcutKeyText);
 		}
 	}
 
 	TuiShortcutKeyTemplateConstructor::TuiShortcutKeyTemplateConstructor()
 		: self(static_cast<::tuiskin::TuiShortcutKeyTemplate*>(nullptr))
-		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
+		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
 	{
 	}
 
@@ -14196,16 +14601,6 @@ Class (::tuiskin::TuiTabHeaderButtonTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc73_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf140_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc74_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf141_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc75_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf142_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
@@ -14213,6 +14608,16 @@ Class (::tuiskin::TuiTabHeaderButtonTemplateConstructor)
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc76_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf143_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc77_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf144_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf145_TuiSkin_tuiskin_TuiTabHeaderButtonTemplateConstructor___vwsn_tuiskin_TuiTabHeaderButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -14267,23 +14672,10 @@ Class (::tuiskin::TuiTabHeaderTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAutoFocus(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf144_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf146_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition()));
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc77_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf145_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetContext(::vl::__vwsn::Box(this->CurrentTabPage));
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc78_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf146_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc79_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
@@ -14291,7 +14683,20 @@ Class (::tuiskin::TuiTabHeaderTemplateConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf148_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(this));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetContext(::vl::__vwsn::Box(this->CurrentTabPage));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc80_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf148_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc81_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf149_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf150_TuiSkin_tuiskin_TuiTabHeaderTemplateConstructor___vwsn_tuiskin_TuiTabHeaderTemplate_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_0)->Clicked, __vwsn_event_handler_);
 		}
 	}
@@ -14384,7 +14789,7 @@ Class (::tuiskin::TuiTabTemplateConstructor)
 		(this->header = new ::vl::presentation::compositions::GuiRepeatFlowComposition());
 		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"header"), ::vl::__vwsn::Box(this->header));
 		{
-			::vl::__vwsn::This(this->header)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf149_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->header)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf151_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->header)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(2); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(2); __vwsn_temp__.bottom = (- static_cast<::vl::vint>(1)); return __vwsn_temp__; }());
@@ -14399,22 +14804,22 @@ Class (::tuiskin::TuiTabTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBackground);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc80_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf150_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc81_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf151_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc82_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf152_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf153_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc83_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf153_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc84_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf154_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf155_TuiSkin_tuiskin_TuiTabTemplateConstructor___vwsn_tuiskin_TuiTabTemplate_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->header)->ItemInserted, __vwsn_event_handler_);
 		}
 		{
@@ -14457,13 +14862,13 @@ Class (::tuiskin::TuiTextListTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetRadioBulletTemplate(vl::Func(::vl_workflow_global::__vwsnf82_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->self)->SetRadioBulletTemplate(vl::Func(::vl_workflow_global::__vwsnf85_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetCheckBulletTemplate(vl::Func(::vl_workflow_global::__vwsnf83_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->self)->SetCheckBulletTemplate(vl::Func(::vl_workflow_global::__vwsnf86_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(vl::Func(::vl_workflow_global::__vwsnf84_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(vl::Func(::vl_workflow_global::__vwsnf87_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -14486,10 +14891,10 @@ Class (::tuiskin::TuiTextListTemplateConstructor)
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint>(1)));
 		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"look"), ::vl::__vwsn::Box(this->look));
 		{
-			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf85_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf88_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetHScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf86_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->look)->SetHScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf89_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->look)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
@@ -14504,8 +14909,8 @@ Class (::tuiskin::TuiTextListTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBackground);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc37_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf87_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc40_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf90_TuiSkin_tuiskin_TuiTextListTemplateConstructor___vwsn_tuiskin_TuiTextListTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -14677,6 +15082,11 @@ Class (::tuiskin::TuiThemeConstructor)
 Class (::tuiskin::TuiTheme)
 ***********************************************************************/
 
+	::vl::Ptr<::vl::presentation::DocumentModel> TuiTheme::CreateBaselineDocument()
+	{
+		return GLOBAL_NAME CreateBaselineDocument();
+	}
+
 	::tuiskin::ColorPackage TuiTheme::GetColorPackage()
 	{
 		return GLOBAL_NAME tuiColors;
@@ -14827,24 +15237,10 @@ Class (::tuiskin::TuiTooltipTemplateConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
 		}
-		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::TuiBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::TuiBorderElement>()));
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
-		}
-		{
-			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
-		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
 		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
-			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->container)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -14856,9 +15252,6 @@ Class (::tuiskin::TuiTooltipTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBackground);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBorder);
-		}
-		{
 			::vl::__vwsn::This(this->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->container));
 		}
 	}
@@ -14867,8 +15260,6 @@ Class (::tuiskin::TuiTooltipTemplateConstructor)
 		: self(static_cast<::tuiskin::TuiTooltipTemplate*>(nullptr))
 		, container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
-		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::TuiBorderElement>())
 	{
 	}
 
@@ -14921,13 +15312,13 @@ Class (::tuiskin::TuiTopScrollButtonTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc67_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf130_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc69_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf132_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc68_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf131_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc70_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf133_TuiSkin_tuiskin_TuiTopScrollButtonTemplateConstructor___vwsn_tuiskin_TuiTopScrollButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -14965,10 +15356,10 @@ Class (::tuiskin::TuiTreeViewTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetExpandingDecoratorTemplate(vl::Func(::vl_workflow_global::__vwsnf88_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->self)->SetExpandingDecoratorTemplate(vl::Func(::vl_workflow_global::__vwsnf91_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(vl::Func(::vl_workflow_global::__vwsnf89_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->self)->SetBackgroundTemplate(vl::Func(::vl_workflow_global::__vwsnf92_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -14991,10 +15382,10 @@ Class (::tuiskin::TuiTreeViewTemplateConstructor)
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint>(1)));
 		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"look"), ::vl::__vwsn::Box(this->look));
 		{
-			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf90_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf93_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->look)->SetHScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf91_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->look)->SetHScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf94_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->look)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
@@ -15009,8 +15400,8 @@ Class (::tuiskin::TuiTreeViewTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBackground);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc38_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf92_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc41_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf95_TuiSkin_tuiskin_TuiTreeViewTemplateConstructor___vwsn_tuiskin_TuiTreeViewTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -15097,7 +15488,7 @@ Class (::tuiskin::TuiVScrollTemplateConstructor)
 			::vl::__vwsn::This(this->buttonDecrease)->SetAutoFocus(false);
 		}
 		{
-			::vl::__vwsn::This(this->buttonDecrease)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf132_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->buttonDecrease)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf134_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonDecrease)->GetBoundsComposition()));
@@ -15127,7 +15518,7 @@ Class (::tuiskin::TuiVScrollTemplateConstructor)
 			::vl::__vwsn::This(this->buttonIncrease)->SetAutoFocus(false);
 		}
 		{
-			::vl::__vwsn::This(this->buttonIncrease)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf133_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->buttonIncrease)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf135_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonIncrease)->GetBoundsComposition()));
@@ -15158,7 +15549,7 @@ Class (::tuiskin::TuiVScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAutoFocus(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf134_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf136_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition()));
@@ -15173,13 +15564,13 @@ Class (::tuiskin::TuiVScrollTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBorderDisabled);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc69_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf135_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc71_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf137_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc70_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf136_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc72_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf138_TuiSkin_tuiskin_TuiVScrollTemplateConstructor___vwsn_tuiskin_TuiVScrollTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -15272,7 +15663,7 @@ Class (::tuiskin::TuiVTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAutoFocus(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf137_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf139_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->handle)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition()));
@@ -15287,13 +15678,13 @@ Class (::tuiskin::TuiVTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME tuiColors.ControlBorderDisabled);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc71_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf138_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc73_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf140_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc72_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf139_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc74_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf141_TuiSkin_tuiskin_TuiVTrackerTemplateConstructor___vwsn_tuiskin_TuiVTrackerTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -15364,9 +15755,9 @@ namespace vl
 			class TuiSkinResourceReader
 			{
 			public:
-				static const vint parserBufferLength = 1166; // 2907 bytes before compressing
+				static const vint parserBufferLength = 1173; // 2950 bytes before compressing
 				static const vint parserBufferBlock = 1024;
-				static const vint parserBufferRemain = 142;
+				static const vint parserBufferRemain = 149;
 				static const vint parserBufferRows = 2;
 				static const char* parserBuffer[2];
 
@@ -15377,8 +15768,8 @@ namespace vl
 			};
 
 			const char* TuiSkinResourceReader::parserBuffer[] = {
-				"\x5B\x0B\x00\x00\x86\x04\x00\x00\x4A\x00\x01\x82\x80\x00\x81\x80\x1E\x29\x65\x73\x2F\x35\x32\x3B\x31\x33\x26\x65\x74\x21\x24\x31\x32\x88\x10\x27\x61\x6D\x25\x3D\x12\x12\x10\x10\x2B\x65\x72\x33\x29\x3F\x36\x34\x8F\x18\x2E\x30\x22\x1E\x1C\x1C\x21\x32\x38\x65\x6E\x24\x31\x93\x31\x35\x85\x17\x2C\xAF\x08\x8A\x8C\x86\x84\x88\x89\x14\x92\xBE\x05\x03\x82\x80\x03\xA2\x01\xC7\x81\x94\x25\x30\x3C\x3B\x07\x48\x80\x10\xA1\x83\x24\x35\x31\x39\x73\x18\x9A\x88\x83\x37\x36\x38\x32\x06\x51\xA1\xA1\x83\x2B\x32\x39\x34\x70\x74\x0D\x11\xAB\xB1\x81\x24\x37\x73\x12\xAE\x2E\x83\x2C\x39\x3C\x36\x65\x08\x11\xBA\xBE\xB0\xBA\xB8\x87\x51\x80\x03\x11\xAC\x04\xC2\x81\x23\x61\x63\x07\x31\x93\x25\x92\x33\x34\x67\x01\xC1\xC1\x01\xAB\xC0\xA4\xCB\x00\x43\x30\x30\x31\xC4\xA2\xC9\xA2\x6D\xA0\xC2\x9A\xC0\x3D\xC5\x36\x38\x72\x09\xB3\x25\x34\x33\x09\xA8\xD7\x4B\xF5\x29\x33\x2B\x31\x36\x37\x9D\x0B\x8D\xA5\x2E\x13\x33\xCD\xC0\xA5\x45\xC0\xDA\xA5\x37\x01\xA9\xE3\xD8\xB3\xB5\xEE\x21\xC1\xD3\x81\xD0\x27\x5E\xED\x21\x2C\x3F\xB3\x30\x37\x3A\x33\x90\x11\xBA\xE1\x86\x16\x17\x17\xDE\xE0\xDF\xE8\xC3\x35\x29\x24\x17\x68\x01\xD1\x11\xAB\xF1\x80\x84\x33\x78\xE3\x34\x24\x9E\x35\xEB\xEB\x99\x39\x51\xB9\xFD\xEF\xE9\xF1\xF1\xF7\xF1\x73\x75\x4B\x0B\x54\x39\x10\x4E\x4B\x73\x26\x58\x58\x1D\x5E\x73\x1F\x0B\x11\xB2\x40\x85\x1A\x7C\xF4\x50\x17\x77\x19\xB6\x68\x71\x61\x61\x48\x5C\x80\x03\x14\xB9\x4E\x46\x13\x1B\x6C\x33\x42\x1F\x58\x45\x68\x80\x89\x4F\x65\x01\x6B\x01\x54\x2F\x81\x40\x15\x6A\x5D\x67\x69\x18\x5E\x64\x13\x61\x54\x65\x48\x53\x55\x52\x8F\x55\x57\x59\x55\x46\x65\x1C\x5E\x54\x19\x2A\x2C\x7A\x91\x40\x74\x32\x63\x1E\x72\x3A\x3A\x04\x16\x6C\x54\x28\x15\x1A\x46\x1A\x11\x59\x94\x93\x4E\x90\x92\x96\x6C\x42\x35\x14\x1C\x83\x6E\x0C\x57\x6A\x55\x74\x25\x1C\x05\x54\x6B\x9C\x99\x1B\x93\xB6\x51\x93\x95\x1A\x43\x16\x93\x1B\x1A\x42\x2F\x18\x1E\x99\x70\x28\x95\x1B\x07\x51\x40\xAE\x98\x9C\x6E\x32\x91\x87\x44\x24\x61\x93\x99\x49\x7C\xBE\x91\x09\x54\x8F\x83\xAE\x97\x9C\x44\x2F\x13\x19\x1D\x1A\x6E\x14\x1C\x13\x61\x22\x15\x18\x1B\x8D\x95\x45\x1B\x08\x51\x64\xA2\xA5\x9C\x5F\xA9\x15\xA7\xA5\x99\xB4\x1C\x52\x53\x79\xBB\x97\x95\x9F\xA2\xA2\x01\x56\xAD\xA7\x85\xA9\xAB\xAA\x98\xB1\x44\x1E\x15\x36\x77\x11\x49\xA8\x69\xAD\x95\x52\xB1\x4D\xAF\x93\xA6\x6C\xA6\x62\x1F\x19\xAC\xC4\xA5\x16\x09\x54\xD3\xB9\xA6\xA1\x1A\x45\x38\x10\x1D\x18\x32\x76\x67\x1A\x4B\x5D\x72\x15\x46\x57\xD1\xB8\xA5\x52\xB9\xC9\x84\xA7\xB5\x12\x69\xAD\x12\x11\x62\x6B\x27\x12\x1F\x42\x32\x51\xB8\x09\x54\xF7\x96\xB9\xA8\x13\x6F\xBF\xA1\xB1\x63\xD7\x6D\x1E\x18\x12\x65\x13\x43\xB3\xAC\x7E\x86\xB3\x40\xB2\x5D\xA8\xA3\x9C\xBF\x71\x40\xB5\x1B\x1D\xD1\x8A\xC2\x40\xC3\xCA\x8E\xC4\x95\x53\x9B\xBD\xB5\xC4\x9B\x02\x69\xBB\xB1\x1A\x54\x29\x65\x1A\xC4\x14\xC8\xC2\xAA\x07\x51\x6C\xCA\xBC\xA5\xA2\x8A\xA4\x99\xB4\x2E\xC5\x55\xCE\xC8\x1A\xEA\xA2\xA8\x14\x69\x37\x97\xC3\x99\xA2\x96\xC1\x40\xC6\xEA\xA9\xA7\x13\xBC\x75\x30\x10\xB6\xCA\x69\x99\x01\x56\xD3\x2F\xF2\x6C\xA6\xA7\xA0\x8C\xDF\x9D\xA0\x21\xCD\xCA\xAF\x9C\x53\x28\x1E\x54\x1D\x97\xB4\x1B\x11\x19\x79\x11\xB5\xB5\x51\x67\xF8\xCB\xD4\x98\x6F\x0B\xAD\x19\x59\xF3\xAC\x1C\x1A\xCC\x8C\x96\xDB\x05\x54\x77\xD1\xD9\x18\x12\x70\xE4\x85\xD4\xD0\xC5\xA0\xCA\xDC\x12\x25\xF0\xBF\xCC\xAD\x69\xA7\xD3\x41\xDA\x5A\xD7\xB8\x10\xB7\x64\x38\x5D\xDE\xDC\x74\xE5\x96\xD4\x09\x51\x58\xEA\xDC\x13\x65\x26\x14\x1F\xE4\x73\xE2\x93\xCE\xD5\x82\x85\x55\xEA\xDA\xD7\xB3\x8F\x1A\xBC\xAA\x6F\xB2\x1D\xB4\x25\x11\x51\xEE\xDE\x52\x10\x68\x1B\xE7\x66\x7E\xD5\xE4\xCD\x2D\xD9\xD9\xC7\xDA\xB3\x79\xE2\xDC\xCA\xD1\xA6\xA5\x52\xF1\xA8\xE9\xA4\x17\x1B\x70\x20\xEB\xEE\xDD\x78\xFE\xE5\xD3\x9C\x56\x20\xEF\xC4\x52\x44\xE3\xC6\x15\xE1\x3E\xEF\xE6\xD6\xF1\x03\x48\xFD\xE2\xF2\x9D\x84\xC6\xC2\x1C\xCF\xC0\xE5\x19\x07\x51\x6C\xFA\xDC\x15\xE5\xC5\xC6\x89\xB4\x17\x11\x55\xFF\xFB\x9D\x91\xB1\xA5\x51\xFB\xC9\xF3\x9C\x44\x6E\x15\x0E\xEB\x69\x78\x71\x32\x26\x5B\x20\xE8\x43\x7F\xFF\x31\x25\x0E\x76\x57\x4C\x80\x7E\x40\x05\x54\x12\x8A\x6E\x00\xB5\x0B\x0A\x7D\x49\x0F\x98\x07\x7E\x50\x48\x52\x7B\x64\xCB\x64\x45\x5C\x67\x20\x0E\x0B\x91\x5E\x7D\x45\x28\x86\xFF\x54\x4F\x0C\x11\xB4\x0C\x84\xFA\x7E\x82\xDE\x43\x05\x0F\xB8\x2F\x0D\x0D\x8D\x3A\x51\xDC\x30\x72\x77\x0F\xB9\x64",
-				"\x86\x36\x8D\x0E\x11\x62\x5A\x23\x2B\x36\x34\x0C\x6F\x09\x66\xFA\x33\x75\x28\x26\xAB\x83\x36\x79\x11\x2F\x95\x43\x84\x48\x23\xB2\x21\x89\xD1\x59\x6D\x51\x5A\x8F\x89\x10\xAC\x0B\x3E\x70\x11\x59\x60\x47\x35\x28\x32\x9C\x6A\x39\x9F\x28\x28\x5F\x29\x42\x2C\x81\x15\x71\x8D\x70\x80\x03\x1A\x83\x2B\x8C\x5E\x6D\x51\x8E\x69\x80\x3B\x40\x40\x30\x62\x3A\x38\x8F\x33\x7A\x86\x2A\x40\x4D\x0F\x4D\x31\x3F\x8A\x32\x28\x43\x22\x8A\x42\x7C\x0D\x43\x81\x30\x33\x03\x38\x30\xFC\x62\x0E\x91\xA8\x09\x06\x92\x02\x3E\x8B\x08\xE8\x25\x92\xA4\x09\x92\x20\x28\x56\x88\x12\xF7\x0D\x93\xA2\x00",
+				"\x86\x0B\x00\x00\x8D\x04\x00\x00\x4A\x00\x01\x82\x80\x00\x81\x80\x1E\x29\x65\x73\x2F\x35\x32\x3B\x31\x33\x26\x65\x74\x21\x24\x31\x32\x88\x10\x27\x61\x6D\x25\x3D\x12\x12\x10\x10\x2B\x65\x72\x33\x29\x3F\x36\x34\x8F\x18\x2E\x30\x22\x1E\x1C\x1C\x21\x32\x38\x65\x6E\x24\x31\x93\x31\x35\x85\x17\x2C\xAF\x08\x8A\x8C\x86\x84\x88\x89\x14\x92\xBE\x05\x03\x82\x80\x03\xA2\x01\xC7\x81\x94\x25\x30\x3C\x3B\x07\x48\x80\x10\xA1\x83\x24\x35\x31\x39\x73\x18\x9A\x88\x83\x37\x36\x38\x32\x06\x51\xA1\xA1\x83\x2B\x32\x39\x34\x70\x74\x0D\x11\xAB\xB1\x81\x24\x37\x73\x12\xAE\x2E\x83\x2C\x39\x3C\x36\x65\x08\x11\xBA\xBE\xB0\xBA\xB8\x87\x51\x80\x03\x11\xAC\x04\xC2\x81\x23\x61\x63\x07\x31\x93\x25\x92\x33\x34\x67\x01\xC1\xC1\x01\xAB\xC0\xA4\xCB\x00\x43\x30\x30\x31\xC4\xA2\xC9\xA2\x6D\xA0\xC2\x9A\xC0\x3D\xC5\x36\x38\x72\x09\xB3\x25\x34\x33\x09\xA8\xD7\x4B\xF5\x29\x33\x2B\x31\x36\x37\x9D\x0B\x8D\xA5\x2E\x13\x33\xCD\xC0\xA5\x45\xC0\xDA\xA5\x37\x01\xA9\xE3\xD8\xB3\xB5\xEE\x21\xC1\xD3\x81\xD0\x27\x5E\xED\x21\x2C\x3F\xB3\x30\x37\x3A\x33\x90\x11\xBA\xE1\x86\x16\x17\x17\xDE\xE0\xDF\xE8\xC3\x35\x29\x24\x17\x68\x01\xD1\x11\xAB\xF1\x80\x84\x33\x78\xE3\x34\x24\x9E\x35\xEB\xEB\x99\x39\x51\xB9\xFD\xEF\xE9\xF1\xF1\xF7\xF1\x73\x75\x4B\x0B\x54\x39\x10\x4E\x4B\x73\x26\x58\x58\x1D\x5E\x73\x1F\x0B\x11\xB2\x40\x85\x1A\x7C\xF4\x50\x17\x77\x19\xB6\x68\x71\x61\x61\x48\x5C\x80\x03\x14\xB9\x4E\x46\x13\x1B\x6C\x33\x42\x1F\x58\x45\x68\x80\x89\x4F\x65\x01\x6B\x01\x54\x2F\x81\x40\x15\x6A\x5D\x67\x69\x18\x5E\x64\x13\x61\x54\x65\x48\x53\x55\x52\x8F\x55\x57\x59\x55\x46\x65\x1C\x5E\x54\x19\x2B\x2C\x7A\x91\x40\x74\x32\x63\x1E\x72\x3A\x3A\x04\x16\x6C\x54\x28\x15\x1A\x46\x1A\x11\x59\x94\x93\x4E\x90\x92\x96\x6C\x42\x35\x14\x1C\x83\x6E\x0C\x57\x6A\x55\x74\x25\x1C\x05\x54\x6B\x9C\x99\x1B\x93\xB6\x51\x93\x95\x1A\x43\x16\x93\x1B\x1A\x42\x2F\x18\x1E\x99\x70\x28\x95\x1B\x07\x51\x40\xAE\x98\x9C\x6E\x32\x91\x87\x44\x24\x61\x93\x99\x49\x7C\xBE\x91\x09\x54\x8F\x83\xAE\x97\x9C\x44\x2F\x13\x19\x1D\x1A\x6E\x14\x1C\x13\x61\x22\x15\x18\x1B\x8D\x95\x45\x1B\x08\x51\x64\xA2\xA5\x9C\x5F\xA9\x15\xA7\xA5\x99\xB4\x1C\x52\x53\x79\xBB\x97\x95\x9F\xA2\xA2\x01\x56\xAD\xA7\x85\xA9\xAB\xAA\x98\xB1\x44\x1E\x15\x36\x77\x11\x49\xA8\x69\xAD\x95\x52\xB1\x4D\xAF\x93\xA6\x6C\xA6\x62\x1F\x19\xAC\xC4\xBF\x91\xA2\x40\xC9\x84\xA6\xA0\x9D\x25\x69\x9A\xA4\x44\x6E\x35\x11\xB6\x09\x51\x60\xB9\xAF\xB5\x45\x38\x10\x1D\x18\x32\x76\x67\x1A\x4B\x5D\x72\x15\x46\x57\xD1\xB8\xA5\x52\xBC\xD5\x8B\xB9\x19\x12\x69\xAD\x12\x11\x62\x6B\x27\x12\x1F\x42\x32\x51\xB8\x09\x54\x03\xE3\xB9\xA8\x13\x6F\xBF\xA1\xB1\x63\xD7\x6D\x1E\x18\x12\x65\x13\x43\xB3\xAC\x7E\x86\xB3\x40\xB2\x5D\xA8\xA3\x9C\xC2\x71\x40\xB5\x1B\x1D\xD1\x96\xC2\x40\xC6\xCA\x9A\xC4\x95\x53\x9B\x89\xC1\xC8\x9B\xD4\x99\xCA\xAF\x9C\x54\x29\x65\x1A\xC7\x20\xD4\xC2\xAA\x07\x51\x78\xC6\xC0\xA5\xA2\x8A\xA4\x99\xB4\x3A\xC5\x51\xD1\xBD\x26\xEA\xA2\xA8\x14\x69\x37\x93\xC7\x99\xA2\xA2\xC1\x40\xC9\xD6\xA9\xA7\x13\xBF\x75\x30\x10\xB6\xCD\x69\x99\x01\x56\xD6\x3B\xF2\x6C\xA6\xA7\xA0\x98\xD2\xB4\x52\x82\x80\x04\xD3\xCB\xB2\x53\x18\x1A\x57\x74\x17\xA4\x1F\x12\x65\x39\x1F\xB5\xB8\x2D\xE5\xC8\xD9\x1A\x79\x8B\xAD\x19\x59\xFF\xAC\x1C\x1A\xCF\x8C\xA2\xDB\x05\x54\x83\xDD\xD9\x18\x12\x7C\xE4\x81\xD8\xD3\xC5\xAC\xC6\xE0\x12\x31\xFC\xBB\xD0\xAD\x69\xA2\xB5\x52\xE5\x67\xD7\xB8\x10\xBA\x64\x38\x59\xE2\xDF\x80\xE5\x92\xD8\x09\x51\x64\xE6\xE0\x13\x65\x26\x14\x1F\xE7\x7F\xE2\x9F\xCE\xD8\x65\xC3\x45\xD9\xE6\xA9\xB3\x8F\x1A\xBF\xAA\x7B\xB2\x1D\xB4\x25\x11\x5D\xEE\xE1\x52\x10\x68\x1B\xEA\x66\x4A\xE1\xE8\xD0\x39\xF5\xD1\xD7\x9C\xAC\xF4\xC1\xB6\xA9\x45\x50\xF4\xEC\xCC\x6F\x30\x1C\xEB\xF1\x82\xC4\xEA\xF2\xBD\x56\x2C\xEB\xC8\x52\x50\xDC\xF1\xE6\xD2\xBB\xE2\xD0\xF7\x40\xD2\xEE\xC7\xB4\x15\x9D\x90\xC2\xC6\x1C\xD8\xCC\xE5\x19\x07\x51\x74\xF6\xE0\xFB\x62\x2E\xF6\x89\xB4\x17\x11\x5D\xFF\xFD\x9D\x51\x59\xA4\x45\x23\x81\xE9\x72\x34\x5B\x75\x1A\x75\xFC\x14\x75\x0C\x79\x43\x24\x5E\xEA\x69\x54\x02\xF8\x57\x4B\x05\xBE\x48\x04\x51\x38\x82\xE1\x08\x83\x0B\x3E\x69\x0B\x4C\x93\x6E\x50\xA4\x5B\x75\x68\x2A\x2F\x0C\x44\x71\x27\x2C\x1C\x08\x81\x5A\xFB\x45\x2E\x85\x06\x89\x0E\x09\xA8\x84\x0E\x15\x82\x83\x84\x86\x63\x09\x1D\x71\x2F\x0D\x36\x0D\x32",
+				"\x53\x7D\x7C\x76\xEF\x24\x87\x6E\x1D\xBC\x85\x0D\x46\x0E\x5E\x46\x57\x06\x36\x32\x2F\x0D\x66\xF2\x7F\x75\x51\x52\x81\x87\x29\x39\x09\x2E\x57\x49\x88\x91\x4C\x82\x27\x27\x91\x5D\x70\x45\x20\x8D\x0C\xB3\x8C\x0D\xF9\x30\x09\x5A\x81\x27\x39\x51\x6A\x8C\x78\xE5\x1F\x30\x29\x7C\x29\x46\x58\x02\x21\x75\x37\xB6\x88\x00\x71\x83\x21\x1C\xBC\x5D\x55\x3B\xAF\x88\x38\x03\x20\x38\xC7\x74\x0E\x8F\xCF\x00\x96\x28\x02\x2D\x0B\x9B\x63\x05\x90\xC9\x28\x43\x20\x2A\x45\x7A\xDF\x0D\x91\x30\xCC\x03\x20\x33\xF8\x74\x91\x54\x09\x0B\x92\x81\x24\x89\x85\x68\x3A\x90\x52\x0F\x92\x20\x14\x5C\x8E\x89\x77\x02\x95\x51\x00",
 				};
 
 			class TuiSkinResourceLoaderPlugin : public Object, public IGuiPlugin

@@ -8,8 +8,11 @@
   </Instance>
   <Instance name="ShortcutKeyTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiShortcutKeyTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
-      <LabelTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" DefaultTextColor-eval="tuiskin::tuiColors.ControlText">
-        <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color-bind="self.TextColor" />
+      <LabelTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" DefaultTextColor-eval="tuiskin::tuiColors.ShortcutKeyText">
+        <SolidBackground Color-eval="tuiskin::tuiColors.ShortcutKeyBackground" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color-bind="self.TextColor" />
+        </Bounds>
       </LabelTemplate>
     </Instance>
   </Instance>

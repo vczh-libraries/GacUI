@@ -13,6 +13,8 @@
         ControlBorderDisabled : Color;
         ControlBorderFocused : Color;
         LabelText : Color;
+        ShortcutKeyBackground : Color;
+        ShortcutKeyText : Color;
         MenuBackground : Color;
         MenuText : Color;
         MenuTextDisabled : Color;

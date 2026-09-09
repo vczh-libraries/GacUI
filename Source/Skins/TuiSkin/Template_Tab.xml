@@ -4,7 +4,7 @@
       <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground ref.Style="itemBackground" />
         <Bounds AlignmentToParent="left:1 top:0 right:1 bottom:0">
-          <SolidLabel ref.Style="itemText" Text-bind="self.Text" Font-bind="{fontFamily:&quot;TuiFont&quot; size:1 bold:((cast (TabPage*) self.Context).OwnerTab.Focused ?? false) underline:(self.State != ButtonState::Normal)}" />
+          <SolidLabel ref.Style="itemText" Text-bind="self.Text" Font-bind="{fontFamily:&quot;TuiFont&quot; size:1 bold:((cast (TabPage*) self.Context).OwnerTab.Focused ?? false) underline:(((cast (TabPage*) self.Context).OwnerTab.Focused ?? false) or self.State != ButtonState::Normal)}" />
         </Bounds>
       </SelectableButtonTemplate>
     </Instance>

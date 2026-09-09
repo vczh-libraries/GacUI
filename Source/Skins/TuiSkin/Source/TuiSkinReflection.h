@@ -45,6 +45,8 @@ namespace vl
 			DECL_TYPE_INFO(::tuiskin::TuiCheckBoxTemplateConstructor)
 			DECL_TYPE_INFO(::tuiskin::TuiComboBoxTemplate)
 			DECL_TYPE_INFO(::tuiskin::TuiComboBoxTemplateConstructor)
+			DECL_TYPE_INFO(::tuiskin::TuiContentMenuTemplate)
+			DECL_TYPE_INFO(::tuiskin::TuiContentMenuTemplateConstructor)
 			DECL_TYPE_INFO(::tuiskin::TuiCustomControlTemplate)
 			DECL_TYPE_INFO(::tuiskin::TuiCustomControlTemplateConstructor)
 			DECL_TYPE_INFO(::tuiskin::TuiCustomFrameWindowTemplate)

@@ -1,8 +1,18 @@
 <Folder>
+  <Instance name="ContentMenuTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiContentMenuTemplate" ref.Styles="res://TuiSkin/Style">
+      <MenuTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="background" />
+      </MenuTemplate>
+    </Instance>
+  </Instance>
   <Instance name="ItemBackgroundTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiItemBackgroundTemplate" xmlns:x="tuiskin::*" xmlns:tui="presentation::templates::*" ref.Styles="res://TuiSkin/Style">
       <tui:TuiListItemBackgroundTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container" TextColor-bind="not self.VisuallyEnabled ? tuiskin::tuiColors.ItemTextDisabled : self.Selected and not self.GridRow ? tuiskin::tuiColors.ItemTextSelected : self.Selected or self.State != ButtonState::Normal ? tuiskin::tuiColors.ItemTextHighlighted : tuiskin::tuiColors.ItemText" SelectedTextColor-eval="tuiskin::tuiColors.ItemTextSelected" SelectedBackgroundColor-eval="tuiskin::tuiColors.ItemBackgroundSelected">
-        <SolidBackground Color-bind="self.Selected and not self.GridRow ? tuiskin::tuiColors.ItemBackgroundSelected : self.Selected or self.VisuallyEnabled and self.State != ButtonState::Normal ? tuiskin::tuiColors.ItemBackgroundHighlighted : tuiskin::tuiColors.ItemBackground" />
+        <SolidBackground Color-eval="tuiskin::tuiColors.ItemBackground" />
+        <Bounds AlignmentToParent-bind="{left:0 top:0 right:0 bottom:(self.GridRow ? 1 : 0)}">
+          <SolidBackground Color-bind="self.Selected and not self.GridRow ? tuiskin::tuiColors.ItemBackgroundSelected : self.Selected or self.VisuallyEnabled and self.State != ButtonState::Normal ? tuiskin::tuiColors.ItemBackgroundHighlighted : tuiskin::tuiColors.ItemBackground" />
+        </Bounds>
         <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" />
       </tui:TuiListItemBackgroundTemplate>
     </Instance>
@@ -78,18 +88,15 @@
   <Instance name="ComboBoxTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiComboBoxTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <DateComboBoxTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container">
-        <att.SubMenuTemplate>tuiskin::TuiToolstripMenuTemplate</att.SubMenuTemplate>
+        <att.SubMenuTemplate>tuiskin::TuiContentMenuTemplate</att.SubMenuTemplate>
         <att.DatePickerTemplate>tuiskin::TuiDatePickerTemplate</att.DatePickerTemplate>
-        <SolidBackground ref.Style="background" />
-        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <TuiBorder ref.Style="border" />
-        </Bounds>
-        <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:2 bottom:1">
+        <SolidBackground ref.Style="buttonBackground" />
+        <Bounds ref.Name="container" AlignmentToParent="left:1 top:0 right:2 bottom:0">
           <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" Visible-bind="self.TextVisible">
-            <SolidLabel Text-bind="self.Text" Font-bind="{fontFamily:&quot;TuiFont&quot; size:1 bold:self.Focused underline:(self.State != ButtonState::Normal)}" Color-bind="self.VisuallyEnabled ? tuiskin::tuiColors.ControlText : tuiskin::tuiColors.ButtonTextDisabled" Ellipse="true" />
+            <SolidLabel Text-bind="self.Text" Font-bind="{fontFamily:&quot;TuiFont&quot; size:1 bold:self.Focused underline:(self.Focused or self.State != ButtonState::Normal)}" ref.Style="buttonText" Ellipse="true" />
           </Bounds>
         </Bounds>
-        <Bounds AlignmentToParent="left:-1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0">
           <SolidBackground ref.Style="buttonBackground" />
           <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <SolidLabel Text="▼" ref.Style="buttonIcon" />
@@ -101,15 +108,15 @@
   <Instance name="ListViewColumnHeaderTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="tuiskin::TuiListViewColumnHeaderTemplate" xmlns:x="tuiskin::*" ref.Styles="res://TuiSkin/Style">
       <ListViewColumnHeaderTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" ContainerComposition-ref="container" SubMenuHost-ref="buttonArrow">
-        <att.SubMenuTemplate>tuiskin::TuiToolstripMenuTemplate</att.SubMenuTemplate>
+        <att.SubMenuTemplate>tuiskin::TuiContentMenuTemplate</att.SubMenuTemplate>
         <SolidBackground ref.Style="buttonBackground" />
-        <Bounds ref.Name="container" AlignmentToParent="left:1 top:0 right:2 bottom:0">
+        <Bounds ref.Name="container" AlignmentToParent-bind="{left:(self.SortingState == ColumnSortingState::NotSorted ? 1 : 2) top:0 right:(self.SubMenuExisting ? 2 : 0) bottom:0}">
           <SolidLabel Text-bind="self.Text" ref.Style="buttonText" Ellipse="true" Font-bind="self.Font" />
         </Bounds>
-        <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0">
+        <Bounds AlignmentToParent="left:1 top:0 right:-1 bottom:0" Visible-bind="self.SortingState != ColumnSortingState::NotSorted">
           <SolidLabel Text-bind="self.SortingState == ColumnSortingState::Ascending ? &quot;▲&quot; : self.SortingState == ColumnSortingState::Descending ? &quot;▼&quot; : &quot; &quot;" ref.Style="buttonText" />
         </Bounds>
-        <Bounds AlignmentToParent="left:-1 top:0 right:1 bottom:0">
+        <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0">
           <Button ref.Name="buttonArrow" ControlTemplate="tuiskin::TuiBottomScrollButtonTemplate" AutoFocus="false" Visible-bind="self.SubMenuExisting">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
           </Button>
