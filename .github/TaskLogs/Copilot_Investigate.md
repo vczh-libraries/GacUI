@@ -5,208 +5,142 @@
 `TODO_Task_TUI.md` was completed but multiple issues are found.
 If skin or layout issue happens because `GacUILayout.md` said so or the guidance is not clear enough, fix this document.
 
-## TuiSkin
+Extra requirements for making commits:
+- `## Release` should be in the last step.
+- Before beginning `## Release`, all local changes in affected repos should be committed and pushed first.
 
-- In DataGrid's DataGrid view, when a row/cell is selected, the background color changing should not cover the last line, as it is for the border.
+## FakeDialogService TUI Dialogs
 
-### DETAILS
-
-- The last line means the bottom terminal-cell row reserved for the horizontal separator in each data row. Keep its normal background and border color while the selected cell uses `ItemBackgroundSelected` and the other cells in the selected row use `ItemBackgroundHighlighted`.
-- Inspect both background layers: `tuiskin::TuiItemBackgroundTemplate` in `Test/Resources/App/TuiSkin/Template_List.xml` paints the entire row, and `TuiUpdateGridCellColors` in `Source/Controls/ListControlPackage/TuiItemTemplates.cpp` paints selected visualizers. Restricting only one layer can still leave the separator with a selection background.
-- `CellBorderVisualizerTemplate` in `Source/Controls/ListControlPackage/GuiDataGridExtensions.cpp` reserves bottom/right separators outside its content container. Preserve those separators and the editor insets maintained by `DefaultDataGridItemTemplate` in `GuiDataGridControls.cpp`. Keep the existing compact row height; do not add an empty row to hide the color issue.
-- Scope the inset to the editable DataGrid view. `TuiInitializeItemBackground` currently marks every `GuiVirtualDataGrid` as `GridRow`, including when it displays Detail view; this flag alone does not establish that a bottom separator row exists. Do not cut away the single content row of Detail, TextList, or TreeView items.
-- During implementation, clarify `GacUILayout.md` under the DataGrid color/layout rules: selection backgrounds cover content and preserve the separator row's normal background. The current document specifies separator foreground colors and reserved space but does not state this background rule.
-
-### VERIFICATION
-
-- In `CppTest_Tui`, open List / BindableDataGrid and explicitly select DataGrid view. Inspect the bottom separator across the entire row before selection, with each cell selected in turn, and after moving selection to another row. Require both the glyph and its background to retain their normal colors; the old selection must repaint correctly.
-- Repeat while hovering, focusing/unfocusing, editing Name/Gender/Category/Birthday/Website, opening and dismissing dropdowns, resizing columns, and scrolling rows out of view and back. Check bottom/right intersections and clipped rows without restoring the removed blank row.
-- Compare at 120x40 and 80x25 terminal cells and after restoring the larger viewport. Switch DataGrid to Detail and back; also inspect ordinary ListView, TextList, and TreeView selection so their full content height and colors remain intact. Compare `CppTest` to confirm the GUI skin is unaffected.
-- Extend the relevant deterministic TUI cell-buffer checks in `Test/GacUISrc/UnitTest/TestTuiProvider.cpp`, or the existing grid test fixture where it owns the setup, to assert selected content and unchanged separator backgrounds across selection changes. Test the actual row/cell composition together so the underlying row fill cannot hide a faulty cell-only fix.
-
-## Control Bugs
-
-For every bug, you need to verify if this is a TUI only issue or a general GacUI issue that happens in both `CppTest_Tui` and `CppTest`.
-
-- Known to be TUI specifc bugs:
-  - In any text box with configuration to allow typing TAB key, pressing TAB doesn't actually insert or render a tab character.
-    - Excluding `TextBox (No Tab)` and `Document (No Tab)` as in those pages text boxes do not accept TAB as typing.
-    - A TAB key is defined to be aligning to 4 spaces.
-    - There should be a configuration in `Tui` but the default value would be 4. You can add a struct with default value initialized in its constructor as an optional argument put in `SetupTuiWindowsRenderer`.
-    - When drawing text, the paragraph (and label is using paragraph) should do the alignment by itself as when the text begins matters. Remember that in case of scrolling, the starting point should still in the real first character in each row.
-  - In `TODO_Task_TUI_FollowUp_1.md` the globa shortcut key is changed to `ctrl+shift+alt+win+f8` I guess is due to fixing the concurrent startup of `CppTest`, which is good. But the `ctrl+win+alt+q` is still not working. You might need to simulate the key sequences directly to the CLI window so that you can observe the issue.
-- Known to be GUI and TUI bugs:
-  - In `TODO_Task_TUI_FollowUp_1.md` the left/right issue on DataGrid is fixed. But I found a new bug, when a combo box dropdown editor is opened, pressing up/down is supposed to select different item in the combo box, but it actually closes the editor and select another row. Meanwhile pressing up/down when the text editor is opened is no-op, this is expected and correct.
+- Message/Color/Font/File dialog no need to have empty lines, except one above buttons.
+- The message in the message box should not have a border, just put a label there it is fine.
+- Message box buttons should align to center horizontally. (other dialogs have button aligned left, that is correct)
+- Color dialog scroll bars are too big:
+  - Both label and scroll bar should align to center vertically in their cell.
+  - Scroll bars should have 1 pixel in height.
 
 ### DETAILS
 
-#### TAB input and configurable stops
-
-- Separate insertion from display during reproduction. `TuiGraphicsParagraph` already lays out and paints literal U+0009 characters at hard-coded four-column stops in `Source/PlatformProviders/TUI/TuiTextLayout.cpp`; `TuiEllipsizeText` has a separate four-column calculation there. The existing tab geometry assertion in `Test/GacUISrc/UnitTest/TestTuiProvider.cpp` does not establish that pressing TAB reaches an editor.
-- Trace terminal character delivery through `TuiControllerBase::Char` in `Source/PlatformProviders/TUI/TuiController.cpp`, TAB focus/suppression handling in `Source/Application/GraphicsHost/GuiGraphicsHost_Tab.cpp`, and `GuiDocumentCommonInterface::OnCharInput` in `Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.cpp`. KeyDown and Char are separate events; avoid inserting a duplicate tab by synthesizing text unconditionally from KeyDown.
-- Insert one literal U+0009 through the existing editing path when `AcceptTabInput` permits it. Tab expansion changes display width, not stored text, caret offsets, clipboard content, or undo semantics. Preserve No Tab focus traversal and the existing read-only/modifier rules.
-- Add a portable TUI configuration type with a constructor-initialized tab interval of 4 and an optional argument to `SetupTuiWindowsRenderer`, declared in `Source/GacUI.h` and implemented in `Source/PlatformProviders/Windows/TUI/TuiWindowsController.Windows.cpp`. Keep the no-argument call valid, require a positive interval, and retain the configuration by value for the application lifetime. Startup configuration is sufficient; no runtime setter is required.
-- Use the same configured interval for all paragraph layout, label rendering, natural minimum-size measurement, and ellipsis calculations. In particular, `TuiLabelRenderer::OnElementStateChanged` in `Source/PlatformProviders/TUI/TuiGraphicsRenderers.cpp` creates a separate layout provider for natural measurements; changing only the display paragraph would leave labels inconsistent.
-- For interval `N`, advance from row-local terminal-cell column `x` by `N - x % N`. A tab at a stop advances a full interval. Count wide characters and inline objects by their layout widths, not string length. Keep the existing wrapping semantics and measure from each full laid-out row's origin before alignment translation, clipping, or scrolling; the first visible character is not a new origin.
-
-#### Local Win-key shortcut
-
-- Preserve all three distinct commands in `Test/Resources/App/TuiControlTest/Resource.xml`: local `Ctrl+Q`, local `Ctrl+Alt+Win+Q`, and global `Ctrl+Shift+Alt+Win+F8`. `Test/Resources/App/FullControlTest/Resource.xml` retains global `Ctrl+Shift+Alt+Win+Q`. Fixing the local chord must not turn it into another global registration.
-- The current Windows TUI decoder fills Ctrl/Shift/Alt/Caps Lock but leaves `osSuper` false; `TuiControllerBase` forwards that payload unchanged, and `GuiShortcutKeyItem::CanActivate` in `Source/Application/GraphicsHost/GuiGraphicsHost_ShortcutKey.cpp` compares every modifier. Trace the actual console records and modifier delivery before choosing the fix. The global hotkey path uses OS registration and does not prove that this local input path works.
-- If the fix belongs in the decoder, its source is `../VlppOS/Source/TUI/TUI.Windows.cpp`; follow that repository's instructions, test there, regenerate its release, and import the generated result. Do not hand-edit `Import/VlppOS.Windows.cpp`. Preserve independent Alt and OS Super and key-down/key-up ordering.
-- The existing TUI knowledge base and `.github/Jobs/DebugTuiControlTestSop.md` describe a Super-delivery limitation. That historical limitation does not resolve this follow-up. Update affected guidance when the actual behavior changes, and distinguish native delivery evidence from injected payload tests. The Window Manager `Alt: ...; Super: ...` readout is updated by mouse events, so it cannot establish keyboard modifier delivery.
-
-#### DataGrid combo-editor navigation
-
-- Reproduce Gender and Category editors in both applications, distinguishing an active in-place editor with a collapsed combo from an expanded dropdown. `GuiComboBoxListControl` in `Source/Controls/ListControlPackage/GuiComboControls.cpp` retains focus on the combo and delegates navigation to its contained list.
-- Inspect event consumption at that shared control boundary. `GuiComboBoxListControl::OnKeyDown` currently calls `SelectItemsByKey` without consuming the result, allowing the parent list's handler in `GuiListControls.cpp` to navigate the grid row and close the editor. Handle navigation owned by the combo, including boundary/no-change cases and repeated input, without swallowing unrelated editor keys or adding a TUI-only workaround.
-- Preserve the distinction between the dropdown's highlighted item and the committed combo value. Existing Enter/mouse acceptance copies the list selection into the combo and its `CellValue` binding. Arrow navigation must remain in the same grid cell with the editor active; do not introduce a new commit-on-arrow rule or make Escape roll back an already submitted value.
-- Preserve the prior mouse-focus and Left/Right grid fixes, text-editor caret movement and Shift selection, and text-editor Up/Down no-op. After normal editor dismissal, grid navigation must work again.
+- Make layout changes in the authored `Source/Utilities/FakeServices/TuiDialogs/*.xml` resources. Preserve their factories, view-model bindings, localized strings, default actions and accept/cancel behavior; regenerate protected C++ outputs through `GacUI_Compiler`.
+- In `MessageBox.xml`, replace the message's bordered `ScrollContainer` with a normal `Label`. Preserve explicit line breaks, the separate icon label and the message text. Center the natural-width button group across the whole dialog, retaining the named `buttonStack` and its default-button lookup. Do not remove borders from the shared scroll-container template.
+- Remove blanket `CellPadding`/stack padding and excess initial client height that introduce empty rows. A stretched percentage content row can retain blank space even after padding is removed. Keep exactly one explicit blank row before the final action row, while preserving actual textbox/list/group borders and useful preview/list areas. Content text containing blank lines must remain unchanged.
+- The color dialog's "scroll bars" are the three `HTracker` controls in `ColorDialog.xml`. `tuiskin::TuiHTrackerTemplate` in `Test/Resources/App/TuiSkin/Template_Scroll.xml` already has a one-cell preferred minimum height; the containing component currently stretches it beside a bordered textbox and adds padding. Arrange each tracker at an actual height of one cell, centered vertically, and center each RGB label within its cell. A minimum height alone does not prevent stretching.
+- The existing non-message action rows are not consistently left aligned: Color, simple/full Font and File place OK/Cancel after a leading percentage column. Apply the requested left alignment when compacting these rows; retain the full-font dialog's `Pick a Color` action. Center message actions only.
+- Clarify `GacUILayout.md` with these dialog/form spacing rules and how to center a one-cell control without stretching it. Keep label text left aligned while centering vertically; use local layout/template changes rather than changing every label's defaults. The existing TUI label already preserves explicit newlines.
 
 ### VERIFICATION
 
-#### Execution and evidence
+- These are implementation requirements, not checks performed by this review. Use the repository build/run wrappers with absolute PowerShell paths from `Test/GacUISrc`. Resource changes require `GacUI_Compiler`, which generates both architectures. Check its output and `git status` for `*.UI.errors.txt`; then follow `Project.md`: build Debug Win32, run `Metadata_Generate` Win32, build Debug x64, run `Metadata_Generate` x64 and `Metadata_Test` x64. Rebuild affected consumers before UI checks. Refresh metadata before compilation too if resources need changed reflection declarations.
+- Run the required `UnitTest` project for C++ changes, including generated C++, following `.github/Guidelines/Running-UnitTest.md`. Respect existing file filters while including affected tests, and inspect completed results and Debug leak reports. Keep unrelated GUI snapshot expectations unchanged.
+- Follow `.github/Jobs/DebugTuiControlTestSop.md` in Windows Terminal using `copilotExecute.ps1 -Mode CLI -Executable CppTest_Tui -Configuration Debug -Platform x64 -Interactive`. Inspect Message, Color, simple Font, full Font, Open File and Save File at 120x40, 80x25 and after restoring the larger viewport. Require compact rows, exactly one blank row before final actions, centered message buttons and left-aligned other actions.
+- Check one-, two- and three-button messages in English and Chinese, short/multiline/CJK text, and cases with/without icons. Require a borderless message, complete readable text, centered actions despite localized widths, correct default activation/results, and normal dismissal/focus return. Include multiline file-validation prompts.
+- Count each RGB tracker's rendered height as one row. Test mouse dragging, keyboard movement, 0/255 endpoints and typed RGB 12,34,56; accept/reopen and change/cancel must retain the existing color semantics. Recheck font effects and the nested color picker, file enumeration/selection and nested validation prompts after compacting their layouts.
 
-- These are verification requirements for implementation, not claims that this review ran the applications. Record a fresh before/after result for every bug in both `CppTest_Tui` and `CppTest`, identifying the selected page, editor, focused control, and whether a combo popup is expanded. Use matching interactions to determine TUI-only versus shared scope.
-- Follow `.github/Jobs/DebugTuiControlTestSop.md`: launch `CppTest_Tui` in actual Windows Terminal through the absolute `.github/Scripts/copilotExecute.ps1` path with `-Mode CLI -Executable CppTest_Tui -Configuration Debug -Platform x64 -Interactive`. It has no HTTP automation endpoint. Use `.github/Guidelines/Running-GacUI.md` for `CppTest`; native shortcut checks still require input through its real focused window.
-- Build `Test/GacUISrc/GacUISrc.sln` using `.github/Scripts/copilotBuild.ps1`. For source changes, run `UnitTest` using `copilotExecute.ps1 -Mode UnitTest -Executable UnitTest` and inspect the completed logs, selected test files, and Debug leak report. Respect existing filters while ensuring affected tests are included.
-- If skin/showcase XML changes, run `GacUI_Compiler`, inspect generated changes and any `*.UI.errors.txt`, follow the Debug Win32/x64 metadata-generation and x64 metadata-test sequence in `Project.md`, and rebuild before application checks. Generate protected outputs through their owning tools. If a dependency changes, verify it upstream and then build/test the downstream import.
+## TuiControlTest
 
-#### TAB
+- After startup the main window does not resized to fit the CLI window.
+  - This should also be added to `DebugTuiControlTestSop.md`.
+- Although TUI's `INativeWindow::Hide` is currently no-op, but it should:
+  - Query window close and give a chance for the app to prepare. You can check out how Windows native GUI implementation does that to invoke necessary callbacks.
+  - Call directly or behave like current `GetTuiApplication()->Stop` so that to quit `GetCurrentController()->Run`.
+  - Update the `Exit` tab in `TuiControlTest` according to this.
+- In `Misc/Dialogs/*`, there are tables where the first column are labels and the second columns are text boxes.
+  - Those label should align to center vertically inside their cell.
+  - No need to keep empty lines, except one above buttons in the last line.
 
-- On the tab-enabled TextBox and Document pages, test all five controls: SinglelineTextBox, MultilineTextBox, DocumentTextBox, editable DocumentViewer, and editable DocumentLabel. Type TAB between distinguishable characters and verify exactly one U+0009 in the text, unchanged focus, and the next character at the correct stop. Compare physical typing with pasting text containing a tab to isolate input loss from layout errors.
-- Check caret movement across a tab, deletion, selection/replacement, clipboard round trips, and undo/redo. Repeat the No Tab counterparts with TAB and Shift+TAB: focus must move and text must remain unchanged. Include the same input checks in `CppTest` without imposing terminal-cell metrics on its GUI renderer.
-- Extend `TestTuiProvider.cpp` for intervals 4 and 8. At interval 4, `\tX`, `a\tX`, `abc\tX`, and `abcd\tX` place X at zero-based columns 4, 4, 4, and 8; `\t\tX` places it at 8. Cover wide CJK/supplementary characters, inline objects, CRLF, wrapping, and styled/selected tab spans. Assert caret bounds and hit testing along with rendered cells.
-- Check left/center/right alignment, a nonzero paragraph origin, and horizontal scrolling/clipping through a tab span whose preceding text is hidden. The visible suffix must agree with the original row layout. Verify labels' natural minimum sizes, ellipsis decisions, and rendered positions use the same interval, including the nondefault value.
+### DETAILS
 
-#### Shortcuts
+#### Startup geometry
 
-- Foreground the real Windows Terminal Window Manager page. Send Ctrl/Alt/Win down, Q down/up, and modifier releases through successful native keyboard input, checking the input API result and the received events. Use the documented CDB workflow if needed to trace the console record, decoded payload, hosted forwarding, and command activation. A failed input call or direct callback injection is not a successful terminal reproduction.
-- Require exactly `You pressed Ctrl+Alt+Win+Q!`, dismiss it, and confirm ordinary input still works. Use local `Ctrl+Q` as a control case; repeat with different modifier press/release orders and check for stuck modifiers. Compare the local commands in `CppTest`.
-- Separately verify the real OS global F8/Q chords with both apps running together and after restarting either app. Require their existing exact success dialogs and independent registrations. Posting `WM_HOTKEY` alone only tests message forwarding.
-- Add focused modifier-delivery tests at the changed layer, including Super with and without Alt and modifier releases. An upstream decoder fix needs upstream tests; injected provider tests supplement the real terminal check. Record any unobservable native input as unverified, not passed.
+- Trace `Test/Resources/App/TuiControlTest/Resource.xml`, `Test/GacUISrc/CppTest_Tui/Main.cpp`, `GuiMainHostedWindowProxy::CheckAndSyncProperties` in `Source/PlatformProviders/Hosted/GuiHostedWindowProxy_Main.cpp`, and `TuiControllerBase::Run` in `Source/PlatformProviders/TUI/TuiController.cpp`. The physical `TuiWindow` constructor reads the terminal size, but hosted setup subsequently copies the showcase's explicit 120x40 size into it.
+- Synchronize the physical and hosted main bounds with the current TUI buffer after hosted properties have been applied and before the first visible frame. Do not wait for the initial `BufferSizeChanged`: VlppOS sends it after `Starting`, which is already occupied by the nested application loop. Reuse the existing size/Moved propagation; do not resize Windows Terminal or add a second TUI loop.
+- Preserve `SystemFrameWindow` and the main bounds' `MinSizeLimitation="NoLimit"`, so hidden pages cannot enlarge the physical viewport. Keep later terminal-resize handling and the existing programmatic stored-size behavior unless the startup fix requires a documented change to that contract.
 
-#### DataGrid editors
+#### Main-window closing
 
-- Extend `ComboEditor` and `TextEditorCaretAndGridFocus` in `Test/GacUISrc/UnitTest/TestControls_List_DataGrid_CellEditor.cpp`; the current combo case uses mouse selection and does not cover this regression. Reuse grid property/navigation tests in `TestControls_List_DataGrid_Properties.cpp` for the prior focus/boundary behavior.
-- In both applications, activate Gender and Category editors by supported mouse/keyboard paths and test Up/Down with the popup collapsed and expanded. Assert the contained list's highlighted item moves one step, the grid row/column does not change, and the editor remains active. At first/last items and during held-key repeats, no event may escape into grid navigation. Accept with Enter and mouse in separate runs and reopen the cell to verify the submitted value.
-- Repeat Name/Website text editors: Up/Down stays a no-op, Left/Right moves the caret, Shift+Left/Right selects text, and typing changes text at the expected caret without moving cells. Preserve existing Enter handling (the single-line editor remains active) and Escape dismissal, then verify restored grid navigation, including first/last column and row boundaries. Also check an ordinary combo outside the grid and Birthday's date editor for regressions from shared key-handling changes.
+- Implement the physical-window behavior in `TuiWindow::Hide(bool closeWindow)` in `Source/PlatformProviders/TUI/TuiWindow.cpp`. Both `Hide(false)` and `Hide(true)` must request closing. The Windows implementation in `Source/PlatformProviders/Windows/WinNativeWindow.cpp` also sends both through its close-query path.
+- Deliver `INativeWindowListener::BeforeClosing` with cancellation, and leave the application running when canceled. For an accepted request, deliver `AfterClosing`, update visibility and the corresponding close notification, then request the existing TUI stop so the nested native/hosted/application loops unwind normally. These callbacks reach `WindowClosing` and `WindowReadyToClose` in `Source/Application/Controls/GuiWindowControls.cpp` through `GuiHostedController`; do not duplicate them at each layer.
+- Keep physical and hosted `Closed` delivery distinct. `GuiHostedController` does not currently forward the physical `Closed` callback; normal hosted teardown stops the window manager and emits hosted close notifications. Preserve that route rather than adding a second forwarder.
+- Respect hosted modal-close handling in `GuiWindow::BeforeClosing`: an open modal can cancel main-window termination while it is focused or dismissed. Hiding/closing a hosted child, popup or fake dialog must keep the physical application running.
+- Keep callbacks and stopping on the existing owner thread. `TuiWindow::Dispatch` suppresses ordinary callbacks once stop is requested, so do not set that flag before delivering required close notifications. Preserve listener/lifetime handling when a callback closes again or detaches a listener, and leave destruction to the existing teardown path; `Hide` must not destroy its own object synchronously.
+- Keep the four existing direct/queued `self.Hide()` and `self.Close()` buttons in `Resource.xml`, but replace the no-op explanation and expectations with accepted/canceled close behavior. Retain the explicit Stop controls as demonstrations of direct stopping, without making them the required exit route. The actual loop boundary is `GetCurrentController()->WindowService()->Run`, reached through `GuiApplication::Run`.
+
+#### Dialog demonstration forms
+
+- Edit `Test/Resources/App/TuiControlTest/LocalizedDialogsTabPage.xml`. The Message and File form tables already have zero `CellPadding`; center their first-column labels within the actual row heights while retaining left text alignment. Include all fields, not only the first Title row.
+- Remove blanket vertical spacing between the file form, `Selected Files` label and results, and retain one explicit gap before its final Open/Save buttons. Add the corresponding single gap before Message/Color/Font launch actions. Preserve the shared locale selector, options, stored values, results, scrolling and keyboard access.
+
+### VERIFICATION
+
+- Apply the generation, metadata, build and unit-test requirements above. Extend `Test/GacUISrc/UnitTest/TestTuiProvider.cpp` for first-frame geometry and accepted/canceled physical Hide/Close. Its current geometry/events test calls `Hide(true)`, asserts visibility and continues input; separate those event checks from accepted shutdown instead of retaining the obsolete no-op assumption.
+- Test startup at a viewport different from 120x40, including 100x30 and 80x25. Before any manual resize, require main bounds and first rendered layout to match the terminal. Then shrink/grow and restore the viewport, switch to pages with larger minimum sizes, and verify clipping, scrolling, popup placement and mouse hit positions.
+- Test each direct/queued Hide/Close path on a fresh run. Assert close-query and ready-to-close callbacks reach the hosted main window once per accepted request, vetoed requests do not request stop or emit accepted-close notifications, and accepted requests return from the application loop normally. Include a canceled request followed by a successful retry and listener removal/reentrant close during notification, checking no duplicate delivery or use-after-free.
+- Exercise main-window closing with a hosted modal open and ordinary child/dialog dismissal. Require existing modal interception and continued responsiveness; closing a child must not terminate TUI. Compare ordinary `CppTest` if shared hosted/window code changes.
+- For accepted Hide/Close and both explicit Stop paths, verify process completion and restored terminal contents, cursor, colors and input mode; type into the shell afterward. Repeat after dialog use. Forced termination or closing the terminal tab is not evidence of normal teardown.
+- Inspect all Misc/Dialogs forms in both locales at both standard terminal sizes. Labels beside bordered textboxes must align with their content row; one-row combos must remain compact. Verify spacing around results/actions and unchanged values, returned outputs, scrolling, keyboard navigation and focus after dialog dismissal.
+
+## Documentation
+
+- Scan `TODO_Task_TUI_FollowUp_[123].md` and see if any knowledge base page or sop need to udpate.
+
+### DETAILS
+
+- Audit the three follow-ups against current code and guidance, rather than copying historical task descriptions as current behavior. Update GacUI-owned pages in this repository; any VlppOS-specific correction belongs in the owning repository under the mono-repo rules.
+- Review `GacUILayout.md`, `.github/KnowledgeBase/KB_GacUI_Design_TuiPlatformProvider.md`, `.github/KnowledgeBase/Index_GacUI.md` and `.github/Jobs/DebugTuiControlTestSop.md`. The provider page and SOP currently describe main Hide/Close as no-ops and startup sizing that can differ from the viewport; update both. Add compact fake-dialog/form checks and all four ordinary Exit paths to the SOP.
+- Check that prior follow-up guidance remains accurate for popup/combo/focus styles, grid separators and editor navigation, TAB stops, Windows service ownership, cached labels and local/global shortcuts. Preserve the distinction between actual terminal input evidence and injected provider tests.
+- Existing SOP verification records describe earlier runs. Keep their historical meaning and add fresh results for this follow-up; do not relabel an old no-op/Stop-only pass as verification of the new closing behavior. Website and aggregate-release guidance changes belong to the final Release stage below.
+
+### VERIFICATION
+
+- Cross-check each changed behavior in follow-ups 1/2/3 against the owning guidance and an explicit SOP check. Search for stale Hide/Close/no-op, Stop-only, startup-size and dialog-spacing claims, and resolve contradictory current instructions without erasing historical results.
+- Validate local links, paths, API names and commands. Record new build/runtime evidence separately from procedures and preserve any unverified terminal appearance/input limitations. Documentation changes alone do not require executing the C++ suite.
+
+## Release
+
+- Refer to `REPO-ROOT/../AGENTS.md` for understanding the mono repo.
+- Just like how `DarkSkin` and `FullControlTest` is done, `TuiSkin` should also be published to `Release` repo, and `TestControlTest` should become its tutorial.
+  - Check out how `Build.ps1 -Project Release` currently handle `DarkSkin` and `FullControlTest`.
+  - `TuiSkin` should go to `Release/Import/Skins/TuiSkin`.
+  - `TuiControlTest` should go to `Release/Tutorial/GacUI_ControlTemplate/TuiSkin.vcxproj` with a new project `TuiSkin`.
+  - `TuiControlTest` resource files will be put in its `UI/TuiControlTest` sub folder, the same structure to the sibling `BlackSkin` for `FullControlTest.
+- To implement the new `TuiControlTest` tutorial, necessary new files should go to `GacUILite` library.
+  - In `GacUILite` there is a `WinMain.cpp` to start the Direct2D renderer.
+  - I would like you to add a `TuiMain.cpp`, but both files will be in every projects.
+  - In order not to break existing apps, you should declare a global macro in `TuiSkin.vcxproj` say `GACUILITE_TUI_APPLICATION`.
+    - `WinMain.cpp` will `#ifndef GACUILITE_TUI_APPLICATION` the whole file.
+    - `TuiMain.cpp` will `#ifdef GACUILITE_TUI_APPLICATION` the whole file.
+    - Therefore no other projects need to change, since not defining `GACUILITE_TUI_APPLICATION` causes `WinMain.cpp` to use and ignore `TuiMain.cpp`.
+- Update the website to:
+  - Introduce GacUI on TUI and how to start.
+  - Remember that TUI does not work with remote protocol, so no need to mention TUI in remote protocol specific pages or sections.
+  - Scan the demo list and see if any tutorials are missing, fix the list.
+  - DO NOT publish the website.
+
+### DETAILS
+
+- Keep this as the final execution stage. Before beginning it, commit and push all local changes in affected repositories as requested. After completing this stage, commit and push the release/tooling/website-source changes too; the website remains unpublished.
+- Follow `../AGENTS.md` and the owning repository instructions. `TestControlTest` above refers to `TuiControlTest`. Following the requested BlackSkin sibling structure, use `../Release/Tutorial/GacUI_ControlTemplate/TuiSkin/TuiSkin.vcxproj`, with `Main.cpp`, `.vcxproj.filters` and `UI/TuiControlTest` in that project directory. Register it in `GacUI_ControlTemplate.sln` for Debug/Release and Win32/x64. This also matches the release verifier's project-directory-relative executable lookup.
+- Extend `../Tools/Tools/BuildRelease.ps1`, which currently copies `DarkSkin*` and the FullControlTest resources. Copy upstream `GacUI/Release/TuiSkin*` into `Release/Import/Skins/TuiSkin` and authored TuiControlTest resources into the tutorial. `../Tools/Tools/ProjectGacUI.ps1` already mirrors/generates TuiSkin, and `Release/CodegenConfig.xml` already emits separate TuiSkin/TuiSkinReflection pairs. Refresh the upstream GacUI release before the aggregate `Build.ps1 -Project Release`; that command does not itself regenerate GacUI's upstream release.
+- Account for the startup macro's compilation scope: `../Release/Tutorial/Lib/GacUILite/GacUILite.vcxproj` is a separately compiled static library. Defining `GACUILITE_TUI_APPLICATION` only in the new executable does not change how that library compiles `WinMain.cpp`. Inventory both whole-file-guarded startup sources in GacUILite, and compile both sources directly in the new TuiSkin project under its macro. Existing projects continue using the shared library's GUI startup; no existing application project needs editing and no project-wide macro is propagated into the shared library build.
+- Make the new executable a Console application whose `wmain` calls `SetupTuiWindowsRenderer()`. Put its reusable TUI startup and skin-registration plugin in GacUILite's `TuiMain.cpp`. Depend on `GacGen_TuiSkinResourceLoader`, install `tuiskin::CreateDefaultColorPackage()` through `tuiskin::SetColorPackage`, then register `tuiskin::TuiTheme` before constructing controls. Add the packaged `TuiSkin.cpp` to GacUILite with `/bigobj`, matching DarkSkin. The GUI startup's whole-file guard must cover its DarkSkin plugin as well as `WinMain`; verify the console link does not pull in that archive member.
+- Package the tutorial's non-code resources as well as generated C++. Its authored `Test/Resources/App/TuiControlTest/Resource.xml` currently has no `Cpp/Resource` or embedded-resource setting. Follow BlackSkin with a repeatable `Cpp/Resource` setting of `../../../UIRes/TuiSkin.bin`, and load `../UIRes/TuiSkin.bin` from the tutorial's working directory before constructing `tuidemo::TuiMainWindow`. Supply `Skins/TuiSkin/TuiSkin.h` as a generated ordinary include where needed. Put settings in the authored resource or a repeatable deployment transformation, not a one-off edit to the copied XML that the next update overwrites.
+- Website changes belong in `../WebsiteSource`: read its instructions and content-format guidance, add a GacUI TUI startup topic/navigation under `packages/website-doc2/src/articles`, and update relevant introduction/download guidance and `packages/website/src/articles/demo.xml`. Explain Windows Terminal, the Console startup/macro, resource compilation/loading, TuiSkin initialization, cell geometry and supported-control limitations. Keep TUI additions outside remote-protocol pages/sections.
+- Audit demo entries against actual Release tutorials. Current candidates include missing `GacUI_Xml/Member_Field`, stale `Member_State` and `GacUI_Controls/TextEditor` links, and the omitted Console_Workflow group; resolve each against the current tutorial inventory and add TuiSkin. Use local build/preview/export only, without running website publishing steps or copying output into the published-site repository.
+
+### VERIFICATION
+
+- After upstream generation, run the prescribed aggregate pipeline with the absolute `../Tools/Tools/Build.ps1` path and `-Project Release`. Inspect the packaged TuiSkin/TuiSkinReflection pairs, copied resources and tutorial inventory. Require tutorial resource compilation for both architectures, generated C++ and `UIRes/TuiSkin.bin` without compiler errors. Repeat update/generation to confirm the new tutorial/settings survive regeneration.
+- The aggregate C++ verifier currently builds tutorial solutions in Win32 Debug/Release only. Also build the affected ControlTemplate solution in x64 Debug/Release using the prescribed wrapper. Build GUI and TUI projects together and alternate individual builds; require one correct entry point per app, no macro/output contamination, and correct skin initialization. Check BlackSkin and WindowSkin startup too.
+- Launch the packaged TuiSkin tutorial through the documented interactive CLI path in Windows Terminal, with the working directory expected by resource loading. Repeat first-frame viewport fit, resize, localized dialogs/document content, accepted/canceled closing and terminal-restoration checks against the packaged files, rather than using development-tree resources.
+- Follow WebsiteSource's local build/test and sequential documentation-generation checks. Inspect the rendered topic, navigation, demo/source links and exported markdown. Record failures or observation limits; do not publish the website or distribute generated manuals as part of local verification.
 
 ## REVIEW COMMENTS
 
-, pay more attention to the ctrl+alt+win+q issue, since I can't activate the handler by this shortcut key in multiple Windows PCs, you should find a way to repro it otherwise you won't be able to observe your fix. It is still suspicious that is alt really possible to be part of a shortcut key in a TUI application, but if you can't repro it first, you won't find out.
-
 # UPDATES
 
-## UPDATE
+# TEST [CONFIRMED]
 
-I would like you to update VlppOS to fix the osSuper issue and see if ctrl+alt+win+q issue will be resolved by that.
+Reproduce startup bounds and physical close notifications with the injected TUI backend, then verify compact generated dialogs and forms with real TUI compositions. Follow all acceptance criteria above, distinguishing native terminal input and appearance from deterministic provider tests. Release packaging and website checks run only after the GacUI changes are committed and pushed.
 
-# TEST
+The baseline Debug x64 solution build passed with zero warnings/errors. The new startup regression fails at `window->GetClientSize() == NativeSize(16, 8)` after the application stores 120x40 and enters the native Run loop. The existing no-op Hide expectation has been removed from the independent input/geometry test. A separate close regression requires cancellation, ordered notifications, reentrant calls, listener detachment and eventual stop for both Hide flags. Source inspection confirms the current Hide body is empty.
 
-Native shortcut reproduction is the first priority. Establish successful native input and trace console records, decoded modifiers, hosted forwarding and command matching before changing shortcut behavior. Synthetic payload tests are supplementary evidence only. Reproduce and verify the grid separator, TAB insertion/configuration and shared combo navigation issues using the task's full acceptance criteria.
-
-
-## Combo navigation [CONFIRMED]
-
-Baseline Debug x64 solution builds passed with zero warnings/errors. The unfiltered UnitTest run failed in the extended `ComboEditor` case on the first Down while the dropdown was expanded: `dataGrid->GetOpenedEditor() && dataGrid->GetSelectedCell() == GridPos(0, 3)`. The preceding text-editor caret/Up/Down regression passed. In the real TUI showcase, injected console input on List / BindableDataGrid / DataGrid reproduced both collapsed and expanded Gender editors closing and selection moving from the first to the second row. GUI HTTP input reproduced the collapsed Gender editor closing and the focus rectangle moving to row two. These are control-path reproductions, not native shortcut evidence.
-
-## Native shortcut prerequisite [UNVERIFIED]
-
-Fresh Windows Terminal PID 4636 and CppTest_Tui PID 3384 were launched through the prescribed CLI wrapper at 120x40. The computer-use service listed only Codex. The shell process is in session 2, window station WinSta0, thread desktop Default. OpenInputDesktop returned null/error 5; SetForegroundWindow returned false; GetForegroundWindow returned null. Correctly sized x64 INPUT (40 bytes) SendInput Ctrl-down/up both returned zero/error 5. No successful native keyboard event was delivered. An interactive-desktop request is pending; no shortcut fix is claimed or implemented from this failed probe.
 # PROPOSALS
-
-- No.1 Consume navigation at the combo-list boundary [CONFIRMED]
-- No.2 Configure terminal tab stops consistently [CONFIRMED]
-- No.3 Preserve DataGrid separator backgrounds [CONFIRMED]
-- No.4 Decode Windows Terminal's per-record Win modifier extensions
-
-## No.1 Consume navigation at the combo-list boundary [CONFIRMED]
-
-`GuiComboBoxListControl::OnKeyDown` delegates arrows/Home/End/PageUp/PageDown to its contained list but discards its result and ignores repeated key-down events. Own these navigation keys at the combo boundary, including no-change/boundary cases, and process held-key repeats. Keep Enter acceptance separate, retain the committed selected index while only moving the list highlight, and let unrelated keys continue to the parent. Preserve OS Super handling and existing text-editor behavior.
-
-### CODE CHANGE
-
-Extend the existing ComboEditor regression for expanded/collapsed arrow navigation, first/last boundaries, held-key repeats, Enter and mouse acceptance, and value persistence after reopening. Extend TextEditorCaretAndGridFocus for Up/Down no-op. Replace the combo handler's outer repeat gate with explicit navigation-key handling; retain its nonrepeat Enter behavior.
-
-### CONFIRMED
-
-The baseline expanded Down assertion failed. The final full x64 suite passes ComboEditor, its related property/navigation cases and TextEditorCaretAndGridFocus. This covers repeats, boundaries, highlight versus commit, Enter/mouse acceptance and reopening. In both real showcase applications, synthetic input confirms collapsed/expanded Gender and Category navigation retains the same first-row editor; Category changes from Lime to Blue only on Enter. The shared boundary fix is required independently of the TUI rendering changes.
-
-## No.2 Configure terminal tab stops consistently [CONFIRMED]
-
-Add portable `TuiConfiguration` with constructor default `tabInterval = 4`, passed as an optional startup argument and copied into the controller and layout provider. Reject nonpositive values. Use that same interval in paragraph layout, label natural measurements and ellipsis. Keep row-local measurement before alignment/clipping and preserve existing wrapping. Test intervals 4/8, tabs at stops, wide text, objects, caret/hit testing and label rendering. The synthetic console TAB character already inserts and renders on the tab-enabled single-line page; native insertion remains unverified, so do not synthesize another Char from KeyDown.
-
-### CODE CHANGE
-
-Update TuiApplication, startup/controller/resource/layout ownership and label measurement; extend TestTuiProvider. Keep configuration immutable during a renderer lifetime.
-
-### CONFIRMED
-
-The final suite passes interval 4/8 geometry, wide scalars, inline objects, CRLF/wrapping, alignment, nonzero origin, clipping, styled tab backgrounds, caret navigation/hit testing, label minimum size/ellipsis and invalid-interval checks. In CppTest_Tui, console KeyDown/Char/KeyUp records retain focus and clipboard-copy exactly one U+0009 in all five editors. Singleline copied code points are [65,114,99,104,101,114,65,9,66]; each document control and MultilineTextBox copied A\tB. Deleting the singleline tab produced ArcherAB and Undo restored ArcherA\tB. DocumentLabel paste/copy round-tripped P\tQ. No Tab pages traversed forward/backward and copied ArcherAC with no tab. This confirms configuration and the existing supplied-character path; physical TAB insertion remains unverified and no input synthesis was added.
-
-
-
-## Additional shortcut evidence
-
-The local Windows Terminal settings contain no custom Ctrl+Alt+Win+Q binding (only Ctrl+C, Ctrl+V, Ctrl+Shift+F and Alt+Shift+D overrides). Microsoft documents independent left/right Alt flags in KEY_EVENT_RECORD and special handling for a lone Alt press/release, so Alt chords are representable; the documented control-state flags have no Win bit. Reference: https://learn.microsoft.com/en-us/windows/console/key-event-record-str . This is API/source evidence only. Successful native input, actual Win delivery and shortcut activation remain unverified; the application decoder has not been changed.
-
-## Separator reproduction [CONFIRMED]
-
-After loading the real application resources, the composed-row regression fails at its separator-background assertion. CDB first-chance trace identifies TestTuiProvider.cpp line 248: selected=0, row=0, x=0. The pixel is Mergeable with foreground #808080 and background #87CEFA instead of #000000. The unselected iteration passes. The test renders the generated TuiItemBackgroundTemplate and real CellBorderVisualizerTemplate together.
-
-## No.3 Preserve DataGrid separator backgrounds [CONFIRMED]
-
-Give the generated row template a normal base fill and a separate selection/highlight fill inset by one cell at the bottom only when GridRow is true. Classify GridRow from DefaultDataGridItemTemplate, so Detail items in a GuiVirtualDataGrid retain their full height. Paint CellBorderVisualizerTemplate selection on its inset content container, leaving its separator compositions outside the fill. Preserve row heights and existing editor insets.
-
-### CODE CHANGE
-
-Update Template_List.xml and TuiItemTemplates.cpp; regenerate through GacUI_Compiler and run the required metadata sequence. Clarify GacUILayout.md. Confirm both background layers through selection changes in the composed-row test. Add the generated TuiSkin inventory to the Unix UnitTest vmake (excluding x86 sources), matching the existing Windows test library dependency required by this portable composed-row fixture.
-
-### CONFIRMED
-
-The final composed-row test passes exact RGB/glyph checks through hover, every selected cell, row changes and deselection, alongside a selected ordinary row at full content height. Real Windows Terminal checks retain normal separator background attributes while editing Name/Gender/Category/Birthday/Website. Detail view has one-cell rows with full selection background. Ordinary TextList, ListView Detail and expanded TreeView also retain full one-cell selected backgrounds (legacy background nibble B across their content). Dragging the Name header boundary from column 21 to 25 moves the cell separator and following intersections four cells; all 114 bottom-row cells retain background nibble 0 while editing Name. Birthday's calendar opens and dismisses after Up/Down without changing its displayed date. These interactions use console input records, not native physical input. Native SetWindowPos resized the same terminal process from 120x40 to 80x25 and back to 120x40; the clipped right edge and bottom separator background remained correct. An additional 80x11 clipping observation was made, but it does not establish scrolling/recycling. Unix build inventory was updated; a Unix build was not run on this Windows host.
-
-## TUI startup diagnostic
-
-The first post-build TUI launch exited with 0xC0000005. CDB in its real Windows Terminal places the null call in CRT __scrt_initialize_type_info/pre_c_initialization, before wmain and SetupTuiWindowsRenderer. Removing only the generated CppTest_Tui x64 .ilk and executable forced a full relink in the next prescribed solution build. The relinked application started successfully and completed the TUI checks.
-
-## GUI application checks after combo change
-
-CppTest Debug x64 on List / BindableDataGrid / DataGrid: collapsed and expanded Gender and Category editors retain their first-row editor bounds after Up/Down (Gender 146,188..226,217; Category 226,188..306,217), unlike the baseline row-two focus transition. Expanded popup remains open during navigation. Category remained Lime while highlighting Blue, and changed to Blue only after Enter; popup then closed with the editor retained.
-
-GUI Control / TextBox: the supplied Char path accepts literal tabs in SinglelineTextBox, MultilineTextBox, DocumentTextBox, editable DocumentViewer and editable DocumentLabel. Plain text serializes U+0009; rich document runs serialize <tab/> between A and B. HTTP KeyPress emits KeyDown/KeyUp only, so KeyPress:TAB without Type:\t is not a native insertion reproduction. On Document (No Tab), KeyPress:TAB followed by the tab character suppresses insertion and moves typing from DocumentTextBox to DocumentViewer. Native physical typing remains unverified.
-
-## Resource generation
-
-GacUI_Compiler Debug x64 completed with exit code 0. Both x86/x64 TuiSkin outputs contain the additional inset row background; no *.UI.errors.txt or deleted generated outputs remain. Debug Win32 and x64 solution builds both passed with zero warnings/errors. Metadata_Generate passed in Win32 and x64, followed by Metadata_Test x64 (exit 0). The unfiltered Debug x64 UnitTest run passed 90/90 files and 1745/1745 cases; both affected test files were selected, none were skipped, and no memory-leak dump followed the summary.
-
-## Outstanding acceptance at the end of the September 8 investigation [HISTORICAL]
-
-This request is not fully resolved. A final native-input prerequisite check still returns OpenInputDesktop=null/error 5 and GetForegroundWindow=null, despite successful window resizing. Ctrl+Alt+Win+Q has not been reproduced with successful native input, so no keyboard decoder or shortcut fix has been made. Local/global shortcut activation, modifier orders/releases, concurrent global registrations and physical TAB-versus-paste comparisons remain unverified. The interactive-desktop request is still unanswered. Alt is documented in console keyboard records, but native Win delivery must be observed before choosing an upstream fix. Exhaustive scrolling/recycling checks were not completed; the verified viewport-clipping observations must not be read as those checks passing.
-
-## No.4 Decode Windows Terminal's per-record Win modifier extensions
-
-The September 9 continuation has an accessible input desktop. Windows Terminal 1.24.11911.0 hosts the prescribed CppTest_Tui Debug x64 launch at 120x40. SetForegroundWindow succeeds and every native SendInput reports one event inserted, error zero. Ctrl+Q displays its exact success dialog. After dismissal, Ctrl+Alt+left-Win+Q produces no dialog. CDB at the production WindowsTuiInputDecoder::DecodeKey records Q down/up with dwControlKeyState=0x040A; Ctrl+Alt+Q without Win records 0x000A. No separate Win down/up record arrives in this sequence.
-
-Microsoft Terminal's matching release source defines RIGHT_WIN_PRESSED=0x0200 and LEFT_WIN_PRESSED=0x0400 in [ControlKeyStates.hpp](https://github.com/microsoft/terminal/blob/v1.24.11911.0/src/cascadia/TerminalCore/ControlKeyStates.hpp). These extensions are absent from the public KEY_EVENT_RECORD flag list and the installed Windows SDK header, but are present in the actual terminal records. This corrects the earlier conclusion that the current record method cannot supply Win. Decode these event-local bits directly; avoid asynchronous key polling and the timing mismatch it would introduce for queued records.
-
-### CODE CHANGE
-
-In VlppOS Source/TUI/TUI.Windows.cpp, name the Windows Terminal extension mask in the existing internal namespace, populate key and mouse osSuper from each record, and copy key osSuper into its accompanying Char event. Preserve Ctrl/Alt independence, repeats, transition order, native character units, lifecycle and public declarations. Add Windows decoder regressions to Test/Source/TestTui.cpp for left/right/both Win, Alt combinations, repeated keys, modifier releases and unchanged queued events. Require a failing regression before the fix, upstream build/tests, regenerated VlppOS release/downstream import, GacUI build/tests, and matching native shortcut success with both Win keys and changed press/release order. Preserve the separate local and global commands.
-
-The upstream regression failed before the change at `key.keyInfo.osSuper == (superMask != 0) && key.keyInfo.alt == (altMask != 0)`. The right-Win native trace likewise records `mods=0x020A`, followed by `TuiControllerBase::KeyDown` receiving Q with ctrl=1, shift=0, alt=1, osSuper=0. Extend GacUI's existing provider test to assert independent Alt/Super forwarding for keys, characters and mouse events; native command activation remains the end-to-end acceptance check.
-
-### Verified decoder and replay; native acceptance pending
-
-VlppOS Debug x64 builds with zero warnings/errors and all 16 files / 299 cases pass without a leak dump. CodePack regenerated only Release/VlppOS.Windows.cpp; the GacUI import is byte-identical (SHA-256 302AFB7C053271098E0A8D40F3B73C12DDD1F0FFF765AEAD2DF07E583912468C). The complete GacUI Debug x64 solution builds with zero warnings/errors. Production TuiPlayground in Windows Terminal accepts native HELP, Enter dismissal, Tab to History, Shift+Tab back to Canvas, and EXIT; every SendInput succeeds and the process exits normally.
-
-During downstream native acceptance, the desktop became inaccessible again: OpenInputDesktop=null/error 5, SetForegroundWindow=false and all eight SendInput calls returned zero/error 5. This after-fix attempt delivered no native input. The rebuilt TUI and GUI showcases were ready concurrently; an unlock request is pending.
-
-As a separate replay check, the six-record sequence was reconstructed from the observed down/up, virtual-key, character and modifier fields of the successful before-fix native left-Win sequence and written to the rebuilt TUI console. CDB sees the same Q down/up flags 0x040A, then forwarding with ctrl=1, shift=0, alt=1, osSuper=1. The application displays exactly `You pressed Ctrl+Alt+Win+Q!`. This verifies the corrected decoder-to-handler path for the observed fields; it is a replay, not a successful native after-fix run. The upstream change and generated release are committed as VlppOS `905cd9a`.
-
-The final unfiltered GacUI Debug x64 UnitTest run passes 90/90 files and 1745/1745 cases, including the extended provider forwarding test. No skipped cases, assertion failures or Debug memory-leak dump appear in the completed log. Both upstream and downstream builds have zero warnings/errors. No further source changes followed these runs.
-
-The final native prerequisite probe still returns OpenInputDesktop=null/error 5 and GetForegroundWindow=null. Therefore native after-fix activation with both Win keys, varied modifier orders/releases, the GUI comparison and concurrent/restarted global shortcut activation remain unverified. No.4 remains unmarked pending that acceptance, although the ignored Win bits, failing regression and corrected replay are established. The before-fix native traces directly demonstrate that Alt is recognized independently and Windows Terminal supplies Win in the current console-record input path.
-
-Cleanup dismissed the replay dialog and exited CppTest_Tui through Stop TUI using console input records. The GUI cleanup request mistakenly used `application/json; charset=utf-8` instead of the endpoint's required `application/json; charset=utf8`, and timed out. Native dialog inspection found `abort() has been called`; CDB identified the HTTP request handler's catch-all `std::terminate` at WindowsAutomationService.Windows.cpp:167. The existing GetUtf8Body header check rejects that spelling. This was an invalid automation request, not a shortcut result. After capturing the stack and detaching CDB, the dialog's Abort button closed the GUI process; its execution wrapper returned 1. No HTTP or GUI source change was made as part of the Win decoder fix.

@@ -154,6 +154,17 @@ namespace tui_provider_tests
 		void GlobalTimer() override { ticks++; }
 	};
 
+	class TuiTestClosingListener : public INativeWindowListener
+	{
+	public:
+		Func<void(bool&)> before;
+		Func<void()> after;
+		Func<void()> closed;
+		void BeforeClosing(bool& cancel) override { before(cancel); }
+		void AfterClosing() override { after(); }
+		void Closed() override { closed(); }
+	};
+
 	void TuiRunTest(const Func<void(TuiTestBackend*, TuiTestController*)>& test)
 	{
 		auto backend = Ptr(new TuiTestBackend);
@@ -512,7 +523,6 @@ TEST_FILE
 			window->SetTitle(L"Terminal title");
 			TEST_ASSERT(controller->title == L"Terminal title");
 			window->ShowMaximized();
-			window->Hide(true);
 			TEST_ASSERT(window->IsVisible() && window->IsActivated());
 			TEST_ASSERT(!window->IsCustomFrameModeEnabled());
 			TEST_ASSERT(window->Convert(NativePoint(3, 4)) == Point(3, 4));
@@ -602,22 +612,69 @@ TEST_FILE
 		});
 	});
 
-	TEST_CASE(L"TUI Run opens the physical window before dispatching application work")
+	TEST_CASE(L"TUI Run fits the viewport before opening and dispatching application work")
 	{
 		TuiRunTest([](TuiTestBackend* backend, TuiTestController* controller)
 		{
 			auto window = controller->CreateNativeWindow(INativeWindow::Normal);
 			TEST_ASSERT(!window->IsVisible());
+			window->SetClientSize(NativeSize(120, 40));
 			bool invoked = false;
 			controller->AsyncService()->InvokeInMainThread(window, [&]()
 			{
 				TEST_ASSERT(window->IsVisible());
+				TEST_ASSERT(window->GetClientSize() == NativeSize(16, 8));
 				invoked = true;
 				controller->Stop();
 			});
 			controller->InputService()->StartTimer();
 			controller->Run(window);
 			TEST_ASSERT(invoked);
+			controller->DestroyNativeWindow(window);
+		});
+	});
+
+	TEST_CASE(L"TUI Hide and Close query once, support cancellation and stop after notifications")
+	{
+		for (bool closeWindow : { false, true })
+		TuiRunTest([=](TuiTestBackend* backend, TuiTestController* controller)
+		{
+			auto window = controller->CreateNativeWindow(INativeWindow::Normal);
+			window->Show();
+			List<WString> events;
+			bool veto = true;
+			TuiTestClosingListener listener;
+			listener.before = [&](bool& cancel)
+			{
+				events.Add(L"BeforeClosing");
+				TEST_ASSERT(window->IsVisible() && !TUI::IsStopRequested());
+				window->Hide(closeWindow);
+				cancel = veto;
+			};
+			listener.after = [&]()
+			{
+				events.Add(L"AfterClosing");
+				TEST_ASSERT(window->IsVisible() && !TUI::IsStopRequested());
+				window->Hide(closeWindow);
+			};
+			listener.closed = [&]()
+			{
+				events.Add(L"Closed");
+				TEST_ASSERT(!window->IsVisible() && !TUI::IsStopRequested());
+				window->Hide(closeWindow);
+				window->UninstallListener(&listener);
+			};
+			window->InstallListener(&listener);
+			window->Hide(closeWindow);
+			TEST_ASSERT(events.Count() == 1 && events[0] == L"BeforeClosing");
+			TEST_ASSERT(window->IsVisible() && !TUI::IsStopRequested());
+			veto = false;
+			window->Hide(closeWindow);
+			TEST_ASSERT(events.Count() == 4);
+			TEST_ASSERT(events[1] == L"BeforeClosing" && events[2] == L"AfterClosing" && events[3] == L"Closed");
+			TEST_ASSERT(!window->IsVisible() && TUI::IsStopRequested());
+			window->Hide(closeWindow);
+			TEST_ASSERT(events.Count() == 4);
 			controller->DestroyNativeWindow(window);
 		});
 	});
