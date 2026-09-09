@@ -3,7 +3,10 @@
   - On macOS, you are working on VlppOS, GacUI and iGac.
   - VlppOS and GacUI are already verified on windows, but if you find any issue in the current OS during verification, fix them.
   - wGac/iGac is updated but never verified, you are going to take care of any issue in them.
-- The already completed work is in `TODO_Task_TUI.md`, verified on Windows. The goal of this request is to make sure it also works on Linux/macOS:
+- TUI has been completed and verified on Windows:
+  - `TODO_Task_TUI.md`
+  - `TODO_Task_TUI_FollowUp_1.md`.
+- The goal of this request is to make sure it also works on Linux/macOS:
   - Port the new test app, make sure it could be synced in the future in `syncProj.sh`, and started by `test.sh --app:tui`.
   - Update `GacUI/.github/Jobs/job.rpXPlat.prompt.md` for the new test app. The SOP is in `GacUI/.github/Jobs/DebugTuiControlTestSop.md`.
     - If it has already been updated, verify this document again.
