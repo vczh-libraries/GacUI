@@ -285,9 +285,12 @@ Use the actual checkout's absolute wrapper path. The wrapper must support `-Inte
 
 | Check | Packaged result, 2026-09-09 |
 | --- | --- |
-| ControlTemplate builds | Debug/Release x64 solution builds passed with zero warnings/errors. Individual Debug x64 builds passed in TuiSkin → BlackSkin → TuiSkin → WindowSkin order |
+| Aggregate release | Build.ps1 -Project Release completed successfully: 88 resources in both architectures, Workflow generation/rebuild, all six GacUI tutorial solutions in Win32 Debug/Release and the executable inventory |
+| ControlTemplate builds | Debug/Release x64 solution builds passed with zero warnings/errors. Individual Debug x64 builds passed in TuiSkin → BlackSkin → TuiSkin → WindowSkin order; their PE subsystems and CRT entry points retain the expected Console/GUI selection |
+| Repeat packaging | UpdateRelease and tutorial generation completed again for both architectures. All five generated TUI C++ hashes are unchanged; the four skin files match upstream. Project/configuration mappings and separate binary-resource settings survive; no compiler error files |
 | Startup and packaged resources | Debug x64 starts at 100x30; Debug Win32 and Release x64 start at 80x25. Dialog checks resize to 120x40, shrink to 80x25 and restore the larger viewport. Embedded document text loads from TuiSkin.bin |
 | Startup selection | CDB resolves wmain and DefaultTuiSkinPlugin::Load in TuiSkin, with no WinMain/DefaultSkinPlugin::Load. BlackSkin and WindowSkin resolve the GUI entry/plugin, create their expected native windows and exit 0 through WM_CLOSE |
 | Localized dialogs | Chinese three-action message preserves CJK text and returns default SelectCancel; actions are centered with one gap. RGB 12/34/56 accepts as #0C2238 and survives reopen/cancel. English simple/full font previews and nested color picker work. File enumeration and the borderless validation prompt return to their owner |
 | Closing and restoration | Four vetoed Hide/Close requests produce invocation/query counts 4/4 and ready 0. Fresh direct/queued Hide/Close and both Stop paths all exit 0. Direct Close after dialogs exits 0 under CDB without a leak dump. Settled shell modes 484/7, attributes 7 and cursor 25/visible are restored; the shell accepts commands |
+| Final regenerated package | Win32 Release starts at 100x30, loads embedded document text/tables and shows a borderless Chinese message with centered action and one gap. Enter returns SelectOK. A vetoed Close stays live, then the accepted retry returns 0 through the wrapper and restores the usable shell |
 | Observation limits | Console event replay, stable live-buffer inspection and CDB establish these results. Physical input and final displayed font/cursor/RGB fidelity remain unverified |
