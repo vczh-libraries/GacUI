@@ -137,6 +137,14 @@ Extra requirements for making commits:
 
 # UPDATES
 
+## UPDATE
+
+the overall work is wonderful! but I found two more items to fix:
+
+- For sub windows, the window border should appear between the title and \_OX buttons (for example in a message dialog there is only X button, between title and X there are currently nothing, but the border should be there. if \_OX buttons shows up together they should not have gap in between \_OX).
+- Color/Font/File dialogs should align buttons in the last row to the right.
+  - This is actually a mistake in my original tast request, so please also fix GacUILayout.md and other documents if needed.
+
 # TEST [CONFIRMED]
 
 Reproduce startup bounds and physical close notifications with the injected TUI backend, then verify compact generated dialogs and forms with real TUI compositions. Follow all acceptance criteria above, distinguishing native terminal input and appearance from deterministic provider tests. Release packaging and website checks run only after the GacUI changes are committed and pushed.
@@ -149,10 +157,11 @@ CDB with source lines enabled confirms that the captured/rethrown `UnitTestAsser
 
 # PROPOSALS
 
-- No.1 Synchronize startup bounds, implement cancellable physical closing and compact TUI layouts [CONFIRMED]
+- No.1 Synchronize startup bounds, implement cancellable physical closing and compact TUI layouts [DENIED]
 - No.2 Package the TUI tutorial and document local startup [CONFIRMED]
+- No.3 Preserve the child title border and right-align non-message dialog actions
 
-## No.1 Synchronize startup bounds, implement cancellable physical closing and compact TUI layouts [CONFIRMED]
+## No.1 Synchronize startup bounds, implement cancellable physical closing and compact TUI layouts [DENIED]
 
 At the native Run boundary, reapply the actual buffer size through the existing BufferSizeChanged path after hosted properties have been copied and before Show. Keep later programmatic stored sizing unchanged. Physical Hide requests BeforeClosing, honors cancellation, sends AfterClosing then Closed after clearing visibility, and only then calls the existing owner-thread Stop. Guard reentrant closing while retaining the existing snapshot/listener-membership dispatch and normal destruction path. Hosted child/modal handling stays in its existing owner.
 
@@ -168,7 +177,9 @@ The next fixture assertion incorrectly used GuiControl::GetVisible() (compositio
 
 Authored TuiDialogs and TuiControlTest XML now use compact content rows, centered message actions, left-aligned other actions, centered field labels and one-cell RGB tracker rows. Exit adds a veto checkbox and close-query/ready counters. Resource generation precedes both metadata architectures and the final full unit suite. GacUILayout.md, the provider KB/index and the SOP describe the new contracts and retain historical records. Release/tooling/website implementation remains the final stage after committing and pushing this stage.
 
-### CONFIRMED
+### DENIED BY USER
+
+The continuation corrects only this proposal's non-message action alignment: Color, both Font variants and File actions must be right aligned. Its original left-alignment requirement and the evidence below remain historical. Retain the working startup, closing, compact-row, centered-message and one-cell-tracker changes; No.3 supersedes the rejected alignment and adds the missing child title-border behavior.
 
 The final Debug x64 unit run passed 90/90 files and 1,748/1,748 cases with no memory-leak dump. Both final Debug architectures build with zero warnings/errors; Metadata_Generate passed in Win32/x64 and Metadata_Test passed in x64. GacUI_Compiler completed both resource architectures with exit 0 and no UI error files. Existing GUI snapshots are unchanged; the new Tui/Closing test contributes its generated record.
 
@@ -221,3 +232,15 @@ The final Win32 Release packaged process (PID 22076) uses the regenerated binary
 The aggregate build, repeat generation, packaged startup/dialog/closing checks, x64 solution builds, alternating project builds, website build and 57 website tests establish this release stage. Local website/doc download and markdown export checks are complete, with the existing excluded-category references recorded above. The website remains unpublished and generated manuals were not distributed. Release is committed and pushed as 42fe20ae; Tools as 9e1a1dd and WebsiteSource as a97babb. The final GacUI verification record and SOP are committed after these results.
 
 No.1 and No.2 are complementary stages, not competing alternatives: retain No.1's provider/layout fixes and No.2's final packaging/documentation changes together. The complete GacUI suite passed 90/90 files and 1,748/1,748 cases before the release stage, with unchanged GUI snapshots and no leak dump; the release-only changes do not modify those tested provider/layout sources.
+
+## No.3 Preserve the child title border and right-align non-message dialog actions
+
+Keep No.1's startup, closing and compact-layout fixes. In authored TuiSkin Template_Window.xml, remove the opaque background covering the full title hit region. Render the caption with its own leading/trailing space using the existing ellipsized SolidLabel, leaving the already-rendered thick/double border visible up to the close button. Keep an empty title empty. Preserve title dragging, resize hit regions, the compact close glyph and hosted frame capabilities: GuiHostedWindowProxy_NonMain currently disables minimize/maximize, so do not add unsupported window commands or new gaps between caption buttons.
+
+Move the flexible column before the minimum-width action columns in ColorDialog.xml, both FontDialog.xml window variants and FileDialog.xml, shifting the action sites accordingly. Right-align the complete full-font action group including Pick a Color. Preserve one explicit row above actions, message-button centering, all bindings and accept/cancel behavior. Correct current GacUILayout, provider KB and SOP guidance while retaining prior verification records as historical.
+
+Verify generated resources for both architectures, the prescribed Debug Win32/x64 build and metadata sequence, and the full configured unit suite including leak/snapshot checks. Inspect rebuilt Windows Terminal dialogs in both locales at 120x40 and 80x25; check short/long/CJK/empty titles, thick/double borders, title dragging and close hit targets, right-aligned Color/simple Font/full Font/Open/Save actions, nested dialogs, and normal return to the shell. Refresh the existing upstream release and packaged tutorial last, after committing/pushing the GacUI fix; build and smoke-test the affected packaged consumer. The website remains unpublished.
+
+### CODE CHANGE
+
+The baseline authored title strip contains the full-width SolidBackground that erases the border after the caption. The four non-message window tables place their Percentage column after their action cells, confirming the old left alignment. The continuation changes are scoped to these XML layouts and their current guidance; generated files will be updated only through the supplied compilers and release scripts.
