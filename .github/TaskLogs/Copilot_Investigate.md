@@ -65,6 +65,12 @@ These are implementation acceptance checks; this review does not execute the tas
 
 ## REVIEW COMMENTS
 
+# UPDATES
+
+## UPDATE
+
+The implementation is overall satisfying, but there is one thing to adjust. Currently all functions in `DarkSkinConfig.cpp` are implemented in Workflow. I would like to see that, just like how `TuiSkinConfig` is doing, all `Create*ColorPackage` should be implemented in C++ in that file directly. Turn those workflow functions into C++, and clean up those no-longer-needed workflow functions. Keep function signatures in DarkSkinConfig.cpp unchanged so no other code needs to update. To simplify the verification, after fixing the code, just run GacUICompiler to rebuild DarkSkin, build the solution, open `CppTest`, do some random theme switching to make sure it works, and it is OK. No need to run the heave unittest or CI script.
+
 # TEST [CONFIRMED]
 
 Reproduce the missing DarkSkin palette API and selector with focused theme tests. Preserve the default snapshot colors; verify six presets, refresh, input-state bindings and document selection. Follow all eight acceptance checks from the task, including both architectures, resource and metadata generation, every showcase host, TUI and release consumers.
@@ -73,7 +79,8 @@ Reproduction evidence: the baseline Style.xml has visual constants inline, Theme
 
 # PROPOSALS
 
-- No.1 Share a Workflow palette across native configuration and all showcase hosts [CONFIRMED]
+- No.1 Share a Workflow palette across native configuration and all showcase hosts [DENIED]
+- No.2 Implement palette factories directly in native DarkSkin configuration
 
 ## No.1 Share a Workflow palette across native configuration and all showcase hosts
 
@@ -194,7 +201,9 @@ Remoting follow-up reproduction (the native palette is already default; replacin
 
 ```
 
-### CONFIRMED
+### DENIED BY USER
+
+The implementation passed the earlier validation, but the follow-up rejects Workflow ownership of the preset factories. Retain the existing theme values and behavior while replacing factory ownership with the C++ configuration pattern. The previous validation record follows for historical context.
 
 The selected implementation supplies one authoritative Workflow palette across native and interpreted hosts, preserving all 40 default values and all 40 existing reactive expression bodies. Default, Aurora, Ember, Moonstone, Lagoon and Rosewood share 28 neutral roles and have 12 distinct accent roles each. The native configuration forwards to those factories; there is no second palette-value table. The selector queues a value-captured package with installation and RefreshThemes in the same callback. Creating another theme does not reset it.
 
@@ -221,3 +230,14 @@ Validation limits and remaining issue:
 - Native monitor capture failed twice (CreateForMonitor 0x80070057); native keyboard injection also failed with access denied. No screenshot or physical-input visual pass is claimed. A fake color dialog entered its normal modal loop, blocking the queued automation read; that run was deliberately terminated. Fake-dialog readability across every palette was not established.
 - The six options fit at the showcase's 640-wide minimum and after its height expanded. Attempted border resizing through remoting input had no effect, so an independent narrow-width resize check is not claimed. Linux vmake inputs were updated, but Linux builds and generated makefiles were not validated on this Windows host.
 - The additional remoting hidden-list scroll reproduction above still fails because asynchronous full-text measurements temporarily shrink new row heights. Palette switching itself works at the renderer. This existing measurement issue remains unresolved; the final suite's focused null-target test does not claim to cover it. The ineffective remote-font-cache experiment was removed.
+
+
+## No.2 Implement palette factories directly in native DarkSkin configuration
+
+Move the six public preset factories and their shared neutral initializer into Source/Skins/DarkSkin/Config/DarkSkinConfig.cpp, retaining all public signatures and exact color values. Keep SetColorPackage as the bridge to the installed Workflow palette. Remove redundant Workflow factory implementations and adapt internal selector/default initialization as needed so callers continue to use the existing public API. The standalone binary-host requirement depends on how the native factories are connected; clarification has been requested while the independent factory conversion proceeds.
+
+### CODE CHANGE
+
+First replace the forwarding C++ factories with direct field assignments and a shared native neutral initializer, matching TuiSkinConfig. Verification for this follow-up is explicitly limited by the user to DarkSkin regeneration, a solution build and interactive CppTest palette switching; do not rerun the heavy unit suite, metadata/CI or release pipeline.
+
+The independent native factory conversion is complete: all six public implementations construct their own accent fields and use the native shared neutral initializer; SetColorPackage and the public header are unchanged. A field-by-field comparison against the previous Workflow implementations confirms all 40 values in every preset are identical. The Debug x64 solution build passed with zero warnings/errors in 2:24.30. Temporary DarkSkin-only compiler switches were restored. Workflow cleanup, resource regeneration and CppTest switching remain pending the native-only versus standalone binary-host compatibility choice; no unit tests or CI scripts were run. The existing Workflow code remains intact meanwhile, so the selector still has its original implementation.
