@@ -57,11 +57,16 @@ Sometimes you might need another number of clicks to show the dropdown, the scre
 For each theme you should capture the whole window and save the screenshot to the target folder:
 - The file name is `TUI_<theme>.png`, where `<theme>` is the text of the chosen theme.
 
-## Tools for Windows
+## Tools for the Task
+
+- Update sections below when you find correct, stable and efficient way to interact with the OS for this task.
+- You can't trust actual coordination, since in different computer the size and DPI is going to be different.
+
+### for Windows
 
 Build `Test/GacUISrc/GacUISrc.sln` with `copilotBuild.ps1` before launching either showcase. Use the wrappers described in the running guidelines.
 
-### FullControlTest automation
+#### FullControlTest automation
 
 - Launch `CppTest` with `copilotExecute.ps1 -Mode CLI -Executable CppTest -Configuration Debug -Platform x64` from `Test/GacUISrc`.
 - Read `http://localhost:8888/Automation/CppTest/Controls` to locate visible labels and their bounds. Send commands to `/IO` without a window id, using exactly `Content-Type: application/json; charset=utf8`.
@@ -71,7 +76,7 @@ Build `Test/GacUISrc/GacUISrc.sln` with `copilotBuild.ps1` before launching eith
 - Read theme names from `Window Manager` / `Color Theme`. The current names are `Default`, `Aurora`, `Ember`, `Moonstone`, `Lagoon`, and `Rosewood`.
 - Close the app with `!Exit` after capturing.
 
-### TuiControlTest console input and inspection
+#### TuiControlTest console input and inspection
 
 Launch a separate Windows Terminal window at 120 columns by 40 rows. For this checkout:
 
@@ -87,14 +92,10 @@ Launch a separate Windows Terminal window at 120 columns by 40 rows. For this ch
 - Use the complete displayed palette label in the filename, including `TUI_SkyBlue (default).png`.
 - After capturing, open `Exit` and choose `self.Close() (InvokeInMainThread)` with cancellation unchecked. Require normal process exit.
 
-### Saving native window images
+#### Saving native window images
 
 Use screenshots for the final artifact and visual verification; the HTTP control tree and console buffer provide the state needed for navigation. Capture the whole native window, including its frame. A window capture API can save FCT directly. For Windows Terminal, identify its showcase window, bring it to the foreground, obtain `DWMWA_EXTENDED_FRAME_BOUNDS` with `DwmGetWindowAttribute`, and use `System.Drawing.Graphics.CopyFromScreen` for that rectangle. Move the pointer outside the rectangle first and keep the window unobscured. Save PNG without rescaling. Verify equal dimensions within each showcase's theme set and inspect every final image.
 
-## Tools for Linux
+### for Linux
 
-<!-- Update here when you find correct, stable and efficient way to interact with the OS for this task -->
-
-## Tools for macOS
-
-<!-- Update here when you find correct, stable and efficient way to interact with the OS for this task -->
+### for macOS
