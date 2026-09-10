@@ -1,11 +1,15 @@
+This job can't be done when the screen is locked.
+
 When running on Windows:
   - The target folder will be `GacUI/Screenshots`.
   - `FullControlTest` will be the `CppTest` test project.
   - `TuiControlTest` will be the `CppTest_Tui` test project.
+
 When running on Linux:
   - The target folder will be `wGac/Screenshots`.
   - `FullControlTest` will can be started with `wGac/test.sh --app:fct`.
   - `TuiControlTest` will can be started with `wGac/test.sh --app:tui`.
+
 When running on macOS:
   - The target folder will be `iGac/Screenshots`.
   - `FullControlTest` will can be started with `iGac/test.sh --app:fct`.
