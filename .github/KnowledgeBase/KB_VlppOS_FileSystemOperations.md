@@ -7,7 +7,7 @@ Cross-platform file and directory manipulation with path handling and content ac
 `FilePath` is a string representation of file path.
 
 - Use `GetPathDelimiter` to get the platform path delimiter.
-- Use `operator/`, `GetName`, `GetFolder`, `GetFullPath` and `GetRelativePathFor` for path manipulation.
+- Use `operator/`, `GetName`, `GetFolder`, `GetFullPath` and `GetRelativePathFor` for path manipulation. On POSIX, joining an absolute right-hand path replaces the base folder; relative paths still resolve from the base.
 - Use `IsFile`, `IsFolder` and `IsRoot` to tell the object represented by the path.
 
 ## File Class

@@ -2,21 +2,22 @@
 
 # Orders
 
-- Verify generated artifacts with downstream consumer checks [23]
+- Verify generated artifacts with downstream consumer checks [24]
+- Keep design documentation aligned with code after refactoring [21]
 - Process staged tasks one by one with verification [20]
-- Keep design documentation aligned with code after refactoring [20]
-- Proactively remove code made redundant by refactoring [18]
-- Port fixes from imports to source repositories [17]
+- Proactively remove code made redundant by refactoring [19]
+- Port fixes from imports to source repositories [18]
 - Crash early instead of adding error-tolerance fallbacks [15]
-- Verify and localize portability on every target OS [13]
+- Verify and localize portability on every target OS [15]
 - Extract abstractions only for real shared behavior [13]
 - Fix behavior at the owning state instead of patching symptoms [12]
+- Validate expectations against implementation and existing tests [11]
 - Make `Stop()` drain asynchronous work before returning [8]
-- Validate expectations against implementation and existing tests [8]
 - Do not assume async callback owners are heap allocated [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [4]
+- Treat environment correlation as evidence, not a cause [4]
 - Don't assume observable changes are batched [3]
 - Use RAII scope cleanup instead of manual catch cleanup [3]
 - Capture dependent lambdas explicitly [2]
@@ -27,7 +28,6 @@
 - Prefer raw pointers unless shared ownership is required [2]
 - Start async callbacks after most-derived construction [2]
 - Sort serialization metadata by deterministic keys, not pointer addresses [2]
-- Treat environment correlation as evidence, not a cause [2]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
 - Use named sentinel constants instead of raw values [1]
@@ -155,6 +155,8 @@ When a VlppOS public namespace refactor changes released APIs, regenerate the Vl
 Before encoding expectations (especially for return value conventions and error semantics), read the relevant implementation and check existing tests for established patterns. This reduces churn from mismatched assumptions (e.g. public API returning a normalized error value even if internals use different sentinel codes).
 
 This also applies to enums and API surface: verify that enum values and method names/signatures actually exist before using them.
+
+Check existing command grammar when a request appears to name an operation incorrectly. Preserve the established command name when the user confirms the wording was a mistake instead of introducing a duplicate alias or unnecessary rename.
 
 For regression tests, verify that the proposed case actually distinguishes broken and fixed behavior. A positive control can pass under both implementations, so retain a root-cause-sensitive reproduction and assert the relevant observable boundary, such as callback count and range, rather than only a coarse aggregate result.
 
