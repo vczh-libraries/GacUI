@@ -56,3 +56,15 @@ Sometimes you might need another number of clicks to show the dropdown, the scre
 
 For each theme you should capture the whole window and save the screenshot to the target folder:
 - The file name is `TUI_<theme>.png`, where `<theme>` is the text of the chosen theme.
+
+## Tools for Windows
+
+<!-- Update here when you find correct, stable and efficient way to interact with the OS for this task -->
+
+## Tools for Linux
+
+<!-- Update here when you find correct, stable and efficient way to interact with the OS for this task -->
+
+## Tools for macOS
+
+<!-- Update here when you find correct, stable and efficient way to interact with the OS for this task -->
