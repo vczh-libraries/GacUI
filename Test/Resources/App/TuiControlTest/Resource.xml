@@ -70,12 +70,14 @@
     </Instance>
   </Instance>
   <Instance name="MainWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiMainWindow" xmlns:demo="tuidemo::*" ref.Styles="res://WindowManagerContentStyles">
+    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiMainWindow" xmlns:demo="tuidemo::*" xmlns:x="presentation::controls::GuiSelectableButton::*" ref.Styles="res://WindowManagerContentStyles">
       <ref.Members><![CDATA[
         var openedSubWindows: GuiWindow^[] = {};
         prop invocationCount : int = 0 {}
         prop closingCount : int = 0 {}
         prop readyToCloseCount : int = 0 {}
+
+        event PaletteSelected(int);
 
         func ShowMouseModifiers(alt: bool, osSuper: bool): void
         {
@@ -184,46 +186,95 @@
               </Tab>
             </TabPage>
             <TabPage Alt="W" Text="Window Manager">
-              <Stack ref.Style="windowManagerContent">
-                <StackItem>
-                  <Label Text-bind="commandLocalShortcut.Shortcut.Name" />
-                </StackItem>
-                <StackItem>
-                  <Label Text-bind="commandLocalSuperShortcut.Shortcut.Name" />
-                </StackItem>
-                <StackItem>
-                  <Label Text-bind="commandGlobalShortcut.Shortcut.Name" />
-                </StackItem>
-                <StackItem>
-                  <Label ref.Name="labelMouseButton" Text="Click here with any mouse button.">
-                    <att.BoundsComposition-set PreferredMinSize="y:1" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-                      <ev.mouseDown-eval><![CDATA[{
-                        labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button down!";
-                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
-                      }]]></ev.mouseDown-eval>
-                      <ev.mouseUp-eval><![CDATA[{
-                        labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button up!";
-                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
-                      }]]></ev.mouseUp-eval>
-                      <ev.mouseMove-eval><![CDATA[{
-                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
-                }]]></ev.mouseMove-eval>
-                      <ev.mouseDoubleClick-eval><![CDATA[{
-                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
-                }]]></ev.mouseDoubleClick-eval>
-                      <ev.verticalWheel-eval><![CDATA[{
-                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
-                }]]></ev.verticalWheel-eval>
-                      <ev.horizontalWheel-eval><![CDATA[{
-                  self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
-                }]]></ev.horizontalWheel-eval>
-                    </att.BoundsComposition-set>
-                  </Label>
-                </StackItem>
-                <StackItem>
-                  <Label ref.Name="labelMouseModifiers" Text="Alt: 0; Super: 0" />
-                </StackItem>
-              </Stack>
+              <x:MutexGroupController ref.Name="paletteGroup" />
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="0">
+                <att.Rows>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Rows>
+                <att.Columns>
+                  <_>composeType:Percentage percentage:1.0</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Columns>
+                <Cell Site="row:0 column:0">
+                  <Stack ref.Style="windowManagerContent">
+                    <StackItem>
+                      <Label Text-bind="commandLocalShortcut.Shortcut.Name" />
+                    </StackItem>
+                    <StackItem>
+                      <Label Text-bind="commandLocalSuperShortcut.Shortcut.Name" />
+                    </StackItem>
+                    <StackItem>
+                      <Label Text-bind="commandGlobalShortcut.Shortcut.Name" />
+                    </StackItem>
+                    <StackItem>
+                      <Label ref.Name="labelMouseButton" Text="Click here with any mouse button.">
+                        <att.BoundsComposition-set PreferredMinSize="y:1" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                          <ev.mouseDown-eval><![CDATA[{
+                            labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button down!";
+                      self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                          }]]></ev.mouseDown-eval>
+                          <ev.mouseUp-eval><![CDATA[{
+                            labelMouseButton.Text = self.MouseButtonName(arguments.button) & " button up!";
+                      self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                          }]]></ev.mouseUp-eval>
+                          <ev.mouseMove-eval><![CDATA[{
+                      self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                    }]]></ev.mouseMove-eval>
+                          <ev.mouseDoubleClick-eval><![CDATA[{
+                      self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                    }]]></ev.mouseDoubleClick-eval>
+                          <ev.verticalWheel-eval><![CDATA[{
+                      self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                    }]]></ev.verticalWheel-eval>
+                          <ev.horizontalWheel-eval><![CDATA[{
+                      self.ShowMouseModifiers(arguments.alt, arguments.osSuper);
+                    }]]></ev.horizontalWheel-eval>
+                        </att.BoundsComposition-set>
+                      </Label>
+                    </StackItem>
+                    <StackItem>
+                      <Label ref.Name="labelMouseModifiers" Text="Alt: 0; Super: 0" />
+                    </StackItem>
+                  </Stack>
+                </Cell>
+                <Cell Site="row:0 column:1">
+                  <GroupBox Text="Color Theme">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1" />
+                    <Stack Direction="Vertical" Padding="0" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                      <StackItem>
+                        <RadioButton ref.Name="palettePink" Text="Pink" GroupController-ref="paletteGroup">
+                          <ev.SelectedChanged-eval><![CDATA[{if (palettePink.Selected) {self.PaletteSelected(0);}}]]></ev.SelectedChanged-eval>
+                        </RadioButton>
+                      </StackItem>
+                      <StackItem>
+                        <RadioButton ref.Name="paletteOrange" Text="Orange" GroupController-ref="paletteGroup">
+                          <ev.SelectedChanged-eval><![CDATA[{if (paletteOrange.Selected) {self.PaletteSelected(1);}}]]></ev.SelectedChanged-eval>
+                        </RadioButton>
+                      </StackItem>
+                      <StackItem>
+                        <RadioButton ref.Name="paletteGrass" Text="Grass" GroupController-ref="paletteGroup">
+                          <ev.SelectedChanged-eval><![CDATA[{if (paletteGrass.Selected) {self.PaletteSelected(2);}}]]></ev.SelectedChanged-eval>
+                        </RadioButton>
+                      </StackItem>
+                      <StackItem>
+                        <RadioButton ref.Name="paletteEmerald" Text="Emerald" GroupController-ref="paletteGroup">
+                          <ev.SelectedChanged-eval><![CDATA[{if (paletteEmerald.Selected) {self.PaletteSelected(3);}}]]></ev.SelectedChanged-eval>
+                        </RadioButton>
+                      </StackItem>
+                      <StackItem>
+                        <RadioButton ref.Name="paletteSkyblue" Text="SkyBlue (default)" GroupController-ref="paletteGroup" Selected="true">
+                          <ev.SelectedChanged-eval><![CDATA[{if (paletteSkyblue.Selected) {self.PaletteSelected(4);}}]]></ev.SelectedChanged-eval>
+                        </RadioButton>
+                      </StackItem>
+                      <StackItem>
+                        <RadioButton ref.Name="palettePurple" Text="Purple" GroupController-ref="paletteGroup">
+                          <ev.SelectedChanged-eval><![CDATA[{if (palettePurple.Selected) {self.PaletteSelected(5);}}]]></ev.SelectedChanged-eval>
+                        </RadioButton>
+                      </StackItem>
+                    </Stack>
+                  </GroupBox>
+                </Cell>
+              </Table>
             </TabPage>
             <TabPage Alt="X" Text="Exit">
               <Stack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" Padding="0" MinSizeLimitation="LimitToElementAndChildren">

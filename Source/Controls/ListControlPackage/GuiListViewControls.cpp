@@ -64,6 +64,14 @@ GuiListViewBase
 
 			void GuiListViewBase::AfterControlTemplateInstalled_(bool initialize)
 			{
+				if (auto arranger = dynamic_cast<list::ListViewColumnItemArranger*>(GetArranger()))
+				{
+					auto columnTemplate = TypedControlTemplateObject(true)->GetColumnHeaderTemplate();
+					for (auto button : arranger->GetColumnButtons())
+					{
+						button->SetControlTemplate(columnTemplate);
+					}
+				}
 			}
 
 			GuiListViewBase::GuiListViewBase(theme::ThemeName themeName, list::IItemProvider* _itemProvider)

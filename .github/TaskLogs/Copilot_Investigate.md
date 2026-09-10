@@ -90,7 +90,7 @@ If skin or layout issue happens because `GacUILayout.md` said so or the guidance
 No unresolved review comments. The implementation decisions and required verification are recorded under each task above.
 
 
-# TEST
+# TEST [CONFIRMED]
 
 The first regression in `../VlppOS/Test/Source/TestTui.cpp` checks all ten drawing signatures for an optional clipper. It compiles against the existing API using a dependent requires-expression and fails at runtime until clipped overloads exist. Behavioral tests will compare distinguishable seeded buffers across null/full/interior/partial/exterior/empty/inverted clips, all primitives and both overload families, original corners, mixed line merging, invalid arguments, zero-sized buffers and wide-glyph repairs. Every active-buffer result must pass `TUI::RenderBuffer`.
 
@@ -100,7 +100,7 @@ The baseline Debug x64 wrapper build succeeded with zero warnings/errors. The Un
 
 # PROPOSALS
 
-- No.1 Centralize clipped drawing in VlppOS and preserve generic control state during live theme refresh.
+- No.1 Centralize clipped drawing in VlppOS and preserve generic control state during live theme refresh. [CONFIRMED]
 
 ## No.1 Centralize clipped drawing in VlppOS and preserve generic control state during live theme refresh
 
@@ -110,4 +110,30 @@ Implement the six native palette factories and deferred showcase selection. Add 
 
 ### CODE CHANGE
 
-The baseline API regression has been added to VlppOS. Implementation and behavioral verification are pending.
+- `../VlppOS/Source/TUI/TUI.h/.cpp`: add the optional half-open `TuiClipper` to all ten drawing overloads. Normalize against current buffer dimensions after argument validation, reject invisible writes before wide-pair mutation, and clip original line/rectangle geometry without inventing edges. Preserve merging, rounded corners and existing partner-background repair. An optional synchronous foreground-color transform in line/rectangle options lets GacUI blend alpha only at painted cells, without duplicating rasterization or copying the buffer. It must not mutate or pump TUI state.
+- Regenerate upstream Release with CodePack and update GacUI's Import pair through the supported dependency copy. SHA-256 hashes of both Import files match upstream Release. The upstream owning TUI KB documents clipping and the color transform.
+- `Source/PlatformProviders/TUI/TuiGraphics.cpp/.h`: retain the composition clip stack, forward its clip to VlppOS, remove the border scratch buffer and duplicated perimeter clipping, and preserve safe destination reads, alpha/text/background/style and wide-caret behavior across resize.
+- `Source/Application/Controls/GuiBasicControls.cpp/.h`, `GuiApplication.cpp/.h`, and `Source/Reflection/TypeDescriptors/GuiReflectionControls.cpp`: add reflected, synchronous UI-thread `RefreshThemes` APIs. Rebuild only unassigned templates; snapshot live children after rebuilding and registered windows before iteration with disposed flags. Preserve explicit overrides and surviving application-owned control focus.
+- `Source/Controls/GuiContainerControls.cpp/.h`: transfer scrollbar ranges, page sizes and positions before attaching replacement-bar handlers; normal layout clamps the new valid range. `Source/Controls/ListControlPackage/GuiListControls.cpp` preserves positions around row reloads and reloads only visible styles during render-target changes, retaining the unchanged provider and arranger.
+- `Source/Controls/TextEditorPackage/GuiDocumentViewer.cpp`: preserve complete baseline formatting on first template installation. Subsequent installs update font/baseline/caret colors without replacing the model or clearing edits, selection, undo/redo or modified state. `GuiListViewControls.cpp` reapplies retained header factories while preserving identity, widths, sorting and filter dropdowns. `GuiMenuControls.cpp` detaches the handler from the matching `BeforeClicked` event.
+- `Test/GacUISrc/Generated_TuiSkin/TuiSkinConfig.h/.cpp`: expose all six exact factory names, share every neutral role, vary coordinated accent/highlight colors, and keep Default forwarding to the unchanged SkyBlue values. The authored `Resource.xml` adds equal columns, one six-radio mutex group and a generated palette event. `CppTest_Tui/Main.cpp` captures the preset by value and queues native palette installation plus refresh after input dispatch. Both architectures' generated sources/resources come from `GacUI_Compiler`.
+- Extend upstream primitive tests, `TestTuiProvider.cpp` and `TestApplication_Theme.cpp`. Coverage includes clipping/repair/resize/alpha, palettes, disposed popup registry mutation, explicit parent/leaf overrides, retained headers and content/date popups, open modal refresh, real keyboard focus, document identity/history/selection/modified state, TAB/Shift+TAB, tree/list selection and nonzero view offsets after deferred layout. An initial GUI transparency assertion protects the first-install baseline path.
+- Update `GacUILayout.md`, the TUI provider and list-control architecture KBs, and `.github/Jobs/DebugTuiControlTestSop.md` with the owning contracts and concrete replay observations. Assigned templates and application-owned captured element colors remain outside automatic recoloring as specified.
+
+The staged list regression first established an accepted (5,10) position, then proved it became (0,0) after refresh. CDB's data breakpoint traced the first write through ancestor-container detachment, `OnRenderTargetChanged`, `SetStyleAndArranger`, `DetachCallback`, `SetItemSource(nullptr)` and `Layout_ResetLayout`. With no host, `CalculateView` ran synchronously during that artificial empty-data interval and disabled both bars. Retaining the provider/arranger during visible-row reload avoids it; restoring the position around both list lifecycle hooks survives subsequent queued layout. Explicit item-template/arranger changes retain their reset semantics.
+
+The first complete GacUI run passed 90/90 files and 1,755/1,755 cases without leaks, but snapshot review found opaque backgrounds in initially constructed plain-text controls. The replacement hook had omitted the original first-install baseline formatting. Keeping initialization separate from refresh restores the transparent default while preserving state during later refreshes. The corrected focused replay passes all 22 cases, including the new transparency assertion. The final complete wrapper run passes 90/90 files and 1,755/1,755 cases with no leak dump.
+
+Generation and architecture validation are complete: pre-resource Debug Win32/x64 metadata generation and x64 Metadata_Test passed; the full resource compiler generated and merged both architectures without UI error files; the required post-generation metadata sequence passed; final Debug x64 and Win32 builds after the lifecycle corrections both report zero warnings/errors. Workflow event handlers require braces around their if bodies; that authored-XML syntax correction was regenerated normally.
+
+The SOP records controlled pseudoterminal replay on both architectures. All six palettes and return to SkyBlue pass mouse and keyboard at 120x40 and 80x25 with exactly one selected radio and matching emitted RGB. Existing child windows, edited/sorted/filtered grids, recycled list rows, scrolled edited documents, mouse/keyboard menu actions, shortcuts and fake dialogs survive palette changes. Post-correction x64/Win32 smoke runs under architecture-matched CDB exit 0 with no leak dump and restore console modes, viewport, attributes and cursor. These are console-buffer/event/VT observations; Windows Terminal launch was blocked by the computer-use tool's product policy, so physical input and final displayed font/cursor/RGB fidelity remain unverified.
+
+### CONFIRMED
+
+The final Debug x64 wrapper log reports 90/90 files and 1,755/1,755 cases passed with no assertion failure or Debug leak dump. VlppOS's completed wrapper log reports 16/16 files and 306/306 cases passed without leaks. Both final GacUI architecture builds have zero warnings/errors, both metadata sequences and x64 metadata validation passed, and the resource compiler completed both architectures without error files.
+
+All existing GUI frame content matches the baseline. Only ScrollResetOnNavigation's frame IDs and intermediate rendering traces differ: JSON comparison excluding frameId proves the saved frame structures, properties, geometry and text are identical. The seven timing-only snapshot files were restored after saving their diff in the verification artifacts. New theme regression snapshots are retained.
+
+The proposal centralizes clipping at the primitive boundary while retaining GacUI alpha behavior, and the owner lifecycle fixes preserve meaningful control state through refresh and subsequent layout/input. Console replay additionally verifies palette selection and emitted RGB, existing/new controls, menus, editors, lists/grids, nested dropdowns, dialogs, resizing, normal shutdown and console restoration. The detailed operations and architecture-specific smoke/leak checks are recorded in the TUI SOP.
+
+Windows Terminal's displayed appearance and physical keyboard/mouse delivery remain unverified because the computer-use tool rejected its launch under product policy. This limit does not change the deterministic test and controlled console-replay results above; it is not claimed as a completed displayed-terminal check.

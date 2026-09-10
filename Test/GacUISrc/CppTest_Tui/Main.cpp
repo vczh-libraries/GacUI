@@ -15,6 +15,25 @@ void GuiMain()
 	tuiskin::SetColorPackage(tuiskin::CreateDefaultColorPackage());
 	theme::RegisterTheme(Ptr(new tuiskin::TuiTheme));
 	tuidemo::TuiMainWindow window;
+	window.PaletteSelected.Add([&window](vint preset)
+	{
+		controls::GetApplication()->InvokeInMainThread(&window, [preset]()
+		{
+			tuiskin::ColorPackage colors;
+			switch (preset)
+			{
+			case 0: colors = tuiskin::CreatePinkColorPackage(); break;
+			case 1: colors = tuiskin::CreateOrangeColorPackage(); break;
+			case 2: colors = tuiskin::CreateGrassPackage(); break;
+			case 3: colors = tuiskin::CreateEmeraldPackage(); break;
+			case 4: colors = tuiskin::CreateSkyblueColorPackage(); break;
+			case 5: colors = tuiskin::CreatePurplePackage(); break;
+			default: return;
+			}
+			tuiskin::SetColorPackage(colors);
+			controls::GetApplication()->RefreshThemes();
+		});
+	});
 	window.ForceCalculateSizeImmediately();
 	controls::GetApplication()->Run(&window);
 }

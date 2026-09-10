@@ -239,6 +239,19 @@ GuiApplication
 				return windows;
 			}
 
+			void GuiApplication::RefreshThemes()
+			{
+				collections::List<Pair<GuiWindow*, Ptr<GuiDisposedFlag>>> snapshot;
+				for (auto window : windows)
+				{
+					snapshot.Add({ window, window->GetDisposedFlag() });
+				}
+				for (auto&& entry : snapshot)
+				{
+					if (!entry.value->IsDisposed()) entry.key->RefreshThemes();
+				}
+			}
+
 			GuiWindow* GuiApplication::GetWindow(NativePoint location)
 			{
 				INativeWindow* nativeWindow = GetCurrentController()->WindowService()->GetWindow(location);

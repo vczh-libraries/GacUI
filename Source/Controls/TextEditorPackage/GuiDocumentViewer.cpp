@@ -32,7 +32,14 @@ GuiDocumentViewer
 				if (documentElement)
 				{
 					documentElement->SetCaretColor(ct->GetCaretColor());
-					SetDocument(GetDocument());
+					if (initialize)
+					{
+						SetDocument(GetDocument());
+					}
+					else
+					{
+						OnFontChanged();
+					}
 				}
 				ReplaceMouseArea(containerComposition->GetParent());
 			}
@@ -157,7 +164,14 @@ GuiDocumentLabel
 				if (documentElement)
 				{
 					documentElement->SetCaretColor(ct->GetCaretColor());
-					SetDocument(GetDocument());
+					if (initialize)
+					{
+						SetDocument(GetDocument());
+					}
+					else
+					{
+						OnFontChanged();
+					}
 				}
 			}
 

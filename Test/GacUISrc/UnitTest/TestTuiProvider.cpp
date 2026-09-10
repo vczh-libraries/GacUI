@@ -189,6 +189,226 @@ using namespace tui_provider_tests;
 
 TEST_FILE
 {
+	TEST_CASE(L"TUI presets share every neutral role and preserve the default palette")
+	{
+		auto skyblue = tuiskin::CreateSkyblueColorPackage();
+		TEST_ASSERT(tuiskin::CreateDefaultColorPackage() == skyblue);
+		TEST_ASSERT(skyblue.ControlBorderFocused == Color(0x87, 0xCE, 0xFA));
+		TEST_ASSERT(skyblue.MenuBackgroundHighlighted == Color(0, 0, 0x80));
+		List<Color> accents;
+		for (auto colors : { tuiskin::CreatePinkColorPackage(), tuiskin::CreateOrangeColorPackage(), tuiskin::CreateGrassPackage(), tuiskin::CreateEmeraldPackage(), skyblue, tuiskin::CreatePurplePackage() })
+		{
+			TEST_ASSERT(!accents.Contains(colors.ControlBorderFocused));
+			accents.Add(colors.ControlBorderFocused);
+			TEST_ASSERT(colors.ControlBorderFocused.a == 255 && colors.MenuBackgroundHighlighted.a == 255);
+			TEST_ASSERT(colors.ItemBackgroundSelected == colors.ControlBorderFocused);
+			TEST_ASSERT(colors.ButtonBackgroundHighlighted == colors.ControlBorderFocused);
+			TEST_ASSERT(colors.ItemBackgroundHighlighted == colors.MenuBackgroundHighlighted);
+			colors.ControlBorderFocused = skyblue.ControlBorderFocused;
+			colors.ItemBackgroundSelected = skyblue.ItemBackgroundSelected;
+			colors.ButtonBackgroundHighlighted = skyblue.ButtonBackgroundHighlighted;
+			colors.ItemBackgroundHighlighted = skyblue.ItemBackgroundHighlighted;
+			colors.MenuBackgroundHighlighted = skyblue.MenuBackgroundHighlighted;
+			TEST_ASSERT(colors == skyblue);
+		}
+	});
+
+	TEST_CASE(L"TUI live themes refresh retained headers, menus, date combos and trees")
+	{
+		using namespace vl::presentation::unittest;
+		GacUIUnitTest_SetGuiMainProxy([](auto, auto)
+		{
+			TuiRunTest([](TuiTestBackend*, TuiTestController* controller)
+			{
+				using namespace controls;
+				using namespace compositions;
+				auto previousResources = GetGuiGraphicsResourceManager();
+				auto previousController = GetNativeController();
+				auto previousHosted = GetHostedApplication();
+				GuiHostedController hosted(controller);
+				TuiGraphicsResourceManager resources;
+				GuiHostedGraphicsResourceManager hostedResources(&hosted, &resources);
+				SetNativeController(&hosted);
+				SetHostedApplication(nullptr);
+				SetHostedApplication(hosted.GetHostedApplication());
+				SetTuiApplication(controller);
+				SetGuiGraphicsResourceManager(&hostedResources);
+				controller->CallbackService()->InstallListener(&resources);
+				RegisterTuiRenderers();
+				hosted.Initialize();
+				tuiskin::SetColorPackage(tuiskin::CreateDefaultColorPackage());
+				auto skin = Ptr(new tuiskin::TuiTheme);
+				theme::RegisterTheme(skin);
+				{
+					GuiWindow main(theme::ThemeName::SystemFrameWindow);
+					main.SetClientSize(Size(120, 40));
+					auto add = [&](GuiControl* control, Rect bounds)
+					{
+						main.GetContainerComposition()->AddChild(control->GetBoundsComposition());
+						control->GetBoundsComposition()->SetExpectedBounds(bounds);
+					};
+					auto listView = new GuiListView(theme::ThemeName::ListView);
+					add(listView, Rect(0, 0, 45, 12));
+					auto column = Ptr(new list::ListViewColumn(L"Retained", 60));
+					column->SetSortingState(ColumnSortingState::Ascending);
+					auto filter = new GuiMenu(theme::ThemeName::Menu, listView);
+					column->SetDropdownPopup(filter);
+					listView->GetColumns().Add(column);
+					for (vint i = 0; i < 40; i++)
+					{
+						auto item = Ptr(new list::ListViewItem);
+						item->SetText(L"Row " + itow(i));
+						listView->GetItems().Add(item);
+					}
+					listView->SetView(ListViewView::Detail);
+					listView->SetSelected(20, true);
+					auto menu = new GuiMenuButton(theme::ThemeName::MenuItemButton);
+					add(menu, Rect(0, 14, 20, 15));
+					vint menuActions = 0;
+					menu->BeforeSubMenuOpening.AttachLambda([&](auto, auto&) {menuActions++; });
+					auto combo = new GuiComboBoxBase(theme::ThemeName::ComboBox, false);
+					add(combo, Rect(25, 14, 45, 15));
+					auto contentPopup = combo->CreateSubMenu();
+					auto content = new GuiLabel(theme::ThemeName::Label);
+					content->SetText(L"Retained content");
+					contentPopup->GetContainerComposition()->AddChild(content->GetBoundsComposition());
+					auto contentTemplate = contentPopup->GetControlTemplateObject();
+					auto date = new GuiDateComboBox(theme::ThemeName::DateComboBox);
+					add(date, Rect(0, 16, 30, 17));
+					auto selectedDate = DateTime::FromDateTime(2024, 2, 29);
+					date->SetSelectedDate(selectedDate);
+					auto treeView = new GuiTreeView(theme::ThemeName::TreeView);
+					add(treeView, Rect(50, 0, 75, 12));
+					GuiWindow modal(theme::ThemeName::Window);
+					modal.SetClientSize(Size(30, 8));
+					auto node = Ptr(new tree::MemoryNodeProvider);
+					treeView->Nodes()->SetTreeViewData(node.Obj(), Ptr(new tree::TreeViewItem(nullptr, L"Expanded")));
+					treeView->Nodes()->Children().Add(node);
+					auto childNode = Ptr(new tree::MemoryNodeProvider);
+					treeView->Nodes()->SetTreeViewData(childNode.Obj(), Ptr(new tree::TreeViewItem(nullptr, L"Child")));
+					node->Children().Add(childNode);
+					node->SetExpanding(true);
+					List<Func<void()>> steps;
+					Point viewPosition;
+					NativeRect mainBounds;
+					NativeRect modalBounds;
+					list::ListViewColumnItemArranger* arranger = nullptr;
+					GuiListViewColumnHeader* header = nullptr;
+					Ptr<GuiDisposedFlag> headerFlag;
+					Ptr<GuiDisposedFlag> arrowFlag;
+					steps.Add([&]()
+					{
+						main.ForceCalculateSizeImmediately();
+						listView->CalculateView();
+					});
+					steps.Add([&]()
+					{
+						listView->SetViewPosition(Point(5, 10));
+						viewPosition = listView->GetViewPosition();
+						TEST_ASSERT(viewPosition.x > 0 && viewPosition.y > 0);
+						mainBounds = main.GetNativeWindow()->GetBounds();
+						arranger = dynamic_cast<list::ListViewColumnItemArranger*>(listView->GetArranger());
+						TEST_ASSERT(arranger && arranger->GetColumnButtons().Count() == 1);
+						header = arranger->GetColumnButtons()[0];
+						headerFlag = header->GetDisposedFlag();
+					});
+					for (auto colors : { tuiskin::CreatePinkColorPackage(), tuiskin::CreateOrangeColorPackage(), tuiskin::CreateGrassPackage(), tuiskin::CreateEmeraldPackage(), tuiskin::CreatePurplePackage(), tuiskin::CreateSkyblueColorPackage() })
+					{
+						steps.Add([&, colors]()
+						{
+							arrowFlag = header->GetSubMenuHost()->GetDisposedFlag();
+							tuiskin::SetColorPackage(colors);
+							GetApplication()->RefreshThemes();
+							main.ForceCalculateSizeImmediately();
+						});
+						steps.Add([&, colors]()
+						{
+							TEST_ASSERT(main.GetOpening() && main.GetNativeWindow()->GetBounds() == mainBounds);
+							TEST_ASSERT(!headerFlag->IsDisposed() && arranger->GetColumnButtons()[0] == header);
+							TEST_ASSERT(arrowFlag->IsDisposed());
+							TEST_ASSERT(column->GetSize() == 60 && header->GetColumnSortingState() == ColumnSortingState::Ascending);
+							TEST_ASSERT(header->GetSubMenu() == filter && column->GetDropdownPopup() == filter);
+							auto headerTemplate = dynamic_cast<templates::GuiListViewColumnHeaderTemplate*>(header->GetControlTemplateObject());
+							headerTemplate->SetState(ButtonState::Active);
+							TEST_ASSERT(headerTemplate->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->GetColor() == colors.ButtonBackgroundHighlighted);
+							headerTemplate->SetState(ButtonState::Pressed);
+							TEST_ASSERT(headerTemplate->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->GetColor() == colors.ButtonBackgroundPressed);
+							TEST_ASSERT(listView->GetSelected(20) && node->GetExpanding());
+							TEST_ASSERT(listView->GetViewPosition() == viewPosition);
+							TEST_ASSERT(date->GetSelectedDate().osMilliseconds == selectedDate.osMilliseconds);
+							TEST_ASSERT(contentPopup->GetControlTemplateObject() == contentTemplate);
+							TEST_ASSERT(content->GetText() == L"Retained content");
+							auto actions = menuActions;
+							menu->GetSubMenuHost()->BeforeClicked.Execute(menu->GetNotifyEventArguments());
+							TEST_ASSERT(menuActions == actions + 1);
+						});
+					}
+					steps.Add([&]()
+					{
+						combo->SetSubMenuOpening(true);
+						TEST_ASSERT(contentPopup->GetOpening());
+						GetApplication()->RefreshThemes();
+					});
+					steps.Add([&]()
+					{
+						TEST_ASSERT(contentPopup->GetOpening());
+						combo->SetSubMenuOpening(false);
+						date->SetSubMenuOpening(true);
+						TEST_ASSERT(date->GetSubMenuOpening());
+						GetApplication()->RefreshThemes();
+					});
+					steps.Add([&]()
+					{
+						TEST_ASSERT(date->GetSubMenuOpening());
+						date->SetSubMenuOpening(false);
+						modal.ShowModal(&main, []() {});
+					});
+					steps.Add([&]()
+					{
+						TEST_ASSERT(modal.GetOpening());
+						modalBounds = modal.GetNativeWindow()->GetBounds();
+						tuiskin::SetColorPackage(tuiskin::CreatePurplePackage());
+						GetApplication()->RefreshThemes();
+						modal.ForceCalculateSizeImmediately();
+					});
+					steps.Add([&]()
+					{
+						TEST_ASSERT(modal.GetOpening() && modal.GetNativeWindow()->GetBounds() == modalBounds);
+						modal.Hide();
+					});
+					steps.Add([&]() {main.Hide(); });
+					vint nextStep = 0;
+					Func<void()> runStep;
+					runStep = [&]()
+					{
+						steps[nextStep++]();
+						if (nextStep < steps.Count())
+						{
+							// Allow rendering and its queued view calculations to finish before observing state.
+							GetApplication()->InvokeInMainThread(&main, [&]()
+							{
+								GetApplication()->InvokeInMainThread(&main, runStep);
+							});
+						}
+					};
+					GetApplication()->InvokeInMainThread(&main, runStep);
+					controller->InputService()->StartTimer();
+					GetApplication()->Run(&main);
+				}
+				tuiskin::SetColorPackage(tuiskin::CreateDefaultColorPackage());
+				theme::UnregisterTheme(skin->Name);
+				hosted.Finalize();
+				controller->CallbackService()->UninstallListener(&resources);
+				SetGuiGraphicsResourceManager(previousResources);
+				SetTuiApplication(nullptr);
+				SetHostedApplication(nullptr);
+				SetHostedApplication(previousHosted);
+				SetNativeController(previousController);
+			}, Size(120, 40));
+		});
+		GacUIUnitTest_Start(L"Tui/RefreshThemes");
+	});
+
 	TEST_CASE(L"TUI document minimum bounds include the final block caret")
 	{
 		TuiRunTest([](TuiTestBackend*, TuiTestController* controller)
@@ -995,6 +1215,84 @@ TEST_FILE
 	});
 
 	TEST_CASE(L"TUI nested and empty clippers restore drawing across resize")
+	{
+		TuiRunTest([](TuiTestBackend* backend, TuiTestController* controller)
+		{
+			auto window = controller->CreateNativeWindow(INativeWindow::Normal);
+			window->Show();
+			TuiGraphicsRenderTarget target(window);
+			target.StartHostedRendering();
+			target.StartRendering();
+			target.Fill(Rect(0, 0, 16, 8), Color(10, 20, 30));
+			target.PushClipper(Rect(2, 1, 12, 7), nullptr);
+			target.PushClipper(Rect(4, 2, 10, 6), nullptr);
+			backend->events.Add({ .type = TuiBackendEventType::Resize, .width = 6, .height = 4 });
+			controller->RunOneCycle();
+			target.Fill(Rect(-100, -100, 100, 100), Color(110, 120, 130, 128));
+			TEST_ASSERT(TUI::GetBuffer()[2 * 6 + 4].backgroundColor == TuiColor({ 60, 70, 80 }));
+			TEST_ASSERT(TUI::GetBuffer()[2 * 6 + 3].backgroundColor == TuiColor({ 10, 20, 30 }));
+			target.PushClipper(Rect(12, 7, 14, 8), nullptr);
+			target.Border(Rect(4, 2, 1000000, 1000000), Color(255, 0, 0), TuiLineStyle::Thin, {});
+			target.PopClipper(nullptr);
+			target.Border(Rect(-1000000, -1000000, 1000000, 1000000), Color(255, 0, 0, 128), TuiLineStyle::Thin, {});
+			TEST_ASSERT(TUI::GetBuffer()[2 * 6 + 4].GetChar32() == 0);
+			target.PopClipper(nullptr);
+			target.Fill(Rect(-100, -100, 100, 100), Color(20, 30, 40));
+			TEST_ASSERT(TUI::GetBuffer()[1 * 6 + 2].backgroundColor == TuiColor({ 20, 30, 40 }));
+			TEST_ASSERT(TUI::GetBuffer()[1 * 6 + 1].backgroundColor == TuiColor({ 10, 20, 30 }));
+			target.PopClipper(nullptr);
+			target.StopRendering();
+			target.StopHostedRendering();
+			TEST_ASSERT(backend->presents == 1);
+			controller->DestroyNativeWindow(window);
+		});
+	});
+
+	TEST_CASE(L"TUI alpha borders and text preserve clipped colors, styles and wide carets")
+	{
+		TuiRunTest([](TuiTestBackend* backend, TuiTestController* controller)
+		{
+			auto window = controller->CreateNativeWindow(INativeWindow::Normal);
+			window->Show();
+			TuiGraphicsRenderTarget target(window);
+			target.StartHostedRendering();
+			target.StartRendering();
+			target.Fill(Rect(0, 0, 16, 8), Color(10, 20, 30));
+			target.Print(Point(2, 2), U'X', Color(30, 40, 50), Color(0, 0, 0, 0), { true, true, true, true });
+			target.PushClipper(Rect(2, 2, 6, 5), nullptr);
+			target.Border(Rect(0, 2, 10, 7), Color(130, 140, 150, 128), TuiLineStyle::Double, {});
+			TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 2].GetChar32() == U'\u2550');
+			TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 2].foregroundColor == TuiColor({ 80, 90, 100 }));
+			TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 2].backgroundColor == TuiColor({ 10, 20, 30 }));
+			TEST_ASSERT(TUI::GetBuffer()[3 * 16 + 2].GetChar32() == 0);
+			target.Fill(Rect(2, 2, 6, 5), Color(1, 2, 3, 0));
+			target.Border(Rect(2, 2, 6, 5), Color(1, 2, 3, 0), TuiLineStyle::Thin, {});
+			target.Print(Point(2, 2), U'Y', Color(1, 2, 3, 0), Color(1, 2, 3, 0), {});
+			TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 2].GetChar32() == U'\u2550');
+			target.Print(Point(2, 2), U'Z', Color(180, 190, 200, 128), Color(110, 120, 130, 128), { true, true, true, true });
+			TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 2].foregroundColor == TuiColor({ 130, 140, 150 }));
+			TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 2].backgroundColor == TuiColor({ 60, 70, 80 }));
+			TEST_ASSERT(TUI::GetBuffer()[2 * 16 + 2].character.style == TuiTextStyle({ true, true, true, true }));
+			target.PopClipper(nullptr);
+			target.Print(Point(1, 3), U'\u4E2D', Color(40, 50, 60), Color(70, 80, 90), { true, true, true, true });
+			target.PushClipper(Rect(2, 3, 6, 5), nullptr);
+			target.Caret(Point(2, 3), Color(150, 160, 170));
+			TEST_ASSERT(TUI::GetBuffer()[3 * 16 + 1].backgroundColor == TuiColor({ 70, 80, 90 }));
+			TEST_ASSERT(TUI::GetBuffer()[3 * 16 + 2].glyph == TuiPixelGlyph::WideCharContinuation);
+			target.PopClipper(nullptr);
+			target.PushClipper(Rect(1, 3, 3, 4), nullptr);
+			target.Caret(Point(2, 3), Color(150, 160, 170));
+			TEST_ASSERT(TUI::GetBuffer()[3 * 16 + 1].backgroundColor == TuiColor({ 150, 160, 170 }));
+			TEST_ASSERT(TUI::GetBuffer()[3 * 16 + 2].backgroundColor == TuiColor({ 150, 160, 170 }));
+			target.PopClipper(nullptr);
+			target.StopRendering();
+			target.StopHostedRendering();
+			TEST_ASSERT(backend->presents == 1);
+			controller->DestroyNativeWindow(window);
+		});
+	});
+
+	TEST_CASE(L"TUI nested clippers restore drawing before and after resize")
 	{
 		TuiRunTest([](TuiTestBackend* backend, TuiTestController* controller)
 		{

@@ -8353,6 +8353,14 @@ namespace vl
 			virtual void					Timer();
 		};
 
+		struct TuiClipper
+		{
+			vint							x1 = 0;
+			vint							y1 = 0;
+			vint							x2 = 0;
+			vint							y2 = 0;
+		};
+
 		struct TuiPrintOptions
 		{
 			TuiColor						foregroundColor = { 255, 255, 255 };
@@ -8365,6 +8373,7 @@ namespace vl
 			TuiMergeableGlyph				glyph = TuiMergeableGlyph::ThinLine;
 			TuiColor						foregroundColor = { 255, 255, 255 };
 			Nullable<TuiColor>				backgroundColor;
+			Func<TuiColor(TuiColor)>			foregroundColorBlending;
 		};
 
 		enum class TuiRectCorner
@@ -8379,6 +8388,7 @@ namespace vl
 			TuiColor						foregroundColor = { 255, 255, 255 };
 			Nullable<TuiColor>				backgroundColor;
 			TuiRectCorner					corner = TuiRectCorner::Sharp;
+			Func<TuiColor(TuiColor)>			foregroundColorBlending;
 		};
 
 		namespace unittest
@@ -8420,17 +8430,17 @@ namespace vl
 			static vint						MeasureChar(char32_t code);
 			static void						RenderBuffer();
 
-			static void						PrintChar(const TuiPrintOptions& options, char32_t code, vint x, vint y);
-			static void						DrawLineV(const TuiLineOptions& options, vint x, vint y1, vint y2);
-			static void						DrawLineH(const TuiLineOptions& options, vint x1, vint x2, vint y);
-			static void						DrawRect(const TuiRectOptions& options, vint x1, vint y1, vint x2, vint y2);
-			static void						Clear(TuiColor backgroundColor, vint x1, vint y1, vint x2, vint y2);
+			static void						PrintChar(const TuiPrintOptions& options, char32_t code, vint x, vint y, const TuiClipper* clipper = nullptr);
+			static void						DrawLineV(const TuiLineOptions& options, vint x, vint y1, vint y2, const TuiClipper* clipper = nullptr);
+			static void						DrawLineH(const TuiLineOptions& options, vint x1, vint x2, vint y, const TuiClipper* clipper = nullptr);
+			static void						DrawRect(const TuiRectOptions& options, vint x1, vint y1, vint x2, vint y2, const TuiClipper* clipper = nullptr);
+			static void						Clear(TuiColor backgroundColor, vint x1, vint y1, vint x2, vint y2, const TuiClipper* clipper = nullptr);
 
-			static void						PrintChar(TuiPixel* buffer, vint width, vint height, const TuiPrintOptions& options, char32_t code, vint x, vint y);
-			static void						DrawLineV(TuiPixel* buffer, vint width, vint height, const TuiLineOptions& options, vint x, vint y1, vint y2);
-			static void						DrawLineH(TuiPixel* buffer, vint width, vint height, const TuiLineOptions& options, vint x1, vint x2, vint y);
-			static void						DrawRect(TuiPixel* buffer, vint width, vint height, const TuiRectOptions& options, vint x1, vint y1, vint x2, vint y2);
-			static void						Clear(TuiPixel* buffer, vint width, vint height, TuiColor backgroundColor, vint x1, vint y1, vint x2, vint y2);
+			static void						PrintChar(TuiPixel* buffer, vint width, vint height, const TuiPrintOptions& options, char32_t code, vint x, vint y, const TuiClipper* clipper = nullptr);
+			static void						DrawLineV(TuiPixel* buffer, vint width, vint height, const TuiLineOptions& options, vint x, vint y1, vint y2, const TuiClipper* clipper = nullptr);
+			static void						DrawLineH(TuiPixel* buffer, vint width, vint height, const TuiLineOptions& options, vint x1, vint x2, vint y, const TuiClipper* clipper = nullptr);
+			static void						DrawRect(TuiPixel* buffer, vint width, vint height, const TuiRectOptions& options, vint x1, vint y1, vint x2, vint y2, const TuiClipper* clipper = nullptr);
+			static void						Clear(TuiPixel* buffer, vint width, vint height, TuiColor backgroundColor, vint x1, vint y1, vint x2, vint y2, const TuiClipper* clipper = nullptr);
 		};
 
 		namespace unittest

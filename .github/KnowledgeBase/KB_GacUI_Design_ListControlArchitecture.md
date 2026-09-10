@@ -482,9 +482,9 @@ When data changes:
 
 ### Rendering Lifecycle
 
-- `OnRenderTargetChanged`: Recreates style and arranger (calls `SetStyleAndArranger`)
+- `OnRenderTargetChanged`: Reloads visible styles while retaining the provider, arranger and view position. Detaching the unchanged provider would temporarily empty the list and disable its scrollbars during ancestor template reconstruction.
 - `OnBeforeReleaseGraphicsHost`: Clears style and arranger to release resources
-- `AfterControlTemplateInstalled_`: Reloads visible styles and recalculates view
+- `AfterControlTemplateInstalled_`: Reloads visible styles, restores the view position transferred by `GuiScrollView`, and recalculates the valid scroll range. Explicit item-template/arranger changes still reset scrollbars in `SetStyleAndArranger`.
 
 ### Focus Handling
 

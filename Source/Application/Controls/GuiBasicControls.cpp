@@ -53,6 +53,20 @@ GuiControl
 			{
 			}
 
+			void GuiControl::RefreshThemes()
+			{
+				if (!controlTemplate) RebuildControlTemplate();
+				List<Pair<GuiControl*, Ptr<GuiDisposedFlag>>> snapshot;
+				for (auto child : children)
+				{
+					snapshot.Add({ child, child->GetDisposedFlag() });
+				}
+				for (auto&& entry : snapshot)
+				{
+					if (!entry.value->IsDisposed()) entry.key->RefreshThemes();
+				}
+			}
+
 			void GuiControl::AfterControlTemplateInstalled(bool initialize)
 			{
 				controlTemplateObject->SetText(text);
@@ -78,6 +92,24 @@ GuiControl
 
 			void GuiControl::RebuildControlTemplate()
 			{
+				GuiControl* focusedControl = nullptr;
+				Ptr<GuiDisposedFlag> focusedDisposedFlag;
+				if (auto host = boundsComposition->GetRelatedGraphicsHost())
+				{
+					if (auto composition = host->GetFocusedComposition())
+					{
+						auto control = composition->GetRelatedControl();
+						for (auto ancestor = control; ancestor; ancestor = ancestor->GetParent())
+						{
+							if (ancestor == this)
+							{
+								focusedControl = control;
+								focusedDisposedFlag = control->GetDisposedFlag();
+								break;
+							}
+						}
+					}
+				}
 				bool initialize = controlTemplateObject == nullptr;
 				if (controlTemplateObject)
 				{
@@ -106,6 +138,7 @@ GuiControl
 					controlTemplateObject->GetContainerComposition()->AddChild(containerComposition);
 					AfterControlTemplateInstalled(initialize);
 				}
+				if (focusedControl && !focusedDisposedFlag->IsDisposed()) focusedControl->SetFocused();
 			}
 
 			void GuiControl::FixingMissingControlTemplateCallback(templates::GuiControlTemplate* value)

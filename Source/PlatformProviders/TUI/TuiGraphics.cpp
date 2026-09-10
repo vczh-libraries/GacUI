@@ -66,14 +66,23 @@ TuiGraphicsRenderTarget
 
 	void TuiGraphicsRenderTarget::Fill(Rect bounds, Color color)
 	{
-		if (!CanDraw() || color.a == 0) return;
+		if (!CanDraw() || color.a == 0 || bounds.Width() <= 0 || bounds.Height() <= 0) return;
+		auto compositionClip = GetClipper();
+		TuiClipper clipper{ compositionClip.x1, compositionClip.y1, compositionClip.x2, compositionClip.y2 };
+		if (color.a == 255)
+		{
+			TUI::Clear({ color.r, color.g, color.b }, bounds.x1, bounds.y1, bounds.x2 - 1, bounds.y2 - 1, &clipper);
+			return;
+		}
 		auto area = bounds.Intersect(GetVisibleClipper());
+		auto buffer = TUI::GetBuffer();
+		auto width = TUI::GetBufferWidth();
 		for (vint y = area.y1; y < area.y2; y++)
 		{
 			for (vint x = area.x1; x < area.x2; x++)
 			{
-				auto background = TUI::GetBuffer()[y * TUI::GetBufferWidth() + x].backgroundColor;
-				TUI::Clear(TuiBlend(color, background), x, y, x, y);
+				auto background = buffer[y * width + x].backgroundColor;
+				TUI::Clear(TuiBlend(color, background), x, y, x, y, &clipper);
 			}
 		}
 	}
@@ -82,43 +91,32 @@ TuiGraphicsRenderTarget
 	{
 		if (!CanDraw() || color.a == 0 || bounds.Width() <= 0 || bounds.Height() <= 0) return;
 		if (bounds.Width() == 1 && bounds.Height() == 1) return;
-		auto area = bounds.Intersect(GetVisibleClipper());
-		if (area.Width() <= 0 || area.Height() <= 0) return;
-		auto width = TUI::GetBufferWidth();
-		auto height = TUI::GetBufferHeight();
-		borderBuffer.Resize(width * height);
-		for (vint i = 0; i < borderBuffer.Count(); i++) borderBuffer[i] = TUI::GetBuffer()[i];
+		auto compositionClip = GetClipper();
+		TuiClipper clipper{ compositionClip.x1, compositionClip.y1, compositionClip.x2, compositionClip.y2 };
 		auto glyph = style == TuiLineStyle::Thin ? TuiMergeableGlyph::ThinLine
 			: style == TuiLineStyle::Thick ? TuiMergeableGlyph::ThickLine : TuiMergeableGlyph::DoubleLine;
 		TuiLineOptions line{glyph, {color.r, color.g, color.b}};
+		if (color.a != 255)
+		{
+			line.foregroundColorBlending = [color](TuiColor destination) { return TuiBlend(color, destination); };
+		}
 		if (bounds.Width() == 1)
 		{
-			TUI::DrawLineV(&borderBuffer[0], width, height, line, bounds.x1, bounds.y1, bounds.y2 - 1);
+			TUI::DrawLineV(line, bounds.x1, bounds.y1, bounds.y2 - 1, &clipper);
 		}
 		else if (bounds.Height() == 1)
 		{
-			TUI::DrawLineH(&borderBuffer[0], width, height, line, bounds.x1, bounds.x2 - 1, bounds.y1);
+			TUI::DrawLineH(line, bounds.x1, bounds.x2 - 1, bounds.y1, &clipper);
 		}
 		else
 		{
 			TuiRectOptions rectangle{glyph, line.foregroundColor};
+			rectangle.foregroundColorBlending = line.foregroundColorBlending;
 			if (style == TuiLineStyle::Thin && shape.shapeType != ElementShapeType::Rectangle && bounds.Width() > 2 && bounds.Height() > 2)
 			{
 				rectangle.corner = TuiRectCorner::Round;
 			}
-			TUI::DrawRect(&borderBuffer[0], width, height, rectangle, bounds.x1, bounds.y1, bounds.x2 - 1, bounds.y2 - 1);
-		}
-		for (vint y = area.y1; y < area.y2; y++)
-		{
-			for (vint x = area.x1; x < area.x2; x++)
-			{
-				if (x != bounds.x1 && x != bounds.x2 - 1 && y != bounds.y1 && y != bounds.y2 - 1) continue;
-				auto index = y * width + x;
-				auto pixel = borderBuffer[index];
-				pixel.foregroundColor = TuiBlend(color, TUI::GetBuffer()[index].foregroundColor);
-				TUI::Clear(pixel.backgroundColor, x, y, x, y);
-				TUI::GetBuffer()[index] = pixel;
-			}
+			TUI::DrawRect(rectangle, bounds.x1, bounds.y1, bounds.x2 - 1, bounds.y2 - 1, &clipper);
 		}
 	}
 
@@ -126,8 +124,10 @@ TuiGraphicsRenderTarget
 	{
 		if (!CanDraw()) return;
 		auto width = TUI::MeasureChar(code);
-		auto clipper = GetVisibleClipper();
-		if (width == 0 || !clipper.Contains(location) || location.x + width > clipper.x2) return;
+		auto visibleClipper = GetVisibleClipper();
+		if (width == 0 || !visibleClipper.Contains(location)) return;
+		auto compositionClip = GetClipper();
+		TuiClipper clipper{ compositionClip.x1, compositionClip.y1, compositionClip.x2, compositionClip.y2 };
 		auto pixel = TUI::GetBuffer()[location.y * TUI::GetBufferWidth() + location.x];
 		TuiPrintOptions options;
 		options.foregroundColor = TuiBlend(foreground, pixel.foregroundColor);
@@ -135,9 +135,9 @@ TuiGraphicsRenderTarget
 		options.style = style;
 		if (foreground.a != 0)
 		{
-			TUI::PrintChar(options, code, location.x, location.y);
+			TUI::PrintChar(options, code, location.x, location.y, &clipper);
 		}
-		else if (background.a != 0)
+		else if (background.a != 0 && location.x + width <= visibleClipper.x2)
 		{
 			Fill(Rect(location, Size(width, 1)), background);
 		}

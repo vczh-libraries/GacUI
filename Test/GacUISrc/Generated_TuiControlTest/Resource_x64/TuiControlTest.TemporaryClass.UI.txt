@@ -171,6 +171,8 @@ namespace tuidemo
 
         prop readyToCloseCount : int{GetreadyToCloseCount, SetreadyToCloseCount : readyToCloseCountChanged}
 
+        event PaletteSelected(int);
+
         func ShowMouseModifiers(alt : bool, osSuper : bool) : (void)
         {
             raise "Not Implemented";

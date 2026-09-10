@@ -10,7 +10,6 @@ namespace vl::presentation::elements
 	{
 	protected:
 		INativeWindow*							window;
-		collections::Array<console::TuiPixel>	borderBuffer;
 		Rect									GetVisibleClipper();
 		void									StartRenderingOnNativeWindow() override;
 		RenderTargetFailure						StopRenderingOnNativeWindow() override;

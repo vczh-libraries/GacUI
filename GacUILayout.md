@@ -56,9 +56,11 @@
   - The variable name will be `tuiColors`.
   - When a color is needed, there is only two ways: using `tuiColors` or any color property from a template. Hardcoded color values are not allowed.
   - Besides of generated C++ code, there are a pair of manually written C++ file for TuiSkin calls `TuiSkinConfig.(h|cpp)`.
-    - Currently it has only two functions:
-      - `tuiskin::CreateDefaultColorPackage` to create `tuiskin::ColorPackage` with all color assigned.
-      - `tuiskin::SetColorPackage` to set a color package to the global variable.
+    - `tuiskin::CreatePinkColorPackage`, `CreateOrangeColorPackage`, `CreateGrassPackage`, `CreateEmeraldPackage`, `CreateSkyblueColorPackage`, and `CreatePurplePackage` create complete opaque palettes with muted accents and darker highlights. Every neutral role is shared.
+    - `tuiskin::CreateDefaultColorPackage` returns the unchanged SkyBlue palette. `CreateColorPackageInternal` initializes all fields for the six factories.
+    - `tuiskin::SetColorPackage` installs the global palette for new templates. To recolor existing default-themed controls, call `GuiApplication::RefreshThemes()` on the UI thread. From an input callback, queue installation and refresh together with `InvokeInMainThread`, capturing the preset by value.
+    - `GuiControl::RefreshThemes()` preserves an assigned `ControlTemplate` while traversing its descendants. Application-owned `Color-eval` elements also retain their captured colors; these presets deliberately share their neutral roles. Arbitrary custom templates and captured element colors are not made reactive by installing a palette.
+    - A palette selector uses one mutex group and processes only newly selected radio buttons. Keep selection in the persistent controls, with no selection-reset callback during refresh. Window Manager uses two equal percentage columns, existing controls on the left and a compact vertical palette group on the right.
     - `TuiSkinConfig.(h|cpp)` will `#include` generated files from TuiSkin's XML resource.
 - Polygons on darkskin is to render icons without actually using an image, such thing should be replaced by one character in TuiSkin.
 

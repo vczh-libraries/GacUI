@@ -95,6 +95,8 @@ Basic Construction
 
 			public:
 				Ptr<GuiDisposedFlag>					GetDisposedFlag();
+				/// <summary>Synchronously rebuild unassigned control templates in this control and its descendants. Explicit templates are preserved. Call on the UI thread.</summary>
+				void									RefreshThemes();
 
 			protected:
 				compositions::GuiBoundsComposition*		boundsComposition = nullptr;

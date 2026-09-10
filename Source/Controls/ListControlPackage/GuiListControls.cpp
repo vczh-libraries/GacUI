@@ -180,7 +180,9 @@ GuiListControl
 			{
 				if (itemArranger)
 				{
+					auto viewPosition = GetViewPosition();
 					itemArranger->ReloadVisibleStyles();
+					SetViewPosition(viewPosition);
 					CalculateView();
 				}
 			}
@@ -228,7 +230,13 @@ GuiListControl
 
 			void GuiListControl::OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)
 			{
-				SetStyleAndArranger(itemStyleProperty, itemArranger);
+				if (itemArranger)
+				{
+					auto viewPosition = GetViewPosition();
+					itemArranger->ReloadVisibleStyles();
+					SetViewPosition(viewPosition);
+					CalculateView();
+				}
 				GuiScrollView::OnRenderTargetChanged(renderTarget);
 			}
 

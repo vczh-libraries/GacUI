@@ -15479,6 +15479,7 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+#include <algorithm>
 
 using namespace vl;
 using namespace vl::presentation;
@@ -15755,6 +15756,20 @@ namespace vl
 				CHECK_ERROR(width >= 0 && height >= 0, L"vl::console::TUI drawing helper requires non-negative dimensions.");
 			}
 
+			TuiClipper NormalizeClipper(vint width, vint height, const TuiClipper* clipper)
+			{
+				TuiClipper result{ 0, 0, width, height };
+				if (clipper)
+				{
+					result.x1 = std::max(result.x1, clipper->x1);
+					result.y1 = std::max(result.y1, clipper->y1);
+					result.x2 = std::min(result.x2, clipper->x2);
+					result.y2 = std::min(result.y2, clipper->y2);
+				}
+				if (result.x1 >= result.x2 || result.y1 >= result.y2) return {};
+				return result;
+			}
+
 			void RepairWide(TuiPixel* buffer, vint width, vint height, vint x, vint y)
 			{
 				if (x < 0 || x >= width || y < 0 || y >= height) return;
@@ -15783,9 +15798,10 @@ namespace vl
 				}
 			}
 
-			void PlaceMergeable(TuiPixel* buffer, vint width, vint height, vint x, vint y, const TuiMergeablePixel& drawing, TuiColor foreground, Nullable<TuiColor> background)
+			void PlaceMergeable(TuiPixel* buffer, vint width, vint height, vint x, vint y, const TuiMergeablePixel& drawing, TuiColor foreground, Nullable<TuiColor> background, const TuiClipper& clipper, const Func<TuiColor(TuiColor)>& foregroundColorBlending)
 			{
-				if (x < 0 || x >= width || y < 0 || y >= height) return;
+				if (x < clipper.x1 || x >= clipper.x2 || y < clipper.y1 || y >= clipper.y2) return;
+				if (foregroundColorBlending) foreground = foregroundColorBlending(buffer[y * width + x].foregroundColor);
 				RepairWide(buffer, width, height, x, y);
 				auto& pixel = buffer[y * width + x];
 				auto candidate = drawing;
@@ -15807,9 +15823,10 @@ namespace vl
 				if (background) pixel.backgroundColor = background.Value();
 			}
 
-			void PlaceUnmergeable(TuiPixel* buffer, vint width, vint height, vint x, vint y, TuiUnmergeableDirection direction, TuiColor foreground, Nullable<TuiColor> background)
+			void PlaceUnmergeable(TuiPixel* buffer, vint width, vint height, vint x, vint y, TuiUnmergeableDirection direction, TuiColor foreground, Nullable<TuiColor> background, const TuiClipper& clipper, const Func<TuiColor(TuiColor)>& foregroundColorBlending)
 			{
-				if (x < 0 || x >= width || y < 0 || y >= height) return;
+				if (x < clipper.x1 || x >= clipper.x2 || y < clipper.y1 || y >= clipper.y2) return;
+				if (foregroundColorBlending) foreground = foregroundColorBlending(buffer[y * width + x].foregroundColor);
 				RepairWide(buffer, width, height, x, y);
 				auto& pixel = buffer[y * width + x];
 				pixel.glyph = TuiPixelGlyph::Unmergeable;
@@ -16302,38 +16319,39 @@ TUI
 			storage.backend->Render(&storage.buffer[0], storage.width, storage.height, storage.colorMode);
 		}
 
-		void TUI::PrintChar(const TuiPrintOptions& options, char32_t code, vint x, vint y)
+		void TUI::PrintChar(const TuiPrintOptions& options, char32_t code, vint x, vint y, const TuiClipper* clipper)
 		{
-			PrintChar(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, code, x, y);
+			PrintChar(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, code, x, y, clipper);
 		}
 
-		void TUI::DrawLineV(const TuiLineOptions& options, vint x, vint y1, vint y2)
+		void TUI::DrawLineV(const TuiLineOptions& options, vint x, vint y1, vint y2, const TuiClipper* clipper)
 		{
-			DrawLineV(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, x, y1, y2);
+			DrawLineV(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, x, y1, y2, clipper);
 		}
 
-		void TUI::DrawLineH(const TuiLineOptions& options, vint x1, vint x2, vint y)
+		void TUI::DrawLineH(const TuiLineOptions& options, vint x1, vint x2, vint y, const TuiClipper* clipper)
 		{
-			DrawLineH(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, x1, x2, y);
+			DrawLineH(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, x1, x2, y, clipper);
 		}
 
-		void TUI::DrawRect(const TuiRectOptions& options, vint x1, vint y1, vint x2, vint y2)
+		void TUI::DrawRect(const TuiRectOptions& options, vint x1, vint y1, vint x2, vint y2, const TuiClipper* clipper)
 		{
-			DrawRect(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, x1, y1, x2, y2);
+			DrawRect(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, x1, y1, x2, y2, clipper);
 		}
 
-		void TUI::Clear(TuiColor backgroundColor, vint x1, vint y1, vint x2, vint y2)
+		void TUI::Clear(TuiColor backgroundColor, vint x1, vint y1, vint x2, vint y2, const TuiClipper* clipper)
 		{
-			Clear(GetBuffer(), GetBufferWidth(), GetBufferHeight(), backgroundColor, x1, y1, x2, y2);
+			Clear(GetBuffer(), GetBufferWidth(), GetBufferHeight(), backgroundColor, x1, y1, x2, y2, clipper);
 		}
 
-		void TUI::PrintChar(TuiPixel* buffer, vint width, vint height, const TuiPrintOptions& options, char32_t code, vint x, vint y)
+		void TUI::PrintChar(TuiPixel* buffer, vint width, vint height, const TuiPrintOptions& options, char32_t code, vint x, vint y, const TuiClipper* clipper)
 		{
 			CheckBuffer(buffer, width, height);
 			CHECK_ERROR(IsScalar(code), L"vl::console::TUI::PrintChar(...)#The character must be a Unicode scalar.");
 			auto charWidth = MeasureChar(code);
-			if (charWidth == 0 || x < 0 || x >= width || y < 0 || y >= height) return;
-			if (charWidth == 2 && x + 1 >= width) return;
+			auto clip = NormalizeClipper(width, height, clipper);
+			if (charWidth == 0 || x < clip.x1 || x >= clip.x2 || y < clip.y1 || y >= clip.y2) return;
+			if (charWidth == 2 && x + 1 >= clip.x2) return;
 			RepairWide(buffer, width, height, x, y);
 			if (charWidth == 2) RepairWide(buffer, width, height, x + 1, y);
 			buffer[y * width + x] = TuiPixel
@@ -16354,81 +16372,90 @@ TUI
 			}
 		}
 
-		void TUI::DrawLineV(TuiPixel* buffer, vint width, vint height, const TuiLineOptions& options, vint x, vint y1, vint y2)
+		void TUI::DrawLineV(TuiPixel* buffer, vint width, vint height, const TuiLineOptions& options, vint x, vint y1, vint y2, const TuiClipper* clipper)
 		{
 			CheckBuffer(buffer, width, height);
 			CHECK_ERROR(y1 <= y2, L"vl::console::TUI::DrawLineV(...)#The ordered range is invalid.");
 			CHECK_ERROR(IsLineGlyph(options.glyph), L"vl::console::TUI::DrawLineV(...)#The line style is invalid.");
-			if (x < 0 || x >= width || y2 < 0 || y1 >= height) return;
-			auto begin = y1 < 0 ? 0 : y1;
-			auto end = y2 >= height ? height - 1 : y2;
+			auto clip = NormalizeClipper(width, height, clipper);
+			if (x < clip.x1 || x >= clip.x2) return;
+			auto begin = std::max(y1, clip.y1);
+			auto end = std::min(y2, clip.y2 - 1);
 			TuiMergeablePixel drawing = { options.glyph, options.glyph, TuiMergeableGlyph::None, TuiMergeableGlyph::None };
-			for (vint y = begin; y <= end; y++) PlaceMergeable(buffer, width, height, x, y, drawing, options.foregroundColor, options.backgroundColor);
+			for (vint y = begin; y <= end; y++) PlaceMergeable(buffer, width, height, x, y, drawing, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
 		}
 
-		void TUI::DrawLineH(TuiPixel* buffer, vint width, vint height, const TuiLineOptions& options, vint x1, vint x2, vint y)
+		void TUI::DrawLineH(TuiPixel* buffer, vint width, vint height, const TuiLineOptions& options, vint x1, vint x2, vint y, const TuiClipper* clipper)
 		{
 			CheckBuffer(buffer, width, height);
 			CHECK_ERROR(x1 <= x2, L"vl::console::TUI::DrawLineH(...)#The ordered range is invalid.");
 			CHECK_ERROR(IsLineGlyph(options.glyph), L"vl::console::TUI::DrawLineH(...)#The line style is invalid.");
-			if (y < 0 || y >= height || x2 < 0 || x1 >= width) return;
-			auto begin = x1 < 0 ? 0 : x1;
-			auto end = x2 >= width ? width - 1 : x2;
+			auto clip = NormalizeClipper(width, height, clipper);
+			if (y < clip.y1 || y >= clip.y2) return;
+			auto begin = std::max(x1, clip.x1);
+			auto end = std::min(x2, clip.x2 - 1);
 			TuiMergeablePixel drawing = { TuiMergeableGlyph::None, TuiMergeableGlyph::None, options.glyph, options.glyph };
-			for (vint x = begin; x <= end; x++) PlaceMergeable(buffer, width, height, x, y, drawing, options.foregroundColor, options.backgroundColor);
+			for (vint x = begin; x <= end; x++) PlaceMergeable(buffer, width, height, x, y, drawing, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
 		}
 
-		void TUI::DrawRect(TuiPixel* buffer, vint width, vint height, const TuiRectOptions& options, vint x1, vint y1, vint x2, vint y2)
+		void TUI::DrawRect(TuiPixel* buffer, vint width, vint height, const TuiRectOptions& options, vint x1, vint y1, vint x2, vint y2, const TuiClipper* clipper)
 		{
 			CheckBuffer(buffer, width, height);
 			CHECK_ERROR(x1 < x2 && y1 < y2, L"vl::console::TUI::DrawRect(...)#A rectangle must have distinct corners.");
 			CHECK_ERROR(IsLineGlyph(options.glyph), L"vl::console::TUI::DrawRect(...)#The line style is invalid.");
 			CHECK_ERROR(options.corner == TuiRectCorner::Sharp || options.corner == TuiRectCorner::Round, L"vl::console::TUI::DrawRect(...)#The corner style is invalid.");
 			CHECK_ERROR(options.corner == TuiRectCorner::Sharp || options.glyph == TuiMergeableGlyph::ThinLine, L"vl::console::TUI::DrawRect(...)#Rounded corners require a thin line.");
-			if (x2 < 0 || y2 < 0 || x1 >= width || y1 >= height) return;
+			auto clip = NormalizeClipper(width, height, clipper);
+			if (clip.x1 >= clip.x2 || x2 < clip.x1 || y2 < clip.y1 || x1 >= clip.x2 || y1 >= clip.y2) return;
 
 			TuiMergeablePixel horizontal = { TuiMergeableGlyph::None, TuiMergeableGlyph::None, options.glyph, options.glyph };
 			TuiMergeablePixel vertical = { options.glyph, options.glyph, TuiMergeableGlyph::None, TuiMergeableGlyph::None };
-			auto left = x1 + 1 < 0 ? 0 : x1 + 1;
-			auto right = x2 - 1 >= width ? width - 1 : x2 - 1;
-			for (vint x = left; x <= right; x++)
+			auto left = std::max(x1 + 1, clip.x1);
+			auto right = std::min(x2 - 1, clip.x2 - 1);
+			if ((y1 >= clip.y1 && y1 < clip.y2) || (y2 >= clip.y1 && y2 < clip.y2))
 			{
-				PlaceMergeable(buffer, width, height, x, y1, horizontal, options.foregroundColor, options.backgroundColor);
-				PlaceMergeable(buffer, width, height, x, y2, horizontal, options.foregroundColor, options.backgroundColor);
+				for (vint x = left; x <= right; x++)
+				{
+					PlaceMergeable(buffer, width, height, x, y1, horizontal, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+					PlaceMergeable(buffer, width, height, x, y2, horizontal, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				}
 			}
-			auto top = y1 + 1 < 0 ? 0 : y1 + 1;
-			auto bottom = y2 - 1 >= height ? height - 1 : y2 - 1;
-			for (vint y = top; y <= bottom; y++)
+			auto top = std::max(y1 + 1, clip.y1);
+			auto bottom = std::min(y2 - 1, clip.y2 - 1);
+			if ((x1 >= clip.x1 && x1 < clip.x2) || (x2 >= clip.x1 && x2 < clip.x2))
 			{
-				PlaceMergeable(buffer, width, height, x1, y, vertical, options.foregroundColor, options.backgroundColor);
-				PlaceMergeable(buffer, width, height, x2, y, vertical, options.foregroundColor, options.backgroundColor);
+				for (vint y = top; y <= bottom; y++)
+				{
+					PlaceMergeable(buffer, width, height, x1, y, vertical, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+					PlaceMergeable(buffer, width, height, x2, y, vertical, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				}
 			}
 
 			if (options.corner == TuiRectCorner::Round)
 			{
-				PlaceUnmergeable(buffer, width, height, x1, y1, TuiUnmergeableDirection::LeftTop, options.foregroundColor, options.backgroundColor);
-				PlaceUnmergeable(buffer, width, height, x2, y1, TuiUnmergeableDirection::RightTop, options.foregroundColor, options.backgroundColor);
-				PlaceUnmergeable(buffer, width, height, x1, y2, TuiUnmergeableDirection::LeftBottom, options.foregroundColor, options.backgroundColor);
-				PlaceUnmergeable(buffer, width, height, x2, y2, TuiUnmergeableDirection::RightBottom, options.foregroundColor, options.backgroundColor);
+				PlaceUnmergeable(buffer, width, height, x1, y1, TuiUnmergeableDirection::LeftTop, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				PlaceUnmergeable(buffer, width, height, x2, y1, TuiUnmergeableDirection::RightTop, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				PlaceUnmergeable(buffer, width, height, x1, y2, TuiUnmergeableDirection::LeftBottom, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				PlaceUnmergeable(buffer, width, height, x2, y2, TuiUnmergeableDirection::RightBottom, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
 			}
 			else
 			{
-				PlaceMergeable(buffer, width, height, x1, y1, { TuiMergeableGlyph::None, options.glyph, TuiMergeableGlyph::None, options.glyph }, options.foregroundColor, options.backgroundColor);
-				PlaceMergeable(buffer, width, height, x2, y1, { TuiMergeableGlyph::None, options.glyph, options.glyph, TuiMergeableGlyph::None }, options.foregroundColor, options.backgroundColor);
-				PlaceMergeable(buffer, width, height, x1, y2, { options.glyph, TuiMergeableGlyph::None, TuiMergeableGlyph::None, options.glyph }, options.foregroundColor, options.backgroundColor);
-				PlaceMergeable(buffer, width, height, x2, y2, { options.glyph, TuiMergeableGlyph::None, options.glyph, TuiMergeableGlyph::None }, options.foregroundColor, options.backgroundColor);
+				PlaceMergeable(buffer, width, height, x1, y1, { TuiMergeableGlyph::None, options.glyph, TuiMergeableGlyph::None, options.glyph }, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				PlaceMergeable(buffer, width, height, x2, y1, { TuiMergeableGlyph::None, options.glyph, options.glyph, TuiMergeableGlyph::None }, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				PlaceMergeable(buffer, width, height, x1, y2, { options.glyph, TuiMergeableGlyph::None, TuiMergeableGlyph::None, options.glyph }, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				PlaceMergeable(buffer, width, height, x2, y2, { options.glyph, TuiMergeableGlyph::None, options.glyph, TuiMergeableGlyph::None }, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
 			}
 		}
 
-		void TUI::Clear(TuiPixel* buffer, vint width, vint height, TuiColor backgroundColor, vint x1, vint y1, vint x2, vint y2)
+		void TUI::Clear(TuiPixel* buffer, vint width, vint height, TuiColor backgroundColor, vint x1, vint y1, vint x2, vint y2, const TuiClipper* clipper)
 		{
 			CheckBuffer(buffer, width, height);
 			CHECK_ERROR(x1 <= x2 && y1 <= y2, L"vl::console::TUI::Clear(...)#The ordered rectangle is invalid.");
-			if (x2 < 0 || y2 < 0 || x1 >= width || y1 >= height) return;
-			auto left = x1 < 0 ? 0 : x1;
-			auto top = y1 < 0 ? 0 : y1;
-			auto right = x2 >= width ? width - 1 : x2;
-			auto bottom = y2 >= height ? height - 1 : y2;
+			auto clip = NormalizeClipper(width, height, clipper);
+			auto left = std::max(x1, clip.x1);
+			auto top = std::max(y1, clip.y1);
+			auto right = std::min(x2, clip.x2 - 1);
+			auto bottom = std::min(y2, clip.y2 - 1);
 			for (vint y = top; y <= bottom; y++)
 			{
 				for (vint x = left; x <= right; x++)

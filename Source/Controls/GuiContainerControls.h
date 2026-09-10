@@ -119,6 +119,9 @@ Scroll View
 				Ptr<IEventHandler>						containerCachedBoundsChangedHandler;
 				bool									horizontalAlwaysVisible = true;
 				bool									verticalAlwaysVisible = true;
+				Point									scrollPositionBeforeTemplate;
+				Size									scrollTotalSizeBeforeTemplate;
+				Size									scrollPageSizeBeforeTemplate;
 
 				void									UpdateDisplayFont()override;
 

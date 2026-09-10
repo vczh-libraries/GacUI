@@ -394,6 +394,111 @@ Closures
 
 	void __vwsnf100_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkIcon)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->checkIcon)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf101_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf101_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf101_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkTitle)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->checkTitle)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf102_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf102_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf102_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		auto subWindow = new ::tuidemo::TuiSubWindow();
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->openedSubWindows.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::Ensure(::vl::Ptr<::tuidemo::TuiSubWindow>(subWindow))));
+		::vl::__vwsn::This(subWindow)->MoveToScreenCenter();
+		::vl::__vwsn::This(subWindow)->ShowWithOwner(static_cast<::vl::presentation::controls::GuiWindow*>(__vwsnthis_0->self));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf103_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf103_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf103_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetMaximizedBox();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetMaximizedBox(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf104_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf104_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf104_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetMinimizedBox();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetMinimizedBox(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf105_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf105_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf105_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetSizeBox();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetSizeBox(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf106_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf106_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf106_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetIconVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -405,12 +510,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf101_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf101_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+	__vwsnf107_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf107_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf101_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf107_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetBorder();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -423,12 +528,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf102_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf102_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+	__vwsnf108_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf108_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf102_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf108_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetTitleBar();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -441,12 +546,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf103_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf103_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf109_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf109_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	bool __vwsnf103_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const
+	bool __vwsnf109_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiMyTextItem>>(__vwsn_item_);
 		if (__vwsn_update_)
@@ -462,12 +567,33 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf104_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf104_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf10_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::__vwsnf10_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_(::tuidemo::TuiDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf104_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::reflection::description::Value __vwsnf10_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
+	{
+		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiMyDataItem>>(__vwsn_item_);
+		if (__vwsn_update_)
+		{
+			::vl::__vwsn::This(itemToBind.Obj())->SetGender(::vl::__vwsn::Unbox<::tuidemo::TuiMyGender>(__vwsn_value_));
+			return ::vl::reflection::description::Value();
+		}
+		else
+		{
+			return ::vl::__vwsn::Box(::vl::__vwsn::This(itemToBind.Obj())->GetGender());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf110_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf110_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf110_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiMyTextItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetName();
@@ -475,12 +601,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf105_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf105_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf111_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf111_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf105_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf111_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_switch_2 = ::vl::__vwsn::This(__vwsnthis_0->comboView)->GetSelectedIndex();
@@ -504,12 +630,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf106_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf106_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf112_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf112_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf106_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf112_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_for_begin_i = static_cast<::vl::vint64_t>(0L);
@@ -543,12 +669,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf107_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf107_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf113_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf113_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf107_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf113_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto i = static_cast<::vl::vint64_t>(0L);
@@ -570,12 +696,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf108_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf108_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf114_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf114_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf108_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf114_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto i = static_cast<::vl::vint64_t>(1L);
@@ -597,12 +723,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf109_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf109_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf115_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf115_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf109_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf115_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->textList)->GetItems()).Obj())->Clear();
 		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->itemsToBind.Obj())->Clear();
@@ -610,33 +736,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf10_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::__vwsnf10_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_(::tuidemo::TuiDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf116_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf116_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::reflection::description::Value __vwsnf10_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
-	{
-		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiMyDataItem>>(__vwsn_item_);
-		if (__vwsn_update_)
-		{
-			::vl::__vwsn::This(itemToBind.Obj())->SetGender(::vl::__vwsn::Unbox<::tuidemo::TuiMyGender>(__vwsn_value_));
-			return ::vl::reflection::description::Value();
-		}
-		else
-		{
-			return ::vl::__vwsn::Box(::vl::__vwsn::This(itemToBind.Obj())->GetGender());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf110_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::__vwsnf110_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(::tuidemo::TuiTextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf110_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf116_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		if (static_cast<bool>(::vl::__vwsn::This(__vwsnthis_0->bindableTextList)->GetItemSource()))
 		{
@@ -650,12 +755,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf111_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_::__vwsnf111_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_(::tuidemo::TuiTreeViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf117_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_::__vwsnf117_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_(::tuidemo::TuiTreeViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf111_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf117_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto nodeToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>>(__vwsn_item_);
 		return ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(nodeToBind.Obj())->Children()));
@@ -663,12 +768,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf112_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_::__vwsnf112_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_(::tuidemo::TuiTreeViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf118_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_::__vwsnf118_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_(::tuidemo::TuiTreeViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf112_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf118_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto nodeToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>>(__vwsn_item_);
 		return ::vl::__vwsn::This(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(nodeToBind.Obj())->GetData().Obj()).Obj())->text;
@@ -676,12 +781,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf113_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_::__vwsnf113_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_(::tuidemo::TuiTreeViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf119_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_::__vwsnf119_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_(::tuidemo::TuiTreeViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf113_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf119_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		if ((! ::vl::__vwsn::This(__vwsnthis_0->bindableTreeView)->GetItemSource().IsNull()))
 		{
@@ -691,96 +796,6 @@ Closures
 		{
 			::vl::__vwsn::This(__vwsnthis_0->bindableTreeView)->SetItemSource(::vl::__vwsn::Box(::vl::__vwsn::This(__vwsnthis_0->self)->nodesToBind));
 		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf114_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_::__vwsnf114_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_(::tuidemo::TuiDateEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf114_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetSelectedDate();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::DateTime>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->comboBox)->SetSelectedDate(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf115_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_::__vwsnf115_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_(::tuidemo::TuiDateEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf115_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetCellValue();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetCellValue(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf116_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::__vwsnf116_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(::tuidemo::TuiDateFilterConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf116_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFilter();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf117_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::__vwsnf117_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(::tuidemo::TuiDateFilterConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf117_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->dateFrom)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->dateFrom)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf118_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::__vwsnf118_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(::tuidemo::TuiDateFilterConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf118_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFilter();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf119_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::__vwsnf119_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(::tuidemo::TuiDateFilterConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf119_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFilter();
 	}
 
 	//-------------------------------------------------------------------
@@ -798,74 +813,30 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf120_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::__vwsnf120_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(::tuidemo::TuiDateFilterConstructor* __vwsnctorthis_0)
+	__vwsnf120_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_::__vwsnf120_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_(::tuidemo::TuiDateEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf120_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf120_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->dateTo)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetSelectedDate();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::DateTime>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->dateTo)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->comboBox)->SetSelectedDate(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf121_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::__vwsnf121_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(::tuidemo::TuiDateFilterConstructor* __vwsnctorthis_0)
+	__vwsnf121_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_::__vwsnf121_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_(::tuidemo::TuiDateEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf121_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFilter();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf122_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_::__vwsnf122_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_(::tuidemo::TuiTextEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiControlTemplate* __vwsnf122_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuidemo::TuiGridTextBoxTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf123_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_::__vwsnf123_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_(::tuidemo::TuiTextEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf123_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf124_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_::__vwsnf124_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_(::tuidemo::TuiTextEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf124_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf121_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetCellValue();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(__vwsn_value_);
@@ -878,92 +849,118 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf125_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_::__vwsnf125_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_(::tuidemo::TuiCellFocusTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf122_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::__vwsnf122_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(::tuidemo::TuiDateFilterConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf125_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf122_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->SetColor(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFilter();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf126_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_::__vwsnf126_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_(::tuidemo::TuiCellFocusTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf123_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::__vwsnf123_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(::tuidemo::TuiDateFilterConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf126_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf123_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetVisible();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->dateFrom)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetVisible(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->dateFrom)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf127_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_::__vwsnf127_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_(::tuidemo::TuiCategoryDisplayerConstructor* __vwsnctorthis_0)
+	__vwsnf124_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::__vwsnf124_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(::tuidemo::TuiDateFilterConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf127_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf124_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFilter();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf125_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::__vwsnf125_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(::tuidemo::TuiDateFilterConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf125_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFilter();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf126_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::__vwsnf126_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(::tuidemo::TuiDateFilterConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf126_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->dateTo)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->dateTo)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf128_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_::__vwsnf128_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_(::tuidemo::TuiCategoryDisplayerConstructor* __vwsnctorthis_0)
+	__vwsnf127_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::__vwsnf127_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(::tuidemo::TuiDateFilterConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf128_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf127_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetText();
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFilter();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf128_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_::__vwsnf128_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_(::tuidemo::TuiTextEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiControlTemplate* __vwsnf128_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuidemo::TuiGridTextBoxTemplate());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf129_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_::__vwsnf129_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_(::tuidemo::TuiTextEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf129_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf129_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_::__vwsnf129_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_(::tuidemo::TuiCategoryDisplayerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf129_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetTextColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->SetTextColor(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -982,84 +979,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf130_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::__vwsnf130_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(::tuidemo::TuiCategoryEditorConstructor* __vwsnctorthis_0)
+	__vwsnf130_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_::__vwsnf130_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_(::tuidemo::TuiTextEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiListItemTemplate* __vwsnf130_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			if ((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::tuidemo::TuiMyCategory>*>(__vwsn_viewModel_.GetBoxedValue().Obj()) != nullptr))
-			{
-				return static_cast<::vl::presentation::templates::GuiListItemTemplate*>(new ::tuidemo::TuiCategoryItemTemplate(::vl::__vwsn::Unbox<::tuidemo::TuiMyCategory>(__vwsn_viewModel_)));
-			}
-		}
-		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf131_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::__vwsnf131_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(::tuidemo::TuiCategoryEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiTemplate* __vwsnf131_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			if ((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::tuidemo::TuiMyCategory>*>(__vwsn_viewModel_.GetBoxedValue().Obj()) != nullptr))
-			{
-				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::tuidemo::TuiCategoryItemTemplate(::vl::__vwsn::Unbox<::tuidemo::TuiMyCategory>(__vwsn_viewModel_)));
-			}
-		}
-		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf132_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::__vwsnf132_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(::tuidemo::TuiCategoryEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf132_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Nullable<::vl::presentation::FontProperties>>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->comboBox)->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf133_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::__vwsnf133_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(::tuidemo::TuiCategoryEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf133_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetSelectedIndex();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint64_t>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->comboBox)->SetSelectedIndex(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf134_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::__vwsnf134_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(::tuidemo::TuiCategoryEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf134_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf130_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetCellValue();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(__vwsn_value_);
@@ -1072,92 +997,164 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf135_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_::__vwsnf135_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_(::tuidemo::TuiCategoryItemTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf131_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_::__vwsnf131_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_(::tuidemo::TuiCellFocusTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf135_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf131_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Nullable<::vl::presentation::FontProperties>>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf136_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_::__vwsnf136_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_(::tuidemo::TuiCategoryItemTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf136_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetTextColor();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetTextColor(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf137_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_::__vwsnf137_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_(::tuidemo::TuiCategoryVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf132_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_::__vwsnf132_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_(::tuidemo::TuiCellFocusTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf137_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf132_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Nullable<::vl::presentation::FontProperties>>(__vwsn_value_);
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetVisible();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetFont(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetVisible(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf138_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_::__vwsnf138_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_(::tuidemo::TuiCategoryVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf133_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_::__vwsnf133_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_(::tuidemo::TuiCategoryDisplayerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf138_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf133_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetTextColor();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetTextColor(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf139_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_::__vwsnf139_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_(::tuidemo::TuiCategoryVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf134_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_::__vwsnf134_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_(::tuidemo::TuiCategoryDisplayerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf139_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf134_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetCategory();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::tuidemo::TuiMyCategory>(__vwsn_value_);
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetCategory(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf135_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_::__vwsnf135_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_(::tuidemo::TuiCategoryDisplayerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf135_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetTextColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->SetTextColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf136_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::__vwsnf136_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(::tuidemo::TuiCategoryEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiListItemTemplate* __vwsnf136_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			if ((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::tuidemo::TuiMyCategory>*>(__vwsn_viewModel_.GetBoxedValue().Obj()) != nullptr))
+			{
+				return static_cast<::vl::presentation::templates::GuiListItemTemplate*>(new ::tuidemo::TuiCategoryItemTemplate(::vl::__vwsn::Unbox<::tuidemo::TuiMyCategory>(__vwsn_viewModel_)));
+			}
+		}
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf137_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::__vwsnf137_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(::tuidemo::TuiCategoryEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnf137_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			if ((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::tuidemo::TuiMyCategory>*>(__vwsn_viewModel_.GetBoxedValue().Obj()) != nullptr))
+			{
+				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::tuidemo::TuiCategoryItemTemplate(::vl::__vwsn::Unbox<::tuidemo::TuiMyCategory>(__vwsn_viewModel_)));
+			}
+		}
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf138_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::__vwsnf138_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(::tuidemo::TuiCategoryEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf138_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Nullable<::vl::presentation::FontProperties>>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->comboBox)->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf139_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::__vwsnf139_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(::tuidemo::TuiCategoryEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf139_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetSelectedIndex();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint64_t>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->comboBox)->SetSelectedIndex(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -1176,120 +1173,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf140_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_::__vwsnf140_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_(::tuidemo::TuiGenderDisplayerConstructor* __vwsnctorthis_0)
+	__vwsnf140_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::__vwsnf140_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(::tuidemo::TuiCategoryEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf140_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf141_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_::__vwsnf141_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_(::tuidemo::TuiGenderDisplayerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf141_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetTextColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetTextColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf142_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::__vwsnf142_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(::tuidemo::TuiGenderEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiListItemTemplate* __vwsnf142_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			if ((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::tuidemo::TuiMyGender>*>(__vwsn_viewModel_.GetBoxedValue().Obj()) != nullptr))
-			{
-				return static_cast<::vl::presentation::templates::GuiListItemTemplate*>(new ::tuidemo::TuiGenderItemTemplate(::vl::__vwsn::Unbox<::tuidemo::TuiMyGender>(__vwsn_viewModel_)));
-			}
-		}
-		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf143_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::__vwsnf143_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(::tuidemo::TuiGenderEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiTemplate* __vwsnf143_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			if ((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::tuidemo::TuiMyGender>*>(__vwsn_viewModel_.GetBoxedValue().Obj()) != nullptr))
-			{
-				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::tuidemo::TuiGenderItemTemplate(::vl::__vwsn::Unbox<::tuidemo::TuiMyGender>(__vwsn_viewModel_)));
-			}
-		}
-		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf144_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::__vwsnf144_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(::tuidemo::TuiGenderEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf144_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Nullable<::vl::presentation::FontProperties>>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->comboBox)->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf145_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::__vwsnf145_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(::tuidemo::TuiGenderEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf145_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetSelectedIndex();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint64_t>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->comboBox)->SetSelectedIndex(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf146_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::__vwsnf146_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(::tuidemo::TuiGenderEditorConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf146_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf140_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetCellValue();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(__vwsn_value_);
@@ -1302,12 +1191,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf147_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_::__vwsnf147_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_(::tuidemo::TuiGenderItemTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf141_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_::__vwsnf141_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_(::tuidemo::TuiCategoryItemTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf147_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf141_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Nullable<::vl::presentation::FontProperties>>(__vwsn_value_);
@@ -1320,12 +1209,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf148_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_::__vwsnf148_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_(::tuidemo::TuiGenderItemTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf142_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_::__vwsnf142_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_(::tuidemo::TuiCategoryItemTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf148_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf142_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetTextColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1338,12 +1227,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf149_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_::__vwsnf149_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_(::tuidemo::TuiGenderVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf143_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_::__vwsnf143_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_(::tuidemo::TuiCategoryVisualizerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf149_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf143_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Nullable<::vl::presentation::FontProperties>>(__vwsn_value_);
@@ -1352,6 +1241,114 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf144_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_::__vwsnf144_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_(::tuidemo::TuiCategoryVisualizerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf144_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetTextColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetTextColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf145_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_::__vwsnf145_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_(::tuidemo::TuiCategoryVisualizerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf145_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetCategory();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::tuidemo::TuiMyCategory>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetCategory(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf146_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_::__vwsnf146_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_(::tuidemo::TuiGenderDisplayerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf146_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf147_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_::__vwsnf147_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_(::tuidemo::TuiGenderDisplayerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf147_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetTextColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetTextColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf148_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::__vwsnf148_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(::tuidemo::TuiGenderEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiListItemTemplate* __vwsnf148_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			if ((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::tuidemo::TuiMyGender>*>(__vwsn_viewModel_.GetBoxedValue().Obj()) != nullptr))
+			{
+				return static_cast<::vl::presentation::templates::GuiListItemTemplate*>(new ::tuidemo::TuiGenderItemTemplate(::vl::__vwsn::Unbox<::tuidemo::TuiMyGender>(__vwsn_viewModel_)));
+			}
+		}
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf149_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::__vwsnf149_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(::tuidemo::TuiGenderEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnf149_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			if ((dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::tuidemo::TuiMyGender>*>(__vwsn_viewModel_.GetBoxedValue().Obj()) != nullptr))
+			{
+				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::tuidemo::TuiGenderItemTemplate(::vl::__vwsn::Unbox<::tuidemo::TuiMyGender>(__vwsn_viewModel_)));
+			}
+		}
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
 	}
 
 	//-------------------------------------------------------------------
@@ -1370,12 +1367,84 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf150_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_::__vwsnf150_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_(::tuidemo::TuiGenderVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf150_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::__vwsnf150_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(::tuidemo::TuiGenderEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf150_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf150_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Nullable<::vl::presentation::FontProperties>>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->comboBox)->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf151_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::__vwsnf151_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(::tuidemo::TuiGenderEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf151_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetSelectedIndex();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint64_t>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->comboBox)->SetSelectedIndex(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf152_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::__vwsnf152_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(::tuidemo::TuiGenderEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf152_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetCellValue();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetCellValue(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf153_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_::__vwsnf153_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_(::tuidemo::TuiGenderItemTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf153_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Nullable<::vl::presentation::FontProperties>>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf154_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_::__vwsnf154_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_(::tuidemo::TuiGenderItemTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf154_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetTextColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1388,12 +1457,48 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf151_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_::__vwsnf151_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_(::tuidemo::TuiGenderVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf155_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_::__vwsnf155_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_(::tuidemo::TuiGenderVisualizerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf151_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf155_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Nullable<::vl::presentation::FontProperties>>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf156_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_::__vwsnf156_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_(::tuidemo::TuiGenderVisualizerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf156_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetTextColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetTextColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf157_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_::__vwsnf157_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_(::tuidemo::TuiGenderVisualizerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf157_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetGender();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::tuidemo::TuiMyGender>(__vwsn_value_);
@@ -1406,12 +1511,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf152_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_::__vwsnf152_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_(::tuidemo::TuiHyperlinkWindowConstructor* __vwsnctorthis_0)
+	__vwsnf158_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_::__vwsnf158_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_(::tuidemo::TuiHyperlinkWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf152_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf158_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetUrl(::vl::Nullable<::vl::WString>(::vl::__vwsn::This(__vwsnthis_0->textUrl)->GetText()));
 		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
@@ -1419,12 +1524,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf153_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_::__vwsnf153_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_(::tuidemo::TuiHyperlinkWindowConstructor* __vwsnctorthis_0)
+	__vwsnf159_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_::__vwsnf159_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_(::tuidemo::TuiHyperlinkWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf153_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf159_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetUrl(::vl::Nullable<::vl::WString>());
 		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
@@ -1432,12 +1537,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf154_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_::__vwsnf154_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_(::tuidemo::TuiLocaleSelectorConstructor* __vwsnctorthis_0)
+	__vwsnf160_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_::__vwsnf160_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_(::tuidemo::TuiLocaleSelectorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf154_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf160_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->comboLocales)->GetSelectedIndex();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint64_t>(__vwsn_value_);
@@ -1450,12 +1555,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf155_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_::__vwsnf155_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_(::tuidemo::TuiLocaleSelectorConstructor* __vwsnctorthis_0)
+	__vwsnf161_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_::__vwsnf161_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_(::tuidemo::TuiLocaleSelectorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf155_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf161_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto index = ::vl::__vwsn::This(__vwsnthis_0->comboLocales)->GetSelectedIndex();
 		if ((index == (- static_cast<::vl::vint64_t>(1L))))
@@ -1467,12 +1572,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf156_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf156_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf162_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf162_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::reflection::description::Value __vwsnf156_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
+	::vl::reflection::description::Value __vwsnf162_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		if (__vwsn_update_)
@@ -1488,12 +1593,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf157_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf157_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf163_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf163_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf157_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf163_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetName();
@@ -1501,12 +1606,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf158_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf158_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf164_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf164_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::reflection::description::Value __vwsnf158_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
+	::vl::reflection::description::Value __vwsnf164_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		if (__vwsn_update_)
@@ -1522,12 +1627,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf159_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf159_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf165_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf165_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf159_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf165_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetSub1();
@@ -1535,12 +1640,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf160_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf160_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf166_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf166_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::reflection::description::Value __vwsnf160_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
+	::vl::reflection::description::Value __vwsnf166_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		if (__vwsn_update_)
@@ -1556,12 +1661,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf161_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf161_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf167_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf167_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf161_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf167_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetSub2();
@@ -1569,12 +1674,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf162_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf162_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf168_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf168_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf162_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf168_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::vl::presentation::controls::list::CellBorderVisualizerTemplate());
@@ -1583,12 +1688,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf163_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf163_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf169_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf169_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf163_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf169_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::tuidemo::TuiCellFocusTemplate());
@@ -1597,12 +1702,26 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf164_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf164_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf16_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::__vwsnf16_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_(::tuidemo::TuiDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf164_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf16_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiGridEditorTemplate*>(new ::tuidemo::TuiCategoryEditor());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf170_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf170_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiGridVisualizerTemplate* __vwsnf170_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiGridVisualizerTemplate*>(new ::vl::presentation::controls::list::HyperlinkVisualizerTemplate());
@@ -1611,12 +1730,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf165_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf165_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf171_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf171_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf165_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf171_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiGridEditorTemplate*>(new ::tuidemo::TuiTextEditor());
@@ -1625,12 +1744,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf166_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf166_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf172_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf172_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::reflection::description::Value __vwsnf166_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
+	::vl::reflection::description::Value __vwsnf172_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		if (__vwsn_update_)
@@ -1646,12 +1765,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf167_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf167_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf173_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf173_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf167_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf173_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetSub3();
@@ -1659,12 +1778,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf168_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf168_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf174_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf174_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf168_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf174_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_switch_3 = ::vl::__vwsn::This(__vwsnthis_0->comboView)->GetSelectedIndex();
@@ -1701,74 +1820,60 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf169_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf169_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf175_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf175_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf169_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf175_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::DataColumn>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetColumns()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf170_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(__vwsnthis_0)));
+		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::DataColumn>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetColumns()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf176_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(__vwsnthis_0)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf16_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::__vwsnf16_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_(::tuidemo::TuiDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf176_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::__vwsnf176_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf16_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiGridEditorTemplate*>(new ::tuidemo::TuiCategoryEditor());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf170_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::__vwsnf170_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::WString __vwsnf170_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
+	::vl::WString __vwsnf176_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
 	{
 		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetName();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf171_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf171_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf177_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf177_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf171_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf177_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::DataColumn>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetColumns()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf172_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(__vwsnthis_0)));
+		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::DataColumn>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetColumns()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf178_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(__vwsnthis_0)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf172_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::__vwsnf172_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf178_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::__vwsnf178_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf172_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
+	::vl::WString __vwsnf178_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
 	{
 		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetTitle();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf173_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf173_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf179_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf179_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf173_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf179_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto s = ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->items.Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->GetSub1();
 		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->items.Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetSub1(((s == ::vl::WString::Unmanaged(L"One")) ? ::vl::WString::Unmanaged(L"SubColumn") : ::vl::WString::Unmanaged(L"One")));
@@ -1777,12 +1882,33 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf174_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf174_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf17_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::__vwsnf17_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_(::tuidemo::TuiDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf174_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	::vl::reflection::description::Value __vwsnf17_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
+	{
+		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiMyDataItem>>(__vwsn_item_);
+		if (__vwsn_update_)
+		{
+			::vl::__vwsn::This(itemToBind.Obj())->SetCategory(::vl::__vwsn::Unbox<::tuidemo::TuiMyCategory>(__vwsn_value_));
+			return ::vl::reflection::description::Value();
+		}
+		else
+		{
+			return ::vl::__vwsn::Box(::vl::__vwsn::This(itemToBind.Obj())->GetCategory());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf180_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf180_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf180_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto s = ::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetDataColumns()).Obj())->Get(static_cast<::vl::vint64_t>(0L)));
 		auto c = ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetDataColumns()).Obj())->GetCount();
@@ -1830,12 +1956,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf175_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf175_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf181_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf181_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf175_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf181_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto s = ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::DataColumn>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetColumns()).Obj())->Get(static_cast<::vl::vint64_t>(1L))).Obj())->GetText();
 		auto c = ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetColumns()).Obj())->GetCount();
@@ -1858,8 +1984,8 @@ Closures
 				auto column = ::vl::Ptr<::vl::presentation::controls::list::DataColumn>(new ::vl::presentation::controls::list::DataColumn());
 				::vl::__vwsn::This(column.Obj())->SetText(::vl::WString::Unmanaged(L"Category"));
 				::vl::__vwsn::This(column.Obj())->SetSize(static_cast<::vl::vint64_t>(15L));
-				::vl::__vwsn::This(column.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf176_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(__vwsnthis_0)));
-				::vl::__vwsn::This(column.Obj())->SetValueProperty(vl::Func(::vl_workflow_global::__vwsnf177_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(__vwsnthis_0)));
+				::vl::__vwsn::This(column.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf182_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(__vwsnthis_0)));
+				::vl::__vwsn::This(column.Obj())->SetValueProperty(vl::Func(::vl_workflow_global::__vwsnf183_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(__vwsnthis_0)));
 				::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetColumns()).Obj())->Insert(static_cast<::vl::vint64_t>(1L), ::vl::__vwsn::Box(column));
 			}
 			else
@@ -1871,24 +1997,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf176_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::__vwsnf176_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf182_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::__vwsnf182_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf176_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
+	::vl::WString __vwsnf182_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
 	{
 		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetSub1();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf177_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::__vwsnf177_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf183_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::__vwsnf183_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::reflection::description::Value __vwsnf177_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value, const ::vl::reflection::description::Value& field, bool update) const
+	::vl::reflection::description::Value __vwsnf183_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value, const ::vl::reflection::description::Value& field, bool update) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value);
 		if (update)
@@ -1904,12 +2030,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf178_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf178_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf184_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::__vwsnf184_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(::tuidemo::TuiRefreshBindableDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf178_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf184_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_33)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1922,12 +2048,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf179_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf179_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf185_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf185_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf179_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf185_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetName();
@@ -1935,33 +2061,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf17_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::__vwsnf17_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_(::tuidemo::TuiDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf186_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf186_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::reflection::description::Value __vwsnf17_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
-	{
-		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiMyDataItem>>(__vwsn_item_);
-		if (__vwsn_update_)
-		{
-			::vl::__vwsn::This(itemToBind.Obj())->SetCategory(::vl::__vwsn::Unbox<::tuidemo::TuiMyCategory>(__vwsn_value_));
-			return ::vl::reflection::description::Value();
-		}
-		else
-		{
-			return ::vl::__vwsn::Box(::vl::__vwsn::This(itemToBind.Obj())->GetCategory());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf180_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf180_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::WString __vwsnf180_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf186_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetSub1();
@@ -1969,12 +2074,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf181_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf181_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf187_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf187_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf181_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf187_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetSub2();
@@ -1982,12 +2087,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf182_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf182_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf188_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf188_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf182_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf188_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetSub3();
@@ -1995,12 +2100,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf183_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf183_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf189_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf189_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf183_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf189_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_switch_4 = ::vl::__vwsn::This(__vwsnthis_0->comboView)->GetSelectedIndex();
@@ -2033,60 +2138,73 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf184_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf184_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf18_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::__vwsnf18_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_(::tuidemo::TuiDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf184_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	::vl::WString __vwsnf18_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetColumns()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf185_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__(__vwsnthis_0)));
+		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiMyDataItem>>(__vwsn_item_);
+		return GLOBAL_NAME ToString(::vl::__vwsn::This(itemToBind.Obj())->GetCategory());
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf185_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__::__vwsnf185_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf190_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf190_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf185_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
+	void __vwsnf190_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetColumns()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf191_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__(__vwsnthis_0)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf191_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__::__vwsnf191_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf191_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
 	{
 		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetName();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf186_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf186_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf192_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf192_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf186_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf192_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetColumns()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf187_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__(__vwsnthis_0)));
+		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetColumns()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf193_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__(__vwsnthis_0)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf187_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__::__vwsnf187_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf193_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__::__vwsnf193_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf187_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
+	::vl::WString __vwsnf193_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
 	{
 		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetTitle();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf188_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf188_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf194_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf194_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf188_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf194_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto s = ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->items.Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->GetSub1();
 		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->items.Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetSub1(((s == ::vl::WString::Unmanaged(L"One")) ? ::vl::WString::Unmanaged(L"SubColumn") : ::vl::WString::Unmanaged(L"One")));
@@ -2095,12 +2213,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf189_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf189_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf195_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf195_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf189_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf195_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto s = ::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetDataColumns()).Obj())->Get(static_cast<::vl::vint64_t>(0L)));
 		auto c = ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetDataColumns()).Obj())->GetCount();
@@ -2148,25 +2266,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf18_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::__vwsnf18_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_(::tuidemo::TuiDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf196_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf196_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf18_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiMyDataItem>>(__vwsn_item_);
-		return GLOBAL_NAME ToString(::vl::__vwsn::This(itemToBind.Obj())->GetCategory());
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf190_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::__vwsnf190_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf190_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf196_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto s = ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetColumns()).Obj())->Get(static_cast<::vl::vint64_t>(1L))).Obj())->GetText();
 		auto c = ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetColumns()).Obj())->GetCount();
@@ -2189,7 +2294,7 @@ Closures
 				auto column = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn());
 				::vl::__vwsn::This(column.Obj())->SetText(::vl::WString::Unmanaged(L"Category"));
 				::vl::__vwsn::This(column.Obj())->SetSize(static_cast<::vl::vint64_t>(15L));
-				::vl::__vwsn::This(column.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf191_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__(__vwsnthis_0)));
+				::vl::__vwsn::This(column.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf197_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__(__vwsnthis_0)));
 				::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetColumns()).Obj())->Insert(static_cast<::vl::vint64_t>(1L), ::vl::__vwsn::Box(column));
 			}
 			else
@@ -2201,24 +2306,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf191_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__::__vwsnf191_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf197_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__::__vwsnf197_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__(::tuidemo::TuiRefreshBindableListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf191_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
+	::vl::WString __vwsnf197_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
 	{
 		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetSub1();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf192_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::__vwsnf192_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf198_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::__vwsnf198_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	bool __vwsnf192_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const
+	bool __vwsnf198_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		if (__vwsn_update_)
@@ -2234,89 +2339,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf193_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::__vwsnf193_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::WString __vwsnf193_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
-		return ::vl::__vwsn::This(item.Obj())->GetName();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf194_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::__vwsnf194_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf194_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->textList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf195_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__(__vwsnthis_0)));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf195_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__::__vwsnf195_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::WString __vwsnf195_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
-	{
-		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetName();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf196_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::__vwsnf196_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf196_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->textList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf197_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__(__vwsnthis_0)));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf197_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__::__vwsnf197_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::WString __vwsnf197_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
-	{
-		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetTitle();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf198_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::__vwsnf198_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf198_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->items.Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetSelected(true);
-		::vl::__vwsn::This(__vwsnthis_0->textList)->NotifyItemDataModified(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L));
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf199_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::__vwsnf199_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf199_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	::vl::WString __vwsnf199_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->items.Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetSelected(false);
-		::vl::__vwsn::This(__vwsnthis_0->textList)->NotifyItemDataModified(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L));
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
+		return ::vl::__vwsn::This(item.Obj())->GetName();
 	}
 
 	//-------------------------------------------------------------------
@@ -2342,6 +2373,80 @@ Closures
 
 	void __vwsnf200_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
+		::vl::__vwsn::This(__vwsnthis_0->textList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf201_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__(__vwsnthis_0)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf201_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__::__vwsnf201_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf201_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
+	{
+		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetName();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf202_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::__vwsnf202_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf202_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->textList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf203_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__(__vwsnthis_0)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf203_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__::__vwsnf203_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf203_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
+	{
+		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetTitle();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf204_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::__vwsnf204_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf204_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->items.Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetSelected(true);
+		::vl::__vwsn::This(__vwsnthis_0->textList)->NotifyItemDataModified(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf205_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::__vwsnf205_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf205_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->items.Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetSelected(false);
+		::vl::__vwsn::This(__vwsnthis_0->textList)->NotifyItemDataModified(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf206_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::__vwsnf206_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(::tuidemo::TuiRefreshBindableTextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf206_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
 		if (::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->items.Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->GetSelected())
 		{
 			::vl::__vwsn::This(__vwsnthis_0->buttonRead)->SetText(::vl::WString::Unmanaged(L"Read (true)"));
@@ -2354,12 +2459,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf201_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::__vwsnf201_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf207_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::__vwsnf207_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::reflection::description::Value __vwsnf201_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
+	::vl::reflection::description::Value __vwsnf207_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
 		if (__vwsn_update_)
@@ -2375,91 +2480,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf202_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::__vwsnf202_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf202_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
-		return ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(item.Obj())->GetChildren());
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf203_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::__vwsnf203_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::WString __vwsnf203_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
-		return ::vl::__vwsn::This(item.Obj())->GetName();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf204_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::__vwsnf204_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf204_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->treeView)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf205_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__(__vwsnthis_0)));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf205_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__::__vwsnf205_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::WString __vwsnf205_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
-	{
-		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetName();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf206_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::__vwsnf206_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf206_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->treeView)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf207_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__(__vwsnthis_0)));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf207_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__::__vwsnf207_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::WString __vwsnf207_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
-	{
-		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetTitle();
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf208_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::__vwsnf208_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf208_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf208_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		auto data = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->rootItem.Obj())->GetChildren().Obj())->Get(static_cast<::vl::vint64_t>(0L)));
-		::vl::__vwsn::This(data.Obj())->SetName(((::vl::__vwsn::This(data.Obj())->GetName() == ::vl::WString::Unmanaged(L"First")) ? ::vl::WString::Unmanaged(L"One") : ::vl::WString::Unmanaged(L"First")));
-		::vl::__vwsn::This(data.Obj())->SetTitle(((::vl::__vwsn::This(data.Obj())->GetTitle() == ::vl::WString::Unmanaged(L"1st")) ? ::vl::WString::Unmanaged(L"One") : ::vl::WString::Unmanaged(L"1st")));
-		::vl::__vwsn::This(__vwsnthis_0->treeView)->NotifyNodeDataModified(::vl::__vwsn::Box(data));
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
+		return ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(item.Obj())->GetChildren());
 	}
 
 	//-------------------------------------------------------------------
@@ -2469,7 +2498,83 @@ Closures
 	{
 	}
 
-	void __vwsnf209_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	::vl::WString __vwsnf209_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(__vwsn_item_);
+		return ::vl::__vwsn::This(item.Obj())->GetName();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf210_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::__vwsnf210_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf210_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->treeView)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf211_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__(__vwsnthis_0)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf211_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__::__vwsnf211_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf211_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
+	{
+		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetName();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf212_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::__vwsnf212_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf212_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->treeView)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf213_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__(__vwsnthis_0)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf213_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__::__vwsnf213_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf213_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize__::operator()(const ::vl::reflection::description::Value& value) const
+	{
+		return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(value).Obj())->GetTitle();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf214_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::__vwsnf214_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf214_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		auto data = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->rootItem.Obj())->GetChildren().Obj())->Get(static_cast<::vl::vint64_t>(0L)));
+		::vl::__vwsn::This(data.Obj())->SetName(((::vl::__vwsn::This(data.Obj())->GetName() == ::vl::WString::Unmanaged(L"First")) ? ::vl::WString::Unmanaged(L"One") : ::vl::WString::Unmanaged(L"First")));
+		::vl::__vwsn::This(data.Obj())->SetTitle(((::vl::__vwsn::This(data.Obj())->GetTitle() == ::vl::WString::Unmanaged(L"1st")) ? ::vl::WString::Unmanaged(L"One") : ::vl::WString::Unmanaged(L"1st")));
+		::vl::__vwsn::This(__vwsnthis_0->treeView)->NotifyNodeDataModified(::vl::__vwsn::Box(data));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf215_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::__vwsnf215_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf215_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto data = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiRefreshItem>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->rootItem.Obj())->GetChildren().Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->GetChildren().Obj())->Get(static_cast<::vl::vint64_t>(1L)));
 		::vl::__vwsn::This(data.Obj())->SetName(((::vl::__vwsn::This(data.Obj())->GetName() == ::vl::WString::Unmanaged(L"Second (1)")) ? ::vl::WString::Unmanaged(L"Two (1)") : ::vl::WString::Unmanaged(L"Second (1)")));
@@ -2479,12 +2584,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf210_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::__vwsnf210_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(::tuidemo::TuiRefreshListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf216_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::__vwsnf216_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(::tuidemo::TuiRefreshListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf210_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf216_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_switch_5 = ::vl::__vwsn::This(__vwsnthis_0->comboView)->GetSelectedIndex();
@@ -2517,12 +2622,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf211_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::__vwsnf211_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(::tuidemo::TuiRefreshListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf217_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::__vwsnf217_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(::tuidemo::TuiRefreshListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf211_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf217_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto s = ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetItems()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->GetText();
 		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetItems()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetText(((s == ::vl::WString::Unmanaged(L"First")) ? ::vl::WString::Unmanaged(L"MainColumn") : ::vl::WString::Unmanaged(L"First")));
@@ -2530,12 +2635,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf212_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::__vwsnf212_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(::tuidemo::TuiRefreshListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf218_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::__vwsnf218_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(::tuidemo::TuiRefreshListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf212_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf218_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto s = ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetItems()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->GetSubItems()).Obj())->Get(static_cast<::vl::vint64_t>(0L)));
 		::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetItems()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->GetSubItems()).Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(((s == ::vl::WString::Unmanaged(L"One")) ? ::vl::WString::Unmanaged(L"SubColumn") : ::vl::WString::Unmanaged(L"One"))));
@@ -2543,12 +2648,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf213_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::__vwsnf213_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(::tuidemo::TuiRefreshListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf219_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::__vwsnf219_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(::tuidemo::TuiRefreshListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf213_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf219_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto s = ::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetDataColumns()).Obj())->Get(static_cast<::vl::vint64_t>(0L)));
 		auto c = ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetDataColumns()).Obj())->GetCount();
@@ -2596,12 +2701,26 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf214_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::__vwsnf214_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(::tuidemo::TuiRefreshListViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf21_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::__vwsnf21_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_(::tuidemo::TuiDataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf214_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf21_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			return static_cast<::vl::presentation::templates::GuiGridEditorTemplate*>(new ::tuidemo::TuiDateEditor());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf220_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::__vwsnf220_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(::tuidemo::TuiRefreshListViewTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf220_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto s = ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetColumns()).Obj())->Get(static_cast<::vl::vint64_t>(1L))).Obj())->GetText();
 		auto c = ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->listView)->GetColumns()).Obj())->GetCount();
@@ -2635,36 +2754,36 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf215_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_::__vwsnf215_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_(::tuidemo::TuiRefreshTextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf221_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_::__vwsnf221_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_(::tuidemo::TuiRefreshTextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf215_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf221_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::TextItem>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->textList)->GetItems()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetChecked(true);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf216_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_::__vwsnf216_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_(::tuidemo::TuiRefreshTextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf222_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_::__vwsnf222_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_(::tuidemo::TuiRefreshTextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf216_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf222_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::TextItem>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->textList)->GetItems()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->SetChecked(false);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf217_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_::__vwsnf217_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_(::tuidemo::TuiRefreshTextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf223_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_::__vwsnf223_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_(::tuidemo::TuiRefreshTextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf217_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf223_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		if (::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::TextItem>>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->textList)->GetItems()).Obj())->Get(static_cast<::vl::vint64_t>(0L))).Obj())->GetChecked())
 		{
@@ -2678,12 +2797,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf218_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_::__vwsnf218_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshTreeViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf224_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_::__vwsnf224_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshTreeViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf218_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf224_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto node = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->treeView)->Nodes().Obj())->GetRootNode().Obj())->GetChild(static_cast<::vl::vint64_t>(0L));
 		auto data = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->treeView)->Nodes().Obj())->GetTreeViewData(::vl::__vwsn::Ensure(static_cast<::vl::presentation::controls::tree::INodeProvider*>(node.Obj())));
@@ -2693,12 +2812,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf219_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_::__vwsnf219_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshTreeViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf225_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_::__vwsnf225_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_(::tuidemo::TuiRefreshTreeViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf219_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf225_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto node = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->treeView)->Nodes().Obj())->GetRootNode().Obj())->GetChild(static_cast<::vl::vint64_t>(0L)).Obj())->GetChild(static_cast<::vl::vint64_t>(1L));
 		auto data = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->treeView)->Nodes().Obj())->GetTreeViewData(::vl::__vwsn::Ensure(static_cast<::vl::presentation::controls::tree::INodeProvider*>(node.Obj())));
@@ -2708,26 +2827,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf21_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::__vwsnf21_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_(::tuidemo::TuiDataGridTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf226_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf226_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiGridEditorTemplate* __vwsnf21_TuiControlTest_tuidemo_TuiDataGridTabPageConstructor___vwsn_tuidemo_TuiDataGridTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiGridEditorTemplate*>(new ::tuidemo::TuiDateEditor());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf220_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf220_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf220_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf226_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_for_begin_i = static_cast<::vl::vint64_t>(0L);
@@ -2748,12 +2853,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf221_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf221_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
+	__vwsnf227_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf227_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf221_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf227_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto i = static_cast<::vl::vint64_t>(0L);
 		while ((i < ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetItemsToBind().Obj())->GetCount()))
@@ -2765,12 +2870,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf222_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf222_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
+	__vwsnf228_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf228_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf222_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf228_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto i = static_cast<::vl::vint64_t>(1L);
 		while ((i < ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetItemsToBind().Obj())->GetCount()))
@@ -2782,116 +2887,14 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf223_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf223_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
+	__vwsnf229_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf229_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf223_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf229_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetItemsToBind().Obj())->Clear();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf224_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf224_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf224_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->Setcounter(static_cast<::vl::vint64_t>(0L));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf225_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf225_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf225_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf226_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf226_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf226_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf227_TuiControlTest_tuidemo_TuiRepeatItemTemplateConstructor___vwsn_tuidemo_TuiRepeatItemTemplate_Initialize_::__vwsnf227_TuiControlTest_tuidemo_TuiRepeatItemTemplateConstructor___vwsn_tuidemo_TuiRepeatItemTemplate_Initialize_(::tuidemo::TuiRepeatItemTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf227_TuiControlTest_tuidemo_TuiRepeatItemTemplateConstructor___vwsn_tuidemo_TuiRepeatItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf228_TuiControlTest_tuidemo_TuiSharedSizeItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeItemTemplate_Initialize_::__vwsnf228_TuiControlTest_tuidemo_TuiSharedSizeItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeItemTemplate_Initialize_(::tuidemo::TuiSharedSizeItemTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf228_TuiControlTest_tuidemo_TuiSharedSizeItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf229_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_::__vwsnf229_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_(::tuidemo::TuiSharedSizeTextItemTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf229_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -2917,12 +2920,114 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf230_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_::__vwsnf230_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_(::tuidemo::TuiSharedSizeTextItemTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf230_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf230_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf230_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf230_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->Setcounter(static_cast<::vl::vint64_t>(0L));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf231_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf231_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf231_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf232_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::__vwsnf232_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(::tuidemo::TuiEnglishNumbersControllerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf232_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf233_TuiControlTest_tuidemo_TuiRepeatItemTemplateConstructor___vwsn_tuidemo_TuiRepeatItemTemplate_Initialize_::__vwsnf233_TuiControlTest_tuidemo_TuiRepeatItemTemplateConstructor___vwsn_tuidemo_TuiRepeatItemTemplate_Initialize_(::tuidemo::TuiRepeatItemTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf233_TuiControlTest_tuidemo_TuiRepeatItemTemplateConstructor___vwsn_tuidemo_TuiRepeatItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf234_TuiControlTest_tuidemo_TuiSharedSizeItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeItemTemplate_Initialize_::__vwsnf234_TuiControlTest_tuidemo_TuiSharedSizeItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeItemTemplate_Initialize_(::tuidemo::TuiSharedSizeItemTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf234_TuiControlTest_tuidemo_TuiSharedSizeItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf235_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_::__vwsnf235_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_(::tuidemo::TuiSharedSizeTextItemTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf235_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf236_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_::__vwsnf236_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_(::tuidemo::TuiSharedSizeTextItemTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf236_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -2935,12 +3040,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf231_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_::__vwsnf231_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_(::tuidemo::TuiSharedSizeTextItemTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf237_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_::__vwsnf237_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_(::tuidemo::TuiSharedSizeTextItemTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf231_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf237_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -2953,12 +3058,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf232_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_::__vwsnf232_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_(::tuidemo::TuiDocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf238_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_::__vwsnf238_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_(::tuidemo::TuiDocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf232_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf238_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetAcceptTabInput();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -2971,12 +3076,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf233_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_::__vwsnf233_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_(::tuidemo::TuiDocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf239_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_::__vwsnf239_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_(::tuidemo::TuiDocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf233_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf239_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->GetAcceptTabInput();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -2985,102 +3090,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->SetAcceptTabInput(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf234_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_::__vwsnf234_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_(::tuidemo::TuiDocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf234_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9)->GetAcceptTabInput();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9)->SetAcceptTabInput(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf235_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_::__vwsnf235_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_(::tuidemo::TuiTextBoxSubTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf235_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetAcceptTabInput();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetAcceptTabInput(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf236_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_::__vwsnf236_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_(::tuidemo::TuiTextBoxSubTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf236_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->GetAcceptTabInput();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->SetAcceptTabInput(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf237_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::__vwsnf237_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(::tuidemo::TuiTextBoxTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf237_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->OnMakeFontLarger)();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf238_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::__vwsnf238_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(::tuidemo::TuiTextBoxTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf238_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf239_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::__vwsnf239_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(::tuidemo::TuiTextBoxTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf239_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->OnMakeFontSmaller)();
 	}
 
 	//-------------------------------------------------------------------
@@ -3098,12 +3107,108 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf240_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::__vwsnf240_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(::tuidemo::TuiTextBoxTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf240_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_::__vwsnf240_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_(::tuidemo::TuiDocumentBoxSubTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf240_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf240_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9)->GetAcceptTabInput();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9)->SetAcceptTabInput(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf241_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_::__vwsnf241_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_(::tuidemo::TuiTextBoxSubTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf241_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetAcceptTabInput();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetAcceptTabInput(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf242_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_::__vwsnf242_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_(::tuidemo::TuiTextBoxSubTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf242_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->GetAcceptTabInput();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->SetAcceptTabInput(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf243_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::__vwsnf243_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(::tuidemo::TuiTextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf243_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->OnMakeFontLarger)();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf244_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::__vwsnf244_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(::tuidemo::TuiTextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf244_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf245_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::__vwsnf245_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(::tuidemo::TuiTextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf245_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->OnMakeFontSmaller)();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf246_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::__vwsnf246_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(::tuidemo::TuiTextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf246_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -3116,134 +3221,26 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf241_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::__vwsnf241_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(::tuidemo::TuiTextBoxTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf247_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::__vwsnf247_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(::tuidemo::TuiTextBoxTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf241_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::operator()() const
+	void __vwsnf247_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::operator()() const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(__vwsnthis_0->t1)->GetDisplayFont(), static_cast<::vl::vint64_t>(5L)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf242_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::__vwsnf242_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(::tuidemo::TuiTextBoxTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf248_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::__vwsnf248_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(::tuidemo::TuiTextBoxTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf242_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::operator()() const
+	void __vwsnf248_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_::operator()() const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(__vwsnthis_0->t1)->GetDisplayFont(), (- static_cast<::vl::vint64_t>(5L))));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf243_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::__vwsnf243_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(::tuidemo::TuiDatePickerTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf243_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf244_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::__vwsnf244_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(::tuidemo::TuiDatePickerTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf244_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf245_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::__vwsnf245_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(::tuidemo::TuiDatePickerTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf245_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf246_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::__vwsnf246_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(::tuidemo::TuiDatePickerTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf246_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf247_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::__vwsnf247_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(::tuidemo::TuiDatePickerTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf247_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf248_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::__vwsnf248_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(::tuidemo::TuiDatePickerTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf248_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->SetFont(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3255,13 +3252,13 @@ Closures
 
 	void __vwsnf249_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->GetText();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->SetText(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3287,6 +3284,114 @@ Closures
 
 	void __vwsnf250_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf251_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::__vwsnf251_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(::tuidemo::TuiDatePickerTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf251_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf252_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::__vwsnf252_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(::tuidemo::TuiDatePickerTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf252_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf253_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::__vwsnf253_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(::tuidemo::TuiDatePickerTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf253_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf254_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::__vwsnf254_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(::tuidemo::TuiDatePickerTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf254_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf255_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::__vwsnf255_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(::tuidemo::TuiDatePickerTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf255_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf256_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::__vwsnf256_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(::tuidemo::TuiDatePickerTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf256_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -3298,12 +3403,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf251_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf251_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf257_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf257_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf251_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf257_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->dialogNotImpl)->GetTitle();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -3316,105 +3421,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf252_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf252_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf252_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->dialogMessage)->SetText(::vl::__vwsn::This(__vwsnthis_0->document)->GetActiveHyperlinkReference());
-		::vl::__vwsn::This(__vwsnthis_0->dialogMessage)->ShowDialog();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf253_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf253_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf253_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		if (::vl::__vwsn::This(__vwsnthis_0->dialogOpenDoc)->ShowDialog())
-		{
-			::vl::__vwsn::This(__vwsnthis_0->self)->LoadAsPrivateFormat(::vl::__vwsn::This(__vwsnthis_0->dialogOpenDoc)->GetFileName());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf254_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf254_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf254_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->dialogSaveDoc)->SetFilterIndex(static_cast<::vl::vint64_t>(0L));
-		::vl::__vwsn::This(__vwsnthis_0->self)->SaveDocument();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf255_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf255_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf255_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->dialogSaveDoc)->SetFilterIndex(static_cast<::vl::vint64_t>(1L));
-		::vl::__vwsn::This(__vwsnthis_0->self)->SaveDocument();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf256_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf256_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf256_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->dialogSaveDoc)->SetFilterIndex(static_cast<::vl::vint64_t>(2L));
-		::vl::__vwsn::This(__vwsnthis_0->self)->SaveDocument();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf257_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf257_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf257_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandUndo)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandUndo)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf258_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf258_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf258_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf258_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandUndo)->GetShortcutBuilder();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandUndo)->SetShortcutBuilder(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->dialogMessage)->SetText(::vl::__vwsn::This(__vwsnthis_0->document)->GetActiveHyperlinkReference());
+		::vl::__vwsn::This(__vwsnthis_0->dialogMessage)->ShowDialog();
 	}
 
 	//-------------------------------------------------------------------
@@ -3426,7 +3441,10 @@ Closures
 
 	void __vwsnf259_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->document)->Undo();
+		if (::vl::__vwsn::This(__vwsnthis_0->dialogOpenDoc)->ShowDialog())
+		{
+			::vl::__vwsn::This(__vwsnthis_0->self)->LoadAsPrivateFormat(::vl::__vwsn::This(__vwsnthis_0->dialogOpenDoc)->GetFileName());
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -3450,7 +3468,94 @@ Closures
 	{
 	}
 
-	void __vwsnf260_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf260_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->dialogSaveDoc)->SetFilterIndex(static_cast<::vl::vint64_t>(0L));
+		::vl::__vwsn::This(__vwsnthis_0->self)->SaveDocument();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf261_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf261_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf261_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->dialogSaveDoc)->SetFilterIndex(static_cast<::vl::vint64_t>(1L));
+		::vl::__vwsn::This(__vwsnthis_0->self)->SaveDocument();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf262_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf262_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf262_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->dialogSaveDoc)->SetFilterIndex(static_cast<::vl::vint64_t>(2L));
+		::vl::__vwsn::This(__vwsnthis_0->self)->SaveDocument();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf263_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf263_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf263_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandUndo)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandUndo)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf264_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf264_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf264_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandUndo)->GetShortcutBuilder();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandUndo)->SetShortcutBuilder(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf265_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf265_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf265_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->document)->Undo();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf266_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf266_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf266_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandRedo)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -3463,12 +3568,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf261_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf261_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf267_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf267_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf261_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf267_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandRedo)->GetShortcutBuilder();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -3481,102 +3586,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf262_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf262_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf262_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->document)->Redo();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf263_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf263_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf263_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandCopy)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandCopy)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf264_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf264_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf264_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandCopy)->GetShortcutBuilder();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandCopy)->SetShortcutBuilder(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf265_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf265_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf265_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->document)->Copy();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf266_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf266_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf266_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandCut)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandCut)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf267_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf267_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf267_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandCut)->GetShortcutBuilder();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandCut)->SetShortcutBuilder(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf268_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf268_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -3584,7 +3593,7 @@ Closures
 
 	void __vwsnf268_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->document)->Cut();
+		::vl::__vwsn::This(__vwsnthis_0->document)->Redo();
 	}
 
 	//-------------------------------------------------------------------
@@ -3596,13 +3605,13 @@ Closures
 
 	void __vwsnf269_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandPaste)->GetEnabled();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandCopy)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->commandPaste)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->commandCopy)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3628,13 +3637,13 @@ Closures
 
 	void __vwsnf270_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandPaste)->GetShortcutBuilder();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandCopy)->GetShortcutBuilder();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->commandPaste)->SetShortcutBuilder(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->commandCopy)->SetShortcutBuilder(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3646,7 +3655,7 @@ Closures
 
 	void __vwsnf271_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->document)->Paste();
+		::vl::__vwsn::This(__vwsnthis_0->document)->Copy();
 	}
 
 	//-------------------------------------------------------------------
@@ -3657,6 +3666,102 @@ Closures
 	}
 
 	void __vwsnf272_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandCut)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandCut)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf273_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf273_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf273_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandCut)->GetShortcutBuilder();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandCut)->SetShortcutBuilder(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf274_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf274_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf274_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->document)->Cut();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf275_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf275_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf275_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandPaste)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandPaste)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf276_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf276_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf276_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandPaste)->GetShortcutBuilder();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandPaste)->SetShortcutBuilder(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf277_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf277_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf277_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->document)->Paste();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf278_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf278_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf278_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandDelete)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -3669,24 +3774,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf273_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf273_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf279_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf279_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf273_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf279_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->document)->SetSelectionText(::vl::WString::Unmanaged(L""));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf274_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf274_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf280_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf280_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf274_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf280_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandSelect)->GetShortcutBuilder();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -3699,24 +3804,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf275_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf275_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf281_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf281_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf275_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf281_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->document)->SelectAll();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf276_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf276_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf282_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf282_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf276_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf282_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandInsertImage)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -3729,12 +3834,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf277_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf277_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf283_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf283_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf277_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf283_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		if (::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->ShowDialog())
 		{
@@ -3763,12 +3868,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf278_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf278_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf284_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf284_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf278_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf284_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandEditHyperlink)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -3781,36 +3886,36 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf279_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf279_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf285_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf285_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf279_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf285_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::reflection::description::AsyncCoroutine::CreateAndRun(vl::Func(::vl_workflow_global::__vwsnf280_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__(__vwsnthis_0)));
+		::vl::reflection::description::AsyncCoroutine::CreateAndRun(vl::Func(::vl_workflow_global::__vwsnf286_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__(__vwsnthis_0)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf280_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__::__vwsnf280_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf286_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__::__vwsnf286_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf280_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__::operator()(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsn_co_impl_) const
+	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf286_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__::operator()(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsn_co_impl_) const
 	{
 		return ::vl::Ptr<::vl::reflection::description::ICoroutine>(new ::vl_workflow_global::__vwsnc108_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize____vl_reflection_description_ICoroutine(__vwsn_co_impl_, __vwsnthis_0));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf281_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf281_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf287_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf287_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf281_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf287_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandRemoveHyperlink)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -3823,107 +3928,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf282_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf282_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf282_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		auto row = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin().row;
-		auto begin = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin().column;
-		auto end = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd().column;
-		::vl::__vwsn::This(__vwsnthis_0->document)->RemoveHyperlink(row, begin, end);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf283_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf283_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf283_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandBold)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandBold)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf284_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf284_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf284_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandBold)->GetSelected();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandBold)->SetSelected(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf285_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf285_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf285_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		auto style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties());
-		(::vl::__vwsn::This(style.Obj())->bold = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandBold)->GetSelected())));
-		::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), style);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf286_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf286_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf286_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandItalic)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandItalic)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf287_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf287_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf287_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandItalic)->GetSelected();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandItalic)->SetSelected(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf288_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf288_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -3931,9 +3935,10 @@ Closures
 
 	void __vwsnf288_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties());
-		(::vl::__vwsn::This(style.Obj())->italic = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandItalic)->GetSelected())));
-		::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), style);
+		auto row = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin().row;
+		auto begin = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin().column;
+		auto end = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd().column;
+		::vl::__vwsn::This(__vwsnthis_0->document)->RemoveHyperlink(row, begin, end);
 	}
 
 	//-------------------------------------------------------------------
@@ -3945,13 +3950,13 @@ Closures
 
 	void __vwsnf289_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->GetEnabled();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandBold)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->commandBold)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3977,13 +3982,13 @@ Closures
 
 	void __vwsnf290_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->GetSelected();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandBold)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->SetSelected(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->commandBold)->SetSelected(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3996,7 +4001,7 @@ Closures
 	void __vwsnf291_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties());
-		(::vl::__vwsn::This(style.Obj())->underline = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->GetSelected())));
+		(::vl::__vwsn::This(style.Obj())->bold = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandBold)->GetSelected())));
 		::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), style);
 	}
 
@@ -4009,13 +4014,13 @@ Closures
 
 	void __vwsnf292_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandStrike)->GetEnabled();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandItalic)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->commandStrike)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->commandItalic)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -4027,13 +4032,13 @@ Closures
 
 	void __vwsnf293_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandStrike)->GetSelected();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandItalic)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->commandStrike)->SetSelected(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->commandItalic)->SetSelected(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -4046,7 +4051,7 @@ Closures
 	void __vwsnf294_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties());
-		(::vl::__vwsn::This(style.Obj())->strikeline = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandStrike)->GetSelected())));
+		(::vl::__vwsn::This(style.Obj())->italic = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandItalic)->GetSelected())));
 		::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), style);
 	}
 
@@ -4059,13 +4064,13 @@ Closures
 
 	void __vwsnf295_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandFont)->GetEnabled();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->commandFont)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -4075,21 +4080,15 @@ Closures
 	{
 	}
 
-	void __vwsnf296_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf296_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto begin = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin();
-		auto end = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd();
-		auto style = ::vl::__vwsn::This(__vwsnthis_0->document)->SummarizeStyle(begin, end);
-		auto baselineFont = ::vl::__vwsn::This(__vwsnthis_0->document)->GetDisplayFont();
-		::vl::__vwsn::This(__vwsnthis_0->dialogFont)->SetSelectedFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ((! static_cast<bool>(::vl::__vwsn::This(style.Obj())->face)) ? baselineFont.fontFamily : ::vl::__vwsn::This(style.Obj())->face.Value()); __vwsn_temp__.size = ((! static_cast<bool>(::vl::__vwsn::This(style.Obj())->size)) ? baselineFont.size : static_cast<::vl::vint64_t>(::vl::__vwsn::This(style.Obj())->size.Value().size)); return __vwsn_temp__; }());
-		if (::vl::__vwsn::This(__vwsnthis_0->dialogFont)->ShowDialog())
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->GetSelected();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			(style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties()));
-			auto selectedFont = ::vl::__vwsn::This(__vwsnthis_0->dialogFont)->GetSelectedFont();
-			(::vl::__vwsn::This(style.Obj())->face = ::vl::Nullable<::vl::WString>(selectedFont.fontFamily));
-			(::vl::__vwsn::This(style.Obj())->size = [&](){ ::vl::presentation::DocumentFontSize __vwsn_temp__; __vwsn_temp__.size = static_cast<double>(selectedFont.size); __vwsn_temp__.relative = false; return __vwsn_temp__; }());
-			::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(begin, end, style);
+			return;
 		}
+		::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->SetSelected(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -4099,15 +4098,11 @@ Closures
 	{
 	}
 
-	void __vwsnf297_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf297_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandColor)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandColor)->SetEnabled(__vwsn_new_);
+		auto style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties());
+		(::vl::__vwsn::This(style.Obj())->underline = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandUnderline)->GetSelected())));
+		::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), style);
 	}
 
 	//-------------------------------------------------------------------
@@ -4117,25 +4112,15 @@ Closures
 	{
 	}
 
-	void __vwsnf298_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf298_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto begin = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin();
-		auto end = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd();
-		auto selectedColor = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->document)->SummarizeStyle(begin, end).Obj())->color;
-		if ((! static_cast<bool>(selectedColor)))
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandStrike)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			::vl::__vwsn::This(__vwsnthis_0->dialogColor)->SetSelectedColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#000000")));
+			return;
 		}
-		else
-		{
-			::vl::__vwsn::This(__vwsnthis_0->dialogColor)->SetSelectedColor(selectedColor.Value());
-		}
-		if (::vl::__vwsn::This(__vwsnthis_0->dialogColor)->ShowDialog())
-		{
-			auto style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties());
-			(::vl::__vwsn::This(style.Obj())->color = ::vl::Nullable<::vl::presentation::Color>(::vl::__vwsn::This(__vwsnthis_0->dialogColor)->GetSelectedColor()));
-			::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(begin, end, style);
-		}
+		::vl::__vwsn::This(__vwsnthis_0->commandStrike)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -4147,13 +4132,13 @@ Closures
 
 	void __vwsnf299_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandBackColor)->GetEnabled();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandStrike)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->commandBackColor)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->commandStrike)->SetSelected(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -4200,6 +4185,126 @@ Closures
 
 	void __vwsnf300_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
+		auto style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties());
+		(::vl::__vwsn::This(style.Obj())->strikeline = ::vl::Nullable<bool>((! ::vl::__vwsn::This(__vwsnthis_0->commandStrike)->GetSelected())));
+		::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), style);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf301_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf301_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf301_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandFont)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandFont)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf302_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf302_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf302_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		auto begin = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin();
+		auto end = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd();
+		auto style = ::vl::__vwsn::This(__vwsnthis_0->document)->SummarizeStyle(begin, end);
+		auto baselineFont = ::vl::__vwsn::This(__vwsnthis_0->document)->GetDisplayFont();
+		::vl::__vwsn::This(__vwsnthis_0->dialogFont)->SetSelectedFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ((! static_cast<bool>(::vl::__vwsn::This(style.Obj())->face)) ? baselineFont.fontFamily : ::vl::__vwsn::This(style.Obj())->face.Value()); __vwsn_temp__.size = ((! static_cast<bool>(::vl::__vwsn::This(style.Obj())->size)) ? baselineFont.size : static_cast<::vl::vint64_t>(::vl::__vwsn::This(style.Obj())->size.Value().size)); return __vwsn_temp__; }());
+		if (::vl::__vwsn::This(__vwsnthis_0->dialogFont)->ShowDialog())
+		{
+			(style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties()));
+			auto selectedFont = ::vl::__vwsn::This(__vwsnthis_0->dialogFont)->GetSelectedFont();
+			(::vl::__vwsn::This(style.Obj())->face = ::vl::Nullable<::vl::WString>(selectedFont.fontFamily));
+			(::vl::__vwsn::This(style.Obj())->size = [&](){ ::vl::presentation::DocumentFontSize __vwsn_temp__; __vwsn_temp__.size = static_cast<double>(selectedFont.size); __vwsn_temp__.relative = false; return __vwsn_temp__; }());
+			::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(begin, end, style);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf303_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf303_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf303_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandColor)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandColor)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf304_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf304_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf304_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		auto begin = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin();
+		auto end = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd();
+		auto selectedColor = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->document)->SummarizeStyle(begin, end).Obj())->color;
+		if ((! static_cast<bool>(selectedColor)))
+		{
+			::vl::__vwsn::This(__vwsnthis_0->dialogColor)->SetSelectedColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#000000")));
+		}
+		else
+		{
+			::vl::__vwsn::This(__vwsnthis_0->dialogColor)->SetSelectedColor(selectedColor.Value());
+		}
+		if (::vl::__vwsn::This(__vwsnthis_0->dialogColor)->ShowDialog())
+		{
+			auto style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties());
+			(::vl::__vwsn::This(style.Obj())->color = ::vl::Nullable<::vl::presentation::Color>(::vl::__vwsn::This(__vwsnthis_0->dialogColor)->GetSelectedColor()));
+			::vl::__vwsn::This(__vwsnthis_0->document)->EditStyle(begin, end, style);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf305_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf305_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf305_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandBackColor)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandBackColor)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf306_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf306_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf306_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
 		auto begin = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin();
 		auto end = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd();
 		auto selectedColor = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->document)->SummarizeStyle(begin, end).Obj())->backgroundColor;
@@ -4221,12 +4326,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf301_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf301_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf307_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf307_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf301_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf307_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandViewOnly)->GetShortcutBuilder();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -4239,96 +4344,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf302_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf302_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf302_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::ViewOnly);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf303_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf303_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf303_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandSelectable)->GetShortcutBuilder();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandSelectable)->SetShortcutBuilder(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf304_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf304_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf304_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::Selectable);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf305_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf305_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf305_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandEditable)->GetShortcutBuilder();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandEditable)->SetShortcutBuilder(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf306_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf306_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf306_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::Editable);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf307_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf307_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf307_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignDefault)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandAlignDefault)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf308_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf308_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -4336,7 +4351,7 @@ Closures
 
 	void __vwsnf308_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignment(::vl::Nullable<::vl::presentation::Alignment>());
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::ViewOnly);
 	}
 
 	//-------------------------------------------------------------------
@@ -4348,13 +4363,13 @@ Closures
 
 	void __vwsnf309_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignLeft)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandSelectable)->GetShortcutBuilder();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->commandAlignLeft)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->commandSelectable)->SetShortcutBuilder(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -4377,7 +4392,97 @@ Closures
 	{
 	}
 
-	void __vwsnf310_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf310_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::Selectable);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf311_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf311_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf311_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandEditable)->GetShortcutBuilder();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandEditable)->SetShortcutBuilder(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf312_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf312_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf312_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::Editable);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf313_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf313_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf313_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignDefault)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandAlignDefault)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf314_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf314_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf314_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignment(::vl::Nullable<::vl::presentation::Alignment>());
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf315_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf315_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf315_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignLeft)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandAlignLeft)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf316_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf316_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf316_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignLeft)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -4390,24 +4495,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf311_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf311_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf317_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf317_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf311_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf317_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignment(::vl::Nullable<::vl::presentation::Alignment>(::vl::presentation::Alignment::Left));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf312_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf312_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf318_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf318_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf312_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf318_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignCenter)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -4420,12 +4525,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf313_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf313_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+	__vwsnf319_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf319_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf313_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf319_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignCenter)->GetSelected();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -4434,96 +4539,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->commandAlignCenter)->SetSelected(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf314_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf314_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf314_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignment(::vl::Nullable<::vl::presentation::Alignment>(::vl::presentation::Alignment::Center));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf315_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf315_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf315_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignRight)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandAlignRight)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf316_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf316_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf316_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignRight)->GetSelected();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->commandAlignRight)->SetSelected(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf317_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf317_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf317_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignment(::vl::Nullable<::vl::presentation::Alignment>(::vl::presentation::Alignment::Right));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf318_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf318_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf318_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetHasEditableSelection();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetHasEditableSelection(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf319_TuiControlTest_tuidemo_TuiEmbeddedControlsSubTabPageConstructor___vwsn_tuidemo_TuiEmbeddedControlsSubTabPage_Initialize_::__vwsnf319_TuiControlTest_tuidemo_TuiEmbeddedControlsSubTabPageConstructor___vwsn_tuidemo_TuiEmbeddedControlsSubTabPage_Initialize_(::tuidemo::TuiEmbeddedControlsSubTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf319_TuiControlTest_tuidemo_TuiEmbeddedControlsSubTabPageConstructor___vwsn_tuidemo_TuiEmbeddedControlsSubTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->dialogStart)->ShowDialog();
 	}
 
 	//-------------------------------------------------------------------
@@ -4570,12 +4585,102 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf320_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_::__vwsnf320_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_(::tuidemo::TuiLocalizedColorDialogTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf320_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf320_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf320_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf320_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignment(::vl::Nullable<::vl::presentation::Alignment>(::vl::presentation::Alignment::Center));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf321_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf321_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf321_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignRight)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandAlignRight)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf322_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf322_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf322_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commandAlignRight)->GetSelected();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->commandAlignRight)->SetSelected(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf323_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf323_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf323_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetAlignment(::vl::Nullable<::vl::presentation::Alignment>(::vl::presentation::Alignment::Right));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf324_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::__vwsnf324_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(::tuidemo::TuiDocumentEditorBaseConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf324_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetHasEditableSelection();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetHasEditableSelection(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf325_TuiControlTest_tuidemo_TuiEmbeddedControlsSubTabPageConstructor___vwsn_tuidemo_TuiEmbeddedControlsSubTabPage_Initialize_::__vwsnf325_TuiControlTest_tuidemo_TuiEmbeddedControlsSubTabPageConstructor___vwsn_tuidemo_TuiEmbeddedControlsSubTabPage_Initialize_(::tuidemo::TuiEmbeddedControlsSubTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf325_TuiControlTest_tuidemo_TuiEmbeddedControlsSubTabPageConstructor___vwsn_tuidemo_TuiEmbeddedControlsSubTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->dialogStart)->ShowDialog();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf326_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_::__vwsnf326_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_(::tuidemo::TuiLocalizedColorDialogTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf326_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -4588,12 +4693,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf321_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_::__vwsnf321_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_(::tuidemo::TuiLocalizedColorDialogTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf327_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_::__vwsnf327_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_(::tuidemo::TuiLocalizedColorDialogTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf321_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf327_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -4606,12 +4711,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf322_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_::__vwsnf322_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_(::tuidemo::TuiLocalizedColorDialogTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf328_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_::__vwsnf328_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_(::tuidemo::TuiLocalizedColorDialogTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf322_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf328_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->dialog)->SetSelectedColor(::vl::__vwsn::This(__vwsnthis_0->self)->GetSampleColor());
 		if (::vl::__vwsn::This(__vwsnthis_0->dialog)->ShowDialog())
@@ -4622,12 +4727,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf323_TuiControlTest_tuidemo_TuiLocalizedDialogsTabPageConstructor___vwsn_tuidemo_TuiLocalizedDialogsTabPage_Initialize_::__vwsnf323_TuiControlTest_tuidemo_TuiLocalizedDialogsTabPageConstructor___vwsn_tuidemo_TuiLocalizedDialogsTabPage_Initialize_(::tuidemo::TuiLocalizedDialogsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf329_TuiControlTest_tuidemo_TuiLocalizedDialogsTabPageConstructor___vwsn_tuidemo_TuiLocalizedDialogsTabPage_Initialize_::__vwsnf329_TuiControlTest_tuidemo_TuiLocalizedDialogsTabPageConstructor___vwsn_tuidemo_TuiLocalizedDialogsTabPage_Initialize_(::tuidemo::TuiLocalizedDialogsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf323_TuiControlTest_tuidemo_TuiLocalizedDialogsTabPageConstructor___vwsn_tuidemo_TuiLocalizedDialogsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf329_TuiControlTest_tuidemo_TuiLocalizedDialogsTabPageConstructor___vwsn_tuidemo_TuiLocalizedDialogsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -4636,57 +4741,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf325_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_::__vwsnf325_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_(::tuidemo::TuiLocalizedFileDialogTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf325_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetDialogProperties(static_cast<::vl::presentation::controls::GuiFileDialogBase*>(__vwsnthis_0->dialogOpen));
-		if (::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->ShowDialog())
-		{
-			::vl::__vwsn::This(__vwsnthis_0->lstFiles)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->GetFileNames())));
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf326_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_::__vwsnf326_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_(::tuidemo::TuiLocalizedFileDialogTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf326_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetDialogProperties(static_cast<::vl::presentation::controls::GuiFileDialogBase*>(__vwsnthis_0->dialogSave));
-		if (::vl::__vwsn::This(__vwsnthis_0->dialogSave)->ShowDialog())
-		{
-			::vl::__vwsn::This(__vwsnthis_0->lstFiles)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>((::vl::__vwsn::CreateList().Add(::vl::__vwsn::This(__vwsnthis_0->dialogSave)->GetFileName())).list));
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf327_TuiControlTest_tuidemo_TuiLocalizedFontDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFontDialogTabPage_Initialize_::__vwsnf327_TuiControlTest_tuidemo_TuiLocalizedFontDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFontDialogTabPage_Initialize_(::tuidemo::TuiLocalizedFontDialogTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf327_TuiControlTest_tuidemo_TuiLocalizedFontDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFontDialogTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->dialog)->SetShowEffect(::vl::__vwsn::This(__vwsnthis_0->checkEffect)->GetSelected());
-		::vl::__vwsn::This(__vwsnthis_0->dialog)->SetSelectedFont(::vl::__vwsn::This(__vwsnthis_0->label.Obj())->GetFont());
-		::vl::__vwsn::This(__vwsnthis_0->dialog)->SetSelectedColor(::vl::__vwsn::This(__vwsnthis_0->label.Obj())->GetColor());
-		if (::vl::__vwsn::This(__vwsnthis_0->dialog)->ShowDialog())
-		{
-			::vl::__vwsn::This(__vwsnthis_0->label.Obj())->SetFont(::vl::__vwsn::This(__vwsnthis_0->dialog)->GetSelectedFont());
-			::vl::__vwsn::This(__vwsnthis_0->label.Obj())->SetColor(::vl::__vwsn::This(__vwsnthis_0->dialog)->GetSelectedColor());
-		}
 	}
 
 	//-------------------------------------------------------------------
@@ -4710,12 +4764,63 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf331_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::__vwsnf331_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(::tuidemo::TuiLocalizedMessageDialogTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf331_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_::__vwsnf331_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_(::tuidemo::TuiLocalizedFileDialogTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf331_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf331_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetDialogProperties(static_cast<::vl::presentation::controls::GuiFileDialogBase*>(__vwsnthis_0->dialogOpen));
+		if (::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->ShowDialog())
+		{
+			::vl::__vwsn::This(__vwsnthis_0->lstFiles)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->GetFileNames())));
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf332_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_::__vwsnf332_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_(::tuidemo::TuiLocalizedFileDialogTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf332_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetDialogProperties(static_cast<::vl::presentation::controls::GuiFileDialogBase*>(__vwsnthis_0->dialogSave));
+		if (::vl::__vwsn::This(__vwsnthis_0->dialogSave)->ShowDialog())
+		{
+			::vl::__vwsn::This(__vwsnthis_0->lstFiles)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>((::vl::__vwsn::CreateList().Add(::vl::__vwsn::This(__vwsnthis_0->dialogSave)->GetFileName())).list));
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf333_TuiControlTest_tuidemo_TuiLocalizedFontDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFontDialogTabPage_Initialize_::__vwsnf333_TuiControlTest_tuidemo_TuiLocalizedFontDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFontDialogTabPage_Initialize_(::tuidemo::TuiLocalizedFontDialogTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf333_TuiControlTest_tuidemo_TuiLocalizedFontDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFontDialogTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->dialog)->SetShowEffect(::vl::__vwsn::This(__vwsnthis_0->checkEffect)->GetSelected());
+		::vl::__vwsn::This(__vwsnthis_0->dialog)->SetSelectedFont(::vl::__vwsn::This(__vwsnthis_0->label.Obj())->GetFont());
+		::vl::__vwsn::This(__vwsnthis_0->dialog)->SetSelectedColor(::vl::__vwsn::This(__vwsnthis_0->label.Obj())->GetColor());
+		if (::vl::__vwsn::This(__vwsnthis_0->dialog)->ShowDialog())
+		{
+			::vl::__vwsn::This(__vwsnthis_0->label.Obj())->SetFont(::vl::__vwsn::This(__vwsnthis_0->dialog)->GetSelectedFont());
+			::vl::__vwsn::This(__vwsnthis_0->label.Obj())->SetColor(::vl::__vwsn::This(__vwsnthis_0->dialog)->GetSelectedColor());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf337_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::__vwsnf337_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(::tuidemo::TuiLocalizedMessageDialogTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf337_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->dialog)->SetTitle(::vl::__vwsn::This(__vwsnthis_0->txtTitle)->GetText());
 		::vl::__vwsn::This(__vwsnthis_0->dialog)->SetText(::vl::__vwsn::This(__vwsnthis_0->txtText)->GetText());
@@ -4728,12 +4833,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf332_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf332_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf338_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf338_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf332_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf338_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -4746,12 +4851,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf333_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf333_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf339_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf339_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf333_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf339_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
@@ -4760,114 +4865,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf334_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf334_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf334_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf335_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf335_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf335_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf336_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf336_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf336_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf337_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf337_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf337_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf338_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf338_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf338_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf339_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf339_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf339_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -4897,6 +4894,114 @@ Closures
 
 	void __vwsnf340_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_9.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf341_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf341_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf341_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_10.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf342_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf342_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf342_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf343_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf343_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf343_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_12.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf344_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf344_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf344_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf345_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf345_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf345_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf346_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf346_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf346_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_15.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -4908,12 +5013,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf341_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf341_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf347_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf347_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf341_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf347_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -4926,12 +5031,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf342_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf342_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf348_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf348_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf342_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf348_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_17.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -4944,12 +5049,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf343_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf343_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf349_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf349_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf343_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf349_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -4958,102 +5063,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf344_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf344_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf344_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf345_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf345_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf345_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_20.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_20.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf346_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf346_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf346_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf347_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf347_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf347_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::ITuiStringResourceStrings>>(__vwsn_value_);
-		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf348_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::__vwsnf348_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(::tuidemo::TuiResponsiveGroupControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf348_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelUp();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf349_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::__vwsnf349_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(::tuidemo::TuiResponsiveGroupControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf349_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelDown();
 	}
 
 	//-------------------------------------------------------------------
@@ -5071,72 +5080,108 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf350_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::__vwsnf350_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(::tuidemo::TuiResponsiveGroupControlConstructor* __vwsnctorthis_0)
+	__vwsnf350_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf350_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf350_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf350_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_38)->GetText();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_38)->SetText(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19.Obj())->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf351_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::__vwsnf351_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(::tuidemo::TuiResponsiveGroupControlConstructor* __vwsnctorthis_0)
+	__vwsnf351_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf351_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf351_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf351_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_40)->GetText();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_20.Obj())->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_40)->SetText(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_20.Obj())->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf352_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::__vwsnf352_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(::tuidemo::TuiResponsiveStackControlConstructor* __vwsnctorthis_0)
+	__vwsnf352_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf352_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf352_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf352_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf353_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::__vwsnf353_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(::tuidemo::TuiLocalizedStringsTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf353_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::ITuiStringResourceStrings>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf354_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::__vwsnf354_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(::tuidemo::TuiResponsiveGroupControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf354_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelUp();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf353_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::__vwsnf353_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(::tuidemo::TuiResponsiveStackControlConstructor* __vwsnctorthis_0)
+	__vwsnf355_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::__vwsnf355_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(::tuidemo::TuiResponsiveGroupControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf353_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf355_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelDown();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf354_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::__vwsnf354_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(::tuidemo::TuiResponsiveStackControlConstructor* __vwsnctorthis_0)
+	__vwsnf356_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::__vwsnf356_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(::tuidemo::TuiResponsiveGroupControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf354_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf356_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_38)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -5149,12 +5194,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf355_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::__vwsnf355_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(::tuidemo::TuiResponsiveStackControlConstructor* __vwsnctorthis_0)
+	__vwsnf357_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::__vwsnf357_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(::tuidemo::TuiResponsiveGroupControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf355_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf357_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_40)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -5167,74 +5212,26 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf356_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf356_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
+	__vwsnf358_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::__vwsnf358_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(::tuidemo::TuiResponsiveStackControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf356_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf358_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->SetText(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelUp();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf357_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf357_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
+	__vwsnf359_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::__vwsnf359_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(::tuidemo::TuiResponsiveStackControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf357_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf359_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf358_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf358_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf358_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf359_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf359_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf359_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_25)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_25)->SetText(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelDown();
 	}
 
 	//-------------------------------------------------------------------
@@ -5252,26 +5249,38 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf360_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf360_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
+	__vwsnf360_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::__vwsnf360_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(::tuidemo::TuiResponsiveStackControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf360_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf360_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelUp();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_38)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_38)->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf361_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf361_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
+	__vwsnf361_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::__vwsnf361_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(::tuidemo::TuiResponsiveStackControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf361_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf361_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelDown();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_40)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_40)->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -5282,6 +5291,102 @@ Closures
 	}
 
 	void __vwsnf362_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf363_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf363_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf363_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_13)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf364_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf364_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf364_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_19)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf365_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf365_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf365_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_25)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_25)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf366_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf366_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf366_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelUp();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf367_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf367_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf367_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->responsive)->LevelDown();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf368_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf368_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf368_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_33)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -5294,12 +5399,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf363_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf363_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
+	__vwsnf369_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::__vwsnf369_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(::tuidemo::TuiResponsiveViewControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf363_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf369_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_35)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -5507,24 +5612,6 @@ Closures
 
 	void __vwsnf46_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_40)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_40)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf47_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf47_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf47_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_42)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -5536,12 +5623,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf48_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf48_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf47_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf47_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf48_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf47_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_44)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -5550,6 +5637,24 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_44)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf48_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf48_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf48_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_46)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_46)->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -5822,20 +5927,25 @@ Closures
 
 	void __vwsnf64_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf65_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__(__vwsnthis_0)));
+		if (::vl::__vwsn::This(__vwsnthis_0->palettePink)->GetSelected())
+		{
+			::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->PaletteSelected)(static_cast<::vl::vint64_t>(0L));
+		}
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf65_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__::__vwsnf65_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf65_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf65_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf65_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__::operator()() const
+	void __vwsnf65_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->Hide();
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetinvocationCount((::vl::__vwsn::This(__vwsnthis_0->self)->GetinvocationCount() + static_cast<::vl::vint64_t>(1L)));
+		if (::vl::__vwsn::This(__vwsnthis_0->paletteOrange)->GetSelected())
+		{
+			::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->PaletteSelected)(static_cast<::vl::vint64_t>(1L));
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -5847,8 +5957,10 @@ Closures
 
 	void __vwsnf66_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->Hide();
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetinvocationCount((::vl::__vwsn::This(__vwsnthis_0->self)->GetinvocationCount() + static_cast<::vl::vint64_t>(1L)));
+		if (::vl::__vwsn::This(__vwsnthis_0->paletteGrass)->GetSelected())
+		{
+			::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->PaletteSelected)(static_cast<::vl::vint64_t>(2L));
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -5860,20 +5972,25 @@ Closures
 
 	void __vwsnf67_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf68_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__(__vwsnthis_0)));
+		if (::vl::__vwsn::This(__vwsnthis_0->paletteEmerald)->GetSelected())
+		{
+			::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->PaletteSelected)(static_cast<::vl::vint64_t>(3L));
+		}
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf68_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__::__vwsnf68_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf68_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf68_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf68_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__::operator()() const
+	void __vwsnf68_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetinvocationCount((::vl::__vwsn::This(__vwsnthis_0->self)->GetinvocationCount() + static_cast<::vl::vint64_t>(1L)));
+		if (::vl::__vwsn::This(__vwsnthis_0->paletteSkyblue)->GetSelected())
+		{
+			::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->PaletteSelected)(static_cast<::vl::vint64_t>(4L));
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -5885,8 +6002,10 @@ Closures
 
 	void __vwsnf69_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetinvocationCount((::vl::__vwsn::This(__vwsnthis_0->self)->GetinvocationCount() + static_cast<::vl::vint64_t>(1L)));
+		if (::vl::__vwsn::This(__vwsnthis_0->palettePurple)->GetSelected())
+		{
+			::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->PaletteSelected)(static_cast<::vl::vint64_t>(5L));
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -5910,27 +6029,22 @@ Closures
 	{
 	}
 
-	void __vwsnf70_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf70_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_71)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_71)->SetText(__vwsn_new_);
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf71_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__(__vwsnthis_0)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf71_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf71_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf71_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__::__vwsnf71_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf71_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf71_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__::operator()() const
 	{
-		::vl::__vwsn::This(::vl::presentation::GetTuiApplication())->Stop();
+		::vl::__vwsn::This(__vwsnthis_0->self)->Hide();
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetinvocationCount((::vl::__vwsn::This(__vwsnthis_0->self)->GetinvocationCount() + static_cast<::vl::vint64_t>(1L)));
 	}
 
 	//-------------------------------------------------------------------
@@ -5942,37 +6056,33 @@ Closures
 
 	void __vwsnf72_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf73_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__(__vwsnthis_0)));
+		::vl::__vwsn::This(__vwsnthis_0->self)->Hide();
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetinvocationCount((::vl::__vwsn::This(__vwsnthis_0->self)->GetinvocationCount() + static_cast<::vl::vint64_t>(1L)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf73_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__::__vwsnf73_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf73_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf73_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf73_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__::operator()() const
+	void __vwsnf73_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(::vl::presentation::GetTuiApplication())->Stop();
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf74_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__(__vwsnthis_0)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf74_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf74_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf74_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__::__vwsnf74_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf74_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf74_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__::operator()() const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetMaximizedBox();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetMaximizedBox(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetinvocationCount((::vl::__vwsn::This(__vwsnthis_0->self)->GetinvocationCount() + static_cast<::vl::vint64_t>(1L)));
 	}
 
 	//-------------------------------------------------------------------
@@ -5982,15 +6092,10 @@ Closures
 	{
 	}
 
-	void __vwsnf75_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf75_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetMinimizedBox();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetMinimizedBox(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetinvocationCount((::vl::__vwsn::This(__vwsnthis_0->self)->GetinvocationCount() + static_cast<::vl::vint64_t>(1L)));
 	}
 
 	//-------------------------------------------------------------------
@@ -6002,13 +6107,13 @@ Closures
 
 	void __vwsnf76_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetSizeBox();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_83)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetSizeBox(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_83)->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -6018,15 +6123,9 @@ Closures
 	{
 	}
 
-	void __vwsnf77_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf77_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetIconVisible();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetIconVisible(__vwsn_new_);
+		::vl::__vwsn::This(::vl::presentation::GetTuiApplication())->Stop();
 	}
 
 	//-------------------------------------------------------------------
@@ -6036,33 +6135,21 @@ Closures
 	{
 	}
 
-	void __vwsnf78_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf78_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetBorder();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetBorder(__vwsn_new_);
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf79_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__(__vwsnthis_0)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf79_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf79_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf79_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__::__vwsnf79_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf79_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf79_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__::operator()() const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetTitleBar();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetTitleBar(__vwsn_new_);
+		::vl::__vwsn::This(::vl::presentation::GetTuiApplication())->Stop();
 	}
 
 	//-------------------------------------------------------------------
@@ -6086,10 +6173,15 @@ Closures
 	{
 	}
 
-	void __vwsnf80_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiRequestEventArgs* arguments) const
+	void __vwsnf80_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetclosingCount((::vl::__vwsn::This(__vwsnthis_0->self)->GetclosingCount() + static_cast<::vl::vint64_t>(1L)));
-		(::vl::__vwsn::This(arguments)->cancel = ::vl::__vwsn::This(__vwsnthis_0->checkCancelClose)->GetSelected());
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetMaximizedBox();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetMaximizedBox(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -6099,19 +6191,122 @@ Closures
 	{
 	}
 
-	void __vwsnf81_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf81_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetMinimizedBox();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetMinimizedBox(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf82_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf82_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf82_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetSizeBox();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetSizeBox(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf83_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf83_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf83_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetIconVisible();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetIconVisible(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf84_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf84_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf84_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetBorder();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetBorder(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf85_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf85_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf85_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetTitleBar();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetTitleBar(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf86_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf86_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf86_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiRequestEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetclosingCount((::vl::__vwsn::This(__vwsnthis_0->self)->GetclosingCount() + static_cast<::vl::vint64_t>(1L)));
+		(::vl::__vwsn::This(arguments)->cancel = ::vl::__vwsn::This(__vwsnthis_0->checkCancelClose)->GetSelected());
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf87_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::__vwsnf87_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(::tuidemo::TuiMainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf87_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetreadyToCloseCount((::vl::__vwsn::This(__vwsnthis_0->self)->GetreadyToCloseCount() + static_cast<::vl::vint64_t>(1L)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf82_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::__vwsnf82_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(::tuidemo::TuiRepeatTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf88_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::__vwsnf88_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(::tuidemo::TuiRepeatTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiTemplate* __vwsnf82_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiTemplate* __vwsnf88_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::tuidemo::TuiMyTextItem>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
@@ -6124,12 +6319,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf83_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::__vwsnf83_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(::tuidemo::TuiRepeatTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf89_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::__vwsnf89_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(::tuidemo::TuiRepeatTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiTemplate* __vwsnf83_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiTemplate* __vwsnf89_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::tuidemo::TuiMyTextItem>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
@@ -6142,12 +6337,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf84_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::__vwsnf84_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(::tuidemo::TuiRepeatTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf90_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::__vwsnf90_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(::tuidemo::TuiRepeatTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiTemplate* __vwsnf84_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiTemplate* __vwsnf90_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::tuidemo::TuiMyTextItem>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
@@ -6160,12 +6355,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf85_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::__vwsnf85_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(::tuidemo::TuiRepeatTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf91_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::__vwsnf91_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(::tuidemo::TuiRepeatTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf85_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf91_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::tuidemo::TuiMyTextItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetName();
@@ -6173,12 +6368,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf86_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::__vwsnf86_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(::tuidemo::TuiRepeatTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf92_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::__vwsnf92_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(::tuidemo::TuiRepeatTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiListItemTemplate* __vwsnf86_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiListItemTemplate* __vwsnf92_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::tuidemo::TuiMyTextItem>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
@@ -6191,12 +6386,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf87_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::__vwsnf87_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(::tuidemo::TuiRepeatTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf93_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::__vwsnf93_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(::tuidemo::TuiRepeatTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf87_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf93_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_27)->GetPosition();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint64_t>(__vwsn_value_);
@@ -6209,12 +6404,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf88_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf88_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+	__vwsnf94_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf94_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf88_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf94_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkFrame)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -6227,12 +6422,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf89_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf89_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+	__vwsnf95_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf95_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf89_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf95_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		if (::vl::__vwsn::This(__vwsnthis_0->checkFrame)->GetSelected())
 		{
@@ -6246,12 +6441,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf90_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf90_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+	__vwsnf96_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf96_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf90_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf96_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkMax)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -6264,12 +6459,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf91_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf91_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+	__vwsnf97_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf97_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf91_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf97_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkMin)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -6282,12 +6477,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf92_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf92_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+	__vwsnf98_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf98_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf92_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf98_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkBorder)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -6300,12 +6495,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf93_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf93_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
+	__vwsnf99_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf99_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf93_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf99_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkSizeBox)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -6314,111 +6509,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->checkSizeBox)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf94_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf94_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf94_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkIcon)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->checkIcon)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf95_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf95_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf95_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkTitle)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->checkTitle)->SetEnabled(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf96_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf96_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf96_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		auto subWindow = new ::tuidemo::TuiSubWindow();
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->openedSubWindows.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::Ensure(::vl::Ptr<::tuidemo::TuiSubWindow>(subWindow))));
-		::vl::__vwsn::This(subWindow)->MoveToScreenCenter();
-		::vl::__vwsn::This(subWindow)->ShowWithOwner(static_cast<::vl::presentation::controls::GuiWindow*>(__vwsnthis_0->self));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf97_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf97_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf97_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetMaximizedBox();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetMaximizedBox(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf98_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf98_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf98_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetMinimizedBox();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetMinimizedBox(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf99_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::__vwsnf99_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(::tuidemo::TuiSubWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf99_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetSizeBox();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetSizeBox(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -6489,48 +6579,48 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsno324_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_::__vwsno324_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_(::tuidemo::TuiLocalizedFileDialogTabPageConstructor* __vwsnctorthis_0)
+	__vwsno330_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_::__vwsno330_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_(::tuidemo::TuiLocalizedFileDialogTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsno324_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
+	::vl::WString __vwsno330_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
 	{
 		return ::vl::__vwsn::Unbox<::vl::WString>(__vwsno_1);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsno328_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::__vwsno328_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(::tuidemo::TuiLocalizedMessageDialogTabPageConstructor* __vwsnctorthis_0)
+	__vwsno334_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::__vwsno334_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(::tuidemo::TuiLocalizedMessageDialogTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsno328_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
+	::vl::WString __vwsno334_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
 	{
 		return ::vl::__vwsn::Unbox<::vl::WString>(__vwsno_1);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsno329_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::__vwsno329_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(::tuidemo::TuiLocalizedMessageDialogTabPageConstructor* __vwsnctorthis_0)
+	__vwsno335_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::__vwsno335_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(::tuidemo::TuiLocalizedMessageDialogTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsno329_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
+	::vl::WString __vwsno335_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
 	{
 		return ::vl::__vwsn::Unbox<::vl::WString>(__vwsno_1);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsno330_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::__vwsno330_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(::tuidemo::TuiLocalizedMessageDialogTabPageConstructor* __vwsnctorthis_0)
+	__vwsno336_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::__vwsno336_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(::tuidemo::TuiLocalizedMessageDialogTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsno330_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
+	::vl::WString __vwsno336_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
 	{
 		return ::vl::__vwsn::Unbox<::vl::WString>(__vwsno_1);
 	}
@@ -16591,17 +16681,17 @@ Class (::tuidemo::TuiCategoryDisplayerConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc48_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf127_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf133_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc49_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf128_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf134_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc50_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf129_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf135_TuiControlTest_tuidemo_TuiCategoryDisplayerConstructor___vwsn_tuidemo_TuiCategoryDisplayer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -16680,7 +16770,7 @@ Class (::tuidemo::TuiCategoryEditorConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetVerticalAlwaysVisible(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf130_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf136_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
 		{
@@ -16691,7 +16781,7 @@ Class (::tuidemo::TuiCategoryEditorConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboBox"), ::vl::__vwsn::Box(this->comboBox));
 		}
 		{
-			::vl::__vwsn::This(this->comboBox)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf131_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(this)));
+			::vl::__vwsn::This(this->comboBox)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf137_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_2 = ::vl::__vwsn::This(this->comboBox)->GetBoundsComposition());
 		{
@@ -16705,17 +16795,17 @@ Class (::tuidemo::TuiCategoryEditorConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc51_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf132_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf138_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc52_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf133_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf139_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc53_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf134_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf140_TuiControlTest_tuidemo_TuiCategoryEditorConstructor___vwsn_tuidemo_TuiCategoryEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -16771,12 +16861,12 @@ Class (::tuidemo::TuiCategoryItemTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc54_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf135_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf141_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc55_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf136_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf142_TuiControlTest_tuidemo_TuiCategoryItemTemplateConstructor___vwsn_tuidemo_TuiCategoryItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -16836,17 +16926,17 @@ Class (::tuidemo::TuiCategoryVisualizerConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc56_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf137_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf143_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc57_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf138_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf144_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc58_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf139_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf145_TuiControlTest_tuidemo_TuiCategoryVisualizerConstructor___vwsn_tuidemo_TuiCategoryVisualizer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -16918,12 +17008,12 @@ Class (::tuidemo::TuiCellFocusTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc46_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf125_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf131_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc47_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf126_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf132_TuiControlTest_tuidemo_TuiCellFocusTemplateConstructor___vwsn_tuidemo_TuiCellFocusTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -17393,12 +17483,12 @@ Class (::tuidemo::TuiDateEditorConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc39_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf114_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf120_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc40_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf115_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf121_TuiControlTest_tuidemo_TuiDateEditorConstructor___vwsn_tuidemo_TuiDateEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -17534,29 +17624,29 @@ Class (::tuidemo::TuiDateFilterConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf116_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf122_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->checkFrom)->SelectedChanged, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc41_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf117_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf123_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf118_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf124_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->dateFrom)->SelectedDateChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf119_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf125_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->checkTo)->SelectedChanged, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc42_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf120_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf126_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf121_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf127_TuiControlTest_tuidemo_TuiDateFilterConstructor___vwsn_tuidemo_TuiDateFilter_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->dateTo)->SelectedDateChanged, __vwsn_event_handler_);
 		}
 	}
@@ -17794,7 +17884,7 @@ Class (::tuidemo::TuiDatePickerTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc85_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf243_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf249_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -17802,12 +17892,12 @@ Class (::tuidemo::TuiDatePickerTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc86_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf244_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf250_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc87_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf245_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf251_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -17815,12 +17905,12 @@ Class (::tuidemo::TuiDatePickerTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc88_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf246_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf252_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc89_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf247_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf253_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -17828,12 +17918,12 @@ Class (::tuidemo::TuiDatePickerTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc90_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf248_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf254_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc91_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf249_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf255_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -17841,7 +17931,7 @@ Class (::tuidemo::TuiDatePickerTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc92_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf250_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf256_TuiControlTest_tuidemo_TuiDatePickerTabPageConstructor___vwsn_tuidemo_TuiDatePickerTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -18025,12 +18115,12 @@ Class (::tuidemo::TuiDocumentBoxSubTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc78_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf232_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf238_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc79_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf233_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf239_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -18038,7 +18128,7 @@ Class (::tuidemo::TuiDocumentBoxSubTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc80_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf234_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf240_TuiControlTest_tuidemo_TuiDocumentBoxSubTabPageConstructor___vwsn_tuidemo_TuiDocumentBoxSubTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -18487,311 +18577,311 @@ Class (::tuidemo::TuiDocumentEditorBaseConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc93_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf251_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf257_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->dialogQueryClose)->SetTitle(::vl::__vwsn::This(this->self)->GetText());
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf252_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf258_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->document)->ActiveHyperlinkExecuted, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf253_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf259_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandLoadPrivate)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf254_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf260_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandSavePrivate)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf255_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf261_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandSaveRtf)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf256_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf262_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandSaveHtml)->Executed, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc94_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf257_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc95_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf258_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf259_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandUndo)->Executed, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc96_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf260_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc97_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf261_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf262_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandRedo)->Executed, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc98_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf263_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc99_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc95_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf264_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf265_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandCopy)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandUndo)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc100_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc96_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf266_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc101_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc97_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf267_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf268_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandCut)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandRedo)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc102_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc98_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf269_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc103_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc99_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf270_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf271_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandPaste)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandCopy)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc104_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc100_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf272_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf273_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandDelete)->Executed, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc105_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf274_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc101_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf273_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf275_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandSelect)->Executed, __vwsn_event_handler_);
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf274_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandCut)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc106_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc102_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf275_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc103_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf276_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf277_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandInsertImage)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandPaste)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc107_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc104_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf278_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf279_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandEditHyperlink)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandDelete)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc109_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf281_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc105_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf280_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf282_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandRemoveHyperlink)->Executed, __vwsn_event_handler_);
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf281_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandSelect)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc110_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf283_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc106_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf282_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc111_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf283_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandInsertImage)->Executed, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc107_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf284_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf285_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandBold)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandEditHyperlink)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc112_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf286_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc113_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc109_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf287_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf288_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandItalic)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandRemoveHyperlink)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc114_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc110_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf289_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc115_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc111_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf290_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf291_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandUnderline)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandBold)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc116_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc112_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf292_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc117_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc113_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf293_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf294_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandStrike)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandItalic)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc118_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc114_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf295_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf296_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandFont)->Executed, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc119_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf297_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc115_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf296_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf298_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandColor)->Executed, __vwsn_event_handler_);
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf297_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandUnderline)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc120_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc116_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf298_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc117_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf299_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf300_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandBackColor)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandStrike)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc121_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc118_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf301_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf302_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandViewOnly)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandFont)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc122_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc119_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf303_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf304_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandSelectable)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandColor)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc123_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc120_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf305_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf306_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandEditable)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandBackColor)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc124_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc121_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf307_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf308_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandAlignDefault)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandViewOnly)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc125_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc122_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf309_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc126_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf310_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf310_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandSelectable)->Executed, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc123_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf311_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf311_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandAlignLeft)->Executed, __vwsn_event_handler_);
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf312_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandEditable)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc127_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf312_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc128_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc124_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf313_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf314_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandAlignCenter)->Executed, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandAlignDefault)->Executed, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc129_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc125_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf315_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc130_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc126_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf316_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf317_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandAlignLeft)->Executed, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc127_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf318_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc128_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf319_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf320_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandAlignCenter)->Executed, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc129_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf321_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc130_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf322_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf323_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commandAlignRight)->Executed, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc131_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf318_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf324_TuiControlTest_tuidemo_TuiDocumentEditorBaseConstructor___vwsn_tuidemo_TuiDocumentEditorBase_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -20306,7 +20396,7 @@ Class (::tuidemo::TuiEmbeddedControlsSubTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_75)->SetDocument(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString::Unmanaged(L"res"), ::vl::WString::Unmanaged(L"SideDocuments/Cell3Req"), true).Obj())));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf319_TuiControlTest_tuidemo_TuiEmbeddedControlsSubTabPageConstructor___vwsn_tuidemo_TuiEmbeddedControlsSubTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf325_TuiControlTest_tuidemo_TuiEmbeddedControlsSubTabPageConstructor___vwsn_tuidemo_TuiEmbeddedControlsSubTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_83)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -20569,33 +20659,33 @@ Class (::tuidemo::TuiEnglishNumbersControllerConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(this->__vwsn_precompile_0);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf220_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf226_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_3)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf221_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf227_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_6)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf222_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf228_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_9)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf223_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf229_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_12)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf224_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf230_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_15)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc71_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf225_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf231_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc72_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf226_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf232_TuiControlTest_tuidemo_TuiEnglishNumbersControllerConstructor___vwsn_tuidemo_TuiEnglishNumbersController_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -20951,12 +21041,12 @@ Class (::tuidemo::TuiGenderDisplayerConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc59_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf140_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf146_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc60_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf141_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf147_TuiControlTest_tuidemo_TuiGenderDisplayerConstructor___vwsn_tuidemo_TuiGenderDisplayer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -21031,14 +21121,14 @@ Class (::tuidemo::TuiGenderEditorConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetVerticalAlwaysVisible(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf142_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf148_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(this)));
 		}
 		{
 			(this->comboBox = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_0)));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboBox"), ::vl::__vwsn::Box(this->comboBox));
 		}
 		{
-			::vl::__vwsn::This(this->comboBox)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf143_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(this)));
+			::vl::__vwsn::This(this->comboBox)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf149_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->comboBox)->GetBoundsComposition());
 		{
@@ -21052,17 +21142,17 @@ Class (::tuidemo::TuiGenderEditorConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc61_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf144_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf150_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc62_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf145_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf151_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc63_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf146_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf152_TuiControlTest_tuidemo_TuiGenderEditorConstructor___vwsn_tuidemo_TuiGenderEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -21117,12 +21207,12 @@ Class (::tuidemo::TuiGenderItemTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc64_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf147_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf153_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc65_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf148_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf154_TuiControlTest_tuidemo_TuiGenderItemTemplateConstructor___vwsn_tuidemo_TuiGenderItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -21182,17 +21272,17 @@ Class (::tuidemo::TuiGenderVisualizerConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc66_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf149_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf155_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc67_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf150_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf156_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc68_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf151_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf157_TuiControlTest_tuidemo_TuiGenderVisualizerConstructor___vwsn_tuidemo_TuiGenderVisualizer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -21423,11 +21513,11 @@ Class (::tuidemo::TuiHyperlinkWindowConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf152_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf158_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_8)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf153_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf159_TuiControlTest_tuidemo_TuiHyperlinkWindowConstructor___vwsn_tuidemo_TuiHyperlinkWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_11)->Clicked, __vwsn_event_handler_);
 		}
 	}
@@ -21946,11 +22036,11 @@ Class (::tuidemo::TuiLocaleSelectorConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc69_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf154_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf160_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf155_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf161_TuiControlTest_tuidemo_TuiLocaleSelectorConstructor___vwsn_tuidemo_TuiLocaleSelector_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->comboLocales)->SelectedIndexChanged, __vwsn_event_handler_);
 		}
 	}
@@ -22087,16 +22177,16 @@ Class (::tuidemo::TuiLocalizedColorDialogTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc132_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf320_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf326_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc133_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf321_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf327_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf322_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf328_TuiControlTest_tuidemo_TuiLocalizedColorDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedColorDialogTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_6)->Clicked, __vwsn_event_handler_);
 		}
 	}
@@ -22263,7 +22353,7 @@ Class (::tuidemo::TuiLocalizedDialogsTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc134_TuiControlTest_tuidemo_TuiLocalizedDialogsTabPageConstructor___vwsn_tuidemo_TuiLocalizedDialogsTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf323_TuiControlTest_tuidemo_TuiLocalizedDialogsTabPageConstructor___vwsn_tuidemo_TuiLocalizedDialogsTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf329_TuiControlTest_tuidemo_TuiLocalizedDialogsTabPageConstructor___vwsn_tuidemo_TuiLocalizedDialogsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -23038,14 +23128,14 @@ Class (::tuidemo::TuiLocalizedFileDialogTabPageConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->__vwsn_precompile_0));
 		}
 		{
-			::vl::__vwsn::This(this->lstFiles)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno324_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->lstFiles)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno330_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_(this)));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf325_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf331_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_65)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf326_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf332_TuiControlTest_tuidemo_TuiLocalizedFileDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFileDialogTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_67)->Clicked, __vwsn_event_handler_);
 		}
 	}
@@ -23309,7 +23399,7 @@ Class (::tuidemo::TuiLocalizedFontDialogTabPageConstructor)
 			::vl::__vwsn::This(this->label.Obj())->SetFont(::vl::__vwsn::This(this->self)->GetDisplayFont());
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf327_TuiControlTest_tuidemo_TuiLocalizedFontDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFontDialogTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf333_TuiControlTest_tuidemo_TuiLocalizedFontDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedFontDialogTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_4)->Clicked, __vwsn_event_handler_);
 		}
 	}
@@ -23848,22 +23938,22 @@ Class (::tuidemo::TuiLocalizedMessageDialogTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_37)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(this->self)->inputTexts));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_37)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno328_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_37)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno334_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_40)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(this->self)->defaultButtonTexts));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_40)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno329_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno335_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_43)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(this->self)->iconTexts));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_43)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno330_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_43)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno336_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(this)));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf331_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf337_TuiControlTest_tuidemo_TuiLocalizedMessageDialogTabPageConstructor___vwsn_tuidemo_TuiLocalizedMessageDialogTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_47)->Clicked, __vwsn_event_handler_);
 		}
 	}
@@ -24105,7 +24195,7 @@ Class (::tuidemo::TuiLocalizedStringsTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc135_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf332_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf338_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -24113,77 +24203,77 @@ Class (::tuidemo::TuiLocalizedStringsTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc136_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf333_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc137_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf334_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc138_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf335_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc139_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf336_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc140_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf337_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc141_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf338_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc142_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf339_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc143_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc137_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf340_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc144_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc138_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf341_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc145_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc139_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf342_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc146_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc140_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf343_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc147_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc141_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf344_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc148_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc142_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf345_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc149_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc143_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf346_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc150_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc144_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf347_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc145_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf348_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc146_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf349_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc147_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf350_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc148_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf351_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc149_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf352_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc150_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf353_TuiControlTest_tuidemo_TuiLocalizedStringsTabPageConstructor___vwsn_tuidemo_TuiLocalizedStringsTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -24262,12 +24352,12 @@ Class (::tuidemo::TuiMainWindowConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint64_t>(120L); __vwsn_temp__.y = static_cast<::vl::vint64_t>(40L); return __vwsn_temp__; }());
 		}
-		(this->__vwsn_precompile_76 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
+		(this->__vwsn_precompile_88 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_76)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint64_t>(80L); __vwsn_temp__.y = static_cast<::vl::vint64_t>(25L); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_88)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint64_t>(80L); __vwsn_temp__.y = static_cast<::vl::vint64_t>(25L); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_76)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::NoLimit);
+			::vl::__vwsn::This(this->__vwsn_precompile_88)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::NoLimit);
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"Complete Control Showcase (TUI)"));
@@ -24610,12 +24700,14 @@ Class (::tuidemo::TuiMainWindowConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_37)->SetText(::vl::WString::Unmanaged(L"Window Manager"));
 		}
-		(this->__vwsn_precompile_38 = new ::vl::presentation::compositions::GuiStackComposition());
+		(this->paletteGroup = new ::vl::presentation::controls::GuiSelectableButton::MutexGroupController());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"paletteGroup"), ::vl::__vwsn::Box(this->paletteGroup));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->SetPadding(static_cast<::vl::vint64_t>(0L));
+			::vl::__vwsn::This(this->__vwsn_precompile_37)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->paletteGroup));
 		}
+		(this->__vwsn_precompile_38 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Vertical);
+			::vl::__vwsn::This(this->__vwsn_precompile_38)->SetCellPadding(static_cast<::vl::vint64_t>(0L));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_38)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
@@ -24623,15 +24715,28 @@ Class (::tuidemo::TuiMainWindowConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_38)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
-		(this->__vwsn_precompile_39 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
-			(this->__vwsn_precompile_40 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+			::vl::__vwsn::This(this->__vwsn_precompile_38)->SetRowsAndColumns(static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(2L));
+			::vl::__vwsn::This(this->__vwsn_precompile_38)->SetRowOption(static_cast<::vl::vint64_t>(0L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_38)->SetColumnOption(static_cast<::vl::vint64_t>(0L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_38)->SetColumnOption(static_cast<::vl::vint64_t>(1L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_39 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_39)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
+		}
+		(this->__vwsn_precompile_40 = new ::vl::presentation::compositions::GuiStackComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->SetPadding(static_cast<::vl::vint64_t>(0L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_39)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_40)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Vertical);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_39));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_41 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
@@ -24641,7 +24746,7 @@ Class (::tuidemo::TuiMainWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_41)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_42)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_41));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_41));
 		}
 		(this->__vwsn_precompile_43 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
@@ -24651,30 +24756,40 @@ Class (::tuidemo::TuiMainWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_43)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_44)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_43));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_43));
 		}
 		(this->__vwsn_precompile_45 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->__vwsn_precompile_46 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_45)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_46)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_45));
+		}
+		(this->__vwsn_precompile_47 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->labelMouseButton = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"labelMouseButton"), ::vl::__vwsn::Box(this->labelMouseButton));
 		}
-		(this->__vwsn_precompile_46 = ::vl::__vwsn::This(this->labelMouseButton)->GetBoundsComposition());
+		(this->__vwsn_precompile_48 = ::vl::__vwsn::This(this->labelMouseButton)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_46)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.y = static_cast<::vl::vint64_t>(1L); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_48)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.y = static_cast<::vl::vint64_t>(1L); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_46)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_48)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->labelMouseButton)->SetText(::vl::WString::Unmanaged(L"Click here with any mouse button."));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_45)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->labelMouseButton)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_47)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->labelMouseButton)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_45));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_47));
 		}
-		(this->__vwsn_precompile_47 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		(this->__vwsn_precompile_49 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->labelMouseModifiers = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"labelMouseModifiers"), ::vl::__vwsn::Box(this->labelMouseModifiers));
@@ -24683,12 +24798,12 @@ Class (::tuidemo::TuiMainWindowConstructor)
 			::vl::__vwsn::This(this->labelMouseModifiers)->SetText(::vl::WString::Unmanaged(L"Alt: 0; Super: 0"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_47)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->labelMouseModifiers)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_49)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->labelMouseModifiers)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_47));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_49));
 		}
-		(this->__vwsn_precompile_48 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		(this->__vwsn_precompile_50 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkFrame = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkFrame"), ::vl::__vwsn::Box(this->checkFrame));
@@ -24697,12 +24812,12 @@ Class (::tuidemo::TuiMainWindowConstructor)
 			::vl::__vwsn::This(this->checkFrame)->SetText(::vl::WString::Unmanaged(L"Customized Frame"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_48)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkFrame)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_50)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkFrame)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_48));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_50));
 		}
-		(this->__vwsn_precompile_49 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		(this->__vwsn_precompile_51 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkMax = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkMax"), ::vl::__vwsn::Box(this->checkMax));
@@ -24711,12 +24826,12 @@ Class (::tuidemo::TuiMainWindowConstructor)
 			::vl::__vwsn::This(this->checkMax)->SetText(::vl::WString::Unmanaged(L"MaximizedBox"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_49)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkMax)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_51)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkMax)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_49));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_51));
 		}
-		(this->__vwsn_precompile_50 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		(this->__vwsn_precompile_52 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkMin = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkMin"), ::vl::__vwsn::Box(this->checkMin));
@@ -24725,12 +24840,12 @@ Class (::tuidemo::TuiMainWindowConstructor)
 			::vl::__vwsn::This(this->checkMin)->SetText(::vl::WString::Unmanaged(L"MinimizedBox"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_50)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkMin)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_52)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkMin)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_50));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_52));
 		}
-		(this->__vwsn_precompile_51 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		(this->__vwsn_precompile_53 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkBorder = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkBorder"), ::vl::__vwsn::Box(this->checkBorder));
@@ -24739,12 +24854,12 @@ Class (::tuidemo::TuiMainWindowConstructor)
 			::vl::__vwsn::This(this->checkBorder)->SetText(::vl::WString::Unmanaged(L"Border"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_51)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkBorder)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_53)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkBorder)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_51));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_53));
 		}
-		(this->__vwsn_precompile_52 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		(this->__vwsn_precompile_54 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkSizeBox = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkSizeBox"), ::vl::__vwsn::Box(this->checkSizeBox));
@@ -24753,12 +24868,12 @@ Class (::tuidemo::TuiMainWindowConstructor)
 			::vl::__vwsn::This(this->checkSizeBox)->SetText(::vl::WString::Unmanaged(L"SizeBox"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_52)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkSizeBox)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_54)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkSizeBox)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_52));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_54));
 		}
-		(this->__vwsn_precompile_53 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		(this->__vwsn_precompile_55 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkIcon = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkIcon"), ::vl::__vwsn::Box(this->checkIcon));
@@ -24767,12 +24882,12 @@ Class (::tuidemo::TuiMainWindowConstructor)
 			::vl::__vwsn::This(this->checkIcon)->SetText(::vl::WString::Unmanaged(L"IconVisible"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_53)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkIcon)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_55)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkIcon)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_53));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_55));
 		}
-		(this->__vwsn_precompile_54 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		(this->__vwsn_precompile_56 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkTitle = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkTitle"), ::vl::__vwsn::Box(this->checkTitle));
@@ -24781,23 +24896,152 @@ Class (::tuidemo::TuiMainWindowConstructor)
 			::vl::__vwsn::This(this->checkTitle)->SetText(::vl::WString::Unmanaged(L"TitleBar"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_54)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkTitle)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_56)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkTitle)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_54));
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_56));
 		}
-		(this->__vwsn_precompile_55 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		(this->__vwsn_precompile_57 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
-			(this->__vwsn_precompile_56 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_56)->SetText(::vl::WString::Unmanaged(L"Open New Window"));
+			(this->__vwsn_precompile_58 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_55)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_56)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_58)->SetText(::vl::WString::Unmanaged(L"Open New Window"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_55));
+			::vl::__vwsn::This(this->__vwsn_precompile_57)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_58)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_40)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_57));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_39)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_40));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_39));
+		}
+		(this->__vwsn_precompile_59 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_59)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
+		}
+		{
+			(this->__vwsn_precompile_60 = new ::vl::presentation::controls::GuiControl(::vl::presentation::theme::ThemeName::GroupBox));
+		}
+		(this->__vwsn_precompile_68 = ::vl::__vwsn::This(this->__vwsn_precompile_60)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_68)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = (- static_cast<::vl::vint64_t>(1L)); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_60)->SetText(::vl::WString::Unmanaged(L"Color Theme"));
+		}
+		(this->__vwsn_precompile_61 = new ::vl::presentation::compositions::GuiStackComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_61)->SetPadding(static_cast<::vl::vint64_t>(0L));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_61)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Vertical);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_61)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_61)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(this->__vwsn_precompile_62 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->palettePink = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::RadioButton));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"palettePink"), ::vl::__vwsn::Box(this->palettePink));
+		}
+		{
+			::vl::__vwsn::This(this->palettePink)->SetText(::vl::WString::Unmanaged(L"Pink"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_62)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->palettePink)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_61)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_62));
+		}
+		(this->__vwsn_precompile_63 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->paletteOrange = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::RadioButton));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"paletteOrange"), ::vl::__vwsn::Box(this->paletteOrange));
+		}
+		{
+			::vl::__vwsn::This(this->paletteOrange)->SetText(::vl::WString::Unmanaged(L"Orange"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_63)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->paletteOrange)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_61)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_63));
+		}
+		(this->__vwsn_precompile_64 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->paletteGrass = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::RadioButton));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"paletteGrass"), ::vl::__vwsn::Box(this->paletteGrass));
+		}
+		{
+			::vl::__vwsn::This(this->paletteGrass)->SetText(::vl::WString::Unmanaged(L"Grass"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_64)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->paletteGrass)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_61)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_64));
+		}
+		(this->__vwsn_precompile_65 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->paletteEmerald = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::RadioButton));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"paletteEmerald"), ::vl::__vwsn::Box(this->paletteEmerald));
+		}
+		{
+			::vl::__vwsn::This(this->paletteEmerald)->SetText(::vl::WString::Unmanaged(L"Emerald"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_65)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->paletteEmerald)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_61)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_65));
+		}
+		(this->__vwsn_precompile_66 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->paletteSkyblue = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::RadioButton));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"paletteSkyblue"), ::vl::__vwsn::Box(this->paletteSkyblue));
+		}
+		{
+			::vl::__vwsn::This(this->paletteSkyblue)->SetSelected(true);
+		}
+		{
+			::vl::__vwsn::This(this->paletteSkyblue)->SetText(::vl::WString::Unmanaged(L"SkyBlue (default)"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_66)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->paletteSkyblue)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_61)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_66));
+		}
+		(this->__vwsn_precompile_67 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->palettePurple = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::RadioButton));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"palettePurple"), ::vl::__vwsn::Box(this->palettePurple));
+		}
+		{
+			::vl::__vwsn::This(this->palettePurple)->SetText(::vl::WString::Unmanaged(L"Purple"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_67)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->palettePurple)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_61)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_67));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->__vwsn_precompile_60)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_61));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_59)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_60)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_38)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_59));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this->__vwsn_precompile_37)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_38));
@@ -24807,80 +25051,80 @@ Class (::tuidemo::TuiMainWindowConstructor)
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_37));
 		}
 		{
-			(this->__vwsn_precompile_57 = new ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl));
+			(this->__vwsn_precompile_69 = new ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_57)->SetAlt(::vl::WString::Unmanaged(L"X"));
+			::vl::__vwsn::This(this->__vwsn_precompile_69)->SetAlt(::vl::WString::Unmanaged(L"X"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_57)->SetText(::vl::WString::Unmanaged(L"Exit"));
+			::vl::__vwsn::This(this->__vwsn_precompile_69)->SetText(::vl::WString::Unmanaged(L"Exit"));
 		}
-		(this->__vwsn_precompile_58 = new ::vl::presentation::compositions::GuiStackComposition());
+		(this->__vwsn_precompile_70 = new ::vl::presentation::compositions::GuiStackComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_58)->SetPadding(static_cast<::vl::vint64_t>(0L));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_58)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Vertical);
+			::vl::__vwsn::This(this->__vwsn_precompile_70)->SetPadding(static_cast<::vl::vint64_t>(0L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_58)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_70)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Vertical);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_58)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		(this->__vwsn_precompile_59 = new ::vl::presentation::compositions::GuiStackItemComposition());
-		{
-			(this->__vwsn_precompile_60 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(this->__vwsn_precompile_70)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_60)->SetText(::vl::WString::Unmanaged(L"self.Hide() (InvokeInMainThread)"));
+			::vl::__vwsn::This(this->__vwsn_precompile_70)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(this->__vwsn_precompile_71 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->__vwsn_precompile_72 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_59)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_60)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_72)->SetText(::vl::WString::Unmanaged(L"self.Hide() (InvokeInMainThread)"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_58)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_59));
-		}
-		(this->__vwsn_precompile_61 = new ::vl::presentation::compositions::GuiStackItemComposition());
-		{
-			(this->__vwsn_precompile_62 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(this->__vwsn_precompile_71)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_72)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_62)->SetText(::vl::WString::Unmanaged(L"self.Hide()"));
+			::vl::__vwsn::This(this->__vwsn_precompile_70)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_71));
+		}
+		(this->__vwsn_precompile_73 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->__vwsn_precompile_74 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_61)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_62)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_74)->SetText(::vl::WString::Unmanaged(L"self.Hide()"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_58)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_61));
-		}
-		(this->__vwsn_precompile_63 = new ::vl::presentation::compositions::GuiStackItemComposition());
-		{
-			(this->__vwsn_precompile_64 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(this->__vwsn_precompile_73)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_74)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_64)->SetText(::vl::WString::Unmanaged(L"self.Close() (InvokeInMainThread)"));
+			::vl::__vwsn::This(this->__vwsn_precompile_70)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_73));
+		}
+		(this->__vwsn_precompile_75 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->__vwsn_precompile_76 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_63)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_64)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_76)->SetText(::vl::WString::Unmanaged(L"self.Close() (InvokeInMainThread)"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_58)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_63));
-		}
-		(this->__vwsn_precompile_65 = new ::vl::presentation::compositions::GuiStackItemComposition());
-		{
-			(this->__vwsn_precompile_66 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(this->__vwsn_precompile_75)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_76)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_66)->SetText(::vl::WString::Unmanaged(L"self.Close()"));
+			::vl::__vwsn::This(this->__vwsn_precompile_70)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_75));
+		}
+		(this->__vwsn_precompile_77 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->__vwsn_precompile_78 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_65)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_66)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_78)->SetText(::vl::WString::Unmanaged(L"self.Close()"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_58)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_65));
+			::vl::__vwsn::This(this->__vwsn_precompile_77)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_78)->GetBoundsComposition()));
 		}
-		(this->__vwsn_precompile_67 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_70)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_77));
+		}
+		(this->__vwsn_precompile_79 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkCancelClose = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkCancelClose"), ::vl::__vwsn::Box(this->checkCancelClose));
@@ -24892,66 +25136,66 @@ Class (::tuidemo::TuiMainWindowConstructor)
 			::vl::__vwsn::This(this->checkCancelClose)->SetText(::vl::WString::Unmanaged(L"Cancel Hide/Close requests"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_67)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkCancelClose)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_79)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkCancelClose)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_58)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_67));
+			::vl::__vwsn::This(this->__vwsn_precompile_70)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_79));
 		}
-		(this->__vwsn_precompile_68 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		(this->__vwsn_precompile_80 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
-			(this->__vwsn_precompile_69 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_69)->SetText(::vl::WString::Unmanaged(L"Hide/Close query WindowClosing; accepted requests stop TUI after WindowReadyToClose."));
+			(this->__vwsn_precompile_81 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_68)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_69)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_81)->SetText(::vl::WString::Unmanaged(L"Hide/Close query WindowClosing; accepted requests stop TUI after WindowReadyToClose."));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_58)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_68));
-		}
-		(this->__vwsn_precompile_70 = new ::vl::presentation::compositions::GuiStackItemComposition());
-		{
-			(this->__vwsn_precompile_71 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+			::vl::__vwsn::This(this->__vwsn_precompile_80)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_81)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_70)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_71)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_70)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_80));
+		}
+		(this->__vwsn_precompile_82 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->__vwsn_precompile_83 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_58)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_70));
-		}
-		(this->__vwsn_precompile_72 = new ::vl::presentation::compositions::GuiStackItemComposition());
-		{
-			(this->__vwsn_precompile_73 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(this->__vwsn_precompile_82)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_83)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_73)->SetText(::vl::WString::Unmanaged(L"Stop TUI"));
+			::vl::__vwsn::This(this->__vwsn_precompile_70)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_82));
+		}
+		(this->__vwsn_precompile_84 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->__vwsn_precompile_85 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_72)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_73)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_85)->SetText(::vl::WString::Unmanaged(L"Stop TUI"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_58)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_72));
-		}
-		(this->__vwsn_precompile_74 = new ::vl::presentation::compositions::GuiStackItemComposition());
-		{
-			(this->__vwsn_precompile_75 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(this->__vwsn_precompile_84)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_85)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_75)->SetText(::vl::WString::Unmanaged(L"Stop TUI (InvokeInMainThread)"));
+			::vl::__vwsn::This(this->__vwsn_precompile_70)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_84));
+		}
+		(this->__vwsn_precompile_86 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			(this->__vwsn_precompile_87 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_74)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_75)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_87)->SetText(::vl::WString::Unmanaged(L"Stop TUI (InvokeInMainThread)"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_58)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_74));
+			::vl::__vwsn::This(this->__vwsn_precompile_86)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_87)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this->__vwsn_precompile_57)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_58));
+			::vl::__vwsn::This(this->__vwsn_precompile_70)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_86));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->__vwsn_precompile_69)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_70));
 		}
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetPages());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_57));
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_69));
 		}
 		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
 		{
@@ -25003,27 +25247,27 @@ Class (::tuidemo::TuiMainWindowConstructor)
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf49_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_46)->GetEventReceiver()->mouseUp, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_48)->GetEventReceiver()->mouseUp, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf50_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_46)->GetEventReceiver()->mouseDown, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_48)->GetEventReceiver()->mouseDown, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf51_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_46)->GetEventReceiver()->mouseMove, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_48)->GetEventReceiver()->mouseMove, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf52_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_46)->GetEventReceiver()->mouseDoubleClick, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_48)->GetEventReceiver()->mouseDoubleClick, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf53_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_46)->GetEventReceiver()->verticalWheel, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_48)->GetEventReceiver()->verticalWheel, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf54_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_46)->GetEventReceiver()->horizontalWheel, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_48)->GetEventReceiver()->horizontalWheel, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc11_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
@@ -25087,73 +25331,115 @@ Class (::tuidemo::TuiMainWindowConstructor)
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf63_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_56)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_58)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			::vl::__vwsn::This(this->palettePink)->SetGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::GroupController*>(this->paletteGroup));
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf64_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_60)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->palettePink)->SelectedChanged, __vwsn_event_handler_);
+		}
+		{
+			::vl::__vwsn::This(this->paletteOrange)->SetGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::GroupController*>(this->paletteGroup));
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf65_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->paletteOrange)->SelectedChanged, __vwsn_event_handler_);
+		}
+		{
+			::vl::__vwsn::This(this->paletteGrass)->SetGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::GroupController*>(this->paletteGroup));
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf66_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_62)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->paletteGrass)->SelectedChanged, __vwsn_event_handler_);
+		}
+		{
+			::vl::__vwsn::This(this->paletteEmerald)->SetGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::GroupController*>(this->paletteGroup));
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf67_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_64)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->paletteEmerald)->SelectedChanged, __vwsn_event_handler_);
+		}
+		{
+			::vl::__vwsn::This(this->paletteSkyblue)->SetGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::GroupController*>(this->paletteGroup));
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf68_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->paletteSkyblue)->SelectedChanged, __vwsn_event_handler_);
+		}
+		{
+			::vl::__vwsn::This(this->palettePurple)->SetGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::GroupController*>(this->paletteGroup));
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf69_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_66)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->palettePurple)->SelectedChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc18_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf70_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf71_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_73)->Clicked, __vwsn_event_handler_);
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf70_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_72)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf72_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_75)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_74)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc19_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf74_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf73_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_76)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc20_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf75_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf75_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_78)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc21_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc18_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf76_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf77_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_85)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf78_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_87)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc19_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf80_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc20_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf81_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc21_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf82_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc22_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf77_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf83_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc23_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf78_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf84_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc24_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf79_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf85_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf80_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf86_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->WindowClosing, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf81_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf87_TuiControlTest_tuidemo_TuiMainWindowConstructor___vwsn_tuidemo_TuiMainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->WindowReadyToClose, __vwsn_event_handler_);
 		}
 	}
@@ -25198,7 +25484,7 @@ Class (::tuidemo::TuiMainWindowConstructor)
 		, __vwsn_precompile_35(static_cast<::tuidemo::TuiLocalizedDialogsTabPage*>(nullptr))
 		, __vwsn_precompile_36(static_cast<::tuidemo::TuiDatePickerTabPage*>(nullptr))
 		, __vwsn_precompile_37(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
-		, __vwsn_precompile_38(static_cast<::vl::presentation::compositions::GuiStackComposition*>(nullptr))
+		, __vwsn_precompile_38(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, checkFrame(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, checkMax(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, checkMin(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
@@ -25215,16 +25501,16 @@ Class (::tuidemo::TuiMainWindowConstructor)
 		, editorToolstrip(static_cast<::tuidemo::TuiDocumentEditorToolstrip*>(nullptr))
 		, labelMouseButton(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, labelMouseModifiers(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
-		, __vwsn_precompile_39(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_40(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_39(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_40(static_cast<::vl::presentation::compositions::GuiStackComposition*>(nullptr))
 		, __vwsn_precompile_41(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_42(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, __vwsn_precompile_43(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_44(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, __vwsn_precompile_45(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_46(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_46(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, __vwsn_precompile_47(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_48(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_48(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_49(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_50(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_51(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
@@ -25232,27 +25518,46 @@ Class (::tuidemo::TuiMainWindowConstructor)
 		, __vwsn_precompile_53(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_54(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_55(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_56(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
-		, __vwsn_precompile_57(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
-		, __vwsn_precompile_58(static_cast<::vl::presentation::compositions::GuiStackComposition*>(nullptr))
-		, __vwsn_precompile_59(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_60(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
-		, __vwsn_precompile_61(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_62(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_56(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_57(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_58(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_59(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_60(static_cast<::vl::presentation::controls::GuiControl*>(nullptr))
+		, __vwsn_precompile_61(static_cast<::vl::presentation::compositions::GuiStackComposition*>(nullptr))
+		, __vwsn_precompile_62(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_63(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_64(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_64(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_65(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_66(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_66(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_67(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_68(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_69(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
-		, __vwsn_precompile_70(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_71(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
-		, __vwsn_precompile_72(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_73(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
-		, __vwsn_precompile_74(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_75(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
-		, __vwsn_precompile_76(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_68(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_69(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
+		, __vwsn_precompile_70(static_cast<::vl::presentation::compositions::GuiStackComposition*>(nullptr))
+		, __vwsn_precompile_71(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_72(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_73(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_74(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_75(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_76(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_77(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_78(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_79(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_80(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_81(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_82(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_83(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_84(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_85(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_86(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_87(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_88(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, paletteGroup(static_cast<::vl::presentation::controls::GuiSelectableButton::MutexGroupController*>(nullptr))
+		, palettePink(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, paletteOrange(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, paletteGrass(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, paletteEmerald(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, paletteSkyblue(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, palettePurple(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, checkCancelClose(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 	{
 	}
@@ -25688,13 +25993,13 @@ Class (::tuidemo::TuiRefreshBindableDataGridTabPageConstructor)
 		}
 		(this->__vwsn_precompile_24 = ::vl::Ptr<::vl::presentation::controls::list::DataColumn>(new ::vl::presentation::controls::list::DataColumn()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetValueProperty(vl::Func(::vl_workflow_global::__vwsnf156_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetValueProperty(vl::Func(::vl_workflow_global::__vwsnf162_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetSize(static_cast<::vl::vint64_t>(15L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf157_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf163_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetText(::vl::WString::Unmanaged(L"Id"));
@@ -25705,13 +26010,13 @@ Class (::tuidemo::TuiRefreshBindableDataGridTabPageConstructor)
 		}
 		(this->__vwsn_precompile_25 = ::vl::Ptr<::vl::presentation::controls::list::DataColumn>(new ::vl::presentation::controls::list::DataColumn()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_25.Obj())->SetValueProperty(vl::Func(::vl_workflow_global::__vwsnf158_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_25.Obj())->SetValueProperty(vl::Func(::vl_workflow_global::__vwsnf164_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_25.Obj())->SetSize(static_cast<::vl::vint64_t>(15L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_25.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf159_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_25.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf165_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_25.Obj())->SetText(::vl::WString::Unmanaged(L"Category"));
@@ -25722,13 +26027,13 @@ Class (::tuidemo::TuiRefreshBindableDataGridTabPageConstructor)
 		}
 		(this->__vwsn_precompile_26 = ::vl::Ptr<::vl::presentation::controls::list::DataColumn>(new ::vl::presentation::controls::list::DataColumn()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetValueProperty(vl::Func(::vl_workflow_global::__vwsnf160_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetValueProperty(vl::Func(::vl_workflow_global::__vwsnf166_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetSize(static_cast<::vl::vint64_t>(15L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf161_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf167_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetText(::vl::WString::Unmanaged(L"Size"));
@@ -25739,19 +26044,19 @@ Class (::tuidemo::TuiRefreshBindableDataGridTabPageConstructor)
 		}
 		(this->__vwsn_precompile_27 = ::vl::Ptr<::vl::presentation::controls::list::DataColumn>(new ::vl::presentation::controls::list::DataColumn()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetVisualizerFactory(::vl::Ptr<::vl::presentation::controls::list::IDataVisualizerFactory>(::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(vl::Func(::vl_workflow_global::__vwsnf162_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(vl::Func(::vl_workflow_global::__vwsnf163_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(vl::Func(::vl_workflow_global::__vwsnf164_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>()))))))));
+			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetVisualizerFactory(::vl::Ptr<::vl::presentation::controls::list::IDataVisualizerFactory>(::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(vl::Func(::vl_workflow_global::__vwsnf168_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(vl::Func(::vl_workflow_global::__vwsnf169_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>(new ::vl::presentation::controls::list::DataVisualizerFactory(vl::Func(::vl_workflow_global::__vwsnf170_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)), ::vl::Ptr<::vl::presentation::controls::list::DataVisualizerFactory>()))))))));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetEditorFactory(::vl::Ptr<::vl::presentation::controls::list::IDataEditorFactory>(::vl::Ptr<::vl::presentation::controls::list::DataEditorFactory>(new ::vl::presentation::controls::list::DataEditorFactory(vl::Func(::vl_workflow_global::__vwsnf165_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this))))));
+			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetEditorFactory(::vl::Ptr<::vl::presentation::controls::list::IDataEditorFactory>(::vl::Ptr<::vl::presentation::controls::list::DataEditorFactory>(new ::vl::presentation::controls::list::DataEditorFactory(vl::Func(::vl_workflow_global::__vwsnf171_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this))))));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetValueProperty(vl::Func(::vl_workflow_global::__vwsnf166_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetValueProperty(vl::Func(::vl_workflow_global::__vwsnf172_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetSize(static_cast<::vl::vint64_t>(32L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf167_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf173_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetText(::vl::WString::Unmanaged(L"File"));
@@ -25827,27 +26132,27 @@ Class (::tuidemo::TuiRefreshBindableDataGridTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf168_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf174_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->comboView)->SelectedIndexChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf169_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf175_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_14)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf171_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf177_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_16)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf173_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf179_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_18)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf174_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf180_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_20)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf175_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf181_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_22)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -25855,7 +26160,7 @@ Class (::tuidemo::TuiRefreshBindableDataGridTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc70_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf178_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf184_TuiControlTest_tuidemo_TuiRefreshBindableDataGridTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableDataGridTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -26150,7 +26455,7 @@ Class (::tuidemo::TuiRefreshBindableListViewTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_23.Obj())->SetSize(static_cast<::vl::vint64_t>(15L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_23.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf179_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_23.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf185_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_23.Obj())->SetText(::vl::WString::Unmanaged(L"Id"));
@@ -26164,7 +26469,7 @@ Class (::tuidemo::TuiRefreshBindableListViewTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetSize(static_cast<::vl::vint64_t>(15L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf180_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf186_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetText(::vl::WString::Unmanaged(L"Category"));
@@ -26178,7 +26483,7 @@ Class (::tuidemo::TuiRefreshBindableListViewTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_25.Obj())->SetSize(static_cast<::vl::vint64_t>(15L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_25.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf181_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_25.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf187_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_25.Obj())->SetText(::vl::WString::Unmanaged(L"Size"));
@@ -26192,7 +26497,7 @@ Class (::tuidemo::TuiRefreshBindableListViewTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetSize(static_cast<::vl::vint64_t>(32L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf182_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf188_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_26.Obj())->SetText(::vl::WString::Unmanaged(L"File"));
@@ -26271,27 +26576,27 @@ Class (::tuidemo::TuiRefreshBindableListViewTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf183_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf189_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->comboView)->SelectedIndexChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf184_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf190_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_13)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf186_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf192_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_15)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf188_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf194_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_17)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf189_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf195_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_19)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf190_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf196_TuiControlTest_tuidemo_TuiRefreshBindableListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableListViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_21)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -26491,7 +26796,7 @@ Class (::tuidemo::TuiRefreshBindableTextListTabPageConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textList"), ::vl::__vwsn::Box(this->textList));
 		}
 		{
-			::vl::__vwsn::This(this->textList)->SetCheckedProperty(vl::Func(::vl_workflow_global::__vwsnf192_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->textList)->SetCheckedProperty(vl::Func(::vl_workflow_global::__vwsnf198_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->textList)->SetView(::vl::presentation::controls::TextListView::Check);
@@ -26500,7 +26805,7 @@ Class (::tuidemo::TuiRefreshBindableTextListTabPageConstructor)
 			::vl::__vwsn::This(this->textList)->SetMultiSelect(true);
 		}
 		{
-			::vl::__vwsn::This(this->textList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf193_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->textList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf199_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_13 = ::vl::__vwsn::This(this->textList)->GetBoundsComposition());
 		{
@@ -26536,23 +26841,23 @@ Class (::tuidemo::TuiRefreshBindableTextListTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf194_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf200_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_4)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf196_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf202_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_6)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf198_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf204_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_8)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf199_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf205_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_10)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf200_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf206_TuiControlTest_tuidemo_TuiRefreshBindableTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->buttonRead)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -26709,14 +27014,14 @@ Class (::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetSite(static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
 		{
-			(this->treeView = new ::vl::presentation::controls::GuiBindableTreeView(::vl::presentation::theme::ThemeName::TreeView, vl::Func(::vl_workflow_global::__vwsnf201_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this))));
+			(this->treeView = new ::vl::presentation::controls::GuiBindableTreeView(::vl::presentation::theme::ThemeName::TreeView, vl::Func(::vl_workflow_global::__vwsnf207_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this))));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"treeView"), ::vl::__vwsn::Box(this->treeView));
 		}
 		{
-			::vl::__vwsn::This(this->treeView)->SetChildrenProperty(vl::Func(::vl_workflow_global::__vwsnf202_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->treeView)->SetChildrenProperty(vl::Func(::vl_workflow_global::__vwsnf208_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->treeView)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf203_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->treeView)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf209_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_12 = ::vl::__vwsn::This(this->treeView)->GetBoundsComposition());
 		{
@@ -26765,19 +27070,19 @@ Class (::tuidemo::TuiRefreshBindableTreeViewTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf204_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf210_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_4)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf206_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf212_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_6)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf208_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf214_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_8)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf209_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf215_TuiControlTest_tuidemo_TuiRefreshBindableTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshBindableTreeViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_10)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -27353,23 +27658,23 @@ Class (::tuidemo::TuiRefreshListViewTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf210_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf216_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->comboView)->SelectedIndexChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf211_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf217_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_13)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf212_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf218_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_15)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf213_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf219_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_17)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf214_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf220_TuiControlTest_tuidemo_TuiRefreshListViewTabPageConstructor___vwsn_tuidemo_TuiRefreshListViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_19)->Clicked, __vwsn_event_handler_);
 		}
 	}
@@ -27623,15 +27928,15 @@ Class (::tuidemo::TuiRefreshTextListTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf215_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf221_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_4)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf216_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf222_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_6)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf217_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf223_TuiControlTest_tuidemo_TuiRefreshTextListTabPageConstructor___vwsn_tuidemo_TuiRefreshTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->buttonRead)->Clicked, __vwsn_event_handler_);
 		}
 	}
@@ -27850,11 +28155,11 @@ Class (::tuidemo::TuiRefreshTreeViewTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf218_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf224_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_4)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf219_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf225_TuiControlTest_tuidemo_TuiRefreshTreeViewTabPageConstructor___vwsn_tuidemo_TuiRefreshTreeViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_6)->Clicked, __vwsn_event_handler_);
 		}
 	}
@@ -27929,7 +28234,7 @@ Class (::tuidemo::TuiRepeatItemTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc73_TuiControlTest_tuidemo_TuiRepeatItemTemplateConstructor___vwsn_tuidemo_TuiRepeatItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf227_TuiControlTest_tuidemo_TuiRepeatItemTemplateConstructor___vwsn_tuidemo_TuiRepeatItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf233_TuiControlTest_tuidemo_TuiRepeatItemTemplateConstructor___vwsn_tuidemo_TuiRepeatItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -28024,7 +28329,7 @@ Class (::tuidemo::TuiRepeatTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetExtraMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf82_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf88_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetPadding(static_cast<::vl::vint64_t>(0L));
@@ -28081,7 +28386,7 @@ Class (::tuidemo::TuiRepeatTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetExtraMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf83_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf89_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
@@ -28139,7 +28444,7 @@ Class (::tuidemo::TuiRepeatTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetExtraMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf84_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf90_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
@@ -28186,10 +28491,10 @@ Class (::tuidemo::TuiRepeatTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetVerticalAlwaysVisible(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf85_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf91_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf86_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf92_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_20 = ::vl::__vwsn::This(this->__vwsn_precompile_19)->GetBoundsComposition());
 		{
@@ -28360,7 +28665,7 @@ Class (::tuidemo::TuiRepeatTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc25_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf87_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf93_TuiControlTest_tuidemo_TuiRepeatTabPageConstructor___vwsn_tuidemo_TuiRepeatTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -28737,21 +29042,21 @@ Class (::tuidemo::TuiResponsiveGroupControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor(::tuiskin::TuiTheme::GetColorPackage().ControlBorder);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf348_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf354_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_34)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf349_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf355_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_36)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc151_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf350_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf356_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc152_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf351_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf357_TuiControlTest_tuidemo_TuiResponsiveGroupControlConstructor___vwsn_tuidemo_TuiResponsiveGroupControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -29130,21 +29435,21 @@ Class (::tuidemo::TuiResponsiveStackControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor(::tuiskin::TuiTheme::GetColorPackage().ControlBorder);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf352_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf358_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_34)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf353_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf359_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_36)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc153_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf354_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf360_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc154_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf355_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf361_TuiControlTest_tuidemo_TuiResponsiveStackControlConstructor___vwsn_tuidemo_TuiResponsiveStackControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -29695,7 +30000,7 @@ Class (::tuidemo::TuiResponsiveViewControlConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc155_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf356_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf362_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -29703,7 +30008,7 @@ Class (::tuidemo::TuiResponsiveViewControlConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc156_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf357_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf363_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -29711,7 +30016,7 @@ Class (::tuidemo::TuiResponsiveViewControlConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc157_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf358_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf364_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -29719,28 +30024,28 @@ Class (::tuidemo::TuiResponsiveViewControlConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc158_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf359_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf365_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_27)->SetShared(static_cast<::vl::presentation::controls::GuiControl*>(this->documentBox));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf360_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf366_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_29)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf361_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf367_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_31)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc159_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf362_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf368_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc160_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf363_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf369_TuiControlTest_tuidemo_TuiResponsiveViewControlConstructor___vwsn_tuidemo_TuiResponsiveViewControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -29842,7 +30147,7 @@ Class (::tuidemo::TuiSharedSizeItemTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc74_TuiControlTest_tuidemo_TuiSharedSizeItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf228_TuiControlTest_tuidemo_TuiSharedSizeItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf234_TuiControlTest_tuidemo_TuiSharedSizeItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -29910,17 +30215,17 @@ Class (::tuidemo::TuiSharedSizeTextItemTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc75_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf229_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf235_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc76_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf230_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf236_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc77_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf231_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf237_TuiControlTest_tuidemo_TuiSharedSizeTextItemTemplateConstructor___vwsn_tuidemo_TuiSharedSizeTextItemTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -30135,19 +30440,19 @@ Class (::tuidemo::TuiSubWindowConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc26_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf88_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf94_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->checkFrame)->SetSelected((::vl::__vwsn::This(this->self)->GetControlThemeName() == ::vl::presentation::theme::ThemeName::CustomFrameWindow));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf89_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf95_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->checkFrame)->SelectedChanged, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc27_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf90_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf96_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -30155,7 +30460,7 @@ Class (::tuidemo::TuiSubWindowConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc28_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf91_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf97_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -30163,7 +30468,7 @@ Class (::tuidemo::TuiSubWindowConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc29_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf92_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf98_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -30171,7 +30476,7 @@ Class (::tuidemo::TuiSubWindowConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc30_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf93_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf99_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -30179,7 +30484,7 @@ Class (::tuidemo::TuiSubWindowConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc31_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf94_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf100_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -30187,14 +30492,14 @@ Class (::tuidemo::TuiSubWindowConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc32_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf95_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf101_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->checkTitle)->SetSelected(::vl::__vwsn::This(this->self)->GetTitleBar());
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf96_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf102_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_9)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -30202,32 +30507,32 @@ Class (::tuidemo::TuiSubWindowConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc33_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf97_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf103_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc34_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf98_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf104_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc35_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf99_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf105_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc36_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf100_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf106_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc37_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf101_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf107_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc38_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf102_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf108_TuiControlTest_tuidemo_TuiSubWindowConstructor___vwsn_tuidemo_TuiSubWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -30442,7 +30747,7 @@ Class (::tuidemo::TuiTextBoxSubTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc81_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf235_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf241_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -30450,7 +30755,7 @@ Class (::tuidemo::TuiTextBoxSubTabPageConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc82_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf236_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf242_TuiControlTest_tuidemo_TuiTextBoxSubTabPageConstructor___vwsn_tuidemo_TuiTextBoxSubTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -30654,29 +30959,29 @@ Class (::tuidemo::TuiTextBoxTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf237_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf243_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_5)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc83_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf238_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf244_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf239_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf245_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_7)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc84_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf240_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf246_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf241_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf247_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->OnMakeFontLarger, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf242_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf248_TuiControlTest_tuidemo_TuiTextBoxTabPageConstructor___vwsn_tuidemo_TuiTextBoxTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->OnMakeFontSmaller, __vwsn_event_handler_);
 		}
 	}
@@ -30743,19 +31048,19 @@ Class (::tuidemo::TuiTextEditorConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->textBox)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf122_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_(this)));
+			::vl::__vwsn::This(this->textBox)->SetControlTemplate(vl::Func(::vl_workflow_global::__vwsnf128_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->textBox)->GetBoundsComposition()));
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc44_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf123_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf129_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc45_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf124_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf130_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -31150,7 +31455,7 @@ Class (::tuidemo::TuiTextListTabPageConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"bindableTextList"), ::vl::__vwsn::Box(this->bindableTextList));
 		}
 		{
-			::vl::__vwsn::This(this->bindableTextList)->SetCheckedProperty(vl::Func(::vl_workflow_global::__vwsnf103_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->bindableTextList)->SetCheckedProperty(vl::Func(::vl_workflow_global::__vwsnf109_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->bindableTextList)->SetHorizontalAlwaysVisible(false);
@@ -31159,7 +31464,7 @@ Class (::tuidemo::TuiTextListTabPageConstructor)
 			::vl::__vwsn::This(this->bindableTextList)->SetVerticalAlwaysVisible(false);
 		}
 		{
-			::vl::__vwsn::This(this->bindableTextList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf104_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->bindableTextList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf110_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_45 = ::vl::__vwsn::This(this->bindableTextList)->GetBoundsComposition());
 		{
@@ -31178,27 +31483,27 @@ Class (::tuidemo::TuiTextListTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf105_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf111_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->comboView)->SelectedIndexChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf106_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf112_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_17)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf107_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf113_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_20)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf108_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf114_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_23)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf109_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf115_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_26)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf110_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf116_TuiControlTest_tuidemo_TuiTextListTabPageConstructor___vwsn_tuidemo_TuiTextListTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_29)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -31583,7 +31888,7 @@ Class (::tuidemo::TuiTreeViewTabPageConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"bindableTreeView"), ::vl::__vwsn::Box(this->bindableTreeView));
 		}
 		{
-			::vl::__vwsn::This(this->bindableTreeView)->SetChildrenProperty(vl::Func(::vl_workflow_global::__vwsnf111_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->bindableTreeView)->SetChildrenProperty(vl::Func(::vl_workflow_global::__vwsnf117_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->bindableTreeView)->SetHorizontalAlwaysVisible(false);
@@ -31592,7 +31897,7 @@ Class (::tuidemo::TuiTreeViewTabPageConstructor)
 			::vl::__vwsn::This(this->bindableTreeView)->SetVerticalAlwaysVisible(false);
 		}
 		{
-			::vl::__vwsn::This(this->bindableTreeView)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf112_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_(this)));
+			::vl::__vwsn::This(this->bindableTreeView)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf118_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_33 = ::vl::__vwsn::This(this->bindableTreeView)->GetBoundsComposition());
 		{
@@ -31611,7 +31916,7 @@ Class (::tuidemo::TuiTreeViewTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf113_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf119_TuiControlTest_tuidemo_TuiTreeViewTabPageConstructor___vwsn_tuidemo_TuiTreeViewTabPage_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_4)->Clicked, __vwsn_event_handler_);
 		}
 	}

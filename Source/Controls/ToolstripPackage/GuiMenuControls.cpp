@@ -265,7 +265,7 @@ GuiMenuButton
 			void GuiMenuButton::BeforeControlTemplateUninstalled_()
 			{
 				auto host = GetSubMenuHost();
-				host->Clicked.Detach(hostClickedHandler);
+				host->BeforeClicked.Detach(hostClickedHandler);
 				host->GetBoundsComposition()->GetEventReceiver()->mouseEnter.Detach(hostMouseEnterHandler);
 
 				hostClickedHandler = nullptr;

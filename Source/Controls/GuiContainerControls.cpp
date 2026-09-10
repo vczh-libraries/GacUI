@@ -254,10 +254,16 @@ GuiScrollView
 
 				if (auto scroll = ct->GetHorizontalScroll())
 				{
+					scrollPositionBeforeTemplate.x = scroll->GetPosition();
+					scrollTotalSizeBeforeTemplate.x = scroll->GetTotalSize();
+					scrollPageSizeBeforeTemplate.x = scroll->GetPageSize();
 					scroll->PositionChanged.Detach(hScrollHandler);
 				}
 				if (auto scroll = ct->GetVerticalScroll())
 				{
+					scrollPositionBeforeTemplate.y = scroll->GetPosition();
+					scrollTotalSizeBeforeTemplate.y = scroll->GetTotalSize();
+					scrollPageSizeBeforeTemplate.y = scroll->GetPageSize();
 					scroll->PositionChanged.Detach(vScrollHandler);
 				}
 				ct->GetEventReceiver()->horizontalWheel.Detach(hWheelHandler);
@@ -277,10 +283,22 @@ GuiScrollView
 				auto ct = TypedControlTemplateObject(true);
 				if (auto scroll = ct->GetHorizontalScroll())
 				{
+					if (!initialize)
+					{
+						scroll->SetTotalSize(scrollTotalSizeBeforeTemplate.x);
+						scroll->SetPageSize(scrollPageSizeBeforeTemplate.x);
+						scroll->SetPosition(scrollPositionBeforeTemplate.x);
+					}
 					hScrollHandler = scroll->PositionChanged.AttachMethod(this, &GuiScrollView::OnHorizontalScroll);
 				}
 				if (auto scroll = ct->GetVerticalScroll())
 				{
+					if (!initialize)
+					{
+						scroll->SetTotalSize(scrollTotalSizeBeforeTemplate.y);
+						scroll->SetPageSize(scrollPageSizeBeforeTemplate.y);
+						scroll->SetPosition(scrollPositionBeforeTemplate.y);
+					}
 					vScrollHandler = scroll->PositionChanged.AttachMethod(this, &GuiScrollView::OnVerticalScroll);
 				}
 				hWheelHandler = ct->GetEventReceiver()->horizontalWheel.AttachMethod(this, &GuiScrollView::OnHorizontalWheel);

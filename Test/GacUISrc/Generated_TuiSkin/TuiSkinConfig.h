@@ -13,7 +13,13 @@ namespace tuiskin
 {
 	/// <summary>Create the opaque terminal palette used by TuiSkin.</summary>
 	extern ColorPackage CreateDefaultColorPackage();
-	/// <summary>Install colors before constructing the theme and its controls.</summary>
+	extern ColorPackage CreatePinkColorPackage();
+	extern ColorPackage CreateOrangeColorPackage();
+	extern ColorPackage CreateGrassPackage();
+	extern ColorPackage CreateEmeraldPackage();
+	extern ColorPackage CreateSkyblueColorPackage();
+	extern ColorPackage CreatePurplePackage();
+	/// <summary>Install colors for new templates. Refresh existing themed controls with GuiApplication::RefreshThemes.</summary>
 	extern void SetColorPackage(const ColorPackage& colors);
 }
 
