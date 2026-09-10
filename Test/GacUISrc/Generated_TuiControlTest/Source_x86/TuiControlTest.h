@@ -2790,6 +2790,7 @@ namespace tuidemo
 		::vl::presentation::controls::GuiSelectableButton* checkSizeBox;
 		::vl::presentation::controls::GuiSelectableButton* checkIcon;
 		::vl::presentation::controls::GuiSelectableButton* checkTitle;
+		::vl::presentation::controls::GuiSelectableButton::MutexGroupController* paletteGroup;
 		::vl::presentation::controls::GuiMessageDialog* dialogLocalShortcut;
 		::vl::presentation::controls::GuiMessageDialog* dialogLocalSuperShortcut;
 		::vl::presentation::controls::GuiMessageDialog* dialogGlobalShortcut;
@@ -2849,7 +2850,6 @@ namespace tuidemo
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_86;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_87;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_88;
-		::vl::presentation::controls::GuiSelectableButton::MutexGroupController* paletteGroup;
 		::vl::presentation::controls::GuiSelectableButton* palettePink;
 		::vl::presentation::controls::GuiSelectableButton* paletteOrange;
 		::vl::presentation::controls::GuiSelectableButton* paletteGrass;

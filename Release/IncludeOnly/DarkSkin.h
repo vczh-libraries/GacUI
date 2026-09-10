@@ -12,3 +12,4 @@ DEVELOPER: Zihan Chen(vczh)
 
 #include "..\..\Source\Skins\DarkSkin\Source\DarkSkinPartialClasses.h"
 #include "..\..\Source\Skins\DarkSkin\Source\DarkSkin.h"
+#include "..\..\Source\Skins\DarkSkin\Config\DarkSkinConfig.h"

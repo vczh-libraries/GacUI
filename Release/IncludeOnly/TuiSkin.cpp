@@ -7,6 +7,6 @@ DEVELOPER: Zihan Chen(vczh)
 #include "TuiSkinReflection.h"
 #endif
 
-#include "..\..\Source\Skins\TuiSkin\Source\TuiSkinConfig.cpp"
 #include "..\..\Source\Skins\TuiSkin\Source\TuiSkinPartialClasses.cpp"
 #include "..\..\Source\Skins\TuiSkin\Source\TuiSkinResource.cpp"
+#include "..\..\Source\Skins\TuiSkin\Config\TuiSkinConfig.cpp"

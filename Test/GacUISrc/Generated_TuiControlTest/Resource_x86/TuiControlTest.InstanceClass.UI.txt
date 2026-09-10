@@ -1609,6 +1609,9 @@ namespace tuidemo
         var checkTitle : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
+        var paletteGroup : ::presentation::controls::GuiSelectableButton::MutexGroupController* = null of (::presentation::controls::GuiSelectableButton::MutexGroupController*);
+
+        @cpp:Protected
         var dialogLocalShortcut : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
 
         @cpp:Protected
@@ -1784,9 +1787,6 @@ namespace tuidemo
 
         @cpp:Protected
         var <precompile>88 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var paletteGroup : ::presentation::controls::GuiSelectableButton::MutexGroupController* = null of (::presentation::controls::GuiSelectableButton::MutexGroupController*);
 
         @cpp:Protected
         var palettePink : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);

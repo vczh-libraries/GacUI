@@ -230,7 +230,8 @@ GuiListControl
 
 			void GuiListControl::OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)
 			{
-				if (itemArranger)
+				// Detached rows cannot measure text; reload after the new render target is attached.
+				if (itemArranger && renderTarget)
 				{
 					auto viewPosition = GetViewPosition();
 					itemArranger->ReloadVisibleStyles();

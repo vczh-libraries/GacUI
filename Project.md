@@ -153,10 +153,16 @@ After running `GacUI_Compiler`, you should always `git status` to find if there 
 
 This is a default skin that not only releases, but also used by all projects in this solution.
 To make a change:
-- Update `REPO-ROOT/Test/Resources/DarkSkin`.
+- Update `REPO-ROOT/Test/Resources/App/DarkSkin`.
 - Run `GacUI_Compiler` and make sure it updated generated C++ code expectely.
   - Sometimes reordering could happen in generated C++ code even when correlated resource is not changed.
 - Rebuild before running any test project.
+
+DarkSkin defines `darkskin::ColorPackage` and the complete default/Aurora/Ember/Moonstone/Lagoon/Rosewood palette values in its authored Workflow resource. `Source/Skins/DarkSkin/Config/DarkSkinConfig.h/.cpp` exposes the public C++ factories and setter by forwarding to generated functions; interpreted resources use the same implementation through `darkskin::Theme`. The installed palette initializes once before templates read it. Creating another theme or window does not reset a selected palette.
+
+Both skin inventories and the direct configuration consumers (`UnitTest` and `CppTest_Tui`) define `GACUI_SKIN_DEVELOPMENT` to select the matching `Generated_<Skin>/Source_x86` or `Source_x64` header. Linux development `vmake` inputs define the same macro. Without it, canonical config headers include the merged release `Source` header. CodePack ignores development branches and includes each `Config` folder in its own skin pair. The release workflow regenerates skin types before its first pack and repeats generation after rebuilding GacGen, preserving the config files throughout.
+
+`SetColorPackage` affects subsequent template construction. Queue installation and `GuiApplication::RefreshThemes()` together after input dispatch to update live default-themed controls. FullControlTest owns this shared Workflow handler, so its selector works in every native reflection variant, the binary host, and remoting. DarkSkin document templates construct palette-based baseline overrides, retaining dark text defaults and document state across refresh.
 
 ## Debugging Remote Protocol Issues
 
@@ -210,7 +216,7 @@ After building Debug x64, use the repository-relative launchers under `Test`:
 - Both launchers use `Test/GacUISrc/x64/Debug`, start visible processes for interactive testing, and return their `System.Diagnostics.Process` objects for inspection or cleanup.
 
 FullControlTest means `Generated_FullControlTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/FullControlTest/Resource.xml`.
-TuiControlTest means `Generated_TuiControlTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/TuiControlTest/Resource.xml`. Its skin is `Generated_TuiSkin.vcxitems`, with manually maintained `TuiSkinConfig.h/.cpp`. GacUI_Compiler also generates `Source/Utilities/FakeServices/TuiDialogs/Source`; run the same metadata generation steps after these resource changes. The release pipeline mirrors TuiSkin XML/configuration into `Source/Skins/TuiSkin` and publishes `TuiSkin`/`TuiSkinReflection`.
+TuiControlTest means `Generated_TuiControlTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/TuiControlTest/Resource.xml`. Its skin is `Generated_TuiSkin.vcxitems`, which compiles the canonical, manually maintained `Source/Skins/TuiSkin/Config/TuiSkinConfig.h/.cpp` exactly once for each consumer. GacUI_Compiler also generates `Source/Utilities/FakeServices/TuiDialogs/Source`; run the same metadata generation steps after these resource changes. The release pipeline mirrors TuiSkin XML into `Source/Skins/TuiSkin`, generates its `Source` folder, preserves its canonical `Config` folder, and publishes `TuiSkin`/`TuiSkinReflection`. Configuration must not be recreated under `Generated_TuiSkin` or the release-generated `Source` folder.
 RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteProtocolTest/Resource.xml`.
 RemoteViewModelTest means `Generated_RemoteViewModelTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteViewModelTest/Resource.xml`.
 When `FakeDialogService` is used, all system dialogs are replaced by `REPO-ROOT/Source/Utilities/FakeServices/Dialogs/Resource.xml`.

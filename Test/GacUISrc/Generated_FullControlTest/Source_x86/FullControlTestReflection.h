@@ -14,6 +14,7 @@ https://github.com/vczh-libraries
 #ifndef VCZH_DEBUG_NO_REFLECTION
 #include "../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 #include "../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
+#include "../../Generated_DarkSkin/Source_x86/DarkSkinReflection.h"
 #endif
 
 #if defined( _MSC_VER)

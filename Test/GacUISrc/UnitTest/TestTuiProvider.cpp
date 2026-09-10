@@ -4,7 +4,7 @@
 #include "../../../Source/PlatformProviders/Hosted/GuiHostedController.h"
 #include "../../../Source/PlatformProviders/Hosted/GuiHostedGraphics.h"
 #include "../../../Source/Controls/ListControlPackage/TuiItemTemplates.h"
-#include "../Generated_TuiSkin/TuiSkinConfig.h"
+#include "../../../Source/Skins/TuiSkin/Config/TuiSkinConfig.h"
 #include "../../../Source/UnitTestUtilities/GuiUnitTestUtilities.h"
 #include <algorithm>
 

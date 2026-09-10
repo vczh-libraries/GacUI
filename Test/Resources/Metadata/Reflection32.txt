@@ -101,6 +101,51 @@ class darkskin::CheckBoxTemplateConstructor : system::ReferenceType {
     constructor () : darkskin::CheckBoxTemplateConstructor^;
 }
 
+@FullName:darkskin::ColorPackage
+@ValueType
+struct darkskin::ColorPackage {
+    property ArrowAccentHovered : presentation::Color;
+    property ArrowDisabled : presentation::Color;
+    property ButtonBackgroundHovered : presentation::Color;
+    property ButtonBorderHovered : presentation::Color;
+    property ColumnHeaderBackground : presentation::Color;
+    property ColumnHeaderBackgroundHovered : presentation::Color;
+    property ComboArrowBackgroundHovered : presentation::Color;
+    property ContentBackground : presentation::Color;
+    property ContentBorder : presentation::Color;
+    property ControlAccentHovered : presentation::Color;
+    property ExpandingArrowHovered : presentation::Color;
+    property GeneralAccent : presentation::Color;
+    property GeneralBackground : presentation::Color;
+    property GeneralBorder : presentation::Color;
+    property GroupText : presentation::Color;
+    property ItemBackgroundSelected : presentation::Color;
+    property ListColumnBorder : presentation::Color;
+    property MenuBackground : presentation::Color;
+    property MenuBorder : presentation::Color;
+    property MenuItemHovered : presentation::Color;
+    property ProgressBackground : presentation::Color;
+    property ProgressBorder : presentation::Color;
+    property ProgressFilling : presentation::Color;
+    property RibbonExpandingArrow : presentation::Color;
+    property RibbonExpandingArrowPressed : presentation::Color;
+    property ScrollBackground : presentation::Color;
+    property ScrollHandle : presentation::Color;
+    property ScrollHandleHovered : presentation::Color;
+    property ScrollHandlePressed : presentation::Color;
+    property SplitterDark : presentation::Color;
+    property SplitterLight : presentation::Color;
+    property TabHighlightedBackground : presentation::Color;
+    property TabHighlightedHovered : presentation::Color;
+    property TabHighlightedSelected : presentation::Color;
+    property TextBright : presentation::Color;
+    property TextDisabled : presentation::Color;
+    property TextNormal : presentation::Color;
+    property TextSecondary : presentation::Color;
+    property Transparent : presentation::Color;
+    property WindowBorderActive : presentation::Color;
+}
+
 @FullName:darkskin::ComboBoxTemplate
 @system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ComboBoxTemplateConstructor)
 class darkskin::ComboBoxTemplate : presentation::templates::GuiDateComboBoxTemplate, darkskin::ComboBoxTemplateConstructor {
@@ -1716,6 +1761,10 @@ class darkskin::TextListTemplateConstructor : system::ReferenceType {
 @FullName:darkskin::Theme
 @system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ThemeConstructor)
 class darkskin::Theme : presentation::theme::ThemeTemplates, darkskin::ThemeConstructor {
+    static function CreateColorPackage(preset : system::Int32) : darkskin::ColorPackage;
+    static function GetColorPackage() : darkskin::ColorPackage;
+    static function SetColorPackage(colors : darkskin::ColorPackage) : system::Void;
+
     constructor () : darkskin::Theme*;
 }
 

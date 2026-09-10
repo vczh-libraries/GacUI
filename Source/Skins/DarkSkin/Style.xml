@@ -1,17 +1,17 @@
 <Styles>
   <Style ref.Path="(//Bounds + //Table + //RepeatStack + //RepeatFlow)" MinSizeLimitation="LimitToElementAndChildren"/>
-  <Style ref.Path="//*.generalBackground" Color="#2D2D30"/>
-  <Style ref.Path="//*.generalBorder" Color="#434346"/>
-  <Style ref.Path="//*.generalFocused" Color="#007ACC"/>
-  <Style ref.Path="//*.contentBackground" Color="#252526"/>
-  <Style ref.Path="//*.contentBorder" Color="#3F3F46"/>
+  <Style ref.Path="//*.generalBackground" Color-eval="darkskin::darkColors.GeneralBackground"/>
+  <Style ref.Path="//*.generalBorder" Color-eval="darkskin::darkColors.GeneralBorder"/>
+  <Style ref.Path="//*.generalFocused" Color-eval="darkskin::darkColors.GeneralAccent"/>
+  <Style ref.Path="//*.contentBackground" Color-eval="darkskin::darkColors.ContentBackground"/>
+  <Style ref.Path="//*.contentBorder" Color-eval="darkskin::darkColors.ContentBorder"/>
   <Style ref.Path="//*.windowBorder">
     <att.Color-bind>
       <![CDATA[
         cast Color let margin = self.CustomFramePadding in (
-          (not self.Border) or (margin.left + margin.top + margin.right + margin.bottom == 0) ? "#00000000" :
-          self.VisuallyEnabled and self.Activated ? "#017ACC" :
-          "#434346"
+          (not self.Border) or (margin.left + margin.top + margin.right + margin.bottom == 0) ? darkskin::darkColors.Transparent :
+          self.VisuallyEnabled and self.Activated ? darkskin::darkColors.WindowBorderActive :
+          darkskin::darkColors.GeneralBorder
         )
       ]]>
     </att.Color-bind>
@@ -20,38 +20,38 @@
     <att.Color-bind>
       <![CDATA[
         cast Color (
-          self.VisuallyEnabled and self.Activated ? "#999999" :
-          "#6D6D6D"
+          self.VisuallyEnabled and self.Activated ? darkskin::darkColors.TextSecondary :
+          darkskin::darkColors.TextDisabled
         )
       ]]>
     </att.Color-bind>
   </Style>
-  <Style ref.Path="//*.tooltipBorder" Color="#017ACC"/>
-  <Style ref.Path="//*.groupText" Color="#C7C7C7"/>
-  <Style ref.Path="//*.labelDefaultText" DefaultTextColor="#F1F1F1"/>
+  <Style ref.Path="//*.tooltipBorder" Color-eval="darkskin::darkColors.WindowBorderActive"/>
+  <Style ref.Path="//*.groupText" Color-eval="darkskin::darkColors.GroupText"/>
+  <Style ref.Path="//*.labelDefaultText" DefaultTextColor-eval="darkskin::darkColors.TextNormal"/>
   <Style ref.Path="//*.labelText">
     <att.Color-bind>
       <![CDATA[
         cast Color (
-          not self.VisuallyEnabled ? "#6D6D6D" :
+          not self.VisuallyEnabled ? darkskin::darkColors.TextDisabled :
           self.TextColor
         )
       ]]>
     </att.Color-bind>
   </Style>
   <Style ref.Path="//*.datePickerColors">
-    <att.BackgroundColor>#2D2D30</att.BackgroundColor>
-    <att.PrimaryTextColor>#FFFFFF</att.PrimaryTextColor>
-    <att.SecondaryTextColor>#999999</att.SecondaryTextColor>
+    <att.BackgroundColor-eval>darkskin::darkColors.GeneralBackground</att.BackgroundColor-eval>
+    <att.PrimaryTextColor-eval>darkskin::darkColors.TextBright</att.PrimaryTextColor-eval>
+    <att.SecondaryTextColor-eval>darkskin::darkColors.TextSecondary</att.SecondaryTextColor-eval>
   </Style>
   <Style ref.Path="//*.buttonBackground">
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#252526" :
-          state == ButtonState::Active ? "#54545C" :
-          state == ButtonState::Pressed ? "#007ACC" :
-          "#3F3F46"
+          not self.VisuallyEnabled ? darkskin::darkColors.ContentBackground :
+          state == ButtonState::Active ? darkskin::darkColors.ButtonBackgroundHovered :
+          state == ButtonState::Pressed ? darkskin::darkColors.GeneralAccent :
+          darkskin::darkColors.ContentBorder
         )
       ]]>
     </att.Color-bind>
@@ -60,10 +60,10 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#434346" :
-          state == ButtonState::Active ? "#6A6A75" :
-          state == ButtonState::Pressed ? "#1C97EA" :
-          "#54545C"
+          not self.VisuallyEnabled ? darkskin::darkColors.GeneralBorder :
+          state == ButtonState::Active ? darkskin::darkColors.ButtonBorderHovered :
+          state == ButtonState::Pressed ? darkskin::darkColors.ControlAccentHovered :
+          darkskin::darkColors.ButtonBackgroundHovered
         )
       ]]>
     </att.Color-bind>
@@ -72,16 +72,16 @@
     <att.BorderColor-bind>
       <![CDATA[
         cast Color (
-          not self.VisuallyEnabled ? "#6D6D6D" :
-          "#F1F1F1"
+          not self.VisuallyEnabled ? darkskin::darkColors.TextDisabled :
+          darkskin::darkColors.TextNormal
         )
       ]]>
     </att.BorderColor-bind>
     <att.BackgroundColor-bind>
       <![CDATA[
         cast Color (
-          not self.VisuallyEnabled ? "#6D6D6D" :
-          "#F1F1F1"
+          not self.VisuallyEnabled ? darkskin::darkColors.TextDisabled :
+          darkskin::darkColors.TextNormal
         )
       ]]>
     </att.BackgroundColor-bind>
@@ -90,10 +90,10 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#6D6D6D" :
-          state == ButtonState::Active ? "#F1F1F1" :
-          state == ButtonState::Pressed ? "#FFFFFF" :
-          "#F1F1F1"
+          not self.VisuallyEnabled ? darkskin::darkColors.TextDisabled :
+          state == ButtonState::Active ? darkskin::darkColors.TextNormal :
+          state == ButtonState::Pressed ? darkskin::darkColors.TextBright :
+          darkskin::darkColors.TextNormal
         )
       ]]>
     </att.Color-bind>
@@ -102,42 +102,42 @@
     <att.Color-bind>
       <![CDATA[
         cast Color (
-          not self.VisuallyEnabled ? "#434346" :
-          self.Focused ? "#1C97EA" :
-          "#54545C"
+          not self.VisuallyEnabled ? darkskin::darkColors.GeneralBorder :
+          self.Focused ? darkskin::darkColors.ControlAccentHovered :
+          darkskin::darkColors.ButtonBackgroundHovered
         )
       ]]>
     </att.Color-bind>
   </Style>
-  <Style ref.Path="//*.listColumnBorder" Color="#404042"/>
+  <Style ref.Path="//*.listColumnBorder" Color-eval="darkskin::darkColors.ListColumnBorder"/>
   <Style ref.Path="//*.textListBackgroundAndColor">
-    <att.TextColor>#F1F1F1</att.TextColor>
-    <SolidBackground Color="#252526"/>
+    <att.TextColor-eval>darkskin::darkColors.TextNormal</att.TextColor-eval>
+    <SolidBackground Color-eval="darkskin::darkColors.ContentBackground"/>
   </Style>
   <Style ref.Path="//*.listViewBackgroundAndColor">
-    <att.PrimaryTextColor>#F1F1F1</att.PrimaryTextColor>
-    <att.SecondaryTextColor>#F1F1F1</att.SecondaryTextColor>
-    <att.ItemSeparatorColor>#F1F1F1</att.ItemSeparatorColor>
-    <SolidBackground Color="#252526"/>
+    <att.PrimaryTextColor-eval>darkskin::darkColors.TextNormal</att.PrimaryTextColor-eval>
+    <att.SecondaryTextColor-eval>darkskin::darkColors.TextNormal</att.SecondaryTextColor-eval>
+    <att.ItemSeparatorColor-eval>darkskin::darkColors.TextNormal</att.ItemSeparatorColor-eval>
+    <SolidBackground Color-eval="darkskin::darkColors.ContentBackground"/>
   </Style>
   <Style ref.Path="//*.treeViewBackgroundAndColor">
-    <att.TextColor>#F1F1F1</att.TextColor>
-    <SolidBackground Color="#252526"/>
+    <att.TextColor-eval>darkskin::darkColors.TextNormal</att.TextColor-eval>
+    <SolidBackground Color-eval="darkskin::darkColors.ContentBackground"/>
   </Style>
   <Style ref.Path="//*.tabHeaderBackground">
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
           self.Highlighted ? (
-            self.Selected ? "#CC7ACC" :
-            state == ButtonState::Active ? "#EA97EA" :
-            state == ButtonState::Pressed ? "#EA97EA" :
-            "#604360"
+            self.Selected ? darkskin::darkColors.TabHighlightedSelected :
+            state == ButtonState::Active ? darkskin::darkColors.TabHighlightedHovered :
+            state == ButtonState::Pressed ? darkskin::darkColors.TabHighlightedHovered :
+            darkskin::darkColors.TabHighlightedBackground
           ) : (
-            self.Selected ? "#007ACC" :
-            state == ButtonState::Active ? "#1C97EA" :
-            state == ButtonState::Pressed ? "#1C97EA" :
-            "#434346"
+            self.Selected ? darkskin::darkColors.GeneralAccent :
+            state == ButtonState::Active ? darkskin::darkColors.ControlAccentHovered :
+            state == ButtonState::Pressed ? darkskin::darkColors.ControlAccentHovered :
+            darkskin::darkColors.GeneralBorder
           )
         )
       ]]>
@@ -146,7 +146,7 @@
   <Style ref.Path="//*.tabHeaderBottomLine">
     <att.Color-bind>
       <![CDATA[
-        cast Color (self.Highlighted ? "#CC7ACC" : "#007ACC")
+        cast Color (self.Highlighted ? darkskin::darkColors.TabHighlightedSelected : darkskin::darkColors.GeneralAccent)
       ]]>
     </att.Color-bind>
   </Style>
@@ -154,9 +154,9 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          state == ButtonState::Active ? "#1C97EA" :
-          state == ButtonState::Pressed ? "#1C97EA" :
-          "#434346"
+          state == ButtonState::Active ? darkskin::darkColors.ControlAccentHovered :
+          state == ButtonState::Pressed ? darkskin::darkColors.ControlAccentHovered :
+          darkskin::darkColors.GeneralBorder
         )
       ]]>
     </att.Color-bind>
@@ -165,8 +165,8 @@
     <att.Color-bind>
       <![CDATA[
         cast Color (
-          not self.VisuallyEnabled ? "#6D6D6D" :
-          "#F1F1F1"
+          not self.VisuallyEnabled ? darkskin::darkColors.TextDisabled :
+          darkskin::darkColors.TextNormal
         )
       ]]>
     </att.Color-bind>
@@ -175,22 +175,22 @@
     <att.Color-bind>
       <![CDATA[
         cast Color (
-          not self.VisuallyEnabled ? "#434346" :
-          self.Focused ? "#1C97EA" :
-          "#54545C"
+          not self.VisuallyEnabled ? darkskin::darkColors.GeneralBorder :
+          self.Focused ? darkskin::darkColors.ControlAccentHovered :
+          darkskin::darkColors.ButtonBackgroundHovered
         )
       ]]>
     </att.Color-bind>
   </Style>
-  <Style ref.Path="//*.scrollBackground" Color="#3D3D42"/>
+  <Style ref.Path="//*.scrollBackground" Color-eval="darkskin::darkColors.ScrollBackground"/>
   <Style ref.Path="//*.scrollArrowColor">
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#555558" :
-          state == ButtonState::Active ? "#1997EA" :
-          state == ButtonState::Pressed ? "#007ACC" :
-          "#999999"
+          not self.VisuallyEnabled ? darkskin::darkColors.ArrowDisabled :
+          state == ButtonState::Active ? darkskin::darkColors.ArrowAccentHovered :
+          state == ButtonState::Pressed ? darkskin::darkColors.GeneralAccent :
+          darkskin::darkColors.TextSecondary
         )
       ]]>
     </att.Color-bind>
@@ -199,20 +199,20 @@
     <att.BorderColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#555558" :
-          state == ButtonState::Active ? "#1997EA" :
-          state == ButtonState::Pressed ? "#007ACC" :
-          "#999999"
+          not self.VisuallyEnabled ? darkskin::darkColors.ArrowDisabled :
+          state == ButtonState::Active ? darkskin::darkColors.ArrowAccentHovered :
+          state == ButtonState::Pressed ? darkskin::darkColors.GeneralAccent :
+          darkskin::darkColors.TextSecondary
         )
       ]]>
     </att.BorderColor-bind>
     <att.BackgroundColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#555558" :
-          state == ButtonState::Active ? "#1997EA" :
-          state == ButtonState::Pressed ? "#007ACC" :
-          "#999999"
+          not self.VisuallyEnabled ? darkskin::darkColors.ArrowDisabled :
+          state == ButtonState::Active ? darkskin::darkColors.ArrowAccentHovered :
+          state == ButtonState::Pressed ? darkskin::darkColors.GeneralAccent :
+          darkskin::darkColors.TextSecondary
         )
       ]]>
     </att.BackgroundColor-bind>
@@ -221,42 +221,42 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#00000000" :
-          state == ButtonState::Active ? "#9E9E9E" :
-          state == ButtonState::Pressed ? "#EFEBEF" :
-          "#686868"
+          not self.VisuallyEnabled ? darkskin::darkColors.Transparent :
+          state == ButtonState::Active ? darkskin::darkColors.ScrollHandleHovered :
+          state == ButtonState::Pressed ? darkskin::darkColors.ScrollHandlePressed :
+          darkskin::darkColors.ScrollHandle
         )
       ]]>
     </att.Color-bind>
   </Style>
-  <Style ref.Path="//*.trackerBackground" Color="#3F3F47"/>
-  <Style ref.Path="//*.trackerBorder" Color="#55545A"/>
-  <Style ref.Path="//*.progressBackground" Color="#3F3F47"/>
-  <Style ref.Path="//*.progressBorder" Color="#55545A"/>
-  <Style ref.Path="//*.progressFilling" Color="#07B023"/>
+  <Style ref.Path="//*.trackerBackground" Color-eval="darkskin::darkColors.ProgressBackground"/>
+  <Style ref.Path="//*.trackerBorder" Color-eval="darkskin::darkColors.ProgressBorder"/>
+  <Style ref.Path="//*.progressBackground" Color-eval="darkskin::darkColors.ProgressBackground"/>
+  <Style ref.Path="//*.progressBorder" Color-eval="darkskin::darkColors.ProgressBorder"/>
+  <Style ref.Path="//*.progressFilling" Color-eval="darkskin::darkColors.ProgressFilling"/>
   <Style ref.Path="//*.itemBackground">
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#00000000" :
-          self.Selected or state == ButtonState::Pressed ? "#3399FF" :
-          state == ButtonState::Active ? "#3F3F46" :
-          "#00000000"
+          not self.VisuallyEnabled ? darkskin::darkColors.Transparent :
+          self.Selected or state == ButtonState::Pressed ? darkskin::darkColors.ItemBackgroundSelected :
+          state == ButtonState::Active ? darkskin::darkColors.ContentBorder :
+          darkskin::darkColors.Transparent
         )
       ]]>
     </att.Color-bind>
   </Style>
-  <Style ref.Path="//*.toolstripMenuBackground" Color="#1B1B1C"/>
-  <Style ref.Path="//*.toolstripMenuBorder" Color="#333337"/>
-  <Style ref.Path="//*.toolstripSplitter" Color1="#222224" Color2="#464648"/>
+  <Style ref.Path="//*.toolstripMenuBackground" Color-eval="darkskin::darkColors.MenuBackground"/>
+  <Style ref.Path="//*.toolstripMenuBorder" Color-eval="darkskin::darkColors.MenuBorder"/>
+  <Style ref.Path="//*.toolstripSplitter" Color1-eval="darkskin::darkColors.SplitterDark" Color2-eval="darkskin::darkColors.SplitterLight"/>
   <Style ref.Path="//*.toolstripBackground">
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#00000000" :
-          state == ButtonState::Pressed or self.SubMenuOpening ? "#007ACC" :
-          state == ButtonState::Active ? "#54545C" :
-          "#00000000"
+          not self.VisuallyEnabled ? darkskin::darkColors.Transparent :
+          state == ButtonState::Pressed or self.SubMenuOpening ? darkskin::darkColors.GeneralAccent :
+          state == ButtonState::Active ? darkskin::darkColors.ButtonBackgroundHovered :
+          darkskin::darkColors.Transparent
         )
       ]]>
     </att.Color-bind>
@@ -265,8 +265,8 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.Selected ? "#00000000" :
-          "#007ACC"
+          not self.Selected ? darkskin::darkColors.Transparent :
+          darkskin::darkColors.GeneralAccent
         )
       ]]>
     </att.Color-bind>
@@ -275,20 +275,20 @@
     <att.BorderColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#555558" :
-          state == ButtonState::Pressed or self.SubMenuOpening ? "#FFFFFF" :
-          state == ButtonState::Active ? "#1997EA" :
-          "#999999"
+          not self.VisuallyEnabled ? darkskin::darkColors.ArrowDisabled :
+          state == ButtonState::Pressed or self.SubMenuOpening ? darkskin::darkColors.TextBright :
+          state == ButtonState::Active ? darkskin::darkColors.ArrowAccentHovered :
+          darkskin::darkColors.TextSecondary
         )
       ]]>
     </att.BorderColor-bind>
     <att.BackgroundColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#555558" :
-          state == ButtonState::Pressed or self.SubMenuOpening ? "#FFFFFF" :
-          state == ButtonState::Active ? "#1997EA" :
-          "#999999"
+          not self.VisuallyEnabled ? darkskin::darkColors.ArrowDisabled :
+          state == ButtonState::Pressed or self.SubMenuOpening ? darkskin::darkColors.TextBright :
+          state == ButtonState::Active ? darkskin::darkColors.ArrowAccentHovered :
+          darkskin::darkColors.TextSecondary
         )
       ]]>
     </att.BackgroundColor-bind>
@@ -297,10 +297,10 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#00000000" :
-          state == ButtonState::Pressed ? "#54545C" :
-          state == ButtonState::Active ? "#54545C" :
-          "#00000000"
+          not self.VisuallyEnabled ? darkskin::darkColors.Transparent :
+          state == ButtonState::Pressed ? darkskin::darkColors.ButtonBackgroundHovered :
+          state == ButtonState::Active ? darkskin::darkColors.ButtonBackgroundHovered :
+          darkskin::darkColors.Transparent
         )
       ]]>
     </att.Color-bind>
@@ -309,10 +309,10 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#00000000" :
-          state == ButtonState::Pressed or self.Selected ? "#007ACC" :
-          state == ButtonState::Active ? "#54545C" :
-          "#00000000"
+          not self.VisuallyEnabled ? darkskin::darkColors.Transparent :
+          state == ButtonState::Pressed or self.Selected ? darkskin::darkColors.GeneralAccent :
+          state == ButtonState::Active ? darkskin::darkColors.ButtonBackgroundHovered :
+          darkskin::darkColors.Transparent
         )
       ]]>
     </att.Color-bind>
@@ -321,20 +321,20 @@
     <att.BorderColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#555558" :
-          state == ButtonState::Pressed or self.Selected ? "#FFFFFF" :
-          state == ButtonState::Active ? "#1997EA" :
-          "#999999"
+          not self.VisuallyEnabled ? darkskin::darkColors.ArrowDisabled :
+          state == ButtonState::Pressed or self.Selected ? darkskin::darkColors.TextBright :
+          state == ButtonState::Active ? darkskin::darkColors.ArrowAccentHovered :
+          darkskin::darkColors.TextSecondary
         )
       ]]>
     </att.BorderColor-bind>
     <att.BackgroundColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#555558" :
-          state == ButtonState::Pressed or self.Selected ? "#FFFFFF" :
-          state == ButtonState::Active ? "#1997EA" :
-          "#999999"
+          not self.VisuallyEnabled ? darkskin::darkColors.ArrowDisabled :
+          state == ButtonState::Pressed or self.Selected ? darkskin::darkColors.TextBright :
+          state == ButtonState::Active ? darkskin::darkColors.ArrowAccentHovered :
+          darkskin::darkColors.TextSecondary
         )
       ]]>
     </att.BackgroundColor-bind>
@@ -343,10 +343,10 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#00000000" :
-          state == ButtonState::Pressed or self.SubMenuOpening ? "#1B1B1C" :
-          state == ButtonState::Active ? "#3D3D40" :
-          "#00000000"
+          not self.VisuallyEnabled ? darkskin::darkColors.Transparent :
+          state == ButtonState::Pressed or self.SubMenuOpening ? darkskin::darkColors.MenuBackground :
+          state == ButtonState::Active ? darkskin::darkColors.MenuItemHovered :
+          darkskin::darkColors.Transparent
         )
       ]]>
     </att.Color-bind>
@@ -355,10 +355,10 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#00000000" :
-          state == ButtonState::Pressed ? "#3D3D40" :
-          state == ButtonState::Active or self.SubMenuOpening ? "#3D3D40" :
-          "#00000000"
+          not self.VisuallyEnabled ? darkskin::darkColors.Transparent :
+          state == ButtonState::Pressed ? darkskin::darkColors.MenuItemHovered :
+          state == ButtonState::Active or self.SubMenuOpening ? darkskin::darkColors.MenuItemHovered :
+          darkskin::darkColors.Transparent
         )
       ]]>
     </att.Color-bind>
@@ -367,20 +367,20 @@
     <att.BorderColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#555558" :
-          state == ButtonState::Active or self.SubMenuOpening ? "#1997EA" :
-          state == ButtonState::Pressed ? "#007ACC" :
-          "#999999"
+          not self.VisuallyEnabled ? darkskin::darkColors.ArrowDisabled :
+          state == ButtonState::Active or self.SubMenuOpening ? darkskin::darkColors.ArrowAccentHovered :
+          state == ButtonState::Pressed ? darkskin::darkColors.GeneralAccent :
+          darkskin::darkColors.TextSecondary
         )
       ]]>
     </att.BorderColor-bind>
     <att.BackgroundColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#555558" :
-          state == ButtonState::Active or self.SubMenuOpening ? "#1997EA" :
-          state == ButtonState::Pressed ? "#007ACC" :
-          "#999999"
+          not self.VisuallyEnabled ? darkskin::darkColors.ArrowDisabled :
+          state == ButtonState::Active or self.SubMenuOpening ? darkskin::darkColors.ArrowAccentHovered :
+          state == ButtonState::Pressed ? darkskin::darkColors.GeneralAccent :
+          darkskin::darkColors.TextSecondary
         )
       ]]>
     </att.BackgroundColor-bind>
@@ -389,10 +389,10 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#2D2D30" :
-          state == ButtonState::Pressed or self.SubMenuOpening ? "#3F3F46" :
-          state == ButtonState::Active ? "#3F3F46" :
-          "#333337"
+          not self.VisuallyEnabled ? darkskin::darkColors.GeneralBackground :
+          state == ButtonState::Pressed or self.SubMenuOpening ? darkskin::darkColors.ContentBorder :
+          state == ButtonState::Active ? darkskin::darkColors.ContentBorder :
+          darkskin::darkColors.MenuBorder
         )
       ]]>
     </att.Color-bind>
@@ -401,10 +401,10 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#00000000" :
-          state == ButtonState::Pressed or self.SubMenuOpening ? "#007ACC" :
-          state == ButtonState::Active ? "#1F1F20" :
-          "#00000000"
+          not self.VisuallyEnabled ? darkskin::darkColors.Transparent :
+          state == ButtonState::Pressed or self.SubMenuOpening ? darkskin::darkColors.GeneralAccent :
+          state == ButtonState::Active ? darkskin::darkColors.ComboArrowBackgroundHovered :
+          darkskin::darkColors.Transparent
         )
       ]]>
     </att.Color-bind>
@@ -413,20 +413,20 @@
     <att.BorderColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#999999" :
-          state == ButtonState::Pressed or self.SubMenuOpening ? "#FFFFFF" :
-          state == ButtonState::Active ? "#007ACC" :
-          "#999999"
+          not self.VisuallyEnabled ? darkskin::darkColors.TextSecondary :
+          state == ButtonState::Pressed or self.SubMenuOpening ? darkskin::darkColors.TextBright :
+          state == ButtonState::Active ? darkskin::darkColors.GeneralAccent :
+          darkskin::darkColors.TextSecondary
         )
       ]]>
     </att.BorderColor-bind>
     <att.BackgroundColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#2D2D30" :
-          state == ButtonState::Pressed or self.SubMenuOpening ? "#3F3F46" :
-          state == ButtonState::Active ? "#3F3F46" :
-          "#434346"
+          not self.VisuallyEnabled ? darkskin::darkColors.GeneralBackground :
+          state == ButtonState::Pressed or self.SubMenuOpening ? darkskin::darkColors.ContentBorder :
+          state == ButtonState::Active ? darkskin::darkColors.ContentBorder :
+          darkskin::darkColors.GeneralBorder
         )
       ]]>
     </att.BackgroundColor-bind>
@@ -435,10 +435,10 @@
     <att.Color-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#3E3E40" :
-          state == ButtonState::Pressed or self.SubMenuOpening ? "#007ACC" :
-          state == ButtonState::Active ? "#3E3E40" :
-          "#252527"
+          not self.VisuallyEnabled ? darkskin::darkColors.ColumnHeaderBackgroundHovered :
+          state == ButtonState::Pressed or self.SubMenuOpening ? darkskin::darkColors.GeneralAccent :
+          state == ButtonState::Active ? darkskin::darkColors.ColumnHeaderBackgroundHovered :
+          darkskin::darkColors.ColumnHeaderBackground
         )
       ]]>
     </att.Color-bind>
@@ -447,57 +447,57 @@
     <att.BorderColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#6D6D6D" :
-          state == ButtonState::Pressed ? "#0A75B9" :
-          state == ButtonState::Active ? "#0A75B9" :
-          "#F1F1F1"
+          not self.VisuallyEnabled ? darkskin::darkColors.TextDisabled :
+          state == ButtonState::Pressed ? darkskin::darkColors.ExpandingArrowHovered :
+          state == ButtonState::Active ? darkskin::darkColors.ExpandingArrowHovered :
+          darkskin::darkColors.TextNormal
         )
       ]]>
     </att.BorderColor-bind>
     <att.BackgroundColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.Selected ? "#00000000" :
-          not self.VisuallyEnabled ? "#6D6D6D" :
-          state == ButtonState::Pressed ? "#0A75B9" :
-          state == ButtonState::Active ? "#0A75B9" :
-          "#F1F1F1"
+          not self.Selected ? darkskin::darkColors.Transparent :
+          not self.VisuallyEnabled ? darkskin::darkColors.TextDisabled :
+          state == ButtonState::Pressed ? darkskin::darkColors.ExpandingArrowHovered :
+          state == ButtonState::Active ? darkskin::darkColors.ExpandingArrowHovered :
+          darkskin::darkColors.TextNormal
         )
       ]]>
     </att.BackgroundColor-bind>
   </Style>
-  <Style ref.Path="//*.ribbonGroupBorder" Color="#3F3F46"/>
-  <Style ref.Path="//*.ribbonGroupTitle" Color="#6D6D6D"/>
-  <Style ref.Path="//*.ribbonMenuBorder" Color="#333337"/>
+  <Style ref.Path="//*.ribbonGroupBorder" Color-eval="darkskin::darkColors.ContentBorder"/>
+  <Style ref.Path="//*.ribbonGroupTitle" Color-eval="darkskin::darkColors.TextDisabled"/>
+  <Style ref.Path="//*.ribbonMenuBorder" Color-eval="darkskin::darkColors.MenuBorder"/>
   <Style ref.Path="//*.ribbonExpandableArrow">
     <att.BorderColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#A0D0FF" :
-          state == ButtonState::Pressed ? "#004879" :
-          state == ButtonState::Active ? "#A0D0FF" :
-          "#A0D0FF"
+          not self.VisuallyEnabled ? darkskin::darkColors.RibbonExpandingArrow :
+          state == ButtonState::Pressed ? darkskin::darkColors.RibbonExpandingArrowPressed :
+          state == ButtonState::Active ? darkskin::darkColors.RibbonExpandingArrow :
+          darkskin::darkColors.RibbonExpandingArrow
         )
       ]]>
     </att.BorderColor-bind>
     <att.BackgroundColor-bind>
       <![CDATA[
         cast Color let state = self.State in (
-          not self.VisuallyEnabled ? "#00000000" :
-          state == ButtonState::Pressed ? "#004879" :
-          state == ButtonState::Active ? "#A0D0FF" :
-          "#00000000"
+          not self.VisuallyEnabled ? darkskin::darkColors.Transparent :
+          state == ButtonState::Pressed ? darkskin::darkColors.RibbonExpandingArrowPressed :
+          state == ButtonState::Active ? darkskin::darkColors.RibbonExpandingArrow :
+          darkskin::darkColors.Transparent
         )
       ]]>
     </att.BackgroundColor-bind>
   </Style>
   <Style ref.Path="//*.textBoxBackgroundAndColor">
-    <att.TextColor>normal:{text:(cast Color "#FFFFFF") background:(cast Color "#00000000")} selectedFocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")} selectedUnfocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")}</att.TextColor>
-    <att.CaretColor>#FFFFFF</att.CaretColor>
-    <SolidBackground Color="#252526"/>
+    <att.TextColor-eval>{normal:{text:(cast Color darkskin::darkColors.TextBright) background:(cast Color darkskin::darkColors.Transparent)} selectedFocused:{text:(cast Color darkskin::darkColors.TextBright) background:(cast Color darkskin::darkColors.GeneralAccent)} selectedUnfocused:{text:(cast Color darkskin::darkColors.TextBright) background:(cast Color darkskin::darkColors.GeneralAccent)}}</att.TextColor-eval>
+    <att.CaretColor-eval>darkskin::darkColors.TextBright</att.CaretColor-eval>
+    <SolidBackground Color-eval="darkskin::darkColors.ContentBackground"/>
   </Style>
-  <Style ref.Path="//*.documentBoxBackgroundAndColor" BaselineDocument-uri="res://DarkSkin/BaselineDocuments/Dark">
-    <att.CaretColor>#FFFFFF</att.CaretColor>
-    <SolidBackground Color="#252526"/>
+  <Style ref.Path="//*.documentBoxBackgroundAndColor" BaselineDocument-eval="darkskin::CreateBaselineDocument()">
+    <att.CaretColor-eval>darkskin::darkColors.TextBright</att.CaretColor-eval>
+    <SolidBackground Color-eval="darkskin::darkColors.ContentBackground"/>
   </Style>
 </Styles>

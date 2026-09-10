@@ -1,13 +1,21 @@
 #ifndef VCZH_PRESENTATION_TUISKINCONFIG
 #define VCZH_PRESENTATION_TUISKINCONFIG
 
-#include "../../../Source/GacUI.h"
+#include "../../../GacUI.h"
 
+/* CodePack:BeginIgnore() */
+#ifdef GACUI_SKIN_DEVELOPMENT
 #ifdef VCZH_64
-#include "Source_x64/TuiSkin.h"
+#include "../../../../Test/GacUISrc/Generated_TuiSkin/Source_x64/TuiSkin.h"
 #else
-#include "Source_x86/TuiSkin.h"
+#include "../../../../Test/GacUISrc/Generated_TuiSkin/Source_x86/TuiSkin.h"
 #endif
+#else
+/* CodePack:EndIgnore() */
+#include "../Source/TuiSkin.h"
+/* CodePack:BeginIgnore() */
+#endif
+/* CodePack:EndIgnore() */
 
 namespace tuiskin
 {

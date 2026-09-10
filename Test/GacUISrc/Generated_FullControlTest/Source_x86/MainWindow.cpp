@@ -35,6 +35,12 @@ Class (::demo::MainWindow)
 
 namespace demo
 {
+	void MainWindow::SelectPalette(::vl::vint32_t preset)
+	{
+		auto colors = ::darkskin::Theme::CreateColorPackage(preset);
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(this->self), vl::Func(::vl_workflow_global::__vwsnf85_FullControlTest_demo_MainWindow_SelectPalette_(colors, this)));
+	}
+
 	void MainWindow::ShowMouseModifiers(bool alt, bool osSuper)
 	{
 		auto altText = ::vl::WString::Unmanaged(L"0");

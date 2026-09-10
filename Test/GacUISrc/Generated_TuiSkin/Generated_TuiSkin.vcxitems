@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
+      <PreprocessorDefinitions>GACUI_SKIN_DEVELOPMENT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -90,7 +91,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)TuiSkinConfig.h" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)TuiSkinConfig.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Skins\TuiSkin\Config\TuiSkinConfig.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Skins\TuiSkin\Config\TuiSkinConfig.cpp" />
   </ItemGroup>
 </Project>

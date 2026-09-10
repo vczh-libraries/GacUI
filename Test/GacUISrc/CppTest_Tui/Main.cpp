@@ -1,7 +1,7 @@
 #include <Vlpp.h>
 
 #if defined VCZH_MSVC
-#include "../Generated_TuiSkin/TuiSkinConfig.h"
+#include "../../../Source/Skins/TuiSkin/Config/TuiSkinConfig.h"
 #else
 #include "Skins/TuiSkin/TuiSkin.h"
 #endif

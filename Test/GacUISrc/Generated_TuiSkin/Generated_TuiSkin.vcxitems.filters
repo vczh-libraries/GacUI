@@ -54,10 +54,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)TuiSkinConfig.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Skins\TuiSkin\Config\TuiSkinConfig.h">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClCompile Include="$(MSBuildThisFileDirectory)TuiSkinConfig.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Skins\TuiSkin\Config\TuiSkinConfig.cpp">
       <Filter>Configuration</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,4 +1,3 @@
-#include "../../../Source/GacUI.h"
 #include "TuiSkinConfig.h"
 
 namespace tuiskin

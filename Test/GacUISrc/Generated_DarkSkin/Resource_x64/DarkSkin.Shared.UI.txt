@@ -1,0 +1,108 @@
+﻿================================(1/1)================================
+module DarkPalette;
+using presentation::*;
+
+namespace darkskin
+{
+    struct ColorPackage
+    {
+        GeneralBackground : Color;
+        GeneralBorder : Color;
+        GeneralAccent : Color;
+        ContentBackground : Color;
+        ContentBorder : Color;
+        Transparent : Color;
+        WindowBorderActive : Color;
+        TextSecondary : Color;
+        TextDisabled : Color;
+        GroupText : Color;
+        TextNormal : Color;
+        TextBright : Color;
+        ButtonBackgroundHovered : Color;
+        ButtonBorderHovered : Color;
+        ControlAccentHovered : Color;
+        ListColumnBorder : Color;
+        TabHighlightedSelected : Color;
+        TabHighlightedHovered : Color;
+        TabHighlightedBackground : Color;
+        ScrollBackground : Color;
+        ArrowDisabled : Color;
+        ArrowAccentHovered : Color;
+        ScrollHandleHovered : Color;
+        ScrollHandlePressed : Color;
+        ScrollHandle : Color;
+        ProgressBackground : Color;
+        ProgressBorder : Color;
+        ProgressFilling : Color;
+        ItemBackgroundSelected : Color;
+        MenuBackground : Color;
+        MenuBorder : Color;
+        SplitterDark : Color;
+        SplitterLight : Color;
+        MenuItemHovered : Color;
+        ComboArrowBackgroundHovered : Color;
+        ColumnHeaderBackgroundHovered : Color;
+        ColumnHeaderBackground : Color;
+        ExpandingArrowHovered : Color;
+        RibbonExpandingArrow : Color;
+        RibbonExpandingArrowPressed : Color;
+    }
+
+    func CreateColorPackageInternal(accents : ColorPackage) : (ColorPackage)
+    {
+        return {GeneralBackground : (cast (Color) "#2D2D30"); GeneralBorder : (cast (Color) "#434346"); GeneralAccent : accents.GeneralAccent; ContentBackground : (cast (Color) "#252526"); ContentBorder : (cast (Color) "#3F3F46"); Transparent : (cast (Color) "#00000000"); WindowBorderActive : accents.WindowBorderActive; TextSecondary : (cast (Color) "#999999"); TextDisabled : (cast (Color) "#6D6D6D"); GroupText : (cast (Color) "#C7C7C7"); TextNormal : (cast (Color) "#F1F1F1"); TextBright : (cast (Color) "#FFFFFF"); ButtonBackgroundHovered : (cast (Color) "#54545C"); ButtonBorderHovered : (cast (Color) "#6A6A75"); ControlAccentHovered : accents.ControlAccentHovered; ListColumnBorder : (cast (Color) "#404042"); TabHighlightedSelected : accents.TabHighlightedSelected; TabHighlightedHovered : accents.TabHighlightedHovered; TabHighlightedBackground : accents.TabHighlightedBackground; ScrollBackground : (cast (Color) "#3D3D42"); ArrowDisabled : (cast (Color) "#555558"); ArrowAccentHovered : accents.ArrowAccentHovered; ScrollHandleHovered : (cast (Color) "#9E9E9E"); ScrollHandlePressed : (cast (Color) "#EFEBEF"); ScrollHandle : (cast (Color) "#686868"); ProgressBackground : (cast (Color) "#3F3F47"); ProgressBorder : (cast (Color) "#55545A"); ProgressFilling : accents.ProgressFilling; ItemBackgroundSelected : accents.ItemBackgroundSelected; MenuBackground : (cast (Color) "#1B1B1C"); MenuBorder : (cast (Color) "#333337"); SplitterDark : (cast (Color) "#222224"); SplitterLight : (cast (Color) "#464648"); MenuItemHovered : (cast (Color) "#3D3D40"); ComboArrowBackgroundHovered : (cast (Color) "#1F1F20"); ColumnHeaderBackgroundHovered : (cast (Color) "#3E3E40"); ColumnHeaderBackground : (cast (Color) "#252527"); ExpandingArrowHovered : accents.ExpandingArrowHovered; RibbonExpandingArrow : accents.RibbonExpandingArrow; RibbonExpandingArrowPressed : accents.RibbonExpandingArrowPressed;};
+    }
+
+    func CreateDefaultColorPackage() : (ColorPackage)
+    {
+        return CreateColorPackageInternal({GeneralAccent : (cast (Color) "#007ACC"); WindowBorderActive : (cast (Color) "#017ACC"); ControlAccentHovered : (cast (Color) "#1C97EA"); ArrowAccentHovered : (cast (Color) "#1997EA"); ItemBackgroundSelected : (cast (Color) "#3399FF"); ExpandingArrowHovered : (cast (Color) "#0A75B9"); RibbonExpandingArrow : (cast (Color) "#A0D0FF"); RibbonExpandingArrowPressed : (cast (Color) "#004879"); TabHighlightedSelected : (cast (Color) "#CC7ACC"); TabHighlightedHovered : (cast (Color) "#EA97EA"); TabHighlightedBackground : (cast (Color) "#604360"); ProgressFilling : (cast (Color) "#07B023");});
+    }
+
+    func CreateAuroraColorPackage() : (ColorPackage)
+    {
+        return CreateColorPackageInternal({GeneralAccent : (cast (Color) "#168A7A"); WindowBorderActive : (cast (Color) "#178A7A"); ControlAccentHovered : (cast (Color) "#31AA97"); ArrowAccentHovered : (cast (Color) "#2EA995"); ItemBackgroundSelected : (cast (Color) "#299C89"); ExpandingArrowHovered : (cast (Color) "#167D6D"); RibbonExpandingArrow : (cast (Color) "#99DBCB"); RibbonExpandingArrowPressed : (cast (Color) "#125A50"); TabHighlightedSelected : (cast (Color) "#B096DD"); TabHighlightedHovered : (cast (Color) "#C8B2EC"); TabHighlightedBackground : (cast (Color) "#51455F"); ProgressFilling : (cast (Color) "#C7A34D");});
+    }
+
+    func CreateEmberColorPackage() : (ColorPackage)
+    {
+        return CreateColorPackageInternal({GeneralAccent : (cast (Color) "#B66332"); WindowBorderActive : (cast (Color) "#B76433"); ControlAccentHovered : (cast (Color) "#D2834A"); ArrowAccentHovered : (cast (Color) "#CF8047"); ItemBackgroundSelected : (cast (Color) "#C77540"); ExpandingArrowHovered : (cast (Color) "#A65A2F"); RibbonExpandingArrow : (cast (Color) "#EDBE94"); RibbonExpandingArrowPressed : (cast (Color) "#754020"); TabHighlightedSelected : (cast (Color) "#CE8EA5"); TabHighlightedHovered : (cast (Color) "#E4ABC0"); TabHighlightedBackground : (cast (Color) "#60434E"); ProgressFilling : (cast (Color) "#8CA95C");});
+    }
+
+    func CreateMoonstoneColorPackage() : (ColorPackage)
+    {
+        return CreateColorPackageInternal({GeneralAccent : (cast (Color) "#6866B4"); WindowBorderActive : (cast (Color) "#6967B5"); ControlAccentHovered : (cast (Color) "#8985D2"); ArrowAccentHovered : (cast (Color) "#8682CE"); ItemBackgroundSelected : (cast (Color) "#7975C5"); ExpandingArrowHovered : (cast (Color) "#5E5CA4"); RibbonExpandingArrow : (cast (Color) "#C6C2F0"); RibbonExpandingArrowPressed : (cast (Color) "#444173"); TabHighlightedSelected : (cast (Color) "#70B7CD"); TabHighlightedHovered : (cast (Color) "#97CFE0"); TabHighlightedBackground : (cast (Color) "#355763"); ProgressFilling : (cast (Color) "#D08377");});
+    }
+
+    func CreateLagoonColorPackage() : (ColorPackage)
+    {
+        return CreateColorPackageInternal({GeneralAccent : (cast (Color) "#147F9C"); WindowBorderActive : (cast (Color) "#15809D"); ControlAccentHovered : (cast (Color) "#329FBD"); ArrowAccentHovered : (cast (Color) "#2F9CBA"); ItemBackgroundSelected : (cast (Color) "#268FA9"); ExpandingArrowHovered : (cast (Color) "#16728A"); RibbonExpandingArrow : (cast (Color) "#9CD3E0"); RibbonExpandingArrowPressed : (cast (Color) "#0D5366"); TabHighlightedSelected : (cast (Color) "#CFAC6A"); TabHighlightedHovered : (cast (Color) "#E5C88C"); TabHighlightedBackground : (cast (Color) "#615337"); ProgressFilling : (cast (Color) "#52AF91");});
+    }
+
+    func CreateRosewoodColorPackage() : (ColorPackage)
+    {
+        return CreateColorPackageInternal({GeneralAccent : (cast (Color) "#A04E72"); WindowBorderActive : (cast (Color) "#A14F73"); ControlAccentHovered : (cast (Color) "#BF7393"); ArrowAccentHovered : (cast (Color) "#BC7090"); ItemBackgroundSelected : (cast (Color) "#AD6082"); ExpandingArrowHovered : (cast (Color) "#914867"); RibbonExpandingArrow : (cast (Color) "#E4B1C8"); RibbonExpandingArrowPressed : (cast (Color) "#69334C"); TabHighlightedSelected : (cast (Color) "#78B5AE"); TabHighlightedHovered : (cast (Color) "#9ECEC8"); TabHighlightedBackground : (cast (Color) "#3C5955"); ProgressFilling : (cast (Color) "#C2A553");});
+    }
+
+    var darkColors : ColorPackage = CreateDefaultColorPackage();
+
+    func InstallColorPackage(colors : ColorPackage) : (void)
+    {
+        (darkColors = colors);
+    }
+
+    func CreateBaselineDocument() : (DocumentModel^)
+    {
+        var document = new (DocumentModel^)();
+        var normal = new (DocumentStyle^)();
+        (normal.styles = new (DocumentStyleProperties^)());
+        (normal.styles.color = darkColors.TextBright);
+        (document.styles["#Default-Override"] = normal);
+        var selection = new (DocumentStyle^)();
+        (selection.styles = new (DocumentStyleProperties^)());
+        (selection.styles.color = darkColors.TextBright);
+        (selection.styles.backgroundColor = darkColors.GeneralAccent);
+        (document.styles["#Selection-Override"] = selection);
+        return document;
+    }
+}
+

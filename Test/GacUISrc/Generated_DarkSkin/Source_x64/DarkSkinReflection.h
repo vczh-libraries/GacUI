@@ -42,6 +42,7 @@ namespace vl
 			DECL_TYPE_INFO(::darkskin::ButtonTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::CheckBoxTemplate)
 			DECL_TYPE_INFO(::darkskin::CheckBoxTemplateConstructor)
+			DECL_TYPE_INFO(::darkskin::ColorPackage)
 			DECL_TYPE_INFO(::darkskin::ComboBoxTemplate)
 			DECL_TYPE_INFO(::darkskin::ComboBoxTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::CustomControlTemplate)

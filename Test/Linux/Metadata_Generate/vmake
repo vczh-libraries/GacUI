@@ -23,6 +23,6 @@ CPP_REMOVES=(
     "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.cpp"
     )
 TARGETS=("${CPP_TARGET}")
-CPP_COMPILE_OPTIONS="-I ../../../Import"
+CPP_COMPILE_OPTIONS="-DGACUI_SKIN_DEVELOPMENT -I ../../../Import"
 #>
 <#@ include "${VCPROOT}/vl/vmake-cpp" #>

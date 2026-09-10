@@ -9420,6 +9420,8 @@ Basic Construction
 
 			public:
 				Ptr<GuiDisposedFlag>					GetDisposedFlag();
+				/// <summary>Synchronously rebuild unassigned control templates in this control and its descendants. Explicit templates are preserved. Call on the UI thread.</summary>
+				void									RefreshThemes();
 
 			protected:
 				compositions::GuiBoundsComposition*		boundsComposition = nullptr;
@@ -10530,6 +10532,8 @@ Application
 				/// <summary>Get all created <see cref="GuiWindow"/> instances. This contains normal windows, popup windows, menus, or other types of windows that inherits from <see cref="GuiWindow"/>.</summary>
 				/// <returns>All created <see cref="GuiWindow"/> instances.</returns>
 				const collections::List<GuiWindow*>&			GetWindows();
+				/// <summary>Synchronously refresh the themes of all live windows, including hidden popups. Call on the UI thread.</summary>
+				void											RefreshThemes();
 				/// <summary>Get the <see cref="GuiWindow"/> instance that the mouse cursor are directly in.</summary>
 				/// <returns>The <see cref="GuiWindow"/> instance that the mouse cursor are directly in.</returns>
 				/// <param name="location">The mouse cursor.</param>
@@ -13744,6 +13748,9 @@ Scroll View
 				Ptr<IEventHandler>						containerCachedBoundsChangedHandler;
 				bool									horizontalAlwaysVisible = true;
 				bool									verticalAlwaysVisible = true;
+				Point									scrollPositionBeforeTemplate;
+				Size									scrollTotalSizeBeforeTemplate;
+				Size									scrollPageSizeBeforeTemplate;
 
 				void									UpdateDisplayFont()override;
 
@@ -29237,7 +29244,6 @@ namespace vl::presentation::elements
 	{
 	protected:
 		INativeWindow*							window;
-		collections::Array<console::TuiPixel>	borderBuffer;
 		Rect									GetVisibleClipper();
 		void									StartRenderingOnNativeWindow() override;
 		RenderTargetFailure						StopRenderingOnNativeWindow() override;

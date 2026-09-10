@@ -1720,6 +1720,7 @@ Type Declaration (Extra)
 				
 				CLASS_MEMBER_METHOD(Run, {L"mainWindow"})
 				CLASS_MEMBER_METHOD(RunOneCycle, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(RefreshThemes, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetWindowFromNative, {L"nativeWindow"});
 				CLASS_MEMBER_METHOD(ShowTooltip, {L"owner" _ L"tooltip" _ L"preferredContentWidth" _ L"location"})
 				CLASS_MEMBER_METHOD(CloseTooltip, NO_PARAMETER)
@@ -2452,6 +2453,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_FAST(TooltipWidth)
 
 				CLASS_MEMBER_METHOD(SetControlThemeNameAndTemplate, { L"themeNameValue" _ L"controlTemplateValue" })
+				CLASS_MEMBER_METHOD(RefreshThemes, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetActivatingAltHost, { L"host" })
 				CLASS_MEMBER_METHOD(GetChild, {L"index"})
 				CLASS_MEMBER_METHOD(AddChild, {L"control"})

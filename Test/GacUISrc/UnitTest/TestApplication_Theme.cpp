@@ -1,19 +1,17 @@
 #include "TestControls.h"
+#include "../../../Source/Skins/DarkSkin/Config/DarkSkinConfig.h"
 
 using namespace gacui_unittest_template;
 
-namespace
+void ConnectThemeTestProtocol(UnitTestRemoteProtocol* protocol)
 {
-	void ConnectThemeTestProtocol(UnitTestRemoteProtocol* protocol)
-	{
-		remoteprotocol::ControllerGlobalConfig config;
+	remoteprotocol::ControllerGlobalConfig config;
 #if defined VCZH_WCHAR_UTF16
-		config.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF16;
+	config.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF16;
 #else
-		config.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF32;
+	config.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF32;
 #endif
-		protocol->GetEvents()->OnControllerConnect(config);
-	}
+	protocol->GetEvents()->OnControllerConnect(config);
 }
 
 TEST_FILE
@@ -54,6 +52,233 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Theme")
 	{
+		TEST_CASE(L"DarkSkin exposes complete palettes with shared neutrals")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				ConnectThemeTestProtocol(protocol);
+				struct ColorRole
+				{
+					Color darkskin::ColorPackage::* field;
+					const wchar_t* expected;
+					bool accent;
+				};
+				const ColorRole roles[] =
+				{
+					{ &darkskin::ColorPackage::GeneralBackground, L"#2D2D30", false },
+					{ &darkskin::ColorPackage::GeneralBorder, L"#434346", false },
+					{ &darkskin::ColorPackage::GeneralAccent, L"#007ACC", true },
+					{ &darkskin::ColorPackage::ContentBackground, L"#252526", false },
+					{ &darkskin::ColorPackage::ContentBorder, L"#3F3F46", false },
+					{ &darkskin::ColorPackage::Transparent, L"#00000000", false },
+					{ &darkskin::ColorPackage::WindowBorderActive, L"#017ACC", true },
+					{ &darkskin::ColorPackage::TextSecondary, L"#999999", false },
+					{ &darkskin::ColorPackage::TextDisabled, L"#6D6D6D", false },
+					{ &darkskin::ColorPackage::GroupText, L"#C7C7C7", false },
+					{ &darkskin::ColorPackage::TextNormal, L"#F1F1F1", false },
+					{ &darkskin::ColorPackage::TextBright, L"#FFFFFF", false },
+					{ &darkskin::ColorPackage::ButtonBackgroundHovered, L"#54545C", false },
+					{ &darkskin::ColorPackage::ButtonBorderHovered, L"#6A6A75", false },
+					{ &darkskin::ColorPackage::ControlAccentHovered, L"#1C97EA", true },
+					{ &darkskin::ColorPackage::ListColumnBorder, L"#404042", false },
+					{ &darkskin::ColorPackage::TabHighlightedSelected, L"#CC7ACC", true },
+					{ &darkskin::ColorPackage::TabHighlightedHovered, L"#EA97EA", true },
+					{ &darkskin::ColorPackage::TabHighlightedBackground, L"#604360", true },
+					{ &darkskin::ColorPackage::ScrollBackground, L"#3D3D42", false },
+					{ &darkskin::ColorPackage::ArrowDisabled, L"#555558", false },
+					{ &darkskin::ColorPackage::ArrowAccentHovered, L"#1997EA", true },
+					{ &darkskin::ColorPackage::ScrollHandleHovered, L"#9E9E9E", false },
+					{ &darkskin::ColorPackage::ScrollHandlePressed, L"#EFEBEF", false },
+					{ &darkskin::ColorPackage::ScrollHandle, L"#686868", false },
+					{ &darkskin::ColorPackage::ProgressBackground, L"#3F3F47", false },
+					{ &darkskin::ColorPackage::ProgressBorder, L"#55545A", false },
+					{ &darkskin::ColorPackage::ProgressFilling, L"#07B023", true },
+					{ &darkskin::ColorPackage::ItemBackgroundSelected, L"#3399FF", true },
+					{ &darkskin::ColorPackage::MenuBackground, L"#1B1B1C", false },
+					{ &darkskin::ColorPackage::MenuBorder, L"#333337", false },
+					{ &darkskin::ColorPackage::SplitterDark, L"#222224", false },
+					{ &darkskin::ColorPackage::SplitterLight, L"#464648", false },
+					{ &darkskin::ColorPackage::MenuItemHovered, L"#3D3D40", false },
+					{ &darkskin::ColorPackage::ComboArrowBackgroundHovered, L"#1F1F20", false },
+					{ &darkskin::ColorPackage::ColumnHeaderBackgroundHovered, L"#3E3E40", false },
+					{ &darkskin::ColorPackage::ColumnHeaderBackground, L"#252527", false },
+					{ &darkskin::ColorPackage::ExpandingArrowHovered, L"#0A75B9", true },
+					{ &darkskin::ColorPackage::RibbonExpandingArrow, L"#A0D0FF", true },
+					{ &darkskin::ColorPackage::RibbonExpandingArrowPressed, L"#004879", true },
+				};
+				const darkskin::ColorPackage palettes[] =
+				{
+					darkskin::CreateDefaultColorPackage(),
+					darkskin::CreateAuroraColorPackage(),
+					darkskin::CreateEmberColorPackage(),
+					darkskin::CreateMoonstoneColorPackage(),
+					darkskin::CreateLagoonColorPackage(),
+					darkskin::CreateRosewoodColorPackage(),
+				};
+				auto installed = darkskin::Theme::GetColorPackage();
+				for (auto&& role : roles)
+				{
+					auto expected = Color::Parse(role.expected);
+					TEST_ASSERT(palettes[0].*role.field == expected);
+					TEST_ASSERT(installed.*role.field == expected);
+					for (vint i = 1; i < 6; i++)
+					{
+						if (role.accent)
+						{
+							for (vint j = 0; j < i; j++)
+							{
+								TEST_ASSERT(palettes[i].*role.field != palettes[j].*role.field);
+							}
+						}
+						else
+						{
+							TEST_ASSERT(palettes[i].*role.field == expected);
+						}
+					}
+				}
+				auto skin = Ptr(new darkskin::Theme);
+				theme::RegisterTheme(skin);
+				{
+					GuiWindow window(theme::ThemeName::Window);
+					window.SetText(L"Default palette initialized automatically");
+					window.SetClientSize(Size(400, 300));
+					protocol->OnNextIdleFrame(L"Default", [&]() { window.Hide(); });
+					GetApplication()->Run(&window);
+				}
+				theme::UnregisterTheme(skin->Name);
+			});
+			GacUIUnitTest_Start(L"Application/DarkSkin/PaletteContract");
+		});
+
+		TEST_CASE(L"DarkSkin palette refresh updates templates and document selection")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				ConnectThemeTestProtocol(protocol);
+				auto skin = Ptr(new darkskin::Theme);
+				theme::RegisterTheme(skin);
+				{
+					GuiWindow window(theme::ThemeName::Window);
+					window.SetText(L"DarkSkin palettes");
+					window.SetClientSize(Size(400, 300));
+					auto button = new GuiButton(theme::ThemeName::Button);
+					button->SetText(L"Palette input");
+					button->GetBoundsComposition()->SetExpectedBounds(Rect(10, 10, 160, 50));
+					window.GetContainerComposition()->AddChild(button->GetBoundsComposition());
+					auto editor = new GuiMultilineTextBox(theme::ThemeName::MultilineTextBox);
+					editor->GetBoundsComposition()->SetExpectedBounds(Rect(10, 60, 380, 250));
+					window.GetContainerComposition()->AddChild(editor->GetBoundsComposition());
+					editor->LoadTextAndClearUndoRedo(L"Retained document");
+					editor->SetCaret(TextPos(0, 0), TextPos(0, 0));
+					editor->SetSelectionText(L"Edited ");
+					editor->SetCaret(TextPos(0, 1), TextPos(0, 5));
+					auto document = editor->GetDocument();
+					auto buttonColor = [&]()
+					{
+						return button->GetControlTemplateObject()->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->GetColor();
+					};
+					for (vint preset = 0; preset < 6; preset++)
+					{
+						protocol->OnNextIdleFrame(L"Select palette " + itow(preset), [&, preset]()
+						{
+							auto colors = darkskin::Theme::CreateColorPackage(preset);
+							GetApplication()->InvokeInMainThread(&window, [&, colors]()
+							{
+								darkskin::SetColorPackage(colors);
+								GetApplication()->RefreshThemes();
+							});
+						});
+						protocol->OnNextIdleFrame(L"Palette installed " + itow(preset), [&, preset]()
+						{
+							auto colors = darkskin::Theme::CreateColorPackage(preset);
+							TEST_ASSERT(editor->GetDocument() == document);
+							TEST_ASSERT(editor->GetCaretBegin() == TextPos(0, 1) && editor->GetCaretEnd() == TextPos(0, 5));
+							TEST_ASSERT(editor->CanUndo());
+							auto selected = document->GetStyle(DocumentModel::SelectionStyleName, {});
+							TEST_ASSERT(selected.backgroundColor == colors.GeneralAccent);
+							TEST_ASSERT(selected.color == colors.TextBright);
+							TEST_ASSERT(document->GetStyle(DocumentModel::DefaultStyleName, {}).backgroundColor.a == 0);
+							{
+								darkskin::Theme anotherTheme;
+								TEST_ASSERT(darkskin::Theme::GetColorPackage().GeneralAccent == colors.GeneralAccent);
+								GuiSinglelineTextBox fresh(theme::ThemeName::SinglelineTextBox);
+								TEST_ASSERT(fresh.GetControlTemplateObject() != nullptr);
+								TEST_ASSERT(fresh.GetDocument()->GetStyle(DocumentModel::SelectionStyleName, {}).backgroundColor == colors.GeneralAccent);
+							}
+							protocol->MouseMove(protocol->LocationOf(button));
+							TEST_ASSERT(buttonColor() == colors.ButtonBackgroundHovered);
+							protocol->_LDown();
+							TEST_ASSERT(buttonColor() == colors.GeneralAccent);
+							protocol->_LUp();
+							button->SetEnabled(false);
+							TEST_ASSERT(buttonColor() == colors.ContentBackground);
+							button->SetEnabled(true);
+							protocol->MouseMove(protocol->LocationOf(editor));
+						});
+					}
+					protocol->OnNextIdleFrame(L"Restore default", [&]()
+					{
+						darkskin::SetColorPackage(darkskin::CreateDefaultColorPackage());
+						GetApplication()->RefreshThemes();
+						window.Hide();
+					});
+					GetApplication()->Run(&window);
+				}
+				theme::UnregisterTheme(skin->Name);
+			});
+			GacUIUnitTest_Start(L"Application/DarkSkin/RefreshPalettes");
+		});
+
+		TEST_CASE(L"List render target detachment preserves realized rows and scrolling")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				ConnectThemeTestProtocol(protocol);
+				auto skin = Ptr(new darkskin::Theme);
+				theme::RegisterTheme(skin);
+				{
+					class DetachableTextList : public GuiTextList
+					{
+					public:
+						DetachableTextList() : GuiTextList(theme::ThemeName::TextList) {}
+						void NotifyRenderTargetDetached() { OnRenderTargetChanged(nullptr); }
+					};
+					GuiWindow window(theme::ThemeName::Window);
+					window.SetText(L"Retained list position");
+					window.SetClientSize(Size(640, 480));
+					auto list = new DetachableTextList;
+					list->GetBoundsComposition()->SetAlignmentToParent(Margin(5, 5, 5, 5));
+					window.GetContainerComposition()->AddChild(list->GetBoundsComposition());
+					vint createdRows = 0;
+					list->SetItemTemplate([&](const Value&)
+					{
+						createdRows++;
+						return new DefaultTextListItemTemplate;
+					});
+					for (vint i = 0; i < 60; i++) list->GetItems().Add(Ptr(new TextItem(itow(i), false)));
+					protocol->OnNextIdleFrame(L"Scroll list", [&]()
+					{
+						list->SetSelected(3, true);
+						list->SetViewPosition(Point(0, 192));
+					});
+					protocol->OnNextIdleFrame(L"Detach render target", [&]()
+					{
+						TEST_ASSERT(list->GetViewPosition() == Point(0, 192));
+						auto previousCreatedRows = createdRows;
+						TEST_ASSERT(previousCreatedRows > 0);
+						list->NotifyRenderTargetDetached();
+						TEST_ASSERT(createdRows == previousCreatedRows);
+						TEST_ASSERT(list->GetViewPosition() == Point(0, 192));
+						TEST_ASSERT(list->GetSelected(3) && list->GetItems().Count() == 60);
+						window.Hide();
+					});
+					GetApplication()->Run(&window);
+				}
+				theme::UnregisterTheme(skin->Name);
+			});
+			GacUIUnitTest_Start(L"Application/DarkSkin/DetachedListScroll");
+		});
+
 		TEST_CASE(L"RefreshThemes preserves overrides and safely snapshots windows")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)

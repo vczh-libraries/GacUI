@@ -665,8 +665,59 @@ namespace vl_workflow_global
 	class __vwsnc9_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_darkskin_CheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription;
 }
 
+namespace __vwsn_structs
+{
+	struct _darkskin_ColorPackage
+	{
+		::vl::presentation::Color GeneralBackground;
+		::vl::presentation::Color GeneralBorder;
+		::vl::presentation::Color GeneralAccent;
+		::vl::presentation::Color ContentBackground;
+		::vl::presentation::Color ContentBorder;
+		::vl::presentation::Color Transparent;
+		::vl::presentation::Color WindowBorderActive;
+		::vl::presentation::Color TextSecondary;
+		::vl::presentation::Color TextDisabled;
+		::vl::presentation::Color GroupText;
+		::vl::presentation::Color TextNormal;
+		::vl::presentation::Color TextBright;
+		::vl::presentation::Color ButtonBackgroundHovered;
+		::vl::presentation::Color ButtonBorderHovered;
+		::vl::presentation::Color ControlAccentHovered;
+		::vl::presentation::Color ListColumnBorder;
+		::vl::presentation::Color TabHighlightedSelected;
+		::vl::presentation::Color TabHighlightedHovered;
+		::vl::presentation::Color TabHighlightedBackground;
+		::vl::presentation::Color ScrollBackground;
+		::vl::presentation::Color ArrowDisabled;
+		::vl::presentation::Color ArrowAccentHovered;
+		::vl::presentation::Color ScrollHandleHovered;
+		::vl::presentation::Color ScrollHandlePressed;
+		::vl::presentation::Color ScrollHandle;
+		::vl::presentation::Color ProgressBackground;
+		::vl::presentation::Color ProgressBorder;
+		::vl::presentation::Color ProgressFilling;
+		::vl::presentation::Color ItemBackgroundSelected;
+		::vl::presentation::Color MenuBackground;
+		::vl::presentation::Color MenuBorder;
+		::vl::presentation::Color SplitterDark;
+		::vl::presentation::Color SplitterLight;
+		::vl::presentation::Color MenuItemHovered;
+		::vl::presentation::Color ComboArrowBackgroundHovered;
+		::vl::presentation::Color ColumnHeaderBackgroundHovered;
+		::vl::presentation::Color ColumnHeaderBackground;
+		::vl::presentation::Color ExpandingArrowHovered;
+		::vl::presentation::Color RibbonExpandingArrow;
+		::vl::presentation::Color RibbonExpandingArrowPressed;
+
+		auto operator<=>(const _darkskin_ColorPackage&) const = default;
+	};
+
+}
 namespace darkskin
 {
+	using ColorPackage = ::__vwsn_structs::_darkskin_ColorPackage;
+
 	class BottomScrollButtonTemplateConstructor;
 	class BottomScrollButtonTemplate;
 	class ButtonTemplateConstructor;
@@ -3579,6 +3630,9 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Theme>;
 #endif
 	public:
+		static ::darkskin::ColorPackage GetColorPackage();
+		static void SetColorPackage(::darkskin::ColorPackage colors);
+		static ::darkskin::ColorPackage CreateColorPackage(::vl::vint64_t preset);
 		Theme();
 		~Theme();
 	};
@@ -4170,6 +4224,18 @@ namespace vl_workflow_global
 	class DarkSkin
 	{
 	public:
+
+		::darkskin::ColorPackage darkColors;
+
+		::darkskin::ColorPackage CreateColorPackageInternal(::darkskin::ColorPackage accents);
+		::darkskin::ColorPackage CreateDefaultColorPackage();
+		::darkskin::ColorPackage CreateAuroraColorPackage();
+		::darkskin::ColorPackage CreateEmberColorPackage();
+		::darkskin::ColorPackage CreateMoonstoneColorPackage();
+		::darkskin::ColorPackage CreateLagoonColorPackage();
+		::darkskin::ColorPackage CreateRosewoodColorPackage();
+		void InstallColorPackage(::darkskin::ColorPackage colors);
+		::vl::Ptr<::vl::presentation::DocumentModel> CreateBaselineDocument();
 
 		static DarkSkin& Instance();
 	};
@@ -7118,7 +7184,7 @@ Closures
 
 		__vwsnf45_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiScrollViewTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiDocumentViewerTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf46_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
@@ -7127,7 +7193,7 @@ Closures
 
 		__vwsnf46_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiLabelTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiTabTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf47_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
@@ -7136,7 +7202,7 @@ Closures
 
 		__vwsnf47_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiWindowTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiScrollViewTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf48_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
@@ -7145,7 +7211,7 @@ Closures
 
 		__vwsnf48_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiWindowTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiLabelTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf49_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
@@ -7172,7 +7238,7 @@ Closures
 
 		__vwsnf50_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiDocumentViewerTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiWindowTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf51_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
@@ -7181,7 +7247,7 @@ Closures
 
 		__vwsnf51_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiTabTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiWindowTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf52_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
@@ -10582,14 +10648,11 @@ Closures
 		__vwsnc232_DarkSkin_darkskin_CustomFrameWindowTemplateConstructor___vwsn_darkskin_CustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(::darkskin::CustomFrameWindowTemplateConstructor* __vwsnctorthis_0);
 
 		::darkskin::CustomFrameWindowTemplate* __vwsn_bind_cache_0 = nullptr;
-		::darkskin::CustomFrameWindowTemplate* __vwsn_bind_cache_1 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -10621,11 +10684,14 @@ Closures
 		__vwsnc234_DarkSkin_darkskin_CustomFrameWindowTemplateConstructor___vwsn_darkskin_CustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(::darkskin::CustomFrameWindowTemplateConstructor* __vwsnctorthis_0);
 
 		::darkskin::CustomFrameWindowTemplate* __vwsn_bind_cache_0 = nullptr;
+		::darkskin::CustomFrameWindowTemplate* __vwsn_bind_cache_1 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -10675,14 +10741,11 @@ Closures
 		__vwsnc237_DarkSkin_darkskin_CustomFrameWindowTemplateConstructor___vwsn_darkskin_CustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(::darkskin::CustomFrameWindowTemplateConstructor* __vwsnctorthis_0);
 
 		::darkskin::CustomFrameWindowTemplate* __vwsn_bind_cache_0 = nullptr;
-		::darkskin::CustomFrameWindowTemplate* __vwsn_bind_cache_1 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -10804,11 +10867,14 @@ Closures
 		__vwsnc243_DarkSkin_darkskin_CustomFrameWindowTemplateConstructor___vwsn_darkskin_CustomFrameWindowTemplate_Initialize__vl_reflection_description_IValueSubscription(::darkskin::CustomFrameWindowTemplateConstructor* __vwsnctorthis_0);
 
 		::darkskin::CustomFrameWindowTemplate* __vwsn_bind_cache_0 = nullptr;
+		::darkskin::CustomFrameWindowTemplate* __vwsn_bind_cache_1 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;

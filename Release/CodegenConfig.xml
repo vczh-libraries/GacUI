@@ -42,11 +42,11 @@
     <category name="reflection" pattern="GuiFakeDialogServiceUIReflection"/>
     <category name="reflection" pattern="TuiFakeDialogServiceUIReflection"/>
     <category name="compiler" pattern="\Source\Compiler\"/>
-    <category name="darkskin" pattern="\Skins\DarkSkin\Source\">
+    <category name="darkskin" pattern="\Skins\DarkSkin\Source\;\Skins\DarkSkin\Config\">
       <except pattern="Reflection"/>
     </category>
     <category name="darkskin_r" pattern="\Skins\DarkSkin\Source\DarkSkinReflection"/>
-    <category name="tuiskin" pattern="\Skins\TuiSkin\Source\">
+    <category name="tuiskin" pattern="\Skins\TuiSkin\Source\;\Skins\TuiSkin\Config\">
       <except pattern="Reflection"/>
     </category>
     <category name="tuiskin_r" pattern="\Skins\TuiSkin\Source\TuiSkinReflection"/>

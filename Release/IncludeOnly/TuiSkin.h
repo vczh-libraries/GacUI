@@ -12,4 +12,4 @@ DEVELOPER: Zihan Chen(vczh)
 
 #include "..\..\Source\Skins\TuiSkin\Source\TuiSkinPartialClasses.h"
 #include "..\..\Source\Skins\TuiSkin\Source\TuiSkin.h"
-#include "..\..\Source\Skins\TuiSkin\Source\TuiSkinConfig.h"
+#include "..\..\Source\Skins\TuiSkin\Config\TuiSkinConfig.h"

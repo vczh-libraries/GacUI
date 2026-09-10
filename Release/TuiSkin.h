@@ -11,7 +11,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppWorkflowLibrary.h"
 
 /***********************************************************************
-.\TUISKINPARTIALCLASSES.H
+.\SOURCE\TUISKINPARTIALCLASSES.H
 ***********************************************************************/
 /***********************************************************************
 !!!!!! DO NOT MODIFY !!!!!!
@@ -6252,7 +6252,7 @@ Closures
 
 
 /***********************************************************************
-.\TUISKIN.H
+.\SOURCE\TUISKIN.H
 ***********************************************************************/
 /***********************************************************************
 !!!!!! DO NOT MODIFY !!!!!!
@@ -6271,21 +6271,24 @@ https://github.com/vczh-libraries
 
 
 /***********************************************************************
-.\TUISKINCONFIG.H
+.\CONFIG\TUISKINCONFIG.H
 ***********************************************************************/
 #ifndef VCZH_PRESENTATION_TUISKINCONFIG
 #define VCZH_PRESENTATION_TUISKINCONFIG
 
 
-#ifdef VCZH_64
-#else
-#endif
 
 namespace tuiskin
 {
 	/// <summary>Create the opaque terminal palette used by TuiSkin.</summary>
 	extern ColorPackage CreateDefaultColorPackage();
-	/// <summary>Install colors before constructing the theme and its controls.</summary>
+	extern ColorPackage CreatePinkColorPackage();
+	extern ColorPackage CreateOrangeColorPackage();
+	extern ColorPackage CreateGrassPackage();
+	extern ColorPackage CreateEmeraldPackage();
+	extern ColorPackage CreateSkyblueColorPackage();
+	extern ColorPackage CreatePurplePackage();
+	/// <summary>Install colors for new templates. Refresh existing themed controls with GuiApplication::RefreshThemes.</summary>
 	extern void SetColorPackage(const ColorPackage& colors);
 }
 

@@ -9,3 +9,4 @@ DEVELOPER: Zihan Chen(vczh)
 
 #include "..\..\Source\Skins\DarkSkin\Source\DarkSkinPartialClasses.cpp"
 #include "..\..\Source\Skins\DarkSkin\Source\DarkSkinResource.cpp"
+#include "..\..\Source\Skins\DarkSkin\Config\DarkSkinConfig.cpp"

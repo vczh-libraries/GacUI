@@ -405,6 +405,19 @@ GuiApplication
 				return windows;
 			}
 
+			void GuiApplication::RefreshThemes()
+			{
+				collections::List<Pair<GuiWindow*, Ptr<GuiDisposedFlag>>> snapshot;
+				for (auto window : windows)
+				{
+					snapshot.Add({ window, window->GetDisposedFlag() });
+				}
+				for (auto&& entry : snapshot)
+				{
+					if (!entry.value->IsDisposed()) entry.key->RefreshThemes();
+				}
+			}
+
 			GuiWindow* GuiApplication::GetWindow(NativePoint location)
 			{
 				INativeWindow* nativeWindow = GetCurrentController()->WindowService()->GetWindow(location);
@@ -771,6 +784,20 @@ GuiControl
 			{
 			}
 
+			void GuiControl::RefreshThemes()
+			{
+				if (!controlTemplate) RebuildControlTemplate();
+				List<Pair<GuiControl*, Ptr<GuiDisposedFlag>>> snapshot;
+				for (auto child : children)
+				{
+					snapshot.Add({ child, child->GetDisposedFlag() });
+				}
+				for (auto&& entry : snapshot)
+				{
+					if (!entry.value->IsDisposed()) entry.key->RefreshThemes();
+				}
+			}
+
 			void GuiControl::AfterControlTemplateInstalled(bool initialize)
 			{
 				controlTemplateObject->SetText(text);
@@ -796,6 +823,24 @@ GuiControl
 
 			void GuiControl::RebuildControlTemplate()
 			{
+				GuiControl* focusedControl = nullptr;
+				Ptr<GuiDisposedFlag> focusedDisposedFlag;
+				if (auto host = boundsComposition->GetRelatedGraphicsHost())
+				{
+					if (auto composition = host->GetFocusedComposition())
+					{
+						auto control = composition->GetRelatedControl();
+						for (auto ancestor = control; ancestor; ancestor = ancestor->GetParent())
+						{
+							if (ancestor == this)
+							{
+								focusedControl = control;
+								focusedDisposedFlag = control->GetDisposedFlag();
+								break;
+							}
+						}
+					}
+				}
 				bool initialize = controlTemplateObject == nullptr;
 				if (controlTemplateObject)
 				{
@@ -824,6 +869,7 @@ GuiControl
 					controlTemplateObject->GetContainerComposition()->AddChild(containerComposition);
 					AfterControlTemplateInstalled(initialize);
 				}
+				if (focusedControl && !focusedDisposedFlag->IsDisposed()) focusedControl->SetFocused();
 			}
 
 			void GuiControl::FixingMissingControlTemplateCallback(templates::GuiControlTemplate* value)
@@ -1569,6 +1615,7 @@ GuiCustomControl
 	}
 }
 
+
 /***********************************************************************
 .\APPLICATION\CONTROLS\GUIINSTANCEROOTOBJECT.CPP
 ***********************************************************************/
@@ -1929,12 +1976,9 @@ GuiLabel
 				auto ct = TypedControlTemplateObject(true);
 				if (initialize || textColorConsisted)
 				{
-					SetTextColor(ct->GetDefaultTextColor());
+					textColor = ct->GetDefaultTextColor();
 				}
-				else
-				{
-					ct->SetTextColor(textColor);
-				}
+				ct->SetTextColor(textColor);
 			}
 
 			GuiLabel::GuiLabel(theme::ThemeName themeName)
@@ -1962,6 +2006,7 @@ GuiLabel
 		}
 	}
 }
+
 
 /***********************************************************************
 .\APPLICATION\CONTROLS\GUITHEMEMANAGER.CPP
@@ -6841,10 +6886,16 @@ GuiScrollView
 
 				if (auto scroll = ct->GetHorizontalScroll())
 				{
+					scrollPositionBeforeTemplate.x = scroll->GetPosition();
+					scrollTotalSizeBeforeTemplate.x = scroll->GetTotalSize();
+					scrollPageSizeBeforeTemplate.x = scroll->GetPageSize();
 					scroll->PositionChanged.Detach(hScrollHandler);
 				}
 				if (auto scroll = ct->GetVerticalScroll())
 				{
+					scrollPositionBeforeTemplate.y = scroll->GetPosition();
+					scrollTotalSizeBeforeTemplate.y = scroll->GetTotalSize();
+					scrollPageSizeBeforeTemplate.y = scroll->GetPageSize();
 					scroll->PositionChanged.Detach(vScrollHandler);
 				}
 				ct->GetEventReceiver()->horizontalWheel.Detach(hWheelHandler);
@@ -6864,10 +6915,22 @@ GuiScrollView
 				auto ct = TypedControlTemplateObject(true);
 				if (auto scroll = ct->GetHorizontalScroll())
 				{
+					if (!initialize)
+					{
+						scroll->SetTotalSize(scrollTotalSizeBeforeTemplate.x);
+						scroll->SetPageSize(scrollPageSizeBeforeTemplate.x);
+						scroll->SetPosition(scrollPositionBeforeTemplate.x);
+					}
 					hScrollHandler = scroll->PositionChanged.AttachMethod(this, &GuiScrollView::OnHorizontalScroll);
 				}
 				if (auto scroll = ct->GetVerticalScroll())
 				{
+					if (!initialize)
+					{
+						scroll->SetTotalSize(scrollTotalSizeBeforeTemplate.y);
+						scroll->SetPageSize(scrollPageSizeBeforeTemplate.y);
+						scroll->SetPosition(scrollPositionBeforeTemplate.y);
+					}
 					vScrollHandler = scroll->PositionChanged.AttachMethod(this, &GuiScrollView::OnVerticalScroll);
 				}
 				hWheelHandler = ct->GetEventReceiver()->horizontalWheel.AttachMethod(this, &GuiScrollView::OnHorizontalWheel);
@@ -12444,7 +12507,9 @@ GuiListControl
 			{
 				if (itemArranger)
 				{
+					auto viewPosition = GetViewPosition();
 					itemArranger->ReloadVisibleStyles();
+					SetViewPosition(viewPosition);
 					CalculateView();
 				}
 			}
@@ -12492,7 +12557,14 @@ GuiListControl
 
 			void GuiListControl::OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)
 			{
-				SetStyleAndArranger(itemStyleProperty, itemArranger);
+				// Detached rows cannot measure text; reload after the new render target is attached.
+				if (itemArranger && renderTarget)
+				{
+					auto viewPosition = GetViewPosition();
+					itemArranger->ReloadVisibleStyles();
+					SetViewPosition(viewPosition);
+					CalculateView();
+				}
 				GuiScrollView::OnRenderTargetChanged(renderTarget);
 			}
 
@@ -13281,6 +13353,14 @@ GuiListViewBase
 
 			void GuiListViewBase::AfterControlTemplateInstalled_(bool initialize)
 			{
+				if (auto arranger = dynamic_cast<list::ListViewColumnItemArranger*>(GetArranger()))
+				{
+					auto columnTemplate = TypedControlTemplateObject(true)->GetColumnHeaderTemplate();
+					for (auto button : arranger->GetColumnButtons())
+					{
+						button->SetControlTemplate(columnTemplate);
+					}
+				}
 			}
 
 			GuiListViewBase::GuiListViewBase(theme::ThemeName themeName, list::IItemProvider* _itemProvider)
@@ -20005,7 +20085,14 @@ GuiDocumentViewer
 				if (documentElement)
 				{
 					documentElement->SetCaretColor(ct->GetCaretColor());
-					SetDocument(GetDocument());
+					if (initialize)
+					{
+						SetDocument(GetDocument());
+					}
+					else
+					{
+						OnFontChanged();
+					}
 				}
 				ReplaceMouseArea(containerComposition->GetParent());
 			}
@@ -20130,7 +20217,14 @@ GuiDocumentLabel
 				if (documentElement)
 				{
 					documentElement->SetCaretColor(ct->GetCaretColor());
-					SetDocument(GetDocument());
+					if (initialize)
+					{
+						SetDocument(GetDocument());
+					}
+					else
+					{
+						OnFontChanged();
+					}
 				}
 			}
 
@@ -20777,7 +20871,7 @@ GuiMenuButton
 			void GuiMenuButton::BeforeControlTemplateUninstalled_()
 			{
 				auto host = GetSubMenuHost();
-				host->Clicked.Detach(hostClickedHandler);
+				host->BeforeClicked.Detach(hostClickedHandler);
 				host->GetBoundsComposition()->GetEventReceiver()->mouseEnter.Detach(hostMouseEnterHandler);
 
 				hostClickedHandler = nullptr;
@@ -21106,6 +21200,7 @@ GuiMenuButton
 		}
 	}
 }
+
 
 /***********************************************************************
 .\CONTROLS\TOOLSTRIPPACKAGE\GUIRIBBONCONTROLS.CPP
@@ -67259,14 +67354,23 @@ TuiGraphicsRenderTarget
 
 	void TuiGraphicsRenderTarget::Fill(Rect bounds, Color color)
 	{
-		if (!CanDraw() || color.a == 0) return;
+		if (!CanDraw() || color.a == 0 || bounds.Width() <= 0 || bounds.Height() <= 0) return;
+		auto compositionClip = GetClipper();
+		TuiClipper clipper{ compositionClip.x1, compositionClip.y1, compositionClip.x2, compositionClip.y2 };
+		if (color.a == 255)
+		{
+			TUI::Clear({ color.r, color.g, color.b }, bounds.x1, bounds.y1, bounds.x2 - 1, bounds.y2 - 1, &clipper);
+			return;
+		}
 		auto area = bounds.Intersect(GetVisibleClipper());
+		auto buffer = TUI::GetBuffer();
+		auto width = TUI::GetBufferWidth();
 		for (vint y = area.y1; y < area.y2; y++)
 		{
 			for (vint x = area.x1; x < area.x2; x++)
 			{
-				auto background = TUI::GetBuffer()[y * TUI::GetBufferWidth() + x].backgroundColor;
-				TUI::Clear(TuiBlend(color, background), x, y, x, y);
+				auto background = buffer[y * width + x].backgroundColor;
+				TUI::Clear(TuiBlend(color, background), x, y, x, y, &clipper);
 			}
 		}
 	}
@@ -67275,43 +67379,32 @@ TuiGraphicsRenderTarget
 	{
 		if (!CanDraw() || color.a == 0 || bounds.Width() <= 0 || bounds.Height() <= 0) return;
 		if (bounds.Width() == 1 && bounds.Height() == 1) return;
-		auto area = bounds.Intersect(GetVisibleClipper());
-		if (area.Width() <= 0 || area.Height() <= 0) return;
-		auto width = TUI::GetBufferWidth();
-		auto height = TUI::GetBufferHeight();
-		borderBuffer.Resize(width * height);
-		for (vint i = 0; i < borderBuffer.Count(); i++) borderBuffer[i] = TUI::GetBuffer()[i];
+		auto compositionClip = GetClipper();
+		TuiClipper clipper{ compositionClip.x1, compositionClip.y1, compositionClip.x2, compositionClip.y2 };
 		auto glyph = style == TuiLineStyle::Thin ? TuiMergeableGlyph::ThinLine
 			: style == TuiLineStyle::Thick ? TuiMergeableGlyph::ThickLine : TuiMergeableGlyph::DoubleLine;
 		TuiLineOptions line{glyph, {color.r, color.g, color.b}};
+		if (color.a != 255)
+		{
+			line.foregroundColorBlending = [color](TuiColor destination) { return TuiBlend(color, destination); };
+		}
 		if (bounds.Width() == 1)
 		{
-			TUI::DrawLineV(&borderBuffer[0], width, height, line, bounds.x1, bounds.y1, bounds.y2 - 1);
+			TUI::DrawLineV(line, bounds.x1, bounds.y1, bounds.y2 - 1, &clipper);
 		}
 		else if (bounds.Height() == 1)
 		{
-			TUI::DrawLineH(&borderBuffer[0], width, height, line, bounds.x1, bounds.x2 - 1, bounds.y1);
+			TUI::DrawLineH(line, bounds.x1, bounds.x2 - 1, bounds.y1, &clipper);
 		}
 		else
 		{
 			TuiRectOptions rectangle{glyph, line.foregroundColor};
+			rectangle.foregroundColorBlending = line.foregroundColorBlending;
 			if (style == TuiLineStyle::Thin && shape.shapeType != ElementShapeType::Rectangle && bounds.Width() > 2 && bounds.Height() > 2)
 			{
 				rectangle.corner = TuiRectCorner::Round;
 			}
-			TUI::DrawRect(&borderBuffer[0], width, height, rectangle, bounds.x1, bounds.y1, bounds.x2 - 1, bounds.y2 - 1);
-		}
-		for (vint y = area.y1; y < area.y2; y++)
-		{
-			for (vint x = area.x1; x < area.x2; x++)
-			{
-				if (x != bounds.x1 && x != bounds.x2 - 1 && y != bounds.y1 && y != bounds.y2 - 1) continue;
-				auto index = y * width + x;
-				auto pixel = borderBuffer[index];
-				pixel.foregroundColor = TuiBlend(color, TUI::GetBuffer()[index].foregroundColor);
-				TUI::Clear(pixel.backgroundColor, x, y, x, y);
-				TUI::GetBuffer()[index] = pixel;
-			}
+			TUI::DrawRect(rectangle, bounds.x1, bounds.y1, bounds.x2 - 1, bounds.y2 - 1, &clipper);
 		}
 	}
 
@@ -67319,8 +67412,10 @@ TuiGraphicsRenderTarget
 	{
 		if (!CanDraw()) return;
 		auto width = TUI::MeasureChar(code);
-		auto clipper = GetVisibleClipper();
-		if (width == 0 || !clipper.Contains(location) || location.x + width > clipper.x2) return;
+		auto visibleClipper = GetVisibleClipper();
+		if (width == 0 || !visibleClipper.Contains(location)) return;
+		auto compositionClip = GetClipper();
+		TuiClipper clipper{ compositionClip.x1, compositionClip.y1, compositionClip.x2, compositionClip.y2 };
 		auto pixel = TUI::GetBuffer()[location.y * TUI::GetBufferWidth() + location.x];
 		TuiPrintOptions options;
 		options.foregroundColor = TuiBlend(foreground, pixel.foregroundColor);
@@ -67328,9 +67423,9 @@ TuiGraphicsRenderTarget
 		options.style = style;
 		if (foreground.a != 0)
 		{
-			TUI::PrintChar(options, code, location.x, location.y);
+			TUI::PrintChar(options, code, location.x, location.y, &clipper);
 		}
-		else if (background.a != 0)
+		else if (background.a != 0 && location.x + width <= visibleClipper.x2)
 		{
 			Fill(Rect(location, Size(width, 1)), background);
 		}

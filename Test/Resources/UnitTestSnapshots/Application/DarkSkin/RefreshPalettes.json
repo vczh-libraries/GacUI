@@ -1,0 +1,655 @@
+﻿{
+  "createdElements": [
+    [1, "SolidBackground"],
+    [2, "SolidBorder"],
+    [3, "SolidBackground"],
+    [4, "SolidBorder"],
+    [5, "FocusRectangle"],
+    [6, "SolidLabel"],
+    [7, "Polygon"],
+    [8, "SolidBackground"],
+    [9, "SolidBorder"],
+    [10, "FocusRectangle"],
+    [11, "SolidLabel"],
+    [12, "Polygon"],
+    [13, "Polygon"],
+    [14, "SolidBackground"],
+    [15, "SolidBorder"],
+    [16, "FocusRectangle"],
+    [17, "SolidLabel"],
+    [18, "Polygon"],
+    [19, "ImageFrame"],
+    [20, "SolidLabel"],
+    [21, "SolidBackground"],
+    [22, "SolidBorder"],
+    [23, "FocusRectangle"],
+    [24, "SolidLabel"],
+    [25, "SolidBackground"],
+    [26, "SolidBorder"],
+    [27, "SolidBackground"],
+    [28, "SolidBorder"],
+    [29, "Polygon"],
+    [30, "Polygon"],
+    [31, "SolidBackground"],
+    [32, "SolidBackground"],
+    [33, "SolidBorder"],
+    [34, "Polygon"],
+    [35, "Polygon"],
+    [36, "SolidBackground"],
+    [37, "DocumentParagraph"],
+    [38, "DocumentParagraph"],
+    [39, "SolidBackground"],
+    [40, "SolidBorder"],
+    [41, "SolidBackground"],
+    [42, "SolidBorder"],
+    [43, "FocusRectangle"],
+    [44, "SolidLabel"],
+    [45, "Polygon"],
+    [46, "SolidBackground"],
+    [47, "SolidBorder"],
+    [48, "FocusRectangle"],
+    [49, "SolidLabel"],
+    [50, "Polygon"],
+    [51, "Polygon"],
+    [52, "SolidBackground"],
+    [53, "SolidBorder"],
+    [54, "FocusRectangle"],
+    [55, "SolidLabel"],
+    [56, "Polygon"],
+    [57, "ImageFrame"],
+    [58, "SolidLabel"],
+    [59, "SolidBackground"],
+    [60, "SolidBorder"],
+    [61, "FocusRectangle"],
+    [62, "SolidLabel"],
+    [63, "SolidBackground"],
+    [64, "SolidBorder"],
+    [65, "SolidBackground"],
+    [66, "SolidBorder"],
+    [67, "Polygon"],
+    [68, "Polygon"],
+    [69, "SolidBackground"],
+    [70, "SolidBackground"],
+    [71, "SolidBorder"],
+    [72, "Polygon"],
+    [73, "Polygon"],
+    [74, "SolidBackground"],
+    [75, "DocumentParagraph"],
+    [76, "SolidBackground"],
+    [77, "SolidBorder"],
+    [78, "SolidBackground"],
+    [79, "SolidBorder"],
+    [80, "FocusRectangle"],
+    [81, "SolidLabel"],
+    [82, "Polygon"],
+    [83, "SolidBackground"],
+    [84, "SolidBorder"],
+    [85, "FocusRectangle"],
+    [86, "SolidLabel"],
+    [87, "Polygon"],
+    [88, "Polygon"],
+    [89, "SolidBackground"],
+    [90, "SolidBorder"],
+    [91, "FocusRectangle"],
+    [92, "SolidLabel"],
+    [93, "Polygon"],
+    [94, "ImageFrame"],
+    [95, "SolidLabel"],
+    [96, "SolidBackground"],
+    [97, "SolidBorder"],
+    [98, "FocusRectangle"],
+    [99, "SolidLabel"],
+    [100, "SolidBackground"],
+    [101, "SolidBorder"],
+    [102, "SolidBackground"],
+    [103, "SolidBorder"],
+    [104, "Polygon"],
+    [105, "Polygon"],
+    [106, "SolidBackground"],
+    [107, "SolidBackground"],
+    [108, "SolidBorder"],
+    [109, "Polygon"],
+    [110, "Polygon"],
+    [111, "SolidBackground"],
+    [112, "DocumentParagraph"],
+    [113, "SolidBackground"],
+    [114, "SolidBorder"],
+    [115, "SolidBackground"],
+    [116, "SolidBorder"],
+    [117, "FocusRectangle"],
+    [118, "SolidLabel"],
+    [119, "Polygon"],
+    [120, "SolidBackground"],
+    [121, "SolidBorder"],
+    [122, "FocusRectangle"],
+    [123, "SolidLabel"],
+    [124, "Polygon"],
+    [125, "Polygon"],
+    [126, "SolidBackground"],
+    [127, "SolidBorder"],
+    [128, "FocusRectangle"],
+    [129, "SolidLabel"],
+    [130, "Polygon"],
+    [131, "ImageFrame"],
+    [132, "SolidLabel"],
+    [133, "SolidBackground"],
+    [134, "SolidBorder"],
+    [135, "FocusRectangle"],
+    [136, "SolidLabel"],
+    [137, "SolidBackground"],
+    [138, "SolidBorder"],
+    [139, "SolidBackground"],
+    [140, "SolidBorder"],
+    [141, "Polygon"],
+    [142, "Polygon"],
+    [143, "SolidBackground"],
+    [144, "SolidBackground"],
+    [145, "SolidBorder"],
+    [146, "Polygon"],
+    [147, "Polygon"],
+    [148, "SolidBackground"],
+    [149, "DocumentParagraph"],
+    [150, "SolidBackground"],
+    [151, "SolidBorder"],
+    [152, "SolidBackground"],
+    [153, "SolidBorder"],
+    [154, "FocusRectangle"],
+    [155, "SolidLabel"],
+    [156, "Polygon"],
+    [157, "SolidBackground"],
+    [158, "SolidBorder"],
+    [159, "FocusRectangle"],
+    [160, "SolidLabel"],
+    [161, "Polygon"],
+    [162, "Polygon"],
+    [163, "SolidBackground"],
+    [164, "SolidBorder"],
+    [165, "FocusRectangle"],
+    [166, "SolidLabel"],
+    [167, "Polygon"],
+    [168, "ImageFrame"],
+    [169, "SolidLabel"],
+    [170, "SolidBackground"],
+    [171, "SolidBorder"],
+    [172, "FocusRectangle"],
+    [173, "SolidLabel"],
+    [174, "SolidBackground"],
+    [175, "SolidBorder"],
+    [176, "SolidBackground"],
+    [177, "SolidBorder"],
+    [178, "Polygon"],
+    [179, "Polygon"],
+    [180, "SolidBackground"],
+    [181, "SolidBackground"],
+    [182, "SolidBorder"],
+    [183, "Polygon"],
+    [184, "Polygon"],
+    [185, "SolidBackground"],
+    [186, "DocumentParagraph"],
+    [187, "SolidBackground"],
+    [188, "SolidBorder"],
+    [189, "SolidBackground"],
+    [190, "SolidBorder"],
+    [191, "FocusRectangle"],
+    [192, "SolidLabel"],
+    [193, "Polygon"],
+    [194, "SolidBackground"],
+    [195, "SolidBorder"],
+    [196, "FocusRectangle"],
+    [197, "SolidLabel"],
+    [198, "Polygon"],
+    [199, "Polygon"],
+    [200, "SolidBackground"],
+    [201, "SolidBorder"],
+    [202, "FocusRectangle"],
+    [203, "SolidLabel"],
+    [204, "Polygon"],
+    [205, "ImageFrame"],
+    [206, "SolidLabel"],
+    [207, "SolidBackground"],
+    [208, "SolidBorder"],
+    [209, "FocusRectangle"],
+    [210, "SolidLabel"],
+    [211, "SolidBackground"],
+    [212, "SolidBorder"],
+    [213, "SolidBackground"],
+    [214, "SolidBorder"],
+    [215, "Polygon"],
+    [216, "Polygon"],
+    [217, "SolidBackground"],
+    [218, "SolidBackground"],
+    [219, "SolidBorder"],
+    [220, "Polygon"],
+    [221, "Polygon"],
+    [222, "SolidBackground"],
+    [223, "DocumentParagraph"],
+    [224, "SolidBackground"],
+    [225, "SolidBorder"],
+    [226, "SolidBackground"],
+    [227, "SolidBorder"],
+    [228, "FocusRectangle"],
+    [229, "SolidLabel"],
+    [230, "Polygon"],
+    [231, "SolidBackground"],
+    [232, "SolidBorder"],
+    [233, "FocusRectangle"],
+    [234, "SolidLabel"],
+    [235, "Polygon"],
+    [236, "Polygon"],
+    [237, "SolidBackground"],
+    [238, "SolidBorder"],
+    [239, "FocusRectangle"],
+    [240, "SolidLabel"],
+    [241, "Polygon"],
+    [242, "ImageFrame"],
+    [243, "SolidLabel"],
+    [244, "SolidBackground"],
+    [245, "SolidBorder"],
+    [246, "FocusRectangle"],
+    [247, "SolidLabel"],
+    [248, "SolidBackground"],
+    [249, "SolidBorder"],
+    [250, "SolidBackground"],
+    [251, "SolidBorder"],
+    [252, "Polygon"],
+    [253, "Polygon"],
+    [254, "SolidBackground"],
+    [255, "SolidBackground"],
+    [256, "SolidBorder"],
+    [257, "Polygon"],
+    [258, "Polygon"],
+    [259, "SolidBackground"],
+    [260, "DocumentParagraph"],
+    [261, "SolidBackground"],
+    [262, "SolidBorder"],
+    [263, "SolidBackground"],
+    [264, "SolidBorder"],
+    [265, "FocusRectangle"],
+    [266, "SolidLabel"],
+    [267, "Polygon"],
+    [268, "SolidBackground"],
+    [269, "SolidBorder"],
+    [270, "FocusRectangle"],
+    [271, "SolidLabel"],
+    [272, "Polygon"],
+    [273, "Polygon"],
+    [274, "SolidBackground"],
+    [275, "SolidBorder"],
+    [276, "FocusRectangle"],
+    [277, "SolidLabel"],
+    [278, "Polygon"],
+    [279, "ImageFrame"],
+    [280, "SolidLabel"],
+    [281, "SolidBackground"],
+    [282, "SolidBorder"],
+    [283, "FocusRectangle"],
+    [284, "SolidLabel"],
+    [285, "SolidBackground"],
+    [286, "SolidBorder"],
+    [287, "SolidBackground"],
+    [288, "SolidBorder"],
+    [289, "Polygon"],
+    [290, "Polygon"],
+    [291, "SolidBackground"],
+    [292, "SolidBackground"],
+    [293, "SolidBorder"],
+    [294, "Polygon"],
+    [295, "Polygon"],
+    [296, "SolidBackground"]
+  ],
+  "imageCreations": [],
+  "imageMetadatas": [],
+  "frames": [
+    {
+      "frameId": 5,
+      "frameName": "Select palette 0",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 10,
+      "frameName": "Palette installed 0",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 12,
+      "frameName": "Select palette 1",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 17,
+      "frameName": "Palette installed 1",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 19,
+      "frameName": "Select palette 2",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 24,
+      "frameName": "Palette installed 2",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 26,
+      "frameName": "Select palette 3",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 31,
+      "frameName": "Palette installed 3",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 33,
+      "frameName": "Select palette 4",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 38,
+      "frameName": "Palette installed 4",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 40,
+      "frameName": "Select palette 5",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 45,
+      "frameName": "Palette installed 5",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 47,
+      "frameName": "Restore default",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    }
+  ]
+}

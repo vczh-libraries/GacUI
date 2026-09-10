@@ -48,4 +48,11 @@
       <Filter>x64</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Configuration">
+      <UniqueIdentifier>{5871e251-8a15-47bc-91e0-e3ed3ca4a0ba}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Skins\DarkSkin\Config\DarkSkinConfig.h"><Filter>Configuration</Filter></ClInclude>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Skins\DarkSkin\Config\DarkSkinConfig.cpp"><Filter>Configuration</Filter></ClCompile>
+  </ItemGroup>
 </Project>

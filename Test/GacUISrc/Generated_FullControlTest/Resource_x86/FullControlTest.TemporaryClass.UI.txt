@@ -148,6 +148,11 @@ namespace demo
     {
         var openedSubWindows : GuiWindow^[] = {};
 
+        func SelectPalette(preset : int) : (void)
+        {
+            raise "Not Implemented";
+        }
+
         func ShowMouseModifiers(alt : bool, osSuper : bool) : (void)
         {
             raise "Not Implemented";

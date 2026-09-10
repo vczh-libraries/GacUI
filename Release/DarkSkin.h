@@ -11,7 +11,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppRegex.h"
 
 /***********************************************************************
-.\DARKSKINPARTIALCLASSES.H
+.\SOURCE\DARKSKINPARTIALCLASSES.H
 ***********************************************************************/
 /***********************************************************************
 !!!!!! DO NOT MODIFY !!!!!!
@@ -679,8 +679,59 @@ namespace vl_workflow_global
 	class __vwsnc9_DarkSkin_darkskin_CheckBoxTemplateConstructor___vwsn_darkskin_CheckBoxTemplate_Initialize__vl_reflection_description_IValueSubscription;
 }
 
+namespace __vwsn_structs
+{
+	struct _darkskin_ColorPackage
+	{
+		::vl::presentation::Color GeneralBackground;
+		::vl::presentation::Color GeneralBorder;
+		::vl::presentation::Color GeneralAccent;
+		::vl::presentation::Color ContentBackground;
+		::vl::presentation::Color ContentBorder;
+		::vl::presentation::Color Transparent;
+		::vl::presentation::Color WindowBorderActive;
+		::vl::presentation::Color TextSecondary;
+		::vl::presentation::Color TextDisabled;
+		::vl::presentation::Color GroupText;
+		::vl::presentation::Color TextNormal;
+		::vl::presentation::Color TextBright;
+		::vl::presentation::Color ButtonBackgroundHovered;
+		::vl::presentation::Color ButtonBorderHovered;
+		::vl::presentation::Color ControlAccentHovered;
+		::vl::presentation::Color ListColumnBorder;
+		::vl::presentation::Color TabHighlightedSelected;
+		::vl::presentation::Color TabHighlightedHovered;
+		::vl::presentation::Color TabHighlightedBackground;
+		::vl::presentation::Color ScrollBackground;
+		::vl::presentation::Color ArrowDisabled;
+		::vl::presentation::Color ArrowAccentHovered;
+		::vl::presentation::Color ScrollHandleHovered;
+		::vl::presentation::Color ScrollHandlePressed;
+		::vl::presentation::Color ScrollHandle;
+		::vl::presentation::Color ProgressBackground;
+		::vl::presentation::Color ProgressBorder;
+		::vl::presentation::Color ProgressFilling;
+		::vl::presentation::Color ItemBackgroundSelected;
+		::vl::presentation::Color MenuBackground;
+		::vl::presentation::Color MenuBorder;
+		::vl::presentation::Color SplitterDark;
+		::vl::presentation::Color SplitterLight;
+		::vl::presentation::Color MenuItemHovered;
+		::vl::presentation::Color ComboArrowBackgroundHovered;
+		::vl::presentation::Color ColumnHeaderBackgroundHovered;
+		::vl::presentation::Color ColumnHeaderBackground;
+		::vl::presentation::Color ExpandingArrowHovered;
+		::vl::presentation::Color RibbonExpandingArrow;
+		::vl::presentation::Color RibbonExpandingArrowPressed;
+
+		auto operator<=>(const _darkskin_ColorPackage&) const = default;
+	};
+
+}
 namespace darkskin
 {
+	using ColorPackage = ::__vwsn_structs::_darkskin_ColorPackage;
+
 	class BottomScrollButtonTemplateConstructor;
 	class BottomScrollButtonTemplate;
 	class ButtonTemplateConstructor;
@@ -3593,6 +3644,9 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<Theme>;
 #endif
 	public:
+		static ::darkskin::ColorPackage GetColorPackage();
+		static void SetColorPackage(::darkskin::ColorPackage colors);
+		static ::darkskin::ColorPackage CreateColorPackage(::vl::vint preset);
 		Theme();
 		~Theme();
 	};
@@ -4184,6 +4238,18 @@ namespace vl_workflow_global
 	class DarkSkin
 	{
 	public:
+
+		::darkskin::ColorPackage darkColors;
+
+		::darkskin::ColorPackage CreateColorPackageInternal(::darkskin::ColorPackage accents);
+		::darkskin::ColorPackage CreateDefaultColorPackage();
+		::darkskin::ColorPackage CreateAuroraColorPackage();
+		::darkskin::ColorPackage CreateEmberColorPackage();
+		::darkskin::ColorPackage CreateMoonstoneColorPackage();
+		::darkskin::ColorPackage CreateLagoonColorPackage();
+		::darkskin::ColorPackage CreateRosewoodColorPackage();
+		void InstallColorPackage(::darkskin::ColorPackage colors);
+		::vl::Ptr<::vl::presentation::DocumentModel> CreateBaselineDocument();
 
 		static DarkSkin& Instance();
 	};
@@ -12695,7 +12761,7 @@ Closures
 
 
 /***********************************************************************
-.\DARKSKIN.H
+.\SOURCE\DARKSKIN.H
 ***********************************************************************/
 /***********************************************************************
 !!!!!! DO NOT MODIFY !!!!!!
@@ -12709,6 +12775,28 @@ https://github.com/vczh-libraries
 #ifndef VCZH_WORKFLOW_COMPILER_GENERATED_DARKSKIN
 #define VCZH_WORKFLOW_COMPILER_GENERATED_DARKSKIN
 
+
+#endif
+
+
+/***********************************************************************
+.\CONFIG\DARKSKINCONFIG.H
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_DARKSKINCONFIG
+#define VCZH_PRESENTATION_DARKSKINCONFIG
+
+
+
+namespace darkskin
+{
+	extern ColorPackage CreateDefaultColorPackage();
+	extern ColorPackage CreateAuroraColorPackage();
+	extern ColorPackage CreateEmberColorPackage();
+	extern ColorPackage CreateMoonstoneColorPackage();
+	extern ColorPackage CreateLagoonColorPackage();
+	extern ColorPackage CreateRosewoodColorPackage();
+	extern void SetColorPackage(const ColorPackage& colors);
+}
 
 #endif
 
