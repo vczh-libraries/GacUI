@@ -14,6 +14,62 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	TEST_CASE(L"GuiLabel synchronizes colors when replacing templates")
+	{
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto label = FindObjectByName<GuiLabel>(window, L"label");
+				auto checkColor = [&](Color expected)
+				{
+					auto ct = dynamic_cast<templates::GuiLabelTemplate*>(label->GetControlTemplateObject());
+					TEST_ASSERT(label->GetTextColor() == expected);
+					TEST_ASSERT(ct->GetTextColor() == expected);
+					TEST_ASSERT(ct->GetOwnedElement().Cast<GuiSolidLabelElement>()->GetColor() == expected);
+				};
+				auto defaultColor = dynamic_cast<templates::GuiLabelTemplate*>(label->GetControlTemplateObject())->GetDefaultTextColor();
+				checkColor(defaultColor);
+				for (vint i = 0; i < 2; i++)
+				{
+					GetApplication()->RefreshThemes();
+					checkColor(defaultColor);
+				}
+
+				auto overrideColor = Color(10, 200, 30);
+				label->SetTextColor(overrideColor);
+				GetApplication()->RefreshThemes();
+				checkColor(overrideColor);
+				label->SetTextColor(defaultColor);
+
+				auto changedColor = Color(200, 30, 10);
+				auto createTemplate = [=](const Value&)
+				{
+					auto ct = new darkskin::LabelTemplate;
+					ct->SetDefaultTextColor(changedColor);
+					return ct;
+				};
+				label->SetControlTemplate(createTemplate);
+				checkColor(changedColor);
+				label->SetControlTemplate(createTemplate);
+				checkColor(changedColor);
+				label->SetTextColor(overrideColor);
+				label->SetControlTemplate({});
+				checkColor(overrideColor);
+				label->SetTextColor(defaultColor);
+				label->RefreshThemes();
+				checkColor(defaultColor);
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			WString::Unmanaged(L"Controls/CoreApplication/GuiLabel/RefreshThemes"),
+			WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+			resource
+			);
+	});
+
 	TEST_CASE(L"GuiLabel")
 	{
 		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)

@@ -28,12 +28,9 @@ GuiLabel
 				auto ct = TypedControlTemplateObject(true);
 				if (initialize || textColorConsisted)
 				{
-					SetTextColor(ct->GetDefaultTextColor());
+					textColor = ct->GetDefaultTextColor();
 				}
-				else
-				{
-					ct->SetTextColor(textColor);
-				}
+				ct->SetTextColor(textColor);
 			}
 
 			GuiLabel::GuiLabel(theme::ThemeName themeName)

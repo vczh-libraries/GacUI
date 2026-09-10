@@ -218,7 +218,7 @@ TEST_FILE
 		using namespace vl::presentation::unittest;
 		GacUIUnitTest_SetGuiMainProxy([](auto, auto)
 		{
-			TuiRunTest([](TuiTestBackend*, TuiTestController* controller)
+			TuiRunTest([](TuiTestBackend* backend, TuiTestController* controller)
 			{
 				using namespace controls;
 				using namespace compositions;
@@ -246,6 +246,40 @@ TEST_FILE
 					{
 						main.GetContainerComposition()->AddChild(control->GetBoundsComposition());
 						control->GetBoundsComposition()->SetExpectedBounds(bounds);
+					};
+					auto enabledLabel = new GuiLabel(theme::ThemeName::Label);
+					enabledLabel->SetText(L"Enabled label");
+					add(enabledLabel, Rect(0, 20, 20, 21));
+					auto disabledLabel = new GuiLabel(theme::ThemeName::Label);
+					disabledLabel->SetText(L"Disabled label");
+					disabledLabel->SetEnabled(false);
+					add(disabledLabel, Rect(0, 21, 20, 22));
+					auto overrideLabel = new GuiLabel(theme::ThemeName::Label);
+					overrideLabel->SetText(L"Override label");
+					auto overrideColor = Color(10, 200, 30);
+					add(overrideLabel, Rect(0, 22, 20, 23));
+					overrideLabel->GetControlTemplateObject();
+					overrideLabel->SetTextColor(overrideColor);
+					auto checkLabelColors = [&](const tuiskin::ColorPackage& colors)
+					{
+						for (auto label : { enabledLabel, disabledLabel, overrideLabel })
+						{
+							auto textColor = label == overrideLabel ? overrideColor : colors.LabelText;
+							auto renderedColor = label->GetVisuallyEnabled() ? textColor : colors.ControlBorderDisabled;
+							auto ct = dynamic_cast<templates::GuiLabelTemplate*>(label->GetControlTemplateObject());
+							TEST_ASSERT(label->GetTextColor() == textColor);
+							TEST_ASSERT(ct->GetTextColor() == textColor);
+							TEST_ASSERT(ct->GetOwnedElement().Cast<GuiSolidLabelElement>()->GetColor() == renderedColor);
+							auto bounds = ct->GetGlobalBounds();
+							auto text = label->GetText();
+							for (vint i = 0; i < text.Length(); i++)
+							{
+								auto&& pixel = backend->frame[bounds.y1 * backend->width + bounds.x1 + i];
+								TEST_ASSERT(pixel.GetWChar() == text[i]);
+								TEST_ASSERT(pixel.foregroundColor == (TuiColor{ renderedColor.r, renderedColor.g, renderedColor.b }));
+								TEST_ASSERT(pixel.backgroundColor == (TuiColor{ colors.ControlBackground.r, colors.ControlBackground.g, colors.ControlBackground.b }));
+							}
+						}
 					};
 					auto listView = new GuiListView(theme::ThemeName::ListView);
 					add(listView, Rect(0, 0, 45, 12));
@@ -303,6 +337,7 @@ TEST_FILE
 					});
 					steps.Add([&]()
 					{
+						checkLabelColors(tuiskin::CreateDefaultColorPackage());
 						listView->SetViewPosition(Point(5, 10));
 						viewPosition = listView->GetViewPosition();
 						TEST_ASSERT(viewPosition.x > 0 && viewPosition.y > 0);
@@ -323,6 +358,7 @@ TEST_FILE
 						});
 						steps.Add([&, colors]()
 						{
+							checkLabelColors(colors);
 							TEST_ASSERT(main.GetOpening() && main.GetNativeWindow()->GetBounds() == mainBounds);
 							TEST_ASSERT(!headerFlag->IsDisposed() && arranger->GetColumnButtons()[0] == header);
 							TEST_ASSERT(arrowFlag->IsDisposed());
@@ -343,6 +379,15 @@ TEST_FILE
 							TEST_ASSERT(menuActions == actions + 1);
 						});
 					}
+					steps.Add([&]()
+					{
+						disabledLabel->SetEnabled(true);
+					});
+					steps.Add([&]()
+					{
+						checkLabelColors(tuiskin::CreateSkyblueColorPackage());
+						disabledLabel->SetEnabled(false);
+					});
 					steps.Add([&]()
 					{
 						combo->SetSubMenuOpening(true);
