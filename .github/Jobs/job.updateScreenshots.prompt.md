@@ -78,17 +78,18 @@ Build `Test/GacUISrc/GacUISrc.sln` with `copilotBuild.ps1` before launching eith
 
 #### TuiControlTest console input and inspection
 
-Launch a separate Windows Terminal window at 120 columns by 40 rows. For this checkout:
+Launch a separate Windows Terminal window, using 120 columns by 40 rows as a starting size. Query the actual viewport after launch and after resizing; font settings and DPI can change the resulting window geometry. For this checkout:
 
 ```powershell
 & wt.exe -w new --size '120,40' new-tab -d 'C:\Code\VczhLibraries\GacUI\Test\GacUISrc' pwsh.exe -NoProfile -Command '& C:\Code\VczhLibraries\GacUI\.github\Scripts\copilotExecute.ps1 -Mode CLI -Executable CppTest_Tui -Configuration Debug -Platform x64 -Interactive'
 ```
 
 - Identify the running `CppTest_Tui` process. From a separate helper process, call `FreeConsole` and `AttachConsole` with that process id. Open `CONOUT$` to read `GetConsoleScreenBufferInfo` and `ReadConsoleOutputCharacterW`, and open `CONIN$` to send `WriteConsoleInputW` records. Close the handles and detach when finished. This app has no HTTP endpoint and does not need UI Automation.
-- Read the visible viewport one row at a time. Respect the returned character count when converting each native buffer to text; do not read past it. Coordinates for input records are console cells, starting at zero.
-- A click consists of three `MOUSE_EVENT` input records at the same cell: mouse move, left button down, then button up. With the current 120x40 layout, `List` is at `(5,0)`, `BindableDataGrid` at `(40,1)`, `Window Manager` at `(50,0)`, and the third row's category dropdown at `(43,9)`. Re-read the console after each transition instead of assuming these positions for another layout.
-- On `Window Manager`, the current palette radios are at column 65, rows 2 through 7: `Pink`, `Orange`, `Grass`, `Emerald`, `SkyBlue (default)`, and `Purple`. Wait until the selected radio shows `(•)` beside the requested label before returning to `List`. Theme refresh is asynchronous.
-- Returning to the grid can retain its editor. Click the category cell, read the console, and click again only if the editor is visible but the dropdown is not. Confirm the popup contains `Black`, `Red`, `Lime`, `Blue`, and `White` before capturing.
+- Read the visible viewport one row at a time. Respect the returned character count when converting each native buffer to text; do not read past it. Preserve the mapping to console cells, including whitespace and wide-character occupancy. Input records use zero-based console buffer coordinates; add the current viewport's left and top offsets when converting viewport-relative positions. Do not derive input coordinates from screen pixels, font size, or saved screenshots.
+- Locate `List`, `BindableDataGrid`, `Window Manager`, and `Exit` by their labels in the current tab rows. A click consists of three `MOUSE_EVENT` input records at a cell inside the matched label: mouse move, left button down, then button up. Re-read the console after every navigation, resize, or theme refresh and locate the next target again. Do not reuse row or column numbers from an earlier run.
+- On the grid page, locate the `Category` header and the surrounding column boundaries. Count data rows, excluding the header and separator rows, to find the third row. Confirm its category is `White`, then click inside that cell. After the editor appears, locate its dropdown arrow within the same cell from a fresh console read.
+- On `Window Manager`, find the `Color Theme` group and enumerate its visible radio labels. Locate each requested theme by its label and adjacent radio marker. Wait until the selected radio shows `(•)` beside that label before returning to `List`; theme refresh is asynchronous. If a target is clipped, resize or scroll to reveal it and read the viewport again before acting.
+- Returning to the grid can retain its editor. Locate the third row's category cell again, click it, read the console, and click its dropdown arrow only if the editor is visible but the dropdown is not. Confirm the popup contains `Black`, `Red`, `Lime`, `Blue`, and `White` before capturing.
 - Use the complete displayed palette label in the filename, including `TUI_SkyBlue (default).png`.
 - After capturing, open `Exit` and choose `self.Close() (InvokeInMainThread)` with cancellation unchecked. Require normal process exit.
 
