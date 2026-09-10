@@ -8,11 +8,15 @@ From `Test/GacUISrc` in Windows Terminal, run `& C:\Code\VczhLibraries\GacUI\.gi
 
 On Linux use sibling `wGac`; on macOS use sibling `iGac`. Refresh the owning upstream releases, then run `./import.sh`, `./syncProj.sh`, and `./build.sh` from that platform repository. Start `./test.sh --app:tui` in a foreground interactive terminal. The target is `Test_TuiControlTest` under `WGacTuiControlTest` or `MacTuiControlTest`. Keep stdin/stdout attached; `--unblock`, `--hosted`, and `--port` do not apply. Complete the same page checks below and maintain `TestMatrix_Tui.md` in the platform repository.
 
+On both Linux and macOS, always try the legacy terminal first: use the desktop's ordinary legacy terminal on Linux and Apple Terminal.app on macOS. Record its name, version and relevant profile settings. Only after a check fails there, retry that check in Kitty with the same application build, configuration and inputs. Do not replace a legacy-terminal failure with a Kitty pass. If only Kitty works, write the exact failure and successful retry in the terminal comparison record card below and in the platform's `TestMatrix_Tui.md`. If the legacy terminal or Kitty cannot be operated, record that limitation explicitly; do not infer a result.
+
 Use the host terminal wherever the shared procedures say Windows Terminal, and native paths for file fixtures. The OS modifier label is `Super` on Linux and `Command` on macOS. Validate shortcut labels using those names. The shared showcase currently retains the literal `Win` spelling in its success-message text on all platforms. The Windows-specific console-record and CDB evidence below remains historical Windows evidence.
 
 POSIX terminals supporting the Kitty keyboard protocol can report Super independently of Alt. The backend requests disambiguated keys and restores the prior keyboard mode on exit; legacy terminal Meta remains Alt. SGR mouse input has no Super bit, and the existing wGac input service does not register global hotkeys. Disambiguation mode does not report standalone modifier keys, so the current POSIX adapter cannot show access-key overlays from Alt alone; use mouse/arrow menu navigation and record that limitation. The existing POSIX locale implementation also keeps en-US date/number formatting while translated resource strings follow the selected locale. Record these unavailable paths explicitly. Injected CSI/SGR bytes prove decoding and application behavior, while real terminal-generated input is required to establish host delivery. A passed decoder test does not establish macOS verification.
 
 On macOS, `Mac/TUI/TuiCocoaController` supplies Cocoa clipboard/image services and Carbon global registration to the shared controller. The plain terminal executable pumps Cocoa events and clipboard changes on the TUI owner thread without opening or activating a Cocoa window. Verify external text using another application or `pbcopy`/`pbpaste`. Carbon registration and actual global chord delivery are separate checks; a locked desktop prevents native activation and displayed appearance verification. Record terminal-generated test keys and raw replay separately from physical input.
+
+Record the Cocoa configuration's `overrideAlt` and `overrideOsSuper` values. Both default to false, and the local macOS showcase enables both. They independently supplement terminal Alt/Super from current local Option/Command state, preserving modifiers already reported by the terminal. Verify the disabled settings and all enabled combinations separately. Current state can differ from queued event-time state, and no override can recover a chord that the terminal consumes without delivering a key. Treat such a failure as a legacy-terminal result before trying Kitty.
 
 On Linux, the TUI clipboard uses an unmapped X11 selection owner because a separate Wayland client cannot borrow the terminal's focus serial. With `DISPLAY` available, verify text with another desktop app through X11/XWayland. Without an X display, document the process-local clipboard limitation and use the terminal's ordinary paste action for external text. Rich document/image clipboard objects are retained inside the app; external transfer is UTF-8 text. Keep the app running while another client reads its selection.
 
@@ -231,6 +235,32 @@ Adapt FCT `Verify Shortcuts and Mouse Buttons`. Open a child and then a grandchi
 The `Exit` tab in `Resource.xml`. Preserve the four vertically arranged, exactly named `self.Hide()` / `self.Close()` buttons, with and without `(InvokeInMainThread)`, so the page is immediately recognizable.
 
 Adapt FCT `Close the Application`. With `Cancel Hide/Close requests` selected, click each original button and require the app to remain responsive, its invocation/query readouts to advance once and its ready count to remain zero. With cancellation cleared, test each button on a fresh run: one WindowClosing and one WindowReadyToClose must precede normal loop exit. Queued operations must reach the same path. Include canceled-then-accepted retry, reentrant close and listener removal in provider regressions. On separate fresh runs, use each Stop button and require normal teardown and restored terminal contents, cursor, colors, input mode, and usable shell input. Repeat after opening/closing hosted dialogs and changing pages. Do not substitute terminal-tab close, force termination, or a remote renderer's Force Exit for normal application stopping.
+
+## Linux/macOS terminal comparison record card
+
+Append a completed card here for each legacy-terminal failure that prompts a Kitty retry, and retain the corresponding evidence in the platform's `TestMatrix_Tui.md`. If only Kitty works, the card must say so explicitly and preserve the legacy failure details. Identify physical keyboard/mouse input, generated native events, terminal test-key commands and raw byte replay separately; record the input method for each result.
+
+| Field | Required evidence |
+| --- | --- |
+| Host / build / configuration | Date, Linux/macOS version, application commit/build, viewport and relevant adapter options. |
+| Legacy terminal attempted first | Terminal name/version, profile, Option/Meta settings and relevant shortcut bindings. |
+| Operation and expected result | Page/control, exact chord or action, modifier press/release order and expected response. |
+| Legacy result | Exact observed behavior, delivered bytes/modifiers if captured, alert or interception, and input method. |
+| Kitty retry after failure | Kitty version/settings, the same operation/build/configuration, input method and exact observed result. |
+| Conclusion | Works in both, fails in both, only Kitty works, or verification unavailable; scope the conclusion to the checks actually performed. |
+| Evidence / cleanup | Capture/log locations, remaining physical-input limits and process/terminal cleanup. |
+
+### macOS Alt/Command retry, 2026-09-09
+
+| Field | Observed result |
+| --- | --- |
+| Host / build / configuration | macOS 26.5.2 arm64; iGac `3f7caf6`, with `overrideAlt=true` and `overrideOsSuper=true`; 120x40. `./build.sh` and 2,880 controlled Cocoa input callbacks pass. |
+| Legacy terminal attempted first | Apple Terminal.app 2.15, Basic profile. Its profile has no explicit Option-as-Meta setting. Targeted native Quartz key events are delivered through Terminal's normal input handling. |
+| Operation and expected result | Ctrl+Q should open `You pressed Ctrl+Q!`; Ctrl+Alt+Command+Q should open the shared `You pressed Ctrl+Alt+Win+Q!` dialog. Generated key-down/up events carry the chord's flags; this does not exercise physical modifier holds or release orders. |
+| Legacy result | Raw input: Q=`71`, Ctrl+Q=`11`, Ctrl+Alt+Q=`11`, Ctrl+Alt+Command+Q/A=no bytes. In the rebuilt showcase, Ctrl+Q succeeds before and after the failed Command chord. Alt is lost in this profile; the Command chord produces no event for either override to supplement. |
+| Kitty retry after failure | Kitty 0.48.2 with built-in configuration, socket control and the same viewport/build/options. The native Ctrl+Q attempt is unavailable: the locked desktop leaves Kitty without a key window, reported explicitly in its debug log. Kitty `send-key` generation separately passes Ctrl+Q and Ctrl+Alt+Super+Q; Ctrl+Alt+Q does not match Ctrl+Q. Both success dialogs dismiss and later Ctrl+Q still works. |
+| Conclusion | The Command shortcut works through Kitty-generated protocol input after failing through Terminal.app's generated native input. A claim that only Kitty works for physical/native input remains unverified because the Kitty native retry is blocked by desktop state. Controlled callback tests verify Alt supplementation and option independence; they do not establish physical held-state timing. |
+| Evidence / cleanup | See [iGac's verification matrix](../../../iGac/TestMatrix_Tui.md#independent-altcommand-overrides-2026-09-09) and `/tmp/tui-alt-*` captures/logs. The raw probe and legacy showcase are stopped and the separate legacy window is closed. Pseudo-terminal and Kitty replay Stop return 0 and restore the alternate screen and shell input. Kitty's transient Darwin `PENDIN` bit clears on the first shell input, after which stty matches exactly. The Kitty shell/window and owned idle process are closed. |
 
 ## Verification record (historical, before follow-up 3)
 
