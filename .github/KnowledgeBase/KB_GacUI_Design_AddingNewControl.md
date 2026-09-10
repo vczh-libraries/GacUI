@@ -127,6 +127,18 @@ Add the control to `GUI_CONTROL_TEMPLATE_TYPES` macro:
 
 This generates the corresponding `theme::ThemeName::YourControl` enum value used in control constructors.
 
+### Refreshing Installed Templates
+
+`vl::presentation::controls::GuiApplication::RefreshThemes()` (`GacUI/Source/Application/Controls/GuiApplication.h/.cpp`) refreshes every live registered window, including hidden popups. `vl::presentation::controls::GuiControl::RefreshThemes()` (`GacUI/Source/Application/Controls/GuiBasicControls.h/.cpp`) refreshes one control and its descendants. Both are reflected, synchronous, no-argument instance methods returning `void`; call them on the UI thread after changing the theme or palette used by template factories.
+
+A control with no explicitly assigned `ControlTemplate` rebuilds its template from the current theme. An explicit factory preserves that control's own template, but its descendants are still visited. Refresh does not replace application-owned controls or their container compositions. Template-owned objects can be destroyed, so application and child traversal use snapshots with `GuiDisposedFlag`, and focus is restored only to a surviving control. Do not retain template-object pointers across refresh.
+
+Control authors must support repeated template installation: detach old template-specific handlers in `BeforeControlTemplateUninstalled_()`, then reapply the existing control state in `AfterControlTemplateInstalled_(bool initialize)`. Use `initialize` for first-installation defaults rather than resetting models, edit history, selection or scrolling every time a theme changes. Preserve owner-provided factories when recreating realized item styles or column-header templates.
+
+For example, after changing a TuiSkin palette, call `GetApplication()->RefreshThemes()`. If the change originates inside an input callback, queue palette installation and refresh together with `InvokeInMainThread` so the callback finishes before its template is replaced. Refreshing themes is available to GUI applications too. Explicit custom templates and values already captured by application-owned `Color-eval` elements do not automatically become reactive.
+
+See [the TUI palette and state-preservation details](./KB_GacUI_Design_TuiPlatformProvider.md#refreshing-live-themes) and [the layout and skin guideline](../Guidelines/GacUILayout.md).
+
 ## Reflection Registration
 
 ### Three-Step Registration Process

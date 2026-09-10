@@ -4,6 +4,14 @@ Project introduction remains in [Index.md](./Index.md#gacui).
 
 ### Choosing APIs
 
+#### Refreshing Existing Themes
+
+- Use `GuiApplication::RefreshThemes()` to refresh all live windows, including hidden popups, after changing the active theme or its palette.
+- Use `GuiControl::RefreshThemes()` to refresh one control subtree. Explicitly assigned `ControlTemplate` factories are preserved while descendants are still visited.
+- Both methods run synchronously on the UI thread and apply to GUI and TUI applications. Install the new theme state first; defer refresh until after an input callback when it could replace the callback's template objects.
+
+[API Explanation](./KB_GacUI_Design_AddingNewControl.md#refreshing-installed-templates)
+
 #### Remote Protocol Unit Test Framework
 
 Testing GacUI applications without real OS windows or rendering, using the remote protocol architecture with a mock renderer (`UnitTestRemoteProtocol`) that captures rendering snapshots and simulates user input.
@@ -26,10 +34,12 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 
 #### Terminal Platform Provider
 
-- SetupTuiWindowsRenderer starts a hosted application over the VlppOS TUI owner-thread pump.
+- `SetupTuiWindowsRenderer`, `vl::presentation::wayland::SetupTuiWaylandRenderer` and `vl::presentation::osx::SetupTuiCocoaRenderer` start hosted terminal applications on Windows, Linux and macOS over the VlppOS TUI owner-thread pump.
+- All three accept an optional `TuiConfiguration`; its positive `tabInterval` defaults to 4.
 - The native Run boundary fits the main window to the terminal before Show; accepted main Hide/Close requests deliver close callbacks and stop that pump, while cancellation and hosted child dismissal keep it running.
 - Shared terminal classes implement cell geometry, rendering, paragraphs and input while platform adapters retain OS service plumbing.
 - TuiSkin, fake TUI dialogs and the TuiControlTest showcase have independent resources and generated inventories.
+- Use [the shared layout and skin guideline](../Guidelines/GacUILayout.md) when authoring GUI/TUI resources. Theme refresh rebuilds existing default-themed controls after a TuiSkin palette change.
 
 [Design Explanation](./KB_GacUI_Design_TuiPlatformProvider.md)
 
@@ -50,9 +60,10 @@ Testing GacUI applications without real OS windows or rendering, using the remot
   - Linux GTK
   - Wayland/WGac
   - macOS Cocoa
+  - terminal rendering on Windows, Linux and macOS
   - remote rendering for testing
   - hosted mode for embedded applications.
-- Entry-point names are platform-specific: Windows uses `SetupWindows*`, `SetupHostedWindows*`, and `SetupRawWindows*`; macOS and WGac expose standard and hosted variants; GTK, remote mode, and code generation use their own setup names.
+- Entry-point names are platform-specific: Windows uses `SetupWindows*`, `SetupHostedWindows*`, and `SetupRawWindows*`; macOS and WGac expose standard and hosted variants; terminals use `SetupTuiWindowsRenderer`, `SetupTuiWaylandRenderer` or `SetupTuiCocoaRenderer`; GTK, remote mode, and code generation use their own setup names.
 - Key features include hardware acceleration fallbacks, comprehensive error handling, frame-based unit testing through remote mode, and systematic native-controller service provisioning.
 
 [Design Explanation](./KB_GacUI_Design_PlatformInitialization.md)

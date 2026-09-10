@@ -96,3 +96,13 @@ There is not default item templates in this list, because default item templates
 </Instance>
 ```
 
+## Refreshing existing controls
+
+`RegisterTheme` and `UnregisterTheme` change how later template lookups resolve; existing controls keep their current template objects until refreshed. After changing the registered themes or a skin's palette, call `GetApplication()->RefreshThemes()` to apply the current defaults to all live windows. `GuiApplication::RefreshThemes()` includes hidden windows, menus and popups. Call `GuiControl::RefreshThemes()` when only one control and its descendants should be refreshed.
+
+Both methods run synchronously on the UI thread. A control whose `ControlTemplate` factory is empty rebuilds its template using its `ControlThemeName` and the current registered themes. Explicitly assigned `ControlTemplate` factories are preserved, and traversal still visits their child controls. The refresh snapshots the windows and child controls being visited and skips those disposed during rebuilding.
+
+Controls keep their application state while their template objects are replaced: existing children, text and document models, selection and editing state, focus, and logical scroll positions survive rebuilding. A new template can change layout, so the final viewport can clamp a scroll position to its new valid range. Keep references to controls and application data; reacquire template-owned compositions or controls after refreshing. If an event is running inside the template being replaced, queue the refresh with `InvokeInMainThread` so that event dispatch can finish first.
+
+For TuiSkin, call `tuiskin::SetColorPackage` before refreshing. See [Change the theme while running](../.././gacui/tui.md) for a palette-switching example.
+

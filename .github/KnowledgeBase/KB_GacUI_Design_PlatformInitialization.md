@@ -11,6 +11,7 @@ GacUI is designed to support multiple platforms with different rendering backend
 5. **macOS Cocoa** - macOS platform support with Core Graphics rendering (declared as `SetupOSXCoreGraphicsRenderer()` and `SetupOSXHostedCoreGraphicsRenderer()` but implemented in a separate repository)
 6. **Remote Rendering** - Platform-agnostic remote rendering over network protocols for testing and distributed applications
 7. **Code Generation** - Special mode for compile-time code generation through `SetupGacGenNativeController()`
+8. **Terminal Rendering** - Hosted cell-based applications over VlppOS TUI on Windows, Linux and macOS, with separate platform service adapters.
 
 The GTK, WGac, and macOS entry points are declared in this codebase to maintain API consistency, while their implementations are supplied separately. The architecture is designed for extensibility, with clear separation between platform-specific implementations and the core framework.
 
@@ -35,6 +36,16 @@ Native standard mode provides the complete GacUI application framework including
 - `SetupOSXHostedCoreGraphicsRenderer()` - Hosted macOS application (implementation supplied separately)
 
 Hosted mode runs the entire GacUI application within only one native OS window. All GacUI sub-windows, dialogs, and menus are rendered as graphics rather than creating additional native OS windows. This is achieved by wrapping the native controller with `GuiHostedController`, which provides window abstraction while sharing the host application's window handle.
+
+### Terminal Mode Entry Points
+
+- `SetupTuiWindowsRenderer(configuration)` - global entry point declared in `GacUI/Source/GacUI.h`.
+- `vl::presentation::wayland::SetupTuiWaylandRenderer(configuration)` - declared in `wGac/WGac/TUI/TuiWGacController.h` and implemented by wGac.
+- `vl::presentation::osx::SetupTuiCocoaRenderer(configuration)` - declared in `iGac/Mac/TUI/TuiCocoaController.h` and implemented by iGac.
+
+All three return `int` and accept `const vl::presentation::TuiConfiguration& configuration = {}`; omit the argument for the default tab interval of 4, or provide a positive `tabInterval`. Call one from a console executable's entry point and implement the ordinary `GuiMain()`. The existing hosted controller manages child windows and dialogs within the terminal's cell buffer. The setup function owns `TUI::Start` and the application-thread event pump, so do not start another TUI loop. Use TuiSkin and the supported terminal element set; the adapters do not turn pixel-based GUI resources into terminal resources automatically.
+
+Terminal setup and native-window setup are separate choices. Unix TUI declarations belong to the sibling platform repositories rather than the common `GacUI.h`. See [the terminal provider](./KB_GacUI_Design_TuiPlatformProvider.md) for service ownership, lifecycle, input limits and rendering contracts.
 
 ### Raw Mode Entry Points
 - `SetupRawWindowsDirect2DRenderer()` - Direct2D rendering without `GuiApplication` or `GuiWindow`

@@ -8,6 +8,7 @@ A GacUI application requires a user defined function **void GuiMain(void)**. In 
   - SetupHostedWindowsGDIRenderer They initialize necessary objects and call **GuiMain** with different rendering techniques.
 - For macOS, **SetupOSXCoreGraphicsRenderer** or **SetupOSXHostedCoreGraphicsRenderer** must be called in **main**.
 - For Linux with Wayland, **vl::presentation::elements::wgac::SetupWGacRenderer or SetupWGacHostedRenderer** must be called in **main**.
+- For a local terminal application, call `SetupTuiWindowsRenderer()` on Windows, `vl::presentation::wayland::SetupTuiWaylandRenderer()` on Linux, or `vl::presentation::osx::SetupTuiCocoaRenderer()` on macOS from a console entry point. Each accepts an optional `const vl::presentation::TuiConfiguration&` and calls `GuiMain()` with terminal rendering and hosted windows. See [Build a terminal application](../.././gacui/tui.md) for platform headers and TuiSkin registration.
 
 When **GuiMain** is called, the **GuiApplication** object is ready, which can be accessed by the **GetApplication** function. A typical **GuiMain** function looks like:
 ```
@@ -27,6 +28,8 @@ void GuiMain()
 ```
 
 **RegisterTheme** must be called before creating any UI object to [register a set of default control templates](../.././gacui/kb/dtemplates.md) for all controls. **RegisterTheme** and **UnregisterTheme** can be used to manage all registered themes. A single theme object is not required to provide control templates for all controls, but all registered themes must cover all controls. The latest registered theme has the top priority.
+
+After changing registered themes or their palette, call `GuiApplication::RefreshThemes()` through `GetApplication()->RefreshThemes()` on the UI thread. It synchronously refreshes all live windows, including hidden popups and menus. `GuiControl::RefreshThemes()` refreshes one control and its descendants instead. Both preserve explicitly assigned control templates while rebuilding templates obtained from the registered themes. See [Refreshing existing controls](../.././gacui/kb/dtemplates.md) for the timing and lifetime rules.
 
 When a theme is created using **GacUI XML Resource**, **RegisterTheme** for this theme is required to call after the associated resource file is loaded. It is difficult to know the exact timing, so GacUI provideds an efficient plugin system to solve this problem. You can create a plugin to register this theme and declare that this theme is depended on its resource like this:
 ```

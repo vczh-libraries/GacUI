@@ -9,25 +9,25 @@ There are two ways to use your own types in XML:
 
 Registered classes are named like **presentation::controls::GuiWindow**. As described in [<Instance>](../../.././gacui/xmlres/tag_instance.md), the default namespace is
 ```
-presentation::controls::GuiWindow;
-presentation::elements::GuiWindowElement;
-presentation::elements::WindowElement;
-presentation::compositions::GuiWindowComposition;
-presentation::compositions::GuiWindow;
-presentation::templates::GuiWindow;
-system::Window;
-system::reflection::Window;
-presentation::Window;
-presentation::GuiWindow;
-presentation::controls::Window;
-presentation::controls::list::Window;
-presentation::controls::tree::Window;
-presentation::elements::Window;
-presentation::elements::GuiWindow;
-presentation::elements::text::Window;
-presentation::compositions::Window;
-presentation::templates::Window;
-presentation::theme::Window
+presentation::controls::Gui*;
+presentation::elements::Gui*Element;
+presentation::elements::*Element;
+presentation::compositions::Gui*Composition;
+presentation::compositions::Gui*;
+presentation::templates::Gui*;
+system::*;
+system::reflection::*;
+presentation::*;
+presentation::Gui*;
+presentation::controls::*;
+presentation::controls::list::*;
+presentation::controls::tree::*;
+presentation::elements::*;
+presentation::elements::Gui*;
+presentation::elements::text::*;
+presentation::compositions::*;
+presentation::templates::*;
+presentation::theme::*
 ```
  When you write **\<Window/\>**, it replaces ***** by **Window** in the list and results in:
 ```

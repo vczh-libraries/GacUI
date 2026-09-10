@@ -93,6 +93,8 @@ This property accepts any value. It does nothing but associates a value to a con
 
 The following properties and events control the control template for a control.
 
+`GuiControl::RefreshThemes()` synchronously rebuilds theme-provided templates in this control and its descendants on the UI thread. Explicit `ControlTemplate` factories are preserved, and their child controls are still visited. Use `GuiApplication::RefreshThemes()` to refresh all live windows, including hidden menus and popups. See [Refreshing existing controls](../../../.././gacui/kb/dtemplates.md) for state preservation and event timing.
+
 ### ControlThemeName (ControlThemeNameChanged)
 
 A **ThemeTemplates** contains control template implementations for controls. Each control template factory fields are optional. Multiple **ThemeTemplates** could be registered and unregistered using **RegisterTheme** and **UnregisteredTheme**. The later registered **ThemeTemplates** has a higher pririty.

@@ -1,8 +1,10 @@
 # Terminal User Interface
 
-`vl::console::TUI`, declared in [TUI.h](../../Source/TUI/TUI.h), provides a cross-platform terminal takeover, owner-thread event loop, cell buffer, and drawing API. It is intended for applications that redraw the visible terminal as a complete user interface instead of using sequential `vl::console::Console` input and output.
+`vl::console::TUI`, declared in `VlppOS/Source/TUI/TUI.h`, provides a cross-platform terminal takeover, owner-thread event loop, cell buffer, and drawing API. It is intended for applications that redraw the visible terminal as a complete user interface instead of using sequential `vl::console::Console` input and output.
 
 All names on this page are in the `vl::console` namespace unless another namespace is shown.
+
+GacUI applications use this layer through `::SetupTuiWindowsRenderer` (`GacUI/Source/GacUI.h`), `vl::presentation::wayland::SetupTuiWaylandRenderer` (`wGac/WGac/TUI/TuiWGacController.h`), or `vl::presentation::osx::SetupTuiCocoaRenderer` (`iGac/Mac/TUI/TuiCocoaController.h`). Each accepts an optional `vl::presentation::TuiConfiguration`, owns terminal startup and shutdown, and runs the ordinary `GuiMain` through the GacUI provider. See [GacUI terminal-provider guidance](./KB_GacUI_Design_TuiPlatformProvider.md) and [the layout guideline](../Guidelines/GacUILayout.md) for the higher-level application, rendering and skin contracts.
 
 ## Starting and Stopping TUI
 
@@ -150,7 +152,7 @@ All `ITuiCallback` methods have default no-op implementations, so a listener onl
 
 ### Shared Input Declarations
 
-[Source/TUI/TUITypes.h](../../Source/TUI/TUITypes.h) is the single declaration owner. These types remain in `vl::presentation`, depend only on Vlpp, and are consumed by GacUI and GacJS's generated protocol. GacUI owns reflection and platform key-name tables. Do not duplicate the declarations or add GacUI/reflection dependencies to VlppOS.
+`VlppOS/Source/TUI/TUITypes.h` is the single declaration owner. These types remain in `vl::presentation`, depend only on Vlpp, and are consumed by GacUI and GacJS's generated protocol. GacUI owns reflection and platform key-name tables. Do not duplicate the declarations or add GacUI/reflection dependencies to VlppOS.
 
 | Declaration | Meaning and defaults |
 | --- | --- |
@@ -185,7 +187,7 @@ Windows translates `wVirtualKeyCode` in 1..255 directly, otherwise UNKNOWN. Each
 
 Windows Terminal extends `dwControlKeyState` with right Win `0x0200` and left Win `0x0400`, as defined in its [ControlKeyStates.hpp](https://github.com/microsoft/terminal/blob/v1.24.11911.0/src/cascadia/TerminalCore/ControlKeyStates.hpp). The Windows decoder maps either bit to `osSuper` in key and mouse records and copies it into each accompanying Char event. These flags are host extensions, absent from the public console flag list. Native Windows Terminal 1.24.11911.0 tracing observed Q with Ctrl+Alt+left Win as `0x040A` and right Win as `0x020A`, without separate Win-key transitions. Read each event's bits directly; asynchronous key polling would substitute current state for queued event state. Hosts that omit these bits continue to report false; the decoder does not synthesize missing Win transitions or make intercepted OS chords available.
 
-The production POSIX decoder in [TUI.Input.cpp](../../Source/TUI/TUI.Input.cpp) retains incomplete bytes and decoded events across reads:
+The production POSIX decoder in `VlppOS/Source/TUI/TUI.Input.cpp` retains incomplete bytes and decoded events across reads:
 
 - ASCII letters/digits/space/punctuation, Tab, Enter, Backspace and Escape map to shared keys. Inferable control bytes map to Ctrl plus their key. Uppercase/shifted punctuation does not imply observable Shift.
 - CSI/SS3 arrows, Home/End, Insert/Delete, PageUp/PageDown, F1..F20 forms, Shift-Tab and SS3 application keypad forms translate to VKEY. Legacy modifier parameters 1..16 preserve Shift/Ctrl and terminal Alt/Meta; legacy Meta maps to Alt, never OS Super.
@@ -299,7 +301,7 @@ The operations are:
 
 Buffer-explicit overloads require a non-null buffer and non-negative dimensions. A zero-sized buffer paints nothing, while invalid drawing arguments still fail validation.
 
-Both overload families append `const TuiClipper* clipper = nullptr`. `TuiClipper` in `Source/TUI/TUI.h` contains `vint x1, y1, x2, y2` with half-open bounds `[x1, x2) x [y1, y2)`. Null selects the whole current buffer. Every operation normalizes the clip against that buffer; empty, inverted and disjoint intersections paint nothing. Drawing endpoints remain inclusive and retain their original geometry, so an interior clip cannot invent rectangle edges or corners. Argument validation precedes clipping.
+Both overload families append `const TuiClipper* clipper = nullptr`. `TuiClipper` in `VlppOS/Source/TUI/TUI.h` contains `vint x1, y1, x2, y2` with half-open bounds `[x1, x2) x [y1, y2)`. Omitting the argument or passing null selects the whole current buffer. All four clipper fields default to zero, so passing a pointer to a default-constructed `TuiClipper` paints nothing. Every operation intersects the clip with the buffer without reordering its bounds; empty, inverted and disjoint intersections paint nothing. Drawing endpoints remain inclusive and retain their original geometry, so an interior clip cannot invent rectangle edges or corners. Argument validation precedes clipping.
 
 A new width-two character requires both cells inside the normalized clip before either cell changes. Overwriting an existing lead or continuation may clear its partner immediately outside the clip; this is the only repair spill, preserves the partner background and never changes unrelated cells. Active-buffer operations reacquire the current buffer after resize rather than retaining its previous pointer or dimensions.
 
@@ -357,7 +359,7 @@ Do not assume that every arbitrary thin, thick, and double four-arm combination 
 
 ### Exact Glyph Selection
 
-`GetMergeableChar` in [TUI.cpp](../../Source/TUI/TUI.cpp) maps all 80 nonempty none/thin/thick combinations exactly; all-none returns zero. Supported double/thin-double states use U+2550..U+256C; unsupported states return zero. Rounded corners use U+256D top-left, U+256E top-right, U+256F bottom-right and U+2570 bottom-left.
+`GetMergeableChar` in `VlppOS/Source/TUI/TUI.cpp` maps all 80 nonempty none/thin/thick combinations exactly; all-none returns zero. Supported double/thin-double states use U+2550..U+256C; unsupported states return zero. Rounded corners use U+256D top-left, U+256E top-right, U+256F bottom-right and U+2570 bottom-left.
 
 This is the exact lookup. Arms are up/down/left/right, with 0=None, 1=Thin, 2=Thick, 3=Double.
 
@@ -468,7 +470,7 @@ POSIX requires an interactive UTF-8 xterm-compatible terminal. Auto chooses True
 
 #### Windows Terminal Requirement
 
-Windows Terminal is the required Windows host for this project's visual verification of bold, italic, underline and strikeline. The user manually confirmed all four effects in Windows Terminal on both Windows 10 and Windows 11. Windows 11 is not required: the terminal host supplies the visual rendering. The earlier underline-only result belongs to the tested built-in console host (`conhost.exe`), not Windows 10 generally. Linux text styles were also manually confirmed. See the [verification results by terminal host](../Jobs/DebugTuiPlaygroundSOP.md#manual-text-style-verification-by-terminal-host).
+Windows Terminal is the required Windows host for this project's visual verification of bold, italic, underline and strikeline. The user manually confirmed all four effects in Windows Terminal on both Windows 10 and Windows 11. Windows 11 is not required: the terminal host supplies the visual rendering. The earlier underline-only result belongs to the tested built-in console host (`conhost.exe`), not Windows 10 generally. Linux text styles were also manually confirmed. See the "Manual text-style verification by terminal host" section in `VlppOS/.github/Jobs/DebugTuiPlaygroundSOP.md`.
 
 Install the current stable Windows Terminal app using `winget install --id Microsoft.WindowsTerminal -e`, open it with `wt`, and launch the playground from a shell tab inside it. Windows Terminal 1.11 or later provides all four effects with [configurable intense-text formatting](https://devblogs.microsoft.com/commandline/windows-terminal-preview-1-11-release/). Its profile [intense-text formatting](https://learn.microsoft.com/en-us/windows/terminal/customize-settings/profile-appearance#intense-text-formatting) defaults to `bright`, which does not request a heavier font. Set `"intenseTextStyle": "bold"` or `"all"` at profile level when testing the `bold` flag. Font choice still affects the result. The current Windows Terminal [OS requirement and installation instructions](https://github.com/microsoft/terminal#installing-and-running-windows-terminal) specify Windows 10 version 2004 (build 19041) or newer, including Windows 11; this is separate from VlppOS's Windows 10 development baseline.
 
@@ -486,7 +488,7 @@ POSIX saves termios, applies cfmakeraw with VMIN/VTIME zero using TCSANOW, and s
 
 ### Playground Contract
 
-[DebugTuiPlaygroundSOP.md](../Jobs/DebugTuiPlaygroundSOP.md) owns executable verification. The playground rebuilds each frame from semantic state.
+`VlppOS/.github/Jobs/DebugTuiPlaygroundSOP.md` owns executable verification. This repository-specific job stays in VlppOS; it is not distributed alongside this shared knowledge page. The playground rebuilds each frame from semantic state.
 
 - Row 0 is exactly ` Canvas ` (8 cells), ` History ` (9), ` Shapes ` (8), clipped on narrow screens. Text is FFFFFF, selected background 000080, unselected 808080.
 - Canvas/History are persistent pages. Shapes is a transient flat menu. Tab/Shift-Tab cycle Canvas/History/Shapes; menu arrows clamp at the first/last of ten entries. Enter accepts; Escape dismisses. Navigation uses KeyDown; Enter/Backspace/Escape use Char once. Tab Char is ignored.

@@ -141,6 +141,7 @@ Detailed project guidance: [Index_GacUI.md](./Index_GacUI.md)
 - [Using Streams](./manual/vlppos/using-streams.md)
 - [Using Threads and Locks](./manual/vlppos/using-threads.md)
 - [Using Inter-Process Channels](./manual/vlppos/using-inter-process.md)
+- [Using Terminal UI](./manual/vlppos/using-tui.md)
 
 ## Vlpp Reflection
 
@@ -205,6 +206,7 @@ Detailed project guidance: [Index_GacUI.md](./Index_GacUI.md)
 
 ## GacUI
 
+- [Build a terminal application](./manual/gacui/tui.md)
 - [Knowledge Base](./manual/gacui/kb/home.md)
   - [GacUI Object Models](./manual/gacui/kb/gom.md)
   - [Elements](./manual/gacui/kb/elements.md)

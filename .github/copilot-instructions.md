@@ -83,6 +83,7 @@ otherwise it won't work properly.
   - Snapshot Viewer: `REPO-ROOT/.github/KnowledgeBase/manual/unittest/gacui_snapshots.md`
 - Syntax of GacUI XML Resources:
   - Brief Introduction: `REPO-ROOT/.github/Guidelines/GacUIXmlResource.md`
+  - Best Practices of UI Layout and Control Template (skin) Development: `REPO-ROOT/.github/Guidelines/GacUILayout.md`
   - Detailed document can be found in `REPO-ROOT/.github/KnowledgeBase/Index.md` under `# Copy of Online Manual` / `## GacUI`, in the `GacUI XML Resource` item and all subitems.
 - Syntax of Workflow Script (the script language in GacUI XML Resource):
   - Detailed document can be found in `REPO-ROOT/.github/KnowledgeBase/Index.md` under `# Copy of Online Manual` / `## Workflow Script`, in the `Syntax` item and all subitems.

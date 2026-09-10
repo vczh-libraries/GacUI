@@ -156,13 +156,15 @@ Cross-platform owner-thread terminal takeover with input, resize and timer callb
 - Use `TUI::TryGetConsoleSize` to query the visible terminal before startup.
 - Use `TUI::InstallListener`, `TUI::Start`, `TUI::RunOneCycle`, `TUI::Stop`, `TUI::IsInUse`, `TUI::IsStopRequested` and `TUI::UninstallListener` for lifecycle and owner-thread event processing.
 - Use `TuiStartOptions`, `TuiColorMode` and `TUI::GetColorMode` to request and inspect terminal color emission.
-- Use shared `vl::presentation::VKEY` and input types from `Source/TUI/TUITypes.h` for key identities and independent Alt/OS Super; GacUI consumes these declarations.
-- Use `ITuiCallback` with `vl::presentation::WindowMouseInfo`, `vl::presentation::NativeWindowKeyInfo` and `vl::presentation::NativeWindowCharInfo` from `Source/TUI/TUITypes.h` for startup, shutdown, resize, input and timer callbacks.
+- Use shared `vl::presentation::VKEY` and input types from `VlppOS/Source/TUI/TUITypes.h` for key identities and independent Alt/OS Super; GacUI consumes these declarations.
+- Use `ITuiCallback` with `vl::presentation::WindowMouseInfo`, `vl::presentation::NativeWindowKeyInfo` and `vl::presentation::NativeWindowCharInfo` from `VlppOS/Source/TUI/TUITypes.h` for startup, shutdown, resize, input and timer callbacks.
 - Use `TUI::StartTimer` and `TUI::StopTimer` for deadline-driven callbacks on the TUI owner thread.
 - Use `TUI::GetBuffer`, `TUI::GetBufferWidth`, `TUI::GetBufferHeight` and `TUI::RenderBuffer` for retained cell-buffer rendering.
 - Use `TuiPixel`, `TuiPixelGlyph`, `TuiColor` and `TUI::MeasureChar` to represent and validate terminal cells and scalar widths.
 - Use `TuiCharPixel`, `TuiTextStyle` and `TuiPrintOptions` for character cells with bold, italic, underline and strikeline styles.
 - Use `TUI::PrintChar`, `TUI::DrawLineV`, `TUI::DrawLineH`, `TUI::DrawRect` and `TUI::Clear` for clipped drawing on the active buffer or a caller-owned buffer.
+- Use `TuiClipper` from `VlppOS/Source/TUI/TUI.h` for half-open drawing clips that preserve original primitive geometry and width-two character invariants.
+- Use `TuiLineOptions::foregroundColorBlending` and `TuiRectOptions::foregroundColorBlending` from `VlppOS/Source/TUI/TUI.h` for destination-dependent foreground colors on painted line and border cells.
 - Use `vl::console::unittest::ScopedTuiBackend` with `vl::console::unittest::ITuiBackend` for deterministic TUI tests.
 
 [API Explanation](./KB_VlppOS_TerminalUserInterface.md)
