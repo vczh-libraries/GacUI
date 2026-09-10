@@ -73,6 +73,10 @@
 - Unified composition mouse handlers use unified event names [1]
 - Propagate environment changes through installed `GuiComponent`s [1]
 - Use themed labels for mouse input examples [1]
+- `TuiControllerBase` keeps platform service ownership in concrete controllers [1]
+- Reuse `TuiLabelRenderer` paragraphs across non-text changes [1]
+- Use concrete TUI element renderers for distinct registered elements [1]
+- TUI drawing primitives own clipping; GacUI owns composition clips and alpha [1]
 
 # Refinements
 
@@ -428,3 +432,19 @@ Walk the complete window composition tree and notify instance roots on both asso
 ## Use themed labels for mouse input examples
 
 Use a `Label` control for a clickable text target in sample resources, and attach mouse handlers to its `att.BoundsComposition-set` property. A raw `SolidLabel` element does not inherit the surrounding label theme automatically; using a control keeps the target's font and color consistent without hard-coded styling.
+
+## `TuiControllerBase` keeps platform service ownership in concrete controllers
+
+Keep the terminal event loop, callbacks, async service and cell geometry in `vl::presentation::TuiControllerBase` (`Source/PlatformProviders/TUI/TuiController.h/.cpp`). Concrete platform controllers own and provide the narrow input, resource, image and clipboard services they need. Do not pass another complete `INativeController` into the portable base or make the base inherit platform service interfaces merely to forward calls. Preserve explicit native notification-window ownership, listener detachment and owner-thread timer behavior when extracting those services.
+
+## Reuse `TuiLabelRenderer` paragraphs across non-text changes
+
+In `vl::presentation::elements::TuiLabelRenderer` (`Source/PlatformProviders/TUI/TuiGraphicsRenderers.cpp`), reuse the cached paragraph and its layout through width, wrapping, alignment, style and color setters. Recreate the paragraph only when effective display text or the render target changes. Cache natural source metrics separately from ellipsized display text: changed source text can require new natural metrics even when the displayed ellipsis remains identical. Verify reuse through the registered layout provider rather than adding production diagnostic counters.
+
+## Use concrete TUI element renderers for distinct registered elements
+
+Keep the border, solid-border and solid-background implementations in `Source/PlatformProviders/TUI/TuiGraphicsRenderers.cpp` as distinct concrete renderers. Prefer `TuiBorderRenderer`, `TuiSolidBorderRenderer` and `TuiSolidBackgroundRenderer` over one `TuiElementRenderer` template with separate `if constexpr` branches for these unrelated registered element roles. Preserve renderer registration and drawing behavior while removing the conditional wrapper.
+
+## TUI drawing primitives own clipping; GacUI owns composition clips and alpha
+
+Keep the composition clip stack in `vl::presentation::elements::TuiGraphicsRenderTarget` (`Source/PlatformProviders/TUI/TuiGraphics.h/.cpp`) and pass its effective clip to VlppOS TUI drawing primitives. The upstream primitive owns buffer intersection and raster clipping; remove duplicate perimeter clipping and full-buffer scratch copies from the render target. Retain GacUI-specific destination-dependent alpha blending in the adapter without introducing GacUI types into VlppOS. Preserve original border geometry and wide-character repair instead of manufacturing edges at clip boundaries. Make and verify primitive changes in the owning VlppOS repository, then regenerate and import its release before validating the GacUI consumer.

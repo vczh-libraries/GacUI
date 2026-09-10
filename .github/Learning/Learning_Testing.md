@@ -17,6 +17,7 @@
 - Avoid duplicate tests across related categories [3]
 - Validate imported dependency APIs with GacUI build and unit test [3]
 - Native modal dialogs block GacUI HTTP automation [3]
+- Verify native shortcut delivery through the focused renderer or terminal [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -31,6 +32,7 @@
 - Verify remoting imports with both HTTP and named-pipe flows [2]
 - Verify `GacUICompiler` determinism with repeated no-change runs [2]
 - Remote-debugging guides own complete Cartesian test matrices [2]
+- Compare TUI control regressions with the GUI showcase [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Verify GacGen RPC outputs with positive and negative resources [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
@@ -75,15 +77,17 @@
 - Verify automation-service ownership changes in every consumer app [1]
 - Treat file-dialog snapshots as scheduling-sensitive contracts [1]
 - Verify renderer-localized shortcut labels in the remoting SOP [1]
-- Verify native shortcut delivery through the focused renderer [1]
+- Regenerate compiler snapshots through UnitTest after XML namespace changes [1]
 
 # Refinements
 
-## Verify native shortcut delivery through the focused renderer
+## Verify native shortcut delivery through the focused renderer or terminal
 
 For shortcuts that work in a standalone native application but fail through a remote renderer, send real native keyboard events to the focused renderer window and check in-app shortcuts separately from global hot keys. A working global shortcut does not prove that the window's ordinary keyboard-input path works. Trace native focus/responder ownership and renderer-side key delivery before blaming modifier serialization or Core shortcut lookup; protocol-level input injection can bypass the failing native boundary.
 
 For the macOS FullControlTest scenario, verify `Ctrl+Q`, `Ctrl+Alt+Command+Q`, and the global `Ctrl+Shift+Alt+Command+Q` by their resulting dialogs. Repeat after replacing the renderer while retaining the Core, and check the standalone Cocoa equivalents and continued responsiveness after dismissing each dialog. Keep the Cocoa implementation details in iGac's owning window-provider documentation.
+
+For TUI shortcuts, establish successful native input to the focused terminal and inspect the resulting console records before blaming Alt, changing the chord or choosing a decoder fix. Keep Alt and OS Super independent, and test local shortcuts separately from OS global registrations. Console-record replay and posted `WM_HOTKEY` messages validate forwarding only; neither proves physical input delivery or native global activation. A failed input call, inaccessible desktop or unavailable displayed surface remains an explicit verification gap. After a fix, repeat native activation with both modifier keys and varied press/release orders; a corrected replay is useful evidence but does not replace that acceptance check.
 
 ## Account for eager child preparation in item-provider tests
 
@@ -491,3 +495,11 @@ When refactoring asynchronous fake-file-dialog work, a passing unit-test summary
 ## Verify renderer-localized shortcut labels in the remoting SOP
 
 Keep exact shortcut-label expectations in `.github/Jobs/DebugRemoteProtocolSop.md` for both FullControlTest and RemoteProtocolTest. Inspect rendered labels after initial connection and renderer replacement, including commands owned by nested controls. The displayed modifier must follow the renderer's `Win`, `Command`, or `Super` label rather than the parser's internal name. Use sample chords that avoid reserved OS shortcuts; a direct event injection does not verify real native global-hot-key activation.
+
+## Regenerate compiler snapshots through UnitTest after XML namespace changes
+
+When a default XML namespace change intentionally alters compiler output, run the existing `UnitTest` project to regenerate compiler snapshots for both architectures. Inspect the expected import-line changes separately from UI frame and protocol-recording changes; successful resource generation alone does not regenerate the unit-test snapshots. Generate the artifacts through their owning tools instead of editing snapshot text manually.
+
+## Compare TUI control regressions with the GUI showcase
+
+Reproduce the same control interaction in `CppTest_Tui` and `CppTest` before deciding whether the fix belongs to shared controls or the TUI provider. Record the selected cell, actual focus and editor state, including whether a combo popup is expanded. Keep source-based hypotheses separate from runtime evidence, and require a regression at the failing event boundary. Do not change shared focus behavior when the focused reproduction already passes; preserve established editor commit, dismissal and key-handling semantics while fixing the reproduced defect.
