@@ -12,7 +12,10 @@
 - The current document is the source of truth, when unalignment happens, align to this document.
 - Maintain documents and scripts in `wGac` and `iGac`.
 - Makesure test apps build and work as expected.
-- `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` have details of verification.
+- Details of verification are in:
+  - `DebugRemoteProtocolWithNativeRenderer.md`
+  - `DebugRemoteProtocolWithGacJS.md`
+  - `DebugTuiControlTestSop.md`
 - You must fix any issue you see during verification.
 
 ## Maintain a Test Matrix Card
@@ -48,6 +51,7 @@ Without explicitly instructed, you are required to complete every available test
 In `GacUI` there are GacUI XML Resources to build C++ code:
 - `FullControlTest`
 - `RemoteProtocolTest`
+- `TuiControlTest`
 - `RemoteViewModelTest`
 - `TuiControlTest` (with the separate released `TuiSkin` pair imported into `Import/Skins/TuiSkin`)
 XML resources and assets will be copied from `GacUI/Test/Resources/App/<APP-NAME>` to `Apps/<APP-NAME>/Resources`, but C++ files are generated from them locally.
