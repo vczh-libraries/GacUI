@@ -1865,6 +1865,7 @@ namespace vl
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::Theme*(), NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(CreateColorPackage, { L"preset" })
 				CLASS_MEMBER_STATIC_METHOD(GetColorPackage, NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(GetCustomColorPackagesAvailable, NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(SetColorPackage, { L"colors" })
 			END_CLASS_MEMBER(::darkskin::Theme)
 

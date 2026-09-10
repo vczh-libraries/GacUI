@@ -27224,11 +27224,17 @@ Class (::demo::MainWindowConstructor)
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->paletteDefault)->SelectedChanged, __vwsn_event_handler_);
 		}
 		{
+			::vl::__vwsn::This(this->paletteAurora)->SetEnabled(::darkskin::Theme::GetCustomColorPackagesAvailable());
+		}
+		{
 			::vl::__vwsn::This(this->paletteAurora)->SetGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::GroupController*>(this->paletteGroup));
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf68_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->paletteAurora)->SelectedChanged, __vwsn_event_handler_);
+		}
+		{
+			::vl::__vwsn::This(this->paletteEmber)->SetEnabled(::darkskin::Theme::GetCustomColorPackagesAvailable());
 		}
 		{
 			::vl::__vwsn::This(this->paletteEmber)->SetGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::GroupController*>(this->paletteGroup));
@@ -27238,6 +27244,9 @@ Class (::demo::MainWindowConstructor)
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->paletteEmber)->SelectedChanged, __vwsn_event_handler_);
 		}
 		{
+			::vl::__vwsn::This(this->paletteMoonstone)->SetEnabled(::darkskin::Theme::GetCustomColorPackagesAvailable());
+		}
+		{
 			::vl::__vwsn::This(this->paletteMoonstone)->SetGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::GroupController*>(this->paletteGroup));
 		}
 		{
@@ -27245,11 +27254,17 @@ Class (::demo::MainWindowConstructor)
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->paletteMoonstone)->SelectedChanged, __vwsn_event_handler_);
 		}
 		{
+			::vl::__vwsn::This(this->paletteLagoon)->SetEnabled(::darkskin::Theme::GetCustomColorPackagesAvailable());
+		}
+		{
 			::vl::__vwsn::This(this->paletteLagoon)->SetGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::GroupController*>(this->paletteGroup));
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf71_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->paletteLagoon)->SelectedChanged, __vwsn_event_handler_);
+		}
+		{
+			::vl::__vwsn::This(this->paletteRosewood)->SetEnabled(::darkskin::Theme::GetCustomColorPackagesAvailable());
 		}
 		{
 			::vl::__vwsn::This(this->paletteRosewood)->SetGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::GroupController*>(this->paletteGroup));

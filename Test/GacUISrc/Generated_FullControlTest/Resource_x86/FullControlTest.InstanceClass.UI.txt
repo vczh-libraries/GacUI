@@ -4257,6 +4257,9 @@ namespace demo
                 attach(paletteDefault.SelectedChanged, <event-handler>);
             }
             {
+                (paletteAurora.Enabled = darkskin::Theme::GetCustomColorPackagesAvailable());
+            }
+            {
                 (paletteAurora.GroupController = paletteGroup);
             }
             {
@@ -4268,6 +4271,9 @@ namespace demo
                     }
                 };
                 attach(paletteAurora.SelectedChanged, <event-handler>);
+            }
+            {
+                (paletteEmber.Enabled = darkskin::Theme::GetCustomColorPackagesAvailable());
             }
             {
                 (paletteEmber.GroupController = paletteGroup);
@@ -4283,6 +4289,9 @@ namespace demo
                 attach(paletteEmber.SelectedChanged, <event-handler>);
             }
             {
+                (paletteMoonstone.Enabled = darkskin::Theme::GetCustomColorPackagesAvailable());
+            }
+            {
                 (paletteMoonstone.GroupController = paletteGroup);
             }
             {
@@ -4296,6 +4305,9 @@ namespace demo
                 attach(paletteMoonstone.SelectedChanged, <event-handler>);
             }
             {
+                (paletteLagoon.Enabled = darkskin::Theme::GetCustomColorPackagesAvailable());
+            }
+            {
                 (paletteLagoon.GroupController = paletteGroup);
             }
             {
@@ -4307,6 +4319,9 @@ namespace demo
                     }
                 };
                 attach(paletteLagoon.SelectedChanged, <event-handler>);
+            }
+            {
+                (paletteRosewood.Enabled = darkskin::Theme::GetCustomColorPackagesAvailable());
             }
             {
                 (paletteRosewood.GroupController = paletteGroup);

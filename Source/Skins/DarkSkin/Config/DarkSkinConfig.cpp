@@ -2,55 +2,9 @@
 
 namespace darkskin
 {
-	static ColorPackage CreateColorPackageInternal(ColorPackage colors)
-	{
-		colors.GeneralBackground = vl::presentation::Color(0x2D, 0x2D, 0x30);
-		colors.GeneralBorder = vl::presentation::Color(0x43, 0x43, 0x46);
-		colors.ContentBackground = vl::presentation::Color(0x25, 0x25, 0x26);
-		colors.ContentBorder = vl::presentation::Color(0x3F, 0x3F, 0x46);
-		colors.Transparent = vl::presentation::Color(0x00, 0x00, 0x00, 0x00);
-		colors.TextSecondary = vl::presentation::Color(0x99, 0x99, 0x99);
-		colors.TextDisabled = vl::presentation::Color(0x6D, 0x6D, 0x6D);
-		colors.GroupText = vl::presentation::Color(0xC7, 0xC7, 0xC7);
-		colors.TextNormal = vl::presentation::Color(0xF1, 0xF1, 0xF1);
-		colors.TextBright = vl::presentation::Color(0xFF, 0xFF, 0xFF);
-		colors.ButtonBackgroundHovered = vl::presentation::Color(0x54, 0x54, 0x5C);
-		colors.ButtonBorderHovered = vl::presentation::Color(0x6A, 0x6A, 0x75);
-		colors.ListColumnBorder = vl::presentation::Color(0x40, 0x40, 0x42);
-		colors.ScrollBackground = vl::presentation::Color(0x3D, 0x3D, 0x42);
-		colors.ArrowDisabled = vl::presentation::Color(0x55, 0x55, 0x58);
-		colors.ScrollHandleHovered = vl::presentation::Color(0x9E, 0x9E, 0x9E);
-		colors.ScrollHandlePressed = vl::presentation::Color(0xEF, 0xEB, 0xEF);
-		colors.ScrollHandle = vl::presentation::Color(0x68, 0x68, 0x68);
-		colors.ProgressBackground = vl::presentation::Color(0x3F, 0x3F, 0x47);
-		colors.ProgressBorder = vl::presentation::Color(0x55, 0x54, 0x5A);
-		colors.MenuBackground = vl::presentation::Color(0x1B, 0x1B, 0x1C);
-		colors.MenuBorder = vl::presentation::Color(0x33, 0x33, 0x37);
-		colors.SplitterDark = vl::presentation::Color(0x22, 0x22, 0x24);
-		colors.SplitterLight = vl::presentation::Color(0x46, 0x46, 0x48);
-		colors.MenuItemHovered = vl::presentation::Color(0x3D, 0x3D, 0x40);
-		colors.ComboArrowBackgroundHovered = vl::presentation::Color(0x1F, 0x1F, 0x20);
-		colors.ColumnHeaderBackgroundHovered = vl::presentation::Color(0x3E, 0x3E, 0x40);
-		colors.ColumnHeaderBackground = vl::presentation::Color(0x25, 0x25, 0x27);
-		return colors;
-	}
-
 	ColorPackage CreateDefaultColorPackage()
 	{
-		ColorPackage colors;
-		colors.GeneralAccent = vl::presentation::Color(0x00, 0x7A, 0xCC);
-		colors.WindowBorderActive = vl::presentation::Color(0x01, 0x7A, 0xCC);
-		colors.ControlAccentHovered = vl::presentation::Color(0x1C, 0x97, 0xEA);
-		colors.ArrowAccentHovered = vl::presentation::Color(0x19, 0x97, 0xEA);
-		colors.ItemBackgroundSelected = vl::presentation::Color(0x33, 0x99, 0xFF);
-		colors.ExpandingArrowHovered = vl::presentation::Color(0x0A, 0x75, 0xB9);
-		colors.RibbonExpandingArrow = vl::presentation::Color(0xA0, 0xD0, 0xFF);
-		colors.RibbonExpandingArrowPressed = vl::presentation::Color(0x00, 0x48, 0x79);
-		colors.TabHighlightedSelected = vl::presentation::Color(0xCC, 0x7A, 0xCC);
-		colors.TabHighlightedHovered = vl::presentation::Color(0xEA, 0x97, 0xEA);
-		colors.TabHighlightedBackground = vl::presentation::Color(0x60, 0x43, 0x60);
-		colors.ProgressFilling = vl::presentation::Color(0x07, 0xB0, 0x23);
-		return CreateColorPackageInternal(colors);
+		return vl_workflow_global::DarkSkin::Instance().CreateDefaultColorPackage();
 	}
 
 	ColorPackage CreateAuroraColorPackage()
@@ -68,7 +22,7 @@ namespace darkskin
 		colors.TabHighlightedHovered = vl::presentation::Color(0xC8, 0xB2, 0xEC);
 		colors.TabHighlightedBackground = vl::presentation::Color(0x51, 0x45, 0x5F);
 		colors.ProgressFilling = vl::presentation::Color(0xC7, 0xA3, 0x4D);
-		return CreateColorPackageInternal(colors);
+		return vl_workflow_global::DarkSkin::Instance().CreateColorPackageInternal(colors);
 	}
 
 	ColorPackage CreateEmberColorPackage()
@@ -86,7 +40,7 @@ namespace darkskin
 		colors.TabHighlightedHovered = vl::presentation::Color(0xE4, 0xAB, 0xC0);
 		colors.TabHighlightedBackground = vl::presentation::Color(0x60, 0x43, 0x4E);
 		colors.ProgressFilling = vl::presentation::Color(0x8C, 0xA9, 0x5C);
-		return CreateColorPackageInternal(colors);
+		return vl_workflow_global::DarkSkin::Instance().CreateColorPackageInternal(colors);
 	}
 
 	ColorPackage CreateMoonstoneColorPackage()
@@ -104,7 +58,7 @@ namespace darkskin
 		colors.TabHighlightedHovered = vl::presentation::Color(0x97, 0xCF, 0xE0);
 		colors.TabHighlightedBackground = vl::presentation::Color(0x35, 0x57, 0x63);
 		colors.ProgressFilling = vl::presentation::Color(0xD0, 0x83, 0x77);
-		return CreateColorPackageInternal(colors);
+		return vl_workflow_global::DarkSkin::Instance().CreateColorPackageInternal(colors);
 	}
 
 	ColorPackage CreateLagoonColorPackage()
@@ -122,7 +76,7 @@ namespace darkskin
 		colors.TabHighlightedHovered = vl::presentation::Color(0xE5, 0xC8, 0x8C);
 		colors.TabHighlightedBackground = vl::presentation::Color(0x61, 0x53, 0x37);
 		colors.ProgressFilling = vl::presentation::Color(0x52, 0xAF, 0x91);
-		return CreateColorPackageInternal(colors);
+		return vl_workflow_global::DarkSkin::Instance().CreateColorPackageInternal(colors);
 	}
 
 	ColorPackage CreateRosewoodColorPackage()
@@ -140,11 +94,57 @@ namespace darkskin
 		colors.TabHighlightedHovered = vl::presentation::Color(0x9E, 0xCE, 0xC8);
 		colors.TabHighlightedBackground = vl::presentation::Color(0x3C, 0x59, 0x55);
 		colors.ProgressFilling = vl::presentation::Color(0xC2, 0xA5, 0x53);
-		return CreateColorPackageInternal(colors);
+		return vl_workflow_global::DarkSkin::Instance().CreateColorPackageInternal(colors);
 	}
 
 	void SetColorPackage(const ColorPackage& colors)
 	{
 		vl_workflow_global::DarkSkin::Instance().InstallColorPackage(colors);
 	}
+
+	class DarkSkinColorPackagePlugin : public vl::presentation::IGuiPlugin
+	{
+	public:
+		vl::WString GetName() override
+		{
+			return L"DarkSkin_ColorPackages";
+		}
+
+		void GetDependencies(vl::collections::List<vl::WString>& dependencies) override
+		{
+		}
+
+		void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins) override
+		{
+			if (controllerUnrelatedPlugins)
+			{
+				vl_workflow_global::DarkSkin::Instance().customColorPackageFactory = [](vl::vint preset) -> ColorPackage
+				{
+#define ERROR_MESSAGE_PREFIX L"darkskin::DarkSkinColorPackagePlugin::Load()#"
+					using vl::Error;
+					switch (preset)
+					{
+					case 1: return CreateAuroraColorPackage();
+					case 2: return CreateEmberColorPackage();
+					case 3: return CreateMoonstoneColorPackage();
+					case 4: return CreateLagoonColorPackage();
+					case 5: return CreateRosewoodColorPackage();
+					default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unknown DarkSkin palette.");
+					}
+#undef ERROR_MESSAGE_PREFIX
+				};
+				vl_workflow_global::DarkSkin::Instance().customColorPackagesAvailable = true;
+			}
+		}
+
+		void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins) override
+		{
+			if (controllerUnrelatedPlugins)
+			{
+				vl_workflow_global::DarkSkin::Instance().customColorPackagesAvailable = false;
+				vl_workflow_global::DarkSkin::Instance().customColorPackageFactory = {};
+			}
+		}
+	};
+	GUI_REGISTER_PLUGIN(DarkSkinColorPackagePlugin)
 }

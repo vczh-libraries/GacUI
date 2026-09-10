@@ -554,39 +554,18 @@ namespace darkskin
             InstallColorPackage(colors);
         }
 
+        static func GetCustomColorPackagesAvailable() : (bool)
+        {
+            return customColorPackagesAvailable;
+        }
+
         static func CreateColorPackage(preset : int) : (ColorPackage)
         {
+            if ((preset == 0))
             {
-                var <switch>0 : ::system::Int32 = preset;
-                if ((<switch>0 == 0 of (::system::Int32)))
-                {
-                    return CreateDefaultColorPackage();
-                }
-                else if ((<switch>0 == 1 of (::system::Int32)))
-                {
-                    return CreateAuroraColorPackage();
-                }
-                else if ((<switch>0 == 2 of (::system::Int32)))
-                {
-                    return CreateEmberColorPackage();
-                }
-                else if ((<switch>0 == 3 of (::system::Int32)))
-                {
-                    return CreateMoonstoneColorPackage();
-                }
-                else if ((<switch>0 == 4 of (::system::Int32)))
-                {
-                    return CreateLagoonColorPackage();
-                }
-                else if ((<switch>0 == 5 of (::system::Int32)))
-                {
-                    return CreateRosewoodColorPackage();
-                }
-                else
-                {
-                    raise "Unknown DarkSkin palette.";
-                }
+                return CreateDefaultColorPackage();
             }
+            return customColorPackageFactory(preset);
         }
 
         new* ()
@@ -34233,32 +34212,11 @@ namespace darkskin
         return CreateColorPackageInternal({GeneralAccent : (cast (Color) "#007ACC"); WindowBorderActive : (cast (Color) "#017ACC"); ControlAccentHovered : (cast (Color) "#1C97EA"); ArrowAccentHovered : (cast (Color) "#1997EA"); ItemBackgroundSelected : (cast (Color) "#3399FF"); ExpandingArrowHovered : (cast (Color) "#0A75B9"); RibbonExpandingArrow : (cast (Color) "#A0D0FF"); RibbonExpandingArrowPressed : (cast (Color) "#004879"); TabHighlightedSelected : (cast (Color) "#CC7ACC"); TabHighlightedHovered : (cast (Color) "#EA97EA"); TabHighlightedBackground : (cast (Color) "#604360"); ProgressFilling : (cast (Color) "#07B023");});
     }
 
-    func CreateAuroraColorPackage() : (ColorPackage)
-    {
-        return CreateColorPackageInternal({GeneralAccent : (cast (Color) "#168A7A"); WindowBorderActive : (cast (Color) "#178A7A"); ControlAccentHovered : (cast (Color) "#31AA97"); ArrowAccentHovered : (cast (Color) "#2EA995"); ItemBackgroundSelected : (cast (Color) "#299C89"); ExpandingArrowHovered : (cast (Color) "#167D6D"); RibbonExpandingArrow : (cast (Color) "#99DBCB"); RibbonExpandingArrowPressed : (cast (Color) "#125A50"); TabHighlightedSelected : (cast (Color) "#B096DD"); TabHighlightedHovered : (cast (Color) "#C8B2EC"); TabHighlightedBackground : (cast (Color) "#51455F"); ProgressFilling : (cast (Color) "#C7A34D");});
-    }
-
-    func CreateEmberColorPackage() : (ColorPackage)
-    {
-        return CreateColorPackageInternal({GeneralAccent : (cast (Color) "#B66332"); WindowBorderActive : (cast (Color) "#B76433"); ControlAccentHovered : (cast (Color) "#D2834A"); ArrowAccentHovered : (cast (Color) "#CF8047"); ItemBackgroundSelected : (cast (Color) "#C77540"); ExpandingArrowHovered : (cast (Color) "#A65A2F"); RibbonExpandingArrow : (cast (Color) "#EDBE94"); RibbonExpandingArrowPressed : (cast (Color) "#754020"); TabHighlightedSelected : (cast (Color) "#CE8EA5"); TabHighlightedHovered : (cast (Color) "#E4ABC0"); TabHighlightedBackground : (cast (Color) "#60434E"); ProgressFilling : (cast (Color) "#8CA95C");});
-    }
-
-    func CreateMoonstoneColorPackage() : (ColorPackage)
-    {
-        return CreateColorPackageInternal({GeneralAccent : (cast (Color) "#6866B4"); WindowBorderActive : (cast (Color) "#6967B5"); ControlAccentHovered : (cast (Color) "#8985D2"); ArrowAccentHovered : (cast (Color) "#8682CE"); ItemBackgroundSelected : (cast (Color) "#7975C5"); ExpandingArrowHovered : (cast (Color) "#5E5CA4"); RibbonExpandingArrow : (cast (Color) "#C6C2F0"); RibbonExpandingArrowPressed : (cast (Color) "#444173"); TabHighlightedSelected : (cast (Color) "#70B7CD"); TabHighlightedHovered : (cast (Color) "#97CFE0"); TabHighlightedBackground : (cast (Color) "#355763"); ProgressFilling : (cast (Color) "#D08377");});
-    }
-
-    func CreateLagoonColorPackage() : (ColorPackage)
-    {
-        return CreateColorPackageInternal({GeneralAccent : (cast (Color) "#147F9C"); WindowBorderActive : (cast (Color) "#15809D"); ControlAccentHovered : (cast (Color) "#329FBD"); ArrowAccentHovered : (cast (Color) "#2F9CBA"); ItemBackgroundSelected : (cast (Color) "#268FA9"); ExpandingArrowHovered : (cast (Color) "#16728A"); RibbonExpandingArrow : (cast (Color) "#9CD3E0"); RibbonExpandingArrowPressed : (cast (Color) "#0D5366"); TabHighlightedSelected : (cast (Color) "#CFAC6A"); TabHighlightedHovered : (cast (Color) "#E5C88C"); TabHighlightedBackground : (cast (Color) "#615337"); ProgressFilling : (cast (Color) "#52AF91");});
-    }
-
-    func CreateRosewoodColorPackage() : (ColorPackage)
-    {
-        return CreateColorPackageInternal({GeneralAccent : (cast (Color) "#A04E72"); WindowBorderActive : (cast (Color) "#A14F73"); ControlAccentHovered : (cast (Color) "#BF7393"); ArrowAccentHovered : (cast (Color) "#BC7090"); ItemBackgroundSelected : (cast (Color) "#AD6082"); ExpandingArrowHovered : (cast (Color) "#914867"); RibbonExpandingArrow : (cast (Color) "#E4B1C8"); RibbonExpandingArrowPressed : (cast (Color) "#69334C"); TabHighlightedSelected : (cast (Color) "#78B5AE"); TabHighlightedHovered : (cast (Color) "#9ECEC8"); TabHighlightedBackground : (cast (Color) "#3C5955"); ProgressFilling : (cast (Color) "#C2A553");});
-    }
-
     var darkColors : ColorPackage = CreateDefaultColorPackage();
+
+    var customColorPackageFactory : (func (int) : (ColorPackage)) = null;
+
+    var customColorPackagesAvailable : bool = false;
 
     func InstallColorPackage(colors : ColorPackage) : (void)
     {

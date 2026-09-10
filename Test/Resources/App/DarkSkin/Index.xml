@@ -8,18 +8,17 @@
     {
       InstallColorPackage(colors);
     }
+    static func GetCustomColorPackagesAvailable() : bool
+    {
+      return customColorPackagesAvailable;
+    }
     static func CreateColorPackage(preset : int) : ColorPackage
     {
-      switch (preset)
+      if (preset == 0)
       {
-        case 0: { return CreateDefaultColorPackage(); }
-        case 1: { return CreateAuroraColorPackage(); }
-        case 2: { return CreateEmberColorPackage(); }
-        case 3: { return CreateMoonstoneColorPackage(); }
-        case 4: { return CreateLagoonColorPackage(); }
-        case 5: { return CreateRosewoodColorPackage(); }
-        default: { raise "Unknown DarkSkin palette."; }
+        return CreateDefaultColorPackage();
       }
+      return customColorPackageFactory(preset);
     }
   ]]></ref.Members>
   <ThemeTemplates Name="DarkSkin" PreferCustomFrameWindow="true">
