@@ -177,11 +177,20 @@ TEST_FILE
 					{
 						return button->GetControlTemplateObject()->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->GetColor();
 					};
+					const darkskin::ColorPackage palettes[] =
+					{
+						darkskin::CreateDefaultColorPackage(),
+						darkskin::CreateAuroraColorPackage(),
+						darkskin::CreateEmberColorPackage(),
+						darkskin::CreateMoonstoneColorPackage(),
+						darkskin::CreateLagoonColorPackage(),
+						darkskin::CreateRosewoodColorPackage(),
+					};
 					for (vint preset = 0; preset < 6; preset++)
 					{
 						protocol->OnNextIdleFrame(L"Select palette " + itow(preset), [&, preset]()
 						{
-							auto colors = darkskin::Theme::CreateColorPackage(preset);
+							auto colors = palettes[preset];
 							GetApplication()->InvokeInMainThread(&window, [&, colors]()
 							{
 								darkskin::SetColorPackage(colors);
@@ -190,7 +199,7 @@ TEST_FILE
 						});
 						protocol->OnNextIdleFrame(L"Palette installed " + itow(preset), [&, preset]()
 						{
-							auto colors = darkskin::Theme::CreateColorPackage(preset);
+							auto colors = palettes[preset];
 							TEST_ASSERT(editor->GetDocument() == document);
 							TEST_ASSERT(editor->GetCaretBegin() == TextPos(0, 1) && editor->GetCaretEnd() == TextPos(0, 5));
 							TEST_ASSERT(editor->CanUndo());

@@ -1,6 +1,7 @@
 #include "DarkSkin.h"
 #include "RpMainWindow.h"
 #include "MainWindow.h"
+#include "../Generated_FullControlTest/FullControlTestPalette.h"
 #include "RemoteViewModelTestIncludes.h"
 #include "../Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.h"
 #include "../../RemotingHelpers/Rvmt/ViewModelHostServer.h"
@@ -55,7 +56,11 @@ void GuiMain()
 		break;
 	default:
 	case 0:
-		window = Ptr(new demo::MainWindow);
+	{
+		auto fullControlTest = Ptr(new demo::MainWindow);
+		fullControlTest->PaletteSelected.Add(&demo::OnPaletteSelected);
+		window = fullControlTest;
+	}
 	}
 	window->ForceCalculateSizeImmediately();
 

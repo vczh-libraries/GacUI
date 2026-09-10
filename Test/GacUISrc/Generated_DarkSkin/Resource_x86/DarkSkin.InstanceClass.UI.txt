@@ -554,20 +554,6 @@ namespace darkskin
             InstallColorPackage(colors);
         }
 
-        static func GetCustomColorPackagesAvailable() : (bool)
-        {
-            return customColorPackagesAvailable;
-        }
-
-        static func CreateColorPackage(preset : int) : (ColorPackage)
-        {
-            if ((preset == 0))
-            {
-                return CreateDefaultColorPackage();
-            }
-            return customColorPackageFactory(preset);
-        }
-
         new* ()
         {
             var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("darkskin::Theme");
@@ -34213,10 +34199,6 @@ namespace darkskin
     }
 
     var darkColors : ColorPackage = CreateDefaultColorPackage();
-
-    var customColorPackageFactory : (func (int) : (ColorPackage)) = null;
-
-    var customColorPackagesAvailable : bool = false;
 
     func InstallColorPackage(colors : ColorPackage) : (void)
     {

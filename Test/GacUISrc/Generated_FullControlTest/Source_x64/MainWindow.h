@@ -26,7 +26,6 @@ namespace demo
 {
 	class MainWindow : public ::vl::presentation::controls::GuiWindow, public ::demo::MainWindowConstructor, public ::vl::reflection::Description<MainWindow>
 	{
-		friend struct ::vl_workflow_global::__vwsnf85_FullControlTest_demo_MainWindow_SelectPalette_;
 		friend class ::demo::MainWindowConstructor;
 		friend class ::vl_workflow_global::__vwsnc10_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc11_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
@@ -92,7 +91,7 @@ namespace demo
 #endif
 	public:
 		::vl::Ptr<::vl::reflection::description::IValueList> openedSubWindows;
-		void SelectPalette(::vl::vint64_t preset);
+		::vl::Event<void(::vl::vint64_t)> PaletteSelected;
 		void ShowMouseModifiers(bool alt, bool osSuper);
 		::vl::WString MouseButtonName(::vl::presentation::NativeMouseButton button);
 		MainWindow();

@@ -9,6 +9,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestPalette.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestPalette.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\MainWindow.h">
       <Filter>x86</Filter>
     </ClInclude>

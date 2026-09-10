@@ -60,10 +60,6 @@ namespace darkskin
 
     var darkColors : ColorPackage = CreateDefaultColorPackage();
 
-    var customColorPackageFactory : (func (int) : (ColorPackage)) = null;
-
-    var customColorPackagesAvailable : bool = false;
-
     func InstallColorPackage(colors : ColorPackage) : (void)
     {
         (darkColors = colors);

@@ -2326,8 +2326,8 @@ namespace vl
 				CLASS_MEMBER_BASE(::demo::MainWindowConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::MainWindow*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(MouseButtonName, { L"button" })
-				CLASS_MEMBER_METHOD(SelectPalette, { L"preset" })
 				CLASS_MEMBER_METHOD(ShowMouseModifiers, { L"alt" _ L"osSuper" })
+				CLASS_MEMBER_EVENT(PaletteSelected)
 				CLASS_MEMBER_FIELD(openedSubWindows)
 			END_CLASS_MEMBER(::demo::MainWindow)
 

@@ -38,11 +38,8 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_DarkSkin)
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.darkColors = GLOBAL_NAME CreateDefaultColorPackage();
-		instance.customColorPackageFactory = ::vl::Func<::darkskin::ColorPackage(::vl::vint32_t)>();
-		instance.customColorPackagesAvailable = false;
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.customColorPackageFactory = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_DarkSkin)
 
 namespace vl_workflow_global
@@ -31809,20 +31806,6 @@ Class (::darkskin::Theme)
 	void Theme::SetColorPackage(::darkskin::ColorPackage colors)
 	{
 		GLOBAL_NAME InstallColorPackage(colors);
-	}
-
-	bool Theme::GetCustomColorPackagesAvailable()
-	{
-		return GLOBAL_NAME customColorPackagesAvailable;
-	}
-
-	::darkskin::ColorPackage Theme::CreateColorPackage(::vl::vint32_t preset)
-	{
-		if ((preset == static_cast<::vl::vint32_t>(0)))
-		{
-			return GLOBAL_NAME CreateDefaultColorPackage();
-		}
-		return GLOBAL_NAME customColorPackageFactory(preset);
 	}
 
 	Theme::Theme()

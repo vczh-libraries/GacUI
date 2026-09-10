@@ -23,7 +23,8 @@ always fix the root cause.
 - `REPO-ROOT/Test/GacUISrc/Generated_TuiControlTest/Source_x86` and `Source_x64`
 - `REPO-ROOT/Test/GacUISrc/Generated_TuiControlTest/Resource_x86` and `Resource_x64`
 - `REPO-ROOT/Test/GacUISrc/Generated_Dialogs`
-- `REPO-ROOT/Test/GacUISrc/Generated_FullControlTest`
+- `REPO-ROOT/Test/GacUISrc/Generated_FullControlTest/Source_x86` and `Source_x64`
+- `REPO-ROOT/Test/GacUISrc/Generated_FullControlTest/Resource_x86` and `Resource_x64`
 - `REPO-ROOT/Test/GacUISrc/Generated_RemoteProtocolTest`
 - `REPO-ROOT/Test/GacUISrc/Generated_RemoteViewModelTest`
 - `REPO-ROOT/Test/GacUISrc/Generated_UnitTestViewer`
@@ -160,9 +161,9 @@ To make a change:
 
 DarkSkin defines `darkskin::ColorPackage`, the shared neutral initializer and the complete default palette in its authored Workflow resource. `Source/Skins/DarkSkin/Config/DarkSkinConfig.h/.cpp` owns the Aurora/Ember/Moonstone/Lagoon/Rosewood accent values in C++. Each named factory calls Workflow's `CreateColorPackageInternal`; the default factory and setter forward to their Workflow implementations. The installed palette initializes once from the Workflow default before templates read it. Creating another theme or window does not reset a selected palette.
 
-Both skin inventories and the direct configuration consumers (`UnitTest` and `CppTest_Tui`) define `GACUI_SKIN_DEVELOPMENT` to select the matching `Generated_<Skin>/Source_x86` or `Source_x64` header. Linux development `vmake` inputs define the same macro. Without it, canonical config headers include the merged release `Source` header. CodePack ignores development branches and includes each `Config` folder in its own skin pair. The release workflow regenerates skin types before its first pack and repeats generation after rebuilding GacGen, preserving the config files throughout.
+Both skin inventories and the direct configuration consumers (`UnitTest`, `CppTest_Tui`, the FullControlTest inventory and `GacUI_Host`) define `GACUI_SKIN_DEVELOPMENT` to select the matching `Generated_<Skin>/Source_x86` or `Source_x64` header. Linux development `vmake` inputs define the same macro. Without it, canonical config headers include the merged release `Source` header. CodePack ignores development branches and includes each `Config` folder in its own skin pair. The release workflow regenerates skin types before its first pack and repeats generation after rebuilding GacGen, preserving the config files throughout.
 
-`SetColorPackage` affects subsequent template construction. Queue installation and `GuiApplication::RefreshThemes()` together after input dispatch to update live default-themed controls. FullControlTest owns this shared Workflow handler. The native config registers a GacUI plugin that installs the named-preset factory callback used by `darkskin::Theme::CreateColorPackage`, preserving the selector in every native reflection variant and remoting without host-specific handlers. The standalone Workflow binary host initializes the default palette automatically; it has no native preset callback, so the five named options are disabled. DarkSkin document templates construct palette-based baseline overrides, retaining dark text defaults and document state across refresh.
+`SetColorPackage` affects subsequent template construction. FullControlTest raises `PaletteSelected(int)` from its palette radios, following TuiControlTest. Its manually maintained `Generated_FullControlTest/FullControlTestPalette.h/.cpp` owns `demo::OnPaletteSelected`, which queues preset creation, installation and `GuiApplication::RefreshThemes()` together after input dispatch. Every showcase entry point attaches that shared handler. All presets are always available; DarkSkin has no selector callback, plugin or availability state. `GacUI_Host` loads the showcase from Workflow binary and uses native DarkSkin from `Lib_GacUI_App_Reflection`, attaching the same handler through reflection. DarkSkin document templates construct palette-based baseline overrides, retaining dark text defaults and document state across refresh.
 
 ## Debugging Remote Protocol Issues
 

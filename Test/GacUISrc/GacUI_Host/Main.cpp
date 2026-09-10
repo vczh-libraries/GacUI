@@ -6,6 +6,8 @@
 #include "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
 #include "../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUIReflection.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "DarkSkinReflection.h"
+#include "../Generated_FullControlTest/FullControlTestPalette.h"
 
 using namespace vl;
 using namespace vl::collections;
@@ -35,18 +37,13 @@ WString GetResourcePath()
 void GuiMain()
 {
 #ifdef VCZH_64
-#define DARKSKIN_BINARY			L"../GacUISrc/Generated_DarkSkin/Resource_x64/DarkSkin.UI.bin"
 #define FULLCONTROLTEST_BINARY	L"../GacUISrc/Generated_FullControlTest/Resource_x64/FullControlTest.UI.bin"
 #else
-#define DARKSKIN_BINARY			L"../GacUISrc/Generated_DarkSkin/Resource_x86/DarkSkin.UI.bin"
 #define FULLCONTROLTEST_BINARY	L"../GacUISrc/Generated_FullControlTest/Resource_x86/FullControlTest.UI.bin"
 #endif
 	LoadGuiFakeDialogServiceUITypes();
 	LoadTuiFakeDialogServiceUITypes();
-	{
-		FileStream fileStream(GetResourcePath() + DARKSKIN_BINARY, FileStream::ReadOnly);
-		GetResourceManager()->LoadResourceOrPending(fileStream, GuiResourceUsage::InstanceClass);
-	}
+	LoadDarkSkinTypes();
 	{
 		FileStream fileStream(GetResourcePath() + FULLCONTROLTEST_BINARY, FileStream::ReadOnly);
 		GetResourceManager()->LoadResourceOrPending(fileStream, GuiResourceUsage::InstanceClass);
@@ -57,6 +54,7 @@ void GuiMain()
 	}
 	{
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
+		BoxValue(window).AttachEvent(L"PaletteSelected", BoxParameter(Func<void(vint)>(&demo::OnPaletteSelected)));
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
 

@@ -34,16 +34,6 @@ namespace darkskin
             raise "Not Implemented";
         }
 
-        static func GetCustomColorPackagesAvailable() : (bool)
-        {
-            raise "Not Implemented";
-        }
-
-        static func CreateColorPackage(preset : int) : (ColorPackage)
-        {
-            raise "Not Implemented";
-        }
-
         new* ()
         {
             raise "Not Implemented";
@@ -2797,10 +2787,6 @@ namespace darkskin
     }
 
     var darkColors : ColorPackage = CreateDefaultColorPackage();
-
-    var customColorPackageFactory : (func (int) : (ColorPackage)) = null;
-
-    var customColorPackagesAvailable : bool = false;
 
     func InstallColorPackage(colors : ColorPackage) : (void)
     {

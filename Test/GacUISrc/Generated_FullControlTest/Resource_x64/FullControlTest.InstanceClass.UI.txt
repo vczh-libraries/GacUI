@@ -4251,13 +4251,10 @@ namespace demo
                 {
                     if (paletteDefault.Selected)
                     {
-                        self.SelectPalette(0);
+                        self.PaletteSelected(0);
                     }
                 };
                 attach(paletteDefault.SelectedChanged, <event-handler>);
-            }
-            {
-                (paletteAurora.Enabled = darkskin::Theme::GetCustomColorPackagesAvailable());
             }
             {
                 (paletteAurora.GroupController = paletteGroup);
@@ -4267,13 +4264,10 @@ namespace demo
                 {
                     if (paletteAurora.Selected)
                     {
-                        self.SelectPalette(1);
+                        self.PaletteSelected(1);
                     }
                 };
                 attach(paletteAurora.SelectedChanged, <event-handler>);
-            }
-            {
-                (paletteEmber.Enabled = darkskin::Theme::GetCustomColorPackagesAvailable());
             }
             {
                 (paletteEmber.GroupController = paletteGroup);
@@ -4283,13 +4277,10 @@ namespace demo
                 {
                     if (paletteEmber.Selected)
                     {
-                        self.SelectPalette(2);
+                        self.PaletteSelected(2);
                     }
                 };
                 attach(paletteEmber.SelectedChanged, <event-handler>);
-            }
-            {
-                (paletteMoonstone.Enabled = darkskin::Theme::GetCustomColorPackagesAvailable());
             }
             {
                 (paletteMoonstone.GroupController = paletteGroup);
@@ -4299,13 +4290,10 @@ namespace demo
                 {
                     if (paletteMoonstone.Selected)
                     {
-                        self.SelectPalette(3);
+                        self.PaletteSelected(3);
                     }
                 };
                 attach(paletteMoonstone.SelectedChanged, <event-handler>);
-            }
-            {
-                (paletteLagoon.Enabled = darkskin::Theme::GetCustomColorPackagesAvailable());
             }
             {
                 (paletteLagoon.GroupController = paletteGroup);
@@ -4315,13 +4303,10 @@ namespace demo
                 {
                     if (paletteLagoon.Selected)
                     {
-                        self.SelectPalette(4);
+                        self.PaletteSelected(4);
                     }
                 };
                 attach(paletteLagoon.SelectedChanged, <event-handler>);
-            }
-            {
-                (paletteRosewood.Enabled = darkskin::Theme::GetCustomColorPackagesAvailable());
             }
             {
                 (paletteRosewood.GroupController = paletteGroup);
@@ -4331,7 +4316,7 @@ namespace demo
                 {
                     if (paletteRosewood.Selected)
                     {
-                        self.SelectPalette(5);
+                        self.PaletteSelected(5);
                     }
                 };
                 attach(paletteRosewood.SelectedChanged, <event-handler>);
@@ -4846,15 +4831,7 @@ namespace demo
     {
         var openedSubWindows : GuiWindow^[] = {};
 
-        func SelectPalette(preset : int) : (void)
-        {
-            var colors = darkskin::Theme::CreateColorPackage(preset);
-            GuiApplication::GetApplication().InvokeInMainThread(self, func () : (void)
-            {
-                darkskin::Theme::SetColorPackage(colors);
-                GuiApplication::GetApplication().RefreshThemes();
-            });
-        }
+        event PaletteSelected(int);
 
         func ShowMouseModifiers(alt : bool, osSuper : bool) : (void)
         {

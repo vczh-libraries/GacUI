@@ -11,6 +11,8 @@ CPP_VCXPROJS=(
 CPP_ADDS=(
     "../../GacUISrc/Generated_DarkSkin/Source_x64/*.cpp"
     "../../GacUISrc/Generated_FullControlTest/Source_x64/*.cpp"
+    "../../GacUISrc/Generated_FullControlTest/FullControlTestPalette.cpp"
+    "../../../Source/Skins/DarkSkin/Config/DarkSkinConfig.cpp"
     "../Main.cpp"
     )
 CPP_REMOVES=(

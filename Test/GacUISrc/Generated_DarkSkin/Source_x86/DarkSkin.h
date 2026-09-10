@@ -3632,8 +3632,6 @@ namespace darkskin
 	public:
 		static ::darkskin::ColorPackage GetColorPackage();
 		static void SetColorPackage(::darkskin::ColorPackage colors);
-		static bool GetCustomColorPackagesAvailable();
-		static ::darkskin::ColorPackage CreateColorPackage(::vl::vint32_t preset);
 		Theme();
 		~Theme();
 	};
@@ -4227,8 +4225,6 @@ namespace vl_workflow_global
 	public:
 
 		::darkskin::ColorPackage darkColors;
-		::vl::Func<::darkskin::ColorPackage(::vl::vint32_t)> customColorPackageFactory;
-		bool customColorPackagesAvailable = false;
 
 		::darkskin::ColorPackage CreateColorPackageInternal(::darkskin::ColorPackage accents);
 		::darkskin::ColorPackage CreateDefaultColorPackage();

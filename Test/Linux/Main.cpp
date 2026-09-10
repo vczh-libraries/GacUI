@@ -1,4 +1,5 @@
 #include "DarkSkin.h"
+#include "../GacUISrc/Generated_FullControlTest/FullControlTestPalette.h"
 #include "MainWindow.h"
 
 using namespace vl;
@@ -16,6 +17,7 @@ void GuiMain()
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
 	{
 		demo::MainWindow window;
+		window.PaletteSelected.Add(&demo::OnPaletteSelected);
 		window.ForceCalculateSizeImmediately();
 		window.MoveToScreenCenter();
 		GetApplication()->Run(&window);

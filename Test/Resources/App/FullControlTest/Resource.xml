@@ -75,15 +75,7 @@
       <ref.Members><![CDATA[
         var openedSubWindows: GuiWindow^[] = {};
 
-        func SelectPalette(preset : int) : void
-        {
-          var colors = darkskin::Theme::CreateColorPackage(preset);
-          GuiApplication::GetApplication().InvokeInMainThread(self, func() : void
-          {
-            darkskin::Theme::SetColorPackage(colors);
-            GuiApplication::GetApplication().RefreshThemes();
-          });
-        }
+        event PaletteSelected(int);
 
         func ShowMouseModifiers(alt: bool, osSuper: bool): void
         {
@@ -256,32 +248,32 @@
                     <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
                       <StackItem>
                         <RadioButton ref.Name="paletteDefault" Text="Default" GroupController-ref="paletteGroup" Selected="true">
-                          <ev.SelectedChanged-eval><![CDATA[{if (paletteDefault.Selected) {self.SelectPalette(0);}}]]></ev.SelectedChanged-eval>
+                          <ev.SelectedChanged-eval><![CDATA[{if (paletteDefault.Selected) {self.PaletteSelected(0);}}]]></ev.SelectedChanged-eval>
                         </RadioButton>
                       </StackItem>
                       <StackItem>
-                        <RadioButton ref.Name="paletteAurora" Text="Aurora" GroupController-ref="paletteGroup" Enabled-eval="darkskin::Theme::GetCustomColorPackagesAvailable()">
-                          <ev.SelectedChanged-eval><![CDATA[{if (paletteAurora.Selected) {self.SelectPalette(1);}}]]></ev.SelectedChanged-eval>
+                        <RadioButton ref.Name="paletteAurora" Text="Aurora" GroupController-ref="paletteGroup">
+                          <ev.SelectedChanged-eval><![CDATA[{if (paletteAurora.Selected) {self.PaletteSelected(1);}}]]></ev.SelectedChanged-eval>
                         </RadioButton>
                       </StackItem>
                       <StackItem>
-                        <RadioButton ref.Name="paletteEmber" Text="Ember" GroupController-ref="paletteGroup" Enabled-eval="darkskin::Theme::GetCustomColorPackagesAvailable()">
-                          <ev.SelectedChanged-eval><![CDATA[{if (paletteEmber.Selected) {self.SelectPalette(2);}}]]></ev.SelectedChanged-eval>
+                        <RadioButton ref.Name="paletteEmber" Text="Ember" GroupController-ref="paletteGroup">
+                          <ev.SelectedChanged-eval><![CDATA[{if (paletteEmber.Selected) {self.PaletteSelected(2);}}]]></ev.SelectedChanged-eval>
                         </RadioButton>
                       </StackItem>
                       <StackItem>
-                        <RadioButton ref.Name="paletteMoonstone" Text="Moonstone" GroupController-ref="paletteGroup" Enabled-eval="darkskin::Theme::GetCustomColorPackagesAvailable()">
-                          <ev.SelectedChanged-eval><![CDATA[{if (paletteMoonstone.Selected) {self.SelectPalette(3);}}]]></ev.SelectedChanged-eval>
+                        <RadioButton ref.Name="paletteMoonstone" Text="Moonstone" GroupController-ref="paletteGroup">
+                          <ev.SelectedChanged-eval><![CDATA[{if (paletteMoonstone.Selected) {self.PaletteSelected(3);}}]]></ev.SelectedChanged-eval>
                         </RadioButton>
                       </StackItem>
                       <StackItem>
-                        <RadioButton ref.Name="paletteLagoon" Text="Lagoon" GroupController-ref="paletteGroup" Enabled-eval="darkskin::Theme::GetCustomColorPackagesAvailable()">
-                          <ev.SelectedChanged-eval><![CDATA[{if (paletteLagoon.Selected) {self.SelectPalette(4);}}]]></ev.SelectedChanged-eval>
+                        <RadioButton ref.Name="paletteLagoon" Text="Lagoon" GroupController-ref="paletteGroup">
+                          <ev.SelectedChanged-eval><![CDATA[{if (paletteLagoon.Selected) {self.PaletteSelected(4);}}]]></ev.SelectedChanged-eval>
                         </RadioButton>
                       </StackItem>
                       <StackItem>
-                        <RadioButton ref.Name="paletteRosewood" Text="Rosewood" GroupController-ref="paletteGroup" Enabled-eval="darkskin::Theme::GetCustomColorPackagesAvailable()">
-                          <ev.SelectedChanged-eval><![CDATA[{if (paletteRosewood.Selected) {self.SelectPalette(5);}}]]></ev.SelectedChanged-eval>
+                        <RadioButton ref.Name="paletteRosewood" Text="Rosewood" GroupController-ref="paletteGroup">
+                          <ev.SelectedChanged-eval><![CDATA[{if (paletteRosewood.Selected) {self.PaletteSelected(5);}}]]></ev.SelectedChanged-eval>
                         </RadioButton>
                       </StackItem>
                     </Stack>

@@ -1761,7 +1761,6 @@ class darkskin::TextListTemplateConstructor : system::ReferenceType {
 @FullName:darkskin::Theme
 @system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:darkskin::ThemeConstructor)
 class darkskin::Theme : presentation::theme::ThemeTemplates, darkskin::ThemeConstructor {
-    static function CreateColorPackage(preset : system::Int64) : darkskin::ColorPackage;
     static function GetColorPackage() : darkskin::ColorPackage;
     static function SetColorPackage(colors : darkskin::ColorPackage) : system::Void;
 

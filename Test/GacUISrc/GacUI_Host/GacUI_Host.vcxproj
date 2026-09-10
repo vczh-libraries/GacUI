@@ -76,25 +76,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\Import;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_DarkSkin\Source_x86;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\Import;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_DarkSkin\Source_x86;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\Import;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_DarkSkin\Source_x64;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\Import;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_DarkSkin\Source_x64;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>VCZH_CHECK_MEMORY_LEAKS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GACUI_SKIN_DEVELOPMENT;VCZH_CHECK_MEMORY_LEAKS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -112,7 +112,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GACUI_SKIN_DEVELOPMENT;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -130,7 +130,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>VCZH_CHECK_MEMORY_LEAKS;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GACUI_SKIN_DEVELOPMENT;VCZH_CHECK_MEMORY_LEAKS;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -148,7 +148,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GACUI_SKIN_DEVELOPMENT;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -171,11 +171,16 @@
     </ClCompile>
     <ClCompile Include="CompositionDumper.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="..\Generated_FullControlTest\FullControlTestPalette.cpp" />
+    <ClInclude Include="..\Generated_FullControlTest\FullControlTestPalette.h" />
     <ClCompile Include="TsfTestWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Lib_GacUI_App_Reflection\Lib_GacUI_App_Reflection.vcxproj">
+      <Project>{338e42de-9928-40b7-9f76-ea990f15d248}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Lib_GacUI_Compiler_Reflection\Lib_GacUI_Compiler_Reflection.vcxproj">
       <Project>{66d0edd1-2747-47a6-abda-49ab8f30f7bc}</Project>
     </ProjectReference>

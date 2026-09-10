@@ -8,18 +8,6 @@
     {
       InstallColorPackage(colors);
     }
-    static func GetCustomColorPackagesAvailable() : bool
-    {
-      return customColorPackagesAvailable;
-    }
-    static func CreateColorPackage(preset : int) : ColorPackage
-    {
-      if (preset == 0)
-      {
-        return CreateDefaultColorPackage();
-      }
-      return customColorPackageFactory(preset);
-    }
   ]]></ref.Members>
   <ThemeTemplates Name="DarkSkin" PreferCustomFrameWindow="true">
     <att.SystemFrameWindow>x:SystemFrameWindowTemplate</att.SystemFrameWindow>
