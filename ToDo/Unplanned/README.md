@@ -58,12 +58,6 @@ Unplanned features with detailed are stored in the same folder, here lists all i
 
 ## GacUI
 
-- DarkSkin Color Theme.
-  - Create a `DarkSkinPalette` class with a static getter method to retrive default colors.
-    - Update all `Style.xml` colors to use `DarkSkinPalette`.
-  - Add a static setter to `DarkSkinPalette`.
-    - A window can be called to update all its controls' and components' template.
-    - The above function will be called inside the setter.
 - New default control templates with animation, written in XML generated C++ code.
 - `INativeWindow` add callback for state changing.
   - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.

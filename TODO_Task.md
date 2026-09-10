@@ -1,0 +1,17 @@
+- `Test\GacUISrc\Generated_TuiSkin\TuiSkinConfig.(h|cpp)` should not exist, content should be moved to `Source\Skins\TuiSkin\Config\TuiSkinConfig.(h|cpp)`.
+  - `Source\Skins\TuiSkin\Source\TuiSkinConfig.(h|cpp)` is the old file, they are now part of the aboce config, delete them.
+- Rework `DarkSkin` to have color them. Just like how `TuiSkin` implements color theme, here is the main requirement:
+  - Make a `darkskin::ColorPackage` struct in darkskin XML resource.
+  - Make a `darkskin::CreateDefaultColorPackage`.
+  - Make a `darkskin::SetColorPackage`.
+  - Current colors are defined in `Style.xml`.
+  - Decide what needs to be named in `darkskin::ColorPackage`, and then replace all color literals in `Style.xml` by either `-eval` binding or referencing the global variable directly in scripts.
+- I would like to keep all themes dark but changing limited colors. The current default theme is blue (general) purble (highlighted tab) green (progress bar).
+  - I would like you to come out of 5 other combinations, set their name, ensure they are beautiful, you might want to find some idea of designs from the internet.
+    - Since each theme are some combination of colors, using color names on them is too long, you can come out with real theme name like `DawnOnSea`.
+    - `DawnOnSea` is only my example, you are not required to actually have it, it is up to you.
+    - Put config in `Source\Skins\DarkSkin\Config\DarkSkinConfig.(h|cpp)`.
+    - `FullControlTest` and `FakeDialogService` UI hardcoded a few other colors, and the `BaselineDocuments.xml` assume all theme are dark, so you can only have dark themes.
+  - Prepare functions for them.
+  - Just like `TuiControlTest`'s `Window Management` tab, put all color options to `FullControlTest`.
+  - Run `CppTest` to make sure it works.
