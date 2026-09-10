@@ -1,12 +1,12 @@
 - `Test\GacUISrc\Generated_TuiSkin\TuiSkinConfig.(h|cpp)` should not exist, content should be moved to `Source\Skins\TuiSkin\Config\TuiSkinConfig.(h|cpp)`.
-  - `Source\Skins\TuiSkin\Source\TuiSkinConfig.(h|cpp)` is the old file, they are now part of the aboce config, delete them.
-- Rework `DarkSkin` to have color them. Just like how `TuiSkin` implements color theme, here is the main requirement:
+  - `Source\Skins\TuiSkin\Source\TuiSkinConfig.(h|cpp)` is the old file, they are now part of the above config, delete them.
+- Rework `DarkSkin` to have color themes. Just like how `TuiSkin` implements color theme, here is the main requirement:
   - Make a `darkskin::ColorPackage` struct in darkskin XML resource.
   - Make a `darkskin::CreateDefaultColorPackage`.
   - Make a `darkskin::SetColorPackage`.
   - Current colors are defined in `Style.xml`.
   - Decide what needs to be named in `darkskin::ColorPackage`, and then replace all color literals in `Style.xml` by either `-eval` binding or referencing the global variable directly in scripts.
-- I would like to keep all themes dark but changing limited colors. The current default theme is blue (general) purble (highlighted tab) green (progress bar).
+- I would like to keep all themes dark but changing limited colors. The current default theme is blue (general) purple (highlighted tab) green (progress bar).
   - I would like you to come out of 5 other combinations, set their name, ensure they are beautiful, you might want to find some idea of designs from the internet.
     - Since each theme are some combination of colors, using color names on them is too long, you can come out with real theme name like `DawnOnSea`.
     - `DawnOnSea` is only my example, you are not required to actually have it, it is up to you.
@@ -15,3 +15,48 @@
   - Prepare functions for them.
   - Just like `TuiControlTest`'s `Window Management` tab, put all color options to `FullControlTest`.
   - Run `CppTest` to make sure it works.
+
+## DETAILS
+
+### TuiSkin configuration ownership
+
+- Move the current implementation from `Test/GacUISrc/Generated_TuiSkin`, preserving all six preset factories, `tuiskin::CreateDefaultColorPackage`, and `tuiskin::SetColorPackage`. The obsolete `Source/Skins/TuiSkin/Source` copy does not contain all six factories and must not replace the newer implementation.
+- Update `Generated_TuiSkin.vcxitems`, its filters, and the includes in `CppTest_Tui/Main.cpp` and `UnitTest/TestTuiProvider.cpp`. Compile the canonical configuration implementation exactly once through the shared skin inventory for each consumer.
+- Resolve the configuration header's dependencies for both development architectures and the release layout. Development consumes `Generated_TuiSkin/Source_x86` or `Source_x64`; release consumes `Source/Skins/TuiSkin/Source`. Do not accidentally include both generated definitions. Apply the same dependency discipline to the new DarkSkin configuration.
+- Update the sibling `../Tools/Tools/ProjectGacUI.ps1` release workflow: its existing copy-and-rewrite loop reads the old test configuration and recreates `Source/Skins/TuiSkin/Source/TuiSkinConfig.*`. The canonical `Config` files must survive release generation, and neither obsolete pair may be recreated.
+- Extend the skin categories in `Release/CodegenConfig.xml` to include each skin's `Config` folder in its own skin output. They currently match only `Source`; the generic GacUI category excludes skins. Update the configuration input and regenerate outputs through the release tools; do not hand-edit amalgamations or IncludeOnly files.
+- Check release ordering as well: `ProjectGacUI.ps1` packs once before skin generation and again afterward. Newly introduced DarkSkin palette types must be available when configuration dependencies are first processed, without relying on previously refreshed generated headers.
+- Update the configuration-location and ownership descriptions in `Project.md` and `.github/KnowledgeBase/KB_GacUI_Design_TuiPlatformProvider.md` when implementing the relocation.
+
+### DarkSkin palette contract
+
+- The authored resources for this solution are in `Test/Resources/App/DarkSkin`, including `DarkSkin.xml`, `Style.xml`, and `Index.xml`. The shorter `Test/Resources/DarkSkin` path mentioned elsewhere in `Project.md` does not exist. The `Source/Skins/DarkSkin` XML copy is maintained by the release workflow.
+- Define `darkskin::ColorPackage` in the Workflow resource and keep one installed palette, following `Test/Resources/App/TuiSkin/TuiSkin.xml`. Put the public C++ configuration functions in `Source/Skins/DarkSkin/Config/DarkSkinConfig.h/.cpp`: `CreateDefaultColorPackage()`, five named `Create<Name>ColorPackage()` factories, and `SetColorPackage(const ColorPackage&)`.
+- There are six choices in total: the unchanged default and five new combinations. Give the new presets concise theme names and matching factory names. Share neutral backgrounds, normal/disabled text, neutral borders, and transparency across presets; vary coordinated general accents, highlighted-tab accents, progress fills, and their related hover/pressed/selection shades. Keep each preset's concrete values in one authoritative implementation.
+- Name fields by their visual roles and states. Preserve every existing default value, including alpha and subtly different blues such as `#007ACC`, `#017ACC`, `#1997EA`, and `#1C97EA`; do not merge them merely because they look similar. Cover nested colors too, including polygon fill/border, splitter colors, and text-box selection structures. All color literals in `Style.xml` must move into palette initialization.
+- Keep existing state-dependent `-bind` expressions reactive to enabled, focused, hovered, pressed, selected, and submenu states; replace their literal branches with palette fields. Use `-eval` for values evaluated when templates are constructed. Replacing a state-dependent binding with `-eval` would freeze that state until another theme refresh.
+- Preserve DarkSkin's existing default appearance without requiring every current caller to learn a new initialization step. The palette must be initialized before templates first read it in generated C++ applications, unit tests, and the Workflow binary host. Creating another theme or window must not reset an already selected palette.
+- `SetColorPackage` installs colors for subsequent template construction. Refresh existing controls explicitly with `vl::presentation::controls::GuiApplication::RefreshThemes()` from `Source/Application/Controls/GuiApplication.h/.cpp`. Follow the lifetime contract in `.github/KnowledgeBase/KB_GacUI_Design_AddingNewControl.md`: queue palette installation and refresh together with `InvokeInMainThread` after input dispatch, capturing the selected preset by value.
+- `BaselineDocuments.xml` also hardcodes a blue document-selection background outside `Style.xml`. To make editor selection follow the chosen general accent, supply palette-based baseline overrides while preserving its existing text defaults for the dark theme and all other baseline styles. Follow TuiSkin's baseline-document pattern; refresh must preserve the document model, explicit formatting, selection, and undo/redo history. Application-specific colors in FullControlTest and fake dialogs can remain fixed and must remain readable with every dark preset.
+
+### FullControlTest integration
+
+- Add a compact, labeled group of six mutually exclusive radio options to the Window Management page in `Test/Resources/App/FullControlTest/Resource.xml`, using TuiControlTest's layout and selection behavior as the reference. Select the default initially, process only newly selected options, and preserve the selection through refresh without emitting another selection event.
+- TuiControlTest currently raises a `PaletteSelected(int)` event that is handled in `CppTest_Tui/Main.cpp`. FullControlTest is shared by `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `RemotingTest_Core /FCT`, and the Workflow-binary `GacUI_Host`; installing a handler only in `CppTest/Main.cpp` would leave the other selectors inert. Provide a shared integration path, including the interpreted resource path, without duplicating preset color values or editing generated code by hand.
+- Palette changes apply to all existing default-themed windows and to windows created afterward. Explicitly assigned custom templates and application-owned `Color-eval` elements retain their captured values under the existing refresh contract; keep their fixed colors compatible with the shared dark neutrals.
+- Include the new configuration in the appropriate shared skin inventory and release output. Regenerate resource C++, reflection, and binary outputs with the existing tools. If exposing native configuration to Workflow affects reflection, follow the registration and metadata requirements in `Project.md`.
+
+## VERIFICATION
+
+These are implementation acceptance checks; this review does not execute the task.
+
+1. Build and generate through the repository wrappers. Run `GacUI_Compiler` for the changed skin/showcase resources and inspect `git status` for `*.UI.errors.txt`. After generation, perform the required sequence: build Debug Win32, run `Metadata_Generate` Win32, build Debug x64, run `Metadata_Generate` x64, then run `Metadata_Test` x64. Inspect completed logs and generated changes. Do not patch generated files to repair errors.
+2. Run `UnitTest` through `copilotExecute.ps1`, following the existing filter rules. Ensure `TestApplication_Theme.cpp` and `TestTuiProvider.cpp` are included: they already cover template overrides, multiple/hidden windows, preserved editing state, TUI presets, and repeated refresh. Require passing results and no appended memory-leak report. Compare existing DarkSkin visual snapshots with the baseline; investigate rendering changes because the default palette must remain visually unchanged. Distinguish expected compiler-output changes from visual regressions.
+3. Add focused DarkSkin coverage for complete default initialization, the five distinct accent combinations with shared neutral values, and a palette switch followed by refresh of representative controls. Check an existing control, a newly created control, a state-dependent binding after another input change, and document-selection colors. Restore the default palette afterward so later tests are independent; reuse the existing theme tests for general state-preservation coverage.
+4. Run `CppTest` with the documented GacUI execution/automation workflow and use the applicable startup, control-interaction, and shutdown checks from the Complete Control Showcase section of `.github/Jobs/DebugRemoteProtocolSop.md`. Select all six palettes and return to default. Inspect actual rendered colors for general focus/selection, highlighted tabs, progress bars, hovered/pressed/disabled buttons, menus, list/tree/grid selections, and editor selection. Check readability of the fixed example and fake-dialog colors, and check the palette group fits when the window is resized.
+5. Before switching, enter document text and establish selection/undo history, scroll a list, and open a secondary window. Switch palettes, reopen an already-created popup, and create another window. Confirm the appropriate templates recolor while text, editing history, list position, current tab, and selected palette survive. Repeat selection to catch callbacks caused by rebuilding the selector, then close normally and inspect the process result.
+6. Smoke-test palette selection in `CppTest_Metaonly`, `CppTest_Reflection`, `GacUI_Host`, and one `RemotingTest_Core /FCT` native-renderer setup. Check initial default colors and a switch back and forth in each. The binary-host check must load regenerated resource binaries; the remoting check must show the new colors at the renderer.
+7. After the TuiSkin move, run its existing palette tests and exercise the six choices in `CppTest_Tui` following `.github/Jobs/DebugTuiControlTestSop.md`. Confirm unchanged default colors and switching behavior. Debug Win32/x64 solution builds must resolve the relocated configuration in every compiled reflection variant.
+8. Run the supported release-generation path and check both normal and IncludeOnly skin outputs contain the configuration APIs exactly once, reference the new locations, and do not recreate either obsolete TuiSkin configuration pair. Verify downstream compilation of the generated skin/configuration outputs. Keep Linux build inputs consistent with the shared inventories and regenerate `vmake.txt`/`makefile` through the supported build script when validating there.
+
+## REVIEW COMMENTS
