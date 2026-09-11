@@ -438,6 +438,52 @@ TEST_FILE
 
 	TEST_CATEGORY(L"File Dialog Navigation")
 	{
+		TEST_CASE(L"Initial file names survive asynchronous folder loading")
+		{
+			for (auto save : { false,true })
+			{
+				Ptr<FileSystemMock> fsMock;
+				auto initialFileName = save ? WString(L"new.txt") : FilePath(L"/A/a.txt").GetFullPath();
+				GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+				{
+					protocol->OnNextIdleFrame(L"Ready", [=]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto dialog = FindObjectByName<GuiFileDialogBase>(window, save ? L"dialogSave" : L"dialogOpen");
+						dialog->SetFileName(initialFileName);
+						auto button = FindControlByText<GuiButton>(window, save ? L"Save PromptCreateFile" : L"Open DefaultOptions");
+						auto location = protocol->LocationOf(button);
+						GetApplication()->InvokeInMainThread(window, [=]() { protocol->LClick(location); });
+					});
+					protocol->OnNextIdleFrame(L"Initial name", [=]()
+					{
+						auto textBox = FindObjectByName<GuiSinglelineTextBox>(GetOpeningFileDialog(), L"filePickerControl", L"textBox");
+						TEST_ASSERT(textBox->GetText() == initialFileName);
+						protocol->LClick(protocol->LocationOf(textBox));
+					});
+					protocol->OnNextIdleFrame(L"Loaded name", [=]()
+					{
+						auto textBox = FindObjectByName<GuiSinglelineTextBox>(GetOpeningFileDialog(), L"filePickerControl", L"textBox");
+						TEST_ASSERT(textBox->GetText() == initialFileName);
+						PressCancel(protocol);
+					});
+					protocol->OnNextIdleFrame(L"Canceled", [=]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto dialog = FindObjectByName<GuiFileDialogBase>(window, save ? L"dialogSave" : L"dialogOpen");
+						TEST_ASSERT(dialog->GetFileName() == initialFileName);
+						window->Hide();
+					});
+				});
+				GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+					save ? L"Application/Dialog_File/InitialName_Save" : L"Application/Dialog_File/InitialName_Open",
+					WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+					resourceFileDialogs,
+					CreateInstaller(fsMock)
+				);
+			}
+		});
+
 		TEST_CASE(L"Open and Close")
 		{
 			Ptr<FileSystemMock> fsMock;

@@ -82,6 +82,13 @@
 ../../../Source/Utilities/SharedServices/GuiSharedAsyncService.cpp
 ../../../Source/Utilities/SharedServices/GuiSharedAutomationService.cpp
 ../../../Source/Utilities/SharedServices/GuiSharedCallbackService.cpp
+../../../Source/PlatformProviders/TUI/TuiApplication.cpp
+../../../Source/PlatformProviders/TUI/TuiController.cpp
+../../../Source/PlatformProviders/TUI/TuiGraphics.cpp
+../../../Source/PlatformProviders/TUI/TuiGraphicsRenderers.cpp
+../../../Source/PlatformProviders/TUI/TuiTextLayout.cpp
+../../../Source/PlatformProviders/TUI/TuiWindow.cpp
+../../../Source/GraphicsElement/TuiGraphicsElement.cpp
 ../../../Source/Application/Controls/GuiApplication.cpp
 ../../../Source/Application/Controls/GuiBasicControls.cpp
 ../../../Source/Application/Controls/GuiInstanceRootObject.cpp
@@ -148,6 +155,7 @@
 ../../../Source/GraphicsComposition/GuiGraphicsSpecializedComposition.cpp
 ../../../Source/GraphicsComposition/GuiGraphicsStackComposition.cpp
 ../../../Source/GraphicsComposition/GuiGraphicsTableComposition.cpp
+../../../Source/Controls/ListControlPackage/TuiItemTemplates.cpp
 ../../../Source/Reflection/GuiInstanceCompiledWorkflow.cpp
 ../../../Source/Reflection/TypeDescriptors/GuiReflectionBasic.cpp
 ../../../Source/Reflection/TypeDescriptors/GuiReflectionCompositions.cpp
@@ -195,5 +203,8 @@
 ../../../Source/Utilities/FakeServices/Dialogs/GuiFakeDialogService.cpp
 ../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.cpp
 ../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.cpp
+../../../Source/Utilities/FakeServices/TuiDialogs/TuiFakeDialogService.cpp
+../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUI.cpp
+../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUIReflection.cpp
 ../../../Source/Utilities/GuiUtilitiesRegistration.cpp
 ../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.cpp

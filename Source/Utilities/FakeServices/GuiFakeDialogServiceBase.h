@@ -527,15 +527,17 @@ FakeDialogServiceBase
 			/// A callback to create a open file dialog from the given view model.
 			/// </summary>
 			/// <param name="viewModel">The given view model.</param>
+			/// <param name="initialFileName">The initial file name or path to display.</param>
 			/// <returns>The created window to be displayed.</returns>
-			virtual controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel) = 0;
+			virtual controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName) = 0;
 
 			/// <summary>
 			/// A callback to create a save file dialog from the given view model.
 			/// </summary>
 			/// <param name="viewModel">The given view model.</param>
+			/// <param name="initialFileName">The initial file name or path to display.</param>
 			/// <returns>The created window to be displayed.</returns>
-			virtual controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel) = 0;
+			virtual controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName) = 0;
 
 			void							ShowModalDialogAndDelete(Ptr<IDescriptable> viewModel, controls::GuiWindow* owner, controls::GuiWindow* dialog);
 

@@ -1,5 +1,9 @@
 #include "FullControlTestPalette.h"
+#ifdef GACUI_SKIN_DEVELOPMENT
 #include "../../../Source/Skins/DarkSkin/Config/DarkSkinConfig.h"
+#else
+#include <Skins/DarkSkin/DarkSkin.h>
+#endif
 
 using namespace vl;
 using namespace vl::presentation::controls;

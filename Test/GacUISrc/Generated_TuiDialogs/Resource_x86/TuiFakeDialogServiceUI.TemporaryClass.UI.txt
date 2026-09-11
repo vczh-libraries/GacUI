@@ -265,12 +265,12 @@ namespace tui_controls
 {
     class TuiFileDialogWindow : ::presentation::controls::GuiWindow
     {
-        func MakeOpenFileDialog() : (void)
+        func MakeOpenFileDialog(initialFileName : string) : (void)
         {
             raise "Not Implemented";
         }
 
-        func MakeSaveFileDialog() : (void)
+        func MakeSaveFileDialog(initialFileName : string) : (void)
         {
             raise "Not Implemented";
         }
@@ -347,6 +347,11 @@ namespace tui_controls
         event RequestClose();
 
         func GetSelectedFiles() : (IFileDialogFile^{})
+        {
+            raise "Not Implemented";
+        }
+
+        func SetInitialFileName(value : string) : (void)
         {
             raise "Not Implemented";
         }

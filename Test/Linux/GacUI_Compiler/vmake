@@ -15,6 +15,9 @@ CPP_ADDS=(
     "../../../Source/Utilities/FakeServices/Dialogs/GuiFakeDialogService.cpp"
     "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.cpp"
     "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.cpp"
+    "../../../Source/Utilities/FakeServices/TuiDialogs/TuiFakeDialogService.cpp"
+    "../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUI.cpp"
+    "../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUIReflection.cpp"
     "../../../Source/Utilities/GuiUtilitiesRegistration.cpp"
     "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.cpp"
     )

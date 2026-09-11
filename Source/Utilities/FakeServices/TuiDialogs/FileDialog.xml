@@ -19,6 +19,11 @@
           }
         }
 
+        func SetInitialFileName(value : string) : void
+        {
+          textBox.Text = value;
+        }
+
         func GetSelection(): string{}
         {
           return ViewModel.ParseDisplayString(textBox.Text);
@@ -245,14 +250,16 @@
       <ref.LocalizedStrings Name="Strings" Class="tui_controls::TuiDialogStrings" Default="true" />
       <ref.Parameter Name="ViewModel" Class="presentation::IFileDialogViewModel" />
       <ref.Members><![CDATA[
-        func MakeOpenFileDialog() : void
+        func MakeOpenFileDialog(initialFileName : string) : void
         {
           buttonOK.Text = Strings.FileDialogOpen();
+          filePickerControl.SetInitialFileName(initialFileName);
         }
         
-        func MakeSaveFileDialog() : void
+        func MakeSaveFileDialog(initialFileName : string) : void
         {
           buttonOK.Text = Strings.FileDialogSave();
+          filePickerControl.SetInitialFileName(initialFileName);
         }
       ]]></ref.Members>
       <ref.Ctor><![CDATA[

@@ -1,6 +1,7 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
+#include "../../../Source/Utilities/SharedServices/GuiSharedAsyncService.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 #include "TestRemote_GraphicsHost_Shared.h"
 
@@ -131,6 +132,29 @@ public:
 
 TEST_FILE
 {
+	TEST_CASE(L"Shared async service: nested modal pumping preserves queued work and batch boundaries")
+	{
+		SharedAsyncService service;
+		vint step = 0;
+		service.InvokeInMainThread(nullptr, [&]()
+		{
+			step = 1;
+			service.ExecuteAsyncTasks();
+			TEST_ASSERT(step == 2);
+			step = 3;
+			service.InvokeInMainThread(nullptr, [&]() { step = 4; });
+		});
+		service.InvokeInMainThread(nullptr, [&]()
+		{
+			TEST_ASSERT(step == 1);
+			step = 2;
+		});
+		service.ExecuteAsyncTasks();
+		TEST_ASSERT(step == 3);
+		service.ExecuteAsyncTasks();
+		TEST_ASSERT(step == 4);
+	});
+
 	TEST_CATEGORY(L"Multiwindow automation: only open native windows are dumped")
 	{
 		GraphicsHostProtocol protocol;
@@ -236,6 +260,50 @@ TEST_FILE
 		TEST_ASSERT(service.handledCount == 1);
 	});
 
+	TEST_CATEGORY(L"Shared automation: identical click coordinates in consecutive windows")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		Ptr<GuiWindow> subWindow;
+		IoCommandState state;
+		List<INativeWindowListener*> listeners;
+		AutomationMouseListener firstListener;
+		AutomationMouseListener secondListener;
+
+		auto clickButton = [&](GuiWindow* window, AutomationMouseListener& listener)
+		{
+			listeners.Clear();
+			listeners.Add(&listener);
+			TEST_ASSERT(RunIOCommandOnNativeWindow(&state, GetCurrentController(), window->GetNativeWindow(), listeners, L"!Mouse4Click:30,20") == L"Queued");
+		};
+
+		protocol.OnNextFrame([&]()
+		{
+			clickButton(controlHost, firstListener);
+		});
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(firstListener.mouseMove > 0);
+			TEST_ASSERT(firstListener.mouse4Down == 1 && firstListener.mouse4Up == 1);
+			subWindow = Ptr(new GuiWindow(theme::ThemeName::Window));
+			subWindow->SetClientSize(Size(200, 100));
+			subWindow->Show();
+			clickButton(subWindow.Obj(), secondListener);
+		});
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(secondListener.mouseMove > 0);
+			TEST_ASSERT(secondListener.mouse4Down == 1 && secondListener.mouse4Up == 1);
+			subWindow->Hide();
+			subWindow = nullptr;
+			controlHost->Hide();
+		});
+
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
 	TEST_CATEGORY(L"Shared automation: extended mouse buttons and Super aliases")
 	{
 		GraphicsHostProtocol protocol;
@@ -275,7 +343,7 @@ TEST_FILE
 			TEST_ASSERT(listener.mouse5Down == 4);
 			TEST_ASSERT(listener.mouse5Up == 4);
 			TEST_ASSERT(listener.mouse5DoubleClick == 1);
-			TEST_ASSERT(listener.mouseMove == 2);
+			TEST_ASSERT(listener.mouseMove == 17);
 			TEST_ASSERT(listener.verticalWheel == 1);
 			TEST_ASSERT(listener.allSuper && listener.allAlt);
 			controlHost->Hide();

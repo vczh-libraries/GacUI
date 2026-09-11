@@ -24367,15 +24367,17 @@ FakeDialogServiceBase
 			/// A callback to create a open file dialog from the given view model.
 			/// </summary>
 			/// <param name="viewModel">The given view model.</param>
+			/// <param name="initialFileName">The initial file name or path to display.</param>
 			/// <returns>The created window to be displayed.</returns>
-			virtual controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel) = 0;
+			virtual controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName) = 0;
 
 			/// <summary>
 			/// A callback to create a save file dialog from the given view model.
 			/// </summary>
 			/// <param name="viewModel">The given view model.</param>
+			/// <param name="initialFileName">The initial file name or path to display.</param>
 			/// <returns>The created window to be displayed.</returns>
-			virtual controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel) = 0;
+			virtual controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName) = 0;
 
 			void							ShowModalDialogAndDelete(Ptr<IDescriptable> viewModel, controls::GuiWindow* owner, controls::GuiWindow* dialog);
 
@@ -24569,8 +24571,8 @@ namespace vl
 			controls::GuiWindow*	CreateColorDialog(Ptr<IColorDialogViewModel> viewModel) override;
 			controls::GuiWindow*	CreateSimpleFontDialog(Ptr<ISimpleFontDialogViewModel> viewModel) override;
 			controls::GuiWindow*	CreateFullFontDialog(Ptr<IFullFontDialogViewModel> viewModel) override;
-			controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel) override;
-			controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName) override;
+			controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName) override;
 
 		public:
 			FakeDialogService();
@@ -24636,6 +24638,7 @@ namespace vl
 			vint									mainThreadId;
 			SpinLock								taskListLock;
 			collections::List<TaskItem>				taskItems;
+			vuint64_t								executedTaskCount = 0;
 			collections::List<Ptr<DelayItem>>		delayItems;
 		public:
 			SharedAsyncService();
@@ -24653,6 +24656,7 @@ namespace vl
 }
 
 #endif
+
 
 /***********************************************************************
 .\UTILITIES\SHAREDSERVICES\GUISHAREDAUTOMATIONSERVICE.H
@@ -26460,8 +26464,8 @@ namespace gaclib_controls
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<FileDialogWindow>;
 #endif
 	public:
-		void MakeOpenFileDialog();
-		void MakeSaveFileDialog();
+		void MakeOpenFileDialog(const ::vl::WString& initialFileName);
+		void MakeSaveFileDialog(const ::vl::WString& initialFileName);
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_prop_Strings;
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_);
@@ -26581,6 +26585,7 @@ namespace gaclib_controls
 		::vl::Ptr<::vl::presentation::GuiImageData> imageFile;
 		::vl::Event<void()> RequestClose;
 		::vl::collections::LazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>> GetSelectedFiles();
+		void SetInitialFileName(const ::vl::WString& value);
 		::vl::collections::LazyList<::vl::WString> GetSelection();
 		void LocateSelectedFolderInTreeView();
 		::vl::Ptr<::vl::presentation::controls::list::IDataFilter> CreateFileFilter(::vl::Ptr<::vl::presentation::IFileDialogFilter> filter);
@@ -29988,8 +29993,8 @@ namespace tui_controls
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiFileDialogWindow>;
 #endif
 	public:
-		void MakeOpenFileDialog();
-		void MakeSaveFileDialog();
+		void MakeOpenFileDialog(const ::vl::WString& initialFileName);
+		void MakeSaveFileDialog(const ::vl::WString& initialFileName);
 		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_prop_Strings;
 		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_);
@@ -30104,6 +30109,7 @@ namespace tui_controls
 	public:
 		::vl::Event<void()> RequestClose;
 		::vl::collections::LazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>> GetSelectedFiles();
+		void SetInitialFileName(const ::vl::WString& value);
 		::vl::collections::LazyList<::vl::WString> GetSelection();
 		void LocateSelectedFolderInTreeView();
 		::vl::Ptr<::vl::presentation::controls::list::IDataFilter> CreateFileFilter(::vl::Ptr<::vl::presentation::IFileDialogFilter> filter);
@@ -32349,8 +32355,8 @@ namespace vl
 			controls::GuiWindow*	CreateColorDialog(Ptr<IColorDialogViewModel> viewModel) override;
 			controls::GuiWindow*	CreateSimpleFontDialog(Ptr<ISimpleFontDialogViewModel> viewModel) override;
 			controls::GuiWindow*	CreateFullFontDialog(Ptr<IFullFontDialogViewModel> viewModel) override;
-			controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel) override;
-			controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName) override;
+			controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName) override;
 
 		public:
 			FakeTuiDialogService();

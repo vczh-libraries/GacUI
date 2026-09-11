@@ -265,12 +265,12 @@ namespace gaclib_controls
 {
     class FileDialogWindow : ::presentation::controls::GuiWindow
     {
-        func MakeOpenFileDialog() : (void)
+        func MakeOpenFileDialog(initialFileName : string) : (void)
         {
             raise "Not Implemented";
         }
 
-        func MakeSaveFileDialog() : (void)
+        func MakeSaveFileDialog(initialFileName : string) : (void)
         {
             raise "Not Implemented";
         }
@@ -351,6 +351,11 @@ namespace gaclib_controls
         event RequestClose();
 
         func GetSelectedFiles() : (IFileDialogFile^{})
+        {
+            raise "Not Implemented";
+        }
+
+        func SetInitialFileName(value : string) : (void)
         {
             raise "Not Implemented";
         }

@@ -93,12 +93,13 @@ SharedAsyncService
 		{
 			auto now=DateTime::UtcTime();
 			Array<TaskItem> items;
+			vuint64_t firstTaskId;
 			List<Ptr<DelayItem>> executableDelayItems;
 
 			SPIN_LOCK(taskListLock)
 			{
 				CopyFrom(items, taskItems);
-				taskItems.RemoveRange(0, items.Count());
+				firstTaskId = executedTaskCount;
 				// TODO: (enumerable) foreach:indexed(alterable(reversed))
 				for(vint i=delayItems.Count()-1;i>=0;i--)
 				{
@@ -112,8 +113,21 @@ SharedAsyncService
 				}
 			}
 
-			for (auto item : items)
+			for (auto [item, index] : indexed(items))
 			{
+				bool execute = false;
+				SPIN_LOCK(taskListLock)
+				{
+					// Keep unstarted work available to a nested modal loop, and skip
+					// snapshot entries that the nested loop has already executed.
+					if (executedTaskCount == firstTaskId + index)
+					{
+						taskItems.RemoveAt(0);
+						executedTaskCount++;
+						execute = true;
+					}
+				}
+				if (!execute) continue;
 				item.proc();
 				if(item.semaphore)
 				{

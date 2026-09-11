@@ -16,6 +16,7 @@ CPP_VCXPROJS=(
     )
 CPP_ADDS=(
     "../../GacUISrc/Generated_DarkSkin/Source_x64/*.cpp"
+    "../../GacUISrc/Generated_TuiSkin/Source_x64/*.cpp"
     )
 CPP_REMOVES=(
     "../../../Import/Vlpp.Windows.cpp"

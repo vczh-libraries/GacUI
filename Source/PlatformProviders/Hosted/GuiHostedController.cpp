@@ -642,6 +642,16 @@ GuiHostedController::INativeWindowListener (IO Event Handling)
 
 		void GuiHostedController::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)
 		{
+			// A new window can appear under a stationary pointer. Refresh its control
+			// hover state without duplicating movement already delivered by the platform.
+			NativePoint location = { info.x,info.y };
+			auto previousLocation = hoveringLocation;
+			UpdateHoveringWindow(location);
+			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
+			if (previousLocation != location || enteringWindow != selectedWindow)
+			{
+				MouseMoving(info);
+			}
 			if (button == NativeMouseButton::Left)
 			{
 				HandleMouseButtonCallback<&GuiHostedController::PreAction_LeftButtonDown, &GuiHostedController::GetSelectedWindow_MouseDown, &GuiHostedController::PostAction_Other, &INativeWindowListener::MouseDown>(button, info);

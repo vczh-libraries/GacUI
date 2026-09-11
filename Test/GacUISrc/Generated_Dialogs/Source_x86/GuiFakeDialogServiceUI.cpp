@@ -6363,14 +6363,16 @@ Class (::gaclib_controls::FileDialogWindowConstructor)
 Class (::gaclib_controls::FileDialogWindow)
 ***********************************************************************/
 
-	void FileDialogWindow::MakeOpenFileDialog()
+	void FileDialogWindow::MakeOpenFileDialog(const ::vl::WString& initialFileName)
 	{
 		::vl::__vwsn::This(this->buttonOK)->SetText(::vl::__vwsn::This(this->GetStrings().Obj())->FileDialogOpen());
+		::vl::__vwsn::This(this->filePickerControl)->SetInitialFileName(initialFileName);
 	}
 
-	void FileDialogWindow::MakeSaveFileDialog()
+	void FileDialogWindow::MakeSaveFileDialog(const ::vl::WString& initialFileName)
 	{
 		::vl::__vwsn::This(this->buttonOK)->SetText(::vl::__vwsn::This(this->GetStrings().Obj())->FileDialogSave());
+		::vl::__vwsn::This(this->filePickerControl)->SetInitialFileName(initialFileName);
 	}
 
 	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> FileDialogWindow::GetStrings()
@@ -6786,6 +6788,11 @@ Class (::gaclib_controls::FilePickerControl)
 	::vl::collections::LazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>> FilePickerControl::GetSelectedFiles()
 	{
 		return ::vl::reflection::description::GetLazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>>(::vl::reflection::description::EnumerableCoroutine::Create(vl::Func(::vl_workflow_global::__vwsnf45_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles_(this))));
+	}
+
+	void FilePickerControl::SetInitialFileName(const ::vl::WString& value)
+	{
+		::vl::__vwsn::This(this->textBox)->SetText(value);
 	}
 
 	::vl::collections::LazyList<::vl::WString> FilePickerControl::GetSelection()

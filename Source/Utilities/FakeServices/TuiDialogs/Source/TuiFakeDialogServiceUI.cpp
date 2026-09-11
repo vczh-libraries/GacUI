@@ -5932,14 +5932,16 @@ Class (::tui_controls::TuiFileDialogWindowConstructor)
 Class (::tui_controls::TuiFileDialogWindow)
 ***********************************************************************/
 
-	void TuiFileDialogWindow::MakeOpenFileDialog()
+	void TuiFileDialogWindow::MakeOpenFileDialog(const ::vl::WString& initialFileName)
 	{
 		::vl::__vwsn::This(this->buttonOK)->SetText(::vl::__vwsn::This(this->GetStrings().Obj())->FileDialogOpen());
+		::vl::__vwsn::This(this->filePickerControl)->SetInitialFileName(initialFileName);
 	}
 
-	void TuiFileDialogWindow::MakeSaveFileDialog()
+	void TuiFileDialogWindow::MakeSaveFileDialog(const ::vl::WString& initialFileName)
 	{
 		::vl::__vwsn::This(this->buttonOK)->SetText(::vl::__vwsn::This(this->GetStrings().Obj())->FileDialogSave());
+		::vl::__vwsn::This(this->filePickerControl)->SetInitialFileName(initialFileName);
 	}
 
 	::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> TuiFileDialogWindow::GetStrings()
@@ -6356,6 +6358,11 @@ Class (::tui_controls::TuiFilePickerControl)
 	::vl::collections::LazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>> TuiFilePickerControl::GetSelectedFiles()
 	{
 		return ::vl::reflection::description::GetLazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>>(::vl::reflection::description::EnumerableCoroutine::Create(vl::Func(::vl_workflow_global::__vwsnf45_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles_(this))));
+	}
+
+	void TuiFilePickerControl::SetInitialFileName(const ::vl::WString& value)
+	{
+		::vl::__vwsn::This(this->textBox)->SetText(value);
 	}
 
 	::vl::collections::LazyList<::vl::WString> TuiFilePickerControl::GetSelection()

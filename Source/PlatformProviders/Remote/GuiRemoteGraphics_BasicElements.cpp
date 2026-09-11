@@ -370,11 +370,11 @@ GuiSolidLabelElementRenderer
 	{
 		if (needFontHeight)
 		{
-			vint index = renderTarget->fontHeights.Keys().IndexOf({ lastFont.fontFamily,lastFont.size });
+			vint index = remoteRenderTarget->fontHeights.Keys().IndexOf({ lastFont.fontFamily,lastFont.size });
 			if (index != -1)
 			{
 				needFontHeight = false;
-				vint size = renderTarget->fontHeights.Values()[index];
+				vint size = remoteRenderTarget->fontHeights.Values()[index];
 				UpdateMinSize({ size,size });
 			}
 		}

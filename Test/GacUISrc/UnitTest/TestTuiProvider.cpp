@@ -1009,6 +1009,55 @@ TEST_FILE
 		});
 	});
 
+	TEST_CASE(L"TUI hosted clicks hit a replacement window without pointer motion")
+	{
+		TuiRunTest([](TuiTestBackend*, TuiTestController* controller)
+		{
+			GuiHostedController hosted(controller);
+			hosted.Initialize();
+			auto main = hosted.WindowService()->CreateNativeWindow(INativeWindow::Normal);
+			bool correct = true;
+			controller->AsyncService()->InvokeInMainThread(controller->GetMainWindow(), [&]()
+			{
+				WindowMouseInfo info;
+				info.x = 10;
+				info.y = 10;
+				for (vint i = 0; i < 2; i++)
+				{
+					class ClickListener : public INativeWindowListener
+					{
+					public:
+						vint clicks = 0;
+						vint moves = 0;
+						void MouseMoving(const NativeWindowMouseInfo&) override { moves++; }
+						void MouseDown(NativeMouseButton, const NativeWindowMouseInfo&) override
+						{
+							clicks++;
+						}
+					} listener;
+					auto child = hosted.WindowService()->CreateNativeWindow(INativeWindow::Normal);
+					child->SetBounds(NativeRect(5, 5, 25, 20));
+					child->InstallListener(&listener);
+					child->Show();
+					if (i == 0) controller->MouseMove(info);
+					info.left = true;
+					controller->MouseDown(NativeMouseButton::Left, info);
+					info.left = false;
+					controller->MouseUp(NativeMouseButton::Left, info);
+					correct = correct && listener.clicks == 1 && listener.moves == 1;
+					child->Hide(false);
+					child->UninstallListener(&listener);
+					hosted.WindowService()->DestroyNativeWindow(child);
+				}
+				main->Hide(false);
+			});
+			controller->InputService()->StartTimer();
+			hosted.WindowService()->Run(main);
+			hosted.Finalize();
+			TEST_ASSERT(correct);
+		}, Size(100, 30));
+	});
+
 	TEST_CASE(L"TUI hosted startup, child dismissal and direct or queued main closing")
 	{
 		for (auto size : { Size(100, 30), Size(80, 25) })

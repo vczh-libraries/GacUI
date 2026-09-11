@@ -260,6 +260,17 @@ Append a completed card here for each legacy-terminal failure that prompts a Kit
 | Conclusion | Works in both, fails in both, only Kitty works, or verification unavailable; scope the conclusion to the checks actually performed. |
 | Evidence / cleanup | Capture/log locations, remaining physical-input limits and process/terminal cleanup. |
 
+### Linux native Super comparison, 2026-09-10
+
+| Field | Evidence |
+| --- | --- |
+| Host / build | Ubuntu 24.04, wGac debug x64 TUI, 120x40; GNOME Wayland desktop with X11 terminal windows. |
+| Legacy terminal first | GNOME Terminal 3.52.0 / VTE 0.76.0; ordinary profile, native XTest keyboard events. Ctrl+Q passes. Ctrl+Alt+Super+Q produces legacy Alt+Ctrl+Q bytes `1b11`, without Super, and no matching dialog. |
+| Kitty retry | Kitty 0.32.2, `linux_display_server=x11`, ordinary keyboard configuration. Same native chord produces `ESC[113;15u` and exactly `You pressed Ctrl+Alt+Win+Q!`. Left/right Super and both modifier release orders pass with Enter dismissal and ordinary Ctrl+Q before/after. The subsequent same-position mouse regression is tracked separately in the matrix. |
+| Conclusion | Only Kitty works for this chord in the tested configuration. Generated native events are distinct from physical hardware input, which was not observed. No raw byte replay or terminal test-key command was used to establish delivery. |
+| Platform limits | wGac global-shortcut registration currently returns an ID without OS registration; global F8 is unavailable. GNOME terminal mouse tests verify Left/Middle/Right and Alt; extended buttons, independent Super and horizontal wheel delivery are not established. |
+| Evidence | `wGac/TestMatrix_Tui.md`, `/tmp/rpxplat-legacy-super-failure.png`, `/tmp/rpxplat-tui.input`, `/tmp/rpxplat-kitty-tui.input`; all six normal exit paths passed, and the temporary terminals, apps and helper servers were closed. |
+
 ### macOS legacy Alt/Command limitation, 2026-09-09
 
 | Field | Observed result |

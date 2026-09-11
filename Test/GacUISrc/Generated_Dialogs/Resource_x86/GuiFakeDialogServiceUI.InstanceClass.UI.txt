@@ -2372,14 +2372,16 @@ namespace gaclib_controls
     @cpp:Friend(typeof(FileDialogWindowConstructor))
     class FileDialogWindow : ::presentation::controls::GuiWindow, FileDialogWindowConstructor
     {
-        func MakeOpenFileDialog() : (void)
+        func MakeOpenFileDialog(initialFileName : string) : (void)
         {
             (buttonOK.Text = Strings.FileDialogOpen());
+            filePickerControl.SetInitialFileName(initialFileName);
         }
 
-        func MakeSaveFileDialog() : (void)
+        func MakeSaveFileDialog(initialFileName : string) : (void)
         {
             (buttonOK.Text = Strings.FileDialogSave());
+            filePickerControl.SetInitialFileName(initialFileName);
         }
 
         @cpp:Private
@@ -3537,6 +3539,11 @@ namespace gaclib_controls
                     }
                 };
             }));
+        }
+
+        func SetInitialFileName(value : string) : (void)
+        {
+            (textBox.Text = value);
         }
 
         func GetSelection() : (string{})

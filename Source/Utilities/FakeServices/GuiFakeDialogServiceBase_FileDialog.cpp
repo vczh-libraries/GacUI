@@ -1019,7 +1019,7 @@ FakeDialogServiceBase
 				{
 					vm->selectToSave = false;
 					auto owner = GetApplication()->GetWindowFromNative(window);
-					auto dialog = CreateOpenFileDialog(vm);
+					auto dialog = CreateOpenFileDialog(vm, initialFileName);
 					ShowModalDialogAndDelete(vm, owner, dialog);
 				}
 				break;
@@ -1028,7 +1028,7 @@ FakeDialogServiceBase
 				{
 					vm->selectToSave = true;
 					auto owner = GetApplication()->GetWindowFromNative(window);
-					auto dialog = CreateSaveFileDialog(vm);
+					auto dialog = CreateSaveFileDialog(vm, initialFileName);
 					ShowModalDialogAndDelete(vm, owner, dialog);
 				}
 				break;

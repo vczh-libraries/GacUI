@@ -221,10 +221,11 @@
 ../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkin.cpp
 ../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkinReflection.cpp
 ../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkinResource.cpp
+../../../Source/Skins/DarkSkin/Config/DarkSkinConfig.cpp
 ../../GacUISrc/Generated_TuiSkin/Source_x64/TuiSkin.cpp
 ../../GacUISrc/Generated_TuiSkin/Source_x64/TuiSkinReflection.cpp
 ../../GacUISrc/Generated_TuiSkin/Source_x64/TuiSkinResource.cpp
-../../GacUISrc/Generated_TuiSkin/TuiSkinConfig.cpp
+../../../Source/Skins/TuiSkin/Config/TuiSkinConfig.cpp
 ../../GacUISrc/UnitTest/Main.cpp
 ../../GacUISrc/UnitTest/TestTuiProvider.cpp
 ../../GacUISrc/UnitTest/TestAutomationService.cpp

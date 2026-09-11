@@ -519,8 +519,8 @@ namespace tui_controls
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiFileDialogWindow>;
 #endif
 	public:
-		void MakeOpenFileDialog();
-		void MakeSaveFileDialog();
+		void MakeOpenFileDialog(const ::vl::WString& initialFileName);
+		void MakeSaveFileDialog(const ::vl::WString& initialFileName);
 		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_prop_Strings;
 		::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> __vwsn_value_);
@@ -635,6 +635,7 @@ namespace tui_controls
 	public:
 		::vl::Event<void()> RequestClose;
 		::vl::collections::LazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>> GetSelectedFiles();
+		void SetInitialFileName(const ::vl::WString& value);
 		::vl::collections::LazyList<::vl::WString> GetSelection();
 		void LocateSelectedFolderInTreeView();
 		::vl::Ptr<::vl::presentation::controls::list::IDataFilter> CreateFileFilter(::vl::Ptr<::vl::presentation::IFileDialogFilter> filter);

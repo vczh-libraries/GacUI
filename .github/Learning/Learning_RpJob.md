@@ -7,6 +7,9 @@
 - Group DataGrid cells by their vertical centers when checking rows. Different cell templates can give text in the same row different top and bottom bounds.
 - Automation `DbClick` already performs down/up, double-click, and the final up. Sending an additional up violates the automation input-state contract and correctly raises an error.
 
+- Native renderer takeover can terminate the displaced renderer normally. Read Core/current-renderer state for retention; an old renderer's closed automation endpoint is not a stale-input response. After a queued normal close, wait for process exit instead of requiring another DOM read from that process.
+- Audit generated snapshot differences before preserving baselines: resolve element references and compare rendered content, distinguish regenerated identities from layout changes, and inspect current-day date-picker highlights. Keep real changes and new regression snapshots. GacJS snapshot imports normalize CRLF to LF to preserve its established checkout format; a second codegen run must remain clean.
+
 ## Windows
 
 - The standalone RVM application's custom caption close button uses native hit testing. Clicking its composition through local automation does not exercise that caption path; exact `!Exit` on the standalone application's native automation endpoint performs its normal application shutdown.
@@ -26,6 +29,11 @@
 - TUI controls have natural cell-sized hit targets. Click the actual short Hide/Close caption, use the current dropdown arrow, and locate localized dialog actions again after resizing. Drag an existing dialog by its visible border into a smaller viewport when necessary.
 - The hyperlink entry dialog starts empty on every invocation. Verify cancel/edit by activating the retained link in Preview, rather than expecting URL prepopulation. Shared file create/overwrite prompts use OK/Cancel, not Yes/No.
 - Keep desktop clipboard reads running while the TUI selection owner is alive. Test an external non-text selection followed by UTF-8 text to verify Paste-enable notifications as well as transfer.
+
+- GNOME Terminal 3.52/VTE 0.76 drops Super from native Ctrl+Alt+Super+Q (`1b11`). Kitty 0.32.2 with its keyboard protocol emits `ESC[113;15u` and opens the correct dialog. Record this as terminal-specific delivery; generated XTest events do not establish physical keyboard input. POSIX radio controls can be exercised with Tab/Shift+Tab and Enter; do not assume arrow-group navigation or key-release delivery.
+- A terminal may omit pointer motion before a click at unchanged coordinates, including after a new hosted modal appears. Test replacement dialogs with button events at the same point; moving the pointer away first can hide stale hosted-window/control hit testing. Space independent presses beyond the POSIX parser's 500 ms double-click interval; a double-click is a separate event and does not act as a second ordinary button click.
+- Terminal resize can publish the new dimensions before the app's next complete repaint. Wait for the target controls as well as dimensions. A date combo commits its new date when a day is selected, not merely when the year/month picker changes. Clipboard ownership updates can also be asynchronous: wait before reading the new external selection.
+- For a blocked native MiniHTTP host-loss check, suspend the host, issue a real text-changing RPC, confirm bytes are waiting in the host socket receive queue, then kill it before acknowledgement. Record the observed termination time separately from the transport deadline constant. The corresponding stdio check can identify the requester blocked in its futex wait before killing the auto-launched child.
 
 ## macOS (iGac repo specific)
 

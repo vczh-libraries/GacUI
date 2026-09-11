@@ -31,17 +31,17 @@ FakeTuiDialogService
 			return new tui_controls::TuiFullFontDialogWindow(viewModel);
 		}
 
-		controls::GuiWindow* FakeTuiDialogService::CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel)
+		controls::GuiWindow* FakeTuiDialogService::CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName)
 		{
 			auto dialog = new tui_controls::TuiFileDialogWindow(viewModel);
-			dialog->MakeOpenFileDialog();
+			dialog->MakeOpenFileDialog(initialFileName);
 			return dialog;
 		}
 
-		controls::GuiWindow* FakeTuiDialogService::CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel)
+		controls::GuiWindow* FakeTuiDialogService::CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName)
 		{
 			auto dialog = new tui_controls::TuiFileDialogWindow(viewModel);
-			dialog->MakeSaveFileDialog();
+			dialog->MakeSaveFileDialog(initialFileName);
 			return dialog;
 		}
 

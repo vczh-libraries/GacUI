@@ -33693,6 +33693,16 @@ GuiHostedController::INativeWindowListener (IO Event Handling)
 
 		void GuiHostedController::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)
 		{
+			// A new window can appear under a stationary pointer. Refresh its control
+			// hover state without duplicating movement already delivered by the platform.
+			NativePoint location = { info.x,info.y };
+			auto previousLocation = hoveringLocation;
+			UpdateHoveringWindow(location);
+			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
+			if (previousLocation != location || enteringWindow != selectedWindow)
+			{
+				MouseMoving(info);
+			}
 			if (button == NativeMouseButton::Left)
 			{
 				HandleMouseButtonCallback<&GuiHostedController::PreAction_LeftButtonDown, &GuiHostedController::GetSelectedWindow_MouseDown, &GuiHostedController::PostAction_Other, &INativeWindowListener::MouseDown>(button, info);
@@ -37212,11 +37222,11 @@ GuiSolidLabelElementRenderer
 	{
 		if (needFontHeight)
 		{
-			vint index = renderTarget->fontHeights.Keys().IndexOf({ lastFont.fontFamily,lastFont.size });
+			vint index = remoteRenderTarget->fontHeights.Keys().IndexOf({ lastFont.fontFamily,lastFont.size });
 			if (index != -1)
 			{
 				needFontHeight = false;
-				vint size = renderTarget->fontHeights.Values()[index];
+				vint size = remoteRenderTarget->fontHeights.Values()[index];
 				UpdateMinSize({ size,size });
 			}
 		}
@@ -55702,7 +55712,7 @@ FakeDialogServiceBase
 				{
 					vm->selectToSave = false;
 					auto owner = GetApplication()->GetWindowFromNative(window);
-					auto dialog = CreateOpenFileDialog(vm);
+					auto dialog = CreateOpenFileDialog(vm, initialFileName);
 					ShowModalDialogAndDelete(vm, owner, dialog);
 				}
 				break;
@@ -55711,7 +55721,7 @@ FakeDialogServiceBase
 				{
 					vm->selectToSave = true;
 					auto owner = GetApplication()->GetWindowFromNative(window);
-					auto dialog = CreateSaveFileDialog(vm);
+					auto dialog = CreateSaveFileDialog(vm, initialFileName);
 					ShowModalDialogAndDelete(vm, owner, dialog);
 				}
 				break;
@@ -56007,17 +56017,17 @@ FakeDialogService
 			return new gaclib_controls::FullFontDialogWindow(viewModel);
 		}
 
-		controls::GuiWindow* FakeDialogService::CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel)
+		controls::GuiWindow* FakeDialogService::CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName)
 		{
 			auto dialog = new gaclib_controls::FileDialogWindow(viewModel);
-			dialog->MakeOpenFileDialog();
+			dialog->MakeOpenFileDialog(initialFileName);
 			return dialog;
 		}
 
-		controls::GuiWindow* FakeDialogService::CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel)
+		controls::GuiWindow* FakeDialogService::CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName)
 		{
 			auto dialog = new gaclib_controls::FileDialogWindow(viewModel);
-			dialog->MakeSaveFileDialog();
+			dialog->MakeSaveFileDialog(initialFileName);
 			return dialog;
 		}
 
@@ -62392,14 +62402,16 @@ Class (::gaclib_controls::FileDialogWindowConstructor)
 Class (::gaclib_controls::FileDialogWindow)
 ***********************************************************************/
 
-	void FileDialogWindow::MakeOpenFileDialog()
+	void FileDialogWindow::MakeOpenFileDialog(const ::vl::WString& initialFileName)
 	{
 		::vl::__vwsn::This(this->buttonOK)->SetText(::vl::__vwsn::This(this->GetStrings().Obj())->FileDialogOpen());
+		::vl::__vwsn::This(this->filePickerControl)->SetInitialFileName(initialFileName);
 	}
 
-	void FileDialogWindow::MakeSaveFileDialog()
+	void FileDialogWindow::MakeSaveFileDialog(const ::vl::WString& initialFileName)
 	{
 		::vl::__vwsn::This(this->buttonOK)->SetText(::vl::__vwsn::This(this->GetStrings().Obj())->FileDialogSave());
+		::vl::__vwsn::This(this->filePickerControl)->SetInitialFileName(initialFileName);
 	}
 
 	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> FileDialogWindow::GetStrings()
@@ -62815,6 +62827,11 @@ Class (::gaclib_controls::FilePickerControl)
 	::vl::collections::LazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>> FilePickerControl::GetSelectedFiles()
 	{
 		return ::vl::reflection::description::GetLazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>>(::vl::reflection::description::EnumerableCoroutine::Create(vl::Func(::vl_workflow_global::__vwsnf45_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles_(this))));
+	}
+
+	void FilePickerControl::SetInitialFileName(const ::vl::WString& value)
+	{
+		::vl::__vwsn::This(this->textBox)->SetText(value);
 	}
 
 	::vl::collections::LazyList<::vl::WString> FilePickerControl::GetSelection()
@@ -65007,12 +65024,13 @@ SharedAsyncService
 		{
 			auto now=DateTime::UtcTime();
 			Array<TaskItem> items;
+			vuint64_t firstTaskId;
 			List<Ptr<DelayItem>> executableDelayItems;
 
 			SPIN_LOCK(taskListLock)
 			{
 				CopyFrom(items, taskItems);
-				taskItems.RemoveRange(0, items.Count());
+				firstTaskId = executedTaskCount;
 				// TODO: (enumerable) foreach:indexed(alterable(reversed))
 				for(vint i=delayItems.Count()-1;i>=0;i--)
 				{
@@ -65026,8 +65044,21 @@ SharedAsyncService
 				}
 			}
 
-			for (auto item : items)
+			for (auto [item, index] : indexed(items))
 			{
+				bool execute = false;
+				SPIN_LOCK(taskListLock)
+				{
+					// Keep unstarted work available to a nested modal loop, and skip
+					// snapshot entries that the nested loop has already executed.
+					if (executedTaskCount == firstTaskId + index)
+					{
+						taskItems.RemoveAt(0);
+						executedTaskCount++;
+						execute = true;
+					}
+				}
+				if (!execute) continue;
 				item.proc();
 				if(item.semaphore)
 				{
@@ -65119,6 +65150,7 @@ SharedAsyncService
 		}
 	}
 }
+
 
 /***********************************************************************
 .\UTILITIES\SHAREDSERVICES\GUISHAREDAUTOMATIONSERVICE.CPP
@@ -65628,11 +65660,10 @@ RunIOCommandOnNativeWindow
 						listener->MouseEntered();
 					}
 				}
-				else if (state->mousePosition.Value() == position)
-				{
-					return;
-				}
 
+				// Coordinates are local to the target window. A new dialog can
+				// reuse both the previous position and a destroyed window's address.
+				// Always refresh its hit test before dispatching the button event.
 				state->mousePosition = position;
 				auto info = MakeMouseInfo(state);
 				for (auto listener : listeners)
@@ -74521,14 +74552,16 @@ Class (::tui_controls::TuiFileDialogWindowConstructor)
 Class (::tui_controls::TuiFileDialogWindow)
 ***********************************************************************/
 
-	void TuiFileDialogWindow::MakeOpenFileDialog()
+	void TuiFileDialogWindow::MakeOpenFileDialog(const ::vl::WString& initialFileName)
 	{
 		::vl::__vwsn::This(this->buttonOK)->SetText(::vl::__vwsn::This(this->GetStrings().Obj())->FileDialogOpen());
+		::vl::__vwsn::This(this->filePickerControl)->SetInitialFileName(initialFileName);
 	}
 
-	void TuiFileDialogWindow::MakeSaveFileDialog()
+	void TuiFileDialogWindow::MakeSaveFileDialog(const ::vl::WString& initialFileName)
 	{
 		::vl::__vwsn::This(this->buttonOK)->SetText(::vl::__vwsn::This(this->GetStrings().Obj())->FileDialogSave());
+		::vl::__vwsn::This(this->filePickerControl)->SetInitialFileName(initialFileName);
 	}
 
 	::vl::Ptr<::tui_controls::ITuiDialogStringsStrings> TuiFileDialogWindow::GetStrings()
@@ -74945,6 +74978,11 @@ Class (::tui_controls::TuiFilePickerControl)
 	::vl::collections::LazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>> TuiFilePickerControl::GetSelectedFiles()
 	{
 		return ::vl::reflection::description::GetLazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>>(::vl::reflection::description::EnumerableCoroutine::Create(vl::Func(::vl_workflow_global::__vwsnf45_TuiFakeDialogServiceUI_tui_controls_TuiFilePickerControl_GetSelectedFiles_(this))));
+	}
+
+	void TuiFilePickerControl::SetInitialFileName(const ::vl::WString& value)
+	{
+		::vl::__vwsn::This(this->textBox)->SetText(value);
 	}
 
 	::vl::collections::LazyList<::vl::WString> TuiFilePickerControl::GetSelection()
@@ -76570,17 +76608,17 @@ FakeTuiDialogService
 			return new tui_controls::TuiFullFontDialogWindow(viewModel);
 		}
 
-		controls::GuiWindow* FakeTuiDialogService::CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel)
+		controls::GuiWindow* FakeTuiDialogService::CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName)
 		{
 			auto dialog = new tui_controls::TuiFileDialogWindow(viewModel);
-			dialog->MakeOpenFileDialog();
+			dialog->MakeOpenFileDialog(initialFileName);
 			return dialog;
 		}
 
-		controls::GuiWindow* FakeTuiDialogService::CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel)
+		controls::GuiWindow* FakeTuiDialogService::CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName)
 		{
 			auto dialog = new tui_controls::TuiFileDialogWindow(viewModel);
-			dialog->MakeSaveFileDialog();
+			dialog->MakeSaveFileDialog(initialFileName);
 			return dialog;
 		}
 

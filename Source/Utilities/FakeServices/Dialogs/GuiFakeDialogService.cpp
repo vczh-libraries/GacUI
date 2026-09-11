@@ -31,17 +31,17 @@ FakeDialogService
 			return new gaclib_controls::FullFontDialogWindow(viewModel);
 		}
 
-		controls::GuiWindow* FakeDialogService::CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel)
+		controls::GuiWindow* FakeDialogService::CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName)
 		{
 			auto dialog = new gaclib_controls::FileDialogWindow(viewModel);
-			dialog->MakeOpenFileDialog();
+			dialog->MakeOpenFileDialog(initialFileName);
 			return dialog;
 		}
 
-		controls::GuiWindow* FakeDialogService::CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel)
+		controls::GuiWindow* FakeDialogService::CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName)
 		{
 			auto dialog = new gaclib_controls::FileDialogWindow(viewModel);
-			dialog->MakeSaveFileDialog();
+			dialog->MakeSaveFileDialog(initialFileName);
 			return dialog;
 		}
 

@@ -464,8 +464,8 @@ namespace gaclib_controls
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<FileDialogWindow>;
 #endif
 	public:
-		void MakeOpenFileDialog();
-		void MakeSaveFileDialog();
+		void MakeOpenFileDialog(const ::vl::WString& initialFileName);
+		void MakeSaveFileDialog(const ::vl::WString& initialFileName);
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_prop_Strings;
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_);
@@ -585,6 +585,7 @@ namespace gaclib_controls
 		::vl::Ptr<::vl::presentation::GuiImageData> imageFile;
 		::vl::Event<void()> RequestClose;
 		::vl::collections::LazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>> GetSelectedFiles();
+		void SetInitialFileName(const ::vl::WString& value);
 		::vl::collections::LazyList<::vl::WString> GetSelection();
 		void LocateSelectedFolderInTreeView();
 		::vl::Ptr<::vl::presentation::controls::list::IDataFilter> CreateFileFilter(::vl::Ptr<::vl::presentation::IFileDialogFilter> filter);

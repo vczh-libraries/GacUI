@@ -504,11 +504,10 @@ RunIOCommandOnNativeWindow
 						listener->MouseEntered();
 					}
 				}
-				else if (state->mousePosition.Value() == position)
-				{
-					return;
-				}
 
+				// Coordinates are local to the target window. A new dialog can
+				// reuse both the previous position and a destroyed window's address.
+				// Always refresh its hit test before dispatching the button event.
 				state->mousePosition = position;
 				auto info = MakeMouseInfo(state);
 				for (auto listener : listeners)

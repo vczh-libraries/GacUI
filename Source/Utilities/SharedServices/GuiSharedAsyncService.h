@@ -51,6 +51,7 @@ namespace vl
 			vint									mainThreadId;
 			SpinLock								taskListLock;
 			collections::List<TaskItem>				taskItems;
+			vuint64_t								executedTaskCount = 0;
 			collections::List<Ptr<DelayItem>>		delayItems;
 		public:
 			SharedAsyncService();
