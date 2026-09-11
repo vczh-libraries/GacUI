@@ -77,6 +77,10 @@
 - Reuse `TuiLabelRenderer` paragraphs across non-text changes [1]
 - Use concrete TUI element renderers for distinct registered elements [1]
 - TUI drawing primitives own clipping; GacUI owns composition clips and alpha [1]
+- Always synchronize retained control state into replacement templates [1]
+- Keep manual skin configuration in canonical Config folders [1]
+- Preserve realized list rows during temporary render-target detachment [1]
+- Keep showcase palette selection outside DarkSkin [1]
 
 # Refinements
 
@@ -448,3 +452,19 @@ Keep the border, solid-border and solid-background implementations in `Source/Pl
 ## TUI drawing primitives own clipping; GacUI owns composition clips and alpha
 
 Keep the composition clip stack in `vl::presentation::elements::TuiGraphicsRenderTarget` (`Source/PlatformProviders/TUI/TuiGraphics.h/.cpp`) and pass its effective clip to VlppOS TUI drawing primitives. The upstream primitive owns buffer intersection and raster clipping; remove duplicate perimeter clipping and full-buffer scratch copies from the render target. Retain GacUI-specific destination-dependent alpha blending in the adapter without introducing GacUI types into VlppOS. Preserve original border geometry and wide-character repair instead of manufacturing edges at clip boundaries. Make and verify primitive changes in the owning VlppOS repository, then regenerate and import its release before validating the GacUI consumer.
+
+## Always synchronize retained control state into replacement templates
+
+In `vl::presentation::controls::GuiLabel::AfterControlTemplateInstalled_` (`Source/Application/Controls/GuiLabelControls.cpp`), choose the retained text color according to initialization, the previous default and any explicit override, then always write that color into the newly installed template. A public setter may skip work when the control value is unchanged even though the replacement template still holds its constructor default. Preserve explicit overrides and default-following behavior without changing palette values to hide missing synchronization.
+
+## Keep manual skin configuration in canonical Config folders
+
+Maintain native skin configuration in `Source/Skins/<Skin>/Config`, outside generated `Source` and architecture-specific test output. When relocating it, preserve the newest implementation, delete obsolete copies and update the shared inventories, consumer includes, development/release header selection and CodePack categories together. Compile each implementation once per consumer. The release workflow must preserve Config, avoid recreating old paths and generate required skin types before the first pack; keep that workflow in the owning Tools repository.
+
+## Preserve realized list rows during temporary render-target detachment
+
+In `vl::presentation::controls::GuiListControl::OnRenderTargetChanged` (`Source/Controls/ListControlPackage/GuiListControls.cpp`), do not rebuild realized rows while the render target is null during ancestor template replacement. Temporary measurement can shrink the reported total size and clamp an existing scroll offset. Wait for a real renderer before reloading rows. Keep this lifecycle regression distinct from asynchronous remote full-text measurement: preserving rows during detachment does not prove that an inactive remote list preserves scrolling through every theme refresh.
+
+## Keep showcase palette selection outside DarkSkin
+
+Keep shared neutral and automatic default initialization in `Test/Resources/App/DarkSkin/DarkSkin.xml`; the default C++ factory forwards to Workflow, and named factories in `Source/Skins/DarkSkin/Config/DarkSkinConfig.cpp` call the shared initializer and own their accent assignments. Preserve public signatures and exact values. DarkSkin must not own a showcase preset selector, callback plugin or availability policy. Follow TuiControlTest: FullControlTest raises `PaletteSelected(int)` only for a newly selected radio, and every showcase entry point attaches the shared native handler in manually maintained `Test/GacUISrc/Generated_FullControlTest/FullControlTestPalette.h/.cpp`. Queue preset creation, installation and `GuiApplication::RefreshThemes()` together after input dispatch, capturing the selection by value. The Workflow-binary showcase attaches the reflected event to the same handler and uses native DarkSkin, keeping every preset available.

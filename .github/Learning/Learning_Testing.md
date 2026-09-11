@@ -18,6 +18,7 @@
 - Validate imported dependency APIs with GacUI build and unit test [3]
 - Native modal dialogs block GacUI HTTP automation [3]
 - Verify native shortcut delivery through the focused renderer or terminal [3]
+- Compare TUI control regressions with the GUI showcase [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -32,7 +33,7 @@
 - Verify remoting imports with both HTTP and named-pipe flows [2]
 - Verify `GacUICompiler` determinism with repeated no-change runs [2]
 - Remote-debugging guides own complete Cartesian test matrices [2]
-- Compare TUI control regressions with the GUI showcase [2]
+- Verify palette refresh through retained state and actual host rendering [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Verify GacGen RPC outputs with positive and negative resources [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
@@ -78,6 +79,7 @@
 - Treat file-dialog snapshots as scheduling-sensitive contracts [1]
 - Verify renderer-localized shortcut labels in the remoting SOP [1]
 - Regenerate compiler snapshots through UnitTest after XML namespace changes [1]
+- Match native theme regressions to the initialized harness [1]
 
 # Refinements
 
@@ -503,3 +505,15 @@ When a default XML namespace change intentionally alters compiler output, run th
 ## Compare TUI control regressions with the GUI showcase
 
 Reproduce the same control interaction in `CppTest_Tui` and `CppTest` before deciding whether the fix belongs to shared controls or the TUI provider. Record the selected cell, actual focus and editor state, including whether a combo popup is expanded. Keep source-based hypotheses separate from runtime evidence, and require a regression at the failing event boundary. Do not change shared focus behavior when the focused reproduction already passes; preserve established editor commit, dismissal and key-handling semantics while fixing the reproduced defect.
+
+For label colors after theme refresh, compare the control property, replacement template property and rendered element or terminal glyph color. Cover unchanged defaults, changed defaults, explicit overrides, disabled labels and re-enabling across presets. A correct retained control value does not prove that a freshly installed template received it; reproduce the same boundary with DarkSkin before blaming TuiSkin colors.
+
+## Verify palette refresh through retained state and actual host rendering
+
+For skin palette refactors, preserve exact default colors and alpha, shared neutral roles and reactive input-state bindings. Check existing and newly created controls, hidden or secondary windows, reopened popups, list position and document identity, selection and undo/redo across refresh, restoring the default afterward. Exercise native, reflection, binary-resource and remoting showcase consumers when affected; input through a renderer should produce matching Core and renderer colors. Compare rendered state rather than assuming a generated factory or passing unit suite proves every host integration.
+
+After a live refresh, wait for settled control and label bounds before calculating coordinates for the next palette click; replacement templates can briefly report empty bounds. Keep date-picker highlight changes caused only by the current day out of unrelated palette snapshots, and distinguish them from rendering or state-preservation regressions.
+
+## Match native theme regressions to the initialized harness
+
+The native theme harness does not automatically register DarkSkin reflection descriptors, so a missing descriptor alone is not evidence of a skin defect. Test the native contract directly and use metadata and interpreted consumers to validate reflection. Set an explicit window client size before the first render, materialize a lazy template with `GetControlTemplateObject` before inspecting it, and keep final assertions and shutdown together when another idle frame would contain no rendering change.

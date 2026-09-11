@@ -2,14 +2,14 @@
 
 # Orders
 
-- Verify generated artifacts with downstream consumer checks [24]
+- Verify generated artifacts with downstream consumer checks [25]
 - Keep design documentation aligned with code after refactoring [21]
 - Process staged tasks one by one with verification [20]
-- Proactively remove code made redundant by refactoring [19]
+- Proactively remove code made redundant by refactoring [20]
 - Port fixes from imports to source repositories [18]
 - Crash early instead of adding error-tolerance fallbacks [15]
 - Verify and localize portability on every target OS [15]
-- Extract abstractions only for real shared behavior [13]
+- Extract abstractions only for real shared behavior [14]
 - Fix behavior at the owning state instead of patching symptoms [12]
 - Validate expectations against implementation and existing tests [11]
 - Make `Stop()` drain asynchronous work before returning [8]
@@ -119,6 +119,8 @@ Do not turn fixed owner decisions or concrete state observations into callbacks 
 Likewise, do not pass one-shot callbacks merely to hide mutually exclusive concrete call sites. Prefer typed ownership that exposes the real server or service to the operation that performs the fixed sequence, and use compile-time or overload separation when some application modes genuinely have no such dependency.
 
 For environment or lifecycle invalidation, prefer forwarding one application-level notification through the existing ownership tree over registering every affected object as a global listener. This keeps notifications scoped to objects that are actually installed or active.
+
+Keep application-specific choices in the application that owns them. When several entry points share one showcase, expose its selection event and attach one shared handler at each entry point instead of adding a callback plugin, selector API or availability state to a reusable skin. A dependency arrangement should make required behavior available in each consumer without teaching the lower layer the showcase policy.
 
 ## Make `Stop()` drain asynchronous work before returning
 
@@ -267,6 +269,8 @@ When CodePack ownership is split, inspect the exact generated code pairs and the
 When a shared dispatcher schema such as `Rpc.d.ts` changes, type-check the shared schema itself as well as generated fixtures so envelope changes are caught even before concrete generated values instantiate every request shape.
 
 For a released VlppOS namespace change, validate Workflow through the ChatBot SOP and validate GacUI through `RemotingTest_Core /RPT /Http` with `RemotingTest_Rendering_Win32 /Http`, plus GacJS against the HTTP remoting core. An upstream build alone does not prove the imported public surface works.
+
+When relocating manually maintained configuration beside generated types, validate both development architectures and the normal and IncludeOnly release consumers. Generate prerequisite types before packing and verify that each canonical configuration implementation appears exactly once; a successful development build can otherwise conceal stale release dependencies.
 
 ## `vl::regex` separator regex: `L"[\\/\\\\]+"`
 
