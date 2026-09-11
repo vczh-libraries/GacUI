@@ -3,16 +3,18 @@
 GPU Accelerated C++ User Interface, with:
 - Cross-platform supports (Windows, Linux, macos, HTML5)
   - Native Renderers
+  - TUI Renderers
   - Hosted Mode to render all windows in one native window (optional)
   - Core/Renderer cross-process separation (optional)
 - Built-in powerful text processing libraries
 - Built-in data binding and MVVM features
+  - View Model could be implemented in another process [with your favorate programming languages](https://github.com/vczh-libraries/Release#implementing-view-model-in-other-programming-languages).
+  - Such FFI integration starts from defining interfaces using [the Workflow script](https://github.com/vczh-libraries/Workflow)
 - XML UI description embedding Workflow script language
   - Dynamic loading with C++ dynamic reflection opt-in
     - Allow loading foreign UI with complex behavior in runtime
   - Generate XML and Workflow to C++ source files for static linking (recommended)
     - Allow C++ dyanmic reflection opt-out to significantly improve performance and reduce binary size
-- FFI Integration with other programming languages (under development)
 
 ## Coding Agent Supports
 
@@ -20,6 +22,17 @@ GPU Accelerated C++ User Interface, with:
 - GacUI applications UI can be understand and operated by coding agents meanwhile:
   - Works even when the screen is locked.
   - Does not block you from using the computer.
+
+## Supported Platforms
+
+- Windows implementation is released in [the Release repo](https://github.com/vczh-libraries/Release)
+- Linux implementation is released in [the wGac repo](https://github.com/vczh-libraries/wGac)
+- macOS implementation is released in [the iGac repo](https://github.com/vczh-libraries/iGac)
+- HTML5 implementation is released in [the GacJS repo](https://github.com/vczh-libraries/GacJS)
+
+![](./Screenshots/FCT_Default.png)
+
+![](./Screenshots/TUI_SkyBlue%20(default).png)
 
 ## License
 

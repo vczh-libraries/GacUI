@@ -57,6 +57,11 @@ Sometimes you might need another number of clicks to show the dropdown, the scre
 For each theme you should capture the whole window and save the screenshot to the target folder:
 - The file name is `TUI_<theme>.png`, where `<theme>` is the text of the chosen theme.
 
+## Update README.md
+
+In the target folder there is also a `README.md` file listing all screenshots.
+Make sure all screenshots are listed correctly and sorted alphabetically, except that the default theme should be the first one.
+
 ## Tools for the Task
 
 - Update sections below when you find correct, stable and efficient way to interact with the OS for this task.
