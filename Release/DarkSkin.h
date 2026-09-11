@@ -3646,7 +3646,6 @@ namespace darkskin
 	public:
 		static ::darkskin::ColorPackage GetColorPackage();
 		static void SetColorPackage(::darkskin::ColorPackage colors);
-		static ::darkskin::ColorPackage CreateColorPackage(::vl::vint preset);
 		Theme();
 		~Theme();
 	};
@@ -4243,11 +4242,6 @@ namespace vl_workflow_global
 
 		::darkskin::ColorPackage CreateColorPackageInternal(::darkskin::ColorPackage accents);
 		::darkskin::ColorPackage CreateDefaultColorPackage();
-		::darkskin::ColorPackage CreateAuroraColorPackage();
-		::darkskin::ColorPackage CreateEmberColorPackage();
-		::darkskin::ColorPackage CreateMoonstoneColorPackage();
-		::darkskin::ColorPackage CreateLagoonColorPackage();
-		::darkskin::ColorPackage CreateRosewoodColorPackage();
 		void InstallColorPackage(::darkskin::ColorPackage colors);
 		::vl::Ptr<::vl::presentation::DocumentModel> CreateBaselineDocument();
 

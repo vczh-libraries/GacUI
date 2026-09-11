@@ -63,31 +63,6 @@ Global Functions
 		return GLOBAL_NAME CreateColorPackageInternal([&](){ ::darkskin::ColorPackage __vwsn_temp__; __vwsn_temp__.GeneralAccent = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#007ACC")); __vwsn_temp__.WindowBorderActive = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#017ACC")); __vwsn_temp__.ControlAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#1C97EA")); __vwsn_temp__.ArrowAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#1997EA")); __vwsn_temp__.ItemBackgroundSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#3399FF")); __vwsn_temp__.ExpandingArrowHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#0A75B9")); __vwsn_temp__.RibbonExpandingArrow = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#A0D0FF")); __vwsn_temp__.RibbonExpandingArrowPressed = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#004879")); __vwsn_temp__.TabHighlightedSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#CC7ACC")); __vwsn_temp__.TabHighlightedHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#EA97EA")); __vwsn_temp__.TabHighlightedBackground = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#604360")); __vwsn_temp__.ProgressFilling = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#07B023")); return __vwsn_temp__; }());
 	}
 
-	::darkskin::ColorPackage DarkSkin::CreateAuroraColorPackage()
-	{
-		return GLOBAL_NAME CreateColorPackageInternal([&](){ ::darkskin::ColorPackage __vwsn_temp__; __vwsn_temp__.GeneralAccent = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#168A7A")); __vwsn_temp__.WindowBorderActive = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#178A7A")); __vwsn_temp__.ControlAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#31AA97")); __vwsn_temp__.ArrowAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#2EA995")); __vwsn_temp__.ItemBackgroundSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#299C89")); __vwsn_temp__.ExpandingArrowHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#167D6D")); __vwsn_temp__.RibbonExpandingArrow = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#99DBCB")); __vwsn_temp__.RibbonExpandingArrowPressed = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#125A50")); __vwsn_temp__.TabHighlightedSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#B096DD")); __vwsn_temp__.TabHighlightedHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#C8B2EC")); __vwsn_temp__.TabHighlightedBackground = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#51455F")); __vwsn_temp__.ProgressFilling = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#C7A34D")); return __vwsn_temp__; }());
-	}
-
-	::darkskin::ColorPackage DarkSkin::CreateEmberColorPackage()
-	{
-		return GLOBAL_NAME CreateColorPackageInternal([&](){ ::darkskin::ColorPackage __vwsn_temp__; __vwsn_temp__.GeneralAccent = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#B66332")); __vwsn_temp__.WindowBorderActive = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#B76433")); __vwsn_temp__.ControlAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#D2834A")); __vwsn_temp__.ArrowAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#CF8047")); __vwsn_temp__.ItemBackgroundSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#C77540")); __vwsn_temp__.ExpandingArrowHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#A65A2F")); __vwsn_temp__.RibbonExpandingArrow = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#EDBE94")); __vwsn_temp__.RibbonExpandingArrowPressed = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#754020")); __vwsn_temp__.TabHighlightedSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#CE8EA5")); __vwsn_temp__.TabHighlightedHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#E4ABC0")); __vwsn_temp__.TabHighlightedBackground = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#60434E")); __vwsn_temp__.ProgressFilling = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#8CA95C")); return __vwsn_temp__; }());
-	}
-
-	::darkskin::ColorPackage DarkSkin::CreateMoonstoneColorPackage()
-	{
-		return GLOBAL_NAME CreateColorPackageInternal([&](){ ::darkskin::ColorPackage __vwsn_temp__; __vwsn_temp__.GeneralAccent = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#6866B4")); __vwsn_temp__.WindowBorderActive = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#6967B5")); __vwsn_temp__.ControlAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#8985D2")); __vwsn_temp__.ArrowAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#8682CE")); __vwsn_temp__.ItemBackgroundSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#7975C5")); __vwsn_temp__.ExpandingArrowHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#5E5CA4")); __vwsn_temp__.RibbonExpandingArrow = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#C6C2F0")); __vwsn_temp__.RibbonExpandingArrowPressed = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#444173")); __vwsn_temp__.TabHighlightedSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#70B7CD")); __vwsn_temp__.TabHighlightedHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#97CFE0")); __vwsn_temp__.TabHighlightedBackground = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#355763")); __vwsn_temp__.ProgressFilling = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#D08377")); return __vwsn_temp__; }());
-	}
-
-	::darkskin::ColorPackage DarkSkin::CreateLagoonColorPackage()
-	{
-		return GLOBAL_NAME CreateColorPackageInternal([&](){ ::darkskin::ColorPackage __vwsn_temp__; __vwsn_temp__.GeneralAccent = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#147F9C")); __vwsn_temp__.WindowBorderActive = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#15809D")); __vwsn_temp__.ControlAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#329FBD")); __vwsn_temp__.ArrowAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#2F9CBA")); __vwsn_temp__.ItemBackgroundSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#268FA9")); __vwsn_temp__.ExpandingArrowHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#16728A")); __vwsn_temp__.RibbonExpandingArrow = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#9CD3E0")); __vwsn_temp__.RibbonExpandingArrowPressed = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#0D5366")); __vwsn_temp__.TabHighlightedSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#CFAC6A")); __vwsn_temp__.TabHighlightedHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#E5C88C")); __vwsn_temp__.TabHighlightedBackground = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#615337")); __vwsn_temp__.ProgressFilling = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#52AF91")); return __vwsn_temp__; }());
-	}
-
-	::darkskin::ColorPackage DarkSkin::CreateRosewoodColorPackage()
-	{
-		return GLOBAL_NAME CreateColorPackageInternal([&](){ ::darkskin::ColorPackage __vwsn_temp__; __vwsn_temp__.GeneralAccent = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#A04E72")); __vwsn_temp__.WindowBorderActive = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#A14F73")); __vwsn_temp__.ControlAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#BF7393")); __vwsn_temp__.ArrowAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#BC7090")); __vwsn_temp__.ItemBackgroundSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#AD6082")); __vwsn_temp__.ExpandingArrowHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#914867")); __vwsn_temp__.RibbonExpandingArrow = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#E4B1C8")); __vwsn_temp__.RibbonExpandingArrowPressed = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#69334C")); __vwsn_temp__.TabHighlightedSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#78B5AE")); __vwsn_temp__.TabHighlightedHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#9ECEC8")); __vwsn_temp__.TabHighlightedBackground = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#3C5955")); __vwsn_temp__.ProgressFilling = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#C2A553")); return __vwsn_temp__; }());
-	}
-
 	void DarkSkin::InstallColorPackage(::darkskin::ColorPackage colors)
 	{
 		(GLOBAL_NAME darkColors = colors);
@@ -31836,41 +31811,6 @@ Class (::darkskin::Theme)
 	void Theme::SetColorPackage(::darkskin::ColorPackage colors)
 	{
 		GLOBAL_NAME InstallColorPackage(colors);
-	}
-
-	::darkskin::ColorPackage Theme::CreateColorPackage(::vl::vint preset)
-	{
-		{
-			auto __vwsn_switch_0 = preset;
-			if ((__vwsn_switch_0 == static_cast<::vl::vint>(0)))
-			{
-				return GLOBAL_NAME CreateDefaultColorPackage();
-			}
-			else if ((__vwsn_switch_0 == static_cast<::vl::vint>(1)))
-			{
-				return GLOBAL_NAME CreateAuroraColorPackage();
-			}
-			else if ((__vwsn_switch_0 == static_cast<::vl::vint>(2)))
-			{
-				return GLOBAL_NAME CreateEmberColorPackage();
-			}
-			else if ((__vwsn_switch_0 == static_cast<::vl::vint>(3)))
-			{
-				return GLOBAL_NAME CreateMoonstoneColorPackage();
-			}
-			else if ((__vwsn_switch_0 == static_cast<::vl::vint>(4)))
-			{
-				return GLOBAL_NAME CreateLagoonColorPackage();
-			}
-			else if ((__vwsn_switch_0 == static_cast<::vl::vint>(5)))
-			{
-				return GLOBAL_NAME CreateRosewoodColorPackage();
-			}
-			else
-			{
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown DarkSkin palette."));
-			}
-		}
 	}
 
 	Theme::Theme()
