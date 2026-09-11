@@ -132,3 +132,38 @@ Use the live desktop for final PNGs. GNOME's `org.gnome.Shell.Screenshot` method
 Do not use an unprocessed `RecordWindow` frame for FCT: on the tested GNOME version it excludes the libdecor title bar and pads the image to monitor dimensions. `RecordArea` captures the actual native frame. Reinspect the desktop after moving or resizing a window; never reuse another run's rectangle. Keep the window unobscured, wait for notifications to disappear, and restore any temporary notification setting afterward. Save without rescaling, require equal dimensions within each showcase's theme set, and inspect every final PNG.
 
 ### for macOS
+
+Build with `iGac/build.sh` before launching either showcase. Check that the desktop is unlocked: `ioreg -n Root -d1 -a` exposes `IOConsoleLocked`. A small Swift helper importing `Cocoa` and `ApplicationServices` can check `CGPreflightScreenCaptureAccess()` and `AXIsProcessTrusted()` before capture and native window sizing. Both were available for the procedure below on macOS 26.5.2.
+
+#### FullControlTest automation
+
+- Launch `iGac/test.sh --app:fct` in a tracked process session. If using `--unblock`, keep its child alive after the launcher returns and retain its PID for cleanup.
+- Read `http://127.0.0.1:8888/Automation/Test_FullControlTest/Controls`. Send the commands described above to `/IO` without a window id, using exactly `Content-Type: application/json; charset=utf8`. The body is the command text. In the tested macOS checkout, `/IO/<windowId>` returned `!Invalid window.` even for ids from `/Controls`; the main-window endpoint worked.
+- Locate `Window Manager` and `Customized Frame` by their current labels and bounds. Uncheck the latter and require `MainWindow.composition.control` to be `SystemFrameWindow`.
+- Open `Control` / `Document Editor (Ribbon)`. Find the `DocumentViewer`, focus its content, type the two paragraphs, then send `Ctrl+Home` and `Shift+End`. Require `Document:Selection(0,0)-(0,16)` before choosing the style.
+- Enlarge the native window until the Style gallery exposes `Header 1` directly in the main window. This avoids the separate native popup. Click its current label bounds, refocus the document, then send `Ctrl+End`. Require `<div style="Header 1">` around `This is a header` and a separate unchanged `Some randome text` paragraph in `elementDocument`. The 2026-09-10 captures used a 1200 by 650 point native frame, including the title bar; discover suitable dimensions from the current layout instead of assuming that width always expands the gallery.
+- Native sizing can use `AXUIElementCreateApplication(pid)`, its `kAXWindowsAttribute`, and `AXUIElementSetAttributeValue` with `kAXSizeAttribute` and an `AXValue` containing `CGSize`. Bring the owned window forward with application activation and `kAXRaiseAction`. Read back both the control tree and native frame bounds after sizing; macOS can constrain the requested height to the available screen area.
+- Enumerate `Default`, `Aurora`, `Ember`, `Moonstone`, `Lagoon`, and `Rosewood` from `Color Theme`. After each selection, wait for the theme refresh to settle, return to the ribbon document, restore the remembered native frame size, and verify the document again before capture.
+- Close with `!Exit` and require normal process exit.
+
+#### TuiControlTest terminal input and inspection
+
+- Use a separate Apple Terminal.app window first. The verified capture host was Terminal.app 2.15, Basic profile, SFMono-Regular 11, at 120 columns by 40 rows. Create an owned window with AppleScript `do script`, retain its window id and tab tty, and set/read the tab's `number of columns` and `number of rows`. Do not reuse the user's existing terminal window.
+- Run `iGac/test.sh --app:tui` in the foreground. For automation, a temporary PTY relay can launch that exact script, forward output unchanged to the visible terminal, and accept input bytes over a local Unix socket. Copy the terminal attributes and actual `TIOCGWINSZ` to the child PTY before launch, propagate `SIGWINCH`, forward terminal responses, and retain the child exit status. Restore the outer terminal attributes when the relay finishes.
+- AppleScript `contents of selected tab of window id <id>` returns the currently visible cell buffer, so no separate ANSI parser is needed for navigation. Read it after each action. Convert label offsets to one-based terminal columns while accounting for combining characters and double-width CJK characters; never derive input cells from screenshot pixels or font size.
+- Inject SGR mouse reports through the relay: `ESC[<35;C;RM` moves, `ESC[<0;C;RM` presses, and `ESC[<0;C;Rm` releases. Separate repeated clicks enough to avoid unintended double-clicks. These are injected terminal bytes, not evidence of physical mouse delivery.
+- Locate `List` / `BindableDataGrid`, count the five data rows excluding separators, and confirm the third row's Category is `White`. Click that cell, reread the buffer, then click its dropdown arrow if needed. The collapsed editor can display the clipped text `Whit`; verify the expanded popup contains the consecutive entries `Black`, `Red`, `Lime`, `Blue`, and `White` before capture.
+- Enumerate all six labels under `Window Manager` / `Color Theme`. Wait for `(•)` beside the selected label and for the rest of the page to finish repainting before returning to `List`. Locate the third row again and reopen its retained editor's dropdown. Use the full filename `TUI_SkyBlue (default).png` for that palette.
+- After the final capture, open `Exit`, verify cancellation is unchecked, and select `self.Close() (InvokeInMainThread)`. Require exit status zero and restored terminal modes before closing the owned Terminal window and relay. Record this scoped screenshot verification in `iGac/TestMatrix_Tui.md` without replacing earlier input-test results.
+
+#### Saving native window images
+
+Use `CGWindowListCopyWindowInfo` with `.optionOnScreenOnly` and `.excludeDesktopElements` to discover the owned window's current `kCGWindowNumber` and `kCGWindowBounds`. Match FCT by its process id and title; match Terminal by the retained native window id. Automation `windowId` values are different from these native capture ids.
+
+Bring the target window forward, keep the complete frame on screen and unobscured, and move the pointer outside it with `CGWarpMouseCursorPosition`. Capture with:
+
+```bash
+screencapture -x -o -l WINDOW_ID /absolute/path/to/Screenshots/FILENAME.png
+```
+
+This saves the complete native frame, including the title bar, while omitting the drop shadow. Do not rescale or recreate the rendered content. Verify PNG dimensions are identical within each showcase's theme set and inspect every final image. The verified 2026-09-10 images were 1200 by 650 pixels for FCT and 877 by 609 pixels for Terminal; other display scales and terminal profiles can produce different pixel dimensions.
