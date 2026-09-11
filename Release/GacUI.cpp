@@ -10644,6 +10644,7 @@ GuiComboBoxListControl
 					arguments.handled = true;
 					containedListControl->SelectItemsByKey(arguments.code, arguments.ctrl, arguments.shift);
 					break;
+				default:;
 				}
 			}
 
