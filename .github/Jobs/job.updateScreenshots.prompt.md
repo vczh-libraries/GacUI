@@ -99,4 +99,36 @@ Use screenshots for the final artifact and visual verification; the HTTP control
 
 ### for Linux
 
+Build with `wGac/build.sh` before launching either showcase. Keep `WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR`, and `DISPLAY` from the unlocked desktop session. On GNOME, check `org.gnome.ScreenSaver.GetActive` before capturing.
+
+#### FullControlTest automation
+
+- Launch `wGac/test.sh --app:fct`. Use `/Automation/Test_FullControlTest/Controls` and `/IO` on port 8888 with the same content type and commands described for Windows. Native popups have their own window ids; use the id containing the selected label when sending a popup click.
+- Locate `Window Manager` and `Customized Frame` in the current control tree. Uncheck the latter and require the main composition to report `SystemFrameWindow`.
+- Open `Control` / `Document Editor (Ribbon)`. Locate the `DocumentViewer` bounds, focus its content, type the two paragraphs, and select the first paragraph with `Ctrl+Home`, then `Shift+End`.
+- Choose `Header 1` from `Style`. At wider sizes, Style is an expanded gallery and `Header 1` can be clicked directly. Refocus the document before sending `Ctrl+End`: with the gallery focused, that key can select another style and apply it to the selected paragraph. Require `<div style="Header 1">` around the first paragraph and the unchanged second paragraph in `elementDocument`.
+- Enumerate the six palette labels from `Color Theme`. After every theme change, wait for the refreshed controls, return to the document page, and restore the remembered client size. Theme refresh can increase the window height even when the document is unchanged.
+- GNOME's native `Alt+F8` resize operation works for the libdecor frame. The first arrow selects an edge; subsequent arrows move it by ten pixels, or one pixel with Ctrl held. Finish with Enter and clear any GacUI access-key overlay with Escape. Read `/Controls` again to verify the exact client dimensions. Desktop key injection can use a temporary `org.gnome.Mutter.RemoteDesktop` session and `NotifyKeyboardKeysym`; stop that session afterward.
+- Close with `!Exit` after capturing.
+
+#### TuiControlTest terminal input and inspection
+
+- Launch a separate GNOME Terminal window with `--hide-menubar --geometry=120x40` and run `wGac/test.sh --app:tui` there. Check the actual terminal dimensions; the geometry option specifies cells. GNOME Terminal 3.52 / VTE 0.76 was used for this procedure.
+- For repeatable inspection, a temporary PTY relay can start the repository launcher, forward its output unchanged to the visible terminal, and feed a copy to an ANSI terminal parser such as `pyte`. Initialize both the child PTY and parser from the terminal's actual dimensions and propagate `SIGWINCH`. Preserve terminal modes and record the child's exit status. The app itself has no HTTP automation endpoint.
+- Read a settled cell buffer before each action. Locate labels and count grid data rows, excluding separators. Preserve wide-character occupancy when translating text offsets to columns. Do not derive input coordinates from screenshot pixels or a remembered font size.
+- Inject SGR mouse reports through the relay's PTY master. Coordinates are one-based terminal cells: `ESC[<35;C;RM` moves, `ESC[<0;C;RM` presses the left button, and `ESC[<0;C;Rm` releases it. Click the third row's Category cell, inspect the editor, and click its dropdown arrow if the popup is not already showing.
+- Enumerate `Pink`, `Orange`, `Grass`, `Emerald`, `SkyBlue (default)`, and `Purple` from `Color Theme`. Wait for `(•)` beside the chosen label and for the tab row to finish repainting before navigating back. A selected radio can appear before the rest of the refresh finishes.
+- After returning to the grid, locate the cell again; its editor may persist. Capture only after the popup visibly contains `Black`, `Red`, `Lime`, `Blue`, and `White`. Use the full palette label in each filename.
+- After capturing, dismiss the popup, open `Exit`, and choose `self.Close() (InvokeInMainThread)` with cancellation unchecked. Require exit status zero and restored terminal modes, then close the owned terminal and relay.
+
+#### Saving native window images on GNOME Wayland
+
+Use the live desktop for final PNGs. GNOME's `org.gnome.Shell.Screenshot` methods may reject ordinary D-Bus callers. The compositor's `org.gnome.Mutter.ScreenCast` interface provides a working capture path:
+
+1. Keep one session-bus connection open, call `CreateSession({})`, and call `RecordMonitor` on the returned session to inspect the current desktop. Determine the showcase's complete native frame rectangle from this fresh image.
+2. For the final image, create a session with `RecordArea(x, y, width, height, {"cursor-mode": uint32(0)})`. Subscribe to the returned stream's `PipeWireStreamAdded` signal before calling the session's `Start` method.
+3. Use its PipeWire node id in a GStreamer pipeline: `pipewiresrc path=NODE num-buffers=1 ! videoconvert ! pngenc ! filesink location=PATH`. Wait for EOS, set the pipeline to NULL, and call the session's `Stop` method. Python's system `gi` bindings for Gio, GLib, and Gst can drive this without a command-line GStreamer executable.
+
+Do not use an unprocessed `RecordWindow` frame for FCT: on the tested GNOME version it excludes the libdecor title bar and pads the image to monitor dimensions. `RecordArea` captures the actual native frame. Reinspect the desktop after moving or resizing a window; never reuse another run's rectangle. Keep the window unobscured, wait for notifications to disappear, and restore any temporary notification setting afterward. Save without rescaling, require equal dimensions within each showcase's theme set, and inspect every final PNG.
+
 ### for macOS
