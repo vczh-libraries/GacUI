@@ -8,19 +8,6 @@
     {
       InstallColorPackage(colors);
     }
-    static func CreateColorPackage(preset : int) : ColorPackage
-    {
-      switch (preset)
-      {
-        case 0: { return CreateDefaultColorPackage(); }
-        case 1: { return CreateAuroraColorPackage(); }
-        case 2: { return CreateEmberColorPackage(); }
-        case 3: { return CreateMoonstoneColorPackage(); }
-        case 4: { return CreateLagoonColorPackage(); }
-        case 5: { return CreateRosewoodColorPackage(); }
-        default: { raise "Unknown DarkSkin palette."; }
-      }
-    }
   ]]></ref.Members>
   <ThemeTemplates Name="DarkSkin" PreferCustomFrameWindow="true">
     <att.SystemFrameWindow>x:SystemFrameWindowTemplate</att.SystemFrameWindow>

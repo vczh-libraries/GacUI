@@ -1997,7 +1997,7 @@
         "ElementDesc_SolidBackground",
         {
           "id": 179,
-          "backgroundColor": "#3399FF",
+          "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -2057,7 +2057,7 @@
         "ElementDesc_SolidBackground",
         {
           "id": 185,
-          "backgroundColor": "#00000000",
+          "backgroundColor": "#3399FF",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]

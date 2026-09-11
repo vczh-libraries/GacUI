@@ -2413,8 +2413,8 @@ class gaclib_controls::FileDialogWindow : presentation::controls::GuiWindow, gac
 
     function GetStrings() : gaclib_controls::IDialogStringsStrings^;
     function GetViewModel() : presentation::IFileDialogViewModel^;
-    function MakeOpenFileDialog() : system::Void;
-    function MakeSaveFileDialog() : system::Void;
+    function MakeOpenFileDialog(initialFileName : system::String) : system::Void;
+    function MakeSaveFileDialog(initialFileName : system::String) : system::Void;
     function SetStrings(__vwsn_value_ : gaclib_controls::IDialogStringsStrings^) : system::Void;
     function __vwsn_instance_ctor_() : system::Void;
 
@@ -2478,6 +2478,7 @@ class gaclib_controls::FilePickerControl : presentation::controls::GuiCustomCont
     function GetStrings() : gaclib_controls::IDialogStringsStrings^;
     function GetViewModel() : presentation::IFileDialogViewModel^;
     function LocateSelectedFolderInTreeView() : system::Void;
+    function SetInitialFileName(value : system::String) : system::Void;
     function SetStrings(__vwsn_value_ : gaclib_controls::IDialogStringsStrings^) : system::Void;
     function __vwsn_instance_ctor_() : system::Void;
 
@@ -10545,8 +10546,8 @@ class tui_controls::TuiFileDialogWindow : presentation::controls::GuiWindow, tui
 
     function GetStrings() : tui_controls::ITuiDialogStringsStrings^;
     function GetViewModel() : presentation::IFileDialogViewModel^;
-    function MakeOpenFileDialog() : system::Void;
-    function MakeSaveFileDialog() : system::Void;
+    function MakeOpenFileDialog(initialFileName : system::String) : system::Void;
+    function MakeSaveFileDialog(initialFileName : system::String) : system::Void;
     function SetStrings(__vwsn_value_ : tui_controls::ITuiDialogStringsStrings^) : system::Void;
     function __vwsn_instance_ctor_() : system::Void;
 
@@ -10608,6 +10609,7 @@ class tui_controls::TuiFilePickerControl : presentation::controls::GuiCustomCont
     function GetStrings() : tui_controls::ITuiDialogStringsStrings^;
     function GetViewModel() : presentation::IFileDialogViewModel^;
     function LocateSelectedFolderInTreeView() : system::Void;
+    function SetInitialFileName(value : system::String) : system::Void;
     function SetStrings(__vwsn_value_ : tui_controls::ITuiDialogStringsStrings^) : system::Void;
     function __vwsn_instance_ctor_() : system::Void;
 
