@@ -271,6 +271,19 @@ Append a completed card here for each legacy-terminal failure that prompts a Kit
 | Platform limits | wGac global-shortcut registration currently returns an ID without OS registration; global F8 is unavailable. GNOME terminal mouse tests verify Left/Middle/Right and Alt; extended buttons, independent Super and horizontal wheel delivery are not established. |
 | Evidence | `wGac/TestMatrix_Tui.md`, `/tmp/rpxplat-legacy-super-failure.png`, `/tmp/rpxplat-tui.input`, `/tmp/rpxplat-kitty-tui.input`; all six normal exit paths passed, and the temporary terminals, apps and helper servers were closed. |
 
+### macOS locked-desktop terminal comparison, 2026-09-10
+
+| Field | Observed result |
+| --- | --- |
+| Host / build / configuration | macOS 26.5.2 arm64; GacUI base `195b7827b` plus the template-stacking fix, iGac base `a7bd388` plus synchronization/Command-key fixes. Fresh 100x30 and 80x25 startup; functional replay at 120x40 and 80x25. |
+| Legacy terminal attempted first | Apple Terminal.app 2.15, Basic profile, SFMono-Regular 11, no explicit Option-as-Meta setting. The foreground showcase launched and its buffer was readable. |
+| Operation and expected result | Window Manager Ctrl+Q opens `You pressed Ctrl+Q!`; Ctrl+Alt+Command+Q opens `You pressed Ctrl+Alt+Win+Q!`. Physical modifier holds and release order were unavailable. |
+| Legacy result | System Events generated Ctrl+Q did not reach the app. macOS reported `CGSSessionScreenIsLocked=true`; desktop capture was black. No successful native Command delivery was established. Raw SGR replay separately closed the showcase normally with exit 0 and usable shell input. |
+| Kitty retry after failure | Installed Kitty 0.48.2, ordinary keyboard configuration with local socket control. Kitty `send-key` produced both exact local shortcut dialogs, Enter dismissed them, and ordinary Ctrl+Q still worked after extensive dialog/palette tests. Pointer tests used SGR byte replay. |
+| Conclusion | Native/physical comparison is unavailable on this locked desktop. Kitty test-key and byte-replay checks passed; they do not establish physical delivery or prove a native Terminal-versus-Kitty difference. POSIX key-down-only semantics leave Space button release unavailable; Tab/Enter palette activation passed. |
+| Platform limits | Global Carbon activation, final displayed colors/fonts/cursor, ALT access overlays and physical input were not observed. Standard SGR provides Left/Middle/Right and Shift/Alt/Ctrl, without independent Super or Mouse4/5. |
+| Evidence / cleanup | `iGac/TestMatrix_Tui.md`; `/tmp/rpxplat-20260910/tui-*.txt`, `.ansi`, `tui-input.log` and build/test logs. All six separate normal exit paths restored exact stty modes, alternate-screen contents and usable shell input. The showcase processes, temporary terminal windows, website server and test helpers were closed. |
+
 ### macOS legacy Alt/Command limitation, 2026-09-09
 
 | Field | Observed result |

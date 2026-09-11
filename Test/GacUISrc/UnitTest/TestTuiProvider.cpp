@@ -288,6 +288,7 @@ TEST_FILE
 					auto filter = new GuiMenu(theme::ThemeName::Menu, listView);
 					column->SetDropdownPopup(filter);
 					listView->GetColumns().Add(column);
+					listView->GetColumns().Add(Ptr(new list::ListViewColumn(L"Adjacent", 20)));
 					for (vint i = 0; i < 40; i++)
 					{
 						auto item = Ptr(new list::ListViewItem);
@@ -330,6 +331,22 @@ TEST_FILE
 					GuiListViewColumnHeader* header = nullptr;
 					Ptr<GuiDisposedFlag> headerFlag;
 					Ptr<GuiDisposedFlag> arrowFlag;
+					auto checkColumnResizing = [&]()
+					{
+						auto bounds = arranger->GetColumnSplitters()[0]->GetGlobalBounds();
+						WindowMouseInfo info;
+						info.x = bounds.x1;
+						info.y = bounds.y1;
+						controller->MouseMove(info);
+						info.left = true;
+						controller->MouseDown(NativeMouseButton::Left, info);
+						info.x += 2;
+						controller->MouseMove(info);
+						info.left = false;
+						controller->MouseUp(NativeMouseButton::Left, info);
+						TEST_ASSERT(column->GetSize() == 62);
+						column->SetSize(60);
+					};
 					steps.Add([&]()
 					{
 						main.ForceCalculateSizeImmediately();
@@ -338,15 +355,16 @@ TEST_FILE
 					steps.Add([&]()
 					{
 						checkLabelColors(tuiskin::CreateDefaultColorPackage());
-						listView->SetViewPosition(Point(5, 10));
+						listView->SetViewPosition(Point(30, 10));
 						viewPosition = listView->GetViewPosition();
 						TEST_ASSERT(viewPosition.x > 0 && viewPosition.y > 0);
 						mainBounds = main.GetNativeWindow()->GetBounds();
 						arranger = dynamic_cast<list::ListViewColumnItemArranger*>(listView->GetArranger());
-						TEST_ASSERT(arranger && arranger->GetColumnButtons().Count() == 1);
+						TEST_ASSERT(arranger && arranger->GetColumnButtons().Count() == 2);
 						header = arranger->GetColumnButtons()[0];
 						headerFlag = header->GetDisposedFlag();
 					});
+					steps.Add(checkColumnResizing);
 					for (auto colors : { tuiskin::CreatePinkColorPackage(), tuiskin::CreateOrangeColorPackage(), tuiskin::CreateGrassPackage(), tuiskin::CreateEmeraldPackage(), tuiskin::CreatePurplePackage(), tuiskin::CreateSkyblueColorPackage() })
 					{
 						steps.Add([&, colors]()
@@ -377,6 +395,7 @@ TEST_FILE
 							auto actions = menuActions;
 							menu->GetSubMenuHost()->BeforeClicked.Execute(menu->GetNotifyEventArguments());
 							TEST_ASSERT(menuActions == actions + 1);
+							checkColumnResizing();
 						});
 					}
 					steps.Add([&]()

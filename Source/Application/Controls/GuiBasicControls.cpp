@@ -111,9 +111,11 @@ GuiControl
 					}
 				}
 				bool initialize = controlTemplateObject == nullptr;
+				vint templateIndex = -1;
 				if (controlTemplateObject)
 				{
 					BeforeControlTemplateUninstalled();
+					templateIndex = boundsComposition->Children().IndexOf(controlTemplateObject);
 					containerComposition->GetParent()->RemoveChild(containerComposition);
 					boundsComposition->AddChild(containerComposition);
 					SafeDeleteComposition(controlTemplateObject);
@@ -134,7 +136,7 @@ GuiControl
 					controlTemplateObject->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
 					containerComposition->GetParent()->RemoveChild(containerComposition);
-					boundsComposition->AddChild(controlTemplateObject);
+					boundsComposition->InsertChild(templateIndex == -1 ? boundsComposition->Children().Count() : templateIndex, controlTemplateObject);
 					controlTemplateObject->GetContainerComposition()->AddChild(containerComposition);
 					AfterControlTemplateInstalled(initialize);
 				}
