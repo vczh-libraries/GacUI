@@ -1,0 +1,3 @@
+- Verify if `REPO-ROOT/ToDo/Task_UIA.md` already enumerates complete UIA node and provider types, fix this document if not.
+- Verify the source code of the current tool (details in `AGENTS.md`) and see if it renders all node and provider types, as well as properties.
+- commit and push all local changes.
