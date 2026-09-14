@@ -1,0 +1,22 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+Project("{BC8A1FFA-BEE3-4634-8014-F334798102B3}") = "UiaFixture", "UiaFixture\UiaFixture.vcxproj", "{A94CD5CC-B3B7-4EE9-A9F8-803477C16727}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A94CD5CC-B3B7-4EE9-A9F8-803477C16727}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A94CD5CC-B3B7-4EE9-A9F8-803477C16727}.Debug|Win32.Build.0 = Debug|Win32
+		{A94CD5CC-B3B7-4EE9-A9F8-803477C16727}.Debug|x64.ActiveCfg = Debug|x64
+		{A94CD5CC-B3B7-4EE9-A9F8-803477C16727}.Debug|x64.Build.0 = Debug|x64
+		{A94CD5CC-B3B7-4EE9-A9F8-803477C16727}.Release|Win32.ActiveCfg = Release|Win32
+		{A94CD5CC-B3B7-4EE9-A9F8-803477C16727}.Release|Win32.Build.0 = Release|Win32
+		{A94CD5CC-B3B7-4EE9-A9F8-803477C16727}.Release|x64.ActiveCfg = Release|x64
+		{A94CD5CC-B3B7-4EE9-A9F8-803477C16727}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+EndGlobal

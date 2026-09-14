@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files" />
+    <Filter Include="Header Files" />
+    <Filter Include="Resource Files" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Import\Vlpp.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\Import\Vlpp.Windows.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppOS.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppOS.Windows.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppRegex.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppReflection.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppGlrParser.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppWorkflowLibrary.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\Release\GacUI.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\Release\GacUI.Windows.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\Release\DarkSkin.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClInclude Include="..\..\..\Import\Vlpp.h"><Filter>Source Files</Filter></ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppOS.h"><Filter>Source Files</Filter></ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppOS.Windows.h"><Filter>Source Files</Filter></ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppRegex.h"><Filter>Source Files</Filter></ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppReflection.h"><Filter>Source Files</Filter></ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppGlrParser.h"><Filter>Source Files</Filter></ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppWorkflowLibrary.h"><Filter>Source Files</Filter></ClInclude>
+    <ClInclude Include="..\..\..\Release\GacUI.h"><Filter>Source Files</Filter></ClInclude>
+    <ClInclude Include="..\..\..\Release\GacUI.Windows.h"><Filter>Source Files</Filter></ClInclude>
+    <ClInclude Include="..\..\..\Release\DarkSkin.h"><Filter>Source Files</Filter></ClInclude>
+  </ItemGroup>
+</Project>

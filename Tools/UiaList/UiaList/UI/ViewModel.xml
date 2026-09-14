@@ -1,0 +1,197 @@
+<Workflow><![CDATA[
+module uialist;
+using system::*;
+using presentation::*;
+namespace uialist
+{
+namespace vm
+{
+  enum ProcessNodeKind { SyntheticRoot = 0, Process = 1, Window = 2, }
+
+  interface IProcessNodeViewModel
+  {
+    prop Kind : ProcessNodeKind {const}
+    prop DisplayText : string {const}
+    prop ProcessId : uint {const}
+    prop ParentId : uint {const}
+    prop Executable : string {const}
+    prop CreationTime : UInt64? {const}
+    prop WindowKey : UInt64 {const}
+    prop WindowTitle : string {const}
+    prop WindowClass : string {const}
+    prop Children : IProcessNodeViewModel^[] {const}
+    prop IsExpanded : bool {}
+  }
+
+  interface INodeViewModel
+  {
+    prop IsSyntheticRoot : bool {const}
+    prop NodeId : int {const}
+    prop ParentId : int {const}
+    prop RuntimeIdText : string {const}
+    prop Children : INodeViewModel^[] {const}
+    prop DisplayText : string {const}
+    prop RoleText : string {const}
+    prop ClientInterfaceName : string {const}
+    prop ProviderNames : string {const}
+    prop Bounds : Rect {const}
+    prop IsOffscreen : bool {const}
+    prop IsExpanded : bool {}
+    prop IsSelected : bool {const}
+  }
+
+  interface IPreviewViewModel
+  {
+    prop Image : GuiImageData^ {const}
+    prop ImageSize : Size {const}
+    prop IsAvailable : bool {const}
+    prop Status : string {const}
+    prop HoverLabel : string {const}
+    prop HoverBounds : Rect {const}
+    prop HasHover : bool {const}
+    func Hover(x : int, y : int) : void;
+    func Leave() : void;
+    func Click(x : int, y : int) : void;
+  }
+
+  interface ITextDialogViewModel
+  {
+    prop Title : string {const}
+    prop OriginalText : string {const}
+    prop DraftText : string {}
+    prop IsReadOnly : bool {const}
+    prop CanAccept : bool {const}
+    prop ValidationMessage : string {const}
+    prop IsOpen : bool {const}
+    func Accept() : void;
+    func Cancel() : void;
+  }
+
+  interface IPropertyRowViewModel
+  {
+    prop Key : string {const}
+    prop Label : string {const}
+    prop DisplayValue : string {const}
+    prop CanEdit : bool {const}
+    prop IsMultiline : bool {const}
+    prop IsSelected : bool {const}
+    prop IsEditing : bool {const}
+    prop EditorKind : int {const}
+    prop Choices : string[] {const}
+    prop ChoiceIndex : int {}
+    prop DraftText : string {}
+    prop ValidationMessage : string {const}
+    func BeginEdit() : void;
+    func Commit() : void;
+    func Cancel() : void;
+    func OpenDetails() : void;
+  }
+
+  interface IReferenceViewModel
+  {
+    prop Key : int {const}
+    prop Label : string {const}
+    prop IsRange : bool {const}
+    prop CanInspect : bool {const}
+    prop CanReveal : bool {const}
+    prop Status : string {const}
+    func Inspect() : void;
+    func Reveal() : void;
+  }
+
+  interface IActionParameterViewModel
+  {
+    prop Label : string {const}
+    prop Kind : int {const}
+    prop DraftText : string {}
+    prop Choices : string[] {const}
+    prop ChoiceIndex : int {}
+    prop IsMultiline : bool {const}
+    prop ValidationMessage : string {const}
+    func EditText() : void;
+    prop SelectedReferences : string {const}
+    func AddReference() : void;
+    func ClearReferences() : void;
+  }
+
+  interface IActionResultViewModel
+  {
+    prop Operation : string {const}
+    prop DisplayValue : string {const}
+    prop References : IReferenceViewModel^[] {const}
+    func OpenDetails() : void;
+  }
+
+  interface IActionCommandViewModel
+  {
+    prop Key : string {const}
+    prop Label : string {const}
+    prop Parameters : IActionParameterViewModel^[] {const}
+    prop CanExecute : bool {const}
+    prop IsBusy : bool {const}
+    prop Status : string {const}
+    func Execute() : void;
+  }
+
+  interface IActionSectionViewModel
+  {
+    prop Heading : string {const}
+    prop PatternId : int {const}
+    prop Readouts : IPropertyRowViewModel^[] {const}
+    prop Commands : IActionCommandViewModel^[] {const}
+    prop IsExpanded : bool {}
+  }
+
+  interface ITextRangeViewModel
+  {
+    prop Label : string {const}
+    prop Section : IActionSectionViewModel^ {const}
+    prop Sections : IActionSectionViewModel^[] {const}
+  }
+
+  interface IPropertyDialogViewModel
+  {
+    prop Title : string {const}
+    prop Rows : IPropertyRowViewModel^[] {const}
+    prop Sections : IActionSectionViewModel^[] {const}
+    prop References : IReferenceViewModel^[] {const}
+    prop Results : IActionResultViewModel^[] {const}
+    prop TextRanges : ITextRangeViewModel^[] {const}
+    prop TextDialog : ITextDialogViewModel^ {const}
+    prop IsBusy : bool {const}
+    prop Status : string {const}
+    prop IsOpen : bool {const}
+    prop SelectedRowIndex : int {const}
+    func Refresh() : void;
+    func SelectRow(row : IPropertyRowViewModel^) : bool;
+    func BeginEdit(row : IPropertyRowViewModel^) : void;
+    func CommitEdit(row : IPropertyRowViewModel^) : void;
+    func CancelEdit(row : IPropertyRowViewModel^) : void;
+    func OpenText(row : IPropertyRowViewModel^) : void;
+    func Close() : void;
+  }
+
+  interface IUiaListViewModel
+  {
+    prop ProcessRoot : IProcessNodeViewModel^ {const}
+    prop NodeRoot : INodeViewModel^ {const}
+    prop SelectedWindow : IProcessNodeViewModel^ {const}
+    prop SelectedNode : INodeViewModel^ {const}
+    prop Preview : IPreviewViewModel^ {const}
+    prop HasSelection : bool {const}
+    prop ActiveTab : int {}
+    prop IsBusy : bool {const}
+    prop Status : string {const}
+    prop LocaleName : string {const}
+    prop PropertyDialog : IPropertyDialogViewModel^ {const}
+    func Initialize() : void;
+    func RefreshProcesses() : void;
+    func RefreshWindow() : void;
+    func SelectWindow(window : IProcessNodeViewModel^) : void;
+    func SelectNode(node : INodeViewModel^) : void;
+    func InspectNode(node : INodeViewModel^) : void;
+    func RequestClose() : void;
+  }
+}
+}
+]]></Workflow>

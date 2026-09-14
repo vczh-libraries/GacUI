@@ -1,0 +1,21 @@
+<Resource>
+  <Folder name="GacGenConfig">
+    <Xml name="Metadata">
+      <ResourceMetadata Name="UiaList" Version="1.0"/>
+    </Xml>
+    <Folder name="Cpp">
+      <Text name="Name">UiaList</Text>
+      <Text name="SourceFolder">../Source</Text>
+      <Text name="NormalInclude">GacUI.h</Text>
+      <Text name="ReflectionInclude">GacUIReflection.h</Text>
+      <Text name="CppCompressed">UiaListResource.cpp</Text>
+    </Folder>
+  </Folder>
+  <Script name="ViewModel" content="File">ViewModel.xml</Script>
+  <LocalizedStrings name="Strings" content="File">Strings.xml</LocalizedStrings>
+  <Instance name="MainWindow" content="File">MainWindow.xml</Instance>
+  <Instance name="PropertyWindow" content="File">PropertyWindow.xml</Instance>
+  <Instance name="MultilineWindow" content="File">MultilineWindow.xml</Instance>
+  <Folder name="PropertyTemplates" content="Link">PropertyTemplates.xml</Folder>
+  <Folder name="ActionTemplates" content="Link">ActionTemplates.xml</Folder>
+</Resource>

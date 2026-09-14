@@ -1,0 +1,63 @@
+<Folder>
+  <Instance name="PropertyValueVisualizer">
+    <Instance ref.CodeBehind="false" ref.Class="uialist::PropertyValueVisualizer">
+      <ref.Members><![CDATA[
+        prop Row : uialist::vm::IPropertyRowViewModel^ = null {}
+        prop Editing : bool = false {}
+      ]]></ref.Members>
+      <GridVisualizerTemplate ref.Name="self" Row-bind="self.RowValue as uialist::vm::IPropertyRowViewModel^" Editing-bind="(self.Row.IsEditing and not self.Row.IsMultiline) ?? false" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="y:30">
+        <ev.EditingChanged-eval><![CDATA[{
+          if (self.Editing)
+          {
+            GuiApplication::GetApplication().InvokeInMainThread(self.RelatedControlHost, func() : void
+            {
+              if (self.Editing)
+              {
+                if (self.Row.EditorKind == 3) { choiceEditor.SetFocused(); }
+                else { inlineEditor.SetFocused(); }
+              }
+            });
+          }
+        }]]></ev.EditingChanged-eval>
+        <Bounds AlignmentToParent="left:4 top:2 right:4 bottom:2">
+          <ev.mouseDown-eval><![CDATA[{ if (arguments.button == NativeMouseButton::Left and self.Row is not null) { self.Row.BeginEdit(); } }]]></ev.mouseDown-eval>
+          <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" Visible-bind="not self.Editing">
+            <SolidLabel Text-bind="self.Row.DisplayValue ?? ''" Color-bind="self.PrimaryTextColor" Font-bind="self.Font" Ellipse="true" VerticalAlignment="Center"/>
+          </Bounds>
+          <SinglelineTextBox ref.Name="inlineEditor" Text-bind="self.Row.DraftText ?? ''" Visible-bind="(self.Editing and self.Row.EditorKind != 3) ?? false" Enabled-bind="self.Row.CanEdit ?? false">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <ev.TextChanged-eval><![CDATA[if (self.Editing) { self.Row.DraftText = inlineEditor.Text; }]]></ev.TextChanged-eval>
+            <att.FocusableComposition-set>
+              <ev.keyDown-eval><![CDATA[{
+                if (arguments.code == VKEY::KEY_RETURN) { self.Row.Commit(); arguments.handled = true; }
+                if (arguments.code == VKEY::KEY_ESCAPE) { self.Row.Cancel(); arguments.handled = true; }
+              }]]></ev.keyDown-eval>
+            </att.FocusableComposition-set>
+          </SinglelineTextBox>
+          <ComboBox ref.Name="choiceEditor" SelectedIndex-bind="self.Row.ChoiceIndex ?? -1" Visible-bind="(self.Editing and self.Row.EditorKind == 3) ?? false" Enabled-bind="self.Row.CanEdit ?? false">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <att.ListControl><BindableTextList env.ItemType="string" env.ItemName="choice" ItemSource-bind="self.Row.Choices ?? null"><att.TextProperty>choice</att.TextProperty></BindableTextList></att.ListControl>
+            <ev.SelectedIndexChanged-eval><![CDATA[if (self.Editing) { self.Row.ChoiceIndex = choiceEditor.SelectedIndex; }]]></ev.SelectedIndexChanged-eval>
+            <att.FocusableComposition-set>
+              <ev.keyDown-eval><![CDATA[{
+                if (arguments.code == VKEY::KEY_RETURN) { self.Row.Commit(); arguments.handled = true; }
+                if (arguments.code == VKEY::KEY_ESCAPE) { self.Row.Cancel(); arguments.handled = true; }
+              }]]></ev.keyDown-eval>
+            </att.FocusableComposition-set>
+          </ComboBox>
+        </Bounds>
+      </GridVisualizerTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="PropertyDetailsVisualizer">
+    <Instance ref.CodeBehind="false" ref.Class="uialist::PropertyDetailsVisualizer">
+      <ref.Members><![CDATA[prop Row : uialist::vm::IPropertyRowViewModel^ = null {}]]></ref.Members>
+      <GridVisualizerTemplate ref.Name="self" Row-bind="self.RowValue as uialist::vm::IPropertyRowViewModel^" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="y:30">
+        <Button ref.Name="detailsButton" Text="..." Visible-bind="self.Row.IsSelected ?? false">
+          <att.BoundsComposition-set AlignmentToParent="left:3 top:2 right:3 bottom:2"/>
+          <ev.Clicked-eval>self.Row.OpenDetails();</ev.Clicked-eval>
+        </Button>
+      </GridVisualizerTemplate>
+    </Instance>
+  </Instance>
+</Folder>

@@ -1,0 +1,132 @@
+<Folder>
+  <Instance name="ActionReadoutTemplate">
+    <Instance ref.CodeBehind="false" ref.Class="uialist::ActionReadoutTemplate">
+      <ref.Parameter Name="ViewModel" Class="uialist::vm::IPropertyRowViewModel"/>
+      <ref.LocalizedStrings Name="Strings" Class="uialist::Strings" Default="true"/>
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="y:30">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows><_>composeType:MinSize</_></att.Rows>
+          <att.Columns><_>composeType:Percentage percentage:0.4</_><_>composeType:Percentage percentage:0.6</_><_>composeType:MinSize</_></att.Columns>
+          <Cell Site="row:0 column:0"><SolidLabel Text-bind="ViewModel.Label" Font-bind="self.Font" Color="#B8CBE8" Ellipse="true" VerticalAlignment="Center"/></Cell>
+          <Cell Site="row:0 column:1"><SolidLabel Text-bind="ViewModel.DisplayValue" Font-bind="self.Font" Color="#FFFFFF" Ellipse="true" VerticalAlignment="Center"/></Cell>
+          <Cell Site="row:0 column:2"><Button Text-str="Details()"><ev.Clicked-eval>ViewModel.OpenDetails();</ev.Clicked-eval></Button></Cell>
+        </Table>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="ActionParameterTemplate">
+    <Instance ref.CodeBehind="false" ref.Class="uialist::ActionParameterTemplate">
+      <ref.Parameter Name="ViewModel" Class="uialist::vm::IActionParameterViewModel"/>
+      <ref.LocalizedStrings Name="Strings" Class="uialist::Strings" Default="true"/>
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="4" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows><_>composeType:MinSize</_><_>composeType:MinSize</_><_>composeType:MinSize</_></att.Rows>
+          <att.Columns><_>composeType:Percentage percentage:0.35</_><_>composeType:Percentage percentage:0.65</_></att.Columns>
+          <Cell Site="row:0 column:0"><SolidLabel Text-bind="ViewModel.Label" Font-bind="self.Font" Color="#DDDDDD" WrapLine="true" WrapLineHeightCalculation="true" VerticalAlignment="Center"/></Cell>
+          <Cell Site="row:0 column:1">
+            <Bounds PreferredMinSize="y:30" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <SinglelineTextBox ref.Name="argumentText" Text-bind="ViewModel.DraftText" Visible-bind="ViewModel.Kind == 0 and not ViewModel.IsMultiline">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.TextChanged-eval>ViewModel.DraftText = argumentText.Text;</ev.TextChanged-eval>
+              </SinglelineTextBox>
+              <ComboBox ref.Name="argumentChoice" SelectedIndex-bind="ViewModel.ChoiceIndex" Visible-bind="ViewModel.Kind != 0">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <att.ListControl><BindableTextList env.ItemType="string" env.ItemName="choice" ItemSource-bind="ViewModel.Choices"><att.TextProperty>choice</att.TextProperty></BindableTextList></att.ListControl>
+                <ev.SelectedIndexChanged-eval>ViewModel.ChoiceIndex = argumentChoice.SelectedIndex;</ev.SelectedIndexChanged-eval>
+              </ComboBox>
+              <Button Text-str="EditText()" Visible-bind="ViewModel.IsMultiline">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>ViewModel.EditText();</ev.Clicked-eval>
+              </Button>
+            </Bounds>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:2"><SolidLabel Text-bind="ViewModel.ValidationMessage" Font-bind="self.Font" Color="#FFB8B8" WrapLine="true" WrapLineHeightCalculation="true"/></Cell>
+          <Cell Site="row:2 column:0 columnSpan:2">
+            <Stack Direction="Vertical" MinSizeLimitation="LimitToElementAndChildren" Visible-bind="ViewModel.Kind == 2">
+              <StackItem MinSizeLimitation="LimitToElementAndChildren"><Stack Direction="Horizontal" Padding="5" MinSizeLimitation="LimitToElementAndChildren">
+                <StackItem MinSizeLimitation="LimitToElementAndChildren"><Button Text-str="AddReference()"><ev.Clicked-eval>ViewModel.AddReference();</ev.Clicked-eval></Button></StackItem>
+                <StackItem MinSizeLimitation="LimitToElementAndChildren"><Button Text-str="ClearReferences()"><ev.Clicked-eval>ViewModel.ClearReferences();</ev.Clicked-eval></Button></StackItem>
+              </Stack></StackItem>
+              <StackItem MinSizeLimitation="LimitToElementAndChildren"><SolidLabel Text-bind="ViewModel.Kind == 2 ? ViewModel.SelectedReferences : ''" Font-bind="self.Font" Color="#DDDDDD" WrapLine="true" WrapLineHeightCalculation="true" Multiline="true"/></StackItem>
+            </Stack>
+          </Cell>
+        </Table>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="ActionCommandTemplate">
+    <Instance ref.CodeBehind="false" ref.Class="uialist::ActionCommandTemplate">
+      <ref.Parameter Name="ViewModel" Class="uialist::vm::IActionCommandViewModel"/>
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Stack Direction="Vertical" Padding="3" ExtraMargin="left:8 top:5 right:8 bottom:5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem MinSizeLimitation="LimitToElementAndChildren">
+            <Button ref.Name="executeAction" Text-bind="ViewModel.Label" Enabled-bind="ViewModel.CanExecute">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>ViewModel.Execute();</ev.Clicked-eval>
+            </Button>
+          </StackItem>
+          <StackItem MinSizeLimitation="LimitToElementAndChildren">
+            <RepeatStack Direction="Vertical" Padding="2" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.Parameters"><att.ItemTemplate>uialist::ActionParameterTemplate</att.ItemTemplate></RepeatStack>
+          </StackItem>
+          <StackItem MinSizeLimitation="LimitToElementAndChildren"><SolidLabel Text-bind="ViewModel.Status" Font-bind="self.Font" Color="#DDDDDD" WrapLine="true" WrapLineHeightCalculation="true"/></StackItem>
+        </Stack>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="ActionSectionTemplate">
+    <Instance ref.CodeBehind="false" ref.Class="uialist::ActionSectionTemplate">
+      <ref.Parameter Name="ViewModel" Class="uialist::vm::IActionSectionViewModel"/>
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
+        <Stack Direction="Vertical" Padding="5" ExtraMargin="left:5 top:5 right:5 bottom:8" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem MinSizeLimitation="LimitToElementAndChildren">
+            <Button Text-bind="ViewModel.Heading"><att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/><ev.Clicked-eval>ViewModel.IsExpanded = not ViewModel.IsExpanded;</ev.Clicked-eval></Button>
+          </StackItem>
+          <StackItem MinSizeLimitation="LimitToElementAndChildren" Visible-bind="ViewModel.IsExpanded">
+            <RepeatStack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.IsExpanded ? ViewModel.Readouts : null"><att.ItemTemplate>uialist::ActionReadoutTemplate</att.ItemTemplate></RepeatStack>
+          </StackItem>
+          <StackItem MinSizeLimitation="LimitToElementAndChildren" Visible-bind="ViewModel.IsExpanded">
+            <RepeatStack Direction="Vertical" Padding="8" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.IsExpanded ? ViewModel.Commands : null"><att.ItemTemplate>uialist::ActionCommandTemplate</att.ItemTemplate></RepeatStack>
+          </StackItem>
+        </Stack>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="ReferenceTemplate">
+    <Instance ref.CodeBehind="false" ref.Class="uialist::ReferenceTemplate">
+      <ref.Parameter Name="ViewModel" Class="uialist::vm::IReferenceViewModel"/>
+      <ref.LocalizedStrings Name="Strings" Class="uialist::Strings" Default="true"/>
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="4" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows><_>composeType:MinSize</_><_>composeType:MinSize</_></att.Rows>
+          <att.Columns><_>composeType:Percentage percentage:1.0</_><_>composeType:MinSize</_><_>composeType:MinSize</_></att.Columns>
+          <Cell Site="row:0 column:0"><SolidLabel Text-bind="ViewModel.Label" Font-bind="self.Font" Color="#FFFFFF" WrapLine="true" WrapLineHeightCalculation="true"/></Cell>
+          <Cell Site="row:0 column:1"><Button Text-str="Inspect()" Enabled-bind="ViewModel.CanInspect"><ev.Clicked-eval>ViewModel.Inspect();</ev.Clicked-eval></Button></Cell>
+          <Cell Site="row:0 column:2"><Button Text-str="Reveal()" Enabled-bind="ViewModel.CanReveal"><ev.Clicked-eval>ViewModel.Reveal();</ev.Clicked-eval></Button></Cell>
+          <Cell Site="row:1 column:0 columnSpan:3"><SolidLabel Text-bind="ViewModel.Status" Font-bind="self.Font" Color="#BBBBBB" WrapLine="true" WrapLineHeightCalculation="true"/></Cell>
+        </Table>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="ActionResultTemplate">
+    <Instance ref.CodeBehind="false" ref.Class="uialist::ActionResultTemplate">
+      <ref.Parameter Name="ViewModel" Class="uialist::vm::IActionResultViewModel"/>
+      <ref.LocalizedStrings Name="Strings" Class="uialist::Strings" Default="true"/>
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Stack Direction="Vertical" Padding="5" ExtraMargin="left:5 top:5 right:5 bottom:5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem MinSizeLimitation="LimitToElementAndChildren"><Label Text-bind="ViewModel.Operation"/></StackItem>
+          <StackItem MinSizeLimitation="LimitToElementAndChildren"><SolidLabel Text-bind="ViewModel.DisplayValue" Font-bind="self.Font" Color="#FFFFFF" WrapLine="true" WrapLineHeightCalculation="true"/></StackItem>
+          <StackItem MinSizeLimitation="LimitToElementAndChildren"><Button Text-str="Details()"><ev.Clicked-eval>ViewModel.OpenDetails();</ev.Clicked-eval></Button></StackItem>
+          <StackItem MinSizeLimitation="LimitToElementAndChildren"><RepeatStack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.References"><att.ItemTemplate>uialist::ReferenceTemplate</att.ItemTemplate></RepeatStack></StackItem>
+        </Stack>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="TextRangeTemplate">
+    <Instance ref.CodeBehind="false" ref.Class="uialist::TextRangeTemplate" xmlns:uialist="uialist::*">
+      <ref.Parameter Name="ViewModel" Class="uialist::vm::ITextRangeViewModel"/>
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
+        <RepeatStack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.Sections"><att.ItemTemplate>uialist::ActionSectionTemplate</att.ItemTemplate></RepeatStack>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+</Folder>

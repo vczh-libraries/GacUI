@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files" />
+    <Filter Include="Header Files" />
+    <Filter Include="Resource Files" />
+    <Filter Include="Generated" />
+    <Filter Include="ViewModel" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\MainWindow.cpp"><Filter>Generated</Filter></ClCompile>
+    <ClInclude Include="Source\MainWindow.h"><Filter>Generated</Filter></ClInclude>
+    <ClCompile Include="Source\MultilineWindow.cpp"><Filter>Generated</Filter></ClCompile>
+    <ClInclude Include="Source\MultilineWindow.h"><Filter>Generated</Filter></ClInclude>
+    <ClCompile Include="Source\PropertyWindow.cpp"><Filter>Generated</Filter></ClCompile>
+    <ClInclude Include="Source\PropertyWindow.h"><Filter>Generated</Filter></ClInclude>
+    <ClInclude Include="Source\UiaList.h"><Filter>Generated</Filter></ClInclude>
+    <ClCompile Include="Source\UiaListPartialClasses.cpp"><Filter>Generated</Filter></ClCompile>
+    <ClInclude Include="Source\UiaListPartialClasses.h"><Filter>Generated</Filter></ClInclude>
+    <ClCompile Include="Source\UiaListReflection.cpp"><Filter>Generated</Filter></ClCompile>
+    <ClInclude Include="Source\UiaListReflection.h"><Filter>Generated</Filter></ClInclude>
+    <ClCompile Include="Source\UiaListResource.cpp"><Filter>Generated</Filter></ClCompile>
+    <ClInclude Include="ViewModel\UiaListViewModel.h"><Filter>ViewModel</Filter></ClInclude>
+    <ClCompile Include="ViewModel\UiaListViewModel.cpp"><Filter>ViewModel</Filter></ClCompile>
+    <ClInclude Include="ViewModel\PropertyViewModel.h"><Filter>ViewModel</Filter></ClInclude>
+    <ClCompile Include="ViewModel\PropertyViewModel.cpp"><Filter>ViewModel</Filter></ClCompile>
+    <ClInclude Include="ViewModel\ProcessDiscovery.Windows.h"><Filter>ViewModel</Filter></ClInclude>
+    <ClCompile Include="ViewModel\ProcessDiscovery.Windows.cpp"><Filter>ViewModel</Filter></ClCompile>
+    <ClInclude Include="ViewModel\UiaCatalog.Windows.h"><Filter>ViewModel</Filter></ClInclude>
+    <ClCompile Include="ViewModel\UiaCatalog.Windows.cpp"><Filter>ViewModel</Filter></ClCompile>
+    <ClInclude Include="ViewModel\UiaSession.Windows.h"><Filter>ViewModel</Filter></ClInclude>
+    <ClCompile Include="ViewModel\UiaSession.Windows.cpp"><Filter>ViewModel</Filter></ClCompile>
+    <ClInclude Include="ViewModel\WindowCapture.Windows.h"><Filter>ViewModel</Filter></ClInclude>
+    <ClCompile Include="ViewModel\WindowCapture.Windows.cpp"><Filter>ViewModel</Filter></ClCompile>
+    <ClInclude Include="ViewModel\UiaCatalog.Actions.Windows.h"><Filter>ViewModel</Filter></ClInclude>
+    <ClCompile Include="ViewModel\UiaCatalog.Actions.Windows.cpp"><Filter>ViewModel</Filter></ClCompile>
+    <ClCompile Include="ViewModel\UiaCatalog.Dispatch.Windows.cpp"><Filter>ViewModel</Filter></ClCompile>
+    <ClCompile Include="ViewModel\UiaCatalog.TextRange.Windows.cpp"><Filter>ViewModel</Filter></ClCompile>
+    <ClInclude Include="ViewModel\ActionViewModel.h"><Filter>ViewModel</Filter></ClInclude>
+    <ClCompile Include="ViewModel\ActionViewModel.cpp"><Filter>ViewModel</Filter></ClCompile>
+    <ClInclude Include="ViewModel\TextRangeViewModel.h"><Filter>ViewModel</Filter></ClInclude>
+    <ClCompile Include="ViewModel\TextRangeViewModel.cpp"><Filter>ViewModel</Filter></ClCompile>
+    <None Include="UI\ActionTemplates.xml"><Filter>Resource Files</Filter></None>
+    <None Include="UI\Resource.xml"><Filter>Resource Files</Filter></None>
+    <None Include="UI\ViewModel.xml"><Filter>Resource Files</Filter></None>
+    <None Include="UI\MainWindow.xml"><Filter>Resource Files</Filter></None>
+    <None Include="UI\PropertyWindow.xml"><Filter>Resource Files</Filter></None>
+    <None Include="UI\MultilineWindow.xml"><Filter>Resource Files</Filter></None>
+    <None Include="UI\Strings.xml"><Filter>Resource Files</Filter></None>
+    <None Include="UI\PropertyTemplates.xml"><Filter>Resource Files</Filter></None>
+  </ItemGroup>
+</Project>

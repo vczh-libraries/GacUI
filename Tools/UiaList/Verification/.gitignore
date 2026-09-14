@@ -1,0 +1,6 @@
+UiaFixture-*.calls.txt
+UiaFixture-*.synthetic.txt
+UiaFixture-*.stress.txt
+*.png
+*.controls.json
+Deployment/

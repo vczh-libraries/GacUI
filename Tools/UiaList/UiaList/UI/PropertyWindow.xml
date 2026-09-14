@@ -1,0 +1,139 @@
+<Instance ref.Class="uialist::PropertyWindow" xmlns:vm="uialist::vm::*" xmlns:uialist="uialist::*">
+  <ref.Parameter Name="ViewModel" Class="uialist::vm::IPropertyDialogViewModel"/>
+  <ref.LocalizedStrings Name="Strings" Class="uialist::Strings" Default="true"/>
+  <ref.Members><![CDATA[
+    prop Dialog : uialist::vm::ITextDialogViewModel^ = null {}
+    prop Open : bool = true {}
+    prop SelectedRow : int = -1 {}
+    var changingCell : bool = false;
+    var previousCell : GridPos = { row: -1 column: -1 };
+    var shownDialog : uialist::vm::ITextDialogViewModel^ = null;
+  ]]></ref.Members>
+  <Window ref.Name="self" Text-bind="ViewModel.Title" ClientSize="x:900 y:650" Dialog-bind="ViewModel.TextDialog" Open-bind="ViewModel.IsOpen" SelectedRow-bind="ViewModel.SelectedRowIndex">
+    <ev.SelectedRowChanged-eval><![CDATA[{
+      GuiApplication::GetApplication().InvokeInMainThread(self, func() : void
+      {
+        if (self.SelectedRow >= 0 and propertyGrid.SelectedCell.row != self.SelectedRow and not self.changingCell)
+        {
+          self.changingCell = true;
+          var pos = { row: self.SelectedRow column: 1 } of GridPos;
+          propertyGrid.SelectCell(pos, false);
+          self.previousCell = pos;
+          self.changingCell = false;
+        }
+      });
+    }]]></ev.SelectedRowChanged-eval>
+    <ev.OpenChanged-eval>if (not self.Open) { self.Close(); }</ev.OpenChanged-eval>
+    <ev.DialogChanged-eval><![CDATA[{
+      if (self.Dialog is not null and self.Dialog.IsOpen and self.shownDialog != self.Dialog)
+      {
+        var dialog = self.Dialog;
+        self.shownDialog = dialog;
+        var window = new uialist::MultilineWindow*(dialog);
+        window.ForceCalculateSizeImmediately();
+        window.MoveToScreenCenter();
+        window.ShowModalAndDelete(self, func() : void
+        {
+          dialog.Cancel();
+          if (self.shownDialog == dialog) { self.shownDialog = null; }
+          propertyGrid.SetFocused();
+        });
+      }
+    }]]></ev.DialogChanged-eval>
+    <ev.WindowClosing-eval>ViewModel.Close();</ev.WindowClosing-eval>
+    <Tab ref.Name="propertyTabs">
+      <att.BoundsComposition-set AlignmentToParent="left:5 top:40 right:5 bottom:35"/>
+      <att.Pages>
+      <TabPage Text-str="Properties()">
+        <BindableDataGrid ref.Name="propertyGrid" env.ItemType="uialist::vm::IPropertyRowViewModel^" ItemSource-bind="ViewModel.Rows">
+          <ev.SelectedCellChanged-eval><![CDATA[{
+            if (not self.changingCell)
+            {
+              var pos = propertyGrid.SelectedCell;
+              if (pos.row >= 0 and pos.row < ViewModel.Rows.Count)
+              {
+                if (ViewModel.SelectRow(ViewModel.Rows[pos.row]))
+                {
+                  self.previousCell = pos;
+                  if (pos.column == 1) { ViewModel.BeginEdit(ViewModel.Rows[pos.row]); }
+                }
+                else
+                {
+                  GuiApplication::GetApplication().InvokeInMainThread(self, func() : void
+                  {
+                    self.changingCell = true;
+                    propertyGrid.SelectCell(self.previousCell, false);
+                    self.changingCell = false;
+                  });
+                }
+              }
+            }
+          }]]></ev.SelectedCellChanged-eval>
+          <ev.ItemLeftButtonDoubleClick-eval><![CDATA[{
+            var pos = propertyGrid.SelectedCell;
+            if (pos.row >= 0 and pos.row < ViewModel.Rows.Count) { ViewModel.OpenText(ViewModel.Rows[pos.row]); }
+          }]]></ev.ItemLeftButtonDoubleClick-eval>
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+          <att.Columns>
+            <DataColumn Text-str="Property()" Size="350" TextProperty="Label"/>
+            <DataColumn Text-str="Value()" Size="420" TextProperty="DisplayValue"><att.VisualizerFactory>uialist:PropertyValueVisualizer;FocusRectangleVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory></DataColumn>
+            <DataColumn Text-str="Details()" Size="75"><att.VisualizerFactory>uialist:PropertyDetailsVisualizer;FocusRectangleVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory></DataColumn>
+          </att.Columns>
+        </BindableDataGrid>
+      </TabPage>
+      <TabPage Text-str="Actions()">
+        <Tab ref.Name="actionTabs">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+          <att.Pages>
+            <TabPage Text-str="Providers()">
+              <ScrollContainer ref.Name="actionScroll" ExtendToFullWidth="true" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <RepeatStack ref.Name="actionCards" Direction="Vertical" Padding="10" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.Sections"><att.ItemTemplate>uialist::ActionSectionTemplate</att.ItemTemplate></RepeatStack>
+              </ScrollContainer>
+            </TabPage>
+            <TabPage Text-str="Results()">
+              <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <RepeatStack ref.Name="actionResults" Direction="Vertical" Padding="10" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.Results"><att.ItemTemplate>uialist::ActionResultTemplate</att.ItemTemplate></RepeatStack>
+              </ScrollContainer>
+            </TabPage>
+            <TabPage Text-str="References()">
+              <BindableTextList ref.Name="referenceList" env.ItemType="uialist::vm::IReferenceViewModel^" ItemSource-bind="ViewModel.References" TextProperty="Label">
+                <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:45"/>
+                <ev.ItemLeftButtonDoubleClick-eval><![CDATA[{ var item = referenceList.SelectedItem as uialist::vm::IReferenceViewModel^; if (item is not null) { item.Inspect(); } }]]></ev.ItemLeftButtonDoubleClick-eval>
+              </BindableTextList>
+              <Stack Direction="Horizontal" Padding="8" AlignmentToParent="left:5 top:-1 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
+                <StackItem MinSizeLimitation="LimitToElementAndChildren"><Button Text-str="Inspect()" Enabled-bind="(referenceList.SelectedItem as uialist::vm::IReferenceViewModel^).CanInspect ?? false"><ev.Clicked-eval>(referenceList.SelectedItem as uialist::vm::IReferenceViewModel^).Inspect();</ev.Clicked-eval></Button></StackItem>
+                <StackItem MinSizeLimitation="LimitToElementAndChildren"><Button Text-str="Reveal()" Enabled-bind="(referenceList.SelectedItem as uialist::vm::IReferenceViewModel^).CanReveal ?? false"><ev.Clicked-eval>(referenceList.SelectedItem as uialist::vm::IReferenceViewModel^).Reveal();</ev.Clicked-eval></Button></StackItem>
+              </Stack>
+            </TabPage>
+            <TabPage Text-str="TextRanges()">
+              <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <RepeatStack ref.Name="textRangeWorkspaces" Direction="Vertical" Padding="10" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.TextRanges"><att.ItemTemplate>uialist::TextRangeTemplate</att.ItemTemplate></RepeatStack>
+              </ScrollContainer>
+            </TabPage>
+          </att.Pages>
+        </Tab>
+      </TabPage>
+      </att.Pages>
+    </Tab>
+    <Button ref.Name="refreshProperties" Text-str="Refresh()" Enabled-bind="not ViewModel.IsBusy">
+      <att.BoundsComposition-set AlignmentToParent="left:8 top:5 right:-1 bottom:-1"/>
+      <ev.Clicked-eval>ViewModel.Refresh();</ev.Clicked-eval>
+    </Button>
+    <Label Text-str="Help()">
+      <att.BoundsComposition-set AlignmentToParent="left:-1 top:5 right:10 bottom:-1"/>
+      <att.TooltipControl>
+        <CustomControl>
+          <Bounds PreferredMinSize="x:420" MinSizeLimitation="LimitToElementAndChildren">
+            <SolidLabel Text-str="CatalogHelp()" Font-eval="self.DisplayFont" Color="#FFFFFF" WrapLine="true" WrapLineHeightCalculation="true"/>
+          </Bounds>
+        </CustomControl>
+      </att.TooltipControl>
+    </Label>
+    <Label Text-bind="ViewModel.Status">
+      <att.BoundsComposition-set AlignmentToParent="left:8 top:-1 right:8 bottom:8"/>
+    </Label>
+  </Window>
+</Instance>

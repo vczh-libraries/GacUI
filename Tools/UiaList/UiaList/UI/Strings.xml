@@ -1,0 +1,92 @@
+<LocalizedStrings ref.Class="uialist::Strings" DefaultLocale="en-US">
+  <Strings Locales="en-US"><String Name="Help" Text="Help"/>
+    <String Name="AddReference" Text="Add reference"/>
+    <String Name="ClearReferences" Text="Clear references"/>
+    <String Name="Providers" Text="Providers"/>
+    <String Name="Results" Text="Results"/>
+    <String Name="References" Text="References"/>
+    <String Name="TextRanges" Text="Text ranges"/>
+    <String Name="Inspect" Text="Inspect"/>
+    <String Name="Reveal" Text="Reveal in Nodes"/>
+    <String Name="EditText" Text="Edit text…"/>
+    <String Name="Completed" Text="Completed"/>
+    <String Name="OutsideTree" Text="This reference is outside the selected raw tree."/>
+    <String Name="CatalogHelp" Text="Standard SDK properties and patterns are shown. Vendor registrations and opaque COM internals are not discoverable. Use a period for decimals; separate numeric array values with commas. Enter one string-array item per line; an empty draft creates an empty array."/>
+    <String Name="InvalidValue" Text="Enter a valid value within the supported range."/>
+    <String Name="CapabilityChanged" Text="This value is no longer writable with the supplied value. Capabilities have been refreshed."/>
+    <String Name="PreviewUnavailable" Text="Preview unavailable. The window must be visible and capture must be supported."/>
+    <String Name="PreviewGeometryChanged" Text="The window moved or resized during capture. Refresh after it settles."/>
+    <String Name="PreviewHelp" Text="Snapshot: one captured pixel per preview unit. Outlines estimate UIA rectangles; clicking selects an inspector node."/>
+    <String Name="Captured" Text="Captured"/>
+    <String Name="ProviderHelp" Text="Provider names are the documented counterparts of acquired client patterns."/>
+    <String Name="AppTitle" Text="UiaList — Windows UI Automation Inspector"/>
+    <String Name="Processes" Text="Processes"/><String Name="Preview" Text="UI"/><String Name="Nodes" Text="Nodes"/>
+    <String Name="Refresh" Text="Refresh"/><String Name="ChooseWindow" Text="Double-click a window in Processes to inspect it."/>
+    <String Name="Properties" Text="Properties"/><String Name="Actions" Text="Actions"/>
+    <String Name="Property" Text="Property"/><String Name="Value" Text="Value"/><String Name="Details" Text="Details"/>
+    <String Name="OK" Text="OK"/><String Name="Cancel" Text="Cancel"/><String Name="Ready" Text="Ready"/>
+    <String Name="Loading" Text="Loading…"/><String Name="NotSupported" Text="Not supported"/>
+    <String Name="Mixed" Text="Mixed"/><String Name="Null" Text="No result"/><String Name="Untitled" Text="Untitled"/>
+    <String Name="Visible" Text="Visible"/><String Name="Hidden" Text="Hidden"/><String Name="Cloaked" Text="Cloaked"/><String Name="Minimized" Text="Minimized"/>
+  </Strings>
+  <Strings Locales="zh-CN"><String Name="Help" Text="帮助"/>
+    <String Name="AddReference" Text="添加引用"/>
+    <String Name="ClearReferences" Text="清空引用"/>
+    <String Name="Providers" Text="提供程序"/>
+    <String Name="Results" Text="结果"/>
+    <String Name="References" Text="引用"/>
+    <String Name="TextRanges" Text="文本范围"/>
+    <String Name="Inspect" Text="检查"/>
+    <String Name="Reveal" Text="在节点中显示"/>
+    <String Name="EditText" Text="编辑文本…"/>
+    <String Name="Completed" Text="已完成"/>
+    <String Name="OutsideTree" Text="此引用不在所选的原始树中。"/>
+    <String Name="CatalogHelp" Text="显示标准 SDK 属性和模式。不支持发现厂商注册项或不透明 COM 对象内部。小数使用句点，数字数组使用逗号分隔。字符串数组每行一项；空白内容生成空数组。"/>
+    <String Name="InvalidValue" Text="请输入支持范围内的有效值。"/>
+    <String Name="CapabilityChanged" Text="当前无法写入提供的值。功能状态已刷新。"/>
+    <String Name="PreviewUnavailable" Text="预览不可用。窗口必须可见且支持捕获。"/>
+    <String Name="PreviewGeometryChanged" Text="捕获期间窗口发生移动或调整大小。请在窗口稳定后刷新。"/>
+    <String Name="PreviewHelp" Text="快照：每个预览单位对应一个捕获像素。轮廓根据 UIA 矩形估算；单击可选择检查器中的节点。"/>
+    <String Name="Captured" Text="捕获时间"/>
+    <String Name="ProviderHelp" Text="提供程序名称是已获取客户端模式的文档对应名称。"/>
+    <String Name="AppTitle" Text="UiaList — Windows UI 自动化检查器"/>
+    <String Name="Processes" Text="进程"/><String Name="Preview" Text="界面"/><String Name="Nodes" Text="节点"/>
+    <String Name="Refresh" Text="刷新"/><String Name="ChooseWindow" Text="双击“进程”中的窗口以进行检查。"/>
+    <String Name="Properties" Text="属性"/><String Name="Actions" Text="操作"/>
+    <String Name="Property" Text="属性"/><String Name="Value" Text="值"/><String Name="Details" Text="详情"/>
+    <String Name="OK" Text="确定"/><String Name="Cancel" Text="取消"/><String Name="Ready" Text="就绪"/>
+    <String Name="Loading" Text="正在加载…"/><String Name="NotSupported" Text="不支持"/>
+    <String Name="Mixed" Text="混合值"/><String Name="Null" Text="无结果"/><String Name="Untitled" Text="无标题"/>
+    <String Name="Visible" Text="可见"/><String Name="Hidden" Text="隐藏"/><String Name="Cloaked" Text="遮蔽"/><String Name="Minimized" Text="已最小化"/>
+  </Strings>
+  <Strings Locales="ja-JP"><String Name="Help" Text="ヘルプ"/>
+    <String Name="AddReference" Text="参照を追加"/>
+    <String Name="ClearReferences" Text="参照をクリア"/>
+    <String Name="Providers" Text="プロバイダー"/>
+    <String Name="Results" Text="結果"/>
+    <String Name="References" Text="参照"/>
+    <String Name="TextRanges" Text="テキスト範囲"/>
+    <String Name="Inspect" Text="検査"/>
+    <String Name="Reveal" Text="ノードに表示"/>
+    <String Name="EditText" Text="テキストを編集…"/>
+    <String Name="Completed" Text="完了"/>
+    <String Name="OutsideTree" Text="この参照は選択した Raw ツリーの外にあります。"/>
+    <String Name="CatalogHelp" Text="標準 SDK のプロパティとパターンを表示します。独自登録や不透明な COM の内部は検出できません。小数点にはピリオド、数値配列の区切りにはコンマを使います。文字列配列は1行につき1項目です。空の入力は空の配列になります。"/>
+    <String Name="InvalidValue" Text="対応範囲内の有効な値を入力してください。"/>
+    <String Name="CapabilityChanged" Text="指定した値を書き込めなくなりました。機能の状態を更新しました。"/>
+    <String Name="PreviewUnavailable" Text="プレビューを利用できません。ウィンドウが表示され、キャプチャに対応している必要があります。"/>
+    <String Name="PreviewGeometryChanged" Text="キャプチャ中にウィンドウが移動またはサイズ変更されました。静止後に更新してください。"/>
+    <String Name="PreviewHelp" Text="スナップショット：1 ピクセルを 1 プレビュー単位で表示。枠は UIA 矩形の推定です。クリックでノードを選択します。"/>
+    <String Name="Captured" Text="キャプチャ日時"/>
+    <String Name="ProviderHelp" Text="プロバイダー名は取得したクライアントパターンに対応する文書上の名称です。"/>
+    <String Name="AppTitle" Text="UiaList — Windows UI オートメーション インスペクター"/>
+    <String Name="Processes" Text="プロセス"/><String Name="Preview" Text="UI"/><String Name="Nodes" Text="ノード"/>
+    <String Name="Refresh" Text="更新"/><String Name="ChooseWindow" Text="プロセス内のウィンドウをダブルクリックして調べます。"/>
+    <String Name="Properties" Text="プロパティ"/><String Name="Actions" Text="操作"/>
+    <String Name="Property" Text="プロパティ"/><String Name="Value" Text="値"/><String Name="Details" Text="詳細"/>
+    <String Name="OK" Text="OK"/><String Name="Cancel" Text="キャンセル"/><String Name="Ready" Text="準備完了"/>
+    <String Name="Loading" Text="読み込み中…"/><String Name="NotSupported" Text="非対応"/>
+    <String Name="Mixed" Text="混在"/><String Name="Null" Text="結果なし"/><String Name="Untitled" Text="無題"/>
+    <String Name="Visible" Text="表示"/><String Name="Hidden" Text="非表示"/><String Name="Cloaked" Text="クローク状態"/><String Name="Minimized" Text="最小化"/>
+  </Strings>
+</LocalizedStrings>

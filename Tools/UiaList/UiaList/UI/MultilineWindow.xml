@@ -1,0 +1,24 @@
+<Instance ref.Class="uialist::MultilineWindow" xmlns:vm="uialist::vm::*">
+  <ref.Parameter Name="ViewModel" Class="uialist::vm::ITextDialogViewModel"/>
+  <ref.LocalizedStrings Name="Strings" Class="uialist::Strings" Default="true"/>
+  <ref.Members><![CDATA[prop Open : bool = true {}]]></ref.Members>
+  <Window ref.Name="self" Text-bind="ViewModel.Title" ClientSize="x:700 y:450" Open-bind="ViewModel.IsOpen">
+    <ev.OpenChanged-eval>if (not self.Open) { self.Close(); }</ev.OpenChanged-eval>
+    <ev.WindowOpened-eval>textEditor.SetFocused();</ev.WindowOpened-eval>
+    <ev.WindowClosing-eval>ViewModel.Cancel();</ev.WindowClosing-eval>
+    <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" CellPadding="5" BorderVisible="false">
+      <att.Rows><_>composeType:Percentage percentage:1.0</_><_>composeType:MinSize</_><_>composeType:MinSize</_></att.Rows>
+      <att.Columns><_>composeType:Percentage percentage:1.0</_><_>composeType:MinSize</_><_>composeType:MinSize</_></att.Columns>
+      <Cell Site="row:0 column:0 columnSpan:3">
+        <MultilineTextBox ref.Name="textEditor" Text-bind="ViewModel.DraftText" EditMode-bind="ViewModel.IsReadOnly ? GuiDocumentEditMode::Selectable : GuiDocumentEditMode::Editable">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <ev.TextChanged-eval>ViewModel.DraftText = textEditor.Text;</ev.TextChanged-eval>
+          <att.FocusableComposition-set><ev.keyDown-eval><![CDATA[{ if (arguments.code == VKEY::KEY_ESCAPE) { ViewModel.Cancel(); arguments.handled = true; } }]]></ev.keyDown-eval></att.FocusableComposition-set>
+        </MultilineTextBox>
+      </Cell>
+      <Cell Site="row:1 column:0 columnSpan:3"><Label Text-bind="ViewModel.ValidationMessage"/></Cell>
+      <Cell Site="row:2 column:1"><Button ref.Name="okButton" Text-str="OK()" Enabled-bind="ViewModel.CanAccept"><ev.Clicked-eval>ViewModel.Accept();</ev.Clicked-eval></Button></Cell>
+      <Cell Site="row:2 column:2"><Button ref.Name="cancelButton" Text-str="Cancel()"><ev.Clicked-eval>{ ViewModel.Cancel(); self.Close(); }</ev.Clicked-eval></Button></Cell>
+    </Table>
+  </Window>
+</Instance>
