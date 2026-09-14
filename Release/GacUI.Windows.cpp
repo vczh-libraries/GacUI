@@ -14530,7 +14530,7 @@ namespace vl::presentation::windows
 		GetAllCreatedWindows(windows, false);
 		auto windowsForm = dynamic_cast<IWindowsForm*>(window);
 		CHECK_ERROR(windowsForm && windows.Contains(windowsForm), ERROR_MESSAGE_PREFIX L"The specified INativeWindow instance should be native.");
-		return utow(static_cast<vuint>(reinterpret_cast<intptr_t>(window)));
+		return u64tow(static_cast<vuint64_t>(reinterpret_cast<uintptr_t>(window)));
 #undef ERROR_MESSAGE_PREFIX
 	}
 
@@ -14541,7 +14541,13 @@ namespace vl::presentation::windows
 			return GetWindowsNativeController()->WindowService()->GetMainWindow();
 		}
 
-		auto expectedWindow = reinterpret_cast<INativeWindow*>(static_cast<intptr_t>(wtou(windowId.Value())));
+		auto id = wtou64(windowId.Value());
+		auto address = static_cast<uintptr_t>(id);
+		if (static_cast<vuint64_t>(address) != id)
+		{
+			return nullptr;
+		}
+		auto expectedWindow = reinterpret_cast<INativeWindow*>(address);
 		List<IWindowsForm*> windows;
 		GetAllCreatedWindows(windows, false);
 		for (auto windowsForm : windows)
