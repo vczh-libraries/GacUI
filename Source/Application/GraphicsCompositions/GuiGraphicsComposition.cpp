@@ -1,6 +1,7 @@
 #include "GuiGraphicsComposition.h"
 #include "../GraphicsHost/GuiGraphicsHost.h"
 #include "../Controls/GuiBasicControls.h"
+#include "../Controls/GuiWindowControls.h"
 
 namespace vl
 {
@@ -190,6 +191,14 @@ GuiGraphicsComposition
 				child->UpdateRelatedHostRecord(relatedHostRecord);
 
 				InvokeOnCompositionStateChanged();
+				if (auto window = dynamic_cast<controls::GuiWindow*>(GetRelatedControlHost()); window && window->registeredInApplication)
+				{
+					controls::GuiCompositionUpdateEventArgs arguments(window->GetBoundsComposition());
+					arguments.updateType = controls::CompositionUpdateType::Inserted;
+					arguments.parent = this;
+					arguments.child = child;
+					window->ChildCompositionUpdated.Execute(arguments);
+				}
 				return true;
 			}
 
@@ -199,6 +208,7 @@ GuiGraphicsComposition
 				if (!child) return false;
 				vint index = children.IndexOf(child);
 				if (index == -1) return false;
+				auto window = dynamic_cast<controls::GuiWindow*>(GetRelatedControlHost());
 
 				// composition parent changed -> control parent changed -> related host changed
 				child->parent = nullptr;
@@ -213,6 +223,14 @@ GuiGraphicsComposition
 				}
 				children.RemoveAt(index);
 				InvokeOnCompositionStateChanged();
+				if (window && window->registeredInApplication)
+				{
+					controls::GuiCompositionUpdateEventArgs arguments(window->GetBoundsComposition());
+					arguments.updateType = controls::CompositionUpdateType::Removed;
+					arguments.parent = this;
+					arguments.child = child;
+					window->ChildCompositionUpdated.Execute(arguments);
+				}
 				return true;
 			}
 
@@ -225,6 +243,14 @@ GuiGraphicsComposition
 				children.RemoveAt(index);
 				children.Insert(newIndex, child);
 				InvokeOnCompositionStateChanged();
+				if (auto window = dynamic_cast<controls::GuiWindow*>(GetRelatedControlHost()); window && window->registeredInApplication)
+				{
+					controls::GuiCompositionUpdateEventArgs arguments(window->GetBoundsComposition());
+					arguments.updateType = controls::CompositionUpdateType::Moved;
+					arguments.parent = this;
+					arguments.child = child;
+					window->ChildCompositionUpdated.Execute(arguments);
+				}
 				return true;
 			}
 

@@ -74,7 +74,7 @@ In `GacUI` there are important test apps:
 - `RemotingTest_Rendering_Win32`, a test app as a native renderer in remote protocol, it connects to `RemotingTest_Core`.
   - `test.sh --app:renderer (--port:<port>)?`
   - Its portable counterparts are `wGac/RemotingTest_Rendering_Wayland` and `iGac/RemotingTest_Rendering_macOS`.
-  - The default automation port is 8889. A concurrent takeover renderer needs a different automation port, such as 8890; this does not change the `/MiniHttp` Core connection on port 8888.
+  - The Windows `RemotingTest_Rendering_Win32` executable accepts `/AsPort:<port>` and defaults to 8888; pass `/AsPort:8889` when running beside Core. The portable wGac/iGac launchers retain their `--port:<port>` contract and default 8889. A concurrent takeover renderer needs a different automation port, such as 8890; this does not change the `/MiniHttp` Core connection on port 8888.
 - `RemotingTest_Core`, a test ap as the core app in remote protocol.
   - It runs from `GacUI/Test/Linux/RemotingTest_Core`.
   - `test_core.sh --app:fct|rpt|rvmt --protocol:minihttp [--cli]` full-builds the selected GacUI project and starts it.

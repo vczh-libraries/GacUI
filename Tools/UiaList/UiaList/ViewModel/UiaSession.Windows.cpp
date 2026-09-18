@@ -332,12 +332,63 @@ namespace uialist::native
 		for (vint i = 0; i < PatternCatalogCount; i++)
 		{
 			auto&& descriptor = PatternCatalog[i];
-			auto section = DescribeActions(nodeKey, descriptor.id);
+			Ptr<ActionSectionData> section;
+			try
+			{
+				section = DescribeActions(nodeKey, descriptor.id);
+			}
+			catch (const UiaFailure& error)
+			{
+				if (!error.IsExpected()) throw;
+				// A stale pattern interface need not mean the whole element disappeared.
+				// Recheck the element so its destruction still terminates inspection.
+				int processId = 0;
+				CheckUia(element->get_CurrentProcessId(&processId), L"Recheck element after pattern failure");
+				section = Ptr(new ActionSectionData);
+				section->pattern = descriptor.id;
+				section->name = WString(descriptor.provider) + L" / " + descriptor.client + L" (" + itow(descriptor.id) + L")";
+				auto value = Ptr(new ValueData);
+				value->kind = ValueKind::String;
+				value->text = error.Message();
+				PropertyData readout;
+				readout.name = L"Pattern query failed";
+				readout.value = value;
+				readout.sourcePattern = descriptor.id;
+				section->readouts.Add(readout);
+			}
 			if (section)
 			{
 				snapshot->patterns.Add(descriptor.id);
 				snapshot->sections.Add(section);
 				for (auto&& readout : section->readouts) snapshot->properties.Add(readout);
+			}
+		}
+		for (auto&& section : snapshot->sections)
+		{
+			for (auto&& command : section->commands)
+			{
+				if (!command->pureGetter || command->parameters.Count() != 0) continue;
+				bool existing = false;
+				for (auto&& readout : section->readouts) if (readout.name == command->name) existing = true;
+				if (existing) continue;
+				List<ActionArgument> arguments;
+				Ptr<ValueData> value;
+				try
+				{
+					value = Execute(nodeKey, *command.Obj(), arguments).value;
+				}
+				catch (const UiaFailure& error)
+				{
+					if (!error.IsExpected() || error.IsUnavailable()) throw;
+					value = Ptr(new ValueData);
+					value->kind = ValueKind::Unsupported;
+					value->text = error.Message();
+				}
+				PropertyData readout;
+				readout.name = command->name;
+				readout.value = value;
+				readout.sourcePattern = section->pattern;
+				section->readouts.Add(readout);
 			}
 		}
 		snapshot->references = GetReferences();

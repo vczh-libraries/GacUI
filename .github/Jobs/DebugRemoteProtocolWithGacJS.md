@@ -135,7 +135,7 @@ while empty or unmatched quoted paths are rejected. Start Core before opening
 `http://localhost:8896/index.html`.
 
 The protocol endpoint is fixed at port `8888`. In MiniHTTP mode, the core also
-registers its `/Automation/RemotingTest_Core/...` routes on that listener. GacJS
+registers its `/Automation/RemotingTest_Core/...` routes on that listener by default. A different `/AsPort` creates a separate automation listener while protocol clients still connect to `8888`. GacJS
 is a separate static website served on port `8896`; `RemotingTest_Core` does not
 host it.
 
@@ -336,8 +336,8 @@ harness uses the Windows Debug x64 core and Playwright Chromium.
 
 Core automation is available at
 `http://localhost:8888/Automation/RemotingTest_Core/...`. The native renderer's
-automation port is selected by its optional `/port:<port>` argument and defaults
-to `8889`; it is not used by GacJS.
+automation port is selected by its optional `/AsPort:<port>` argument and defaults
+to `8888`; native paired runs explicitly pass `/AsPort:8889`. GacJS does not use that native endpoint. Core also accepts `/AsPort` for its automation endpoint; its remote protocol URL always stays on 8888. MiniHTTP shares its protocol socket only when automation also selects 8888, otherwise it owns a separate automation socket.
 
 Close the browser, stop the retained Core, and then stop a retained host if it
 has not already exited:

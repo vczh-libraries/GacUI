@@ -2,6 +2,7 @@
 #include "WinDirect2DApplication.h"
 #include "Renderers\GuiGraphicsWindowsDirect2D.h"
 #include "..\ServicesImpl\WindowsImageService.h"
+#include "../UIAutomation/WindowsUIAutomation.Windows.h"
 
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -646,14 +647,17 @@ int SetupWindowsDirect2DRendererInternal(bool hosted, bool raw)
 
 	{
 		// install listener
-		Direct2DWindowsNativeControllerListener listener;
-		nativeController->CallbackService()->InstallListener(&listener);
-		direct2DListener = &listener;
+		Direct2DWindowsNativeControllerListener nativeListener;
+		nativeController->CallbackService()->InstallListener(&nativeListener);
+		direct2DListener = &nativeListener;
+		auto uiaListener = Ptr(new WindowsUIAutomationListener(hosted));
+		uiaListener->Start(uiaListener);
 		// main
 		RendererMainDirect2D(hostedController, raw);
+		uiaListener->Stop();
 		// uninstall listener
 		direct2DListener = nullptr;
-		nativeController->CallbackService()->UninstallListener(&listener);
+		nativeController->CallbackService()->UninstallListener(&nativeListener);
 	}
 
 	// destroy controller

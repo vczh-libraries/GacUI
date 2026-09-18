@@ -3,6 +3,7 @@
 #define _WINSOCKAPI_
 #include <Windows.h>
 #include <Shellapi.h>
+#include "../../AutomationArguments.h"
 
 #pragma comment(lib, "Shell32.lib")
 
@@ -24,10 +25,11 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	}
 
 	vint transport = -1; // 0 = Pipe, 1 = Http, 2 = MiniHTTP
-	vint automationHttpPort = 8889;
-	bool portSpecified = false;
 	for (int i = 1; i < argc; i++)
 	{
+		auto consumed = gacui_test::automationArguments.Consume(WString(argv[i]));
+		if (consumed < 0) { LocalFree(argv); return result; }
+		if (consumed > 0) continue;
 		vint currentTransport = -1;
 		if (wcscmp(argv[i], L"/Pipe") == 0)
 		{
@@ -40,19 +42,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		else if (wcscmp(argv[i], L"/MiniHttp") == 0)
 		{
 			currentTransport = 2;
-		}
-		else if (wcsncmp(argv[i], L"/port:", 6) == 0)
-		{
-			wchar_t* end = nullptr;
-			auto port = wcstol(argv[i] + 6, &end, 10);
-			if (portSpecified || end == argv[i] + 6 || *end || port < 1 || port > 65535)
-			{
-				LocalFree(argv);
-				return result;
-			}
-			portSpecified = true;
-			automationHttpPort = port;
-			continue;
 		}
 		else
 		{
@@ -68,6 +57,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		transport = currentTransport;
 	}
 	LocalFree(argv);
+	auto automationHttpPort = gacui_test::automationArguments.port;
 
 	if (transport == 0)
 	{

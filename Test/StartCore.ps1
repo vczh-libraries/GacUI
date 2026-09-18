@@ -7,7 +7,10 @@ param(
     [ValidateSet('http', 'pipe', 'minihttp')]
     [string]$Protocol,
 
-    [switch]$Cli
+    [switch]$Cli,
+
+    [ValidateRange(1, 65535)]
+    [int]$AsPort = 8888
 )
 
 $ErrorActionPreference = 'Stop'
@@ -45,6 +48,8 @@ else {
         $applicationArguments += '/Cli:"{0}"' -f $hostExe
     }
 }
+
+$applicationArguments += "/AsPort:$AsPort"
 
 foreach ($executable in @($application)) {
     if (-not (Test-Path -LiteralPath $executable -PathType Leaf)) {

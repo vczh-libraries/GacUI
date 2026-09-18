@@ -1,4 +1,4 @@
-﻿# GacUI Developer's Projects
+# GacUI Developer's Projects
 
 ## Network Protocol Windows API
 
@@ -19,16 +19,18 @@
   - `GacUI_Host`: Load the compiled binary file and run.
   - `Playground`: Compile and load XML with generated DarkSkin.
   - `RemotingTest_Core`: GacUI running in remote protocol (`/Pipe`, `/Http`, `/MiniHttp`); `/RVMT` may additionally use `/Cli:<path>` to auto-launch its host.
-  - `RemotingTest_Rendering_Win32`: Renderer connects to `RemotingTest_Core` using the selected transport (`/Pipe`, `/Http`, `/MiniHttp`); `/port:<port>` optionally selects its automation port (default `8889`).
+  - `RemotingTest_Rendering_Win32`: Renderer connects to `RemotingTest_Core` using the selected transport (`/Pipe`, `/Http`, `/MiniHttp`); `/AsPort:<port>` selects its automation port (default `8888`). Pass `/AsPort:8889` beside Core.
   - `RemotingTest_RvmHost`: Provide the `ViewModelChannel` service and internal `ViewModelReadyChannel` startup signal used by `CppTest_Rvm` and `RemotingTest_Core /RVMT` (`/Pipe`, `/Http`, `/MiniHttp`, `/Cli`).
 - `UnitTest`: Test cases for GacUI.
 - `UnitTestViewer`: Render snapshots generated in `UnitTest`.
 
 RemoteViewModel demo startup is ordered:
 
+All existing automation consumers (`CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `GacUI_Host`, `Playground`, `CppTest_Rvm`, `RemotingTest_Core`, `RemotingTest_Rendering_Win32`, and Debug `UiaListApp`) accept one `/AsPort:<decimal port>` in 1..65535, default 8888. Use distinct ports for simultaneous automation endpoints. The remote protocol always uses 8888. Core and CppTest_Rvm share their MiniHTTP protocol socket only for automation port 8888; another selection owns a separate automation socket. The native UIA fixture, TUI showcase, and RVM host have no automation endpoint.
+
 - Without `/Cli`, start `RemotingTest_Core /RVMT` first, then start `RemotingTest_RvmHost` with the same `/Pipe`, `/Http`, or `/MiniHttp` selector. Start the renderer only after Core automation exposes `Remote View Model Test`.
 - With `/Cli:<path>`, Core still requires `/RVMT` and one renderer transport, but auto-launches the host with exact `/Cli`; do not start that host manually. Renderer and host traffic use independent servers.
-- The Windows-only local requester accepts exactly one of `/Pipe`, `/Http`, `/MiniHttp`, or `/Cli:<path>`. The network modes require a manually started matching host; `/Cli` auto-launches it. No renderer is used. `/Pipe`, `/Http`, and `/Cli` use Windows HTTP automation, while `/MiniHttp` shares its port-8888 socket server.
+- The Windows-only local requester accepts exactly one of `/Pipe`, `/Http`, `/MiniHttp`, or `/Cli:<path>`. The network modes require a manually started matching host; `/Cli` auto-launches it. No renderer is used. `/Pipe`, `/Http`, and `/Cli` use Windows HTTP automation, while `/MiniHttp` shares its port-8888 protocol socket only when automation also selects 8888; another `/AsPort` owns a separate automation socket.
 - A requester exits with an error if `RemotingTest_RvmHost` disconnects while it is running.
 - On Linux and macOS, Core renderers use `/MiniHttp`; the host may use manual `/MiniHttp` or auto-launched stdio `/Cli:<path>`.
 

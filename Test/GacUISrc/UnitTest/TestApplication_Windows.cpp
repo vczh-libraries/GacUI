@@ -30,6 +30,97 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Windows")
 	{
+		TEST_CASE(L"Composition updates report completed direct mutations")
+		{
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [&]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto other = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+					auto parent = new GuiBoundsComposition;
+					auto first = new GuiBoundsComposition;
+					auto second = new GuiBoundsComposition;
+					auto grandchild = new GuiBoundsComposition;
+					collections::List<CompositionUpdateType> updates;
+					vint reflected = 0;
+					vint otherUpdates = 0;
+					auto handler = window->ChildCompositionUpdated.AttachLambda([&](GuiGraphicsComposition* sender, GuiCompositionUpdateEventArgs& arguments)
+					{
+						TEST_ASSERT(sender == window->GetBoundsComposition());
+						TEST_ASSERT(arguments.compositionSource == sender);
+						TEST_ASSERT(arguments.parent);
+						TEST_ASSERT(arguments.child);
+						if (arguments.updateType == CompositionUpdateType::Removed)
+						{
+							TEST_ASSERT(!arguments.parent->Children().Contains(arguments.child));
+							TEST_ASSERT(!arguments.child->GetParent());
+							TEST_ASSERT(!arguments.child->GetRelatedGraphicsHost());
+						}
+						else
+						{
+							TEST_ASSERT(arguments.parent->Children().Contains(arguments.child));
+							TEST_ASSERT(arguments.child->GetParent() == arguments.parent);
+							TEST_ASSERT(arguments.child->GetRelatedControlHost() == window);
+						}
+						updates.Add(arguments.updateType);
+					});
+					Func<void(GuiGraphicsComposition*, GuiCompositionUpdateEventArgs*)> callback = [&](GuiGraphicsComposition*, GuiCompositionUpdateEventArgs* arguments)
+					{
+						TEST_ASSERT(arguments->parent);
+						reflected++;
+					};
+					auto boxed = BoxValue(window);
+					auto reflectedHandler = boxed.AttachEvent(L"ChildCompositionUpdated", BoxParameter(callback));
+					other->ChildCompositionUpdated.AttachLambda([&](GuiGraphicsComposition*, GuiCompositionUpdateEventArgs& arguments)
+					{
+						TEST_ASSERT(arguments.parent == other->GetContainerComposition());
+						TEST_ASSERT(arguments.child == parent);
+						otherUpdates++;
+					});
+
+					TEST_ASSERT(first->AddChild(grandchild));
+					TEST_ASSERT(parent->AddChild(first));
+					TEST_ASSERT(parent->AddChild(second));
+					TEST_ASSERT(parent->MoveChild(second, 0));
+					TEST_ASSERT(updates.Count() == 0);
+					TEST_ASSERT(window->GetContainerComposition()->AddChild(parent));
+					TEST_ASSERT(updates.Count() == 1);
+					TEST_ASSERT(updates[0] == CompositionUpdateType::Inserted);
+					TEST_ASSERT(!parent->AddChild(first));
+					TEST_ASSERT(!parent->AddChild(nullptr));
+					TEST_ASSERT(!parent->RemoveChild(grandchild));
+					TEST_ASSERT(!parent->MoveChild(grandchild, 0));
+					TEST_ASSERT(parent->MoveChild(second, 0));
+					TEST_ASSERT(updates.Count() == 1);
+					TEST_ASSERT(parent->MoveChild(first, 0));
+					TEST_ASSERT(parent->Children()[0] == first);
+					TEST_ASSERT(updates.Count() == 2 && updates[1] == CompositionUpdateType::Moved);
+					TEST_ASSERT(parent->RemoveChild(first));
+					TEST_ASSERT(updates.Count() == 3 && updates[2] == CompositionUpdateType::Removed);
+					TEST_ASSERT(parent->InsertChild(0, first));
+					TEST_ASSERT(updates.Count() == 4 && updates[3] == CompositionUpdateType::Inserted);
+					TEST_ASSERT(window->GetContainerComposition()->RemoveChild(parent));
+					TEST_ASSERT(updates.Count() == 5 && updates[4] == CompositionUpdateType::Removed);
+					TEST_ASSERT(other->GetContainerComposition()->AddChild(parent));
+					TEST_ASSERT(otherUpdates == 1);
+					TEST_ASSERT(other->GetContainerComposition()->RemoveChild(parent));
+					TEST_ASSERT(otherUpdates == 2);
+					TEST_ASSERT(window->GetContainerComposition()->AddChild(parent));
+					TEST_ASSERT(updates.Count() == 6 && reflected == 6);
+					TEST_ASSERT(boxed.DetachEvent(L"ChildCompositionUpdated", reflectedHandler));
+					TEST_ASSERT(window->ChildCompositionUpdated.Detach(handler));
+					SafeDeleteControl(other);
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Windows/CompositionUpdates"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceEmptyWindows
+			);
+		});
+
 		GuiWindow* subWindowA = nullptr;
 		GuiWindow* subWindowB = nullptr;
 

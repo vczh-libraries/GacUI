@@ -6,6 +6,7 @@
 #include "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
 #include "../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUIReflection.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../AutomationArguments.h"
 #include "DarkSkinReflection.h"
 #include "../Generated_FullControlTest/FullControlTestPalette.h"
 
@@ -16,6 +17,7 @@ using namespace vl::reflection::description;
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
+	if (!gacui_test::automationArguments.ParseWindowsCommandLine()) return 1;
 	int result = SetupWindowsDirect2DRenderer();
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
@@ -60,7 +62,7 @@ void GuiMain()
 
 		windows::WindowsAutomationService automationService;
 		GetNativeServiceSubstitution()->Substitute(&automationService, false);
-		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/GacUI_Host"), 8888);
+		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/GacUI_Host"), gacui_test::automationArguments.port);
 		GetApplication()->Run(window);
 		windows::StopWindowsHttpAutomationService();
 		automationService.Stop();

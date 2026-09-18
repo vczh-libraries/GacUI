@@ -28,6 +28,10 @@
               <SinglelineTextBox ref.Name="argumentText" Text-bind="ViewModel.DraftText" Visible-bind="ViewModel.Kind == 0 and not ViewModel.IsMultiline">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 <ev.TextChanged-eval>ViewModel.DraftText = argumentText.Text;</ev.TextChanged-eval>
+                <att.FocusableComposition-set>
+                  <ev.lostFocus-eval>ViewModel.Commit();</ev.lostFocus-eval>
+                  <ev.keyDown-eval>if (arguments.code == VKEY::KEY_RETURN) { ViewModel.Commit(); arguments.handled = true; }</ev.keyDown-eval>
+                </att.FocusableComposition-set>
               </SinglelineTextBox>
               <ComboBox ref.Name="argumentChoice" SelectedIndex-bind="ViewModel.ChoiceIndex" Visible-bind="ViewModel.Kind != 0">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
@@ -60,10 +64,11 @@
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <Stack Direction="Vertical" Padding="3" ExtraMargin="left:8 top:5 right:8 bottom:5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <StackItem MinSizeLimitation="LimitToElementAndChildren">
-            <Button ref.Name="executeAction" Text-bind="ViewModel.Label" Enabled-bind="ViewModel.CanExecute">
+            <Button ref.Name="executeAction" Text-bind="ViewModel.Label" Enabled-bind="ViewModel.CanExecute" Visible-bind="not ViewModel.IsGetter">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <ev.Clicked-eval>ViewModel.Execute();</ev.Clicked-eval>
             </Button>
+            <Label Text-bind="ViewModel.Label" Visible-bind="ViewModel.IsGetter"/>
           </StackItem>
           <StackItem MinSizeLimitation="LimitToElementAndChildren">
             <RepeatStack Direction="Vertical" Padding="2" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.Parameters"><att.ItemTemplate>uialist::ActionParameterTemplate</att.ItemTemplate></RepeatStack>

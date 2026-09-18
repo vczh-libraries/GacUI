@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <CommCtrl.h>
 #include <cstdio>
+#include <UIAutomation.h>
 #include "Synthetic.h"
 
 #pragma comment(lib, "Comctl32.lib")
@@ -84,8 +85,58 @@ LRESULT CALLBACK FixtureProc(HWND window, UINT message, WPARAM wParam, LPARAM lP
 	}
 }
 
-int WINAPI WinMain(HINSTANCE instance, HINSTANCE, LPSTR, int show)
+int ProbeLegacy(DWORD targetProcess)
 {
+	if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED))) return 1;
+	struct Target { DWORD process; HWND window = nullptr; } target{ targetProcess };
+	EnumWindows([](HWND window, LPARAM argument) -> BOOL
+	{
+		auto target = reinterpret_cast<Target*>(argument);
+		DWORD process = 0;
+		GetWindowThreadProcessId(window, &process);
+		wchar_t name[100];
+		GetClassNameW(window, name, 100);
+		if (process == target->process && wcscmp(name, L"UiaFixture") == 0) target->window = window;
+		return TRUE;
+	}, reinterpret_cast<LPARAM>(&target));
+	if (!target.window) return 2;
+	IUIAutomation* automation = nullptr;
+	if (FAILED(CoCreateInstance(CLSID_CUIAutomation, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&automation)))) return 3;
+	wchar_t path[100];
+	swprintf_s(path, L"LegacyProbe-%lu.txt", targetProcess);
+	FILE* log = nullptr;
+	_wfopen_s(&log, path, L"w, ccs=UTF-8");
+	if (!log) return 4;
+	int failures = 0;
+	const int controls[] = {101, 108};
+	for (int id : controls)
+	{
+		IUIAutomationElement* element = nullptr;
+		auto hr = automation->ElementFromHandle(GetDlgItem(target.window, id), &element);
+		IUIAutomationLegacyIAccessiblePattern* legacy = nullptr;
+		if (SUCCEEDED(hr)) hr = element->GetCurrentPatternAs(UIA_LegacyIAccessiblePatternId, IID_PPV_ARGS(&legacy));
+		BSTR action = nullptr;
+		DWORD state = 0;
+		if (SUCCEEDED(hr)) hr = legacy->get_CurrentDefaultAction(&action);
+		if (SUCCEEDED(hr)) hr = legacy->get_CurrentState(&state);
+		if (FAILED(hr) || (id == 101 ? !action || !SysStringLen(action) : action && SysStringLen(action))) failures++;
+		if (SUCCEEDED(hr)) hr = legacy->DoDefaultAction();
+		fwprintf(log, L"target=%d defaultAction=%s state=0x%08lX DoDefaultAction=0x%08lX\n", id, action ? action : L"<null>", state, static_cast<unsigned long>(hr));
+		if (id == 101 && FAILED(hr)) failures++;
+		SysFreeString(action);
+		if (legacy) legacy->Release();
+		if (element) element->Release();
+	}
+	fclose(log);
+	automation->Release();
+	CoUninitialize();
+	return failures ? 5 : 0;
+}
+
+int WINAPI WinMain(HINSTANCE instance, HINSTANCE, LPSTR arguments, int show)
+{
+	unsigned long targetProcess = 0;
+	if (sscanf_s(arguments, "/LegacyProbe:%lu", &targetProcess) == 1) return ProbeLegacy(targetProcess);
 	if (FAILED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED))) return 1;
 	SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 	INITCOMMONCONTROLSEX common = {sizeof(common), ICC_WIN95_CLASSES};

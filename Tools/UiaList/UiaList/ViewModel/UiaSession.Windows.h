@@ -83,7 +83,7 @@ namespace uialist::native
 		PATTERNID pattern = 0;
 		vl::vint rangeKey = 0;
 		vl::WString name;
-		bool enabled = true, mutation = false;
+		bool enabled = true, mutation = false, pureGetter = false;
 		vl::collections::List<vl::Ptr<ArgumentSpec>> parameters;
 	};
 

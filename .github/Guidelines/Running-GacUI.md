@@ -53,9 +53,9 @@ When remote protocol is in use:
 
 ### UI Automation
 
-GacUI does not support UI Automation so far, but this situation will be changed very soon.
+Local Windows applications expose native UI Automation providers in ordinary and hosted GDI/Direct2D modes. Hosted logical windows share the actual host HWND. Remote renderers do not expose a transported semantic tree.
 
-UI Automation does not work when the screen is locked. Calling any UIA tools in this case will just fail.
+Use a windowless MTA client and identify the application's owned HWND with EnumWindows; Process.MainWindowHandle can be zero in a locked session. UIA provider calls can work while locked, so verify the actual connection instead of assuming failure. HTTP automation remains available for complementary inspection and input.
 
 ## Windows Specific
 

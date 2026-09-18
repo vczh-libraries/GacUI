@@ -3583,7 +3583,7 @@ namespace demo
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.Shortcut.Name of (::system::String);
+                        var <bind-activator-result> = (<bind-cache>0.Shortcut.Name ?? "Global shortcut unavailable") of (::system::String);
                         ValueChanged(<bind-activator-result>);
                     }
 

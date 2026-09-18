@@ -267,6 +267,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetIsBusy);
 				}
+				bool GetIsGetter() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetIsGetter);
+				}
 				::vl::WString GetKey() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetKey);
@@ -293,6 +297,10 @@ namespace vl
 				void ClearReferences() override
 				{
 					INVOKE_INTERFACE_PROXY_NOPARAMS(ClearReferences);
+				}
+				void Commit() override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Commit);
 				}
 				void EditText() override
 				{

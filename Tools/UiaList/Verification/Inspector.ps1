@@ -1,4 +1,5 @@
 param(
+    [ValidateRange(1,65535)][int]$AsPort = 8888,
     [string]$Command,
     [int]$Window = 0,
     [string]$Find = '*',
@@ -11,7 +12,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$endpoint = 'http://localhost:8888/Automation/UiaListApp'
+$endpoint = "http://localhost:$AsPort/Automation/UiaListApp"
 Add-Type @'
 using System;
 using System.Runtime.InteropServices;
@@ -67,18 +68,24 @@ $target = $windows[$Window]
 $nodes = @(Get-TextNodes $target.composition)
 if ($ClickLabel) {
     if ($Scroll) {
-        if ($Window -eq 0) { throw 'Scroll targets the property action viewport only.' }
         $url = "$endpoint/IO/$($target.windowId)"
         function Send-ScrollCommand([string]$text) {
             $response = (Invoke-WebRequest -Method Post -Uri $url -Headers @{'Content-Type'='application/json; charset=utf8'} -SkipHeaderValidation -Body ([Text.Encoding]::UTF8.GetBytes($text)) -TimeoutSec 10).Content
             if ($response -ne 'Queued') { throw $response }
         }
-        for ($attempt = 0; $attempt -lt 12; $attempt++) {
+        for ($attempt = 0; $attempt -lt 240; $attempt++) {
             $matches = @($nodes | Where-Object { $_.Text -like $ClickLabel -and (!$Button -or $_.Control -eq 'Button') })
-            if ($Occurrence -ge $matches.Count) { throw "Caption '$ClickLabel' was not found." }
-            $bounds = $matches[$Occurrence].Bounds
-            if ($bounds.y1 -ge 142 -and $bounds.y2 -le 594 -and $bounds.y2 -gt $bounds.y1) { break }
-            $delta = [int](($bounds.y1 + $bounds.y2) / 2) - 360
+            if ($Occurrence -ge $matches.Count) {
+                if ($Window -ne 0) { throw "Caption '$ClickLabel' was not found." }
+                # Advance less than one viewport so virtualized rows cannot be skipped.
+                $delta = 192
+            } else {
+                $bounds = $matches[$Occurrence].Bounds
+                $top = if ($Window -eq 0) { 0 } else { 142 }
+                $bottom = if ($Window -eq 0) { $target.composition.bounds.y2 - 60 } else { 594 }
+                if ($bounds.y1 -ge $top -and $bounds.y2 -le $bottom -and $bounds.y2 -gt $bounds.y1) { break }
+                $delta = [int](($bounds.y1 + $bounds.y2) / 2) - 360
+            }
             $ticks = [Math]::Max(1, [Math]::Floor([Math]::Abs($delta) / 48))
             Send-ScrollCommand '!MouseMove:600,400'
             Send-ScrollCommand "!MouseWheel$(if ($delta -gt 0) {'Down'} else {'Up'}):$ticks"

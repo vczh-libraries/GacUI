@@ -60,7 +60,7 @@ namespace uialist
 	{
 		if (owner->owner->busy || value < 0 || value >= choiceValues.Count()) return;
 		if (value == GetChoiceIndex()) return;
-		reference = choiceValues[value]; draft = itow(reference); DraftTextChanged(); ChoiceIndexChanged(); owner->Validate();
+		reference = choiceValues[value]; draft = itow(reference); DraftTextChanged(); ChoiceIndexChanged(); owner->Validate(); Commit();
 	}
 	bool ActionParameterViewModel::GetIsMultiline() { return spec->multiline || (spec->kind == native::ArgumentKind::Variant && (variantType == VT_BSTR || variantType == (VT_ARRAY | VT_BSTR))); }
 	WString ActionParameterViewModel::GetSelectedReferences()
@@ -87,7 +87,7 @@ namespace uialist
 		if (dialog->busy || !dialog->open || (dialog->textDialog && dialog->textDialog->open)) return;
 		auto text = Ptr(new TextDialogViewModel); text->title = spec->name; text->original = text->draft = draft; text->readOnly = false;
 		auto parameter = Ptr(this);
-		text->accept = [parameter, dialog](const WString& value) { parameter->SetDraftText(value); dialog->textDialog->Cancel(); };
+		text->accept = [parameter, dialog](const WString& value) { parameter->SetDraftText(value); parameter->Commit(); dialog->textDialog->Cancel(); };
 		dialog->textDialog = text; dialog->TextDialogChanged();
 	}
 	void ActionParameterViewModel::UpdateChoices()
@@ -115,6 +115,10 @@ namespace uialist
 			}
 		}
 		ChoicesChanged(); ChoiceIndexChanged(); KindChanged(); LabelChanged();
+	}
+	void ActionParameterViewModel::Commit()
+	{
+		if (owner->spec->pureGetter) owner->Query();
 	}
 	bool ActionParameterViewModel::Parse(native::ActionArgument& result)
 	{
@@ -184,9 +188,12 @@ namespace uialist
 		return true;
 	}
 	bool ActionCommandViewModel::GetIsBusy() { return executing; }
+	bool ActionCommandViewModel::GetIsGetter() { return spec->pureGetter; }
 	WString ActionCommandViewModel::GetStatus() { return executing ? owner->owner->strings->Loading() : status; }
 	void ActionCommandViewModel::Validate()
 	{
+		querySerial++;
+		if (spec->pureGetter) executing = false;
 		for (auto&& item : parameters)
 		{
 			auto p = item.Cast<ActionParameterViewModel>();
@@ -211,31 +218,98 @@ namespace uialist
 		CanExecuteChanged();
 	}
 
+	void ActionCommandViewModel::Query()
+	{
+		Validate();
+		if (!spec->pureGetter || !GetCanExecute()) return;
+		auto arguments = Ptr(new List<native::ActionArgument>);
+		for (auto&& value : parameters)
+		{
+			native::ActionArgument argument;
+			CHECK_ERROR(value.Cast<ActionParameterViewModel>()->Parse(argument), L"Validated getter argument changed during acceptance");
+			arguments->Add(std::move(argument));
+		}
+		executing = true;
+		StatusChanged();
+		auto command = Ptr(this);
+		auto gate = owner->owner->lifetime;
+		auto epoch = generation, request = owner->serial, query = querySerial, key = owner->nodeKey;
+		auto descriptor = spec;
+		auto worker = &owner->owner->worker;
+		owner->owner->QueueNative(spec->name + L"; element=" + itow(key), [command, gate, epoch, request, query, key, descriptor, arguments, worker]()
+		{
+			auto outcome = Ptr(new native::ActionOutcome);
+			try
+			{
+				*outcome.Obj() = worker->session->Execute(key, *descriptor.Obj(), *arguments.Obj());
+			}
+			catch (const native::UiaFailure& error)
+			{
+				if (!error.IsExpected()) throw;
+				outcome->available = false;
+				outcome->value = native::StringValue(error.Message());
+			}
+			UiaListViewModel::Post(gate, [command, outcome, epoch, request, query](UiaListViewModel& root)
+			{
+				if (root.lifetime->generation != epoch || !root.propertyDialog || !root.propertyDialog->open || root.propertyDialog->serial != request || command->querySerial != query) return;
+				command->executing = false;
+				command->status = FormatValue(*outcome->value.Obj(), *root.strings.Obj());
+				command->StatusChanged();
+				root.propertyDialog->PublishReferences(outcome->references);
+			});
+		});
+	}
+
 	void ActionCommandViewModel::Execute()
 	{
 		Validate(); if (!GetCanExecute()) return;
+		auto command = Ptr(this);
 		auto arguments = Ptr(new List<native::ActionArgument>);
 		for (auto&& value : parameters) { native::ActionArgument argument; CHECK_ERROR(value.Cast<ActionParameterViewModel>()->Parse(argument), L"Validated argument changed during acceptance"); arguments->Add(std::move(argument)); }
 		executing = true; owner->busy = true; owner->NotifyAvailability(); IsBusyChanged(); StatusChanged();
 		auto gate = owner->owner->lifetime;
 		auto epoch = generation, request = owner->serial, key = owner->nodeKey;
 		auto descriptor = spec; auto worker = &owner->owner->worker;
-		owner->owner->QueueNative(spec->name + L"; element=" + itow(key), [gate, epoch, request, key, descriptor, arguments, worker]()
+		owner->owner->QueueNative(spec->name + L"; element=" + itow(key), [command, gate, epoch, request, key, descriptor, arguments, worker]()
 		{
 			// FIFO retains the original worker session until every accepted operation ahead of a selection runs.
-			auto outcome = Ptr(new native::ActionOutcome(worker->session->Execute(key, *descriptor.Obj(), *arguments.Obj())));
+			auto outcome = Ptr(new native::ActionOutcome);
+			WString failure;
+			try { *outcome.Obj() = worker->session->Execute(key, *descriptor.Obj(), *arguments.Obj()); }
+			catch (const native::UiaFailure& error)
+			{
+				if (!error.IsExpected()) throw;
+				failure = error.Message();
+			}
 			Ptr<native::InspectionSnapshot> inspection;
 			Ptr<native::ActionSectionData> range;
-			if (!outcome->closedWindow)
+			if (failure.Length() == 0 && !outcome->closedWindow)
 			{
 				if (outcome->mutation) worker->session->DiscardRanges();
-				inspection = worker->session->Inspect(key);
-				if (descriptor->rangeKey && !outcome->mutation) range = worker->session->DescribeRange(descriptor->rangeKey);
+				try
+				{
+					inspection = worker->session->Inspect(key);
+				}
+				catch (const native::UiaFailure& error)
+				{
+					if (!error.IsUnavailable()) throw;
+					outcome->closedWindow = true;
+				}
+				if (!outcome->closedWindow && descriptor->rangeKey && !outcome->mutation) range = worker->session->DescribeRange(descriptor->rangeKey);
 			}
-			UiaListViewModel::Post(gate, [outcome, inspection, range, epoch, request, descriptor](UiaListViewModel& root)
+			UiaListViewModel::Post(gate, [command, failure, outcome, inspection, range, epoch, request, descriptor](UiaListViewModel& root)
 			{
 				if (root.lifetime->generation != epoch || !root.propertyDialog || !root.propertyDialog->open || root.propertyDialog->serial != request) return;
 				auto dialog = root.propertyDialog;
+				command->executing = false;
+				if (failure.Length())
+				{
+					command->status = failure;
+					command->StatusChanged(); command->IsBusyChanged();
+					dialog->busy = false; dialog->status = failure;
+					dialog->StatusChanged(); dialog->NotifyAvailability();
+					return;
+				}
 				if (outcome->closedWindow)
 				{
 					dialog->Close(); if (!native::IsCurrentWindow(root.selectedWindow->window.identity)) root.ClearSelection(); else root.RefreshWindow(); return;
@@ -275,6 +349,7 @@ namespace uialist
 		for (auto&& readout : data->readouts) readouts.Add(dialog.CreateRow(readout));
 		for (auto&& command : data->commands)
 		{
+			if (command->pureGetter && command->parameters.Count() == 0) continue;
 			auto vm = Ptr(new ActionCommandViewModel); vm->owner = &dialog; vm->spec = command; vm->generation = dialog.generation;
 			for (auto&& argument : command->parameters)
 			{
@@ -289,5 +364,50 @@ namespace uialist
 	Ptr<IValueList> ActionSectionViewModel::GetReadouts() { return UnboxValue<Ptr<IValueList>>(BoxParameter(readouts)); }
 	Ptr<IValueList> ActionSectionViewModel::GetCommands() { return UnboxValue<Ptr<IValueList>>(BoxParameter(commands)); }
 	bool ActionSectionViewModel::GetIsExpanded() { return expanded; }
-	void ActionSectionViewModel::SetIsExpanded(bool value) { if (expanded != value) { expanded = value; IsExpandedChanged(); } }
+	void ActionSectionViewModel::SetIsExpanded(bool value)
+	{
+		if (expanded != value)
+		{
+			expanded = value;
+			refreshSerial++;
+			IsExpandedChanged();
+			if (expanded)
+			{
+				for (auto&& command : commands) command.Cast<ActionCommandViewModel>()->Query();
+				if (data->rangeKey) return;
+				auto section = Ptr(this);
+				auto gate = owner->owner->lifetime;
+				auto epoch = owner->generation, request = owner->serial, refresh = refreshSerial, key = owner->nodeKey;
+				auto worker = &owner->owner->worker;
+				owner->owner->QueueNative(L"Refresh getter readouts", [section, gate, epoch, request, refresh, key, worker]()
+				{
+					Ptr<native::InspectionSnapshot> snapshot;
+					WString failure;
+					try { snapshot = worker->session->Inspect(key); }
+					catch (const native::UiaFailure& error)
+					{
+						if (!error.IsExpected()) throw;
+						failure = error.Message();
+					}
+					UiaListViewModel::Post(gate, [section, snapshot, failure, epoch, request, refresh](UiaListViewModel& root)
+					{
+						if (root.lifetime->generation != epoch || !root.propertyDialog || !root.propertyDialog->open || root.propertyDialog->serial != request || section->refreshSerial != refresh) return;
+						if (failure.Length())
+						{
+							root.propertyDialog->status = failure;
+							root.propertyDialog->StatusChanged();
+							return;
+						}
+						for (auto&& data : snapshot->sections) if (data->pattern == section->data->pattern)
+						{
+							section->readouts.Clear();
+							for (auto&& readout : data->readouts) section->readouts.Add(root.propertyDialog->CreateRow(readout));
+							break;
+						}
+						root.propertyDialog->PublishReferences(snapshot->references);
+					});
+				});
+			}
+		}
+	}
 }

@@ -228,6 +228,8 @@ Type List (Events)
 ***********************************************************************/
 
 #define GUIREFLECTIONEVENT_TYPELIST(F)\
+			F(presentation::controls::CompositionUpdateType)\
+			F(presentation::controls::GuiCompositionUpdateEventArgs)\
 			F(presentation::compositions::GuiEventArgs)\
 			F(presentation::compositions::GuiRequestEventArgs)\
 			F(presentation::compositions::GuiKeyEventArgs)\

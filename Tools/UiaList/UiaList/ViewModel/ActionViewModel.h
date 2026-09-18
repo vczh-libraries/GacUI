@@ -49,6 +49,7 @@ namespace uialist
 		vl::WString GetSelectedReferences() override;
 		void AddReference() override;
 		void ClearReferences() override;
+		void Commit() override;
 		bool Parse(native::ActionArgument& result);
 		void UpdateChoices();
 	};
@@ -71,6 +72,7 @@ namespace uialist
 		PropertyDialogViewModel* owner;
 		vl::Ptr<native::ActionSpec> spec;
 		vl::vint generation;
+		vl::vint querySerial = 0;
 		vl::collections::ObservableList<vl::Ptr<vm::IActionParameterViewModel>> parameters;
 		vl::WString status;
 		bool executing = false;
@@ -79,9 +81,11 @@ namespace uialist
 		vl::Ptr<vl::reflection::description::IValueList> GetParameters() override;
 		bool GetCanExecute() override;
 		bool GetIsBusy() override;
+		bool GetIsGetter() override;
 		vl::WString GetStatus() override;
 		void Execute() override;
 		void Validate();
+		void Query();
 	};
 
 	class ActionSectionViewModel : public vl::Object, public virtual vm::IActionSectionViewModel
@@ -90,6 +94,7 @@ namespace uialist
 		PropertyDialogViewModel* owner;
 		vl::Ptr<native::ActionSectionData> data;
 		bool expanded = true;
+		vl::vint refreshSerial = 0;
 		vl::collections::ObservableList<vl::Ptr<vm::IPropertyRowViewModel>> readouts;
 		vl::collections::ObservableList<vl::Ptr<vm::IActionCommandViewModel>> commands;
 		ActionSectionViewModel(PropertyDialogViewModel& owner, vl::Ptr<native::ActionSectionData> data);

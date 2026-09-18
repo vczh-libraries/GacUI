@@ -2,6 +2,7 @@
 #include "WinGDIApplication.h"
 #include "Renderers\GuiGraphicsWindowsGDI.h"
 #include "..\ServicesImpl\WindowsImageService.h"
+#include "../UIAutomation/WindowsUIAutomation.Windows.h"
 
 namespace vl
 {
@@ -228,14 +229,17 @@ int SetupWindowsGDIRendererInternal(bool hosted, bool raw)
 
 	{
 		// install listener
-		GdiWindowsNativeControllerListener listener;
-		nativeController->CallbackService()->InstallListener(&listener);
-		gdiListener = &listener;
+		GdiWindowsNativeControllerListener nativeListener;
+		nativeController->CallbackService()->InstallListener(&nativeListener);
+		gdiListener = &nativeListener;
+		auto uiaListener = Ptr(new WindowsUIAutomationListener(hosted));
+		uiaListener->Start(uiaListener);
 		// main
 		RendererMainGDI(hostedController, raw);
+		uiaListener->Stop();
 		// uninstall listener
 		gdiListener = nullptr;
-		nativeController->CallbackService()->UninstallListener(&listener);
+		nativeController->CallbackService()->UninstallListener(&nativeListener);
 	}
 
 	// destroy controller

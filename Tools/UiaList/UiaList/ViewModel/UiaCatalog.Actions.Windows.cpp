@@ -44,6 +44,21 @@ namespace uialist::native
 	{
 		auto command = Ptr(new ActionSpec); command->code = code; command->pattern = section.pattern; command->rangeKey = section.rangeKey;
 		command->name = name; command->mutation = mutation; command->enabled = enabled;
+		switch (code)
+		{
+		case ActionCode::ClickablePoint: case ActionCode::Metadata: case ActionCode::GridItem:
+		case ActionCode::ViewName: case ActionCode::Selection: case ActionCode::RowHeaders:
+		case ActionCode::ColumnHeaders: case ActionCode::RowHeaderItems: case ActionCode::ColumnHeaderItems:
+		case ActionCode::DocumentRange: case ActionCode::TextSelection: case ActionCode::VisibleRanges:
+		case ActionCode::RangeFromPoint: case ActionCode::RangeFromChild: case ActionCode::LegacySelection:
+		case ActionCode::LegacyObject: case ActionCode::FindItem: case ActionCode::ObjectModel:
+		case ActionCode::RangeFromAnnotation: case ActionCode::CaretRange: case ActionCode::ExtendedProperties:
+		case ActionCode::SpreadsheetItem: case ActionCode::AnnotationObjects: case ActionCode::AnnotationTypes:
+		case ActionCode::ChildRange: case ActionCode::GrabbedItems: case ActionCode::CompositionRange:
+		case ActionCode::ConversionRange: case ActionCode::Navigate:
+			command->pureGetter = true;
+			break;
+		}
 		for (auto&& p : arguments) command->parameters.Add(p);
 		section.commands.Add(command); return command;
 	}
@@ -373,7 +388,15 @@ namespace uialist::native
 				auto p = PatternInterface<IUIAutomationLegacyIAccessiblePattern>(pattern.Obj());
 				READ_ELEMENTS(p, GetCurrentSelection);
 				READ_INT(p, ChildId); READ_STRING(p, Name); READ_STRING(p, Value); READ_STRING(p, Description); READ_ENUM(p, Role, DWORD); READ_ENUM(p, State, DWORD); READ_STRING(p, Help); READ_STRING(p, KeyboardShortcut); READ_STRING(p, DefaultAction);
-				add(ActionCode::LegacySelection, L"GetCurrentSelection", false); add(ActionCode::LegacyDefault, L"DoDefaultAction", true); add(ActionCode::LegacyObject, L"GetIAccessible", false);
+				BSTR defaultAction = nullptr;
+				DWORD state = 0;
+				CheckUia(p->get_CurrentDefaultAction(&defaultAction), L"LegacyIAccessible.DefaultAction");
+				CheckUia(p->get_CurrentState(&state), L"LegacyIAccessible.State");
+				auto actionable = defaultAction && SysStringLen(defaultAction) > 0 && !(state & (STATE_SYSTEM_UNAVAILABLE | STATE_SYSTEM_INVISIBLE));
+				SysFreeString(defaultAction);
+				add(ActionCode::LegacySelection, L"GetCurrentSelection", false);
+				add(ActionCode::LegacyDefault, L"DoDefaultAction", true, {}, actionable);
+				add(ActionCode::LegacyObject, L"GetIAccessible", false);
 				add(ActionCode::LegacySelect, L"Select", true, { ChoiceArgument(L"flagsSelect", { { SELFLAG_TAKEFOCUS, L"SELFLAG_TAKEFOCUS (1)" }, { SELFLAG_TAKESELECTION, L"SELFLAG_TAKESELECTION (2)" }, { SELFLAG_EXTENDSELECTION, L"SELFLAG_EXTENDSELECTION (4)" }, { SELFLAG_ADDSELECTION, L"SELFLAG_ADDSELECTION (8)" }, { SELFLAG_REMOVESELECTION, L"SELFLAG_REMOVESELECTION (16)" }, { 3, L"TAKEFOCUS | TAKESELECTION (3)" }, { 5, L"TAKEFOCUS | EXTENDSELECTION (5)" }, { 9, L"TAKEFOCUS | ADDSELECTION (9)" }, { 17, L"TAKEFOCUS | REMOVESELECTION (17)" }, { 12, L"EXTENDSELECTION | ADDSELECTION (12)" }, { 20, L"EXTENDSELECTION | REMOVESELECTION (20)" }, { 13, L"TAKEFOCUS | EXTENDSELECTION | ADDSELECTION (13)" }, { 21, L"TAKEFOCUS | EXTENDSELECTION | REMOVESELECTION (21)" } }) });
 				add(ActionCode::LegacyValue, L"SetValue", true, { TextArgument(L"szValue", {}, true) });
 			}

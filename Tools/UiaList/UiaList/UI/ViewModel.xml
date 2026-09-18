@@ -112,6 +112,7 @@ namespace vm
     prop SelectedReferences : string {const}
     func AddReference() : void;
     func ClearReferences() : void;
+    func Commit() : void;
   }
 
   interface IActionResultViewModel
@@ -129,6 +130,7 @@ namespace vm
     prop Parameters : IActionParameterViewModel^[] {const}
     prop CanExecute : bool {const}
     prop IsBusy : bool {const}
+    prop IsGetter : bool {const}
     prop Status : string {const}
     func Execute() : void;
   }

@@ -5222,6 +5222,13 @@ enum presentation::controls::ColumnSortingState {
 }
 
 @ValueType
+enum presentation::controls::CompositionUpdateType {
+    Inserted = 0,
+    Moved = 2,
+    Removed = 1,
+}
+
+@ValueType
 struct presentation::controls::GalleryPos {
     property group : system::Int64;
     property item : system::Int64;
@@ -5513,6 +5520,15 @@ class presentation::controls::GuiComboButton : presentation::controls::GuiComboB
 }
 
 class presentation::controls::GuiComponent : system::ReferenceType {
+}
+
+class presentation::controls::GuiCompositionUpdateEventArgs : presentation::compositions::GuiEventArgs {
+    property child : presentation::compositions::GuiGraphicsComposition*;
+    property parent : presentation::compositions::GuiGraphicsComposition*;
+    property updateType : presentation::controls::CompositionUpdateType;
+
+    constructor () : presentation::controls::GuiCompositionUpdateEventArgs^;
+    constructor (composition : presentation::compositions::GuiGraphicsComposition*) : presentation::controls::GuiCompositionUpdateEventArgs^;
 }
 
 class presentation::controls::GuiControl : system::ReferenceType {
@@ -6706,6 +6722,7 @@ class presentation::controls::GuiVirtualTreeView : presentation::controls::GuiVi
 }
 
 class presentation::controls::GuiWindow : presentation::controls::GuiControlHost {
+    event ChildCompositionUpdated : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::controls::GuiCompositionUpdateEventArgs*>^;
     event ClipboardUpdated : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event FrameConfigChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         FrameConfig,

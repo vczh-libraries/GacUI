@@ -25,6 +25,7 @@
 #include "RemoteViewModelTestIncludes.h"
 #endif
 #include <VlppOS.h>
+#include "../../AutomationArguments.h"
 #if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
 #endif
@@ -70,17 +71,24 @@ void GuiMain()
 	osx::CocoaAutomationServiceHosted automationService;
 #endif
 	GetNativeServiceSubstitution()->Substitute(&automationService, false);
+	Ptr<async_tcp_socket::IAsyncSocketServer> separateAutomationSocket;
 
 #if defined VCZH_MSVC
 	if (!currentGuiContext->miniHttpSocketServer)
 	{
-		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/CppTest_Rvm"), RemotingHttpPort);
+		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/CppTest_Rvm"), gacui_test::automationArguments.port);
 	}
 	else
 #endif
 	{
+		auto socket = currentGuiContext->miniHttpSocketServer;
+		if (!socket || gacui_test::automationArguments.port != RemotingHttpPort)
+		{
+			separateAutomationSocket = async_tcp_socket::CreateDefaultAsyncSocketServer(gacui_test::automationArguments.port);
+			socket = separateAutomationSocket;
+		}
 		StartMiniHttpAutomationService(
-			currentGuiContext->miniHttpSocketServer,
+			socket,
 			WString::Unmanaged(L"CppTest_Rvm")
 			);
 	}
@@ -95,6 +103,7 @@ void GuiMain()
 #endif
 	{
 		StopMiniHttpAutomationService();
+		if (separateAutomationSocket && !separateAutomationSocket->IsStopped()) separateAutomationSocket->Stop();
 	}
 	automationService.Stop();
 	GetNativeServiceSubstitution()->Unsubstitute(&automationService);

@@ -5,6 +5,7 @@
 #include "../GacUI_Compiler/ResourceCompiler.h"
 #include "../../../Source/GacUI.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../AutomationArguments.h"
 
 using namespace vl;
 using namespace vl::collections;
@@ -77,6 +78,7 @@ namespace vl::presentation::description
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
+	if (!gacui_test::automationArguments.ParseWindowsCommandLine()) return 1;
 	int result = SetupWindowsDirect2DRenderer();
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
@@ -101,7 +103,7 @@ void OpenMainWindow()
 
 		windows::WindowsAutomationService automationService;
 		GetNativeServiceSubstitution()->Substitute(&automationService, false);
-		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/Playground"), 8888);
+		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/Playground"), gacui_test::automationArguments.port);
 		GetApplication()->Run(window);
 		windows::StopWindowsHttpAutomationService();
 		automationService.Stop();

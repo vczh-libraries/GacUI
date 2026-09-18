@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <Shellapi.h>
 #include <crtdbg.h>
+#include "../../AutomationArguments.h"
 
 #pragma comment(lib, "Shell32.lib")
 
@@ -24,6 +25,15 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	{
 		return result;
 	}
+	// Keep the existing transport grammar after consuming its independent automation option.
+	int remaining = 1;
+	for (int i = 1; i < argc; i++)
+	{
+		auto consumed = gacui_test::automationArguments.Consume(vl::WString(argv[i]));
+		if (consumed < 0) { LocalFree(argv); return result; }
+		if (!consumed) argv[remaining++] = argv[i];
+	}
+	argc = remaining;
 
 	if (argc == 2 && wcscmp(argv[1], L"/Pipe") == 0)
 	{

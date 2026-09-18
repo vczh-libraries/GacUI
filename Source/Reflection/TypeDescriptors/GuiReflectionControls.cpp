@@ -945,6 +945,7 @@ Type Declaration (Class)
 
 				CLASS_MEMBER_GUIEVENT(ClipboardUpdated)
 				CLASS_MEMBER_GUIEVENT(FrameConfigChanged)
+				CLASS_MEMBER_GUIEVENT(ChildCompositionUpdated)
 
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(FrameConfig, FrameConfigChanged)
 				CLASS_MEMBER_PROPERTY_FAST(MaximizedBox)

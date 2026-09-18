@@ -1,6 +1,7 @@
 UiaFixture-*.calls.txt
 UiaFixture-*.synthetic.txt
 UiaFixture-*.stress.txt
+LegacyProbe-*.txt
 *.png
 *.controls.json
 Deployment/

@@ -179,9 +179,31 @@ namespace uialist
 		{
 			context += L"; HWND=" + native::Hex(selectedWindow->GetWindowKey()) + L"; PID=" + utow(selectedWindow->processId);
 		}
-		worker.queue.QueueTask([task, context]()
+		auto gate = lifetime;
+		auto epoch = lifetime->generation.load();
+		worker.queue.QueueTask([task, context, gate, epoch]()
 		{
-			try { task(); }
+			try
+			{
+				try { task(); }
+				catch (const native::UiaFailure& error)
+				{
+					if (!error.IsExpected()) throw;
+					auto message = context + L"\r\n" + error.Message();
+					Post(gate, [message, epoch](UiaListViewModel& root)
+					{
+						if (root.lifetime->generation != epoch) return;
+						if (root.propertyDialog && root.propertyDialog->open)
+						{
+							auto dialog = root.propertyDialog;
+							dialog->busy = false;
+							dialog->status = message;
+							dialog->StatusChanged();
+							dialog->NotifyAvailability();
+						}
+					});
+				}
+			}
 			catch (const Exception& error)
 			{
 				auto message = context + L"\r\n" + error.Message();

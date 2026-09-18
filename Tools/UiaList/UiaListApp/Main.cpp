@@ -2,6 +2,7 @@
 #include "DarkSkin.h"
 #include "../UiaList/Source/UiaList.h"
 #include "../UiaList/ViewModel/UiaListViewModel.h"
+#include "../../../Test/AutomationArguments.h"
 
 using namespace vl;
 using namespace vl::presentation;
@@ -45,11 +46,11 @@ void GuiMain()
 		GetNativeServiceSubstitution()->Substitute(&automationService, false);
 		try
 		{
-			windows::StartWindowsHttpAutomationService(L"Automation/UiaListApp", 8888);
+			windows::StartWindowsHttpAutomationService(L"Automation/UiaListApp", gacui_test::automationArguments.port);
 		}
 		catch (const Error& error)
 		{
-			auto message = WString(L"StartWindowsHttpAutomationService: http://localhost:8888/Automation/UiaListApp/\r\n") + error.Description();
+			auto message = WString(L"StartWindowsHttpAutomationService: http://localhost:") + itow(gacui_test::automationArguments.port) + L"/Automation/UiaListApp/\r\n" + error.Description();
 			OutputDebugStringW(message.Buffer());
 			MessageBoxW(nullptr, message.Buffer(), L"UiaList", MB_OK | MB_ICONERROR);
 			ExitProcess(1);
@@ -67,6 +68,7 @@ void GuiMain()
 
 int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
+	if (!gacui_test::automationArguments.ParseWindowsCommandLine()) return 1;
 	int result = 1;
 	try
 	{

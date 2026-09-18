@@ -6,6 +6,15 @@
 
 namespace uialist::native
 {
+	class UiaFailure : public vl::Exception
+	{
+	public:
+		HRESULT						result;
+		UiaFailure(HRESULT result, const vl::WString& operation);
+		bool IsUnavailable()const;
+		bool IsExpected()const;
+	};
+
 	struct IdDescriptor
 	{
 		LONG						id;

@@ -212,8 +212,8 @@ Automation HTTP service for GUI applications are available for Windows:
 
 After building Debug x64, use the repository-relative launchers under `Test`:
 
-- `StartCore.ps1 -App cpptest_rvm|fct|rpt|rvmt -Protocol http|pipe|minihttp [-Cli]` starts `CppTest_Rvm` or `RemotingTest_Core`. `-Cli` is valid only for `cpptest_rvm` and `rvmt`; without it, those two app modes start their required `RemotingTest_RvmHost` manually one second after the requester/Core.
-- `StartRendrerer.ps1 -Protocol http|pipe|minihttp [-Port <1-65535>]` starts `RemotingTest_Rendering_Win32` and optionally selects its automation service port. The file name intentionally preserves the requested `Rendrerer` spelling.
+- `StartCore.ps1 -App cpptest_rvm|fct|rpt|rvmt -Protocol http|pipe|minihttp [-Cli] [-AsPort <1-65535>]` starts `CppTest_Rvm` or `RemotingTest_Core`. `-Cli` is valid only for `cpptest_rvm` and `rvmt`; without it, those two app modes start their required `RemotingTest_RvmHost` manually one second after the requester/Core. The automation port defaults to 8888.
+- `StartRendrerer.ps1 -Protocol http|pipe|minihttp [-AsPort <1-65535>]` starts `RemotingTest_Rendering_Win32` with an explicit `/AsPort:8889` by default, allowing it to run beside Core. The executable itself defaults to 8888. The file name intentionally preserves the requested `Rendrerer` spelling.
 - Both launchers use `Test/GacUISrc/x64/Debug`, start visible processes for interactive testing, and return their `System.Diagnostics.Process` objects for inspection or cleanup.
 
 FullControlTest means `Generated_FullControlTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/FullControlTest/Resource.xml`.
@@ -222,15 +222,17 @@ RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`, generated from
 RemoteViewModelTest means `Generated_RemoteViewModelTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteViewModelTest/Resource.xml`.
 When `FakeDialogService` is used, all system dialogs are replaced by `REPO-ROOT/Source/Utilities/FakeServices/Dialogs/Resource.xml`.
 For the non-remoting projects above, the automation endpoint is `http://localhost:8888/Automation/<PROJECT-NAME>/...` and is hosted by `StartWindowsHttpAutomationService`.
+- `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `GacUI_Host`, `Playground`, `CppTest_Rvm`, `RemotingTest_Core`, `RemotingTest_Rendering_Win32`, and `UiaListApp` accept one `/AsPort:<decimal port>` in 1..65535, default 8888. Invalid, empty, duplicate, and out-of-range values fail before starting listeners. UiaList exposes its endpoint only in Debug. Assign distinct ports to run independent automation endpoints simultaneously; for example CppTest 8888, CppTest_Metaonly 8890, and UiaListApp 8891.
+- The remote protocol port is always 8888 for `/Http` and `/MiniHttp`, regardless of `/AsPort`. Named pipe and stdio endpoints are unchanged. Multiple protocol servers still cannot own the same fixed transport endpoint.
 - Checkout `REPO-ROOT/.github/Guidelines/Running-GacUI.md` for details.
 
 Each application owns its automation stack directly. It constructs the concrete service matching its setup (`WindowsAutomationService`, `WindowsAutomationServiceHosted`, `WindowsAutomationServiceRenderer`, `RemoteProtocolAutomationService`, or a platform renderer service), substitutes it, starts the selected Windows HTTP or MiniHTTP endpoint, runs the application, then stops the endpoint and service before unsubstituting it. Both endpoint implementations expose the same `Controls`, `Dom`, and `IO` contract.
 
 Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in `/Http`, `/Pipe`, and `/MiniHttp` modes:
 - `RemotingTest_Core` exposes the UI as a window-control tree at `http://localhost:8888/Automation/RemotingTest_Core/...`.
-- `RemotingTest_Rendering_Win32` exposes the UI as a DOM tree at `http://localhost:<renderer-port>/Automation/RemotingTest_Rendering_Native/...`. Pass `/port:<renderer-port>` to select the automation port; omitting it keeps the default port `8889`.
+- `RemotingTest_Rendering_Win32` exposes the UI as a DOM tree at `http://localhost:<renderer-port>/Automation/RemotingTest_Rendering_Native/...`. Pass `/AsPort:<renderer-port>` to select the automation port; omitting it selects 8888. Paired examples must explicitly use `/AsPort:8889` or another free port.
 - `/Http` and `/Pipe` use `StartWindowsHttpAutomationService`.
-- In `/MiniHttp` mode, the core registers its automation prefix with the exact same `IAsyncSocketServer` that hosts the remote protocol on port `8888`. The renderer is a separate process, so it hosts its automation prefix with a separate MiniHTTP socket server on the selected renderer automation port (default `8889`).
+- In `/MiniHttp` mode, Core and CppTest_Rvm share their protocol socket when `/AsPort:8888` is selected. Another automation port creates a separately owned MiniHTTP socket, stopped with the automation endpoint while preserving protocol shutdown order. The renderer always owns a separate automation socket. Its protocol client still connects to port 8888.
 - Both support IO operations:
   - When performing IO via the renderer, remote protocol events pass the IO operations to the core.
   - When performing IO via the core, the renderer only receives UI updates and redraws.
@@ -245,7 +247,7 @@ RVM RPC uses the exact logical channels `ViewModelChannel` and `ViewModelReadyCh
 - `CppTest_Rvm` accepts exactly one of `/Pipe`, `/Http`, `/MiniHttp`, or `/Cli:<nonempty-host-path>`. The first three wait for a manually started host using the same selector. `/Cli` auto-launches the host and is itself the exclusive RVM transport. This variant never uses a renderer.
 - `RemotingTest_RvmHost` accepts exact `/Cli` in addition to its network selectors. In stdio mode, stdin/stdout are reserved for framed protocol traffic and the ordinary startup banner is suppressed.
 - A requester terminates with an error if `RemotingTest_RvmHost` disconnects while the application is running.
-- `CppTest_Rvm` exposes automation at `http://localhost:8888/Automation/CppTest_Rvm/...`. `/Pipe`, `/Http`, and `/Cli` use the Windows HTTP endpoint; `/MiniHttp` registers MiniHTTP automation on the same port-8888 socket server that carries its RVM traffic.
+- `CppTest_Rvm` exposes automation at `http://localhost:<AsPort>/Automation/CppTest_Rvm/...`. `/Pipe`, `/Http`, and `/Cli` use the Windows HTTP endpoint; `/MiniHttp` shares the protocol socket only when the selected automation port is 8888.
 
 `Playground` is for adhoc testing:
 - The UI in resource file, including `GuiMain` and `OpenMainWindow`, could be modified freely without any concern, it is not part of the release. DO NOT revert `Playground` change as I can also use it for manual verification.

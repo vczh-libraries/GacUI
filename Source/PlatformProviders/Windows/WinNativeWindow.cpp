@@ -1156,7 +1156,7 @@ WindowsForm
 				{
 					vint index = messageHandlers.IndexOf(handler.Obj());
 					if (index == -1)return false;
-					messageHandlers.RemoveAt(handler);
+					messageHandlers.RemoveAt(index);
 					return true;
 				}
 

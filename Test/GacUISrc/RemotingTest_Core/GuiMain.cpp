@@ -13,6 +13,7 @@
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #endif
 #include <type_traits>
+#include "../../AutomationArguments.h"
 
 using namespace vl;
 using namespace vl::inter_process;
@@ -28,7 +29,6 @@ using namespace vl::presentation::remoteprotocol::repeatfiltering;
 constexpr const wchar_t* RemotingNamedPipeName = L"GacUIRemoteProtocolNamedPipe";
 constexpr const wchar_t* RemotingHttpBaseUrl = L"/GacUIRemoteProtocolHttp";
 constexpr vint RemotingHttpPort = 8888;
-constexpr vint GacUIAutomationHttpPort = 8888;
 
 struct CoreGuiContext
 {
@@ -66,19 +66,26 @@ void GuiMain()
 
 	RemoteProtocolAutomationService automationService;
 	GetNativeServiceSubstitution()->Substitute(&automationService, false);
+	Ptr<async_tcp_socket::IAsyncSocketServer> separateAutomationSocket;
 #ifdef VCZH_MSVC
 	if (!currentGuiContext->miniHttpSocketServer)
 	{
 		windows::StartWindowsHttpAutomationService(
 			WString::Unmanaged(L"Automation/RemotingTest_Core"),
-			GacUIAutomationHttpPort
+			gacui_test::automationArguments.port
 			);
 	}
 	else
 #endif
 	{
+		auto socket = currentGuiContext->miniHttpSocketServer;
+		if (!socket || gacui_test::automationArguments.port != RemotingHttpPort)
+		{
+			separateAutomationSocket = async_tcp_socket::CreateDefaultAsyncSocketServer(gacui_test::automationArguments.port);
+			socket = separateAutomationSocket;
+		}
 		StartMiniHttpAutomationService(
-			currentGuiContext->miniHttpSocketServer,
+			socket,
 			WString::Unmanaged(L"RemotingTest_Core")
 			);
 	}
@@ -108,6 +115,7 @@ void GuiMain()
 #endif
 	{
 		StopMiniHttpAutomationService();
+		if (separateAutomationSocket && !separateAutomationSocket->IsStopped()) separateAutomationSocket->Stop();
 	}
 
 	automationService.Stop();

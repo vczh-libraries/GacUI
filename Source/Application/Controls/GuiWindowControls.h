@@ -235,6 +235,23 @@ Control Host
 Window
 ***********************************************************************/
 
+			enum class CompositionUpdateType
+			{
+				Inserted,
+				Removed,
+				Moved,
+			};
+
+			struct GuiCompositionUpdateEventArgs : compositions::GuiEventArgs, Description<GuiCompositionUpdateEventArgs>
+			{
+				CompositionUpdateType					updateType = CompositionUpdateType::Inserted;
+				compositions::GuiGraphicsComposition*	parent = nullptr;
+				compositions::GuiGraphicsComposition*	child = nullptr;
+
+				GuiCompositionUpdateEventArgs() = default;
+				GuiCompositionUpdateEventArgs(compositions::GuiGraphicsComposition* composition);
+			};
+
 			/// <summary>
 			/// Represents a normal window.
 			/// </summary>
@@ -242,6 +259,7 @@ Window
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
 				friend class GuiApplication;
+				friend class compositions::GuiGraphicsComposition;
 			protected:
 				struct ShowModalRecord
 				{
@@ -299,6 +317,7 @@ Window
 				compositions::GuiNotifyEvent			ClipboardUpdated;
 				/// <summary>Frame configuration changed event.</summary>
 				compositions::GuiNotifyEvent			FrameConfigChanged;
+				compositions::GuiGraphicsEvent<GuiCompositionUpdateEventArgs>	ChildCompositionUpdated;
 
 				/// <summary>Move the window to the center of the screen. If multiple screens exist, the window move to the screen that contains the biggest part of the window.</summary>
 				void									MoveToScreenCenter();

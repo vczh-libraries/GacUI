@@ -4,6 +4,7 @@
 #include "../Generated_FullControlTest/FullControlTestPalette.h"
 #include "FullControlTestReflection.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
+#include "../../AutomationArguments.h"
 #include "resource.h"
 
 using namespace vl;
@@ -29,7 +30,7 @@ void GuiMain()
 
 		windows::WindowsAutomationService automationService;
 		GetNativeServiceSubstitution()->Substitute(&automationService, false);
-		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/CppTest_Reflection"), 8888);
+		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/CppTest_Reflection"), gacui_test::automationArguments.port);
 		GetApplication()->Run(&window);
 		windows::StopWindowsHttpAutomationService();
 		automationService.Stop();
@@ -39,6 +40,7 @@ void GuiMain()
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
+	if (!gacui_test::automationArguments.ParseWindowsCommandLine()) return 1;
 	int result = SetupWindowsDirect2DRenderer();
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();

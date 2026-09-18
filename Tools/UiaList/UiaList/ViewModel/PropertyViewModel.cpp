@@ -15,7 +15,7 @@ namespace uialist
 		switch (value.kind)
 		{
 		case ValueKind::Null: return strings.Null() + L" (VT=" + itow(value.type) + L")";
-		case ValueKind::Unsupported: return strings.NotSupported();
+		case ValueKind::Unsupported: return value.text.Length() ? strings.NotSupported() + L": " + value.text : strings.NotSupported();
 		case ValueKind::Mixed: return strings.Mixed();
 		case ValueKind::Boolean: return value.signedValue ? L"true" : L"false";
 		case ValueKind::Signed: return i64tow(value.signedValue);

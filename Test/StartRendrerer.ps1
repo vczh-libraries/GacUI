@@ -4,7 +4,7 @@ param(
     [string]$Protocol,
 
     [ValidateRange(1, 65535)]
-    [int]$Port
+    [int]$AsPort = 8889
 )
 
 $ErrorActionPreference = 'Stop'
@@ -21,9 +21,7 @@ $rendererArguments = @(
         'minihttp' { '/MiniHttp' }
     }
 )
-if ($PSBoundParameters.ContainsKey('Port')) {
-    $rendererArguments += "/port:$Port"
-}
+$rendererArguments += "/AsPort:$AsPort"
 
 Write-Host "Starting: $renderer $($rendererArguments -join ' ')"
 $rendererProcess = Start-Process -FilePath $renderer -ArgumentList $rendererArguments -PassThru

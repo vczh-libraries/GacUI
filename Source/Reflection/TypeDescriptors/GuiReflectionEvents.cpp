@@ -7,6 +7,7 @@ namespace vl
 		namespace description
 		{
 			using namespace presentation::compositions;
+			using namespace presentation::controls;
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -34,6 +35,20 @@ Type Declaration
 
 				CLASS_MEMBER_FIELD(cancel)
 			END_CLASS_MEMBER(GuiRequestEventArgs)
+
+			BEGIN_ENUM_ITEM(CompositionUpdateType)
+				ENUM_CLASS_ITEM(Inserted)
+				ENUM_CLASS_ITEM(Removed)
+				ENUM_CLASS_ITEM(Moved)
+			END_ENUM_ITEM(CompositionUpdateType)
+
+			BEGIN_CLASS_MEMBER(GuiCompositionUpdateEventArgs)
+				CLASS_MEMBER_BASE(GuiEventArgs)
+				EVENTARGS_CONSTRUCTOR(GuiCompositionUpdateEventArgs)
+				CLASS_MEMBER_FIELD(updateType)
+				CLASS_MEMBER_FIELD(parent)
+				CLASS_MEMBER_FIELD(child)
+			END_CLASS_MEMBER(GuiCompositionUpdateEventArgs)
 
 			BEGIN_CLASS_MEMBER(GuiKeyEventArgs)
 				CLASS_MEMBER_BASE(GuiEventArgs)

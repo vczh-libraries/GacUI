@@ -920,11 +920,17 @@ GuiWindow
 				}
 			}
 
+			GuiCompositionUpdateEventArgs::GuiCompositionUpdateEventArgs(GuiGraphicsComposition* composition)
+				:GuiEventArgs(composition)
+			{
+			}
+
 			GuiWindow::GuiWindow(theme::ThemeName themeName, INativeWindow::WindowMode mode)
 				:GuiControlHost(themeName, mode)
 			{
 				SetAltComposition(boundsComposition);
 				SetAltControl(this, true);
+				ChildCompositionUpdated.SetAssociatedComposition(boundsComposition);
 
 				INativeWindow* window = GetCurrentController()->WindowService()->CreateNativeWindow(windowMode);
 				SetNativeWindow(window);

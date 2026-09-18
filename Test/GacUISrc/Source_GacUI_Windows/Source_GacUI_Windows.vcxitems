@@ -57,4 +57,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\TUI\TuiWindowsController.Windows.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\TUI\TuiWindowsController.Windows.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomation.Windows.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationText.Windows.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomation.Windows.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationActions.Windows.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationPatterns.Windows.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationProvider.Windows.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationProvider.Windows.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationSemantic.Windows.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationState.Windows.cpp" />
+  </ItemGroup>
 </Project>

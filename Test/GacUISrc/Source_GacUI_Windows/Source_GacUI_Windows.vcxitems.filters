@@ -148,4 +148,15 @@
       <Filter>PlatformProviders\Windows\TUI</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomation.Windows.cpp"><Filter>PlatformProviders</Filter></ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationText.Windows.cpp"><Filter>PlatformProviders</Filter></ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomation.Windows.h"><Filter>PlatformProviders</Filter></ClInclude>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationActions.Windows.cpp"><Filter>PlatformProviders</Filter></ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationPatterns.Windows.cpp"><Filter>PlatformProviders</Filter></ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationProvider.Windows.cpp"><Filter>PlatformProviders</Filter></ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationProvider.Windows.h"><Filter>PlatformProviders</Filter></ClInclude>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationSemantic.Windows.cpp"><Filter>PlatformProviders</Filter></ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\UIAutomation\WindowsUIAutomationState.Windows.cpp"><Filter>PlatformProviders</Filter></ClCompile>
+  </ItemGroup>
 </Project>

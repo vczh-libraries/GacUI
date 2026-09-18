@@ -29,8 +29,8 @@ shutdown and both host-loss variants in the fatal regression addendum.
 
 For a Core target, the Core must start before the renderer. The application
 selector belongs only to Core, while the renderer receives the transport
-selector and optional `/port:<port>` automation-listener argument. Omitting the
-port keeps the default `8889`. Run one target at a time and retain every process
+selector and optional `/AsPort:<port>` automation-listener argument. Omitting the
+port selects 8888; pass `/AsPort:8889` when running beside Core. Run one target at a time and retain every process
 identifier for cleanup.
 
 ### Test Matrix Card
@@ -120,7 +120,7 @@ commands below with `-App cpptest_rvm|fct|rpt|rvmt`,
 `-Protocol http|pipe|minihttp`, and optional `-Cli`. A manual RVM host starts
 one second after its requester/Core. `GacUI/Test/StartRendrerer.ps1` starts the
 matching Win32 renderer with the same `-Protocol` values and optional
-`-Port <1-65535>`.
+`-AsPort <1-65535>` (the launcher explicitly selects 8889 by default).
 
 Start a pair from the monorepo root. These examples use `/RPT`; substitute
 `/FCT` or `/RVMT` for the other Core application targets.
@@ -130,15 +130,15 @@ $bin = (Resolve-Path GacUI\Test\GacUISrc\x64\Debug).Path
 
 # Full Windows HTTP implementation
 $core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -ArgumentList '/Http','/RPT' -PassThru
-$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Http','/port:8890' -PassThru
+$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Http','/AsPort:8890' -PassThru
 
 # Async-socket MiniHTTP implementation
 $core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -ArgumentList '/MiniHttp','/RPT' -PassThru
-$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/MiniHttp','/port:8890' -PassThru
+$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/MiniHttp','/AsPort:8890' -PassThru
 
 # Named pipe implementation
 $core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -ArgumentList '/Pipe','/RPT' -PassThru
-$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Pipe','/port:8890' -PassThru
+$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Pipe','/AsPort:8890' -PassThru
 ```
 
 For a non-CLI Core `/RVMT` target, start the three processes in this order, replacing
@@ -148,7 +148,7 @@ For a non-CLI Core `/RVMT` target, start the three processes in this order, repl
 ```powershell
 $core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -ArgumentList '/Http','/RVMT' -PassThru
 $host = Start-Process -FilePath (Join-Path $bin 'RemotingTest_RvmHost.exe') -ArgumentList '/Http' -PassThru
-$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Http','/port:8890' -PassThru
+$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Http','/AsPort:8890' -PassThru
 ```
 
 For a Core `/Cli` target, Core owns and auto-launches the host. Keep the selected
@@ -158,7 +158,7 @@ and then start the renderer:
 ```powershell
 $hostExe = (Join-Path $bin 'RemotingTest_RvmHost.exe')
 $core = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Core.exe') -ArgumentList '/Http','/RVMT',('/Cli:"{0}"' -f $hostExe) -PassThru
-$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Http','/port:8890' -PassThru
+$renderer = Start-Process -FilePath (Join-Path $bin 'RemotingTest_Rendering_Win32.exe') -ArgumentList '/Http','/AsPort:8890' -PassThru
 ```
 
 For a standalone RVM requester target, omit Core and the renderer. Start the
@@ -170,7 +170,7 @@ $host = Start-Process -FilePath (Join-Path $bin 'RemotingTest_RvmHost.exe') -Arg
 ```
 
 The standalone `/Cli` target is one process command; it auto-launches the host
-and continues to expose Windows HTTP automation on port 8888:
+and continues to expose Windows HTTP automation on port 8888 by default (override with `/AsPort:<port>`):
 
 ```powershell
 $hostExe = (Join-Path $bin 'RemotingTest_RvmHost.exe')
@@ -207,11 +207,11 @@ Standalone `CppTest_Rvm`, including `/Cli`, uses
 
 During `/Http` and `/Pipe` runs, the projects use the Windows HTTP automation
 service. During a `/MiniHttp` run, `RemotingTest_Core` registers its automation
-prefix with the exact same `IAsyncSocketServer` that hosts the remote protocol
-on port `8888`; it does not create another listener. The renderer is a separate
+prefix with the same `IAsyncSocketServer` that hosts the remote protocol
+when its automation port is `8888`; a different `/AsPort` creates a separate automation listener. The renderer is a separate
 process and cannot share that server instance, so it starts a separate MiniHTTP
-automation server on the port selected by `/port:<port>`. The examples select
-`8890`; without `/port:`, the renderer uses `8889`.
+automation server on the port selected by `/AsPort:<port>`. The examples select
+`8890`; without `/AsPort`, the Windows renderer uses `8888`. Core and CppTest_Rvm accept the same argument. For a different MiniHTTP automation port they own a separate socket; their protocol socket and all clients remain on 8888.
 
 `Controls` describes logical GacUI controls; `Dom` describes what the native
 renderer received. Search the latest JSON for the visible text, walk upward to

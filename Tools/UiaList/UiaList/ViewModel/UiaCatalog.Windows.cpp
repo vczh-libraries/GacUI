@@ -528,9 +528,24 @@ namespace uialist::native
 		return buffer;
 	}
 
+	UiaFailure::UiaFailure(HRESULT value, const WString& operation)
+		:Exception(operation + L": HRESULT " + Hex(static_cast<ULONG>(value))), result(value)
+	{
+	}
+
+	bool UiaFailure::IsUnavailable()const
+	{
+		return result == UIA_E_ELEMENTNOTAVAILABLE || result == CO_E_OBJNOTCONNECTED || result == RPC_E_DISCONNECTED;
+	}
+
+	bool UiaFailure::IsExpected()const
+	{
+		return IsUnavailable() || result == UIA_E_NOTSUPPORTED || result == E_NOTIMPL || result == UIA_E_ELEMENTNOTENABLED;
+	}
+
 	void CheckUia(HRESULT result, const WString& operation)
 	{
-		if (FAILED(result)) throw Exception(operation + L": HRESULT " + Hex(static_cast<ULONG>(result)));
+		if (FAILED(result)) throw UiaFailure(result, operation);
 	}
 
 	WString EnumerationName(const WString& field, LONG value)
