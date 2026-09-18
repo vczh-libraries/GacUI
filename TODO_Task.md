@@ -4,7 +4,10 @@
 - In `Actions`, getter functions without side effects should just display the result directly instead of making a button.
 
 Implement UIA support for GacUI on Windows
-- An object will be added to controls' internel property as a flag that events are hooked or not.
+- `GuiWindow` should expose a event `ChildCompositionUpdated`:
+  - New types introduced by this event should be declared just above `GuiWindow`.
+  - Argument has `CompositionUpdateType updateType` which has Added/Removed/Reordered.
+  - Argument had two GuiGraphicsComposition pointer field `parent` and `child`.
 - Controls destroys, connects to or disconnects from a top level window report.
   - If a control has not been hooked, hook all necessary events.
   - There will be no unhook, but callbacks should he ignored when:
