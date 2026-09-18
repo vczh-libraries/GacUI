@@ -209,7 +209,7 @@
                       <Label Text-bind="commandLocalSuperShortcut.Shortcut.Name"/>
                     </StackItem>
                     <StackItem>
-                      <Label Text-bind="commandGlobalShortcut.Shortcut.Name"/>
+                      <Label Text-bind="commandGlobalShortcut.Shortcut.Name ?? 'Global shortcut unavailable'"/>
                     </StackItem>
                     <StackItem>
                       <Label ref.Name="labelMouseButton" Text="Click here with any mouse button.">
