@@ -1,5 +1,5 @@
 <LocalizedStrings ref.Class="uialist::Strings" DefaultLocale="en-US">
-  <Strings Locales="en-US"><String Name="Help" Text="Help"/>
+  <Strings Locales="en-US"><String Name="WindowTitle" Text="Title"/><String Name="WindowClass" Text="Window class"/><String Name="WindowHandle" Text="HWND"/><String Name="Help" Text="Help"/>
     <String Name="AddReference" Text="Add reference"/>
     <String Name="ClearReferences" Text="Clear references"/>
     <String Name="Providers" Text="Providers"/>
@@ -21,15 +21,14 @@
     <String Name="ProviderHelp" Text="Provider names are the documented counterparts of acquired client patterns."/>
     <String Name="AppTitle" Text="UiaList — Windows UI Automation Inspector"/>
     <String Name="Processes" Text="Processes"/><String Name="Preview" Text="UI"/><String Name="Nodes" Text="Nodes"/>
-    <String Name="Refresh" Text="Refresh"/><String Name="ChooseWindow" Text="Double-click a window in Processes to inspect it."/>
+    <String Name="Refresh" Text="Refresh"/><String Name="ChooseWindow" Text="Select a process, then click a window to inspect it."/>
     <String Name="Properties" Text="Properties"/><String Name="Actions" Text="Actions"/>
     <String Name="Property" Text="Property"/><String Name="Value" Text="Value"/><String Name="Details" Text="Details"/>
     <String Name="OK" Text="OK"/><String Name="Cancel" Text="Cancel"/><String Name="Ready" Text="Ready"/>
     <String Name="Loading" Text="Loading…"/><String Name="NotSupported" Text="Not supported"/>
     <String Name="Mixed" Text="Mixed"/><String Name="Null" Text="No result"/><String Name="Untitled" Text="Untitled"/>
-    <String Name="Visible" Text="Visible"/><String Name="Hidden" Text="Hidden"/><String Name="Cloaked" Text="Cloaked"/><String Name="Minimized" Text="Minimized"/>
   </Strings>
-  <Strings Locales="zh-CN"><String Name="Help" Text="帮助"/>
+  <Strings Locales="zh-CN"><String Name="WindowTitle" Text="标题"/><String Name="WindowClass" Text="窗口类"/><String Name="WindowHandle" Text="窗口句柄"/><String Name="Help" Text="帮助"/>
     <String Name="AddReference" Text="添加引用"/>
     <String Name="ClearReferences" Text="清空引用"/>
     <String Name="Providers" Text="提供程序"/>
@@ -51,15 +50,14 @@
     <String Name="ProviderHelp" Text="提供程序名称是已获取客户端模式的文档对应名称。"/>
     <String Name="AppTitle" Text="UiaList — Windows UI 自动化检查器"/>
     <String Name="Processes" Text="进程"/><String Name="Preview" Text="界面"/><String Name="Nodes" Text="节点"/>
-    <String Name="Refresh" Text="刷新"/><String Name="ChooseWindow" Text="双击“进程”中的窗口以进行检查。"/>
+    <String Name="Refresh" Text="刷新"/><String Name="ChooseWindow" Text="选择进程，然后单击窗口进行检查。"/>
     <String Name="Properties" Text="属性"/><String Name="Actions" Text="操作"/>
     <String Name="Property" Text="属性"/><String Name="Value" Text="值"/><String Name="Details" Text="详情"/>
     <String Name="OK" Text="确定"/><String Name="Cancel" Text="取消"/><String Name="Ready" Text="就绪"/>
     <String Name="Loading" Text="正在加载…"/><String Name="NotSupported" Text="不支持"/>
     <String Name="Mixed" Text="混合值"/><String Name="Null" Text="无结果"/><String Name="Untitled" Text="无标题"/>
-    <String Name="Visible" Text="可见"/><String Name="Hidden" Text="隐藏"/><String Name="Cloaked" Text="遮蔽"/><String Name="Minimized" Text="已最小化"/>
   </Strings>
-  <Strings Locales="ja-JP"><String Name="Help" Text="ヘルプ"/>
+  <Strings Locales="ja-JP"><String Name="WindowTitle" Text="タイトル"/><String Name="WindowClass" Text="ウィンドウクラス"/><String Name="WindowHandle" Text="ウィンドウハンドル"/><String Name="Help" Text="ヘルプ"/>
     <String Name="AddReference" Text="参照を追加"/>
     <String Name="ClearReferences" Text="参照をクリア"/>
     <String Name="Providers" Text="プロバイダー"/>
@@ -81,12 +79,11 @@
     <String Name="ProviderHelp" Text="プロバイダー名は取得したクライアントパターンに対応する文書上の名称です。"/>
     <String Name="AppTitle" Text="UiaList — Windows UI オートメーション インスペクター"/>
     <String Name="Processes" Text="プロセス"/><String Name="Preview" Text="UI"/><String Name="Nodes" Text="ノード"/>
-    <String Name="Refresh" Text="更新"/><String Name="ChooseWindow" Text="プロセス内のウィンドウをダブルクリックして調べます。"/>
+    <String Name="Refresh" Text="更新"/><String Name="ChooseWindow" Text="プロセスを選択し、ウィンドウをクリックして検査します。"/>
     <String Name="Properties" Text="プロパティ"/><String Name="Actions" Text="操作"/>
     <String Name="Property" Text="プロパティ"/><String Name="Value" Text="値"/><String Name="Details" Text="詳細"/>
     <String Name="OK" Text="OK"/><String Name="Cancel" Text="キャンセル"/><String Name="Ready" Text="準備完了"/>
     <String Name="Loading" Text="読み込み中…"/><String Name="NotSupported" Text="非対応"/>
     <String Name="Mixed" Text="混在"/><String Name="Null" Text="結果なし"/><String Name="Untitled" Text="無題"/>
-    <String Name="Visible" Text="表示"/><String Name="Hidden" Text="非表示"/><String Name="Cloaked" Text="クローク状態"/><String Name="Minimized" Text="最小化"/>
   </Strings>
 </LocalizedStrings>

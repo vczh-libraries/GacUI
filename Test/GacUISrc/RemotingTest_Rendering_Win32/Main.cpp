@@ -3,7 +3,7 @@
 #define _WINSOCKAPI_
 #include <Windows.h>
 #include <Shellapi.h>
-#include "../../AutomationArguments.h"
+#include "../SharedArguments.h"
 
 #pragma comment(lib, "Shell32.lib")
 

@@ -13,7 +13,7 @@
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #endif
 #include <type_traits>
-#include "../../AutomationArguments.h"
+#include "../SharedArguments.h"
 
 using namespace vl;
 using namespace vl::inter_process;

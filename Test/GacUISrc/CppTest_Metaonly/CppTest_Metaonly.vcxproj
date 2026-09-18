@@ -186,5 +186,5 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-  <ItemGroup><ClInclude Include="..\..\AutomationArguments.h" /></ItemGroup>
+  <ItemGroup><ClInclude Include="..\SharedArguments.h" /></ItemGroup>
 </Project>

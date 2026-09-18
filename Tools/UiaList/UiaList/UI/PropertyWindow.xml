@@ -13,10 +13,10 @@
     <ev.SelectedRowChanged-eval><![CDATA[{
       GuiApplication::GetApplication().InvokeInMainThread(self, func() : void
       {
-        if (self.SelectedRow >= 0 and propertyGrid.SelectedCell.row != self.SelectedRow and not self.changingCell)
+        if (propertyGrid.SelectedCell.row != self.SelectedRow and not self.changingCell)
         {
           self.changingCell = true;
-          var pos = { row: self.SelectedRow column: 1 } of GridPos;
+          var pos = { row: self.SelectedRow column: self.SelectedRow >= 0 ? 1 : -1 } of GridPos;
           propertyGrid.SelectCell(pos, false);
           self.previousCell = pos;
           self.changingCell = false;
@@ -36,7 +36,7 @@
         {
           dialog.Cancel();
           if (self.shownDialog == dialog) { self.shownDialog = null; }
-          propertyGrid.SetFocused();
+          GuiApplication::GetApplication().InvokeInMainThread(self, func() : void { propertyGrid.SetFocused(); });
         });
       }
     }]]></ev.DialogChanged-eval>
@@ -88,29 +88,37 @@
             <TabPage Text-str="Providers()">
               <ScrollContainer ref.Name="actionScroll" ExtendToFullWidth="true" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <RepeatStack ref.Name="actionCards" Direction="Vertical" Padding="10" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.Sections"><att.ItemTemplate>uialist::ActionSectionTemplate</att.ItemTemplate></RepeatStack>
+                <RepeatStack ref.Name="actionCards" Direction="Vertical" Padding="5" ExtraMargin="left:5 top:5 right:5 bottom:5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.Sections"><att.ItemTemplate>uialist::ActionSectionTemplate</att.ItemTemplate></RepeatStack>
               </ScrollContainer>
             </TabPage>
             <TabPage Text-str="Results()">
               <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <RepeatStack ref.Name="actionResults" Direction="Vertical" Padding="10" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.Results"><att.ItemTemplate>uialist::ActionResultTemplate</att.ItemTemplate></RepeatStack>
+                <RepeatStack ref.Name="actionResults" Direction="Vertical" Padding="5" ExtraMargin="left:5 top:5 right:5 bottom:5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.Results"><att.ItemTemplate>uialist::ActionResultTemplate</att.ItemTemplate></RepeatStack>
               </ScrollContainer>
             </TabPage>
             <TabPage Text-str="References()">
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" BorderVisible="false">
+                <att.Rows><_>composeType:Percentage percentage:1.0</_><_>composeType:MinSize</_></att.Rows>
+                <att.Columns><_>composeType:Percentage percentage:1.0</_></att.Columns>
+                <Cell Site="row:0 column:0">
               <BindableTextList ref.Name="referenceList" env.ItemType="uialist::vm::IReferenceViewModel^" ItemSource-bind="ViewModel.References" TextProperty="Label">
-                <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:45"/>
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 <ev.ItemLeftButtonDoubleClick-eval><![CDATA[{ var item = referenceList.SelectedItem as uialist::vm::IReferenceViewModel^; if (item is not null) { item.Inspect(); } }]]></ev.ItemLeftButtonDoubleClick-eval>
               </BindableTextList>
-              <Stack Direction="Horizontal" Padding="8" AlignmentToParent="left:5 top:-1 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
+                </Cell>
+                <Cell Site="row:1 column:0">
+              <Stack Direction="Horizontal" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                 <StackItem MinSizeLimitation="LimitToElementAndChildren"><Button Text-str="Inspect()" Enabled-bind="(referenceList.SelectedItem as uialist::vm::IReferenceViewModel^).CanInspect ?? false"><ev.Clicked-eval>(referenceList.SelectedItem as uialist::vm::IReferenceViewModel^).Inspect();</ev.Clicked-eval></Button></StackItem>
                 <StackItem MinSizeLimitation="LimitToElementAndChildren"><Button Text-str="Reveal()" Enabled-bind="(referenceList.SelectedItem as uialist::vm::IReferenceViewModel^).CanReveal ?? false"><ev.Clicked-eval>(referenceList.SelectedItem as uialist::vm::IReferenceViewModel^).Reveal();</ev.Clicked-eval></Button></StackItem>
               </Stack>
+                </Cell>
+              </Table>
             </TabPage>
             <TabPage Text-str="TextRanges()">
               <ScrollContainer ExtendToFullWidth="true" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <RepeatStack ref.Name="textRangeWorkspaces" Direction="Vertical" Padding="10" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.TextRanges"><att.ItemTemplate>uialist::TextRangeTemplate</att.ItemTemplate></RepeatStack>
+                <RepeatStack ref.Name="textRangeWorkspaces" Direction="Vertical" Padding="5" ExtraMargin="left:5 top:5 right:5 bottom:5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" ItemSource-bind="ViewModel.TextRanges"><att.ItemTemplate>uialist::TextRangeTemplate</att.ItemTemplate></RepeatStack>
               </ScrollContainer>
             </TabPage>
           </att.Pages>

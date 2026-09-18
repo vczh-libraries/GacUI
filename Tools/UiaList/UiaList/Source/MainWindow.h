@@ -26,7 +26,7 @@ namespace uialist
 {
 	class MainWindow : public ::vl::presentation::controls::GuiWindow, public ::uialist::MainWindowConstructor, public ::vl::reflection::Description<MainWindow>
 	{
-		friend struct ::vl_workflow_global::__vwsnf59_UiaList_uialist_MainWindow_SyncTree_;
+		friend struct ::vl_workflow_global::__vwsnf74_UiaList_uialist_MainWindow_SyncTree_;
 		friend class ::uialist::MainWindowConstructor;
 		friend class ::vl_workflow_global::__vwsnc10_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc11_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
@@ -50,6 +50,13 @@ namespace uialist
 		friend class ::vl_workflow_global::__vwsnc28_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc29_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc2_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc30_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc31_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc32_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc33_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc34_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc35_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc36_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc3_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc4_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc5_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
@@ -104,14 +111,29 @@ namespace uialist
 		friend struct ::vl_workflow_global::__vwsnf50_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf51_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf52_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf53_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__;
-		friend struct ::vl_workflow_global::__vwsnf54_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize___;
+		friend struct ::vl_workflow_global::__vwsnf53_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf54_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf55_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf56_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf57_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf58_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf59_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf5_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf60_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf61_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf62_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf63_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf64_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf65_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf66_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf67_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf68_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize___;
+		friend struct ::vl_workflow_global::__vwsnf69_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize____;
 		friend struct ::vl_workflow_global::__vwsnf6_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf70_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf71_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf72_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf73_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf7_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf8_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf9_UiaList_uialist_MainWindowConstructor___vwsn_uialist_MainWindow_Initialize_;
@@ -139,6 +161,16 @@ namespace uialist
 		::vl::Ptr<::uialist::vm::INodeViewModel> GetFocusNode();
 		void SetFocusNode(::vl::Ptr<::uialist::vm::INodeViewModel> __vwsn_value_);
 		::vl::Event<void()> FocusNodeChanged;
+		::vl::Ptr<::uialist::vm::IProcessNodeViewModel> __vwsn_prop_BrowsedProcess;
+		::vl::Ptr<::uialist::vm::IProcessNodeViewModel> GetBrowsedProcess();
+		void SetBrowsedProcess(::vl::Ptr<::uialist::vm::IProcessNodeViewModel> __vwsn_value_);
+		::vl::Event<void()> BrowsedProcessChanged;
+		bool __vwsn_prop_Busy;
+		bool GetBusy();
+		void SetBusy(bool __vwsn_value_);
+		::vl::Event<void()> BusyChanged;
+		::vl::Ptr<::uialist::vm::INodeViewModel> menuNode;
+		bool syncingProcesses;
 		::vl::Ptr<::uialist::vm::IPropertyDialogViewModel> shownDialog;
 		void SyncTree(::vl::presentation::controls::GuiBindableTreeView* tree, bool processes);
 		::vl::Ptr<::uialist::IStringsStrings> __vwsn_prop_Strings;

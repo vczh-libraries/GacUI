@@ -5,7 +5,7 @@
 #include "../GacUI_Compiler/ResourceCompiler.h"
 #include "../../../Source/GacUI.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
-#include "../../AutomationArguments.h"
+#include "../SharedArguments.h"
 
 using namespace vl;
 using namespace vl::collections;

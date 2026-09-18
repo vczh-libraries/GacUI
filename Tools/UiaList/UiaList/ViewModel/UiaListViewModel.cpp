@@ -101,9 +101,11 @@ namespace uialist
 	WString ProcessNodeViewModel::GetExecutable() { return executable; }
 	Nullable<vuint64_t> ProcessNodeViewModel::GetCreationTime() { return creationTime; }
 	vuint64_t ProcessNodeViewModel::GetWindowKey() { return reinterpret_cast<UINT_PTR>(window.identity.handle); }
-	WString ProcessNodeViewModel::GetWindowTitle() { return window.title; }
+	WString ProcessNodeViewModel::GetWindowTitle() { return displayText; }
 	WString ProcessNodeViewModel::GetWindowClass() { return window.className; }
+	WString ProcessNodeViewModel::GetWindowHandleText() { return native::Hex(GetWindowKey()); }
 	Ptr<IValueList> ProcessNodeViewModel::GetChildren() { return UnboxValue<Ptr<IValueList>>(BoxParameter(children)); }
+	Ptr<IValueList> ProcessNodeViewModel::GetWindows() { return UnboxValue<Ptr<IValueList>>(BoxParameter(windows)); }
 	bool ProcessNodeViewModel::GetIsExpanded() { return expanded; }
 	void ProcessNodeViewModel::SetIsExpanded(bool value) { if (expanded != value) { expanded = value; IsExpandedChanged(); } }
 
@@ -149,6 +151,8 @@ namespace uialist
 		RequestClose();
 	}
 	Ptr<vm::IProcessNodeViewModel> UiaListViewModel::GetProcessRoot() { return processRoot; }
+	Ptr<vm::IProcessNodeViewModel> UiaListViewModel::GetSelectedProcess() { return selectedProcess; }
+	Ptr<IValueList> UiaListViewModel::GetWindows() { return selectedProcess ? selectedProcess->GetWindows() : nullptr; }
 	Ptr<vm::INodeViewModel> UiaListViewModel::GetNodeRoot() { return nodeRoot; }
 	Ptr<vm::IProcessNodeViewModel> UiaListViewModel::GetSelectedWindow() { return selectedWindow; }
 	Ptr<vm::INodeViewModel> UiaListViewModel::GetSelectedNode() { return selectedNode; }
@@ -251,6 +255,8 @@ namespace uialist
 					for (auto&& child : p->children) previous.Add(child);
 				}
 				Ptr<ProcessNodeViewModel> survivingSelection;
+				Ptr<ProcessNodeViewModel> survivingProcess;
+				root.processes.Clear();
 				for (auto&& record : result->processes)
 				{
 					auto node = Ptr(new ProcessNodeViewModel);
@@ -262,30 +268,38 @@ namespace uialist
 					node->displayText = record.executable + L" [" + utow(record.processId) + L"]";
 					auto processKey = utow(record.processId) + L"/" + (record.creationTime ? u64tow(record.creationTime.Value()) : WString());
 					node->expanded = expansion.Keys().Contains(processKey) ? expansion[processKey] : true;
+					if (record.hasVisibleUI)
+					{
+						root.processes.Add(record.processId, node);
+						if (root.selectedProcess && root.selectedProcess->processId == record.processId
+							&& (!root.selectedProcess->creationTime || !node->creationTime || root.selectedProcess->creationTime == node->creationTime)) survivingProcess = node;
+					}
 					for (auto&& window : record.windows)
 					{
+						if (!window.qualifies) continue;
 						auto child = Ptr(new ProcessNodeViewModel);
 						child->kind = vm::ProcessNodeKind::Window;
 						child->processId = record.processId;
 						child->executable = record.executable;
 						child->window = window;
-						auto state = !window.visible ? root.strings->Hidden() : window.cloaked ? root.strings->Cloaked() : window.minimized ? root.strings->Minimized() : root.strings->Visible();
-						child->displayText = SingleLine(window.title.Length() ? window.title : root.strings->Untitled()) + L" [" + window.className + L", " + native::Hex(child->GetWindowKey()) + L", " + state + L"]";
-						node->children.Add(child);
+						child->displayText = SingleLine(window.title.Length() ? window.title : root.strings->Untitled());
+						node->windows.Add(child);
 						if (root.selectedWindow && root.selectedWindow->window.identity == window.identity) survivingSelection = child;
 					}
 					processNodes.Add(node);
 				}
 				for (vint i = 0; i < result->processes.Count(); i++)
 				{
-					vint insertion = 0;
-					for (auto index : result->processes[i].children) processNodes[i]->children.Insert(insertion++, processNodes[index]);
+					for (auto index : result->processes[i].children) processNodes[i]->children.Add(processNodes[index]);
 				}
 				auto synthetic = Ptr(new ProcessNodeViewModel);
 				for (auto index : result->roots) synthetic->children.Add(processNodes[index]);
 				ReleaseTreeChildren(root.processRoot);
 				root.processRoot = synthetic;
+				root.selectedProcess = survivingProcess;
 				root.ProcessRootChanged();
+				root.SelectedProcessChanged();
+				root.WindowsChanged();
 				if (root.selectedWindow && !survivingSelection) root.ClearSelection();
 				else if (survivingSelection) { root.selectedWindow = survivingSelection; root.SelectedWindowChanged(); }
 				root.processBusy = false;
@@ -293,6 +307,16 @@ namespace uialist
 				root.StatusChanged();
 			});
 		});
+	}
+
+	void UiaListViewModel::SelectProcess(Ptr<vm::IProcessNodeViewModel> value)
+	{
+		auto process = value.Cast<ProcessNodeViewModel>();
+		if (!process || !processes.Keys().Contains(process->processId) || processes[process->processId] != process || lifetime->closed) return;
+		if (selectedProcess == process) return;
+		selectedProcess = process;
+		SelectedProcessChanged();
+		WindowsChanged();
 	}
 
 	void UiaListViewModel::ClearSelection()
@@ -319,12 +343,13 @@ namespace uialist
 		NodeRootChanged();
 		IsBusyChanged();
 		StatusChanged();
+		SetActiveTab(0);
 	}
 
 	void UiaListViewModel::SelectWindow(Ptr<vm::IProcessNodeViewModel> value)
 	{
 		auto node = value.Cast<ProcessNodeViewModel>();
-		if (!node || node->kind != vm::ProcessNodeKind::Window || lifetime->closed) return;
+		if (!node || !selectedProcess || !selectedProcess->windows.Contains(node.Obj()) || !node->window.qualifies || lifetime->closed) return;
 		ClearSelection();
 		selectedWindow = node;
 		SelectedWindowChanged();
@@ -488,11 +513,12 @@ namespace uialist
 
 	void UiaListViewModel::InspectNode(Ptr<vm::INodeViewModel> value)
 	{
-		if (!value || value->GetIsSyntheticRoot()) return;
+		auto node = value.Cast<NodeViewModel>();
+		if (!node || node->GetIsSyntheticRoot() || node->generation != lifetime->generation || treeBusy || lifetime->closed) return;
+		if (!nodes.Keys().Contains(node->data.key) || nodes[node->data.key] != node) return;
 		if (propertyDialog && propertyDialog->open) return;
-		SelectNode(value);
-		if (!selectedNode || treeBusy) return;
-		propertyDialog = Ptr(new PropertyDialogViewModel(*this, selectedNode->data.key, selectedNode->displayText));
+		SelectNode(node);
+		propertyDialog = Ptr(new PropertyDialogViewModel(*this, node->data.key, node->displayText));
 		PropertyDialogChanged();
 		propertyDialog->Refresh();
 	}

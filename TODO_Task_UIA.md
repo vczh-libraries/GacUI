@@ -1,3 +1,5 @@
+> Superseded naming requirements: the later TODO_Task_UiaList.md task renames the ordinary suite to Test/UIA_CppTest_Metaonly.ps1, shared files to Test/UIA_CppTest_Shared.*, and the parser to Test/GacUISrc/SharedArguments.h. Original wording below is preserved as historical task input.
+
 `Tools\UiaList\Planning.md` stores the last completed mission to create the `UiaList` tool. But when I am running it manually I notice some issues:
 - When opening the detail window for an UI element, IInvokeProvider seems never appear in `Actions` tab.
 - It seems almost all UI element implements `ILegacyIAccessibleProvider`, but clicking `DoDefaultAction` always crash.

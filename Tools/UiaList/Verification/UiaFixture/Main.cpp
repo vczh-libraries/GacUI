@@ -2,14 +2,18 @@
 #include <CommCtrl.h>
 #include <cstdio>
 #include <UIAutomation.h>
+#include <dwmapi.h>
+#include <vector>
 #include "Synthetic.h"
 
 #pragma comment(lib, "Comctl32.lib")
+#pragma comment(lib, "Dwmapi.lib")
 
 struct Fixture
 {
 	HWND window = nullptr;
 	HWND stress = nullptr;
+	std::vector<HWND> navigation;
 	HANDLE log = INVALID_HANDLE_VALUE;
 	int invoked = 0;
 
@@ -20,6 +24,26 @@ struct Fixture
 		DWORD written = 0;
 		if (!WriteFile(log, line, static_cast<DWORD>(length * sizeof(wchar_t)), &written, nullptr)) RaiseFailFastException(nullptr, nullptr, 0);
 		FlushFileBuffers(log);
+	}
+
+	void CreateNavigationWindows()
+	{
+		for (auto handle : navigation) if (IsWindow(handle)) return;
+		navigation.clear();
+		WNDCLASSW type = {};
+		type.hInstance = GetModuleHandleW(nullptr);
+		type.lpszClassName = L"UiaNavigationFixture";
+		type.lpfnWndProc = DefWindowProcW;
+		type.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
+		RegisterClassW(&type);
+		const wchar_t* titles[] = { L"Duplicate navigation title", L"Duplicate navigation title", L"", L"Owned navigation dialog", L"Hidden navigation window", L"Cloaked navigation window", L"Minimized navigation window", L"Empty navigation bounds" };
+		for (int i = 0; i < 8; i++)
+		{
+			auto handle = CreateWindowExW(0, type.lpszClassName, titles[i], i == 7 ? WS_POPUP : WS_OVERLAPPEDWINDOW, 120 + 20 * i, 120 + 20 * i, i == 7 ? 0 : 300, i == 7 ? 0 : 150, i == 3 ? window : nullptr, nullptr, type.hInstance, nullptr);
+			navigation.push_back(handle);
+			if (i != 4) ShowWindow(handle, i == 6 ? SW_SHOWMINNOACTIVE : SW_SHOWNOACTIVATE);
+			if (i == 5) { BOOL cloak = TRUE; DwmSetWindowAttribute(handle, DWMWA_CLOAK, &cloak, sizeof(cloak)); }
+		}
 	}
 
 	void CreateChildren()
@@ -44,6 +68,7 @@ struct Fixture
 		SendMessageW(slider, TBM_SETPOS, TRUE, 25);
 		create(L"STATIC", L"Bounds oracle: client origin (0,0), controls have fixed physical coordinates.", 0, 108, 20, 465, 640, 40);
 		create(L"BUTTON", L"Open large/deep raw tree", BS_PUSHBUTTON, 109, 20, 410, 180, 30);
+		create(L"BUTTON", L"Open navigation windows", BS_PUSHBUTTON, 110, 220, 410, 180, 30);
 	}
 };
 
@@ -61,6 +86,7 @@ LRESULT CALLBACK FixtureProc(HWND window, UINT message, WPARAM wParam, LPARAM lP
 	{
 	case WM_CREATE: fixture->CreateChildren(); return 0;
 	case WM_COMMAND:
+		if (LOWORD(wParam) == 110 && HIWORD(wParam) == BN_CLICKED) fixture->CreateNavigationWindows();
 		if (LOWORD(wParam) == 109 && HIWORD(wParam) == BN_CLICKED && !IsWindow(fixture->stress)) fixture->stress = CreateSyntheticFixture(GetModuleHandleW(nullptr), true);
 		if (LOWORD(wParam) == 101 && HIWORD(wParam) == BN_CLICKED) ++fixture->invoked;
 		fixture->Record(L"WM_COMMAND", LOWORD(wParam), HIWORD(wParam));
@@ -80,7 +106,9 @@ LRESULT CALLBACK FixtureProc(HWND window, UINT message, WPARAM wParam, LPARAM lP
 			EndPaint(window, &paint);
 			return 0;
 		}
-	case WM_DESTROY: DestroySyntheticFixture(fixture->stress); fixture->Record(L"WM_DESTROY", 0, 0); PostQuitMessage(0); return 0;
+	case WM_DESTROY:
+		for (auto handle : fixture->navigation) if (IsWindow(handle)) DestroyWindow(handle);
+		DestroySyntheticFixture(fixture->stress); fixture->Record(L"WM_DESTROY", 0, 0); PostQuitMessage(0); return 0;
 	default: return DefWindowProcW(window, message, wParam, lParam);
 	}
 }

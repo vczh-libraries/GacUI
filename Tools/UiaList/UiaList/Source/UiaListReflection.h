@@ -116,10 +116,6 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(ClearReferences);
 				}
-				::vl::WString Cloaked() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Cloaked);
-				}
 				::vl::WString Completed() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Completed);
@@ -136,10 +132,6 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Help);
 				}
-				::vl::WString Hidden() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Hidden);
-				}
 				::vl::WString Inspect() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Inspect);
@@ -151,10 +143,6 @@ namespace vl
 				::vl::WString Loading() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Loading);
-				}
-				::vl::WString Minimized() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Minimized);
 				}
 				::vl::WString Mixed() override
 				{
@@ -248,9 +236,17 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Value);
 				}
-				::vl::WString Visible() override
+				::vl::WString WindowClass() override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Visible);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(WindowClass);
+				}
+				::vl::WString WindowHandle() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(WindowHandle);
+				}
+				::vl::WString WindowTitle() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(WindowTitle);
 				}
 			END_INTERFACE_PROXY(::uialist::IStringsStrings)
 
@@ -376,10 +372,6 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetHeading);
 				}
-				bool GetIsExpanded() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetIsExpanded);
-				}
 				::vl::vint GetPatternId() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetPatternId);
@@ -387,10 +379,6 @@ namespace vl
 				::vl::Ptr<::vl::reflection::description::IValueList> GetReadouts() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetReadouts);
-				}
-				void SetIsExpanded(bool __vwsn_value_) override
-				{
-					INVOKE_INTERFACE_PROXY(SetIsExpanded, __vwsn_value_);
 				}
 			END_INTERFACE_PROXY(::uialist::vm::IActionSectionViewModel)
 
@@ -533,6 +521,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetWindowClass);
 				}
+				::vl::WString GetWindowHandleText() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetWindowHandleText);
+				}
 				::vl::vuint64_t GetWindowKey() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetWindowKey);
@@ -540,6 +532,10 @@ namespace vl
 				::vl::WString GetWindowTitle() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetWindowTitle);
+				}
+				::vl::Ptr<::vl::reflection::description::IValueList> GetWindows() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetWindows);
 				}
 				void SetIsExpanded(bool __vwsn_value_) override
 				{
@@ -827,6 +823,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSelectedNode);
 				}
+				::vl::Ptr<::uialist::vm::IProcessNodeViewModel> GetSelectedProcess() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSelectedProcess);
+				}
 				::vl::Ptr<::uialist::vm::IProcessNodeViewModel> GetSelectedWindow() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSelectedWindow);
@@ -834,6 +834,10 @@ namespace vl
 				::vl::WString GetStatus() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetStatus);
+				}
+				::vl::Ptr<::vl::reflection::description::IValueList> GetWindows() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetWindows);
 				}
 				void Initialize() override
 				{
@@ -858,6 +862,10 @@ namespace vl
 				void SelectNode(::vl::Ptr<::uialist::vm::INodeViewModel> node) override
 				{
 					INVOKE_INTERFACE_PROXY(SelectNode, node);
+				}
+				void SelectProcess(::vl::Ptr<::uialist::vm::IProcessNodeViewModel> process) override
+				{
+					INVOKE_INTERFACE_PROXY(SelectProcess, process);
 				}
 				void SelectWindow(::vl::Ptr<::uialist::vm::IProcessNodeViewModel> window) override
 				{

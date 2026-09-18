@@ -7,6 +7,10 @@
     prop ProcessData : uialist::vm::IProcessNodeViewModel^ = null {}
     prop NodeData : uialist::vm::INodeViewModel^ = null {}
     prop FocusNode : uialist::vm::INodeViewModel^ = null {}
+    prop BrowsedProcess : uialist::vm::IProcessNodeViewModel^ = null {}
+    prop Busy : bool = false {}
+    var menuNode : uialist::vm::INodeViewModel^ = null;
+    var syncingProcesses : bool = false;
     var shownDialog : uialist::vm::IPropertyDialogViewModel^ = null;
     func SyncTree(tree : GuiBindableTreeView*, processes : bool) : void
     {
@@ -17,6 +21,7 @@
         pending.Add(provider.RootNode);
         var position = 0;
         var selected : presentation::controls::tree::INodeProvider^ = null;
+        if (processes) { self.syncingProcesses = true; tree.ClearSelection(); }
         while (position < pending.Count)
         {
           var node = pending[position];
@@ -24,7 +29,11 @@
           if (processes)
           {
             var item = provider.GetBindingValue(cast (presentation::controls::tree::INodeProvider*) node) as uialist::vm::IProcessNodeViewModel^;
-            if (item is not null) { node.Expanding = item.IsExpanded; }
+            if (item is not null)
+            {
+              node.Expanding = item.IsExpanded;
+              if (item == ViewModel.SelectedProcess) { selected = node; }
+            }
           }
           else
           {
@@ -47,12 +56,15 @@
             tree.EnsureItemVisible(index);
           }
         }
+        if (processes) { self.syncingProcesses = false; }
       });
     }
   ]]></ref.Members>
-  <Window ref.Name="self" Text-str="AppTitle()" ClientSize="x:1100 y:760" Dialog-bind="ViewModel.PropertyDialog" CurrentTab-bind="ViewModel.ActiveTab" ProcessData-bind="ViewModel.ProcessRoot" NodeData-bind="ViewModel.NodeRoot" FocusNode-bind="ViewModel.SelectedNode">
+  <Window ref.Name="self" Text-str="AppTitle()" ClientSize="x:1100 y:760" Dialog-bind="ViewModel.PropertyDialog" CurrentTab-bind="ViewModel.ActiveTab" ProcessData-bind="ViewModel.ProcessRoot" NodeData-bind="ViewModel.NodeRoot" FocusNode-bind="ViewModel.SelectedNode" BrowsedProcess-bind="ViewModel.SelectedProcess" Busy-bind="ViewModel.IsBusy">
     <ev.ProcessDataChanged-eval>self.SyncTree(processTree, true);</ev.ProcessDataChanged-eval>
-    <ev.NodeDataChanged-eval>self.SyncTree(nodeTree, false);</ev.NodeDataChanged-eval>
+    <ev.BrowsedProcessChanged-eval>{ windowList.ClearSelection(); self.SyncTree(processTree, true); }</ev.BrowsedProcessChanged-eval>
+    <ev.BusyChanged-eval>if (self.Busy) { if (nodeMenu.GetOpening()) { nodeMenu.Hide(); } self.menuNode = null; }</ev.BusyChanged-eval>
+    <ev.NodeDataChanged-eval>{ if (nodeMenu.GetOpening()) { nodeMenu.Hide(); } self.menuNode = null; self.SyncTree(nodeTree, false); }</ev.NodeDataChanged-eval>
     <ev.FocusNodeChanged-eval>self.SyncTree(nodeTree, false);</ev.FocusNodeChanged-eval>
     <ev.DialogChanged-eval><![CDATA[{
       GuiApplication::GetApplication().InvokeInMainThread(self, func() : void
@@ -68,7 +80,7 @@
           {
             dialog.Close();
             if (self.shownDialog == dialog) { self.shownDialog = null; }
-            nodeTree.SetFocused();
+            GuiApplication::GetApplication().InvokeInMainThread(self, func() : void { nodeTree.SetFocused(); });
           });
         }
       });
@@ -79,6 +91,18 @@
     <ev.WindowOpened-eval>ViewModel.Initialize();</ev.WindowOpened-eval>
     <ev.WindowClosing-eval>ViewModel.RequestClose();</ev.WindowClosing-eval>
     <att.BoundsComposition-set PreferredMinSize="x:720 y:480"/>
+    <ToolstripMenu ref.Name="nodeMenu">
+      <ToolstripGroupContainer>
+        <MenuItemButton Text-str="Inspect()">
+          <ev.Clicked-eval><![CDATA[{
+            var node = self.menuNode;
+            nodeMenu.Hide();
+            self.menuNode = null;
+            ViewModel.InspectNode(node);
+          }]]></ev.Clicked-eval>
+        </MenuItemButton>
+      </ToolstripGroupContainer>
+    </ToolstripMenu>
     <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" CellPadding="5" BorderVisible="false">
       <att.Rows><_>composeType:Percentage percentage:1.0</_><_>composeType:MinSize</_></att.Rows>
       <att.Columns><_>composeType:Percentage percentage:1.0</_></att.Columns>
@@ -90,23 +114,41 @@
           <TabPage ref.Name="processesPage" Text-str="Processes()">
             <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" CellPadding="5" BorderVisible="false">
               <att.Rows><_>composeType:MinSize</_><_>composeType:Percentage percentage:1.0</_></att.Rows>
-              <att.Columns><_>composeType:Percentage percentage:1.0</_></att.Columns>
+              <att.Columns><_>composeType:MinSize</_><_>composeType:Percentage percentage:1.0</_></att.Columns>
               <Cell Site="row:0 column:0">
                 <Button ref.Name="refreshProcesses" Text-str="Refresh()">
                   <ev.Clicked-eval>ViewModel.RefreshProcesses();</ev.Clicked-eval>
                 </Button>
               </Cell>
-              <Cell Site="row:1 column:0">
-                <BindableTreeView ref.Name="processTree" env.ItemType="uialist::vm::IProcessNodeViewModel^" ItemSource-bind="ViewModel.ProcessRoot">
+              <Cell Site="row:0 column:1">
+                <ComboBox ref.Name="processCombo">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <att.ListControl>
+                  <BindableTreeView ref.Name="processTree" env.ItemType="uialist::vm::IProcessNodeViewModel^" ItemSource-bind="ViewModel.ProcessRoot">
                   <ev.NodeExpanded-eval>(processTree.NodeRootProvider.GetBindingValue(arguments.node) as uialist::vm::IProcessNodeViewModel^).IsExpanded = true;</ev.NodeExpanded-eval>
                   <ev.NodeCollapsed-eval>(processTree.NodeRootProvider.GetBindingValue(arguments.node) as uialist::vm::IProcessNodeViewModel^).IsExpanded = false;</ev.NodeCollapsed-eval>
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <att.TextProperty>DisplayText</att.TextProperty><att.ChildrenProperty>Children</att.ChildrenProperty>
-                  <ev.ItemLeftButtonDoubleClick-eval>ViewModel.SelectWindow(processTree.SelectedItem as uialist::vm::IProcessNodeViewModel^);</ev.ItemLeftButtonDoubleClick-eval>
+                  <ev.SelectionChanged-eval>if (not self.syncingProcesses) { ViewModel.SelectProcess(processTree.SelectedItem as uialist::vm::IProcessNodeViewModel^); }</ev.SelectionChanged-eval>
+                  </BindableTreeView>
+                  </att.ListControl>
+                </ComboBox>
+              </Cell>
+              <Cell Site="row:1 column:0 columnSpan:2">
+                <BindableListView ref.Name="windowList" env.ItemType="uialist::vm::IProcessNodeViewModel^" ItemSource-bind="ViewModel.Windows" View="Detail">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <att.Columns>
+                    <_ Text-str="WindowTitle()" TextProperty="WindowTitle" Size="520"/>
+                    <_ Text-str="WindowClass()" TextProperty="WindowClass" Size="300"/>
+                    <_ Text-str="WindowHandle()" TextProperty="WindowHandleText" Size="180"/>
+                  </att.Columns>
+                  <ev.ItemLeftButtonUp-eval><![CDATA[{
+                    if (arguments.itemIndex >= 0 and arguments.itemIndex < ViewModel.Windows.Count) { ViewModel.SelectWindow(ViewModel.Windows[arguments.itemIndex]); }
+                  }]]></ev.ItemLeftButtonUp-eval>
                   <att.FocusableComposition-set>
-                    <ev.keyDown-eval><![CDATA[{ if (arguments.code == VKEY::KEY_RETURN) { ViewModel.SelectWindow(processTree.SelectedItem as uialist::vm::IProcessNodeViewModel^); arguments.handled = true; } }]]></ev.keyDown-eval>
+                    <ev.keyDown-eval><![CDATA[{ if (arguments.code == VKEY::KEY_RETURN) { ViewModel.SelectWindow(windowList.SelectedItem as uialist::vm::IProcessNodeViewModel^); arguments.handled = true; } }]]></ev.keyDown-eval>
                   </att.FocusableComposition-set>
-                </BindableTreeView>
+                </BindableListView>
               </Cell>
             </Table>
           </TabPage>
@@ -143,7 +185,15 @@
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <att.TextProperty>DisplayText</att.TextProperty><att.ChildrenProperty>Children</att.ChildrenProperty>
                   <ev.SelectionChanged-eval>ViewModel.SelectNode(nodeTree.SelectedItem as uialist::vm::INodeViewModel^);</ev.SelectionChanged-eval>
-                  <ev.ItemLeftButtonDoubleClick-eval>ViewModel.InspectNode(nodeTree.SelectedItem as uialist::vm::INodeViewModel^);</ev.ItemLeftButtonDoubleClick-eval>
+                  <ev.NodeRightButtonUp-eval><![CDATA[{
+                    self.menuNode = nodeTree.NodeRootProvider.GetBindingValue(arguments.node) as uialist::vm::INodeViewModel^;
+                    if (self.menuNode is not null and not self.menuNode.IsSyntheticRoot and not ViewModel.IsBusy)
+                    {
+                      ViewModel.SelectNode(self.menuNode);
+                      nodeMenu.ShowPopup(nodeTree, { x:arguments.x y:arguments.y } of Point);
+                    }
+                    else { if (nodeMenu.GetOpening()) { nodeMenu.Hide(); } self.menuNode = null; }
+                  }]]></ev.NodeRightButtonUp-eval>
                   <att.FocusableComposition-set><ev.keyDown-eval><![CDATA[{ if (arguments.code == VKEY::KEY_RETURN) { ViewModel.InspectNode(nodeTree.SelectedItem as uialist::vm::INodeViewModel^); arguments.handled = true; } }]]></ev.keyDown-eval></att.FocusableComposition-set>
                 </BindableTreeView>
               </Cell>

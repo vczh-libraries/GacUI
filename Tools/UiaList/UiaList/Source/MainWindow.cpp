@@ -100,9 +100,35 @@ namespace uialist
 		}
 	}
 
+	::vl::Ptr<::uialist::vm::IProcessNodeViewModel> MainWindow::GetBrowsedProcess()
+	{
+		return this->__vwsn_prop_BrowsedProcess;
+	}
+	void MainWindow::SetBrowsedProcess(::vl::Ptr<::uialist::vm::IProcessNodeViewModel> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_BrowsedProcess.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_BrowsedProcess = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->BrowsedProcessChanged)();
+		}
+	}
+
+	bool MainWindow::GetBusy()
+	{
+		return this->__vwsn_prop_Busy;
+	}
+	void MainWindow::SetBusy(bool __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Busy != __vwsn_value_))
+		{
+			(this->__vwsn_prop_Busy = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->BusyChanged)();
+		}
+	}
+
 	void MainWindow::SyncTree(::vl::presentation::controls::GuiBindableTreeView* tree, bool processes)
 	{
-		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(this->self), vl::Func(::vl_workflow_global::__vwsnf59_UiaList_uialist_MainWindow_SyncTree_(processes, tree, this)));
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(this->self), vl::Func(::vl_workflow_global::__vwsnf74_UiaList_uialist_MainWindow_SyncTree_(processes, tree, this)));
 	}
 
 	::vl::Ptr<::uialist::IStringsStrings> MainWindow::GetStrings()
@@ -130,6 +156,10 @@ namespace uialist
 		, __vwsn_prop_ProcessData(::vl::Ptr<::uialist::vm::IProcessNodeViewModel>())
 		, __vwsn_prop_NodeData(::vl::Ptr<::uialist::vm::INodeViewModel>())
 		, __vwsn_prop_FocusNode(::vl::Ptr<::uialist::vm::INodeViewModel>())
+		, __vwsn_prop_BrowsedProcess(::vl::Ptr<::uialist::vm::IProcessNodeViewModel>())
+		, __vwsn_prop_Busy(false)
+		, menuNode(::vl::Ptr<::uialist::vm::INodeViewModel>())
+		, syncingProcesses(false)
 		, shownDialog(::vl::Ptr<::uialist::vm::IPropertyDialogViewModel>())
 		, __vwsn_prop_Strings(::uialist::Strings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
 		, __vwsn_parameter_ViewModel(::vl::Ptr<::uialist::vm::IUiaListViewModel>())

@@ -19,7 +19,9 @@ namespace vm
     prop WindowKey : UInt64 {const}
     prop WindowTitle : string {const}
     prop WindowClass : string {const}
+    prop WindowHandleText : string {const}
     prop Children : IProcessNodeViewModel^[] {const}
+    prop Windows : IProcessNodeViewModel^[] {const}
     prop IsExpanded : bool {}
   }
 
@@ -141,7 +143,6 @@ namespace vm
     prop PatternId : int {const}
     prop Readouts : IPropertyRowViewModel^[] {const}
     prop Commands : IActionCommandViewModel^[] {const}
-    prop IsExpanded : bool {}
   }
 
   interface ITextRangeViewModel
@@ -176,6 +177,8 @@ namespace vm
   interface IUiaListViewModel
   {
     prop ProcessRoot : IProcessNodeViewModel^ {const}
+    prop SelectedProcess : IProcessNodeViewModel^ {const}
+    prop Windows : IProcessNodeViewModel^[] {const}
     prop NodeRoot : INodeViewModel^ {const}
     prop SelectedWindow : IProcessNodeViewModel^ {const}
     prop SelectedNode : INodeViewModel^ {const}
@@ -189,6 +192,7 @@ namespace vm
     func Initialize() : void;
     func RefreshProcesses() : void;
     func RefreshWindow() : void;
+    func SelectProcess(process : IProcessNodeViewModel^) : void;
     func SelectWindow(window : IProcessNodeViewModel^) : void;
     func SelectNode(node : INodeViewModel^) : void;
     func InspectNode(node : INodeViewModel^) : void;

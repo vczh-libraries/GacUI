@@ -6,7 +6,7 @@
 #include <Windows.h>
 #include <Shellapi.h>
 #include <crtdbg.h>
-#include "../../AutomationArguments.h"
+#include "../SharedArguments.h"
 
 #pragma comment(lib, "Shell32.lib")
 

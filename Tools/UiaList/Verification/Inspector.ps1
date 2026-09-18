@@ -6,6 +6,9 @@ param(
     [string]$ClickLabel,
     [int]$Occurrence = 0,
     [switch]$DoubleClick,
+    [switch]$RightClick,
+    [switch]$InspectNode,
+    [int]$SelectProcessId,
     [switch]$Scroll,
     [switch]$Button,
     [switch]$Dump
@@ -48,13 +51,15 @@ function Assert-InspectorAlive {
 function Get-TextNodes($node) {
     $pending = [Collections.Generic.Stack[object]]::new()
     $result = [Collections.Generic.List[object]]::new()
-    $pending.Push(@{Node=$node; Control=''})
+    $pending.Push(@{Node=$node; Control=''; Clip=$node.bounds; Scroll=$null})
     while ($pending.Count) {
         $entry = $pending.Pop()
         $current = $entry.Node
         $control = if ($current.control) { $current.control } else { $entry.Control }
-        if ($current.elementText) { $result.Add([pscustomobject]@{ Text = $current.elementText; Bounds = $current.bounds; Control=$control }) }
-        for ($index = $current.children.Count - 1; $index -ge 0; $index--) { $pending.Push(@{Node=$current.children[$index]; Control=$control}) }
+        $clip = @{x1=[Math]::Max($entry.Clip.x1,$current.bounds.x1); y1=[Math]::Max($entry.Clip.y1,$current.bounds.y1); x2=[Math]::Min($entry.Clip.x2,$current.bounds.x2); y2=[Math]::Min($entry.Clip.y2,$current.bounds.y2)}
+        $scrollBounds = if ($current.control -in @('ScrollView','TreeView','ListView','TextList','DataGrid')) { $clip } else { $entry.Scroll }
+        if ($current.elementText) { $result.Add([pscustomobject]@{ Text = $current.elementText; Bounds = $current.bounds; VisibleBounds=$clip; ScrollBounds=$scrollBounds; Control=$control }) }
+        for ($index = $current.children.Count - 1; $index -ge 0; $index--) { $pending.Push(@{Node=$current.children[$index]; Control=$control; Clip=$clip; Scroll=$scrollBounds}) }
     }
     return $result.ToArray()
 }
@@ -62,7 +67,34 @@ function Get-TextNodes($node) {
 Assert-InspectorAlive
 try { $state = Invoke-RestMethod -Uri "$endpoint/Controls" -TimeoutSec 10 }
 catch { Assert-InspectorAlive; throw }
+if ($SelectProcessId) {
+    $pending = [Collections.Generic.Stack[object]]::new(); $pending.Push($state.MainWindow.composition)
+    $combo = $null
+    while ($pending.Count) { $node=$pending.Pop(); if ($node.control -eq 'ComboBox') { $combo=$node; break }; foreach ($child in $node.children) { $pending.Push($child) } }
+    if (!$combo) { throw 'Process combo box was not found. Select Processes first.' }
+    $point = '!LeftClick:{0},{1}' -f [int](($combo.bounds.x1+$combo.bounds.x2)/2),[int](($combo.bounds.y1+$combo.bounds.y2)/2)
+    $reply=(Invoke-WebRequest -Method Post -Uri "$endpoint/IO/$($state.MainWindow.windowId)" -Headers @{'Content-Type'='application/json; charset=utf8'} -SkipHeaderValidation -Body ([Text.Encoding]::UTF8.GetBytes($point)) -TimeoutSec 10).Content
+    if ($reply -ne 'Queued') { throw $reply }
+    $state=Invoke-RestMethod "$endpoint/Controls" -TimeoutSec 15
+    if (@($state.Popups).Count -ne 1) { throw 'Process dropdown did not open.' }
+    $deadline=[DateTime]::UtcNow.AddSeconds(5)
+    while (!(Get-TextNodes $state.Popups[0].composition).Count -and [DateTime]::UtcNow -lt $deadline) {
+        Start-Sleep -Milliseconds 50
+        $state=Invoke-RestMethod "$endpoint/Controls" -TimeoutSec 15
+    }
+    $Window=1+@($state.SubWindows).Count
+    $ClickLabel='*' + [WildcardPattern]::Escape("[$SelectProcessId]")
+    $Scroll=$true
+}
 $windows = @($state.MainWindow) + @($state.SubWindows) + @($state.Popups)
+if ($Window -gt 0) {
+    $deadline=[DateTime]::UtcNow.AddSeconds(5)
+    while ($Window -ge $windows.Count -and [DateTime]::UtcNow -lt $deadline) {
+        Start-Sleep -Milliseconds 50
+        $state=Invoke-RestMethod "$endpoint/Controls" -TimeoutSec 15
+        $windows=@($state.MainWindow)+@($state.SubWindows)+@($state.Popups)
+    }
+}
 if ($Window -lt 0 -or $Window -ge $windows.Count) { throw "Window index $Window is out of range." }
 $target = $windows[$Window]
 $nodes = @(Get-TextNodes $target.composition)
@@ -76,18 +108,20 @@ if ($ClickLabel) {
         for ($attempt = 0; $attempt -lt 240; $attempt++) {
             $matches = @($nodes | Where-Object { $_.Text -like $ClickLabel -and (!$Button -or $_.Control -eq 'Button') })
             if ($Occurrence -ge $matches.Count) {
-                if ($Window -ne 0) { throw "Caption '$ClickLabel' was not found." }
                 # Advance less than one viewport so virtualized rows cannot be skipped.
-                $delta = 192
+                $surface=@($nodes | Where-Object ScrollBounds | Select-Object -First 1)[0].ScrollBounds
+                if (!$surface) { throw "No scroll surface for '$ClickLabel'." }
+                $delta = if ($attempt -eq 0) { -48000 } else { [Math]::Max(48,($surface.y2-$surface.y1)/2) }
             } else {
                 $bounds = $matches[$Occurrence].Bounds
-                $top = if ($Window -eq 0) { 0 } else { 142 }
-                $bottom = if ($Window -eq 0) { $target.composition.bounds.y2 - 60 } else { 594 }
-                if ($bounds.y1 -ge $top -and $bounds.y2 -le $bottom -and $bounds.y2 -gt $bounds.y1) { break }
-                $delta = [int](($bounds.y1 + $bounds.y2) / 2) - 360
+                $visible=$matches[$Occurrence].VisibleBounds
+                if ($visible.y2 -gt $visible.y1 -and $visible.x2 -gt $visible.x1 -and $visible.y1 -eq $bounds.y1 -and $visible.y2 -eq $bounds.y2) { break }
+                $surface=$matches[$Occurrence].ScrollBounds
+                if (!$surface) { throw "Caption '$ClickLabel' is outside a scroll surface." }
+                $delta = [int](($bounds.y1 + $bounds.y2 - $surface.y1 - $surface.y2) / 2)
             }
             $ticks = [Math]::Max(1, [Math]::Floor([Math]::Abs($delta) / 48))
-            Send-ScrollCommand '!MouseMove:600,400'
+            Send-ScrollCommand ('!MouseMove:{0},{1}' -f [int](($surface.x1+$surface.x2)/2),[int](($surface.y1+$surface.y2)/2))
             Send-ScrollCommand "!MouseWheel$(if ($delta -gt 0) {'Down'} else {'Up'}):$ticks"
             Start-Sleep -Milliseconds 150
             $state = Invoke-RestMethod -Uri "$endpoint/Controls" -TimeoutSec 10
@@ -98,11 +132,11 @@ if ($ClickLabel) {
     }
     $matches = @($nodes | Where-Object { $_.Text -like $ClickLabel -and (!$Button -or $_.Control -eq 'Button') })
     if ($Occurrence -ge $matches.Count) { throw "Caption '$ClickLabel' occurrence $Occurrence is not visible." }
-    $bounds = $matches[$Occurrence].Bounds
+    $bounds = $matches[$Occurrence].VisibleBounds
     $x = [int](($bounds.x1 + $bounds.x2) / 2)
     $y = [int](($bounds.y1 + $bounds.y2) / 2)
     if ($bounds.y2 -le $bounds.y1 -or $bounds.x2 -le $bounds.x1 -or $x -lt 0 -or $y -lt 0 -or $x -ge $target.composition.bounds.x2 -or $y -ge $target.composition.bounds.y2) { throw "Caption '$ClickLabel' is clipped. Scroll it into view before clicking." }
-    $verb = if ($DoubleClick) { '!LeftDbClick' } else { '!LeftClick' }
+    $verb = if ($RightClick -or $InspectNode) { '!RightClick' } elseif ($DoubleClick) { '!LeftDbClick' } else { '!LeftClick' }
     $Command = "${verb}:$x,$y"
 }
 if ($Command) {
@@ -110,6 +144,22 @@ if ($Command) {
     $response = (Invoke-WebRequest -Method Post -Uri $url -Headers @{'Content-Type'='application/json; charset=utf8'} -SkipHeaderValidation -Body ([Text.Encoding]::UTF8.GetBytes($Command)) -TimeoutSec 10).Content
     if ($response -ne 'Queued') { throw "Command rejected: $response" }
     Write-Output "Queued $Command for window $Window. Read Controls to verify completion."
+    if ($InspectNode) {
+        $state=Invoke-RestMethod "$endpoint/Controls" -TimeoutSec 15
+        $menus=@($state.Popups | Where-Object { @(Get-TextNodes $_.composition | Where-Object Text -EQ 'Inspect').Count })
+        $deadline=[DateTime]::UtcNow.AddSeconds(5)
+        while ($menus.Count -ne 1 -and [DateTime]::UtcNow -lt $deadline) {
+            Start-Sleep -Milliseconds 50
+            $state=Invoke-RestMethod "$endpoint/Controls" -TimeoutSec 15
+            $menus=@($state.Popups | Where-Object { @(Get-TextNodes $_.composition | Where-Object Text -EQ 'Inspect').Count })
+        }
+        if ($menus.Count -ne 1) { throw 'Node Inspect menu did not open.' }
+        $item=@(Get-TextNodes $menus[0].composition | Where-Object Text -EQ 'Inspect')[0].VisibleBounds
+        $point='!LeftClick:{0},{1}' -f [int](($item.x1+$item.x2)/2),[int](($item.y1+$item.y2)/2)
+        $reply=(Invoke-WebRequest -Method Post -Uri "$endpoint/IO/$($menus[0].windowId)" -Headers @{'Content-Type'='application/json; charset=utf8'} -SkipHeaderValidation -Body ([Text.Encoding]::UTF8.GetBytes($point)) -TimeoutSec 10).Content
+        if ($reply -ne 'Queued') { throw $reply }
+        $null=Invoke-RestMethod "$endpoint/Controls" -TimeoutSec 15
+    }
 }
 if ($Dump -or !$Command) {
     for ($index = 0; $index -lt $windows.Count; $index++) {

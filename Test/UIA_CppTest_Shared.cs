@@ -356,10 +356,10 @@ public static class GacUIShowcaseTests
         Check(Thread.CurrentThread.GetApartmentState() == ApartmentState.MTA, "client must be MTA");
         IntPtr hwnd = IntPtr.Zero;
         Wait(() => { EnumWindows((h,p) => { uint id; GetWindowThreadProcessId(h,out id); var text=new StringBuilder(256); GetClassName(h,text,256); if (id==processId && text.ToString()=="VczhWindow" && IsWindowVisible(h)) hwnd=h; return true; },IntPtr.Zero); return hwnd!=IntPtr.Zero; }, "owned HWND");
-        root = AutomationElement.FromHandle(hwnd);
+        Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
         inputEndpoint = "http://localhost:" + port + "/Automation/" + (hosted ? "CppTest" : "CppTest_Metaonly") + "/IO";
         ownedProcess = processId; isHosted = hosted;
-        Check(root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI", "owned native GacUI root");
+        Check(root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI", "owned native GacUI root; HWND=" + hwnd + "; PID=" + root.Current.ProcessId + "; FrameworkId=" + root.Current.FrameworkId + "; Name=" + root.Current.Name);
         Check(root.Current.Name == "Complete Control Showcase", "showcase title");
         if (scenario == "Concurrent")
         {

@@ -25,7 +25,7 @@
 #include "RemoteViewModelTestIncludes.h"
 #endif
 #include <VlppOS.h>
-#include "../../AutomationArguments.h"
+#include "../SharedArguments.h"
 #if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
 #endif

@@ -151,7 +151,14 @@ namespace
 			case UIA_ValueValuePropertyId: output->vt = VT_BSTR; return get_Value(&output->bstrVal);
 			case UIA_RangeValueValuePropertyId: output->vt = VT_R8; output->dblVal = context->value; break;
 			case UIA_ToggleToggleStatePropertyId: output->vt = VT_I4; output->lVal = context->toggle; break;
-			case UIA_HelpTextPropertyId: output->vt = VT_BSTR; return String(L"Synthetic combinations; see independent typed call log.", &output->bstrVal);
+			case UIA_HelpTextPropertyId:
+				if (context->toggle == 1) { output->vt = VT_UNKNOWN; return UiaGetReservedNotSupportedValue(&output->punkVal); }
+				output->vt = VT_BSTR; return String(L"Synthetic combinations; see independent typed call log.", &output->bstrVal);
+			case UIA_ItemStatusPropertyId: output->vt = VT_BSTR; return String(L"", &output->bstrVal);
+			case UIA_IsRequiredForFormPropertyId: output->vt = VT_BOOL; output->boolVal = VARIANT_FALSE; break;
+			case UIA_LevelPropertyId: output->vt = VT_I4; output->lVal = 0; break;
+			case UIA_ControllerForPropertyId: output->vt = VT_ARRAY | VT_UNKNOWN; output->parray = Objects(nullptr); break;
+			case UIA_LabeledByPropertyId: output->vt = VT_UNKNOWN; output->punkVal = nullptr; break;
 			}
 			return S_OK;
 		}

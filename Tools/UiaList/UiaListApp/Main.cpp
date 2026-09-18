@@ -2,7 +2,7 @@
 #include "DarkSkin.h"
 #include "../UiaList/Source/UiaList.h"
 #include "../UiaList/ViewModel/UiaListViewModel.h"
-#include "../../../Test/AutomationArguments.h"
+#include "../../../Test/GacUISrc/SharedArguments.h"
 
 using namespace vl;
 using namespace vl::presentation;

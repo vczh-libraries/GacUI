@@ -1,6 +1,6 @@
 #include <Vlpp.h>
 #include <VlppOS.h>
-#include "../../AutomationArguments.h"
+#include "../SharedArguments.h"
 #ifdef VCZH_MSVC
 #include <crtdbg.h>
 #endif

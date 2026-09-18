@@ -52,5 +52,5 @@
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
-  <ItemGroup><ClInclude Include="..\..\AutomationArguments.h" /></ItemGroup>
+  <ItemGroup><ClInclude Include="..\SharedArguments.h" /></ItemGroup>
 </Project>

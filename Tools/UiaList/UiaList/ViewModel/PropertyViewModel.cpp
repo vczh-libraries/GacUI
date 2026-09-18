@@ -164,6 +164,7 @@ namespace uialist
 		selected = nullptr;
 		for (auto&& property : result->properties)
 		{
+			if (property.value->kind == native::ValueKind::Unsupported) continue;
 			auto row = CreateRow(property);
 			rows.Add(row);
 			if (row->GetKey() == selectedKey) { selected = row; row->selected = true; }

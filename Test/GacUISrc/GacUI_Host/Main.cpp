@@ -6,7 +6,7 @@
 #include "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
 #include "../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUIReflection.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
-#include "../../AutomationArguments.h"
+#include "../SharedArguments.h"
 #include "DarkSkinReflection.h"
 #include "../Generated_FullControlTest/FullControlTestPalette.h"
 

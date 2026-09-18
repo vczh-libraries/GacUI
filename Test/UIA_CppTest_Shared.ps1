@@ -9,7 +9,7 @@ $repository = Split-Path $PSScriptRoot -Parent
 $solution = Join-Path $PSScriptRoot 'GacUISrc'
 if ($ClientProcessId) {
     Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, WindowsBase
-    Add-Type -Path (Join-Path $PSScriptRoot 'UIA_Showcase.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase
+    Add-Type -Path (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase
     try { [GacUIShowcaseTests]::Run($ClientProcessId, $Application -eq 'CppTest', $Scenario, $AsPort) }
     catch { [Console]::Error.WriteLine($_.Exception.ToString()); exit 1 }
     exit 0

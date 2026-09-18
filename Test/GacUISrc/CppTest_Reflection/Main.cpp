@@ -4,7 +4,7 @@
 #include "../Generated_FullControlTest/FullControlTestPalette.h"
 #include "FullControlTestReflection.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
-#include "../../AutomationArguments.h"
+#include "../SharedArguments.h"
 #include "resource.h"
 
 using namespace vl;

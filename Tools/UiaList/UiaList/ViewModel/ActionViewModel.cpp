@@ -344,7 +344,7 @@ namespace uialist
 	}
 
 	ActionSectionViewModel::ActionSectionViewModel(PropertyDialogViewModel& dialog, Ptr<native::ActionSectionData> value)
-		: owner(&dialog), data(value)
+		: data(value)
 	{
 		for (auto&& readout : data->readouts) readouts.Add(dialog.CreateRow(readout));
 		for (auto&& command : data->commands)
@@ -363,51 +363,4 @@ namespace uialist
 	vint ActionSectionViewModel::GetPatternId() { return data->pattern; }
 	Ptr<IValueList> ActionSectionViewModel::GetReadouts() { return UnboxValue<Ptr<IValueList>>(BoxParameter(readouts)); }
 	Ptr<IValueList> ActionSectionViewModel::GetCommands() { return UnboxValue<Ptr<IValueList>>(BoxParameter(commands)); }
-	bool ActionSectionViewModel::GetIsExpanded() { return expanded; }
-	void ActionSectionViewModel::SetIsExpanded(bool value)
-	{
-		if (expanded != value)
-		{
-			expanded = value;
-			refreshSerial++;
-			IsExpandedChanged();
-			if (expanded)
-			{
-				for (auto&& command : commands) command.Cast<ActionCommandViewModel>()->Query();
-				if (data->rangeKey) return;
-				auto section = Ptr(this);
-				auto gate = owner->owner->lifetime;
-				auto epoch = owner->generation, request = owner->serial, refresh = refreshSerial, key = owner->nodeKey;
-				auto worker = &owner->owner->worker;
-				owner->owner->QueueNative(L"Refresh getter readouts", [section, gate, epoch, request, refresh, key, worker]()
-				{
-					Ptr<native::InspectionSnapshot> snapshot;
-					WString failure;
-					try { snapshot = worker->session->Inspect(key); }
-					catch (const native::UiaFailure& error)
-					{
-						if (!error.IsExpected()) throw;
-						failure = error.Message();
-					}
-					UiaListViewModel::Post(gate, [section, snapshot, failure, epoch, request, refresh](UiaListViewModel& root)
-					{
-						if (root.lifetime->generation != epoch || !root.propertyDialog || !root.propertyDialog->open || root.propertyDialog->serial != request || section->refreshSerial != refresh) return;
-						if (failure.Length())
-						{
-							root.propertyDialog->status = failure;
-							root.propertyDialog->StatusChanged();
-							return;
-						}
-						for (auto&& data : snapshot->sections) if (data->pattern == section->data->pattern)
-						{
-							section->readouts.Clear();
-							for (auto&& readout : data->readouts) section->readouts.Add(root.propertyDialog->CreateRow(readout));
-							break;
-						}
-						root.propertyDialog->PublishReferences(snapshot->references);
-					});
-				});
-			}
-		}
-	}
 }

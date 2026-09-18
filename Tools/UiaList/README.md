@@ -2,9 +2,11 @@
 
 UiaList is a Windows UI Automation inspector built with GacUI and C++20. It lists the process forest, captures a selected window, walks its complete UIA Raw View, and exposes properties, standard patterns, returned elements, and text ranges.
 
-Double-click a window in **Processes**. **UI** displays a captured snapshot; hovering outlines the deepest matching UIA rectangle, and clicking selects that node in **Nodes**. Double-click a node to open **Properties** and **Actions**. Refresh is explicit; successful mutations refresh the selected target. Actions operate on the inspected application.
+Select a process in the hierarchical combo beside **Refresh**, then single-click one of its visible windows in the details list. **UI** displays a captured snapshot; hovering outlines the deepest matching UIA rectangle, and clicking selects that node in **Nodes**. Right-click a node and choose **Inspect**, or press Enter, to open **Properties** and **Actions**. Double-click expands/collapses the node. Refresh is explicit; successful mutations refresh the selected target. Actions operate on the inspected application.
 
-The property grid offers editors only for explicitly mapped setters. Text whose single-line behavior cannot be established uses a modal editor. The Actions page contains the acquired patterns, typed arguments, results, reference navigation, and text-range workspaces. Canonical SDK names and target text remain untranslated. The surrounding UI selects English, Simplified Chinese, or Japanese from Windows' preferred UI languages.
+The dropdown retains headless ancestors of visible descendants, but each process lists only its own visible, uncloaked, nonempty top-level windows. Minimized windows remain selectable even when their preview is unavailable. Process refresh preserves surviving PID/creation-time and HWND/PID identities without recapturing the inspected window. Selecting another process only changes the window list.
+
+The property grid omits unsupported properties and retains supported false, zero, empty, null, mixed and read-only values. It offers editors only for explicitly mapped setters. Text whose single-line behavior cannot be established uses a modal editor. The Actions page contains always-visible provider group boxes, typed arguments, results, reference navigation, and text-range workspaces. Canonical SDK names and target text remain untranslated. The surrounding UI selects English, Simplified Chinese, or Japanese from Windows' preferred UI languages.
 
 ## Build
 

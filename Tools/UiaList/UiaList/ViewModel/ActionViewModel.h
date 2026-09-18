@@ -91,10 +91,7 @@ namespace uialist
 	class ActionSectionViewModel : public vl::Object, public virtual vm::IActionSectionViewModel
 	{
 	public:
-		PropertyDialogViewModel* owner;
 		vl::Ptr<native::ActionSectionData> data;
-		bool expanded = true;
-		vl::vint refreshSerial = 0;
 		vl::collections::ObservableList<vl::Ptr<vm::IPropertyRowViewModel>> readouts;
 		vl::collections::ObservableList<vl::Ptr<vm::IActionCommandViewModel>> commands;
 		ActionSectionViewModel(PropertyDialogViewModel& owner, vl::Ptr<native::ActionSectionData> data);
@@ -102,8 +99,6 @@ namespace uialist
 		vl::vint GetPatternId() override;
 		vl::Ptr<vl::reflection::description::IValueList> GetReadouts() override;
 		vl::Ptr<vl::reflection::description::IValueList> GetCommands() override;
-		bool GetIsExpanded() override;
-		void SetIsExpanded(bool value) override;
 	};
 }
 

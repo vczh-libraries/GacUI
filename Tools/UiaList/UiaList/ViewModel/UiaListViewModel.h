@@ -31,6 +31,7 @@ namespace uialist
 		vl::Nullable<vl::vuint64_t>		creationTime;
 		native::WindowRecord			window;
 		vl::collections::ObservableList<vl::Ptr<vm::IProcessNodeViewModel>> children;
+		vl::collections::ObservableList<vl::Ptr<vm::IProcessNodeViewModel>> windows;
 		bool							expanded = false;
 
 		vm::ProcessNodeKind				GetKind() override;
@@ -42,7 +43,9 @@ namespace uialist
 		vl::vuint64_t					GetWindowKey() override;
 		vl::WString						GetWindowTitle() override;
 		vl::WString						GetWindowClass() override;
+		vl::WString						GetWindowHandleText() override;
 		vl::Ptr<vl::reflection::description::IValueList> GetChildren() override;
+		vl::Ptr<vl::reflection::description::IValueList> GetWindows() override;
 		bool							GetIsExpanded() override;
 		void							SetIsExpanded(bool value) override;
 	};
@@ -114,6 +117,8 @@ namespace uialist
 		vl::Ptr<native::CaptureSnapshot> pendingCapture;
 		vl::Ptr<PreviewViewModel>		preview;
 		vl::Ptr<ProcessNodeViewModel>	processRoot;
+		vl::Ptr<ProcessNodeViewModel>	selectedProcess;
+		vl::collections::Dictionary<DWORD, vl::Ptr<ProcessNodeViewModel>> processes;
 		vl::Ptr<ProcessNodeViewModel>	selectedWindow;
 		vl::Ptr<NodeViewModel>			nodeRoot;
 		vl::Ptr<NodeViewModel>			selectedNode;
@@ -124,6 +129,8 @@ namespace uialist
 										UiaListViewModel(vl::Ptr<IStringsStrings> value, const vl::WString& locale);
 										~UiaListViewModel();
 		vl::Ptr<vm::IProcessNodeViewModel> GetProcessRoot() override;
+		vl::Ptr<vm::IProcessNodeViewModel> GetSelectedProcess() override;
+		vl::Ptr<vl::reflection::description::IValueList> GetWindows() override;
 		vl::Ptr<vm::INodeViewModel>		GetNodeRoot() override;
 		vl::Ptr<vm::IProcessNodeViewModel> GetSelectedWindow() override;
 		vl::Ptr<vm::INodeViewModel>		GetSelectedNode() override;
@@ -139,6 +146,7 @@ namespace uialist
 		void							RefreshProcesses() override;
 		void							RefreshWindow() override;
 		void							RefreshWindowInternal(bool closeDialog);
+		void							SelectProcess(vl::Ptr<vm::IProcessNodeViewModel> process) override;
 		void							SelectWindow(vl::Ptr<vm::IProcessNodeViewModel> window) override;
 		void							SelectNode(vl::Ptr<vm::INodeViewModel> node) override;
 		void							InspectNode(vl::Ptr<vm::INodeViewModel> node) override;
