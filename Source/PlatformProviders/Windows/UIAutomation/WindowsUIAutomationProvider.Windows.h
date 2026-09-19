@@ -30,7 +30,7 @@ namespace vl::presentation::windows
 
 	enum class WindowsUIAutomationNodeKind
 	{
-		Control, Item, Cell, Header, HeaderItem, TreeNode, CalendarDay, CalendarHeader,
+		Control, Item, Cell, Header, HeaderItem, TreeNode, CalendarDay, CalendarHeader, TabContent,
 	};
 
 	struct WindowsUIAutomationValue : Object
@@ -56,6 +56,7 @@ namespace vl::presentation::windows
 		bool								notificationPending = false;
 		bool								structurePending = false;
 		collections::SortedList<EVENTID>	pendingEvents;
+		collections::List<vint>				selection;
 		ComPtr<IRawElementProviderSimple>	provider;
 		collections::Dictionary<PROPERTYID, Ptr<WindowsUIAutomationValue>> properties;
 
@@ -70,6 +71,8 @@ namespace vl::presentation::windows
 		CONTROLTYPEID Role();
 		bool Supports(PATTERNID pattern);
 		bool IsSelected();
+		bool IsFocusable();
+		bool IsFocused();
 		vint ItemIndex();
 		UiaRect Bounds();
 		Ptr<WindowsUIAutomationNode> Parent();
@@ -117,6 +120,7 @@ namespace vl::presentation::windows
 		Ptr<WindowsUIAutomationNode> Item(Ptr<WindowsUIAutomationNode> owner, WindowsUIAutomationNodeKind kind, vint row = -1, vint column = -1, Ptr<controls::tree::INodeProvider> treeNode = nullptr);
 		void Notify(Ptr<WindowsUIAutomationNode> node, bool structure = false, EVENTID eventId = 0);
 		void UpdateProperties(Ptr<WindowsUIAutomationNode> node, bool raiseEvents);
+		void UpdateSelection(Ptr<WindowsUIAutomationNode> node, bool raiseEvents);
 	};
 
 	class WindowsUIAutomationProvider : public IRawElementProviderSimple, public IRawElementProviderFragment, public IRawElementProviderFragmentRoot,
@@ -229,6 +233,8 @@ namespace vl::presentation::windows
 	extern controls::GuiDocumentCommonInterface* UiaDocument(controls::GuiControl* control);
 	extern templates::GuiCommonDatePickerLook* UiaCalendar(controls::GuiControl* control);
 	extern controls::GuiComboBoxListControl* UiaCombo(WindowsUIAutomationNode* node);
+	extern controls::GuiControl* UiaPopupOwner(WindowsUIAutomationNode* node);
+	extern void UiaSelectedChildren(Ptr<WindowsUIAutomationNode> node, collections::List<Ptr<WindowsUIAutomationNode>>& selected);
 	extern collections::List<Ptr<WindowsUIAutomationNode>> UiaTextChildren(WindowsUIAutomationNode* node, vint begin, vint end);
 	extern void UiaCollectChildren(WindowsUIAutomationContext* context, compositions::GuiGraphicsComposition* composition, collections::List<Ptr<WindowsUIAutomationNode>>& children);
 }

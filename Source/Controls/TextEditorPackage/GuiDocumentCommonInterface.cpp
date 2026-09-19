@@ -304,6 +304,7 @@ GuiDocumentCommonInterface
 				ActiveHyperlinkChanged.SetAssociatedComposition(eventComposition);
 				ActiveHyperlinkExecuted.SetAssociatedComposition(eventComposition);
 				SelectionChanged.SetAssociatedComposition(eventComposition);
+				EditModeChanged.SetAssociatedComposition(eventComposition);
 				UndoRedoChanged.SetAssociatedComposition(eventComposition);
 				ModifiedChanged.SetAssociatedComposition(eventComposition);
 
@@ -1134,6 +1135,14 @@ GuiDocumentCommonInterface
 				EnsureDocumentRectVisible(documentElement->GetCaretBounds(end, frontSide));
 			}
 
+			void GuiDocumentCommonInterface::EnsureTextPositionVisible(TextPos caret, bool frontSide)
+			{
+				auto bounds = documentElement->GetCaretBounds(caret, frontSide);
+				// Materialize paragraph geometry before using cached viewport dimensions.
+				documentControl->GetBoundsComposition()->ForceCalculateSizeImmediately();
+				EnsureDocumentRectVisible(bounds);
+			}
+
 			TextPos GuiDocumentCommonInterface::CalculateCaretFromPoint(Point point)
 			{
 				return documentElement->CalculateCaretFromPoint(point);
@@ -1398,6 +1407,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::SetEditMode(GuiDocumentEditMode value)
 			{
+				if (editMode == value) return;
 				if (activeHyperlinks)
 				{
 					SetActiveHyperlink(nullptr);
@@ -1413,6 +1423,7 @@ GuiDocumentCommonInterface
 					INativeCursor* cursor = GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::IBeam);
 					UpdateCursor(cursor);
 				}
+				if (documentControl) EditModeChanged.Execute(documentControl->GetNotifyEventArguments());
 			}
 
 			void GuiDocumentCommonInterface::LoadTextAndClearUndoRedo(const WString& text)

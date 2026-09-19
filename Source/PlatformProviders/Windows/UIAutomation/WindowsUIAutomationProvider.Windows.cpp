@@ -1,4 +1,5 @@
 #include "WindowsUIAutomationProvider.Windows.h"
+#include "../../Hosted/GuiHostedApplication.h"
 
 #ifdef VCZH_MSVC
 namespace vl::presentation::windows
@@ -113,7 +114,8 @@ namespace vl::presentation::windows
 			if (auto button = dynamic_cast<GuiToolstripButton*>(control); button && button->GetCommand() && button->GetCommand()->GetShortcut()) string(button->GetCommand()->GetShortcut()->GetName());
 			break;
 		case UIA_OrientationPropertyId:
-			if (dynamic_cast<GuiScroll*>(control))
+			if (kind == Kind::Header || kind == Kind::Control && (dynamic_cast<GuiTab*>(control) || dynamic_cast<GuiMenuBar*>(control))) number(OrientationType_Horizontal);
+			else if (dynamic_cast<GuiScroll*>(control))
 			{
 				auto theme = control->GetControlThemeName();
 				number(theme == theme::ThemeName::VScroll || theme == theme::ThemeName::VTracker ? OrientationType_Vertical : OrientationType_Horizontal);
@@ -124,10 +126,20 @@ namespace vl::presentation::windows
 		case UIA_IsControlElementPropertyId: boolean(true); break;
 		case UIA_IsContentElementPropertyId: boolean(kind != Kind::Header && kind != Kind::HeaderItem && kind != Kind::CalendarHeader && Role() != UIA_MenuBarControlTypeId && Role() != UIA_ScrollBarControlTypeId && Role() != UIA_SeparatorControlTypeId); break;
 		case UIA_IsEnabledPropertyId: boolean(control->GetVisuallyEnabled() && Window()->GetNativeWindow()->IsEnabled()); break;
-		case UIA_HasKeyboardFocusPropertyId: boolean(control->GetFocused() && (kind == Kind::Control || IsSelected())); break;
-		case UIA_IsKeyboardFocusablePropertyId: boolean(control->GetFocusableComposition() || Supports(UIA_SelectionItemPatternId)); break;
+		case UIA_HasKeyboardFocusPropertyId: boolean(IsFocused()); break;
+		case UIA_IsKeyboardFocusablePropertyId: boolean(IsFocusable()); break;
 		case UIA_IsOffscreenPropertyId: { auto bounds = Bounds(); boolean(bounds.width <= 0 || bounds.height <= 0); break; }
 		case UIA_IsPasswordPropertyId: { auto text = dynamic_cast<GuiSinglelineTextBox*>(control); boolean(text && text->GetPasswordChar()); break; }
+		case UIA_BoundingRectanglePropertyId:
+			{
+				auto bounds = Bounds();
+				result->vt = VT_ARRAY | VT_R8;
+				result->parray = SafeArrayCreateVector(VT_R8, 0, 4);
+				if (!result->parray) return E_OUTOFMEMORY;
+				LONG index = 0;
+				for (double value : { bounds.left, bounds.top, bounds.width, bounds.height }) { SafeArrayPutElement(result->parray, &index, &value); index++; }
+				break;
+			}
 		case UIA_ValueValuePropertyId:
 			if (Supports(UIA_ValuePatternId))
 			{
@@ -174,6 +186,33 @@ namespace vl::presentation::windows
 		case UIA_ScrollHorizontallyScrollablePropertyId: if (Supports(UIA_ScrollPatternId)) boolean(dynamic_cast<GuiScrollView*>(control)->GetHorizontalScroll()->GetMaxPosition() > 0); break;
 		case UIA_ScrollVerticallyScrollablePropertyId: if (Supports(UIA_ScrollPatternId)) boolean(dynamic_cast<GuiScrollView*>(control)->GetVerticalScroll()->GetMaxPosition() > 0); break;
 		case UIA_MultipleViewCurrentViewPropertyId: if (Supports(UIA_MultipleViewPatternId)) number((LONG)dynamic_cast<GuiVirtualListView*>(control)->GetView()); break;
+#define UIA_BOOL_PROPERTY(NAME, PATTERN, METHOD) \
+		case UIA_##NAME##PropertyId: \
+			if (Supports(UIA_##PATTERN##PatternId)) { BOOL value = FALSE; auto hr = static_cast<WindowsUIAutomationProvider*>(Provider())->METHOD(&value); if (FAILED(hr)) return hr; boolean(value != FALSE); } \
+			break;
+		UIA_BOOL_PROPERTY(SelectionCanSelectMultiple, Selection, get_CanSelectMultiple)
+		UIA_BOOL_PROPERTY(SelectionIsSelectionRequired, Selection, get_IsSelectionRequired)
+		UIA_BOOL_PROPERTY(WindowCanMaximize, Window, get_CanMaximize)
+		UIA_BOOL_PROPERTY(WindowCanMinimize, Window, get_CanMinimize)
+		UIA_BOOL_PROPERTY(WindowIsModal, Window, get_IsModal)
+		UIA_BOOL_PROPERTY(WindowIsTopmost, Window, get_IsTopmost)
+#undef UIA_BOOL_PROPERTY
+		case UIA_GridRowCountPropertyId: case UIA_GridColumnCountPropertyId:
+			if (Supports(UIA_GridPatternId))
+			{
+				auto provider = static_cast<WindowsUIAutomationProvider*>(Provider());
+				int value = 0;
+				auto hr = property == UIA_GridRowCountPropertyId ? provider->get_RowCount(&value) : provider->get_ColumnCount(&value);
+				if (FAILED(hr)) return hr;
+				number(value);
+			}
+			break;
+		case UIA_WindowWindowVisualStatePropertyId:
+			if (Supports(UIA_WindowPatternId)) { WindowVisualState value; auto hr = static_cast<WindowsUIAutomationProvider*>(Provider())->get_WindowVisualState(&value); if (FAILED(hr)) return hr; number(value); }
+			break;
+		case UIA_WindowWindowInteractionStatePropertyId:
+			if (Supports(UIA_WindowPatternId)) { WindowInteractionState value; auto hr = static_cast<WindowsUIAutomationProvider*>(Provider())->get_WindowInteractionState(&value); if (FAILED(hr)) return hr; number(value); }
+			break;
 #define UIA_AVAILABLE(NAME) case UIA_Is##NAME##PatternAvailablePropertyId: boolean(Supports(UIA_##NAME##PatternId)); break;
 		UIA_PATTERNS(UIA_AVAILABLE)
 #undef UIA_AVAILABLE
@@ -249,7 +288,8 @@ namespace vl::presentation::windows
 	{
 		return Read([&]() -> HRESULT
 		{
-			if (node->kind != Kind::Control && node->Supports(UIA_SelectionItemPatternId)) Select();
+			// UIA may focus before a pattern action: focus must not change selection.
+			if (!node->IsFocusable()) return UIA_E_INVALIDOPERATION;
 			node->control->SetFocused();
 			return S_OK;
 		}, 0, true);
@@ -266,26 +306,42 @@ namespace vl::presentation::windows
 	}
 	Ptr<WindowsUIAutomationNode> UiaHitTest(Ptr<WindowsUIAutomationNode> node, double x, double y)
 	{
+		auto bounds = node->Bounds();
+		bool contains = x >= bounds.left && y >= bounds.top && x < bounds.left + bounds.width && y < bounds.top + bounds.height;
+		// A tab's logical page owns its body despite the header's disjoint bounds.
+		if (!contains && !(node->kind == Kind::Control && dynamic_cast<GuiTabPage*>(node->control) && node->IsSelected())) return nullptr;
 		auto children = node->Children();
 		for (vint i = children.Count() - 1; i >= 0; i--)
 		{
 			auto child = children[i];
-			auto bounds = child->Bounds();
-			if (x >= bounds.left && y >= bounds.top && x < bounds.left + bounds.width && y < bounds.top + bounds.height)
-				return UiaHitTest(child, x, y);
+			// Native/hosted window hit testing has already chosen the topmost window.
+			if (child->Window() != node->Window()) continue;
+			if (auto hit = UiaHitTest(child, x, y)) return hit;
 		}
-		return node;
+		return contains ? node : nullptr;
 	}
 	HRESULT WindowsUIAutomationProvider::ElementProviderFromPoint(double x, double y, IRawElementProviderFragment** result)
 	{
 		if (!result) return E_POINTER;
 		*result = nullptr;
-		return Read([&]() { return UiaHitTest(node, x, y)->Provider()->QueryInterface(IID_PPV_ARGS(result)); });
+		return Read([&]() -> HRESULT
+		{
+			auto root = node;
+			if (node->context->hosted)
+			{
+				auto origin = GetHostedApplication()->GetNativeWindowHost()->GetClientBoundsInScreen().LeftTop();
+				auto native = GetCurrentController()->WindowService()->GetWindow(NativePoint((vint)x - origin.x.value, (vint)y - origin.y.value));
+				if (!native) return S_OK;
+				for (auto window : GetApplication()->GetWindows()) if (window->GetNativeWindow() == native) { root = node->context->Control(window); break; }
+			}
+			auto hit = UiaHitTest(root, x, y);
+			return hit ? hit->Provider()->QueryInterface(IID_PPV_ARGS(result)) : S_OK;
+		});
 	}
 	Ptr<WindowsUIAutomationNode> UiaFindFocus(Ptr<WindowsUIAutomationNode> node)
 	{
 		for (auto child : node->Children()) if (auto focused = UiaFindFocus(child)) return focused;
-		if (node->control->GetFocused() && (node->kind == Kind::Control || node->IsSelected())) return node;
+		if (node->IsFocused()) return node;
 		return nullptr;
 	}
 	HRESULT WindowsUIAutomationProvider::GetFocus(IRawElementProviderFragment** result)

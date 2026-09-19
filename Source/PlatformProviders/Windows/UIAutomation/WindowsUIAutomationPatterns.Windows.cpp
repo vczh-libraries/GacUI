@@ -12,10 +12,32 @@ namespace vl::presentation::windows
 
 	void UiaSelectedChildren(Ptr<WindowsUIAutomationNode> node, List<Ptr<WindowsUIAutomationNode>>& selected)
 	{
+		if (node->kind == Kind::Control)
+		{
+			if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control))
+			{
+				auto cell = grid->GetSelectedCell();
+				if (cell.row >= 0 && cell.column >= 0) selected.Add(node->context->Item(node, Kind::Cell, cell.row, cell.column));
+				return;
+			}
+			if (auto list = dynamic_cast<GuiSelectableListControl*>(node->control))
+			{
+				if (auto combo = UiaCombo(node.Obj()))
+				{
+					if (combo->GetSelectedIndex() >= 0) selected.Add(node->context->Item(node, Kind::Item, combo->GetSelectedIndex()));
+				}
+				else for (auto index : list->GetSelectedItems())
+				{
+					if (auto tree = dynamic_cast<GuiVirtualTreeListControl*>(list)) selected.Add(node->context->Item(node, Kind::TreeNode, -1, -1, tree->GetNodeItemView()->RequestNode(index)));
+					else selected.Add(node->context->Item(node, Kind::Item, index));
+				}
+				return;
+			}
+		}
 		for (auto child : node->Children())
 		{
 			if (child->Supports(UIA_SelectionItemPatternId) && child->IsSelected()) selected.Add(child);
-			if (child->kind == Kind::TreeNode) UiaSelectedChildren(child, selected);
+			if (child->kind == Kind::TreeNode || child->kind == Kind::Item && UiaDataGrid(child->control)) UiaSelectedChildren(child, selected);
 		}
 	}
 	HRESULT WindowsUIAutomationProvider::GetSelection(SAFEARRAY** result)

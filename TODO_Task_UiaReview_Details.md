@@ -171,3 +171,61 @@ Investigate a runtime crash or timeout immediately using [Running-ComputerUse.md
 ## REVIEW COMMENTS
 
 No unresolved review comments. The corrections and missing details above have reasonable review policies and concrete follow-up checks. Client behavior that still needs measurement remains verification work, and L2 API/transport design remains a separate follow-up; neither requires a blocking question before this review can be recorded.
+
+## Implementation investigation (2026-09-18)
+
+The subsequent `investigate repro` request authorizes implementation. The original task file remains unchanged; the review above is historical source analysis, while this section records later execution. Reproduction is committed in `191e67589`, and the implementation proposal in `c0cba1e5b`. The investigation journal is `.github/TaskLogs/Copilot_Investigate.md`.
+
+The new `Review` scenario initially failed twelve independent checks against the unchanged hosted provider: empty visible ranges, degenerate Add/Remove selection, selected tab body hit testing, embedded range enclosure and children, combo descendants, active grid-cell selection, unique grid focus, Header/Tab orientation and weekday-header geometry. Rejected combo removal preserved its public selection in this fixture, so that particular assertion was not a reproduced client failure. Source inspection nevertheless found and removed a mutation preceding its error return.
+
+### Implemented local behavior
+
+- Known menu/combo/gallery popups have reciprocal owner navigation in both modes. Ordinary popups retain their HWND host provider, following [Microsoft's popup reparenting procedure](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-serversideprovider). Hosted hit testing selects the actual hosted window before walking its semantic subtree.
+- A selected TabItem exposes a body Pane independently of its header geometry. Data grids enumerate their active cell as selection; ordinary detail lists retain row selection. Grid focus identifies the active cell instead of duplicating focus across the container, row and cells. Synthetic model nodes without an independent keyboard target are not advertised as focusable; the active grid cell shares its container's keyboard target. SetFocus checks that capability and never selects an item. Default Header/Tab/MenuBar orientation and calendar weekday geometry are available.
+- Empty or wholly invisible text returns a degenerate visible range. Degenerate Add/Remove moves the insertion point; selection mutations check both control and native-window enablement. RangeFromChild retains its requested embedded identity, including containers with several controls sharing one marker. Independent embedded text stores remain separate. Rectangle merging preserves both left and right extents, and text scrolling uses the existing document visibility machinery without moving selection.
+- Document controls expose Value with edit-mode-dependent read-only status. `EditModeChanged` and `PasswordCharChanged` are explicit reflected events. Password transitions discard cached plaintext Value before queued notifications; retained Text ranges reject access while masking is active.
+- Selection events compare the previous selection with the resulting selection, including application mutations. Cardinality changes use Added, Selected or Removed on the appropriate item. Button Invoked follows the common BeforeClicked path, including keyboard activation. Invoked remains before potentially modal/destructive command handlers, as permitted by the documented contract.
+- Property reads and change snapshots now include bounds, password/focusability/access keys, grid dimensions, selection capabilities and window state. Rectangle arrays and NaN step values use value-aware comparison instead of emitting changes for equivalent snapshots.
+- ProgressBar step values are NaN. Only the concrete mutex button controller implies RadioButton/SelectionItem; other groups retain CheckBox/Toggle semantics. Non-dismissable popups no longer inherit Window/Transform merely by subclassing GuiWindow. Invoking an already-selected offscreen grid cell realizes its row before opening the editor.
+
+The grid rejection regression exposed an additional focus interaction: CDB showed UIA calling SetFocus before AddToSelection, and the former implementation selected the cell during that preliminary call. The Add rejection guard consequently saw the requested cell already selected. Separating focus from selection closes that mutation path. Provider-owned focus alone did not solve it and was not retained. This is distinct from the native-window focus behavior described by [Microsoft's SetFocus contract](https://learn.microsoft.com/en-us/windows/win32/api/uiautomationcore/nf-uiautomationcore-irawelementproviderfragment-setfocus).
+
+### Reproducers and execution record
+
+`Test/UIA_CppTest_Shared.ps1 -Application CppTest -AsPort 8888 -Scenario Review` and the corresponding `CppTest_Metaonly` command with port 8890 exercise the original failures. `All` includes these contracts and the existing showcase scenarios. Popup discovery now starts beneath the combo rather than accepting unrelated top-level-window descendants.
+
+The existing Playground has an opt-in `/UiaReview` fixture and `/UiaHosted` renderer option. Run it through `Test/UIA_CppTest_Shared.ps1 -Application Playground -AsPort 8892 -Scenario Transitions`, adding `-HostedFixture` for hosted mode. It checks password event payloads and retained ranges, read-only and disabled rejection, horizontal scrolling without caret changes, ProgressBar values, non-mutex groups, exact selection event sources/cardinalities, keyboard Invoked, and concurrent MTA readers of the same providers/ranges. Ordinary Playground behavior is preserved when these arguments are absent.
+
+Final-source verification used the repository build/execute wrappers:
+
+| Verification | Result |
+| --- | --- |
+| Debug x64 and Win32 solution builds | Both passed, zero warnings/errors. |
+| Metadata_Generate Win32, Metadata_Generate x64, Metadata_Test x64 | Generated and validated the reflected events/API for both architectures. |
+| UnitTest Debug x64 | 90/90 files, 1,769/1,769 cases; no appended leak report. |
+| Ordinary `Review` | 72 assertions passed, including atomic rejection of a different-cell AddToSelection. |
+| Hosted `All`, corrected nested-tab walker | 3,250 assertions passed; normal shutdown and endpoint release. |
+| Ordinary `All`, before the client-only walker correction | 1,265 assertions passed for the named scenarios; supplemented by the corrected `Walk` run below. |
+| Ordinary corrected `Walk` | 2,339 assertions passed; normal shutdown and endpoint release. |
+| Ordinary and hosted Playground `Transitions` | 71 assertions passed in each mode; normal shutdown and endpoint release. |
+
+The new TabItem body Pane required updating `WalkTabs` to enter that Pane before finding nested tabs. The earlier 65-assertion Review and 1,260-assertion hosted runs are intermediate evidence, not the final coverage result. The ordinary message-box proxy required the existing owned-button BM_CLICK fallback because native SendInput was unavailable. Fixture keyboard commands use HTTP-injected input; these runs do not claim verification of physical keyboard delivery.
+
+No unit-test snapshot changes are included: the file-path/current-day differences are environment dependent, and all 11 other changed file-dialog frames were identical after resolving element references and removing allocation IDs/frame numbers. The original task file's SHA-256 remains `58E00028A48EC942441CD3820C36479CD3BC0E925E6A89D841D00CB1788DEABE`.
+
+### L2 extension and transport design boundary
+
+These are explicit design decisions for the separate cross-platform extension, not claims that the following API/transport is implemented:
+
+1. Attach an optional semantic source to a `GuiGraphicsComposition`. Give it an explicit augment/replace choice, stable application-supplied identity, role/capabilities/properties, child enumeration and action dispatch. Walk the composition root as well as its descendants. Replacement suppresses the corresponding default subtree; augmentation preserves it. Reject duplicate/cyclic identities instead of silently merging unrelated controls.
+2. Keep owner-provided grid coordinates, selection container, header relationships and model identity in the semantic node contract. An item-template replacement can replace presentation and add actions, but must explicitly delegate or implement those obligations. The composition's disposal/detachment and its owning model generation bound node lifetime. Do not use a recycled item-template pointer as persistent model identity.
+3. Factor the current Windows-only semantic queries/actions into a platform-neutral core model; retain COM, HWND hosting, DPI conversion and UIA event conversion in the Windows adapter. Core nodes own logical identifiers and revisions. A renderer must not reconstruct names, selection or commands from drawing elements or guess them from HTTP inspection output.
+4. Extend the authored `Source/PlatformProviders/Remote/Protocol/*.txt` schema with a negotiated semantic version/capability, a full semantic snapshot, revisioned deltas and action request/completion records. Reuse the existing typed JSON channel and connection epochs. Core-to-renderer messages carry snapshots/deltas/completions; renderer-to-core events carry uniquely correlated action requests. The current request/response direction is core-to-renderer, so renderer actions need their own explicit correlation rather than reversing `GuiRemoteMessages::Submit`.
+5. Commit each semantic delta atomically before emitting local UIA notifications. On reconnect, replace the renderer cache from a complete snapshot and retire providers from the old connection epoch. Validate node generation, capability and enablement again in the core before executing actions. Never send password contents, cached old plaintext, or live object pointers. Synchronous COM getters read a coherent renderer cache; action completion carries success/failure and resulting revision, without blocking the renderer UI thread on a core round trip.
+6. Validate native hosted and remote adapters against the same semantic contract fixtures, then test reconnect/replacement, out-of-order/stale requests, disabled/modal controls, multiclient requests and renderer shutdown. Generate protocol code with `Metadata_UpdateProtocol`, update schema serialization and filtering rules, and add remote snapshot/action tests. Keep commands and lifetime notifications out of lossy repeat-drop filtering.
+
+This follows the repository's [remote core architecture](.github/KnowledgeBase/KB_GacUI_Design_RemoteProtocolCoreArchitecture.md) and [renderer/channel architecture](.github/KnowledgeBase/KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md). The current patch is a local Windows provider repair; it does not provide that cross-platform model or semantic transport.
+
+### Remaining review coverage
+
+The original checkboxes are intentionally unchanged. The local fixes do not establish full UIA conformance. Still requiring focused implementation or evidence are semantic label/HelpText/AutomationId customization; complete split-button substructure and focusable tooltip policies; custom calendar/grid/tree/list templates and content filtering; same-stream hyperlinks and richer text-unit boundaries; exact per-transition event delivery under bursts, immediate destruction and all input sources; idle timeout semantics; multiselection keyboard focus endpoints outside data grids; DPI/RTL/occlusion coverage; and scale/memory benchmarks for node caching/retirement. The L2 implementation is separately scoped above. The four-reader test covers concurrent reads, not the 25-run shutdown-race acceptance criterion.

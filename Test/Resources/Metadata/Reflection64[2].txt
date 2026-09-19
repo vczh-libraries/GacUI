@@ -5762,6 +5762,9 @@ class presentation::controls::GuiDisposedFlag : system::ReferenceType {
 class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType {
     event ActiveHyperlinkChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event ActiveHyperlinkExecuted : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
+    event EditModeChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        EditMode,
+    }
     event ModifiedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         Modified,
     }
@@ -5776,7 +5779,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     property CaretEnd : presentation::TextPos { get:GetCaretEnd }
     property Document : presentation::DocumentModel^ { get:GetDocument set:SetDocument }
     property DocumentItems : system::ReadonlyDictionary<system::String, presentation::controls::GuiDocumentItem^>^ { get:GetDocumentItems }
-    property EditMode : presentation::controls::GuiDocumentEditMode { get:GetEditMode set:SetEditMode }
+    property EditMode : presentation::controls::GuiDocumentEditMode { get:GetEditMode set:SetEditMode event:EditModeChanged }
     property Modified : system::Boolean { get:GetModified event:ModifiedChanged }
     property SelectionModel : presentation::DocumentModel^ { get:GetSelectionModel set:SetSelectionModel event:SelectionChanged }
     property SelectionText : system::String { get:GetSelectionText set:SetSelectionText event:SelectionChanged }
@@ -5800,6 +5803,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function EditStyleName(begin : presentation::TextPos, end : presentation::TextPos, styleName : system::String) : system::Void;
     function EditText(begin : presentation::TextPos, end : presentation::TextPos, frontSide : system::Boolean, text : system::ReadonlyList<system::String>^, skipFormatting : system::Boolean) : system::Void;
     function EnsureCaretVisible() : system::Void;
+    function EnsureTextPositionVisible(caret : presentation::TextPos, frontSide : system::Boolean) : system::Void;
     function GetActiveHyperlinkReference() : system::String;
     function GetCaretBegin() : presentation::TextPos;
     function GetCaretBounds(caret : presentation::TextPos, frontSide : system::Boolean) : presentation::Rect;
@@ -6484,7 +6488,11 @@ class presentation::controls::GuiSelectableListControl : presentation::controls:
 }
 
 class presentation::controls::GuiSinglelineTextBox : presentation::controls::GuiDocumentLabel {
-    property PasswordChar : system::Char { get:GetPasswordChar set:SetPasswordChar }
+    event PasswordCharChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        PasswordChar,
+    }
+
+    property PasswordChar : system::Char { get:GetPasswordChar set:SetPasswordChar event:PasswordCharChanged }
 
     function GetPasswordChar() : system::Char;
     function SetPasswordChar(value : system::Char) : system::Void;

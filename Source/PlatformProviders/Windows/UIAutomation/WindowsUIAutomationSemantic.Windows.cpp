@@ -35,6 +35,18 @@ namespace vl::presentation::windows
 		}
 		return nullptr;
 	}
+	GuiControl* UiaPopupOwner(WindowsUIAutomationNode* node)
+	{
+		if (dynamic_cast<GuiTooltip*>(node->control)) return GetApplication()->GetTooltipOwner();
+		if (!dynamic_cast<GuiMenu*>(node->control)) return nullptr;
+		for (auto candidate : node->context->nodes)
+		{
+			if (candidate->kind != Kind::Control || !candidate->IsLive()) continue;
+			if (auto menu = dynamic_cast<GuiMenuButton*>(candidate->control); menu && menu->GetSubMenu() == node->control) return menu;
+			if (auto gallery = dynamic_cast<GuiBindableRibbonGalleryList*>(candidate->control); gallery && gallery->GetSubMenu() == node->control) return gallery;
+		}
+		return nullptr;
+	}
 
 	template<typename T>
 	T* UiaFindComposition(GuiGraphicsComposition* composition)
@@ -98,6 +110,7 @@ namespace vl::presentation::windows
 
 	GuiGraphicsComposition* WindowsUIAutomationNode::Composition()
 	{
+		if (kind == Kind::TabContent) return control->GetBoundsComposition();
 		if (kind == Kind::Control)
 		{
 			if (auto page = dynamic_cast<GuiTabPage*>(control))
@@ -120,7 +133,15 @@ namespace vl::presentation::windows
 			auto calendar = UiaCalendar(control);
 			return calendar ? calendar->GetDayButton(row, column)->GetBoundsComposition() : nullptr;
 		}
-		if (kind == Kind::CalendarHeader) return nullptr;
+		if (kind == Kind::CalendarHeader)
+		{
+			// The common look places weekday labels directly above its six week rows.
+			auto calendar = UiaCalendar(control);
+			if (!calendar) return nullptr;
+			auto cell = dynamic_cast<GuiCellComposition*>(calendar->GetDayButton(0, column)->GetBoundsComposition()->GetParent());
+			auto table = cell ? dynamic_cast<GuiTableComposition*>(cell->GetParent()) : nullptr;
+			return table ? table->GetSitedCell(cell->GetRow() - 1, column) : nullptr;
+		}
 		auto listControl = dynamic_cast<GuiListControl*>(control);
 		if (!listControl) return nullptr;
 		if (kind == Kind::Header || kind == Kind::HeaderItem)
@@ -183,6 +204,7 @@ namespace vl::presentation::windows
 		case Kind::Header: return L"Column headers";
 		case Kind::HeaderItem: return UiaListView(control)->GetColumnText(column);
 		case Kind::CalendarHeader: return dynamic_cast<GuiDatePicker*>(control)->GetDateLocale().GetShortDayOfWeekName(column);
+		case Kind::TabContent: return L"";
 		case Kind::CalendarDay:
 			{
 				auto date = UiaCalendar(control)->GetDateOfDayButton(row, column);
@@ -205,6 +227,7 @@ namespace vl::presentation::windows
 		case Kind::Header: return UIA_HeaderControlTypeId;
 		case Kind::HeaderItem: case Kind::CalendarHeader: return UIA_HeaderItemControlTypeId;
 		case Kind::CalendarDay: return UIA_ListItemControlTypeId;
+		case Kind::TabContent: return UIA_PaneControlTypeId;
 		default: break;
 		}
 		if (dynamic_cast<GuiTooltip*>(control)) return UIA_ToolTipControlTypeId;
@@ -231,7 +254,7 @@ namespace vl::presentation::windows
 		if (dynamic_cast<GuiMenuBar*>(control)) return UIA_MenuBarControlTypeId;
 		if (dynamic_cast<GuiToolstripToolBar*>(control) || dynamic_cast<GuiRibbonToolstrips*>(control)) return UIA_ToolBarControlTypeId;
 		if (dynamic_cast<GuiRibbonGroup*>(control) || dynamic_cast<GuiRibbonButtons*>(control) || dynamic_cast<GuiRibbonGallery*>(control)) return UIA_GroupControlTypeId;
-		if (auto button = dynamic_cast<GuiSelectableButton*>(control)) return button->GetGroupController() ? UIA_RadioButtonControlTypeId : UIA_CheckBoxControlTypeId;
+		if (auto button = dynamic_cast<GuiSelectableButton*>(control)) return dynamic_cast<GuiSelectableButton::MutexGroupController*>(button->GetGroupController()) ? UIA_RadioButtonControlTypeId : UIA_CheckBoxControlTypeId;
 		if (dynamic_cast<GuiButton*>(control)) return UIA_ButtonControlTypeId;
 		if (dynamic_cast<GuiTabPage*>(control)) return UIA_TabItemControlTypeId;
 		if (dynamic_cast<GuiTab*>(control)) return UIA_TabControlTypeId;
@@ -258,6 +281,7 @@ namespace vl::presentation::windows
 	bool WindowsUIAutomationNode::Supports(PATTERNID pattern)
 	{
 		auto button = dynamic_cast<GuiSelectableButton*>(control);
+		auto mutex = button ? dynamic_cast<GuiSelectableButton::MutexGroupController*>(button->GetGroupController()) : nullptr;
 		auto list = dynamic_cast<GuiListControl*>(control);
 		auto listView = dynamic_cast<GuiVirtualListView*>(control);
 		auto text = dynamic_cast<GuiVirtualTextList*>(control);
@@ -269,7 +293,7 @@ namespace vl::presentation::windows
 		{
 			switch (pattern)
 			{
-			case UIA_SelectionItemPatternId: return kind == Kind::CalendarDay || dynamic_cast<GuiSelectableListControl*>(control) && (kind == Kind::Item || kind == Kind::TreeNode || kind == Kind::Cell);
+			case UIA_SelectionItemPatternId: return kind == Kind::CalendarDay || dynamic_cast<GuiSelectableListControl*>(control) && (kind == Kind::TreeNode || (UiaDataGrid(control) ? kind == Kind::Cell : kind == Kind::Item));
 			case UIA_ScrollItemPatternId: case UIA_VirtualizedItemPatternId: return list && row >= 0 || kind == Kind::TreeNode;
 			case UIA_ExpandCollapsePatternId: return kind == Kind::TreeNode;
 			case UIA_TogglePatternId: return kind == Kind::Item && text && text->GetView() != TextListView::Text;
@@ -283,13 +307,13 @@ namespace vl::presentation::windows
 		{
 		case UIA_InvokePatternId:
 			if (dynamic_cast<GuiComboBoxBase*>(control)) return false;
-			if (menu) return !menu->GetAutoSelection() && !menu->GetGroupController() && (!menu->GetSubMenu() || menu->GetSubMenuHost() != menu);
+			if (menu) return Role() == UIA_SplitButtonControlTypeId || !menu->GetAutoSelection() && !menu->GetGroupController() && !menu->GetSubMenu();
 			return dynamic_cast<GuiButton*>(control) && !button;
-		case UIA_TogglePatternId: return button && !button->GetGroupController() && (!menu || menu->GetAutoSelection());
-		case UIA_SelectionItemPatternId: return tabPage || button && button->GetGroupController();
+		case UIA_TogglePatternId: return button && !mutex && (!menu || menu->GetAutoSelection());
+		case UIA_SelectionItemPatternId: return tabPage || mutex;
 		case UIA_SelectionPatternId: return dynamic_cast<GuiSelectableListControl*>(control) || dynamic_cast<GuiTab*>(control) || calendar || dynamic_cast<GuiComboBoxListControl*>(control);
 		case UIA_ExpandCollapsePatternId: return menu && menu->GetSubMenu() || dynamic_cast<GuiBindableRibbonGalleryList*>(control);
-		case UIA_ValuePatternId: return document && (dynamic_cast<GuiSinglelineTextBox*>(control) || dynamic_cast<GuiMultilineTextBox*>(control));
+		case UIA_ValuePatternId: return document != nullptr;
 		case UIA_TextPatternId:
 			if (auto single = dynamic_cast<GuiSinglelineTextBox*>(control); single && single->GetPasswordChar()) return false;
 			return document != nullptr;
@@ -300,7 +324,7 @@ namespace vl::presentation::windows
 		case UIA_GridPatternId: case UIA_TablePatternId: return UiaDataGrid(control) || listView && listView->GetView() == ListViewView::Detail || calendar;
 		case UIA_ItemContainerPatternId: return list || calendar;
 		case UIA_MultipleViewPatternId: return listView && !UiaDataGrid(control);
-		case UIA_WindowPatternId: case UIA_TransformPatternId: return dynamic_cast<GuiWindow*>(control);
+		case UIA_WindowPatternId: case UIA_TransformPatternId: return dynamic_cast<GuiWindow*>(control) && !dynamic_cast<GuiPopup*>(control);
 		default: return false;
 		}
 	}
@@ -328,6 +352,22 @@ namespace vl::presentation::windows
 		return false;
 	}
 
+	bool WindowsUIAutomationNode::IsFocusable()
+	{
+		return control->GetFocusableComposition() && (kind == Kind::Control || kind == Kind::Cell && UiaDataGrid(control) && IsSelected());
+	}
+
+	bool WindowsUIAutomationNode::IsFocused()
+	{
+		if (!control->GetFocused()) return false;
+		if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(control))
+		{
+			auto selected = grid->GetSelectedCell();
+			return selected.row >= 0 && selected.column >= 0 ? kind == Kind::Cell && IsSelected() : kind == Kind::Control;
+		}
+		return kind == Kind::Control;
+	}
+
 	void UiaCollectChildren(WindowsUIAutomationContext* context, GuiGraphicsComposition* composition, List<Ptr<WindowsUIAutomationNode>>& children)
 	{
 		for (auto child : composition->Children())
@@ -342,7 +382,11 @@ namespace vl::presentation::windows
 	{
 		List<Ptr<WindowsUIAutomationNode>> result;
 		auto self = context->nodes[context->nodes.IndexOf(this)];
-		if (kind == Kind::Header)
+		if (kind == Kind::TabContent)
+		{
+			if (owner->IsSelected()) UiaCollectChildren(context, control->GetBoundsComposition(), result);
+		}
+		else if (kind == Kind::Header)
 		{
 			for (vint c = 0; c < UiaListView(control)->GetColumnCount(); c++) result.Add(context->Item(owner, Kind::HeaderItem, -1, c));
 		}
@@ -376,7 +420,11 @@ namespace vl::presentation::windows
 		{
 			if (UiaDocument(control))
 			{
-				return UiaTextChildren(this, 0, -1);
+				result = UiaTextChildren(this, 0, -1);
+			}
+			else if (dynamic_cast<GuiTabPage*>(control))
+			{
+				if (IsSelected()) result.Add(context->Item(self, Kind::TabContent));
 			}
 			else if (auto tab = dynamic_cast<GuiTab*>(control))
 			{
@@ -400,8 +448,12 @@ namespace vl::presentation::windows
 			}
 			if (IsRoot() && context->hosted)
 			{
-				for (auto window : GetApplication()->GetWindows()) if (window != control && window->GetOpening()) result.Add(context->Control(window));
+				for (auto window : GetApplication()->GetWindows()) if (window != control && window->GetOpening() && !UiaPopupOwner(context->Control(window).Obj())) result.Add(context->Control(window));
 			}
+			if (auto menu = dynamic_cast<GuiMenuButton*>(control); menu && menu->GetSubMenuOpening()) result.Add(context->Control(menu->GetSubMenu()));
+			if (auto gallery = dynamic_cast<GuiBindableRibbonGalleryList*>(control); gallery && gallery->GetSubMenu()->GetOpening()) result.Add(context->Control(gallery->GetSubMenu()));
+			if (GetApplication()->GetTooltipOwner() == control)
+				for (auto window : GetApplication()->GetWindows()) if (dynamic_cast<GuiTooltip*>(window) && window->GetOpening()) result.Add(context->Control(window));
 		}
 		return result;
 	}
@@ -417,6 +469,7 @@ namespace vl::presentation::windows
 		if (kind == Kind::Cell) return context->Item(owner, Kind::Item, row);
 		if (kind == Kind::HeaderItem) return context->Item(owner, Kind::Header);
 		if (owner) return owner;
+		if (auto popupOwner = UiaPopupOwner(this)) return context->Control(popupOwner);
 		if (IsRoot()) return nullptr;
 		if (dynamic_cast<GuiWindow*>(control) && context->hosted) return context->Control(GetApplication()->GetMainWindow());
 		if (auto page = dynamic_cast<GuiTabPage*>(control)) return context->Control(page->GetOwnerTab());
@@ -435,6 +488,7 @@ namespace vl::presentation::windows
 			}
 			if (auto parent = composition->GetAssociatedControl())
 			{
+				if (dynamic_cast<GuiTabPage*>(parent)) return context->Item(context->Control(parent), Kind::TabContent);
 				return context->Control(parent);
 			}
 		}

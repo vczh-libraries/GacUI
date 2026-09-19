@@ -50,8 +50,10 @@ public static class GacUIShowcaseTests
     }
     static AutomationElement Popup(ControlType type, AutomationElement selectionOwner = null)
     {
-        var windows = isHosted ? Find(root, ControlType.Window, TreeScope.Children) : OwnedWindows();
-        if (isHosted) windows.AddRange(Find(root, ControlType.Menu, TreeScope.Children));
+        var windows = new List<AutomationElement>();
+        if (selectionOwner != null) windows.Add(selectionOwner);
+        windows.AddRange(Find(root, ControlType.Menu));
+        windows.AddRange(isHosted ? Find(root, ControlType.Window, TreeScope.Children) : OwnedWindows());
         foreach (var window in windows)
         {
             if (Automation.Compare(window, root) || window.Current.IsOffscreen) continue;
@@ -107,7 +109,7 @@ public static class GacUIShowcaseTests
         var expand = Pattern<ExpandCollapsePattern>(combo, ExpandCollapsePattern.Pattern);
         expand.Expand();
         AutomationElement item = null;
-        Wait(() => { foreach (var window in OwnedWindows()) { item = window.FindFirst(TreeScope.Descendants, new AndCondition(new PropertyCondition(AutomationElement.NameProperty, name), new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.ListItem))); if (item != null) return true; } return false; }, "popup item " + name);
+        Wait(() => { item = combo.FindFirst(TreeScope.Descendants, new AndCondition(new PropertyCondition(AutomationElement.NameProperty, name), new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.ListItem))); return item != null; }, "popup item under combo: " + name);
         Pattern<SelectionItemPattern>(item, SelectionItemPattern.Pattern).Select();
         expand.Collapse();
     }
@@ -330,6 +332,12 @@ public static class GacUIShowcaseTests
     static void WalkTabs(AutomationElement container, int depth)
     {
         if (depth > 5) return;
+        if (container.Current.ControlType == ControlType.TabItem)
+        {
+            var bodies = Find(container, ControlType.Pane, TreeScope.Children);
+            Check(bodies.Count == 1, "selected tab exposes one body Pane");
+            container = bodies[0];
+        }
         var tabs = Find(container, ControlType.Tab, TreeScope.Children);
         foreach (var tab in tabs) foreach (var page in Find(tab, ControlType.TabItem, TreeScope.Children))
         {
@@ -400,6 +408,16 @@ public static class GacUIShowcaseTests
         expansion.Expand();
         Wait(() => expansion.Current.ExpandCollapseState == ExpandCollapseState.Expanded, "review combo opens");
         verify(Find(combo, ControlType.ListItem).Count > 0, "T1 combo dropdown items descend from combo");
+        var dropdownItems = Find(combo, ControlType.ListItem);
+        foreach (var item in dropdownItems)
+        {
+            var bounds = item.Current.BoundingRectangle;
+            if (bounds.IsEmpty || bounds.Width <= 0 || bounds.Height <= 0) continue;
+            verify(Automation.Compare(item, AutomationElement.FromPoint(new System.Windows.Point(bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2))), "T1 popup hit test follows native stacking");
+            break;
+        }
+        var menuParent = TreeWalker.RawViewWalker.GetParent(Find(combo, ControlType.Menu)[0]);
+        verify(Automation.Compare(menuParent, combo), "L1 popup parent navigation returns combo");
         var selection = Pattern<SelectionPattern>(combo, SelectionPattern.Pattern);
         var before = selection.Current.GetSelection();
         Check(before.Length == 1, "review combo initially selected");
@@ -417,6 +435,14 @@ public static class GacUIShowcaseTests
         Pattern<SelectionItemPattern>(cell, SelectionItemPattern.Pattern).Select();
         var selectedCells = Pattern<SelectionPattern>(grid, SelectionPattern.Pattern).Current.GetSelection();
         verify(selectedCells.Length == 1 && Automation.Compare(selectedCells[0], cell), "T4 data grid selection returns active cell");
+        var anotherCell = Pattern<GridPattern>(grid, GridPattern.Pattern).GetItem(0, 1);
+        verify(cell.Current.IsKeyboardFocusable && !anotherCell.Current.IsKeyboardFocusable, "P2 grid focusability follows the active keyboard cell");
+        rejected = false;
+        try { Pattern<SelectionItemPattern>(anotherCell, SelectionItemPattern.Pattern).AddToSelection(); }
+        catch (InvalidOperationException) { rejected = true; }
+        selectedCells = Pattern<SelectionPattern>(grid, SelectionPattern.Pattern).Current.GetSelection();
+        bool preserved = selectedCells.Length == 1 && Automation.Compare(selectedCells[0], cell);
+        verify(rejected && preserved, "T4 rejected second-cell Add preserves single selection (rejected=" + rejected + ", preserved=" + preserved + ", count=" + selectedCells.Length + ")");
         cell.SetFocus();
         int focused = grid.Current.HasKeyboardFocus ? 1 : 0;
         foreach (AutomationElement item in grid.FindAll(TreeScope.Descendants, new PropertyCondition(AutomationElement.HasKeyboardFocusProperty, true))) focused++;
@@ -435,16 +461,114 @@ public static class GacUIShowcaseTests
 
         Check(failures.Count == 0, "UIA review contract failures: " + string.Join("; ", failures.ToArray()));
     }
+    static void TransitionContracts()
+    {
+        Test("review transitions / password, read-only, disabled text and horizontal scrolling");
+        var edit = Find(root, ControlType.Edit)[0];
+        var value = Pattern<ValuePattern>(edit, ValuePattern.Pattern);
+        var text = Pattern<TextPattern>(edit, TextPattern.Pattern);
+        var retained = text.DocumentRange;
+        int passwordEvents = 0, readOnlyEvents = 0, leakedValues = 0;
+        Automation.AddAutomationPropertyChangedEventHandler(edit, TreeScope.Element, (s,e) => {
+            if (e.Property == AutomationElement.IsPasswordProperty) Interlocked.Increment(ref passwordEvents);
+            if (e.Property == ValuePattern.IsReadOnlyProperty) Interlocked.Increment(ref readOnlyEvents);
+            if (e.Property == ValuePattern.ValueProperty && ((AutomationElement)s).Current.IsPassword &&
+                ((e.OldValue as string) == "public-before-password" || (e.NewValue as string) == "public-before-password")) Interlocked.Increment(ref leakedValues);
+        }, AutomationElement.IsPasswordProperty, ValuePattern.ValueProperty, ValuePattern.IsReadOnlyProperty);
+        Invoke(root, "Password on");
+        Wait(() => edit.Current.IsPassword && passwordEvents > 0, "password transition notification");
+        Absent(edit, TextPattern.Pattern);
+        bool unavailable = false;
+        try { retained.GetText(-1); } catch (ElementNotAvailableException) { unavailable = true; }
+        Check(unavailable, "retained text range is unavailable while protected");
+        try { Check(value.Current.Value != "public-before-password", "password Value property excludes plaintext"); }
+        catch (UnauthorizedAccessException) { assertions++; }
+        Check(leakedValues == 0, "password event payload excludes cached plaintext");
+        Invoke(root, "Password off");
+        Wait(() => !edit.Current.IsPassword && passwordEvents >= 2, "password removal notification");
+        text = Pattern<TextPattern>(edit, TextPattern.Pattern);
+        Invoke(root, "Read only");
+        Wait(() => value.Current.IsReadOnly && readOnlyEvents > 0, "read-only transition notification");
+        bool rejected = false;
+        try { value.SetValue("must not replace"); } catch (InvalidOperationException) { rejected = true; }
+        Check(rejected && value.Current.Value == "public-before-password", "read-only Value rejection is atomic");
+        Invoke(root, "Editable");
+        Wait(() => !value.Current.IsReadOnly && readOnlyEvents >= 2, "editable transition notification");
+        var caret = text.DocumentRange; caret.MoveEndpointByRange(TextPatternRangeEndpoint.End, caret, TextPatternRangeEndpoint.Start);
+        Invoke(root, "Disabled"); Wait(() => !edit.Current.IsEnabled, "disabled text");
+        foreach (Action operation in new Action[] { caret.Select, caret.AddToSelection, caret.RemoveFromSelection })
+        {
+            rejected = false;
+            try { operation(); } catch (ElementNotEnabledException) { rejected = true; }
+            Check(rejected, "disabled text selection mutation rejected");
+        }
+        Invoke(root, "Enabled"); Wait(() => edit.Current.IsEnabled, "enabled text");
+        value.SetValue(new string('x', 300) + "TARGET");
+        caret = text.DocumentRange; caret.MoveEndpointByRange(TextPatternRangeEndpoint.End, caret, TextPatternRangeEndpoint.Start); caret.Select();
+        var target = text.DocumentRange.FindText("TARGET", false, false);
+        target.ScrollIntoView(false);
+        Wait(() => target.GetBoundingRectangles().Length > 0, "horizontal text scroll reaches target");
+        Check(text.GetSelection()[0].Compare(caret), "scrolling preserves insertion point");
+        var progress = Pattern<RangeValuePattern>(Find(root, ControlType.ProgressBar)[0], RangeValuePattern.Pattern).Current;
+        Check(progress.IsReadOnly && Double.IsNaN(progress.SmallChange) && Double.IsNaN(progress.LargeChange), "ProgressBar read-only step values are NaN");
+
+        Test("review transitions / selection event cardinality and ordinary command sources");
+        var list = Find(root, ControlType.List)[0];
+        var items = Items(list);
+        var events = new List<string>();
+        Action<AutomationEvent,string> subscribe = (kind, name) => Automation.AddAutomationEventHandler(kind, list, TreeScope.Subtree, (s,e) => {
+            lock (events) events.Add(name + ":" + ((AutomationElement)s).Current.Name);
+        });
+        subscribe(SelectionItemPattern.ElementSelectedEvent, "selected");
+        subscribe(SelectionItemPattern.ElementAddedToSelectionEvent, "added");
+        subscribe(SelectionItemPattern.ElementRemovedFromSelectionEvent, "removed");
+        Action<string> expected = name => Wait(() => { lock (events) return events.Contains(name); }, name + " event");
+        Pattern<SelectionItemPattern>(items[0], SelectionItemPattern.Pattern).Select(); expected("selected:0");
+        Invoke(root, "Select second"); expected("added:1");
+        Check(Pattern<SelectionPattern>(list, SelectionPattern.Pattern).Current.GetSelection().Length == 2, "application selection mutation adds second item");
+        Invoke(root, "Remove first"); expected("selected:1");
+        Invoke(root, "Clear selection"); expected("removed:1");
+        lock (events) Check(events.Count == 4, "exact selection event types and sources across cardinalities");
+        int invoked = 0;
+        var command = Named(root, "Select second", ControlType.Button);
+        Automation.AddAutomationEventHandler(InvokePattern.InvokedEvent, command, TreeScope.Element, (s,e) => Interlocked.Increment(ref invoked));
+        command.SetFocus(); Press("Space");
+        Wait(() => invoked == 1, "keyboard activation raises one Invoked event");
+        Check(Pattern<SelectionItemPattern>(items[1], SelectionItemPattern.Pattern).Current.IsSelected, "keyboard activation executes application command");
+        var checks = Find(root, ControlType.CheckBox);
+        Check(checks.Count == 2, "non-mutex groups keep CheckBox semantics");
+        foreach (var check in checks) { Absent(check, SelectionItemPattern.Pattern); Pattern<TogglePattern>(check, TogglePattern.Pattern).Toggle(); }
+        foreach (var check in checks) Check(Pattern<TogglePattern>(check, TogglePattern.Pattern).Current.ToggleState == ToggleState.On, "non-mutex group permits independent selection");
+
+        Test("review transitions / concurrent MTA readers share retained providers and ranges");
+        var errors = new List<Exception>();
+        var readers = new List<Thread>();
+        for (int worker = 0; worker < 4; worker++)
+        {
+            var thread = new Thread(() => {
+                try {
+                    for (int i = 0; i < 30; i++) {
+                        if (root.Current.FrameworkId != "GacUI" || text.DocumentRange.GetText(-1).Length != 306 || target.Clone().GetText(-1) != "TARGET") throw new Exception("Concurrent read changed semantic identity or text");
+                    }
+                } catch (Exception error) { lock (errors) errors.Add(error); }
+            });
+            thread.SetApartmentState(ApartmentState.MTA); thread.IsBackground = true;
+            readers.Add(thread); thread.Start();
+        }
+        foreach (var reader in readers) Check(reader.Join(30000), "concurrent MTA reader completes");
+        lock (errors) Check(errors.Count == 0, errors.Count == 0 ? "concurrent MTA reads agree" : errors[0].ToString());
+    }
+
     public static void Run(int processId, bool hosted, string scenario, int port)
     {
         Check(Thread.CurrentThread.GetApartmentState() == ApartmentState.MTA, "client must be MTA");
         IntPtr hwnd = IntPtr.Zero;
         Wait(() => { EnumWindows((h,p) => { uint id; GetWindowThreadProcessId(h,out id); var text=new StringBuilder(256); GetClassName(h,text,256); if (id==processId && text.ToString()=="VczhWindow" && IsWindowVisible(h)) hwnd=h; return true; },IntPtr.Zero); return hwnd!=IntPtr.Zero; }, "owned HWND");
         Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
-        inputEndpoint = "http://localhost:" + port + "/Automation/" + (hosted ? "CppTest" : "CppTest_Metaonly") + "/IO";
+        inputEndpoint = "http://localhost:" + port + "/Automation/" + (scenario == "Transitions" ? "Playground" : hosted ? "CppTest" : "CppTest_Metaonly") + "/IO";
         ownedProcess = processId; isHosted = hosted;
         Check(root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI", "owned native GacUI root; HWND=" + hwnd + "; PID=" + root.Current.ProcessId + "; FrameworkId=" + root.Current.FrameworkId + "; Name=" + root.Current.Name);
-        Check(root.Current.Name == "Complete Control Showcase", "showcase title");
+        Check(root.Current.Name == (scenario == "Transitions" ? "UIA Review Fixture" : "Complete Control Showcase"), "application title");
         if (scenario == "Concurrent")
         {
             Test("concurrent target / independent UIA selection");
@@ -461,7 +585,8 @@ public static class GacUIShowcaseTests
         Automation.AddAutomationEventHandler(TextPattern.TextSelectionChangedEvent, root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref selectionEvents));
         try
         {
-            if (scenario == "Review") ReviewContracts();
+            if (scenario == "All" || scenario == "Review") ReviewContracts();
+            if (scenario == "Transitions") TransitionContracts();
             if (scenario == "All" || scenario == "List") { TextLists(); ListViews(); Trees(); }
             if (scenario == "All" || scenario == "Grid") Grids();
             if (scenario == "All" || scenario == "Text") TextControls();

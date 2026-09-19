@@ -1,5 +1,6 @@
 #include "WindowsUIAutomationProvider.Windows.h"
 #include "../../Hosted/GuiHostedApplication.h"
+#include <cmath>
 
 #ifdef VCZH_MSVC
 namespace vl::presentation::windows
@@ -94,7 +95,7 @@ namespace vl::presentation::windows
 		control->ControlTemplateChanged.AttachLambda(structure);
 		control->FocusedChanged.AttachLambda([node](GuiGraphicsComposition*, GuiEventArgs&)
 		{
-			if (node->IsLive()) node->context->Notify(node, false, node->control->GetFocused() ? UIA_AutomationFocusChangedEventId : 0);
+			if (node->IsLive()) node->context->Notify(node);
 		});
 		if (auto window = dynamic_cast<GuiWindow*>(control))
 		{
@@ -113,9 +114,20 @@ namespace vl::presentation::windows
 				node->context->Notify(node, true);
 			});
 		}
+		if (auto button = dynamic_cast<GuiButton*>(control))
+		{
+			button->BeforeClicked.AttachLambda([node](GuiGraphicsComposition*, GuiEventArgs&)
+			{
+				// Commands may open modal windows or destroy their own control.
+				if (node->IsLive() && node->Supports(UIA_InvokePatternId)) UiaRaiseAutomationEvent(node->Provider(), UIA_Invoke_InvokedEventId);
+			});
+		}
 		if (auto button = dynamic_cast<GuiSelectableButton*>(control))
 		{
-			button->SelectedChanged.AttachLambda(changed);
+			button->SelectedChanged.AttachLambda([node](GuiGraphicsComposition*, GuiEventArgs&)
+			{
+				if (node->IsLive()) node->context->Notify(node, false, node->Supports(UIA_SelectionItemPatternId) && node->IsSelected() ? UIA_SelectionItem_ElementSelectedEventId : 0);
+			});
 			button->AutoSelectionChanged.AttachLambda(changed);
 			button->GroupControllerChanged.AttachLambda(changed);
 		}
@@ -179,12 +191,24 @@ namespace vl::presentation::windows
 		}
 		if (auto document = UiaDocument(control))
 		{
+			document->EditModeChanged.AttachLambda(changed);
 			document->SelectionChanged.AttachLambda([node](GuiGraphicsComposition*, GuiEventArgs&)
 			{
 				if (node->IsLive()) node->context->Notify(node, false, UIA_Text_TextSelectionChangedEventId);
 			});
 		}
+		if (auto text = dynamic_cast<GuiSinglelineTextBox*>(control))
+		{
+			text->PasswordCharChanged.AttachLambda([node](GuiGraphicsComposition*, GuiEventArgs&)
+			{
+				if (!node->IsLive()) return;
+				// Drop plaintext before any queued callback can publish it as oldValue.
+				node->properties.Remove(UIA_ValueValuePropertyId);
+				node->context->Notify(node);
+			});
+		}
 		UpdateProperties(node, false);
+		UpdateSelection(node, false);
 		return node;
 	}
 
@@ -232,6 +256,7 @@ namespace vl::presentation::windows
 			// Rescan the final live tree without retaining notification pointers.
 			if (structure) context->Scan(node->control->GetBoundsComposition());
 			context->UpdateProperties(node, true);
+			context->UpdateSelection(node, true);
 			for (auto child : context->nodes)
 			{
 				if (child != node && (child->owner == node || structure && node->IsRoot()) && child->IsLive()) context->UpdateProperties(child, true);
@@ -241,6 +266,31 @@ namespace vl::presentation::windows
 		});
 	}
 
+	void WindowsUIAutomationContext::UpdateSelection(Ptr<WindowsUIAutomationNode> node, bool raiseEvents)
+	{
+		if (!node->IsLive() || !node->Supports(UIA_SelectionPatternId) || dynamic_cast<GuiComboBoxListControl*>(node->control)) return;
+		List<Ptr<WindowsUIAutomationNode>> selected;
+		UiaSelectedChildren(node, selected);
+		if (raiseEvents)
+		{
+			if (selected.Count() == 1)
+			{
+				if (node->selection.Count() != 1 || node->selection[0] != selected[0]->id) UiaRaiseAutomationEvent(selected[0]->Provider(), UIA_SelectionItem_ElementSelectedEventId);
+			}
+			else
+			{
+				for (auto item : selected) if (!node->selection.Contains(item->id)) UiaRaiseAutomationEvent(item->Provider(), UIA_SelectionItem_ElementAddedToSelectionEventId);
+				for (auto id : node->selection)
+				{
+					if (From(selected).Any([=](auto item) { return item->id == id; })) continue;
+					for (auto item : nodes) if (item->id == id && item->IsLive()) UiaRaiseAutomationEvent(item->Provider(), UIA_SelectionItem_ElementRemovedFromSelectionEventId);
+				}
+			}
+		}
+		node->selection.Clear();
+		for (auto item : selected) node->selection.Add(item->id);
+	}
+
 	void WindowsUIAutomationContext::UpdateProperties(Ptr<WindowsUIAutomationNode> node, bool raiseEvents)
 	{
 		if (!node->IsLive()) return;
@@ -248,6 +298,10 @@ namespace vl::presentation::windows
 		{
 			UIA_NamePropertyId, UIA_AcceleratorKeyPropertyId, UIA_ItemStatusPropertyId, UIA_OrientationPropertyId,
 			UIA_IsEnabledPropertyId, UIA_IsOffscreenPropertyId, UIA_HasKeyboardFocusPropertyId, UIA_IsContentElementPropertyId,
+			UIA_IsPasswordPropertyId, UIA_IsKeyboardFocusablePropertyId, UIA_AccessKeyPropertyId,
+			UIA_BoundingRectanglePropertyId, UIA_GridRowCountPropertyId, UIA_GridColumnCountPropertyId,
+			UIA_SelectionCanSelectMultiplePropertyId, UIA_SelectionIsSelectionRequiredPropertyId,
+			UIA_WindowWindowVisualStatePropertyId, UIA_WindowWindowInteractionStatePropertyId,
 			UIA_ValueValuePropertyId, UIA_ValueIsReadOnlyPropertyId, UIA_ToggleToggleStatePropertyId, UIA_SelectionItemIsSelectedPropertyId,
 			UIA_ExpandCollapseExpandCollapseStatePropertyId, UIA_RangeValueValuePropertyId, UIA_RangeValueMinimumPropertyId,
 			UIA_RangeValueMaximumPropertyId, UIA_RangeValueSmallChangePropertyId, UIA_RangeValueLargeChangePropertyId, UIA_RangeValueIsReadOnlyPropertyId,
@@ -266,8 +320,24 @@ namespace vl::presentation::windows
 			{
 				auto old = node->properties.Values()[index];
 				bool bothEmpty = old->value.vt == VT_EMPTY && value->value.vt == VT_EMPTY;
-				if (raiseEvents && !bothEmpty && VarCmp(&old->value, &value->value, LOCALE_INVARIANT, 0) != VARCMP_EQ)
+				bool equal = bothEmpty || VarCmp(&old->value, &value->value, LOCALE_INVARIANT, 0) == VARCMP_EQ;
+				if (old->value.vt == VT_R8 && value->value.vt == VT_R8 && std::isnan(old->value.dblVal) && std::isnan(value->value.dblVal)) equal = true;
+				if (property == UIA_BoundingRectanglePropertyId && old->value.vt == (VT_ARRAY | VT_R8) && value->value.vt == (VT_ARRAY | VT_R8))
+				{
+					equal = true;
+					for (LONG i = 0; i < 4; i++)
+					{
+						double a = 0, b = 0;
+						SafeArrayGetElement(old->value.parray, &i, &a);
+						SafeArrayGetElement(value->value.parray, &i, &b);
+						if (a != b) equal = false;
+					}
+				}
+				if (raiseEvents && !equal)
+				{
 					UiaRaiseAutomationPropertyChangedEvent(node->Provider(), property, old->value, value->value);
+					if (property == UIA_HasKeyboardFocusPropertyId && value->value.boolVal == VARIANT_TRUE) UiaRaiseAutomationEvent(node->Provider(), UIA_AutomationFocusChangedEventId);
+				}
 			}
 			node->properties.Set(property, value);
 		}

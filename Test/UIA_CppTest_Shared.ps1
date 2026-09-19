@@ -1,8 +1,10 @@
 param(
-    [ValidateSet('CppTest','CppTest_Metaonly')][string]$Application,
+    [ValidateSet('CppTest','CppTest_Metaonly','Playground')][string]$Application,
     [ValidateRange(1,65535)][int]$AsPort,
     [int]$ClientProcessId = 0,
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Walk','Window','Concurrent','Review')][string]$Scenario = 'All'
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Walk','Window','Concurrent','Review','Transitions')][string]$Scenario = 'All',
+    [switch]$HostedFixture,
+    [switch]$SkipBuild
 )
 $ErrorActionPreference = 'Stop'
 $repository = Split-Path $PSScriptRoot -Parent
@@ -10,7 +12,7 @@ $solution = Join-Path $PSScriptRoot 'GacUISrc'
 if ($ClientProcessId) {
     Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, WindowsBase
     Add-Type -Path (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase
-    try { [GacUIShowcaseTests]::Run($ClientProcessId, $Application -eq 'CppTest', $Scenario, $AsPort) }
+    try { [GacUIShowcaseTests]::Run($ClientProcessId, ($Application -eq 'CppTest' -or $HostedFixture), $Scenario, $AsPort) }
     catch { [Console]::Error.WriteLine($_.Exception.ToString()); exit 1 }
     exit 0
 }
@@ -34,13 +36,15 @@ function Assert-Target {
     if ($owned.HasExited) { throw "Target unexpectedly exited: $($owned.ExitCode)" }
     if ([ShowcaseWindows]::Crashed($owned.Id)) { throw "Target PID $($owned.Id) has a blocking native runtime error dialog." }
 }
-Write-Host "TEST $Application / build Debug x64"
-Push-Location $solution
-try { & (Join-Path $repository '.github/Scripts/copilotBuild.ps1') -Configuration Debug -Platform x64 }
-finally { Pop-Location }
-if ($LASTEXITCODE -ne 0) { throw 'Showcase build failed.' }
-$buildLog = Get-Content (Join-Path $repository '.github/Scripts/Build.log') -Raw
-if ($buildLog -notmatch 'Build succeeded\.') { throw 'Completed build log does not report success.' }
+if (!$SkipBuild) {
+    Write-Host "TEST $Application / build Debug x64"
+    Push-Location $solution
+    try { & (Join-Path $repository '.github/Scripts/copilotBuild.ps1') -Configuration Debug -Platform x64 }
+    finally { Pop-Location }
+    if ($LASTEXITCODE -ne 0) { throw 'Showcase build failed.' }
+    $buildLog = Get-Content (Join-Path $repository '.github/Scripts/Build.log') -Raw
+    if ($buildLog -notmatch 'Build succeeded\.') { throw 'Completed build log does not report success.' }
+}
 
 $userFile = Join-Path $solution "$Application/$Application.vcxproj.user"
 $original = if (Test-Path -LiteralPath $userFile) { [IO.File]::ReadAllBytes($userFile) } else { $null }
@@ -60,6 +64,8 @@ try {
     }
     $argument = $settings.CreateElement('LocalDebuggerCommandArguments', $settings.DocumentElement.NamespaceURI)
     $argument.InnerText = "/AsPort:$AsPort"
+    if ($Application -eq 'Playground') { $argument.InnerText += ' /UiaReview' }
+    if ($HostedFixture) { $argument.InnerText += ' /UiaHosted' }
     $null = $group.AppendChild($argument)
     $null = $settings.DocumentElement.AppendChild($group)
     $settings.Save($userFile)
@@ -83,7 +89,9 @@ try {
     } while ([DateTime]::UtcNow -lt $deadline)
     if (!$state.MainWindow) { throw 'Automation endpoint did not become ready.' }
     # A separate windowless MTA process provides a hard deadline even if a provider blocks.
-    $client = Start-Process powershell.exe -WindowStyle Hidden -ArgumentList @('-NoProfile','-Mta','-File',"`"$PSCommandPath`"",'-Application',$Application,'-AsPort',$AsPort,'-ClientProcessId',$owned.Id,'-Scenario',$Scenario) -RedirectStandardOutput (Join-Path $env:TEMP "$Application-uia.stdout.txt") -RedirectStandardError (Join-Path $env:TEMP "$Application-uia.stderr.txt") -PassThru
+    $clientArguments = @('-NoProfile','-Mta','-File',"`"$PSCommandPath`"",'-Application',$Application,'-AsPort',$AsPort,'-ClientProcessId',$owned.Id,'-Scenario',$Scenario)
+    if ($HostedFixture) { $clientArguments += '-HostedFixture' }
+    $client = Start-Process powershell.exe -WindowStyle Hidden -ArgumentList $clientArguments -RedirectStandardOutput (Join-Path $env:TEMP "$Application-uia.stdout.txt") -RedirectStandardError (Join-Path $env:TEMP "$Application-uia.stderr.txt") -PassThru
     $lastCount = 0
     $deadline = [DateTime]::UtcNow.AddMinutes(20)
     do {

@@ -79,7 +79,7 @@ namespace vl::presentation::description
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
 	if (!gacui_test::automationArguments.ParseWindowsCommandLine()) return 1;
-	int result = SetupWindowsDirect2DRenderer();
+	int result = wcsstr(GetCommandLineW(), L"/UiaHosted") ? SetupHostedWindowsDirect2DRenderer() : SetupWindowsDirect2DRenderer();
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
@@ -112,10 +112,91 @@ void OpenMainWindow()
 	}
 }
 
+void RunUiaReview()
+{
+	RegisterTheme(Ptr(new darkskin::Theme));
+	GuiWindow window(theme::ThemeName::Window);
+	window.SetText(L"UIA Review Fixture");
+	window.SetClientSize(Size(700, 420));
+	auto add = [&](GuiControl* control, Rect bounds)
+	{
+		control->GetBoundsComposition()->SetExpectedBounds(bounds);
+		window.GetContainerComposition()->AddChild(control->GetBoundsComposition());
+	};
+	auto edit = new GuiSinglelineTextBox(theme::ThemeName::SinglelineTextBox);
+	edit->SetText(L"public-before-password");
+	add(edit, Rect(10, 10, 450, 45));
+	auto button = [&](const WString& name, vint x, vint y, const Func<void()>& action)
+	{
+		auto control = new GuiButton(theme::ThemeName::Button);
+		control->SetText(name);
+		control->Clicked.AttachLambda([action](GuiGraphicsComposition*, GuiEventArgs&) { action(); });
+		add(control, Rect(x, y, x + 140, y + 35));
+	};
+	button(L"Password on", 10, 60, [=]() { edit->SetPasswordChar(L'*'); });
+	button(L"Password off", 160, 60, [=]() { edit->SetPasswordChar(0); });
+	button(L"Read only", 310, 60, [=]() { edit->SetEditMode(GuiDocumentEditMode::Selectable); });
+	button(L"Editable", 460, 60, [=]() { edit->SetEditMode(GuiDocumentEditMode::Editable); });
+	button(L"Disabled", 10, 105, [=]() { edit->SetEnabled(false); });
+	button(L"Enabled", 160, 105, [=]() { edit->SetEnabled(true); });
+	auto list = new GuiTextList(theme::ThemeName::TextList);
+	list->SetMultiSelect(true);
+	for (vint i = 0; i < 3; i++) list->GetItems().Add(Ptr(new list::TextItem(itow(i))));
+	add(list, Rect(10, 160, 250, 310));
+	button(L"Select second", 270, 160, [=]() { list->SetSelected(1, true); });
+	button(L"Remove first", 270, 205, [=]() { list->SetSelected(0, false); });
+	button(L"Clear selection", 270, 250, [=]() { list->ClearSelection(); });
+	class IndependentGroup : public GuiSelectableButton::GroupController
+	{
+	public:
+		void OnSelectedChanged(GuiSelectableButton*)override {}
+	};
+	auto group = new IndependentGroup;
+	window.AddComponent(group);
+	for (vint i = 0; i < 2; i++)
+	{
+		auto check = new GuiSelectableButton(theme::ThemeName::CheckBox);
+		check->SetText(L"Independent " + itow(i));
+		check->SetGroupController(group);
+		add(check, Rect(470, 160 + i * 45, 670, 195 + i * 45));
+	}
+	auto progress = new GuiScroll(theme::ThemeName::ProgressBar);
+	progress->SetTotalSize(100);
+	progress->SetPosition(40);
+	add(progress, Rect(10, 330, 450, 360));
+	window.ForceCalculateSizeImmediately();
+	window.MoveToScreenCenter();
+	if (wcsstr(GetCommandLineW(), L"/UiaHosted"))
+	{
+		windows::WindowsAutomationServiceHosted automationService;
+		GetNativeServiceSubstitution()->Substitute(&automationService, false);
+		windows::StartWindowsHttpAutomationService(L"Automation/Playground", gacui_test::automationArguments.port);
+		GetApplication()->Run(&window);
+		windows::StopWindowsHttpAutomationService();
+		automationService.Stop();
+		GetNativeServiceSubstitution()->Unsubstitute(&automationService);
+	}
+	else
+	{
+		windows::WindowsAutomationService automationService;
+		GetNativeServiceSubstitution()->Substitute(&automationService, false);
+		windows::StartWindowsHttpAutomationService(L"Automation/Playground", gacui_test::automationArguments.port);
+		GetApplication()->Run(&window);
+		windows::StopWindowsHttpAutomationService();
+		automationService.Stop();
+		GetNativeServiceSubstitution()->Unsubstitute(&automationService);
+	}
+}
+
 void GuiMain()
 {
 	LoadDarkSkinTypes();
 	LoadPlaygroundTypes();
+	if (wcsstr(GetCommandLineW(), L"/UiaReview"))
+	{
+		RunUiaReview();
+		return;
+	}
 
 	List<WString> names;
 	names.Add(L"ResourceDocument");

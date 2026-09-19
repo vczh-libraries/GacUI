@@ -224,6 +224,8 @@ GuiDocumentCommonInterface
 
 				/// <summary>Selection changed event.</summary>
 				compositions::GuiNotifyEvent				SelectionChanged;
+				/// <summary>Document edit mode changed event.</summary>
+				compositions::GuiNotifyEvent				EditModeChanged;
 				/// <summary>Undo redo status changed event.</summary>
 				compositions::GuiNotifyEvent				UndoRedoChanged;
 				/// <summary>Modified status changed event.</summary>
@@ -279,6 +281,10 @@ GuiDocumentCommonInterface
 				/// <param name="caret">The caret.</param>
 				/// <param name="frontSide">Set to true to get the bounds for the character before it.</param>
 				Rect										GetCaretBounds(TextPos caret, bool frontSide);
+				/// <summary>Scroll a text position into view without changing the selection.</summary>
+				/// <param name="caret">The text position.</param>
+				/// <param name="frontSide">Set to true to show the preceding character.</param>
+				void										EnsureTextPositionVisible(TextPos caret, bool frontSide);
 
 				//================ editing operations
 

@@ -307,6 +307,7 @@ GuiSinglelineTextBox
 			GuiSinglelineTextBox::GuiSinglelineTextBox(theme::ThemeName themeName, const GuiDocumentConfig& _config)
 				: GuiDocumentLabel(themeName, FixConfig(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetSinglelineTextBoxDefaultConfig(), _config)))
 			{
+				PasswordCharChanged.SetAssociatedComposition(boundsComposition);
 				SetEditMode(GuiDocumentEditMode::Editable);
 			}
 
@@ -321,7 +322,9 @@ GuiSinglelineTextBox
 
 			void GuiSinglelineTextBox::SetPasswordChar(wchar_t value)
 			{
+				if (documentElement->GetPasswordChar() == value) return;
 				documentElement->SetPasswordChar(value);
+				PasswordCharChanged.Execute(GetNotifyEventArguments());
 			}
 		}
 	}

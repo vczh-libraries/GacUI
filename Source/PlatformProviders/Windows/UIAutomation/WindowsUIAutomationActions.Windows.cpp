@@ -1,5 +1,6 @@
 #include "WindowsUIAutomationProvider.Windows.h"
 #include <cmath>
+#include <limits>
 
 #ifdef VCZH_MSVC
 namespace vl::presentation::windows
@@ -13,13 +14,15 @@ namespace vl::presentation::windows
 	{
 		return Queue([target = node]()
 		{
-			UiaRaiseAutomationEvent(target->Provider(), UIA_Invoke_InvokedEventId);
 			if (target->kind == Kind::Cell)
 			{
+				UiaRaiseAutomationEvent(target->Provider(), UIA_Invoke_InvokedEventId);
+				dynamic_cast<GuiVirtualDataGrid*>(target->control)->EnsureItemVisible(target->row);
 				dynamic_cast<GuiVirtualDataGrid*>(target->control)->SelectCell(GridPos(target->row, target->column), true);
 			}
 			else if (target->kind == Kind::HeaderItem)
 			{
+				UiaRaiseAutomationEvent(target->Provider(), UIA_Invoke_InvokedEventId);
 				auto list = dynamic_cast<GuiListViewBase*>(target->control);
 				GuiItemEventArgs arguments(list->GetBoundsComposition());
 				arguments.itemIndex = target->column;
@@ -74,19 +77,23 @@ namespace vl::presentation::windows
 		else if (node->kind == Kind::Cell && UiaDataGrid(node->control))
 		{
 			if (!selected) return UIA_E_INVALIDOPERATION;
-			dynamic_cast<GuiVirtualDataGrid*>(node->control)->SelectCell(GridPos(node->row, node->column), false);
+			auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control);
+			auto current = grid->GetSelectedCell();
+			if (!clear && current.row >= 0 && current != GridPos(node->row, node->column)) return UIA_E_INVALIDOPERATION;
+			grid->SelectCell(GridPos(node->row, node->column), false);
 		}
 		else if (node->kind == Kind::Item || node->kind == Kind::TreeNode || node->kind == Kind::Cell)
 		{
 			auto list = dynamic_cast<GuiSelectableListControl*>(node->control);
 			auto index = node->ItemIndex();
 			if (index < 0) return UIA_E_INVALIDOPERATION;
+			auto combo = UiaCombo(node.Obj());
+			if (combo && !selected) return UIA_E_INVALIDOPERATION;
 			if (!clear && selected && !list->GetMultiSelect() && list->GetSelectedItems().Count() && !list->GetSelected(index)) return UIA_E_INVALIDOPERATION;
 			if (clear) list->ClearSelection();
 			list->SetSelected(index, selected);
-			if (auto combo = UiaCombo(node.Obj()))
+			if (combo)
 			{
-				if (!selected) return UIA_E_INVALIDOPERATION;
 				combo->SetSelectedIndex(index);
 				combo->SetSubMenuOpening(false);
 			}
@@ -101,7 +108,7 @@ namespace vl::presentation::windows
 			if (!selected) return UIA_E_INVALIDOPERATION;
 			button->SetSelected(true);
 		}
-		node->context->Notify(node, false, selected ? UIA_SelectionItem_ElementSelectedEventId : UIA_SelectionItem_ElementRemovedFromSelectionEventId);
+		if (node->IsLive()) node->context->Notify(node);
 		return S_OK;
 	}
 	HRESULT WindowsUIAutomationProvider::Select() { return Read([&]() { return UiaSelect(node, true, true); }, UIA_SelectionItemPatternId, true); }
@@ -127,12 +134,19 @@ namespace vl::presentation::windows
 	HRESULT WindowsUIAutomationProvider::get_CanSelectMultiple(BOOL* result)
 	{
 		if (!result) return E_POINTER;
-		return Read([&]() -> HRESULT { auto list = dynamic_cast<GuiSelectableListControl*>(node->control); *result = list && list->GetMultiSelect(); return S_OK; }, UIA_SelectionPatternId);
+		return Read([&]() -> HRESULT { auto list = dynamic_cast<GuiSelectableListControl*>(node->control); *result = list && !UiaDataGrid(list) && list->GetMultiSelect(); return S_OK; }, UIA_SelectionPatternId);
 	}
 	HRESULT WindowsUIAutomationProvider::get_IsSelectionRequired(BOOL* result)
 	{
 		if (!result) return E_POINTER;
-		return Read([&]() -> HRESULT { *result = dynamic_cast<GuiTab*>(node->control) || dynamic_cast<GuiDatePicker*>(node->control); return S_OK; }, UIA_SelectionPatternId);
+		return Read([&]() -> HRESULT
+		{
+			if (auto tab = dynamic_cast<GuiTab*>(node->control)) *result = tab->GetPages().Count() > 0;
+			else if (auto combo = dynamic_cast<GuiComboBoxListControl*>(node->control)) *result = combo->GetSelectedIndex() >= 0;
+			else if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control)) *result = grid->GetSelectedCell().row >= 0;
+			else *result = dynamic_cast<GuiDatePicker*>(node->control) != nullptr;
+			return S_OK;
+		}, UIA_SelectionPatternId);
 	}
 	HRESULT UiaExpand(Ptr<WindowsUIAutomationNode> node, bool expanding)
 	{
@@ -208,8 +222,8 @@ namespace vl::presentation::windows
 	UIA_RANGE_GETTER(Value, scroll->GetPosition())
 	UIA_RANGE_GETTER(Maximum, scroll->GetMaxPosition())
 	UIA_RANGE_GETTER(Minimum, 0)
-	UIA_RANGE_GETTER(LargeChange, scroll->GetBigMove())
-	UIA_RANGE_GETTER(SmallChange, scroll->GetSmallMove())
+	UIA_RANGE_GETTER(LargeChange, node->Role() == UIA_ProgressBarControlTypeId ? std::numeric_limits<double>::quiet_NaN() : scroll->GetBigMove())
+	UIA_RANGE_GETTER(SmallChange, node->Role() == UIA_ProgressBarControlTypeId ? std::numeric_limits<double>::quiet_NaN() : scroll->GetSmallMove())
 #undef UIA_RANGE_GETTER
 
 	HRESULT UiaScroll(GuiScroll* scroll, ScrollAmount amount)

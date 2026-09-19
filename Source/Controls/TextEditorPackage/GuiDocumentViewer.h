@@ -100,6 +100,9 @@ GuiDocumentLabel
 				GuiSinglelineTextBox(theme::ThemeName themeName, const GuiDocumentConfig& _config = {});
 				~GuiSinglelineTextBox();
 
+				/// <summary>Password masking changed event.</summary>
+				compositions::GuiNotifyEvent				PasswordCharChanged;
+
 				/// <summary>Get the password char. A password char is a character that replaces every characters in the document while rendering.</summary>
 				/// <returns>Returns the passwrd char. 0 means no password char.</returns>
 				wchar_t										GetPasswordChar();

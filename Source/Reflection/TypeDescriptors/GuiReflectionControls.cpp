@@ -1314,7 +1314,8 @@ Type Declaration (Class)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentCommonInterface)
 				CLASS_MEMBER_PROPERTY_FAST(Document)
-				CLASS_MEMBER_PROPERTY_FAST(EditMode)
+				CLASS_MEMBER_GUIEVENT(EditModeChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(EditMode, EditModeChanged)
 
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkChanged)
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkExecuted)
@@ -1334,6 +1335,7 @@ Type Declaration (Class)
 
 				CLASS_MEMBER_METHOD(SetCaret, {L"begin" _ L"end" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(EnsureCaretVisible, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(EnsureTextPositionVisible, {L"caret" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(CalculateCaretFromPoint, {L"point"})
 				CLASS_MEMBER_METHOD(GetCaretBounds, {L"caret" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(NotifyParagraphUpdated, {L"index" _ L"oldCount" _ L"newCount" _ L"updatedText" _ L"skipFormatting"})
@@ -1395,7 +1397,8 @@ Type Declaration (Class)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiSinglelineTextBox)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiSinglelineTextBox, const GuiDocumentConfig&, config)
 
-				CLASS_MEMBER_PROPERTY_FAST(PasswordChar)
+				CLASS_MEMBER_GUIEVENT(PasswordCharChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(PasswordChar, PasswordCharChanged)
 			END_CLASS_MEMBER(GuiSinglelineTextBox)
 
 			BEGIN_CLASS_MEMBER(GuiVirtualDataGrid)

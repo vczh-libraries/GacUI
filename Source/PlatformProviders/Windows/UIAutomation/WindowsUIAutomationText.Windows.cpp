@@ -114,12 +114,13 @@ namespace vl::presentation::windows
 		std::atomic<ULONG> references = 1;
 	public:
 		Ptr<WindowsUIAutomationNode> node;
+		Ptr<WindowsUIAutomationNode> embedded;
 		Ptr<DocumentModel> document;
 		WString previousText;
 		vint begin, end;
 
-		WindowsUIAutomationTextRange(Ptr<WindowsUIAutomationNode> target, vint first, vint last)
-			: node(target), document(UiaDocument(target->control)->GetDocument()), begin(first), end(last)
+		WindowsUIAutomationTextRange(Ptr<WindowsUIAutomationNode> target, vint first, vint last, Ptr<WindowsUIAutomationNode> child = nullptr)
+			: node(target), embedded(child), document(UiaDocument(target->control)->GetDocument()), begin(first), end(last)
 		{
 			WindowsUIAutomationTextSnapshot snapshot(UiaDocument(node->control));
 			previousText = snapshot.text;
@@ -164,7 +165,7 @@ namespace vl::presentation::windows
 		{
 			if (!result) return E_POINTER;
 			*result = nullptr;
-			return Read([&](auto&) -> HRESULT { *result = new WindowsUIAutomationTextRange(node, begin, end); return S_OK; });
+			return Read([&](auto&) -> HRESULT { *result = new WindowsUIAutomationTextRange(node, begin, end, embedded); return S_OK; });
 		}
 		HRESULT STDMETHODCALLTYPE Compare(ITextRangeProvider* other, BOOL* result)override
 		{
@@ -309,11 +310,24 @@ namespace vl::presentation::windows
 			if (maximum < -1) return E_INVALIDARG;
 			return Read([&](auto& snapshot) { return UiaString(snapshot.text.Sub(begin, maximum < 0 ? end - begin : min((vint)maximum, end - begin)), result); });
 		}
+		Ptr<WindowsUIAutomationNode> EnclosingElement(WindowsUIAutomationTextSnapshot& snapshot)
+		{
+			for (auto offset : snapshot.objects.Values())
+			{
+				if (begin < offset || begin >= offset + 1 || end > offset + 1) continue;
+				auto children = UiaTextChildren(node.Obj(), offset, offset + 1);
+				if (embedded && embedded->IsLive())
+					for (auto parent = embedded; parent && parent != node; parent = parent->Parent())
+						if (children.Contains(parent.Obj())) return embedded;
+				if (children.Count() == 1) return children[0];
+			}
+			return node;
+		}
 		HRESULT STDMETHODCALLTYPE GetEnclosingElement(IRawElementProviderSimple** result)override
 		{
 			if (!result) return E_POINTER;
 			*result = nullptr;
-			return Read([&](auto&) -> HRESULT { *result = node->Provider(); (*result)->AddRef(); return S_OK; });
+			return Read([&](auto& snapshot) -> HRESULT { *result = EnclosingElement(snapshot)->Provider(); (*result)->AddRef(); return S_OK; });
 		}
 		HRESULT STDMETHODCALLTYPE GetChildren(SAFEARRAY** result)override
 		{
@@ -321,7 +335,8 @@ namespace vl::presentation::windows
 			*result = nullptr;
 			return Read([&](auto& snapshot) -> HRESULT
 			{
-				auto children = UiaTextChildren(node.Obj(), begin, end);
+				List<Ptr<WindowsUIAutomationNode>> children;
+				if (EnclosingElement(snapshot) == node) children = UiaTextChildren(node.Obj(), begin, end);
 				return UiaNodeArray(children, result);
 			});
 		}
@@ -342,9 +357,11 @@ namespace vl::presentation::windows
 					if (rectangles.Count())
 					{
 						auto previous = rectangles[rectangles.Count() - 1];
-						if (previous.top == rect.top && previous.height == rect.height && rect.left <= previous.left + previous.width + 1)
+						if (previous.top == rect.top && previous.height == rect.height && rect.left <= previous.left + previous.width + 1 && previous.left <= rect.left + rect.width + 1)
 						{
-							previous.width = max(previous.left + previous.width, rect.left + rect.width) - previous.left;
+							auto left = min(previous.left, rect.left);
+							previous.width = max(previous.left + previous.width, rect.left + rect.width) - left;
+							previous.left = left;
 							rectangles.Set(rectangles.Count() - 1, previous); continue;
 						}
 					}
@@ -410,7 +427,7 @@ namespace vl::presentation::windows
 			{
 				auto document = UiaDocument(node->control);
 				if (document->GetEditMode() == GuiDocumentEditMode::ViewOnly) return UIA_E_INVALIDOPERATION;
-				if (!node->control->GetVisuallyEnabled()) return UIA_E_ELEMENTNOTENABLED;
+				if (!node->control->GetVisuallyEnabled() || !node->Window()->GetNativeWindow()->IsEnabled()) return UIA_E_ELEMENTNOTENABLED;
 				document->SetCaret(snapshot.positions[begin], snapshot.positions[end]); return S_OK;
 			});
 		}
@@ -418,6 +435,7 @@ namespace vl::presentation::windows
 		{
 			return Read([&](auto& snapshot) -> HRESULT
 			{
+				if (begin == end) return Select();
 				auto document = UiaDocument(node->control);
 				auto a = snapshot.Offset(document->GetCaretBegin()), b = snapshot.Offset(document->GetCaretEnd());
 				return a == b || min(a, b) == begin && max(a, b) == end ? Select() : UIA_E_INVALIDOPERATION;
@@ -427,8 +445,10 @@ namespace vl::presentation::windows
 		{
 			return Read([&](auto& snapshot) -> HRESULT
 			{
+				if (begin == end) return Select();
 				auto document = UiaDocument(node->control);
 				if (document->GetEditMode() == GuiDocumentEditMode::ViewOnly) return UIA_E_INVALIDOPERATION;
+				if (!node->control->GetVisuallyEnabled() || !node->Window()->GetNativeWindow()->IsEnabled()) return UIA_E_ELEMENTNOTENABLED;
 				auto a = snapshot.Offset(document->GetCaretBegin()), b = snapshot.Offset(document->GetCaretEnd());
 				if (min(a, b) != begin || max(a, b) != end) return UIA_E_INVALIDOPERATION;
 				document->SetCaret(snapshot.positions[begin], snapshot.positions[begin]); return S_OK;
@@ -438,10 +458,13 @@ namespace vl::presentation::windows
 		{
 			return Read([&](auto& snapshot) -> HRESULT
 			{
+				UiaDocument(node->control)->EnsureTextPositionVisible(snapshot.positions[alignToTop ? begin : end], alignToTop == FALSE);
 				auto rectangle = UiaDocument(node->control)->GetCaretBounds(snapshot.positions[alignToTop ? begin : end], alignToTop == FALSE);
 				if (auto scroll = dynamic_cast<GuiScrollView*>(node->control))
 				{
 					auto position = scroll->GetViewPosition(); position.y = alignToTop ? rectangle.y1 : rectangle.y2 - scroll->GetViewSize().y;
+					if (rectangle.x1 < position.x) position.x = rectangle.x1;
+					else if (rectangle.x2 > position.x + scroll->GetViewSize().x) position.x = rectangle.x2 - scroll->GetViewSize().x;
 					scroll->SetViewPosition(position);
 				}
 				return S_OK;
@@ -505,7 +528,7 @@ namespace vl::presentation::windows
 					if (item->GetContainer() != composition) continue;
 					auto index = snapshot.objects.Keys().IndexOf(item->GetName());
 					if (index < 0) return UIA_E_ELEMENTNOTAVAILABLE;
-					auto offset = snapshot.objects.Values()[index]; *result = new WindowsUIAutomationTextRange(node, offset, offset + 1); return S_OK;
+					auto offset = snapshot.objects.Values()[index]; *result = new WindowsUIAutomationTextRange(node, offset, offset + 1, provider->node); return S_OK;
 				}
 			}
 			return E_INVALIDARG;
@@ -527,6 +550,7 @@ namespace vl::presentation::windows
 				if (rectangle.height && rectangle.width) { if (first < 0) first = i; }
 				else if (first >= 0) { ranges.Add(ComPtr<ITextRangeProvider>(new WindowsUIAutomationTextRange(node, first, i))); first = -1; }
 			}
+			if (ranges.Count() == 0) ranges.Add(ComPtr<ITextRangeProvider>(new WindowsUIAutomationTextRange(node, 0, 0)));
 			*result = SafeArrayCreateVector(VT_UNKNOWN, 0, (ULONG)ranges.Count());
 			for (LONG i = 0; i < ranges.Count(); i++) SafeArrayPutElement(*result, &i, ranges[i].Obj());
 			return S_OK;
