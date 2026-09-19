@@ -195,7 +195,7 @@ Rich Content Document (run)
 		};
 				
 		/// <summary>Pepresents an embedded object run.</summary>
-		class DocumentEmbeddedObjectRun : public DocumentInlineObjectRun, public Description<DocumentImageRun>
+		class DocumentEmbeddedObjectRun : public DocumentInlineObjectRun, public Description<DocumentEmbeddedObjectRun>
 		{
 		public:
 			static const wchar_t*			RepresentationText;

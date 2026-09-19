@@ -190,6 +190,7 @@
     <Xml Include="Resources\ResourceBigJson.xml" />
     <Xml Include="Resources\ResourceDocument.xml" />
     <Xml Include="Resources\ResourceRawElement.xml" />
+    <Xml Include="Resources\ResourceUiaReview.xml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png" />

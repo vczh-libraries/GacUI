@@ -67,6 +67,14 @@ TEST_FILE
 			});
 		});
 
+		TEST_CASE(L"Construct and access an embedded document object through reflection")
+		{
+			auto run = Value::Create(L"presentation::DocumentEmbeddedObjectRun");
+			run.SetProperty(L"name", BoxValue(WString(L"embedded-control")));
+			auto embedded = UnboxValue<Ptr<DocumentEmbeddedObjectRun>>(run);
+			TEST_ASSERT(embedded->name == L"embedded-control");
+		});
+
 		TEST_CASE(L"Ensure mouse button and Super modifier reflection surface")
 		{
 			auto mouseButtonType = GetTypeDescriptor(L"presentation::NativeMouseButton");

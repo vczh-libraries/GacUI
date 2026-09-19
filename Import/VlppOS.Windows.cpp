@@ -5820,6 +5820,7 @@ void HttpServerApi::Start()
 
 void HttpServerApi::Stop()
 {
+	auto started = state != State::Ready;
 	state = State::Stopping;
 	auto waitHandle = std::atomic_ref<HANDLE>(hWaitHandleRequest).exchange(INVALID_HANDLE_VALUE);
 	if (waitHandle != INVALID_HANDLE_VALUE)
@@ -5832,6 +5833,13 @@ void HttpServerApi::Stop()
 
 	if (httpRequestQueue != INVALID_HANDLE_VALUE)
 	{
+		if (started)
+		{
+			// Cancellation must complete before the receive buffer and OVERLAPPED are freed.
+			CancelIoEx(httpRequestQueue, &overlappedRequest);
+			DWORD read = 0;
+			GetOverlappedResult(httpRequestQueue, &overlappedRequest, &read, TRUE);
+		}
 		HttpCloseUrlGroup(httpUrlGroupId);
 		HttpCloseServerSession(httpSessionId);
 		HttpCloseRequestQueue(httpRequestQueue);

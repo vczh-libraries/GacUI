@@ -247,6 +247,7 @@ namespace vl::presentation::windows
 			if (auto form = dynamic_cast<IWindowsForm*>(native)) form->UninstallMessageHandler(messageHandler);
 		}
 		context->Stop();
+		UiaDisconnectAllProviders();
 		messageHandler = nullptr;
 	}
 
@@ -272,7 +273,11 @@ namespace vl::presentation::windows
 			root->Retire();
 			context->roots.Remove(native);
 		}
-		if (auto form = dynamic_cast<IWindowsForm*>(native)) form->UninstallMessageHandler(messageHandler);
+		if (auto form = dynamic_cast<IWindowsForm*>(native))
+		{
+			form->UninstallMessageHandler(messageHandler);
+			UiaReturnRawElementProvider(form->GetWindowHandle(), 0, 0, nullptr);
+		}
 		context->windows.Remove(native);
 	}
 

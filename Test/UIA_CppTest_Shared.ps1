@@ -64,8 +64,6 @@ try {
     }
     $argument = $settings.CreateElement('LocalDebuggerCommandArguments', $settings.DocumentElement.NamespaceURI)
     $argument.InnerText = "/AsPort:$AsPort"
-    if ($Application -eq 'Playground') { $argument.InnerText += ' /UiaReview' }
-    if ($Scenario -eq 'Review2') { $argument.InnerText += ' /UiaReview2' }
     if ($HostedFixture) { $argument.InnerText += ' /UiaHosted' }
     $null = $group.AppendChild($argument)
     $null = $settings.DocumentElement.AppendChild($group)

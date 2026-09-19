@@ -250,8 +250,9 @@ RVM RPC uses the exact logical channels `ViewModelChannel` and `ViewModelReadyCh
 - `CppTest_Rvm` exposes automation at `http://localhost:<AsPort>/Automation/CppTest_Rvm/...`. `/Pipe`, `/Http`, and `/Cli` use the Windows HTTP endpoint; `/MiniHttp` shares the protocol socket only when the selected automation port is 8888.
 
 `Playground` is for adhoc testing:
+- Playground is for trying UI from XML. All UI, including controls, layout, document content and interaction behavior, must be implemented in XML resources and their Workflow scripts, not constructed in C++. C++ may provide native interop hooks that the scripts call.
 - The UI in resource file, including `GuiMain` and `OpenMainWindow`, could be modified freely without any concern, it is not part of the release. DO NOT revert `Playground` change as I can also use it for manual verification.
-- Actual resource files to load is specified in `GuiMain`.
+- Actual resource files to load is specified in `GuiMain`. Loading one candidate at a time by editing this function is sufficient; no command-line fixture selector is required.
 - Actual theme type and main window type is specified in `OpenMainWindow`.
 - All candidate resource files to load are supposed to put in the same folder, and add to the same solution explorer folder in `Playground` project.
 

@@ -1,0 +1,254 @@
+<Resource>
+  <Instance name="SecondaryWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::ReviewSecondary">
+      <Window Text="Review secondary" ClientSize="x:250 y:140"/>
+    </Instance>
+  </Instance>
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow"
+              xmlns:x="presentation::controls::GuiSelectableButton::*" xmlns:cpp="*">
+      <ref.Members><![CDATA[
+        var native : PlaygroundUia^ = new PlaygroundUia^();
+        var secondary : demo::ReviewSecondary* = new demo::ReviewSecondary*();
+        var plainPopup : GuiPopup* = new GuiPopup*(ThemeName::Window);
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        plainPopup.Text = "Review plain popup";
+        plainPopup.ClientSize = {x:200 y:100};
+        PlaygroundUia::SetLabel(edit, label);
+        PlaygroundUia::SetName(scroll, "Review scroll");
+        PlaygroundUia::SetName(document, "Review objects");
+        PlaygroundUia::SetText(views, "BigIcon", "Grandes icones");
+        PlaygroundUia::SetText(views, "ColumnHeaders", "En-tetes");
+        PlaygroundUia::SetLabel(combo, comboLabel);
+        PlaygroundUia::SetName(namedEdit, "Explicit editor name");
+        PlaygroundUia::SetName(nestedDocument, "Nested review objects");
+      }]]></ref.Ctor>
+      <ref.Dtor><![CDATA[{
+        delete plainPopup;
+        delete secondary;
+      }]]></ref.Dtor>
+      <Window ref.Name="self" Text="UIA Review Fixture" ClientSize="x:1050 y:760">
+        <cpp:PlaygroundIndependentGroup ref.Name="independentGroup"/>
+        <x:MutexGroupController ref.Name="groupA"/>
+        <x:MutexGroupController ref.Name="groupB"/>
+
+        <SinglelineTextBox ref.Name="edit" Text="public-before-password">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:10 x2:450 y2:45"/>
+          <att.TooltipControl>
+            <Label Text="Your account identifier"/>
+          </att.TooltipControl>
+        </SinglelineTextBox>
+        <Button Text="Password on">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:60 x2:150 y2:95"/>
+          <ev.Clicked-eval><![CDATA[{ edit.PasswordChar = cast char '*'; }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Password off">
+          <att.BoundsComposition-set ExpectedBounds="x1:160 y1:60 x2:300 y2:95"/>
+          <ev.Clicked-eval><![CDATA[{ edit.PasswordChar = cast char ''; }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Read only">
+          <att.BoundsComposition-set ExpectedBounds="x1:310 y1:60 x2:450 y2:95"/>
+          <ev.Clicked-eval><![CDATA[{ edit.EditMode = GuiDocumentEditMode::Selectable; }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Editable">
+          <att.BoundsComposition-set ExpectedBounds="x1:460 y1:60 x2:600 y2:95"/>
+          <ev.Clicked-eval><![CDATA[{ edit.EditMode = GuiDocumentEditMode::Editable; }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Disabled">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:105 x2:150 y2:140"/>
+          <ev.Clicked-eval><![CDATA[{ edit.Enabled = false; }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Enabled">
+          <att.BoundsComposition-set ExpectedBounds="x1:160 y1:105 x2:300 y2:140"/>
+          <ev.Clicked-eval><![CDATA[{ edit.Enabled = true; }]]></ev.Clicked-eval>
+        </Button>
+        <TextList ref.Name="list" MultiSelect="true">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:160 x2:250 y2:310"/>
+          <att.Items>
+            <TextItem Text="0"/>
+            <TextItem Text="1"/>
+            <TextItem Text="2"/>
+          </att.Items>
+        </TextList>
+        <Button Text="Select second">
+          <att.BoundsComposition-set ExpectedBounds="x1:270 y1:160 x2:410 y2:195"/>
+          <ev.Clicked-eval><![CDATA[{ list.SetSelected(1, true); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Remove first">
+          <att.BoundsComposition-set ExpectedBounds="x1:270 y1:205 x2:410 y2:240"/>
+          <ev.Clicked-eval><![CDATA[{ list.SetSelected(0, false); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Clear selection">
+          <att.BoundsComposition-set ExpectedBounds="x1:270 y1:250 x2:410 y2:285"/>
+          <ev.Clicked-eval><![CDATA[{ list.ClearSelection(); }]]></ev.Clicked-eval>
+        </Button>
+        <CheckBox Text="Independent 0" GroupController-ref="independentGroup">
+          <att.BoundsComposition-set ExpectedBounds="x1:470 y1:160 x2:670 y2:195"/>
+        </CheckBox>
+        <CheckBox Text="Independent 1" GroupController-ref="independentGroup">
+          <att.BoundsComposition-set ExpectedBounds="x1:470 y1:205 x2:670 y2:240"/>
+        </CheckBox>
+        <ProgressBar TotalSize="100" Position="40">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:330 x2:450 y2:360"/>
+        </ProgressBar>
+
+        <Label ref.Name="label" Text="Account name">
+          <att.BoundsComposition-set ExpectedBounds="x1:470 y1:10 x2:670 y2:45"/>
+        </Label>
+        <Button Text="Show tooltip">
+          <att.BoundsComposition-set ExpectedBounds="x1:470 y1:330 x2:610 y2:365"/>
+          <ev.Clicked-eval><![CDATA[{ edit.DisplayTooltip({x:10 y:10}); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Hide tooltip">
+          <att.BoundsComposition-set ExpectedBounds="x1:620 y1:330 x2:760 y2:365"/>
+          <ev.Clicked-eval><![CDATA[{ edit.CloseTooltip(); }]]></ev.Clicked-eval>
+        </Button>
+        <ScrollContainer ref.Name="scroll">
+          <att.BoundsComposition-set ExpectedBounds="x1:700 y1:10 x2:1020 y2:150"/>
+          <Button Text="Far button">
+            <att.BoundsComposition-set ExpectedBounds="x1:600 y1:350 x2:740 y2:385"/>
+          </Button>
+        </ScrollContainer>
+        <CustomControl>
+          <att.BoundsComposition-set ExpectedBounds="x1:700 y1:230 x2:1020 y2:275"/>
+          <RadioButton Text="Radio 1" GroupController-ref="groupA">
+            <att.BoundsComposition-set ExpectedBounds="x1:0 y1:0 x2:140 y2:35"/>
+          </RadioButton>
+        </CustomControl>
+        <RadioButton Text="Radio 0" GroupController-ref="groupA" Selected="true">
+          <att.BoundsComposition-set ExpectedBounds="x1:700 y1:160 x2:840 y2:195"/>
+        </RadioButton>
+        <RadioButton Text="Radio 2" GroupController-ref="groupB" Selected="true">
+          <att.BoundsComposition-set ExpectedBounds="x1:700 y1:195 x2:840 y2:230"/>
+        </RadioButton>
+        <RadioButton Text="Radio 3" GroupController-ref="groupB">
+          <att.BoundsComposition-set ExpectedBounds="x1:850 y1:195 x2:990 y2:230"/>
+        </RadioButton>
+
+        <DocumentLabel ref.Name="document" EditMode="Selectable">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:385 x2:650 y2:460"/>
+          <att.Document>
+            <DocumentModel>
+              <att.paragraphs>
+                <DocumentParagraphRun>
+                  <att.runs>
+                    <DocumentHyperlinkRun reference="review://link">
+                      <att.runs>
+                        <DocumentTextRun text="Review link"/>
+                      </att.runs>
+                    </DocumentHyperlinkRun>
+                    <DocumentImageRun source="Review image 0" sizeOverride="x:35 y:35"/>
+                    <DocumentImageRun source="Review image 1" sizeOverride="x:35 y:35"/>
+                  </att.runs>
+                </DocumentParagraphRun>
+              </att.paragraphs>
+            </DocumentModel>
+          </att.Document>
+          <ev.ActiveHyperlinkExecuted-eval><![CDATA[{ label.Text = document.ActiveHyperlinkReference; }]]></ev.ActiveHyperlinkExecuted-eval>
+        </DocumentLabel>
+        <Button Text="Replace document">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:480 x2:150 y2:515"/>
+          <ev.Clicked-eval><![CDATA[{ document.Document = document.Document; }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Update paragraph">
+          <att.BoundsComposition-set ExpectedBounds="x1:160 y1:480 x2:300 y2:515"/>
+          <ev.Clicked-eval><![CDATA[{
+            var text = new DocumentTextRun^();
+            text.text = "updated";
+            document.Document.paragraphs[0].runs.Add(text);
+            document.NotifyParagraphUpdated(0, 1, 1, true, false);
+          }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Open secondary">
+          <att.BoundsComposition-set ExpectedBounds="x1:310 y1:480 x2:450 y2:515"/>
+          <ev.Clicked-eval><![CDATA[{ self.secondary.ShowWithOwner(self); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Disable secondary">
+          <att.BoundsComposition-set ExpectedBounds="x1:460 y1:480 x2:600 y2:515"/>
+          <ev.Clicked-eval><![CDATA[{ self.secondary.Enabled = false; }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Enable secondary">
+          <att.BoundsComposition-set ExpectedBounds="x1:610 y1:480 x2:750 y2:515"/>
+          <ev.Clicked-eval><![CDATA[{ self.secondary.Enabled = true; }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Busy">
+          <att.BoundsComposition-set ExpectedBounds="x1:760 y1:480 x2:900 y2:515"/>
+          <ev.Clicked-eval><![CDATA[{ self.native.WaitUntilReleased(); }]]></ev.Clicked-eval>
+        </Button>
+        <ListView ref.Name="views">
+          <att.BoundsComposition-set ExpectedBounds="x1:700 y1:385 x2:1020 y2:460"/>
+        </ListView>
+
+        <Label ref.Name="comboLabel" Text="Review choices">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:540 x2:160 y2:570"/>
+        </Label>
+        <ComboBox ref.Name="combo" SelectedIndex="0">
+          <att.BoundsComposition-set ExpectedBounds="x1:170 y1:540 x2:350 y2:575"/>
+          <att.ListControl>
+            <TextList>
+              <att.Items>
+                <TextItem Text="First choice"/>
+                <TextItem Text="Second choice"/>
+              </att.Items>
+            </TextList>
+          </att.ListControl>
+        </ComboBox>
+        <SinglelineTextBox ref.Name="namedEdit">
+          <att.BoundsComposition-set ExpectedBounds="x1:370 y1:540 x2:650 y2:575"/>
+          <att.TooltipControl>
+            <Button Text="Tooltip command"/>
+          </att.TooltipControl>
+        </SinglelineTextBox>
+        <Button Text="Interactive tooltip">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:590 x2:150 y2:625"/>
+          <ev.Clicked-eval><![CDATA[{ namedEdit.DisplayTooltip({x:10 y:10}); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Hide interactive">
+          <att.BoundsComposition-set ExpectedBounds="x1:160 y1:590 x2:300 y2:625"/>
+          <ev.Clicked-eval><![CDATA[{ namedEdit.CloseTooltip(); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Plain popup">
+          <att.BoundsComposition-set ExpectedBounds="x1:310 y1:590 x2:450 y2:625"/>
+          <ev.Clicked-eval><![CDATA[{
+            var location : Point = {x:200 y:100};
+            self.plainPopup.ShowPopup(self, location);
+          }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Hide popup">
+          <att.BoundsComposition-set ExpectedBounds="x1:460 y1:590 x2:600 y2:625"/>
+          <ev.Clicked-eval><![CDATA[{ self.plainPopup.Hide(); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Open modal">
+          <att.BoundsComposition-set ExpectedBounds="x1:610 y1:590 x2:750 y2:625"/>
+          <ev.Clicked-eval><![CDATA[{ self.secondary.ShowModal(self, func(): void {}); }]]></ev.Clicked-eval>
+        </Button>
+        <DocumentLabel ref.Name="nestedDocument">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:650 x2:650 y2:725"/>
+          <att.Document>
+            <DocumentModel>
+              <att.paragraphs>
+                <DocumentParagraphRun>
+                  <att.runs>
+                    <DocumentHyperlinkRun reference="review://nested">
+                      <att.runs>
+                        <DocumentTextRun text="Nested link "/>
+                        <DocumentImageRun source="Nested image" sizeOverride="x:35 y:35"/>
+                        <DocumentEmbeddedObjectRun name="nested-button"/>
+                      </att.runs>
+                    </DocumentHyperlinkRun>
+                  </att.runs>
+                </DocumentParagraphRun>
+              </att.paragraphs>
+            </DocumentModel>
+          </att.Document>
+          <DocumentItem Name="nested-button">
+            <Button Text="Nested button">
+              <att.BoundsComposition-set PreferredMinSize="x:120 y:35"/>
+            </Button>
+          </DocumentItem>
+        </DocumentLabel>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
