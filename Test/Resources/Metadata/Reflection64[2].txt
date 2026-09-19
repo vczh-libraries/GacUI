@@ -5215,6 +5215,88 @@ enum presentation::compositions::VirtualRepeatEnsureItemVisibleResult {
     NotMoved = 2,
 }
 
+class presentation::compositions::eazy_layout::GuiEasyBottomLayout : presentation::compositions::eazy_layout::GuiEasyLayout {
+    constructor () : presentation::compositions::eazy_layout::GuiEasyBottomLayout^;
+}
+
+class presentation::compositions::eazy_layout::GuiEasyCellLayout : presentation::compositions::eazy_layout::GuiEasyLayout {
+    property CellOption : presentation::compositions::GuiCellOption { get:GetCellOption set:SetCellOption }
+    property CellSpan : system::Int64 { get:GetCellSpan set:SetCellSpan }
+
+    function GetCellOption() : presentation::compositions::GuiCellOption;
+    function GetCellSpan() : system::Int64;
+    function SetCellOption(value : presentation::compositions::GuiCellOption) : system::Void;
+    function SetCellSpan(value : system::Int64) : system::Void;
+
+}
+
+class presentation::compositions::eazy_layout::GuiEasyColumnLayout : presentation::compositions::eazy_layout::GuiEasyCellLayout {
+    constructor () : presentation::compositions::eazy_layout::GuiEasyColumnLayout^;
+}
+
+class presentation::compositions::eazy_layout::GuiEasyFillLayout : presentation::compositions::eazy_layout::GuiEasyLayout {
+    property Direction : presentation::compositions::eazy_layout::GuiEasyLayoutDirection { get:GetDirection set:SetDirection }
+    property Percentage : system::Double { get:GetPercentage set:SetPercentage }
+
+    function GetDirection() : presentation::compositions::eazy_layout::GuiEasyLayoutDirection;
+    function GetPercentage() : system::Double;
+    function SetDirection(value : presentation::compositions::eazy_layout::GuiEasyLayoutDirection) : system::Void;
+    function SetPercentage(value : system::Double) : system::Void;
+
+    constructor () : presentation::compositions::eazy_layout::GuiEasyFillLayout^;
+}
+
+class presentation::compositions::eazy_layout::GuiEasyLayout : system::ReferenceType {
+    property Composition : presentation::compositions::GuiGraphicsComposition* { get:GetComposition set:SetComposition }
+    property Layouts : system::List<presentation::compositions::eazy_layout::GuiEasyLayout^>^ { get:GetLayouts }
+
+    function GetComposition() : presentation::compositions::GuiGraphicsComposition*;
+    function GetLayouts() : system::List<presentation::compositions::eazy_layout::GuiEasyLayout^>^;
+    function SetComposition(value : presentation::compositions::GuiGraphicsComposition*) : system::Void;
+
+}
+
+class presentation::compositions::eazy_layout::GuiEasyLayoutComposition : presentation::compositions::GuiBoundsComposition {
+    property Border : system::Boolean { get:GetBorder set:SetBorder }
+    property Composition : presentation::compositions::GuiGraphicsComposition* { get:GetComposition set:SetComposition }
+    property Layouts : system::List<presentation::compositions::eazy_layout::GuiEasyLayout^>^ { get:GetLayouts }
+    property Padding : system::Int64 { get:GetPadding set:SetPadding }
+
+    function BuildLayout() : system::Void;
+    function GetBorder() : system::Boolean;
+    function GetComposition() : presentation::compositions::GuiGraphicsComposition*;
+    function GetLayouts() : system::List<presentation::compositions::eazy_layout::GuiEasyLayout^>^;
+    function GetPadding() : system::Int64;
+    function SetBorder(value : system::Boolean) : system::Void;
+    function SetComposition(value : presentation::compositions::GuiGraphicsComposition*) : system::Void;
+    function SetPadding(value : system::Int64) : system::Void;
+
+    constructor () : presentation::compositions::eazy_layout::GuiEasyLayoutComposition*;
+}
+
+@ValueType
+enum presentation::compositions::eazy_layout::GuiEasyLayoutDirection {
+    Horizontal = 1,
+    Inherited = 0,
+    Vertical = 2,
+}
+
+class presentation::compositions::eazy_layout::GuiEasyLeftLayout : presentation::compositions::eazy_layout::GuiEasyLayout {
+    constructor () : presentation::compositions::eazy_layout::GuiEasyLeftLayout^;
+}
+
+class presentation::compositions::eazy_layout::GuiEasyRightLayout : presentation::compositions::eazy_layout::GuiEasyLayout {
+    constructor () : presentation::compositions::eazy_layout::GuiEasyRightLayout^;
+}
+
+class presentation::compositions::eazy_layout::GuiEasyRowLayout : presentation::compositions::eazy_layout::GuiEasyCellLayout {
+    constructor () : presentation::compositions::eazy_layout::GuiEasyRowLayout^;
+}
+
+class presentation::compositions::eazy_layout::GuiEasyTopLayout : presentation::compositions::eazy_layout::GuiEasyLayout {
+    constructor () : presentation::compositions::eazy_layout::GuiEasyTopLayout^;
+}
+
 @ValueType
 enum presentation::controls::ButtonState {
     Active = 1,

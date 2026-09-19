@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="TestControls_EasyLayout.cpp">
+      <Filter>Source Files\Controls</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
@@ -100,6 +105,9 @@
       <Filter>Source Files\Compositions</Filter>
     </ClCompile>
     <ClCompile Include="TestCompositions_Flow.cpp">
+      <Filter>Source Files\Compositions</Filter>
+    </ClCompile>
+    <ClCompile Include="TestCompositions_EasyLayout.cpp">
       <Filter>Source Files\Compositions</Filter>
     </ClCompile>
     <ClCompile Include="TestCompositions_Table.cpp">

@@ -38,3 +38,4 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowModule.cpp"
 #include "..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowParser.cpp"
 #include "..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowScriptPosition.cpp"
+#include "..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_EasyLayout.cpp"

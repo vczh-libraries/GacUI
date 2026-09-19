@@ -9,6 +9,7 @@ namespace vl
 			using namespace collections;
 			using namespace presentation;
 			using namespace presentation::compositions;
+			using namespace presentation::compositions::eazy_layout;
 			using namespace presentation::controls;
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -21,6 +22,70 @@ namespace vl
 /***********************************************************************
 Type Declaration (Extra)
 ***********************************************************************/
+
+			BEGIN_ENUM_ITEM(GuiEasyLayoutDirection)
+				ENUM_CLASS_ITEM(Inherited)
+				ENUM_CLASS_ITEM(Horizontal)
+				ENUM_CLASS_ITEM(Vertical)
+			END_ENUM_ITEM(GuiEasyLayoutDirection)
+
+			BEGIN_CLASS_MEMBER(GuiEasyLayout)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Layouts)
+				CLASS_MEMBER_PROPERTY_FAST(Composition)
+			END_CLASS_MEMBER(GuiEasyLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyCellLayout)
+				CLASS_MEMBER_BASE(GuiEasyLayout)
+				CLASS_MEMBER_PROPERTY_FAST(CellOption)
+				CLASS_MEMBER_PROPERTY_FAST(CellSpan)
+			END_CLASS_MEMBER(GuiEasyCellLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyTopLayout)
+				CLASS_MEMBER_BASE(GuiEasyLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyTopLayout>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyTopLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyBottomLayout)
+				CLASS_MEMBER_BASE(GuiEasyLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyBottomLayout>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyBottomLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyLeftLayout)
+				CLASS_MEMBER_BASE(GuiEasyLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyLeftLayout>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyLeftLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyRightLayout)
+				CLASS_MEMBER_BASE(GuiEasyLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyRightLayout>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyRightLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyRowLayout)
+				CLASS_MEMBER_BASE(GuiEasyCellLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyRowLayout>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyRowLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyColumnLayout)
+				CLASS_MEMBER_BASE(GuiEasyCellLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyColumnLayout>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyColumnLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyFillLayout)
+				CLASS_MEMBER_BASE(GuiEasyLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyFillLayout>(), NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_FAST(Percentage)
+				CLASS_MEMBER_PROPERTY_FAST(Direction)
+			END_CLASS_MEMBER(GuiEasyFillLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyLayoutComposition)
+				CLASS_MEMBER_BASE(GuiBoundsComposition)
+				CLASS_MEMBER_CONSTRUCTOR(GuiEasyLayoutComposition*(), NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_FAST(Padding)
+				CLASS_MEMBER_PROPERTY_FAST(Border)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Layouts)
+				CLASS_MEMBER_PROPERTY_FAST(Composition)
+				CLASS_MEMBER_METHOD(BuildLayout, NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyLayoutComposition)
 
 			BEGIN_ENUM_ITEM(KeyDirection)
 				ENUM_CLASS_ITEM(Up)

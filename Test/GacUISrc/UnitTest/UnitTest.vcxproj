@@ -197,6 +197,7 @@
     <ClCompile Include="TestCompositions_SharedSize.cpp" />
     <ClCompile Include="TestCompositions_Specialized.cpp" />
     <ClCompile Include="TestCompositions_Stack.cpp" />
+    <ClCompile Include="TestCompositions_EasyLayout.cpp" />
     <ClCompile Include="TestCompositions_Table.cpp" />
     <ClCompile Include="TestCompositions_VirtualRepeat.cpp" />
     <ClCompile Include="TestControls_Basic_GuiButton.cpp" />
@@ -208,6 +209,7 @@
     <ClCompile Include="TestControls_CoreApplication_GuiControl.cpp" />
     <ClCompile Include="TestControls_CoreApplication_GuiLabel.cpp" />
     <ClCompile Include="TestControls_CoreApplication_GuiWindow.cpp" />
+    <ClCompile Include="TestControls_EasyLayout.cpp" />
     <ClCompile Include="TestControls_Editor.cpp" />
     <ClCompile Include="TestControls_Editor_Key.cpp" />
     <ClCompile Include="TestControls_Editor_RichText.cpp" />

@@ -1,0 +1,40 @@
+<Folder>
+  <Instance name="EasyLayoutTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::EasyLayoutTabPage">
+      <TabPage Text="Easy Layout">
+        <ez:Layout>
+          <ez:Top>
+            <CheckBox ref.Name="vertical" Text="Store vertical arrangement (press Rebuild to apply)"/>
+          </ez:Top>
+          <ez:Top>
+            <Button Text="Rebuild">
+              <ev.Clicked-eval><![CDATA[{ content.BuildLayout(); }]]></ev.Clicked-eval>
+            </Button>
+          </ez:Top>
+          <ez:Fill>
+            <ez:Layout ref.Name="content" Border="false" Padding-bind="vertical.Selected ? 10 : 5">
+              <ez:Fill Direction-bind="vertical.Selected ? Vertical : Horizontal">
+                <SinglelineTextBox ref.Name="editor" Text="This text survives rebuilding."/>
+              </ez:Fill>
+              <ez:Fill Percentage="2">
+                <Label Text-bind="editor.Text"/>
+              </ez:Fill>
+            </ez:Layout>
+          </ez:Fill>
+          <ez:Bottom>
+            <ez:Layout Border="false">
+              <ez:Row CellOption="composeType:Absolute absolute:24">
+                <ez:Column CellOption="composeType:Percentage percentage:1"><Label Text="First column"/></ez:Column>
+                <ez:Column><att.CellOption>composeType:Percentage percentage:2</att.CellOption><Label Text="Second column (twice the width)"/></ez:Column>
+              </ez:Row>
+              <ez:Row>
+                <ez:Column><Label Text="Shared tracks"/></ez:Column>
+                <ez:Column><ez:Layout Border="false"/></ez:Column>
+              </ez:Row>
+            </ez:Layout>
+          </ez:Bottom>
+        </ez:Layout>
+      </TabPage>
+    </Instance>
+  </Instance>
+</Folder>

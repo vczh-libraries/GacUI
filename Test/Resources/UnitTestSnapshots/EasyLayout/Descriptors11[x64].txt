@@ -1,0 +1,212 @@
+﻿================================(1/2)================================
+module <constructor>easy_test::MainWindow;
+using presentation::controls::Gui*;
+using presentation::compositions::Gui*Composition;
+
+namespace easy_test
+{
+    class MainWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::easy_test::MainWindow* = null of (::easy_test::MainWindow*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::compositions::eazy_layout::GuiEasyRowLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRowLayout^);
+
+        @cpp:Protected
+        var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var vertical : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+
+        @cpp:Protected
+        var bottom : ::presentation::compositions::eazy_layout::GuiEasyBottomLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^);
+
+        @cpp:Protected
+        var top : ::presentation::compositions::eazy_layout::GuiEasyTopLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyTopLayout^);
+
+        @cpp:Protected
+        var right : ::presentation::compositions::eazy_layout::GuiEasyRightLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRightLayout^);
+
+        @cpp:Protected
+        var left : ::presentation::compositions::eazy_layout::GuiEasyLeftLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^);
+
+        @cpp:Protected
+        var fill : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+
+        @cpp:Protected
+        var row : ::presentation::compositions::eazy_layout::GuiEasyRowLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRowLayout^);
+
+        @cpp:Protected
+        var column : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
+
+        @cpp:Protected
+        func <easy_test-MainWindow>Initialize(<this> : ::easy_test::MainWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
+            }
+            {
+                (self.Text = "Easy layout");
+            }
+            (vertical = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            <this>.SetNamedObject("vertical", vertical);
+            (bottom = new (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^)());
+            <this>.SetNamedObject("bottom", bottom);
+            {
+                vertical.Layouts.Add(bottom);
+            }
+            (top = new (::presentation::compositions::eazy_layout::GuiEasyTopLayout^)());
+            <this>.SetNamedObject("top", top);
+            {
+                vertical.Layouts.Add(top);
+            }
+            {
+                self.ContainerComposition.AddChild(vertical);
+            }
+            (<precompile>0 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            (right = new (::presentation::compositions::eazy_layout::GuiEasyRightLayout^)());
+            <this>.SetNamedObject("right", right);
+            {
+                <precompile>0.Layouts.Add(right);
+            }
+            (left = new (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^)());
+            <this>.SetNamedObject("left", left);
+            {
+                <precompile>0.Layouts.Add(left);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>0);
+            }
+            (<precompile>1 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            (fill = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            <this>.SetNamedObject("fill", fill);
+            {
+                (fill.Direction = Horizontal of (::presentation::compositions::eazy_layout::GuiEasyLayoutDirection));
+            }
+            {
+                (fill.Percentage = 3 of (::system::Double));
+            }
+            {
+                (<precompile>2 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>2.Text = "Payload");
+            }
+            {
+                (fill.Composition = <precompile>2.BoundsComposition);
+            }
+            {
+                <precompile>1.Layouts.Add(fill);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>1);
+            }
+            (<precompile>3 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            (row = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
+            <this>.SetNamedObject("row", row);
+            {
+                (row.CellSpan = 1 of (::system::Int64));
+            }
+            {
+                (row.CellOption = {composeType : ::presentation::compositions::GuiCellOption::ComposeType::Absolute; absolute : 12;} of (::presentation::compositions::GuiCellOption));
+            }
+            (column = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
+            <this>.SetNamedObject("column", column);
+            {
+                (column.CellSpan = 1 of (::system::Int64));
+            }
+            {
+                (column.CellOption = {composeType : ::presentation::compositions::GuiCellOption::ComposeType::Percentage; percentage : 2;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>4 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (column.Composition = <precompile>4);
+            }
+            {
+                row.Layouts.Add(column);
+            }
+            {
+                <precompile>3.Layouts.Add(row);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>3);
+            }
+            (<precompile>5 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            (<precompile>6 = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
+            (<precompile>7 = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
+            (<precompile>8 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>7.Composition = <precompile>8);
+            }
+            {
+                <precompile>6.Layouts.Add(<precompile>7);
+            }
+            {
+                <precompile>5.Layouts.Add(<precompile>6);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>5);
+            }
+            vertical.BuildLayout();
+            <precompile>0.BuildLayout();
+            <precompile>1.BuildLayout();
+            <precompile>3.BuildLayout();
+            <precompile>5.BuildLayout();
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/2)================================
+module <instance>easy_test::MainWindow;
+using presentation::controls::Gui*;
+using presentation::compositions::Gui*Composition;
+
+namespace easy_test
+{
+    @cpp:File("MainWindow")
+    @cpp:Friend(typeof(MainWindowConstructor))
+    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("easy_test::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<easy_test-MainWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+

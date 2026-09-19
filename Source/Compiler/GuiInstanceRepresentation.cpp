@@ -607,6 +607,15 @@ GuiInstanceContext
 						L"presentation::theme::*";
 					namespaceAttributes.Add(att);
 				}
+				if (!XmlGetAttribute(xml->rootElement, L"xmlns:ez"))
+				{
+					auto att = Ptr(new XmlAttribute);
+					att->name.value = L"xmlns:ez";
+					att->value.value =
+						L"presentation::compositions::eazy_layout::GuiEasy*Composition;"
+						L"presentation::compositions::eazy_layout::GuiEasy*Layout";
+					namespaceAttributes.Add(att);
+				}
 				for (auto att : namespaceAttributes)
 				{
 					// check if the attribute defines a namespace

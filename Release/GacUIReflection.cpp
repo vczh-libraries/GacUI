@@ -1111,6 +1111,7 @@ namespace vl
 			using namespace collections;
 			using namespace presentation;
 			using namespace presentation::compositions;
+			using namespace presentation::compositions::eazy_layout;
 			using namespace presentation::controls;
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -1123,6 +1124,70 @@ namespace vl
 /***********************************************************************
 Type Declaration (Extra)
 ***********************************************************************/
+
+			BEGIN_ENUM_ITEM(GuiEasyLayoutDirection)
+				ENUM_CLASS_ITEM(Inherited)
+				ENUM_CLASS_ITEM(Horizontal)
+				ENUM_CLASS_ITEM(Vertical)
+			END_ENUM_ITEM(GuiEasyLayoutDirection)
+
+			BEGIN_CLASS_MEMBER(GuiEasyLayout)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Layouts)
+				CLASS_MEMBER_PROPERTY_FAST(Composition)
+			END_CLASS_MEMBER(GuiEasyLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyCellLayout)
+				CLASS_MEMBER_BASE(GuiEasyLayout)
+				CLASS_MEMBER_PROPERTY_FAST(CellOption)
+				CLASS_MEMBER_PROPERTY_FAST(CellSpan)
+			END_CLASS_MEMBER(GuiEasyCellLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyTopLayout)
+				CLASS_MEMBER_BASE(GuiEasyLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyTopLayout>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyTopLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyBottomLayout)
+				CLASS_MEMBER_BASE(GuiEasyLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyBottomLayout>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyBottomLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyLeftLayout)
+				CLASS_MEMBER_BASE(GuiEasyLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyLeftLayout>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyLeftLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyRightLayout)
+				CLASS_MEMBER_BASE(GuiEasyLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyRightLayout>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyRightLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyRowLayout)
+				CLASS_MEMBER_BASE(GuiEasyCellLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyRowLayout>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyRowLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyColumnLayout)
+				CLASS_MEMBER_BASE(GuiEasyCellLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyColumnLayout>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyColumnLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyFillLayout)
+				CLASS_MEMBER_BASE(GuiEasyLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasyFillLayout>(), NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_FAST(Percentage)
+				CLASS_MEMBER_PROPERTY_FAST(Direction)
+			END_CLASS_MEMBER(GuiEasyFillLayout)
+
+			BEGIN_CLASS_MEMBER(GuiEasyLayoutComposition)
+				CLASS_MEMBER_BASE(GuiBoundsComposition)
+				CLASS_MEMBER_CONSTRUCTOR(GuiEasyLayoutComposition*(), NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_FAST(Padding)
+				CLASS_MEMBER_PROPERTY_FAST(Border)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Layouts)
+				CLASS_MEMBER_PROPERTY_FAST(Composition)
+				CLASS_MEMBER_METHOD(BuildLayout, NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasyLayoutComposition)
 
 			BEGIN_ENUM_ITEM(KeyDirection)
 				ENUM_CLASS_ITEM(Up)
@@ -1557,11 +1622,13 @@ Type Declaration (Class)
 			BEGIN_CLASS_MEMBER(GuiRepeatFixedSizeMultiColumnItemComposition)
 				CLASS_MEMBER_BASE(GuiVirtualRepeatCompositionBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiRepeatFixedSizeMultiColumnItemComposition*(), NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnCount)
 			END_CLASS_MEMBER(GuiRepeatFixedSizeMultiColumnItemComposition)
 
 			BEGIN_CLASS_MEMBER(GuiRepeatFixedHeightMultiColumnItemComposition)
 				CLASS_MEMBER_BASE(GuiVirtualRepeatCompositionBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiRepeatFixedHeightMultiColumnItemComposition*(), NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(RowCount)
 			END_CLASS_MEMBER(GuiRepeatFixedHeightMultiColumnItemComposition)
 
 			BEGIN_CLASS_MEMBER(GuiResponsiveCompositionBase)
@@ -2601,6 +2668,10 @@ Type Declaration (Class)
 
 				CLASS_MEMBER_GUIEVENT(ClipboardUpdated)
 				CLASS_MEMBER_GUIEVENT(FrameConfigChanged)
+				CLASS_MEMBER_GUIEVENT(ChildCompositionUpdated)
+				CLASS_MEMBER_GUIEVENT(BoundsChanged)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Modal)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(BlockedByModalWindow)
 
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(FrameConfig, FrameConfigChanged)
 				CLASS_MEMBER_PROPERTY_FAST(MaximizedBox)
@@ -2969,9 +3040,11 @@ Type Declaration (Class)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentCommonInterface)
 				CLASS_MEMBER_PROPERTY_FAST(Document)
-				CLASS_MEMBER_PROPERTY_FAST(EditMode)
+				CLASS_MEMBER_GUIEVENT(EditModeChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(EditMode, EditModeChanged)
 
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkChanged)
+				CLASS_MEMBER_GUIEVENT(BeforeActiveHyperlinkExecuted)
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkExecuted)
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
 				CLASS_MEMBER_GUIEVENT(UndoRedoChanged)
@@ -2983,12 +3056,15 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretBegin)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretEnd)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ActiveHyperlinkReference)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ActiveHyperlink)
+				CLASS_MEMBER_METHOD(ExecuteHyperlink, { L"position" })
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionText, SelectionChanged)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionModel, SelectionChanged)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Modified)
 
 				CLASS_MEMBER_METHOD(SetCaret, {L"begin" _ L"end" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(EnsureCaretVisible, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(EnsureTextPositionVisible, {L"caret" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(CalculateCaretFromPoint, {L"point"})
 				CLASS_MEMBER_METHOD(GetCaretBounds, {L"caret" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(NotifyParagraphUpdated, {L"index" _ L"oldCount" _ L"newCount" _ L"updatedText" _ L"skipFormatting"})
@@ -3050,7 +3126,8 @@ Type Declaration (Class)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiSinglelineTextBox)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiSinglelineTextBox, const GuiDocumentConfig&, config)
 
-				CLASS_MEMBER_PROPERTY_FAST(PasswordChar)
+				CLASS_MEMBER_GUIEVENT(PasswordCharChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(PasswordChar, PasswordCharChanged)
 			END_CLASS_MEMBER(GuiSinglelineTextBox)
 
 			BEGIN_CLASS_MEMBER(GuiVirtualDataGrid)
@@ -3468,6 +3545,7 @@ namespace vl
 		namespace description
 		{
 			using namespace presentation::compositions;
+			using namespace presentation::controls;
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -3495,6 +3573,20 @@ Type Declaration
 
 				CLASS_MEMBER_FIELD(cancel)
 			END_CLASS_MEMBER(GuiRequestEventArgs)
+
+			BEGIN_ENUM_ITEM(CompositionUpdateType)
+				ENUM_CLASS_ITEM(Inserted)
+				ENUM_CLASS_ITEM(Removed)
+				ENUM_CLASS_ITEM(Moved)
+			END_ENUM_ITEM(CompositionUpdateType)
+
+			BEGIN_CLASS_MEMBER(GuiCompositionUpdateEventArgs)
+				CLASS_MEMBER_BASE(GuiEventArgs)
+				EVENTARGS_CONSTRUCTOR(GuiCompositionUpdateEventArgs)
+				CLASS_MEMBER_FIELD(updateType)
+				CLASS_MEMBER_FIELD(parent)
+				CLASS_MEMBER_FIELD(child)
+			END_CLASS_MEMBER(GuiCompositionUpdateEventArgs)
 
 			BEGIN_CLASS_MEMBER(GuiKeyEventArgs)
 				CLASS_MEMBER_BASE(GuiEventArgs)

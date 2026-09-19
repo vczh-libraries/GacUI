@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -24,6 +24,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceRepresentation.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiInstanceSharedScript.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Compositions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_EasyLayout.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Document.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_List.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Plugin.cpp" />
@@ -65,5 +66,8 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Syntax\Parser.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_EasyLayout.h" />
   </ItemGroup>
 </Project>

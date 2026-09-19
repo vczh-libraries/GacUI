@@ -1,4 +1,5 @@
 #include "GuiInstanceLoader_WorkflowCodegen.h"
+#include "../InstanceLoaders/GuiInstanceLoader_EasyLayout.h"
 #include "../GuiInstanceLocalizedStrings.h"
 
 namespace vl
@@ -263,6 +264,12 @@ WorkflowReferenceNamesVisitor
 				{
 					List<types::PropertyResolving> possibleInfos;
 					auto prop = repr->setters.Keys()[index];
+					if (setter->binding != GlobalStringKey::Empty && IsEasyLayoutConstantProperty({ resolvedTypeInfo,prop }))
+					{
+						errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
+							L"Easy layout: " + prop.ToString() + L" must be constant and does not accept any binding."));
+						continue;
+					}
 
 					WString errorPrefix;
 					if (Workflow_GetPropertyTypes(precompileContext, errorPrefix, resolvingResult, loader, resolvedTypeInfo, prop, setter, possibleInfos, errors))

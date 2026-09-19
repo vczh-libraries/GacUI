@@ -32,3 +32,4 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Compiler\RemoteProtocol\GuiRemoteProtocolCompiler.h"
 #include "..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.h"
 #include "..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_TemplateControl.h"
+#include "..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_EasyLayout.h"

@@ -1,4 +1,5 @@
 #include "GuiInstanceLoader_TemplateControl.h"
+#include "GuiInstanceLoader_EasyLayout.h"
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
@@ -539,6 +540,7 @@ Initialization
 
 			void LoadCompositions(IGuiInstanceLoaderManager* manager)
 			{
+				LoadEasyLayouts(manager);
 				manager->SetLoader(Ptr(new GuiAxisInstanceLoader));
 				manager->SetLoader(Ptr(new GuiCompositionInstanceLoader));
 				manager->SetLoader(Ptr(new GuiTableCompositionInstanceLoader));

@@ -20,5 +20,6 @@ Interfaces:
 #include "GuiGraphicsSharedSizeComposition.h"
 #include "GuiGraphicsRepeatComposition.h"
 #include "GuiGraphicsAxis.h"
+#include "EazyLayout/GuiEasyLayout.h"
 
 #endif

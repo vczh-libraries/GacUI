@@ -163,6 +163,16 @@ Type List (Compositions)
 ***********************************************************************/
 
 #define GUIREFLECTIONCOMPOSITION_EXTRA_TYPELIST(F)\
+			F(presentation::compositions::eazy_layout::GuiEasyLayoutDirection)\
+			F(presentation::compositions::eazy_layout::GuiEasyLayout)\
+			F(presentation::compositions::eazy_layout::GuiEasyCellLayout)\
+			F(presentation::compositions::eazy_layout::GuiEasyTopLayout)\
+			F(presentation::compositions::eazy_layout::GuiEasyBottomLayout)\
+			F(presentation::compositions::eazy_layout::GuiEasyLeftLayout)\
+			F(presentation::compositions::eazy_layout::GuiEasyRightLayout)\
+			F(presentation::compositions::eazy_layout::GuiEasyRowLayout)\
+			F(presentation::compositions::eazy_layout::GuiEasyColumnLayout)\
+			F(presentation::compositions::eazy_layout::GuiEasyFillLayout)\
 			F(presentation::compositions::KeyDirection)\
 			F(presentation::compositions::IGuiAxis)\
 			F(presentation::compositions::GuiDefaultAxis)\
@@ -187,6 +197,7 @@ Type List (Compositions)
 			F(presentation::compositions::VirtualRepeatEnsureItemVisibleResult)\
 
 #define GUIREFLECTIONCOMPOSITION_CLASS_TYPELIST(F)\
+			F(presentation::compositions::eazy_layout::GuiEasyLayoutComposition)\
 			F(presentation::compositions::GuiGraphicsComposition)\
 			F(presentation::compositions::GuiWindowComposition)\
 			F(presentation::compositions::GuiBoundsComposition)\

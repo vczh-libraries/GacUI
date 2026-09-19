@@ -6653,6 +6653,9 @@ GuiVirtualRepeatCompositionBase
 				GuiRepeatFixedSizeMultiColumnItemComposition() = default;
 				~GuiRepeatFixedSizeMultiColumnItemComposition() = default;
 
+				/// <summary>Get the column capacity used by the current layout and keyboard navigation.</summary>
+				vint												GetColumnCount();
+
 				vint												FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
 			};
@@ -6687,6 +6690,9 @@ GuiVirtualRepeatCompositionBase
 				GuiRepeatFixedHeightMultiColumnItemComposition() = default;
 				~GuiRepeatFixedHeightMultiColumnItemComposition() = default;
 
+				/// <summary>Get the row capacity used by the current layout and keyboard navigation.</summary>
+				vint												GetRowCount();
+
 				vint												FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
 			};
@@ -6695,6 +6701,7 @@ GuiVirtualRepeatCompositionBase
 }
 
 #endif
+
 
 /***********************************************************************
 .\GRAPHICSCOMPOSITION\GUIGRAPHICSTABLECOMPOSITION.H
@@ -7050,23 +7057,6 @@ Table Compositions
 		}
 	}
 }
-
-#endif
-
-/***********************************************************************
-.\GRAPHICSCOMPOSITION\INCLUDEALL.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Composition System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_COMPOSITION_INCLUDEALL
-#define VCZH_PRESENTATION_COMPOSITION_INCLUDEALL
-
 
 #endif
 
@@ -10152,6 +10142,23 @@ Control Host
 Window
 ***********************************************************************/
 
+			enum class CompositionUpdateType
+			{
+				Inserted,
+				Removed,
+				Moved,
+			};
+
+			struct GuiCompositionUpdateEventArgs : compositions::GuiEventArgs, Description<GuiCompositionUpdateEventArgs>
+			{
+				CompositionUpdateType					updateType = CompositionUpdateType::Inserted;
+				compositions::GuiGraphicsComposition*	parent = nullptr;
+				compositions::GuiGraphicsComposition*	child = nullptr;
+
+				GuiCompositionUpdateEventArgs() = default;
+				GuiCompositionUpdateEventArgs(compositions::GuiGraphicsComposition* composition);
+			};
+
 			/// <summary>
 			/// Represents a normal window.
 			/// </summary>
@@ -10159,6 +10166,7 @@ Window
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
 				friend class GuiApplication;
+				friend class compositions::GuiGraphicsComposition;
 			protected:
 				struct ShowModalRecord
 				{
@@ -10216,6 +10224,10 @@ Window
 				compositions::GuiNotifyEvent			ClipboardUpdated;
 				/// <summary>Frame configuration changed event.</summary>
 				compositions::GuiNotifyEvent			FrameConfigChanged;
+				compositions::GuiGraphicsEvent<GuiCompositionUpdateEventArgs>	ChildCompositionUpdated;
+				compositions::GuiNotifyEvent			BoundsChanged;
+				bool									GetModal();
+				bool									GetBlockedByModalWindow();
 
 				/// <summary>Move the window to the center of the screen. If multiple screens exist, the window move to the screen that contains the biggest part of the window.</summary>
 				void									MoveToScreenCenter();
@@ -11468,7 +11480,7 @@ Rich Content Document (run)
 		};
 				
 		/// <summary>Pepresents an embedded object run.</summary>
-		class DocumentEmbeddedObjectRun : public DocumentInlineObjectRun, public Description<DocumentImageRun>
+		class DocumentEmbeddedObjectRun : public DocumentInlineObjectRun, public Description<DocumentEmbeddedObjectRun>
 		{
 		public:
 			static const wchar_t*			RepresentationText;
@@ -11669,6 +11681,7 @@ Rich Content Document (model)
 }
 
 #endif
+
 
 /***********************************************************************
 .\GRAPHICSELEMENT\GUIGRAPHICSDOCUMENTINTERFACES.H
@@ -19682,6 +19695,7 @@ GuiDocumentCommonInterface
 			protected:
 
 				WString										UserInput_ConvertDocumentToText(Ptr<DocumentModel> model);
+				void										InvokeActiveHyperlinkExecuted();
 
 			public:
 				GuiDocumentCommonInterface(const GuiDocumentConfig& _config);
@@ -19689,11 +19703,15 @@ GuiDocumentCommonInterface
 
 				/// <summary>Active hyperlink changed event.</summary>
 				compositions::GuiNotifyEvent				ActiveHyperlinkChanged;
+				/// <summary>Raised before application hyperlink execution handlers.</summary>
+				compositions::GuiNotifyEvent				BeforeActiveHyperlinkExecuted;
 				/// <summary>Active hyperlink executed event.</summary>
 				compositions::GuiNotifyEvent				ActiveHyperlinkExecuted;
 
 				/// <summary>Selection changed event.</summary>
 				compositions::GuiNotifyEvent				SelectionChanged;
+				/// <summary>Document edit mode changed event.</summary>
+				compositions::GuiNotifyEvent				EditModeChanged;
 				/// <summary>Undo redo status changed event.</summary>
 				compositions::GuiNotifyEvent				UndoRedoChanged;
 				/// <summary>Modified status changed event.</summary>
@@ -19749,6 +19767,10 @@ GuiDocumentCommonInterface
 				/// <param name="caret">The caret.</param>
 				/// <param name="frontSide">Set to true to get the bounds for the character before it.</param>
 				Rect										GetCaretBounds(TextPos caret, bool frontSide);
+				/// <summary>Scroll a text position into view without changing the selection.</summary>
+				/// <param name="caret">The text position.</param>
+				/// <param name="frontSide">Set to true to show the preceding character.</param>
+				void										EnsureTextPositionVisible(TextPos caret, bool frontSide);
 
 				//================ editing operations
 
@@ -19860,6 +19882,9 @@ GuiDocumentCommonInterface
 				/// <summary>Get the href attribute of the active hyperlink.</summary>
 				/// <returns>The href attribute of the active hyperlink.</returns>
 				WString										GetActiveHyperlinkReference();
+				/// <summary>Get the active hyperlink run, or null if no hyperlink is active.</summary>
+				Ptr<DocumentHyperlinkRun>					GetActiveHyperlink();
+				bool										ExecuteHyperlink(TextPos position);
 				/// <summary>Get the edit mode of this control.</summary>
 				/// <returns>The edit mode.</returns>
 				GuiDocumentEditMode							GetEditMode();
@@ -20044,6 +20069,9 @@ GuiDocumentLabel
 				/// <param name="_config">(Optional): configuration of document editing and rendering behavior.</param>
 				GuiSinglelineTextBox(theme::ThemeName themeName, const GuiDocumentConfig& _config = {});
 				~GuiSinglelineTextBox();
+
+				/// <summary>Password masking changed event.</summary>
+				compositions::GuiNotifyEvent				PasswordCharChanged;
 
 				/// <summary>Get the password char. A password char is a character that replaces every characters in the document while rendering.</summary>
 				/// <returns>Returns the passwrd char. 0 means no password char.</returns>
@@ -24442,101 +24470,6 @@ FakeDialogServiceBase
 #endif
 
 /***********************************************************************
-.\GACUIREFLECTIONHELPER.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI Reflection Helper
-
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_GACUIREFLECTIONHELPER
-#define VCZH_PRESENTATION_GACUIREFLECTIONHELPER
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace helper_types
-		{
-			struct SiteValue
-			{
-				vint					row = 0;
-				vint					column = 0;
-				vint					rowSpan = 1;
-				vint					columnSpan = 1;
-
-				auto operator<=>(const SiteValue&) const = default;
-			};
-
-			class LocalizedStrings
-			{
-			public:
-				static WString			FirstOrEmpty(const collections::LazyList<WString>& formats);
-			};
-		}
-	}
-
-	namespace reflection
-	{
-		namespace description
-		{
-
-/***********************************************************************
-Serialization
-***********************************************************************/
-
-			template<>
-			struct TypedValueSerializerProvider<presentation::Color>
-			{
-				static presentation::Color GetDefaultValue();
-				static bool Serialize(const presentation::Color& input, WString& output);
-				static bool Deserialize(const WString& input, presentation::Color& output);
-			};
-
-			template<>
-			struct TypedValueSerializerProvider<presentation::DocumentFontSize>
-			{
-				static presentation::DocumentFontSize GetDefaultValue();
-				static bool Serialize(const presentation::DocumentFontSize& input, WString& output);
-				static bool Deserialize(const WString& input, presentation::DocumentFontSize& output);
-			};
-
-			template<>
-			struct TypedValueSerializerProvider<presentation::GlobalStringKey>
-			{
-				static presentation::GlobalStringKey GetDefaultValue();
-				static bool Serialize(const presentation::GlobalStringKey& input, WString& output);
-				static bool Deserialize(const WString& input, presentation::GlobalStringKey& output);
-			};
-
-/***********************************************************************
-External Functions
-***********************************************************************/
-
-			extern Ptr<presentation::INativeImage>							INativeImage_Constructor(const WString& path);
-			extern presentation::INativeCursor*								INativeCursor_Constructor1();
-			extern presentation::INativeCursor*								INativeCursor_Constructor2(presentation::INativeCursor::SystemCursorType type);
-			extern Ptr<presentation::elements::IGuiGraphicsElement>			GuiRawElement_Constructor();
-
-			template<typename T>
-			Ptr<T> Element_Constructor()
-			{
-				return Ptr(T::Create());
-			}
-
-			extern void														GuiTableComposition_SetRows(presentation::compositions::GuiTableComposition* thisObject, vint value);
-			extern void														GuiTableComposition_SetColumns(presentation::compositions::GuiTableComposition* thisObject, vint value);
-			extern void														IGuiAltActionHost_CollectAltActions(presentation::compositions::IGuiAltActionHost* host, collections::List<presentation::compositions::IGuiAltAction*>& actions);
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
 .\UTILITIES\FAKESERVICES\DIALOGS\GUIFAKEDIALOGSERVICE.H
 ***********************************************************************/
 /***********************************************************************
@@ -25883,6 +25816,651 @@ namespace vl::presentation
 
 #endif
 
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\TUI\TUITEXTLAYOUT.H
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_ELEMENTS_TUITEXTLAYOUT
+#define VCZH_PRESENTATION_ELEMENTS_TUITEXTLAYOUT
+
+
+namespace vl::presentation::elements
+{
+	class TuiGraphicsRenderTarget;
+	class TuiGraphicsLayoutProvider;
+
+	struct TuiTextCell
+	{
+		vint													start = 0;
+		vint													length = 0;
+		char32_t												code = 0;
+		Rect													bounds;
+		vint													line = 0;
+		Nullable<IGuiGraphicsParagraph::InlineObjectProperties>	inlineObject;
+	};
+
+	struct TuiTextLine
+	{
+		vint													firstCell = 0;
+		vint													lastCell = 0;
+		vint													start = 0;
+		vint													end = 0;
+		Rect													bounds;
+	};
+
+	class TuiGraphicsParagraph : public Object, public IGuiGraphicsParagraph
+	{
+	protected:
+		TuiGraphicsLayoutProvider*								provider;
+		TuiGraphicsRenderTarget*								renderTarget;
+		IGuiGraphicsParagraphCallback*							callback;
+		WString													text;
+		collections::Array<TextStyle>							styles;
+		collections::Array<Color>								colors;
+		collections::Array<Color>								backgrounds;
+		collections::Dictionary<vint, collections::Pair<vint, InlineObjectProperties>> inlineObjects;
+		collections::List<TuiTextCell>							cells;
+		collections::List<TuiTextLine>							lines;
+		collections::Dictionary<vint, vint>						caretToCell;
+		bool													dirty = true;
+		bool													wrapLine = false;
+		vint													maxWidth = -1;
+		Alignment												alignment = Alignment::Left;
+		Size													size;
+		vint													caretPosition = -1;
+		Color													caretColor;
+		bool													caretFrontSide = true;
+		bool													caretVisible = false;
+
+		bool													ValidRange(vint start, vint length);
+		void													EnsureLayout();
+		vint													FindLine(vint caret, bool frontSide);
+	public:
+		TuiGraphicsParagraph(const WString& text, TuiGraphicsLayoutProvider* provider, TuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback);
+		IGuiGraphicsLayoutProvider*								GetProvider() override;
+		IGuiGraphicsRenderTarget*								GetRenderTarget() override;
+		bool													GetWrapLine() override;
+		void													SetWrapLine(bool value) override;
+		vint													GetMaxWidth() override;
+		void													SetMaxWidth(vint value) override;
+		Alignment												GetParagraphAlignment() override;
+		void													SetParagraphAlignment(Alignment value) override;
+		bool													SetFont(vint start, vint length, const WString& value) override;
+		bool													SetSize(vint start, vint length, vint value) override;
+		bool													SetStyle(vint start, vint length, TextStyle value) override;
+		bool													SetColor(vint start, vint length, Color value) override;
+		bool													SetBackgroundColor(vint start, vint length, Color value) override;
+		Size													GetSize() override;
+		bool													EnableCaret(vint caret, Color color, bool frontSide) override;
+		void													DisableCaret() override;
+		bool													BlinkCaret() override;
+		bool													IsValidCaret(vint caret) override;
+		bool													IsValidTextPos(vint textPos) override;
+		bool													SetInlineObject(vint start, vint length, const InlineObjectProperties& properties) override;
+		bool													ResetInlineObject(vint start, vint length) override;
+		void													Render(Rect bounds) override;
+		vint													GetCaret(vint comparingCaret, CaretRelativePosition position, bool& preferFrontSide) override;
+		Rect													GetCaretBounds(vint caret, bool frontSide) override;
+		vint													GetCaretFromPoint(Point point) override;
+		Nullable<InlineObjectProperties>						GetInlineObjectFromPoint(Point point, vint& start, vint& length) override;
+		vint													GetNearestCaretFromTextPos(vint textPos, bool frontSide) override;
+	};
+
+	class TuiGraphicsLayoutProvider : public Object, public IGuiGraphicsLayoutProvider
+	{
+	protected:
+		TuiConfiguration				configuration;
+	public:
+		TuiGraphicsLayoutProvider(const TuiConfiguration& configuration = {});
+		const TuiConfiguration&			GetConfiguration() const;
+		Ptr<IGuiGraphicsParagraph>								CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback) override;
+	};
+
+	extern char32_t						TuiReadScalar(const WString& text, vint start, vint& length);
+	extern WString						TuiEllipsizeText(const WString& text, vint width, vint tabInterval = 4);
+	extern console::TuiTextStyle			TuiGetTextStyle(IGuiGraphicsParagraph::TextStyle style);
+}
+
+#endif
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\TUI\TUIGRAPHICS.H
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_ELEMENTS_TUIGRAPHICS
+#define VCZH_PRESENTATION_ELEMENTS_TUIGRAPHICS
+
+
+namespace vl::presentation::elements
+{
+	class TuiGraphicsRenderTarget : public GuiGraphicsRenderTarget
+	{
+	protected:
+		INativeWindow*							window;
+		Rect									GetVisibleClipper();
+		void									StartRenderingOnNativeWindow() override;
+		RenderTargetFailure						StopRenderingOnNativeWindow() override;
+		Size									GetCanvasSize() override;
+		void									AfterPushedClipper(Rect clipper, Rect validArea, reflection::DescriptableObject* generator) override;
+		void									AfterPushedClipperAndBecameInvalid(Rect clipper, reflection::DescriptableObject* generator) override;
+		void									AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override;
+		void									AfterPoppedClipper(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override;
+	public:
+		TuiGraphicsRenderTarget(INativeWindow* window);
+		bool									CanDraw();
+		void									Fill(Rect bounds, Color color);
+		void									Border(Rect bounds, Color color, TuiLineStyle style, ElementShape shape);
+		void									Print(Point location, char32_t code, Color foreground, Color background, console::TuiTextStyle style);
+		void									Caret(Point location, Color color);
+	};
+
+	class TuiGraphicsResourceManager : public GuiGraphicsResourceManager, public INativeControllerListener
+	{
+	protected:
+		Ptr<TuiGraphicsRenderTarget>			renderTarget;
+		TuiGraphicsLayoutProvider				layoutProvider;
+	public:
+		TuiGraphicsResourceManager(const TuiConfiguration& configuration = {});
+		IGuiGraphicsRenderTarget*				GetRenderTarget(INativeWindow* window) override;
+		void									RecreateRenderTarget(INativeWindow* window) override;
+		void									ResizeRenderTarget(INativeWindow* window) override;
+		IGuiGraphicsLayoutProvider*				GetLayoutProvider() override;
+		Ptr<IGuiGraphicsElement>				CreateRawElement() override;
+		void									NativeWindowCreated(INativeWindow* window) override;
+		void									NativeWindowDestroying(INativeWindow* window) override;
+	};
+
+	extern console::TuiColor					TuiBlend(Color color, console::TuiColor background);
+	extern void									RegisterTuiRenderers();
+}
+
+#endif
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\TUI\TUIWINDOW.H
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_TUIWINDOW
+#define VCZH_PRESENTATION_TUIWINDOW
+
+
+namespace vl::presentation
+{
+	class TuiControllerBase;
+
+	class TuiWindow : public Object, public INativeWindow
+	{
+		friend class TuiControllerBase;
+	protected:
+		TuiControllerBase*							controller;
+		collections::List<INativeWindowListener*>	listeners;
+		NativeSize									clientSize;
+		WString										title;
+		INativeCursor*								cursor = nullptr;
+		NativePoint									caret;
+		Ptr<GuiImageData>							icon;
+		bool										visible = false;
+		bool										enabled = true;
+		bool										capturing = false;
+		bool										closing = false;
+	public:
+		TuiWindow(TuiControllerBase* controller);
+		~TuiWindow();
+		void										Dispatch(const Func<void(INativeWindowListener*)>& callback, bool duringFinalization = false);
+		bool										IsActivelyRefreshing() override;
+		NativeSize									GetRenderingOffset() override;
+		Point										Convert(NativePoint value) override;
+		NativePoint									Convert(Point value) override;
+		Size										Convert(NativeSize value) override;
+		NativeSize									Convert(Size value) override;
+		Margin										Convert(NativeMargin value) override;
+		NativeMargin								Convert(Margin value) override;
+		NativeRect									GetBounds() override;
+		void										SetBounds(const NativeRect& bounds) override;
+		NativeSize									GetClientSize() override;
+		void										SetClientSize(NativeSize size) override;
+		NativeRect									GetClientBoundsInScreen() override;
+		void										SuggestMinClientSize(NativeSize size) override;
+		WString										GetTitle() override;
+		void										SetTitle(const WString& value) override;
+		INativeCursor*								GetWindowCursor() override;
+		void										SetWindowCursor(INativeCursor* value) override;
+		NativePoint									GetCaretPoint() override;
+		void										SetCaretPoint(NativePoint value) override;
+		INativeWindow*								GetParent() override;
+		void										SetParent(INativeWindow* parent) override;
+		WindowMode									GetWindowMode() override;
+		void										EnableCustomFrameMode() override;
+		void										DisableCustomFrameMode() override;
+		bool										IsCustomFrameModeEnabled() override;
+		NativeMargin								GetCustomFramePadding() override;
+		Ptr<GuiImageData>							GetIcon() override;
+		void										SetIcon(Ptr<GuiImageData> value) override;
+		WindowSizeState								GetSizeState() override;
+		void										Show() override;
+		void										ShowDeactivated() override;
+		void										ShowRestored() override;
+		void										ShowMaximized() override;
+		void										ShowMinimized() override;
+		void										Hide(bool closeWindow) override;
+		bool										IsVisible() override;
+		void										Enable() override;
+		void										Disable() override;
+		bool										IsEnabled() override;
+		void										SetActivate() override;
+		bool										IsActivated() override;
+		bool										IsRenderingAsActivated() override;
+		bool										IsAppearedInTaskBar() override;
+		bool										IsEnabledActivate() override;
+		void										ShowInTaskBar() override;
+		void										HideInTaskBar() override;
+		void										EnableActivate() override;
+		void										DisableActivate() override;
+		void										SupressAlt() override;
+		bool										RequireCapture() override;
+		bool										ReleaseCapture() override;
+		bool										IsCapturing() override;
+		bool										GetMaximizedBox() override;
+		void										SetMaximizedBox(bool value) override;
+		bool										GetMinimizedBox() override;
+		void										SetMinimizedBox(bool value) override;
+		bool										GetBorder() override;
+		void										SetBorder(bool value) override;
+		bool										GetSizeBox() override;
+		void										SetSizeBox(bool value) override;
+		bool										GetIconVisible() override;
+		void										SetIconVisible(bool value) override;
+		bool										GetTitleBar() override;
+		void										SetTitleBar(bool value) override;
+		bool										GetTopMost() override;
+		void										SetTopMost(bool value) override;
+		bool										InstallListener(INativeWindowListener* listener) override;
+		bool										UninstallListener(INativeWindowListener* listener) override;
+		void										RedrawContent() override;
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\TUI\TUICONTROLLER.H
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_TUICONTROLLER
+#define VCZH_PRESENTATION_TUICONTROLLER
+
+
+namespace vl::presentation
+{
+	class TuiControllerBase
+		: public Object
+		, public INativeController
+		, public ITuiApplication
+		, public console::ITuiCallback
+		, protected INativeScreenService
+		, protected INativeScreen
+		, protected INativeWindowService
+	{
+	protected:
+		TuiConfiguration				configuration;
+		SharedCallbackService			callbackService;
+		SharedAsyncService				asyncService;
+		Ptr<TuiWindow>					window;
+		NativeWindowFrameConfig			frameConfig;
+
+		virtual void					PumpPlatformEvents() = 0;
+		void							Starting() override;
+	public:
+		TuiControllerBase(const TuiConfiguration& configuration = {});
+		~TuiControllerBase();
+		ITuiApplication*				GetTuiApplication();
+		virtual void					ApplyTitle(const WString& title) = 0;
+		INativeCallbackService*			CallbackService() override;
+		INativeAsyncService*			AsyncService() override;
+		INativeDialogService*			DialogService() override;
+		INativeAutomationService*		AutomationService() override;
+		INativeScreenService*			ScreenService() override;
+		INativeWindowService*			WindowService() override;
+		vint							GetScreenCount() override;
+		INativeScreen*					GetScreen(vint index) override;
+		INativeScreen*					GetScreen(INativeWindow* window) override;
+		NativeRect						GetBounds() override;
+		NativeRect						GetClientBounds() override;
+		WString							GetName() override;
+		bool							IsPrimary() override;
+		double							GetScalingX() override;
+		double							GetScalingY() override;
+		const NativeWindowFrameConfig&	GetMainWindowFrameConfig() override;
+		const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig() override;
+		INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
+		void							DestroyNativeWindow(INativeWindow* value) override;
+		INativeWindow*					GetMainWindow() override;
+		INativeWindow*					GetWindow(NativePoint location) override;
+		void							Run(INativeWindow* value) override;
+		bool							RunOneCycle() override;
+		void							Stop() override;
+		void							BufferSizeChanged() override;
+		void							Timer() override;
+		void							ClipboardUpdated();
+		void							GlobalShortcutKeyActivated(vint id);
+		void							KeyDown(const NativeWindowKeyInfo& info) override;
+		void							KeyUp(const NativeWindowKeyInfo& info) override;
+		void							Char(const NativeWindowCharInfo& info) override;
+		void							MouseMove(const WindowMouseInfo& info) override;
+		void							MouseDown(NativeMouseButton button, const WindowMouseInfo& info) override;
+		void							MouseUp(NativeMouseButton button, const WindowMouseInfo& info) override;
+		void							MouseDoubleClick(NativeMouseButton button, const WindowMouseInfo& info) override;
+		void							MouseVerticalWheel(const WindowMouseInfo& info) override;
+		void							MouseHorizontalWheel(const WindowMouseInfo& info) override;
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\TUIDIALOGS\TUIFAKEDIALOGSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKETUIDIALOGSERVICE
+#define VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKETUIDIALOGSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			class GuiWindow;
+		}
+
+		/// <summary>
+		/// UI implementations for <see cref="INativeDialogService"/>.
+		/// </summary>
+		class FakeTuiDialogService : public FakeDialogServiceBase
+		{
+		protected:
+
+			controls::GuiWindow*	CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateColorDialog(Ptr<IColorDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateSimpleFontDialog(Ptr<ISimpleFontDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateFullFontDialog(Ptr<IFullFontDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName) override;
+			controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName) override;
+
+		public:
+			FakeTuiDialogService();
+			~FakeTuiDialogService();
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\GRAPHICSCOMPOSITION\EAZYLAYOUT\GUIEASYLAYOUT.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Composition System
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_COMPOSITION_EAZYLAYOUT_GUIEASYLAYOUT
+#define VCZH_PRESENTATION_COMPOSITION_EAZYLAYOUT_GUIEASYLAYOUT
+
+
+namespace vl::presentation::compositions::eazy_layout
+{
+	enum class GuiEasyLayoutDirection
+	{
+		Inherited,
+		Horizontal,
+		Vertical,
+	};
+
+	class GuiEasyLayoutComposition;
+	class GuiEasyLayoutBuilder;
+	class GuiEasyPayloadState;
+
+	/// <summary>Stored layout configuration containing descriptor children or one independently positioned payload. Changes are applied by the owning composition's BuildLayout.</summary>
+	class GuiEasyLayout : public Object, public Description<GuiEasyLayout>
+	{
+		friend class GuiEasyLayoutComposition;
+		friend class GuiEasyLayoutBuilder;
+	protected:
+		enum class Kind { Root, Top, Bottom, Left, Right, Row, Column, Fill };
+
+		Kind										kind;
+		collections::List<Ptr<GuiEasyLayout>>			layouts;
+		Ptr<GuiEasyPayloadState>						payload;
+		GuiEasyLayoutComposition*					owner = nullptr;
+
+		GuiEasyLayout(Kind _kind);
+	public:
+		~GuiEasyLayout();
+
+		collections::List<Ptr<GuiEasyLayout>>&		GetLayouts();
+		GuiGraphicsComposition*						GetComposition();
+		/// <summary>Transfers an unattached payload to this descriptor. An attached payload remains owned by its composition tree until rebuilding removes it.</summary>
+		void										SetComposition(GuiGraphicsComposition* value);
+	};
+
+	class GuiEasyTopLayout : public GuiEasyLayout, public Description<GuiEasyTopLayout>
+	{
+	public:
+		GuiEasyTopLayout();
+	};
+
+	class GuiEasyBottomLayout : public GuiEasyLayout, public Description<GuiEasyBottomLayout>
+	{
+	public:
+		GuiEasyBottomLayout();
+	};
+
+	class GuiEasyLeftLayout : public GuiEasyLayout, public Description<GuiEasyLeftLayout>
+	{
+	public:
+		GuiEasyLeftLayout();
+	};
+
+	class GuiEasyRightLayout : public GuiEasyLayout, public Description<GuiEasyRightLayout>
+	{
+	public:
+		GuiEasyRightLayout();
+	};
+
+	class GuiEasyCellLayout : public GuiEasyLayout, public Description<GuiEasyCellLayout>
+	{
+	protected:
+		GuiCellOption								cellOption = GuiCellOption::MinSizeOption();
+		vint										cellSpan = 1;
+
+		GuiEasyCellLayout(Kind _kind);
+	public:
+		GuiCellOption								GetCellOption();
+		void										SetCellOption(GuiCellOption value);
+		vint										GetCellSpan();
+		void										SetCellSpan(vint value);
+	};
+
+	class GuiEasyRowLayout : public GuiEasyCellLayout, public Description<GuiEasyRowLayout>
+	{
+	public:
+		GuiEasyRowLayout();
+	};
+
+	class GuiEasyColumnLayout : public GuiEasyCellLayout, public Description<GuiEasyColumnLayout>
+	{
+	public:
+		GuiEasyColumnLayout();
+	};
+
+	class GuiEasyFillLayout : public GuiEasyLayout, public Description<GuiEasyFillLayout>
+	{
+	protected:
+		double										percentage = 1;
+		GuiEasyLayoutDirection						direction = GuiEasyLayoutDirection::Inherited;
+	public:
+		GuiEasyFillLayout();
+
+		double										GetPercentage();
+		void										SetPercentage(double value);
+		GuiEasyLayoutDirection						GetDirection();
+		void										SetDirection(GuiEasyLayoutDirection value);
+	};
+
+	/// <summary>Lowers stored descriptors to ordinary tables and stacks when explicitly built. Rebuilding retains reused payload instances.</summary>
+	class GuiEasyLayoutComposition : public GuiBoundsComposition, public Description<GuiEasyLayoutComposition>
+	{
+		friend class GuiEasyLayoutBuilder;
+	protected:
+		vint										padding = 5;
+		bool										border = true;
+		Ptr<GuiEasyLayout>							content;
+		collections::List<Ptr<GuiEasyLayout>>			builtLayouts;
+		collections::List<Ptr<GuiEasyPayloadState>>	builtPayloads;
+		GuiGraphicsComposition*						generated = nullptr;
+
+	public:
+		GuiEasyLayoutComposition();
+		~GuiEasyLayoutComposition();
+
+		vint										GetPadding();
+		void										SetPadding(vint value);
+		bool										GetBorder();
+		void										SetBorder(bool value);
+		collections::List<Ptr<GuiEasyLayout>>&		GetLayouts();
+		GuiGraphicsComposition*						GetComposition();
+		void										SetComposition(GuiGraphicsComposition* value);
+		/// <summary>Validates the current configuration, replaces generated containers, and applies spacing. Invalid descriptor grammar or track weights raise Error; invalid cell sites follow GuiCellComposition::SetSite.</summary>
+		void										BuildLayout();
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\GRAPHICSCOMPOSITION\INCLUDEALL.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Composition System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_COMPOSITION_INCLUDEALL
+#define VCZH_PRESENTATION_COMPOSITION_INCLUDEALL
+
+
+#endif
+
+
+/***********************************************************************
+.\GACUIREFLECTIONHELPER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection Helper
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GACUIREFLECTIONHELPER
+#define VCZH_PRESENTATION_GACUIREFLECTIONHELPER
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace helper_types
+		{
+			struct SiteValue
+			{
+				vint					row = 0;
+				vint					column = 0;
+				vint					rowSpan = 1;
+				vint					columnSpan = 1;
+
+				auto operator<=>(const SiteValue&) const = default;
+			};
+
+			class LocalizedStrings
+			{
+			public:
+				static WString			FirstOrEmpty(const collections::LazyList<WString>& formats);
+			};
+		}
+	}
+
+	namespace reflection
+	{
+		namespace description
+		{
+
+/***********************************************************************
+Serialization
+***********************************************************************/
+
+			template<>
+			struct TypedValueSerializerProvider<presentation::Color>
+			{
+				static presentation::Color GetDefaultValue();
+				static bool Serialize(const presentation::Color& input, WString& output);
+				static bool Deserialize(const WString& input, presentation::Color& output);
+			};
+
+			template<>
+			struct TypedValueSerializerProvider<presentation::DocumentFontSize>
+			{
+				static presentation::DocumentFontSize GetDefaultValue();
+				static bool Serialize(const presentation::DocumentFontSize& input, WString& output);
+				static bool Deserialize(const WString& input, presentation::DocumentFontSize& output);
+			};
+
+			template<>
+			struct TypedValueSerializerProvider<presentation::GlobalStringKey>
+			{
+				static presentation::GlobalStringKey GetDefaultValue();
+				static bool Serialize(const presentation::GlobalStringKey& input, WString& output);
+				static bool Deserialize(const WString& input, presentation::GlobalStringKey& output);
+			};
+
+/***********************************************************************
+External Functions
+***********************************************************************/
+
+			extern Ptr<presentation::INativeImage>							INativeImage_Constructor(const WString& path);
+			extern presentation::INativeCursor*								INativeCursor_Constructor1();
+			extern presentation::INativeCursor*								INativeCursor_Constructor2(presentation::INativeCursor::SystemCursorType type);
+			extern Ptr<presentation::elements::IGuiGraphicsElement>			GuiRawElement_Constructor();
+
+			template<typename T>
+			Ptr<T> Element_Constructor()
+			{
+				return Ptr(T::Create());
+			}
+
+			extern void														GuiTableComposition_SetRows(presentation::compositions::GuiTableComposition* thisObject, vint value);
+			extern void														GuiTableComposition_SetColumns(presentation::compositions::GuiTableComposition* thisObject, vint value);
+			extern void														IGuiAltActionHost_CollectAltActions(presentation::compositions::IGuiAltActionHost* host, collections::List<presentation::compositions::IGuiAltAction*>& actions);
+		}
+	}
+}
+
+#endif
 
 /***********************************************************************
 .\GACUI.H
@@ -29130,347 +29708,6 @@ https://github.com/vczh-libraries
 
 
 /***********************************************************************
-.\PLATFORMPROVIDERS\TUI\TUITEXTLAYOUT.H
-***********************************************************************/
-#ifndef VCZH_PRESENTATION_ELEMENTS_TUITEXTLAYOUT
-#define VCZH_PRESENTATION_ELEMENTS_TUITEXTLAYOUT
-
-
-namespace vl::presentation::elements
-{
-	class TuiGraphicsRenderTarget;
-	class TuiGraphicsLayoutProvider;
-
-	struct TuiTextCell
-	{
-		vint													start = 0;
-		vint													length = 0;
-		char32_t												code = 0;
-		Rect													bounds;
-		vint													line = 0;
-		Nullable<IGuiGraphicsParagraph::InlineObjectProperties>	inlineObject;
-	};
-
-	struct TuiTextLine
-	{
-		vint													firstCell = 0;
-		vint													lastCell = 0;
-		vint													start = 0;
-		vint													end = 0;
-		Rect													bounds;
-	};
-
-	class TuiGraphicsParagraph : public Object, public IGuiGraphicsParagraph
-	{
-	protected:
-		TuiGraphicsLayoutProvider*								provider;
-		TuiGraphicsRenderTarget*								renderTarget;
-		IGuiGraphicsParagraphCallback*							callback;
-		WString													text;
-		collections::Array<TextStyle>							styles;
-		collections::Array<Color>								colors;
-		collections::Array<Color>								backgrounds;
-		collections::Dictionary<vint, collections::Pair<vint, InlineObjectProperties>> inlineObjects;
-		collections::List<TuiTextCell>							cells;
-		collections::List<TuiTextLine>							lines;
-		collections::Dictionary<vint, vint>						caretToCell;
-		bool													dirty = true;
-		bool													wrapLine = false;
-		vint													maxWidth = -1;
-		Alignment												alignment = Alignment::Left;
-		Size													size;
-		vint													caretPosition = -1;
-		Color													caretColor;
-		bool													caretFrontSide = true;
-		bool													caretVisible = false;
-
-		bool													ValidRange(vint start, vint length);
-		void													EnsureLayout();
-		vint													FindLine(vint caret, bool frontSide);
-	public:
-		TuiGraphicsParagraph(const WString& text, TuiGraphicsLayoutProvider* provider, TuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback);
-		IGuiGraphicsLayoutProvider*								GetProvider() override;
-		IGuiGraphicsRenderTarget*								GetRenderTarget() override;
-		bool													GetWrapLine() override;
-		void													SetWrapLine(bool value) override;
-		vint													GetMaxWidth() override;
-		void													SetMaxWidth(vint value) override;
-		Alignment												GetParagraphAlignment() override;
-		void													SetParagraphAlignment(Alignment value) override;
-		bool													SetFont(vint start, vint length, const WString& value) override;
-		bool													SetSize(vint start, vint length, vint value) override;
-		bool													SetStyle(vint start, vint length, TextStyle value) override;
-		bool													SetColor(vint start, vint length, Color value) override;
-		bool													SetBackgroundColor(vint start, vint length, Color value) override;
-		Size													GetSize() override;
-		bool													EnableCaret(vint caret, Color color, bool frontSide) override;
-		void													DisableCaret() override;
-		bool													BlinkCaret() override;
-		bool													IsValidCaret(vint caret) override;
-		bool													IsValidTextPos(vint textPos) override;
-		bool													SetInlineObject(vint start, vint length, const InlineObjectProperties& properties) override;
-		bool													ResetInlineObject(vint start, vint length) override;
-		void													Render(Rect bounds) override;
-		vint													GetCaret(vint comparingCaret, CaretRelativePosition position, bool& preferFrontSide) override;
-		Rect													GetCaretBounds(vint caret, bool frontSide) override;
-		vint													GetCaretFromPoint(Point point) override;
-		Nullable<InlineObjectProperties>						GetInlineObjectFromPoint(Point point, vint& start, vint& length) override;
-		vint													GetNearestCaretFromTextPos(vint textPos, bool frontSide) override;
-	};
-
-	class TuiGraphicsLayoutProvider : public Object, public IGuiGraphicsLayoutProvider
-	{
-	protected:
-		TuiConfiguration				configuration;
-	public:
-		TuiGraphicsLayoutProvider(const TuiConfiguration& configuration = {});
-		const TuiConfiguration&			GetConfiguration() const;
-		Ptr<IGuiGraphicsParagraph>								CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback) override;
-	};
-
-	extern char32_t						TuiReadScalar(const WString& text, vint start, vint& length);
-	extern WString						TuiEllipsizeText(const WString& text, vint width, vint tabInterval = 4);
-	extern console::TuiTextStyle			TuiGetTextStyle(IGuiGraphicsParagraph::TextStyle style);
-}
-
-#endif
-
-
-/***********************************************************************
-.\PLATFORMPROVIDERS\TUI\TUIGRAPHICS.H
-***********************************************************************/
-#ifndef VCZH_PRESENTATION_ELEMENTS_TUIGRAPHICS
-#define VCZH_PRESENTATION_ELEMENTS_TUIGRAPHICS
-
-
-namespace vl::presentation::elements
-{
-	class TuiGraphicsRenderTarget : public GuiGraphicsRenderTarget
-	{
-	protected:
-		INativeWindow*							window;
-		Rect									GetVisibleClipper();
-		void									StartRenderingOnNativeWindow() override;
-		RenderTargetFailure						StopRenderingOnNativeWindow() override;
-		Size									GetCanvasSize() override;
-		void									AfterPushedClipper(Rect clipper, Rect validArea, reflection::DescriptableObject* generator) override;
-		void									AfterPushedClipperAndBecameInvalid(Rect clipper, reflection::DescriptableObject* generator) override;
-		void									AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override;
-		void									AfterPoppedClipper(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override;
-	public:
-		TuiGraphicsRenderTarget(INativeWindow* window);
-		bool									CanDraw();
-		void									Fill(Rect bounds, Color color);
-		void									Border(Rect bounds, Color color, TuiLineStyle style, ElementShape shape);
-		void									Print(Point location, char32_t code, Color foreground, Color background, console::TuiTextStyle style);
-		void									Caret(Point location, Color color);
-	};
-
-	class TuiGraphicsResourceManager : public GuiGraphicsResourceManager, public INativeControllerListener
-	{
-	protected:
-		Ptr<TuiGraphicsRenderTarget>			renderTarget;
-		TuiGraphicsLayoutProvider				layoutProvider;
-	public:
-		TuiGraphicsResourceManager(const TuiConfiguration& configuration = {});
-		IGuiGraphicsRenderTarget*				GetRenderTarget(INativeWindow* window) override;
-		void									RecreateRenderTarget(INativeWindow* window) override;
-		void									ResizeRenderTarget(INativeWindow* window) override;
-		IGuiGraphicsLayoutProvider*				GetLayoutProvider() override;
-		Ptr<IGuiGraphicsElement>				CreateRawElement() override;
-		void									NativeWindowCreated(INativeWindow* window) override;
-		void									NativeWindowDestroying(INativeWindow* window) override;
-	};
-
-	extern console::TuiColor					TuiBlend(Color color, console::TuiColor background);
-	extern void									RegisterTuiRenderers();
-}
-
-#endif
-
-
-/***********************************************************************
-.\PLATFORMPROVIDERS\TUI\TUIWINDOW.H
-***********************************************************************/
-#ifndef VCZH_PRESENTATION_TUIWINDOW
-#define VCZH_PRESENTATION_TUIWINDOW
-
-
-namespace vl::presentation
-{
-	class TuiControllerBase;
-
-	class TuiWindow : public Object, public INativeWindow
-	{
-		friend class TuiControllerBase;
-	protected:
-		TuiControllerBase*							controller;
-		collections::List<INativeWindowListener*>	listeners;
-		NativeSize									clientSize;
-		WString										title;
-		INativeCursor*								cursor = nullptr;
-		NativePoint									caret;
-		Ptr<GuiImageData>							icon;
-		bool										visible = false;
-		bool										enabled = true;
-		bool										capturing = false;
-		bool										closing = false;
-	public:
-		TuiWindow(TuiControllerBase* controller);
-		~TuiWindow();
-		void										Dispatch(const Func<void(INativeWindowListener*)>& callback, bool duringFinalization = false);
-		bool										IsActivelyRefreshing() override;
-		NativeSize									GetRenderingOffset() override;
-		Point										Convert(NativePoint value) override;
-		NativePoint									Convert(Point value) override;
-		Size										Convert(NativeSize value) override;
-		NativeSize									Convert(Size value) override;
-		Margin										Convert(NativeMargin value) override;
-		NativeMargin								Convert(Margin value) override;
-		NativeRect									GetBounds() override;
-		void										SetBounds(const NativeRect& bounds) override;
-		NativeSize									GetClientSize() override;
-		void										SetClientSize(NativeSize size) override;
-		NativeRect									GetClientBoundsInScreen() override;
-		void										SuggestMinClientSize(NativeSize size) override;
-		WString										GetTitle() override;
-		void										SetTitle(const WString& value) override;
-		INativeCursor*								GetWindowCursor() override;
-		void										SetWindowCursor(INativeCursor* value) override;
-		NativePoint									GetCaretPoint() override;
-		void										SetCaretPoint(NativePoint value) override;
-		INativeWindow*								GetParent() override;
-		void										SetParent(INativeWindow* parent) override;
-		WindowMode									GetWindowMode() override;
-		void										EnableCustomFrameMode() override;
-		void										DisableCustomFrameMode() override;
-		bool										IsCustomFrameModeEnabled() override;
-		NativeMargin								GetCustomFramePadding() override;
-		Ptr<GuiImageData>							GetIcon() override;
-		void										SetIcon(Ptr<GuiImageData> value) override;
-		WindowSizeState								GetSizeState() override;
-		void										Show() override;
-		void										ShowDeactivated() override;
-		void										ShowRestored() override;
-		void										ShowMaximized() override;
-		void										ShowMinimized() override;
-		void										Hide(bool closeWindow) override;
-		bool										IsVisible() override;
-		void										Enable() override;
-		void										Disable() override;
-		bool										IsEnabled() override;
-		void										SetActivate() override;
-		bool										IsActivated() override;
-		bool										IsRenderingAsActivated() override;
-		bool										IsAppearedInTaskBar() override;
-		bool										IsEnabledActivate() override;
-		void										ShowInTaskBar() override;
-		void										HideInTaskBar() override;
-		void										EnableActivate() override;
-		void										DisableActivate() override;
-		void										SupressAlt() override;
-		bool										RequireCapture() override;
-		bool										ReleaseCapture() override;
-		bool										IsCapturing() override;
-		bool										GetMaximizedBox() override;
-		void										SetMaximizedBox(bool value) override;
-		bool										GetMinimizedBox() override;
-		void										SetMinimizedBox(bool value) override;
-		bool										GetBorder() override;
-		void										SetBorder(bool value) override;
-		bool										GetSizeBox() override;
-		void										SetSizeBox(bool value) override;
-		bool										GetIconVisible() override;
-		void										SetIconVisible(bool value) override;
-		bool										GetTitleBar() override;
-		void										SetTitleBar(bool value) override;
-		bool										GetTopMost() override;
-		void										SetTopMost(bool value) override;
-		bool										InstallListener(INativeWindowListener* listener) override;
-		bool										UninstallListener(INativeWindowListener* listener) override;
-		void										RedrawContent() override;
-	};
-}
-
-#endif
-
-
-/***********************************************************************
-.\PLATFORMPROVIDERS\TUI\TUICONTROLLER.H
-***********************************************************************/
-#ifndef VCZH_PRESENTATION_TUICONTROLLER
-#define VCZH_PRESENTATION_TUICONTROLLER
-
-
-namespace vl::presentation
-{
-	class TuiControllerBase
-		: public Object
-		, public INativeController
-		, public ITuiApplication
-		, public console::ITuiCallback
-		, protected INativeScreenService
-		, protected INativeScreen
-		, protected INativeWindowService
-	{
-	protected:
-		TuiConfiguration				configuration;
-		SharedCallbackService			callbackService;
-		SharedAsyncService				asyncService;
-		Ptr<TuiWindow>					window;
-		NativeWindowFrameConfig			frameConfig;
-
-		virtual void					PumpPlatformEvents() = 0;
-		void							Starting() override;
-	public:
-		TuiControllerBase(const TuiConfiguration& configuration = {});
-		~TuiControllerBase();
-		ITuiApplication*				GetTuiApplication();
-		virtual void					ApplyTitle(const WString& title) = 0;
-		INativeCallbackService*			CallbackService() override;
-		INativeAsyncService*			AsyncService() override;
-		INativeDialogService*			DialogService() override;
-		INativeAutomationService*		AutomationService() override;
-		INativeScreenService*			ScreenService() override;
-		INativeWindowService*			WindowService() override;
-		vint							GetScreenCount() override;
-		INativeScreen*					GetScreen(vint index) override;
-		INativeScreen*					GetScreen(INativeWindow* window) override;
-		NativeRect						GetBounds() override;
-		NativeRect						GetClientBounds() override;
-		WString							GetName() override;
-		bool							IsPrimary() override;
-		double							GetScalingX() override;
-		double							GetScalingY() override;
-		const NativeWindowFrameConfig&	GetMainWindowFrameConfig() override;
-		const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig() override;
-		INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
-		void							DestroyNativeWindow(INativeWindow* value) override;
-		INativeWindow*					GetMainWindow() override;
-		INativeWindow*					GetWindow(NativePoint location) override;
-		void							Run(INativeWindow* value) override;
-		bool							RunOneCycle() override;
-		void							Stop() override;
-		void							BufferSizeChanged() override;
-		void							Timer() override;
-		void							ClipboardUpdated();
-		void							GlobalShortcutKeyActivated(vint id);
-		void							KeyDown(const NativeWindowKeyInfo& info) override;
-		void							KeyUp(const NativeWindowKeyInfo& info) override;
-		void							Char(const NativeWindowCharInfo& info) override;
-		void							MouseMove(const WindowMouseInfo& info) override;
-		void							MouseDown(NativeMouseButton button, const WindowMouseInfo& info) override;
-		void							MouseUp(NativeMouseButton button, const WindowMouseInfo& info) override;
-		void							MouseDoubleClick(NativeMouseButton button, const WindowMouseInfo& info) override;
-		void							MouseVerticalWheel(const WindowMouseInfo& info) override;
-		void							MouseHorizontalWheel(const WindowMouseInfo& info) override;
-	};
-}
-
-#endif
-
-
-/***********************************************************************
 .\UTILITIES\FAKESERVICES\TUIDIALOGS\SOURCE\TUIFAKEDIALOGSERVICEUI.H
 ***********************************************************************/
 /***********************************************************************
@@ -32319,50 +32556,3 @@ https://github.com/vczh-libraries
 
 #endif
 
-
-/***********************************************************************
-.\UTILITIES\FAKESERVICES\TUIDIALOGS\TUIFAKEDIALOGSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Default Service Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKETUIDIALOGSERVICE
-#define VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKETUIDIALOGSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			class GuiWindow;
-		}
-
-		/// <summary>
-		/// UI implementations for <see cref="INativeDialogService"/>.
-		/// </summary>
-		class FakeTuiDialogService : public FakeDialogServiceBase
-		{
-		protected:
-
-			controls::GuiWindow*	CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel) override;
-			controls::GuiWindow*	CreateColorDialog(Ptr<IColorDialogViewModel> viewModel) override;
-			controls::GuiWindow*	CreateSimpleFontDialog(Ptr<ISimpleFontDialogViewModel> viewModel) override;
-			controls::GuiWindow*	CreateFullFontDialog(Ptr<IFullFontDialogViewModel> viewModel) override;
-			controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName) override;
-			controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel, const WString& initialFileName) override;
-
-		public:
-			FakeTuiDialogService();
-			~FakeTuiDialogService();
-		};
-	}
-}
-
-#endif
