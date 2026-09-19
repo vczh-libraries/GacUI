@@ -143,6 +143,8 @@ Everything will only take effect when the build function is called, changing tho
 
 **suggested solution**: For the initial grammar, require outer grouping spans to be 1 and let only inner descriptors span their group's axis. Preserve tables needing spans on both axes as a single composition payload during migration. If these tables must also be expressed entirely with easy-layout descriptors, define cell placement, both-axis spans, overlap detection, and which single-span declarations determine each track before implementing the grid builder.
 
+No worry about this, just set the range to GuiCellComposition, overlapping will be handled by GuiTableComposition, that is, if anything wrong the cell won't show. No extra check about this is necessary.
+
 ### Specialized tutorial layouts versus all-layout migration
 
 **review comment**: `../Release/Tutorial/GacUI_Controls/AddressBook/UI/Resource.xml` contains an interactive `ColumnSplitter`, and `ColorPicker2/UI/Resource.xml` uses `SharedSizeRoot`, `RepeatFlow`, and `SharedSizeItem` for dynamically repeated, wrapping, equally sized palette entries. The proposed descriptor grammar has neither splitter access to its generated table nor repeated-flow/shared-size equivalents. Replacing every existing layout solely with these descriptors cannot preserve those behaviors.
