@@ -14,7 +14,12 @@ namespace vl::presentation::windows
 	{
 		return Queue([target = node]()
 		{
-			if (target->kind == Kind::Cell)
+			if (target->kind == Kind::DocumentObject)
+			{
+				UiaRaiseAutomationEvent(target->Provider(), UIA_Invoke_InvokedEventId);
+				UiaInvokeDocumentObject(target.Obj());
+			}
+			else if (target->kind == Kind::Cell)
 			{
 				UiaRaiseAutomationEvent(target->Provider(), UIA_Invoke_InvokedEventId);
 				dynamic_cast<GuiVirtualDataGrid*>(target->control)->EnsureItemVisible(target->row);
@@ -70,6 +75,7 @@ namespace vl::presentation::windows
 		if (node->kind == Kind::CalendarDay)
 		{
 			if (!selected) return UIA_E_INVALIDOPERATION;
+			if (!clear && !node->IsSelected()) return UIA_E_INVALIDOPERATION;
 			auto picker = dynamic_cast<GuiDatePicker*>(node->control);
 			picker->SetDate(UiaCalendar(node->control)->GetDateOfDayButton(node->row, node->column));
 			if (node->IsLive()) picker->DateSelected.Execute(picker->GetNotifyEventArguments());
@@ -101,11 +107,17 @@ namespace vl::presentation::windows
 		else if (auto page = dynamic_cast<GuiTabPage*>(node->control))
 		{
 			if (!selected) return UIA_E_INVALIDOPERATION;
+			if (!clear && page->GetOwnerTab()->GetSelectedPage() && !node->IsSelected()) return UIA_E_INVALIDOPERATION;
 			page->GetOwnerTab()->SetSelectedPage(page);
 		}
 		else if (auto button = dynamic_cast<GuiSelectableButton*>(node->control))
 		{
 			if (!selected) return UIA_E_INVALIDOPERATION;
+			if (!clear) if (auto group = UiaRadioGroup(node.Obj()))
+			{
+				auto children = group->Children();
+				for (auto child : children) if (child != node && child->IsSelected()) return UIA_E_INVALIDOPERATION;
+			}
 			button->SetSelected(true);
 		}
 		if (node->IsLive()) node->context->Notify(node);
@@ -142,6 +154,7 @@ namespace vl::presentation::windows
 		return Read([&]() -> HRESULT
 		{
 			if (auto tab = dynamic_cast<GuiTab*>(node->control)) *result = tab->GetPages().Count() > 0;
+			else if (node->kind == Kind::RadioGroup) *result = From(node->Children()).Any([](auto child) { return child->IsSelected(); });
 			else if (auto combo = dynamic_cast<GuiComboBoxListControl*>(node->control)) *result = combo->GetSelectedIndex() >= 0;
 			else if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(node->control)) *result = grid->GetSelectedCell().row >= 0;
 			else *result = dynamic_cast<GuiDatePicker*>(node->control) != nullptr;
@@ -176,6 +189,13 @@ namespace vl::presentation::windows
 		if (!value) return E_INVALIDARG;
 		return Read([&]() -> HRESULT
 		{
+			if (node->kind == Kind::Cell)
+			{
+				if (!UiaDataGrid(node->control)->GetCellDataEditorFactory(node->row, node->column)) return UIA_E_INVALIDOPERATION;
+				UiaDataGrid(node->control)->SetBindingCellValue(node->row, node->column, reflection::description::BoxValue(WString(value)));
+				if (node->IsLive()) node->context->Notify(node);
+				return S_OK;
+			}
 			if (UiaDocument(node->control)->GetEditMode() != GuiDocumentEditMode::Editable) return UIA_E_INVALIDOPERATION;
 			node->control->SetText(WString(value));
 			return S_OK;
@@ -189,6 +209,7 @@ namespace vl::presentation::windows
 		{
 			auto text = dynamic_cast<GuiSinglelineTextBox*>(node->control);
 			if (text && text->GetPasswordChar()) return E_ACCESSDENIED;
+			if (node->kind == Kind::Cell) return UiaString(reflection::description::UnboxValue<WString>(UiaDataGrid(node->control)->GetBindingCellValue(node->row, node->column)), result);
 			return UiaString(node->control->GetText(), result);
 		}, UIA_ValuePatternId);
 	}
@@ -197,7 +218,8 @@ namespace vl::presentation::windows
 		if (!result) return E_POINTER;
 		return Read([&]() -> HRESULT
 		{
-			if (auto document = UiaDocument(node->control)) *result = document->GetEditMode() != GuiDocumentEditMode::Editable;
+			if (node->kind == Kind::Cell) *result = !UiaDataGrid(node->control)->GetCellDataEditorFactory(node->row, node->column);
+			else if (auto document = UiaDocument(node->control)) *result = document->GetEditMode() != GuiDocumentEditMode::Editable;
 			else *result = node->Role() == UIA_ProgressBarControlTypeId;
 			return S_OK;
 		});
@@ -289,6 +311,42 @@ namespace vl::presentation::windows
 			return dynamic_cast<GuiListControl*>(node->control)->EnsureItemVisible(node->ItemIndex()) ? S_OK : UIA_E_INVALIDOPERATION;
 		}, UIA_VirtualizedItemPatternId, true);
 	}
-	HRESULT WindowsUIAutomationProvider::ScrollIntoView() { return Realize(); }
+	HRESULT WindowsUIAutomationProvider::ScrollIntoView()
+	{
+		return Read([&]() -> HRESULT
+		{
+			if (node->Supports(UIA_VirtualizedItemPatternId))
+			{
+				auto result = Realize();
+				if (FAILED(result)) return result;
+			}
+			node->control->GetBoundsComposition()->ForceCalculateSizeImmediately();
+			auto composition = node->Composition();
+			if (!composition) return UIA_E_INVALIDOPERATION;
+			for (auto parent = node->kind == Kind::Control ? node->control->GetParent() : node->control; parent; parent = parent->GetParent())
+			{
+				auto view = dynamic_cast<GuiScrollView*>(parent);
+				if (!view) continue;
+				auto bounds = composition->GetGlobalBounds();
+				auto viewport = view->GetControlTemplateObject()->GetContainerComposition()->GetGlobalBounds();
+				if (node->kind == Kind::Cell && !dynamic_cast<GuiCellComposition*>(composition))
+				{
+					auto columns = UiaColumns(node->control);
+					vint left = bounds.x1;
+					for (vint c = 0; c < node->column; c++) left += columns->GetColumnSize(c);
+					bounds.x1 = left;
+					bounds.x2 = left + columns->GetColumnSize(node->column);
+				}
+				auto position = view->GetViewPosition();
+				if (bounds.x1 < viewport.x1) position.x += bounds.x1 - viewport.x1;
+				else if (bounds.x2 > viewport.x2) position.x += min(bounds.x1 - viewport.x1, bounds.x2 - viewport.x2);
+				if (bounds.y1 < viewport.y1) position.y += bounds.y1 - viewport.y1;
+				else if (bounds.y2 > viewport.y2) position.y += min(bounds.y1 - viewport.y1, bounds.y2 - viewport.y2);
+				view->SetViewPosition(position);
+				view->GetBoundsComposition()->ForceCalculateSizeImmediately();
+			}
+			return S_OK;
+		}, UIA_ScrollItemPatternId, true);
+	}
 }
 #endif

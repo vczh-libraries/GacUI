@@ -396,6 +396,7 @@ GuiDocumentCommonInterface
 				/// <summary>Get the href attribute of the active hyperlink.</summary>
 				/// <returns>The href attribute of the active hyperlink.</returns>
 				WString										GetActiveHyperlinkReference();
+				bool										ExecuteHyperlink(TextPos position);
 				/// <summary>Get the edit mode of this control.</summary>
 				/// <returns>The edit mode.</returns>
 				GuiDocumentEditMode							GetEditMode();

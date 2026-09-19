@@ -7,34 +7,49 @@ namespace vl::presentation::windows
 	using namespace collections;
 	using namespace controls;
 	using namespace compositions;
+	using Kind = WindowsUIAutomationNodeKind;
+
+	struct WindowsUIAutomationTextObject
+	{
+		Ptr<DocumentRun> run;
+		DocumentRun* parent = nullptr;
+		vint begin = 0;
+		vint end = 0;
+	};
 
 	struct WindowsUIAutomationTextSnapshot
 	{
 		WString text;
 		List<TextPos> positions;
 		Dictionary<WString, vint> objects;
+		List<WindowsUIAutomationTextObject> runs;
 
-		void Append(DocumentRun* run, vint row, vint& column)
+		void Append(Ptr<DocumentRun> run, vint row, vint& column, DocumentRun* parent = nullptr)
 		{
-			if (auto container = dynamic_cast<DocumentContainerRun*>(run))
+			auto first = text.Length();
+			bool object = run.Cast<DocumentHyperlinkRun>() || run.Cast<DocumentImageRun>();
+			auto index = runs.Count();
+			if (object) runs.Add({run, parent, first, first});
+			if (auto container = run.Cast<DocumentContainerRun>())
 			{
-				for (auto child : container->runs) Append(child.Obj(), row, column);
+				for (auto child : container->runs) Append(child, row, column, object ? run.Obj() : parent);
 			}
-			else if (auto content = dynamic_cast<DocumentContentRun*>(run))
+			else if (auto content = run.Cast<DocumentContentRun>())
 			{
-				if (auto plain = dynamic_cast<DocumentTextRun*>(run))
+				if (auto plain = run.Cast<DocumentTextRun>())
 				{
 					text += plain->text;
 					for (vint i = 0; i < plain->text.Length(); i++) positions.Add(TextPos(row, column++));
 				}
 				else
 				{
-					if (auto embedded = dynamic_cast<DocumentEmbeddedObjectRun*>(run)) objects.Set(embedded->name, text.Length());
+					if (auto embedded = run.Cast<DocumentEmbeddedObjectRun>()) objects.Set(embedded->name, text.Length());
 					text += L"\xFFFC";
 					positions.Add(TextPos(row, column));
 					column += content->GetRepresentationText().Length();
 				}
 			}
+			if (object) runs[index].end = text.Length();
 		}
 		WindowsUIAutomationTextSnapshot(GuiDocumentCommonInterface* document)
 		{
@@ -49,7 +64,7 @@ namespace vl::presentation::windows
 					positions.Add(TextPos(row - 1, column));
 				}
 				column = 0;
-				Append(model->paragraphs[row].Obj(), row, column);
+				Append(model->paragraphs[row], row, column);
 			}
 			positions.Add(TextPos(max((vint)0, model->paragraphs.Count() - 1), column));
 			// UIA offsets count UTF-16 code units; renderer carets cannot split a
@@ -66,24 +81,71 @@ namespace vl::presentation::windows
 			for (vint i = 0; i < positions.Count(); i++) if (positions[i] >= position) return i;
 			return text.Length();
 		}
+		vint CharacterStart(vint offset)
+		{
+			while (offset > 0 && positions[offset] == positions[offset - 1]) offset--;
+			return offset;
+		}
+		vint CharacterEnd(vint offset)
+		{
+			auto position = positions[offset];
+			while (offset < text.Length() && positions[offset] == position) offset++;
+			return offset;
+		}
 	};
+
+	bool UiaDocumentObjectRange(WindowsUIAutomationNode* node, vint& begin, vint& end)
+	{
+		WindowsUIAutomationTextSnapshot snapshot(UiaDocument(node->control));
+		for (auto object : snapshot.runs) if (object.run == node->documentRun)
+		{
+			begin = object.begin;
+			end = object.end;
+			return true;
+		}
+		return false;
+	}
+
+	WString UiaDocumentObjectName(WindowsUIAutomationNode* node)
+	{
+		if (auto image = node->documentRun.Cast<DocumentImageRun>()) return image->source;
+		WindowsUIAutomationTextSnapshot snapshot(UiaDocument(node->control));
+		for (auto object : snapshot.runs) if (object.run == node->documentRun) return snapshot.text.Sub(object.begin, object.end - object.begin);
+		return L"";
+	}
 
 	List<Ptr<WindowsUIAutomationNode>> UiaTextChildren(WindowsUIAutomationNode* node, vint begin, vint end)
 	{
 		List<Ptr<WindowsUIAutomationNode>> children;
+		List<Pair<vint, Ptr<WindowsUIAutomationNode>>> ordered;
 		auto document = UiaDocument(node->control);
 		WindowsUIAutomationTextSnapshot snapshot(document);
+		auto owner = node->kind == Kind::DocumentObject ? node->owner : node->context->Control(node->control);
+		for (auto object : snapshot.runs)
+		{
+			if (object.parent != node->documentRun.Obj() || object.end <= begin || end >= 0 && object.begin >= end) continue;
+			ordered.Add({object.begin, node->context->Item(owner, Kind::DocumentObject, -1, -1, nullptr, object.run)});
+		}
 		auto& items = document->GetDocumentItems();
 		auto objects = From(snapshot.objects.Keys()).OrderBy([&](const WString& a, const WString& b) { return snapshot.objects[a] <=> snapshot.objects[b]; });
 		for (auto name : objects)
 		{
 			auto offset = snapshot.objects[name];
 			if (offset < begin || end >= 0 && offset >= end) continue;
+			DocumentRun* parent = nullptr;
+			for (auto object : snapshot.runs) if (offset >= object.begin && offset < object.end) parent = object.run.Obj();
+			if (parent != node->documentRun.Obj()) continue;
 			auto index = items.Keys().IndexOf(name);
 			// The renderer hides this container when its placeholder is offscreen.
 			// Its semantic children still belong to the document and text range.
-			if (index >= 0) UiaCollectChildren(node->context, items.Values()[index]->GetContainer(), children);
+			if (index >= 0)
+			{
+				List<Ptr<WindowsUIAutomationNode>> embedded;
+				UiaCollectChildren(node->context, items.Values()[index]->GetContainer(), embedded);
+				for (auto child : embedded) ordered.Add({offset, child});
+			}
 		}
+		CopyFrom(children, From(ordered).OrderBy([](const auto& a, const auto& b) { return a.key <=> b.key; }).Select([](const auto& item) { return item.value; }));
 		return children;
 	}
 
@@ -107,6 +169,47 @@ namespace vl::presentation::windows
 		double left = max((double)(window.x.value + position.x.value), clip.left), top = max((double)(window.y.value + position.y.value), clip.top);
 		double right = min((double)(window.x.value + position.x.value + size.x.value), clip.left + clip.width), bottom = min((double)(window.y.value + position.y.value + size.y.value), clip.top + clip.height);
 		return right > left && bottom > top ? UiaRect{ left, top, right - left, bottom - top } : UiaRect{};
+	}
+
+	Ptr<WindowsUIAutomationNode> UiaDocumentObjectParent(WindowsUIAutomationNode* node)
+	{
+		WindowsUIAutomationTextSnapshot snapshot(UiaDocument(node->control));
+		for (auto object : snapshot.runs) if (object.run == node->documentRun && object.parent)
+			for (auto parent : snapshot.runs) if (parent.run.Obj() == object.parent)
+				return node->context->Item(node->owner, Kind::DocumentObject, -1, -1, nullptr, parent.run);
+		return node->owner;
+	}
+
+	UiaRect UiaDocumentObjectBounds(WindowsUIAutomationNode* node)
+	{
+		vint begin, end;
+		if (!UiaDocumentObjectRange(node, begin, end)) return {};
+		auto document = UiaDocument(node->control);
+		WindowsUIAutomationTextSnapshot snapshot(document);
+		UiaRect result = {};
+		for (vint i = begin; i < end; i = snapshot.CharacterEnd(i))
+		{
+			auto a = document->GetCaretBounds(snapshot.positions[i], false);
+			auto b = document->GetCaretBounds(snapshot.positions[snapshot.CharacterEnd(i)], true);
+			auto rectangle = UiaTextRectangle(node->owner, Rect(min(a.x1, b.x1), min(a.y1, b.y1), max(a.x2, b.x2), max(a.y2, b.y2)));
+			if (!rectangle.width || !rectangle.height) continue;
+			if (!result.width) result = rectangle;
+			else
+			{
+				auto left = min(result.left, rectangle.left), top = min(result.top, rectangle.top);
+				result = {left, top, max(result.left + result.width, rectangle.left + rectangle.width) - left, max(result.top + result.height, rectangle.top + rectangle.height) - top};
+			}
+		}
+		return result;
+	}
+
+	void UiaInvokeDocumentObject(WindowsUIAutomationNode* node)
+	{
+		vint begin, end;
+		if (!UiaDocumentObjectRange(node, begin, end)) return;
+		auto document = UiaDocument(node->control);
+		WindowsUIAutomationTextSnapshot snapshot(document);
+		document->ExecuteHyperlink(snapshot.positions[begin]);
 	}
 
 	class WindowsUIAutomationTextRange : public ITextRangeProvider
@@ -194,29 +297,35 @@ namespace vl::presentation::windows
 			List<vint> boundaries; boundaries.Add(0);
 			for (vint i = 1; i < snapshot.text.Length(); i++)
 			{
+				if (snapshot.positions[i] == snapshot.positions[i - 1]) continue;
 				bool boundary = false;
 				switch (unit)
 				{
 				case TextUnit_Character: boundary = snapshot.positions[i] != snapshot.positions[i - 1]; break;
 				case TextUnit_Format:
 					{
-						const TEXTATTRIBUTEID attributes[] = { UIA_FontNameAttributeId, UIA_FontSizeAttributeId, UIA_FontWeightAttributeId, UIA_IsItalicAttributeId, UIA_UnderlineStyleAttributeId, UIA_StrikethroughStyleAttributeId, UIA_ForegroundColorAttributeId, UIA_BackgroundColorAttributeId };
+						const TEXTATTRIBUTEID attributes[] = { UIA_FontNameAttributeId, UIA_FontSizeAttributeId, UIA_FontWeightAttributeId, UIA_IsItalicAttributeId, UIA_UnderlineStyleAttributeId, UIA_StrikethroughStyleAttributeId, UIA_ForegroundColorAttributeId, UIA_BackgroundColorAttributeId, UIA_HorizontalTextAlignmentAttributeId };
 						for (auto attribute : attributes)
 						{
 							WindowsUIAutomationValue a, b;
-							Attribute(snapshot, attribute, i - 1, i, &a.value);
-							Attribute(snapshot, attribute, i, i + 1, &b.value);
+							Attribute(snapshot, attribute, snapshot.CharacterStart(i - 1), i, &a.value);
+							Attribute(snapshot, attribute, i, snapshot.CharacterEnd(i), &b.value);
 							bool same = a.value.vt == VT_UNKNOWN && b.value.vt == VT_UNKNOWN ? a.value.punkVal == b.value.punkVal : VarCmp(&a.value, &b.value, LOCALE_INVARIANT, 0) == VARCMP_EQ;
 							if (!same) { boundary = true; break; }
 						}
 						break;
 					}
-				case TextUnit_Word: boundary = iswalnum(snapshot.text[i]) != iswalnum(snapshot.text[i - 1]) || iswspace(snapshot.text[i - 1]) && !iswspace(snapshot.text[i]); break;
+				case TextUnit_Word: boundary = iswalnum(snapshot.text[i]) && !iswalnum(snapshot.text[i - 1]); break;
 				case TextUnit_Line:
 					boundary = snapshot.positions[i].row != snapshot.positions[i - 1].row || UiaDocument(node->control)->GetCaretBounds(snapshot.positions[i], false).y1 != UiaDocument(node->control)->GetCaretBounds(snapshot.positions[i - 1], false).y1;
 					break;
 				case TextUnit_Paragraph: boundary = snapshot.positions[i].row != snapshot.positions[i - 1].row; break;
 				default: break;
+				}
+				if (unit == TextUnit_Format || unit == TextUnit_Word)
+				{
+					boundary |= snapshot.text[i] == L'\xFFFC' || snapshot.text[i - 1] == L'\xFFFC';
+					for (auto object : snapshot.runs) boundary |= i == object.begin || i == object.end;
 				}
 				if (boundary) boundaries.Add(i);
 			}
@@ -238,6 +347,11 @@ namespace vl::presentation::windows
 			VariantInit(result);
 			auto mixed = [&]() { result->vt = VT_UNKNOWN; return UiaGetReservedMixedAttributeValue(&result->punkVal); };
 			auto document = UiaDocument(node->control);
+			if (first == last && snapshot.text.Length())
+			{
+				first = snapshot.CharacterStart(first == snapshot.text.Length() ? first - 1 : first);
+				last = snapshot.CharacterEnd(first);
+			}
 			auto style = document->SummarizeStyle(snapshot.positions[first], snapshot.positions[last]);
 			switch (attribute)
 			{
@@ -277,13 +391,15 @@ namespace vl::presentation::windows
 			return Read([&](auto& snapshot) -> HRESULT
 			{
 				vint first = -1, last = -1;
-				for (vint i = backward ? end - 1 : begin; i >= begin && i < end; i += backward ? -1 : 1)
+				for (vint i = backward ? snapshot.CharacterStart(end - 1) : begin; i >= begin && i < end;)
 				{
-					WindowsUIAutomationValue candidate; Attribute(snapshot, attribute, i, i + 1, &candidate.value);
-					if (VarCmp(&candidate.value, &value, LOCALE_INVARIANT, 0) == VARCMP_EQ) { if (first < 0) first = i; last = i; }
+					auto next = min(end, snapshot.CharacterEnd(i));
+					WindowsUIAutomationValue candidate; Attribute(snapshot, attribute, i, next, &candidate.value);
+					if (VarCmp(&candidate.value, &value, LOCALE_INVARIANT, 0) == VARCMP_EQ) { first = first < 0 ? i : min(first, i); last = max(last, next); }
 					else if (first >= 0) break;
+					i = backward ? i == 0 ? -1 : snapshot.CharacterStart(i - 1) : next;
 				}
-				if (first >= 0) *result = new WindowsUIAutomationTextRange(node, min(first, last), max(first, last) + 1);
+				if (first >= 0) *result = new WindowsUIAutomationTextRange(node, first, last);
 				return S_OK;
 			});
 		}
@@ -312,16 +428,20 @@ namespace vl::presentation::windows
 		}
 		Ptr<WindowsUIAutomationNode> EnclosingElement(WindowsUIAutomationTextSnapshot& snapshot)
 		{
+			Ptr<DocumentRun> enclosing;
+			for (auto object : snapshot.runs)
+				if (begin >= object.begin && begin < object.end && end <= object.end) enclosing = object.run;
+			auto container = enclosing ? node->context->Item(node, Kind::DocumentObject, -1, -1, nullptr, enclosing) : node;
 			for (auto offset : snapshot.objects.Values())
 			{
 				if (begin < offset || begin >= offset + 1 || end > offset + 1) continue;
-				auto children = UiaTextChildren(node.Obj(), offset, offset + 1);
+				auto children = UiaTextChildren(container.Obj(), offset, offset + 1);
 				if (embedded && embedded->IsLive())
 					for (auto parent = embedded; parent && parent != node; parent = parent->Parent())
 						if (children.Contains(parent.Obj())) return embedded;
 				if (children.Count() == 1) return children[0];
 			}
-			return node;
+			return container;
 		}
 		HRESULT STDMETHODCALLTYPE GetEnclosingElement(IRawElementProviderSimple** result)override
 		{
@@ -336,7 +456,8 @@ namespace vl::presentation::windows
 			return Read([&](auto& snapshot) -> HRESULT
 			{
 				List<Ptr<WindowsUIAutomationNode>> children;
-				if (EnclosingElement(snapshot) == node) children = UiaTextChildren(node.Obj(), begin, end);
+				auto enclosing = EnclosingElement(snapshot);
+				if (enclosing == node || enclosing->kind == Kind::DocumentObject) children = UiaTextChildren(enclosing.Obj(), begin, end);
 				return UiaNodeArray(children, result);
 			});
 		}
@@ -402,11 +523,27 @@ namespace vl::presentation::windows
 				if (!count) return S_OK;
 				bool degenerate = begin == end;
 				auto boundaries = Boundaries(snapshot, unit);
+				if (degenerate)
+				{
+					auto position = begin;
+					while (*moved != count)
+					{
+						vint next = position;
+						if (count > 0) { for (auto candidate : boundaries) if (candidate > position) { next = candidate; break; } }
+						else { for (vint i = boundaries.Count() - 1; i >= 0; i--) if (boundaries[i] < position) { next = boundaries[i]; break; } }
+						if (next == position) break;
+						position = next;
+						*moved += count > 0 ? 1 : -1;
+					}
+					begin = end = position;
+					return S_OK;
+				}
 				vint index = 0;
 				while (index + 1 < boundaries.Count() && boundaries[index + 1] <= begin) index++;
 				auto maximum = max((vint)0, boundaries.Count() - (degenerate ? 1 : 2));
 				auto next = min(maximum, max((vint)0, index + count));
-				*moved = (int)(next - index); begin = boundaries[next]; end = degenerate || next + 1 >= boundaries.Count() ? begin : boundaries[next + 1];
+				if (next == index || next + 1 >= boundaries.Count()) return S_OK;
+				*moved = (int)(next - index); begin = boundaries[next]; end = boundaries[next + 1];
 				return S_OK;
 			});
 		}
@@ -499,6 +636,17 @@ namespace vl::presentation::windows
 		*result = nullptr;
 		return Read([&]() -> HRESULT
 		{
+			Func<Ptr<WindowsUIAutomationNode>(Ptr<WindowsUIAutomationNode>)> hit;
+			hit = [&](Ptr<WindowsUIAutomationNode> child) -> Ptr<WindowsUIAutomationNode>
+			{
+				auto bounds = child->Bounds();
+				if (point.x < bounds.left || point.y < bounds.top || point.x >= bounds.left + bounds.width || point.y >= bounds.top + bounds.height) return nullptr;
+				auto children = child->Children();
+				for (auto nested : children) if (auto target = hit(nested)) return target;
+				return child;
+			};
+			auto children = UiaTextChildren(node.Obj(), 0, -1);
+			for (auto child : children) if (auto target = hit(child)) return RangeFromChild(target->Provider(), result);
 			auto document = UiaDocument(node->control);
 			auto native = node->Window()->GetNativeWindow();
 			auto screen = node->ScreenOrigin();
@@ -521,6 +669,13 @@ namespace vl::presentation::windows
 			if (!provider || !provider->node->IsLive()) return E_INVALIDARG;
 			auto document = UiaDocument(node->control);
 			WindowsUIAutomationTextSnapshot snapshot(document);
+			if (provider->node->kind == Kind::DocumentObject && provider->node->control == node->control)
+			{
+				vint first, last;
+				if (!UiaDocumentObjectRange(provider->node.Obj(), first, last)) return UIA_E_ELEMENTNOTAVAILABLE;
+				*result = new WindowsUIAutomationTextRange(node, first, last, provider->node);
+				return S_OK;
+			}
 			for (GuiGraphicsComposition* composition = provider->node->control->GetBoundsComposition(); composition; composition = composition->GetParent())
 			{
 				for (auto item : document->GetDocumentItems().Values())

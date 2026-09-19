@@ -14,11 +14,31 @@ public static class GacUIShowcaseTests
     [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint process);
     [DllImport("user32.dll", CharSet=CharSet.Unicode)] static extern int GetClassName(IntPtr hwnd, StringBuilder text, int count);
     [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr hwnd);
+    [DllImport("user32.dll")] static extern IntPtr GetForegroundWindow();
     [StructLayout(LayoutKind.Sequential)] struct NativeRect { public int Left, Top, Right, Bottom; }
     [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr hwnd, out NativeRect rectangle);
+    [StructLayout(LayoutKind.Sequential)] struct NativePoint { public int X, Y; }
+    [DllImport("user32.dll")] static extern bool ScreenToClient(IntPtr hwnd, ref NativePoint point);
+    [DllImport("user32.dll")] static extern uint GetDpiForWindow(IntPtr hwnd);
     [DllImport("user32.dll", SetLastError=true)] static extern bool PostMessage(IntPtr hwnd, uint message, IntPtr wParam, IntPtr lParam);
+    [DllImport("kernel32.dll", CharSet=CharSet.Unicode)] static extern IntPtr OpenEvent(uint access, bool inherit, string name);
+    [DllImport("kernel32.dll")] static extern uint WaitForSingleObject(IntPtr handle, uint milliseconds);
+    [DllImport("kernel32.dll")] static extern bool SetEvent(IntPtr handle);
+    [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr handle);
+    [DllImport("wtsapi32.dll", CharSet=CharSet.Unicode)] static extern bool WTSQuerySessionInformation(IntPtr server, int session, int info, out IntPtr buffer, out int bytes);
+    [DllImport("wtsapi32.dll")] static extern void WTSFreeMemory(IntPtr buffer);
     static string inputEndpoint;
     static void Press(string key) { Input("!KeyPress:" + key); }
+    static void Click(AutomationElement element)
+    {
+        var bounds = element.Current.BoundingRectangle;
+        var point = new NativePoint { X = (int)(bounds.Left + bounds.Width / 2), Y = (int)(bounds.Top + bounds.Height / 2) };
+        var hwnd = new IntPtr(root.Current.NativeWindowHandle);
+        Check(ScreenToClient(hwnd, ref point), "convert pointer to client coordinates");
+        uint dpi = GetDpiForWindow(hwnd);
+        Check(dpi != 0, "read pointer coordinate DPI");
+        Input("!LeftClick:" + (point.X * 96 / dpi) + "," + (point.Y * 96 / dpi));
+    }
     static void Input(string command)
     {
         using (var client = new System.Net.WebClient())
@@ -36,6 +56,15 @@ public static class GacUIShowcaseTests
     static int selectionEvents;
     static int ownedProcess;
     static bool isHosted;
+    // The Windows event IDs exist in UIAutomationTypes but its managed public
+    // surface omits these two identifiers. Register them for this client.
+    static AutomationEvent NativeEvent(int id, string name)
+    {
+        var register = typeof(AutomationEvent).GetMethod("Register", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+        return (AutomationEvent)register.Invoke(null, new object[] { Enum.ToObject(register.GetParameters()[0].ParameterType, id), name });
+    }
+    static readonly AutomationEvent MenuModeStartEvent = NativeEvent(20018, "MenuModeStart");
+    static readonly AutomationEvent MenuModeEndEvent = NativeEvent(20019, "MenuModeEnd");
     static List<AutomationElement> OwnedWindows()
     {
         var result = new List<AutomationElement>();
@@ -52,6 +81,7 @@ public static class GacUIShowcaseTests
     {
         var windows = new List<AutomationElement>();
         if (selectionOwner != null) windows.Add(selectionOwner);
+        windows.AddRange(Find(root, type));
         windows.AddRange(Find(root, ControlType.Menu));
         windows.AddRange(isHosted ? Find(root, ControlType.Window, TreeScope.Children) : OwnedWindows());
         foreach (var window in windows)
@@ -99,6 +129,27 @@ public static class GacUIShowcaseTests
     }
     static List<AutomationElement> Items(AutomationElement list) { return Find(list, ControlType.ListItem, TreeScope.Children); }
     static void Same(AutomationElement actual, AutomationElement expected, string message) { Check(Automation.Compare(actual, expected), message); }
+    static void CheckFocus(AutomationElement element, string message)
+    {
+        Check(element.Current.HasKeyboardFocus, message + " property");
+        var focused = root.FindAll(TreeScope.Descendants, new PropertyCondition(AutomationElement.HasKeyboardFocusProperty, true));
+        Check(focused.Count == 1 && Automation.Compare(focused[0], element), message + " unique reachable logical focus");
+        IntPtr buffer; int bytes;
+        Check(WTSQuerySessionInformation(IntPtr.Zero, -1, 8, out buffer, out bytes), "query session connection state");
+        int connectionState;
+        try { connectionState = Marshal.ReadInt32(buffer); }
+        finally { WTSFreeMemory(buffer); }
+        uint foregroundProcess;
+        GetWindowThreadProcessId(GetForegroundWindow(), out foregroundProcess);
+        if (connectionState == 4) Console.WriteLine("UNVERIFIED desktop focus lookup: WTSDisconnected session");
+        else if (foregroundProcess != ownedProcess) Console.WriteLine("UNVERIFIED desktop focus lookup: test application is not foreground");
+        else
+        {
+            var actual = AutomationElement.FocusedElement;
+            string description = actual == null ? "null" : actual.Current.ControlType.ProgrammaticName + "/" + actual.Current.ClassName + "/PID=" + actual.Current.ProcessId + "/" + actual.Current.Name;
+            Same(actual, element, message + " desktop lookup (actual=" + description + ", expected PID=" + ownedProcess + ")");
+        }
+    }
     static void Names(List<AutomationElement> items, params string[] names)
     {
         Check(items.Count == names.Length, "Item count: expected " + names.Length + ", got " + items.Count);
@@ -181,7 +232,7 @@ public static class GacUIShowcaseTests
             {
                 Test("ListView / " + views.GetViewName(view));
                 views.SetCurrentView(view); Check(views.Current.CurrentView == view, "view changed");
-                if (views.GetViewName(view) == "Detail") Pattern<GridPattern>(list, GridPattern.Pattern); else Absent(list, GridPattern.Pattern);
+                if (view == 5) Pattern<GridPattern>(list, GridPattern.Pattern); else Absent(list, GridPattern.Pattern);
                 Check(Pattern<SelectionItemPattern>(retained, SelectionItemPattern.Pattern).Current.IsSelected, "selection survives view change");
             }
         }
@@ -327,6 +378,9 @@ public static class GacUIShowcaseTests
             Check(Pattern<TablePattern>(calendar, TablePattern.Pattern).Current.GetColumnHeaders().Length == 7, "weekday headers");
             var day = grid.GetItem(2,2); var selection = Pattern<SelectionItemPattern>(day, SelectionItemPattern.Pattern); selection.Select();
             Check(selection.Current.IsSelected, "calendar day selected"); Same(selection.Current.SelectionContainer, calendar, "calendar container");
+            day.SetFocus();
+            Check(day.Current.HasKeyboardFocus, "calendar logical focus");
+            CheckFocus(day, "calendar focus");
         }
     }
     static void WalkTabs(AutomationElement container, int depth)
@@ -400,6 +454,8 @@ public static class GacUIShowcaseTests
         bool repeatsChild = false;
         foreach (var nested in childRange.GetChildren()) if (Automation.Compare(nested, child)) repeatsChild = true;
         verify(!repeatsChild, "X4 embedded range children do not repeat enclosing child");
+        var childBounds = child.Current.BoundingRectangle;
+        verify(document.RangeFromPoint(new System.Windows.Point(childBounds.Left + childBounds.Width / 2, childBounds.Top + childBounds.Height / 2)).Compare(childRange), "R2-20 point within embedded control returns its object range");
 
         Test("review / combo ownership and atomic rejection");
         var listPage = Page(Page(root, "List"), "TextList");
@@ -449,6 +505,29 @@ public static class GacUIShowcaseTests
         verify(focused == 1, "P2 one focused semantic element in grid");
         var headers = Find(grid, ControlType.Header);
         verify(headers.Count == 1 && headers[0].Current.Orientation == OrientationType.Horizontal, "P2 header orientation is horizontal");
+        var cellValue = Pattern<ValuePattern>(cell, ValuePattern.Pattern);
+        var originalValue = cellValue.Current.Value;
+        cellValue.SetValue("UIA grid value");
+        verify(cellValue.Current.Value == "UIA grid value" && cell.Current.Name == "UIA grid value", "R2-11 editable cell Value updates the model");
+        cellValue.SetValue(originalValue);
+        Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(2000), "grid value restoration is idle");
+        var gridPattern = Pattern<GridPattern>(grid, GridPattern.Pattern);
+        var gridHeaders = Pattern<TablePattern>(grid, TablePattern.Pattern).Current.GetColumnHeaders();
+        var gridScroll = Pattern<ScrollPattern>(grid, ScrollPattern.Pattern);
+        double originalScroll = gridScroll.Current.HorizontalScrollPercent;
+        var firstHeader = Pattern<TransformPattern>(gridHeaders[0], TransformPattern.Pattern);
+        double originalWidth = gridHeaders[0].Current.BoundingRectangle.Width;
+        double originalHeight = gridHeaders[0].Current.BoundingRectangle.Height;
+        firstHeader.Resize(grid.Current.BoundingRectangle.Width + 100, originalHeight);
+        Wait(() => gridHeaders[0].Current.BoundingRectangle.Width > originalWidth, "grid column resize is laid out");
+        var farCell = gridPattern.GetItem(0, gridPattern.Current.ColumnCount - 1);
+        Wait(() => farCell.Current.IsOffscreen, "R2-10 distant grid column begins offscreen after column layout");
+        Pattern<ScrollItemPattern>(farCell, ScrollItemPattern.Pattern).ScrollIntoView();
+        Wait(() => !farCell.Current.IsOffscreen, "R2-10 horizontal scrolling reveals the distant cell");
+        selectedCells = Pattern<SelectionPattern>(grid, SelectionPattern.Pattern).Current.GetSelection();
+        verify(selectedCells.Length == 1 && Automation.Compare(selectedCells[0], cell), "R2-10 horizontal cell scrolling preserves selection");
+        firstHeader.Resize(originalWidth, originalHeight);
+        gridScroll.SetScrollPercent(originalScroll, ScrollPattern.NoScroll);
 
         var calendarPage = Page(Page(root, "Misc"), "DatePicker");
         var calendar = Find(calendarPage, ControlType.Calendar)[0];
@@ -456,8 +535,81 @@ public static class GacUIShowcaseTests
         bool visibleHeaders = weekdayHeaders.Length == 7;
         foreach (var header in weekdayHeaders) { var bounds = header.Current.BoundingRectangle; visibleHeaders &= !bounds.IsEmpty && bounds.Width > 0 && bounds.Height > 0; }
         verify(visibleHeaders, "T6 calendar weekday headers have visible geometry");
+        var calendarSelection = Pattern<SelectionPattern>(calendar, SelectionPattern.Pattern);
+        var selectedDay = calendarSelection.Current.GetSelection()[0];
+        var days = Pattern<GridPattern>(calendar, GridPattern.Pattern);
+        var differentDay = days.GetItem(2, 3);
+        if (Automation.Compare(selectedDay, differentDay)) differentDay = days.GetItem(2, 4);
+        rejected = false;
+        try { Pattern<SelectionItemPattern>(differentDay, SelectionItemPattern.Pattern).AddToSelection(); }
+        catch (InvalidOperationException) { rejected = true; }
+        verify(rejected && Automation.Compare(calendarSelection.Current.GetSelection()[0], selectedDay), "R2-07 calendar Add rejects a conflicting day without mutation");
+        selectedDay.SetFocus();
+        Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(2000), "previous calendar focus transition settles");
+        AutomationElement focusedDay = null;
+        AutomationFocusChangedEventHandler focusHandler = (s,e) => { var element = s as AutomationElement; if (element != null && Automation.Compare(element, differentDay)) focusedDay = element; };
+        Automation.AddAutomationFocusChangedEventHandler(focusHandler);
+        try
+        {
+            verify(differentDay.Current.IsKeyboardFocusable, "R2-03 logical calendar day is focusable");
+            differentDay.SetFocus();
+            verify(differentDay.Current.HasKeyboardFocus, "R2-03 logical day reports keyboard focus after SetFocus");
+            Wait(() => focusedDay != null, "R2-03 focus event identifies logical calendar day");
+            CheckFocus(differentDay, "R2-03 logical calendar day");
+        }
+        finally { Automation.RemoveAutomationFocusChangedEventHandler(focusHandler); }
         var tabs = Find(root, ControlType.Tab, TreeScope.Children);
         verify(tabs.Count > 0 && tabs[0].Current.Orientation == OrientationType.Horizontal, "P2 tab orientation is horizontal");
+        var tabSelection = Pattern<SelectionPattern>(tabs[0], SelectionPattern.Pattern);
+        var originalTab = tabSelection.Current.GetSelection()[0];
+        var otherTab = Find(tabs[0], ControlType.TabItem, TreeScope.Children)[0];
+        if (Automation.Compare(originalTab, otherTab)) otherTab = Find(tabs[0], ControlType.TabItem, TreeScope.Children)[1];
+        rejected = false;
+        try { Pattern<SelectionItemPattern>(otherTab, SelectionItemPattern.Pattern).AddToSelection(); }
+        catch (InvalidOperationException) { rejected = true; }
+        verify(rejected && Automation.Compare(tabSelection.Current.GetSelection()[0], originalTab), "R2-07 tab Add rejects another page without mutation");
+
+        Test("review / ribbon headers and menu mode events");
+        var ribbonPage = Page(Page(root, "Control"), "Document Editor (Ribbon)");
+        var home = Named(ribbonPage, "  HOME  ", ControlType.Button);
+        var search = Find(ribbonPage, ControlType.Edit)[0];
+        foreach (var headerControl in new [] { home, search })
+        {
+            var bounds = headerControl.Current.BoundingRectangle;
+            verify(Automation.Compare(AutomationElement.FromPoint(new System.Windows.Point(bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2)), headerControl), "R2-02 ribbon header hit test: " + headerControl.Current.ControlType.ProgrammaticName);
+            headerControl.SetFocus();
+            CheckFocus(headerControl, "R2-02 ribbon header");
+        }
+        var menuPage = Page(Page(root, "Control"), "Document Editor (Toolstrip)");
+        var menuEvents = new List<int>();
+        AutomationEventHandler menuHandler = (s,e) => { lock(menuEvents) menuEvents.Add(e.EventId.Id); };
+        var eventRoot = isHosted ? root : AutomationElement.RootElement;
+        foreach (var eventId in new [] { MenuModeStartEvent, AutomationElement.MenuOpenedEvent, AutomationElement.MenuClosedEvent, MenuModeEndEvent })
+            Automation.AddAutomationEventHandler(eventId, eventRoot, TreeScope.Subtree, menuHandler);
+        try
+        {
+            var fileItem = Named(menuPage, "File", ControlType.MenuItem);
+            var fileMenu = Pattern<ExpandCollapsePattern>(fileItem, ExpandCollapsePattern.Pattern);
+            foreach (var entry in new [] { "ExpandCollapse", "keyboard", "pointer" })
+            {
+                lock(menuEvents) menuEvents.Clear();
+                if (entry == "keyboard") { fileItem.SetFocus(); Press("Space"); }
+                else if (entry == "pointer") Click(fileItem);
+                else fileMenu.Expand();
+                Wait(() => { lock(menuEvents) return menuEvents.Contains(AutomationElement.MenuOpenedEvent.Id); }, "R2-23 menu opened by " + entry);
+                var nestedMenu = Pattern<ExpandCollapsePattern>(Named(menuPage, "Save as", ControlType.MenuItem), ExpandCollapsePattern.Pattern);
+                nestedMenu.Expand();
+                Wait(() => { lock(menuEvents) return menuEvents.FindAll(id => id == AutomationElement.MenuOpenedEvent.Id).Count == 2; }, "R2-23 nested menu opens in the same menu mode");
+                fileMenu.Collapse();
+                Wait(() => { lock(menuEvents) return menuEvents.Contains(MenuModeEndEvent.Id); }, "R2-23 menu mode ended event");
+                lock(menuEvents) verify(menuEvents.Count == 6 && menuEvents[0] == MenuModeStartEvent.Id && menuEvents[1] == AutomationElement.MenuOpenedEvent.Id && menuEvents[2] == AutomationElement.MenuOpenedEvent.Id && menuEvents[3] == AutomationElement.MenuClosedEvent.Id && menuEvents[4] == AutomationElement.MenuClosedEvent.Id && menuEvents[5] == MenuModeEndEvent.Id, "R2-23 nested menu boundary events are paired and ordered: " + entry);
+            }
+        }
+        finally
+        {
+            foreach (var eventId in new [] { MenuModeStartEvent, AutomationElement.MenuOpenedEvent, AutomationElement.MenuClosedEvent, MenuModeEndEvent })
+                Automation.RemoveAutomationEventHandler(eventId, eventRoot, menuHandler);
+        }
 
         Check(failures.Count == 0, "UIA review contract failures: " + string.Join("; ", failures.ToArray()));
     }
@@ -559,16 +711,210 @@ public static class GacUIShowcaseTests
         lock (errors) Check(errors.Count == 0, errors.Count == 0 ? "concurrent MTA reads agree" : errors[0].ToString());
     }
 
+    static void Review2Contracts()
+    {
+        var failures = new List<string>();
+        Action<bool,string> verify = (condition, message) => {
+            Console.WriteLine((condition ? "PASS " : "FAIL ") + message);
+            if (condition) assertions++; else failures.Add(message);
+        };
+        var edit = Find(root, ControlType.Edit)[0];
+        var value = Pattern<ValuePattern>(edit, ValuePattern.Pattern);
+        var text = Pattern<TextPattern>(edit, TextPattern.Pattern);
+        value.SetValue("\uD83D\uDE00");
+        var found = text.DocumentRange.FindAttribute(TextPattern.FontWeightAttribute, 400, false);
+        verify(found != null && found.GetText(-1) == "\uD83D\uDE00", "R2-15 attribute search preserves supplementary character");
+        var range = text.DocumentRange.Clone();
+        range.MoveEndpointByRange(TextPatternRangeEndpoint.End, range, TextPatternRangeEndpoint.Start);
+        range.ExpandToEnclosingUnit(TextUnit.Format);
+        verify(range.GetText(-1) == "\uD83D\uDE00", "R2-15 Format preserves supplementary character");
+        value.SetValue("abc");
+        range = text.DocumentRange.Clone();
+        range.MoveEndpointByRange(TextPatternRangeEndpoint.End, range, TextPatternRangeEndpoint.Start);
+        verify(Object.Equals(range.GetAttributeValue(TextPattern.FontWeightAttribute), 400), "R2-16 caret inherits uniform formatting");
+        range.Move(TextUnit.Character, 2);
+        int moved = range.Move(TextUnit.Document, -1);
+        verify(moved == -1 && range.CompareEndpoints(TextPatternRangeEndpoint.Start, text.DocumentRange, TextPatternRangeEndpoint.Start) == 0, "R2-17 degenerate movement counts actual boundary");
+        range = text.DocumentRange.FindText("b", false, false);
+        moved = range.Move(TextUnit.Document, -1);
+        verify(moved == 0 && range.GetText(-1) == "b", "R2-17 failed nondegenerate movement preserves endpoints");
+        value.SetValue("one two");
+        range = text.DocumentRange.Clone();
+        range.MoveEndpointByRange(TextPatternRangeEndpoint.End, range, TextPatternRangeEndpoint.Start);
+        range.ExpandToEnclosingUnit(TextUnit.Word);
+        verify(range.GetText(-1) == "one ", "R2-18 Word includes trailing separator");
+
+        verify(edit.Current.Name == "Account name" && edit.Current.LabeledBy != null && edit.Current.LabeledBy.Current.Name == "Account name", "R2-01 explicit label remains independent of value");
+        verify(edit.Current.HelpText == "Your account identifier", "R2-05 tooltip text is owner HelpText before opening");
+        Invoke(root, "Show tooltip");
+        AutomationElement tooltip = null;
+        Wait(() => { tooltip = Popup(ControlType.ToolTip); return tooltip != null; }, "tooltip opens");
+        verify(tooltip.Current.Name == "Your account identifier" && !tooltip.Current.IsContentElement, "R2-05 ordinary tooltip name and content view");
+        Invoke(root, "Hide tooltip");
+        Wait(() => tooltip.Current.IsOffscreen, "tooltip closes");
+        var combo = Named(root, "Review choices", ControlType.ComboBox);
+        var comboLabel = combo.Current.LabeledBy;
+        SelectCombo(root, combo, "Second choice");
+        verify(combo.Current.Name == "Review choices" && Automation.Compare(combo.Current.LabeledBy, comboLabel), "R2-01 combo label remains stable across selection");
+        var namedEdit = Named(root, "Explicit editor name", ControlType.Edit);
+        Pattern<ValuePattern>(namedEdit, ValuePattern.Pattern).SetValue("new contents");
+        verify(namedEdit.Current.Name == "Explicit editor name", "R2-01 application name remains independent of editor value");
+        Invoke(root, "Interactive tooltip");
+        Wait(() => { tooltip = Popup(ControlType.ToolTip); return tooltip != null; }, "interactive tooltip opens");
+        verify(tooltip.Current.IsContentElement && tooltip.Current.Name == "Tooltip command", "R2-05 interactive tooltip belongs to content view");
+        Invoke(root, "Hide interactive");
+        Wait(() => tooltip.Current.IsOffscreen, "interactive tooltip closes");
+        Invoke(root, "Plain popup");
+        AutomationElement plainPopup = null;
+        Wait(() => { foreach (var candidate in isHosted ? Find(root, ControlType.Pane) : OwnedWindows()) if (candidate.Current.Name == "Review plain popup") { plainPopup = candidate; return true; } return false; }, "plain popup opens");
+        verify(plainPopup.Current.ControlType == ControlType.Pane, "R2-06 plain popup has Pane role");
+        Absent(plainPopup, WindowPattern.Pattern);
+        Absent(plainPopup, TransformPattern.Pattern);
+        Invoke(root, "Hide popup");
+        Wait(() => plainPopup.Current.IsOffscreen, "plain popup closes");
+
+        var radio0 = Named(root, "Radio 0", ControlType.RadioButton);
+        var radio1 = Named(root, "Radio 1", ControlType.RadioButton);
+        var radio2 = Named(root, "Radio 2", ControlType.RadioButton);
+        var selection0 = Pattern<SelectionItemPattern>(radio0, SelectionItemPattern.Pattern);
+        var selection1 = Pattern<SelectionItemPattern>(radio1, SelectionItemPattern.Pattern);
+        var selection2 = Pattern<SelectionItemPattern>(radio2, SelectionItemPattern.Pattern);
+        var group0 = selection0.Current.SelectionContainer;
+        verify(group0 != null && Automation.Compare(group0, selection1.Current.SelectionContainer) && !Automation.Compare(group0, selection2.Current.SelectionContainer), "R2-08 mutex identity spans layout parents and separates independent groups");
+        var selected = Pattern<SelectionPattern>(group0, SelectionPattern.Pattern).Current.GetSelection();
+        verify(selected.Length == 1 && Automation.Compare(selected[0], radio0), "R2-08 group Selection returns actual selected peer");
+        bool rejected = false;
+        try { selection1.AddToSelection(); } catch (InvalidOperationException) { rejected = true; }
+        verify(rejected && selection0.Current.IsSelected && !selection1.Current.IsSelected, "R2-07 radio Add rejection preserves selection");
+        selection1.Select();
+        verify(selection1.Current.IsSelected && selection2.Current.IsSelected, "R2-08 selection affects only actual mutex peers");
+
+        var farButton = Named(root, "Far button", ControlType.Button);
+        edit.SetFocus();
+        verify(farButton.Current.IsOffscreen, "R2-09 ordinary target begins outside scroll viewport");
+        Pattern<ScrollItemPattern>(farButton, ScrollItemPattern.Pattern).ScrollIntoView();
+        verify(!farButton.Current.IsOffscreen && edit.Current.HasKeyboardFocus, "R2-09 ScrollItem reveals ordinary control without changing focus");
+
+        var documentElement = Named(root, "Review objects", ControlType.Document);
+        var document = Pattern<TextPattern>(documentElement, TextPattern.Pattern);
+        var children = document.DocumentRange.GetChildren();
+        verify(children.Length == 3 && children[0].Current.ControlType == ControlType.Hyperlink && children[1].Current.ControlType == ControlType.Image, "R2-19 hyperlinks and images have text-child identities");
+        foreach (var child in children)
+        {
+            var objectRange = document.RangeFromChild(child);
+            verify(Automation.Compare(objectRange.GetEnclosingElement(), child), "R2-19 object range enclosure: " + child.Current.Name);
+            var bounds = child.Current.BoundingRectangle;
+            verify(!bounds.IsEmpty && bounds.Width > 0 && bounds.Height > 0, "R2-19 object bounds: " + child.Current.Name);
+            var pointRange = document.RangeFromPoint(new System.Windows.Point(bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2));
+            verify(pointRange.Compare(objectRange), "R2-20 point range encloses object: " + child.Current.Name);
+            objectRange.ExpandToEnclosingUnit(TextUnit.Format);
+            verify(objectRange.Compare(document.RangeFromChild(child)), "R2-18 Format stops at object boundary: " + child.Current.Name);
+        }
+        Pattern<InvokePattern>(children[0], InvokePattern.Pattern).Invoke();
+        Wait(() => edit.Current.LabeledBy.Current.Name == "review://link", "R2-19 hyperlink invokes its document action");
+        var nestedDocumentElement = Named(root, "Nested review objects", ControlType.Document);
+        var nestedText = Pattern<TextPattern>(nestedDocumentElement, TextPattern.Pattern);
+        // The entire stream is inside this link, so its text range's enclosing
+        // element is the link and GetChildren already returns the nested objects.
+        var nestedLink = Find(nestedDocumentElement, ControlType.Hyperlink, TreeScope.Children)[0];
+        var nestedChildren = nestedText.RangeFromChild(nestedLink).GetChildren();
+        verify(nestedChildren.Length == 2 && nestedChildren[0].Current.ControlType == ControlType.Image && nestedChildren[1].Current.ControlType == ControlType.Button, "R2-19 nested image and button remain reachable under hyperlink");
+        foreach (var child in nestedChildren)
+        {
+            Same(TreeWalker.ControlViewWalker.GetParent(child), nestedLink, "R2-19 nested semantic parent");
+            var objectRange = nestedText.RangeFromChild(child);
+            Same(objectRange.GetEnclosingElement(), child, "R2-19 nested object enclosure");
+            var bounds = child.Current.BoundingRectangle;
+            verify(nestedText.RangeFromPoint(new System.Windows.Point(bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2)).Compare(objectRange), "R2-20 nested object point range");
+            verify(objectRange.GetChildren().Length == 0, "R2-19 nested object does not repeat itself");
+        }
+        int documentTextEvents = 0, documentSelectionEvents = 0;
+        Automation.AddAutomationEventHandler(TextPattern.TextChangedEvent, documentElement, TreeScope.Element, (s,e) => Interlocked.Increment(ref documentTextEvents));
+        Automation.AddAutomationEventHandler(TextPattern.TextSelectionChangedEvent, documentElement, TreeScope.Element, (s,e) => Interlocked.Increment(ref documentSelectionEvents));
+        range = document.DocumentRange;
+        range.MoveEndpointByRange(TextPatternRangeEndpoint.Start, range, TextPatternRangeEndpoint.End);
+        range.Select();
+        Wait(() => documentSelectionEvents > 0, "fixture caret selection event");
+        int selectionBefore = documentSelectionEvents;
+        Invoke(root, "Replace document");
+        Wait(() => documentTextEvents > 0 && documentSelectionEvents > selectionBefore, "R2-21 document replacement publishes text and caret changes");
+        int textBefore = documentTextEvents;
+        Invoke(root, "Update paragraph");
+        Wait(() => documentTextEvents > textBefore && document.DocumentRange.GetText(-1).EndsWith("updated"), "R2-21 direct paragraph update publishes text event");
+
+        AutomationElement views = null;
+        foreach (AutomationElement candidate in root.FindAll(TreeScope.Descendants, Condition.TrueCondition))
+        {
+            object pattern;
+            if (candidate.TryGetCurrentPattern(MultipleViewPattern.Pattern, out pattern)) { views = candidate; break; }
+        }
+        var multipleView = Pattern<MultipleViewPattern>(views, MultipleViewPattern.Pattern);
+        verify(multipleView.GetViewName(0) == "Grandes icones" && multipleView.Current.GetSupportedViews()[0] == 0, "R2-24 localized view names preserve numeric IDs");
+        verify(Find(views, ControlType.Header)[0].Current.Name == "En-tetes", "R2-24 header metadata uses application locale");
+
+        Invoke(root, "Open secondary");
+        AutomationElement secondary = null;
+        Wait(() => { foreach (var candidate in isHosted ? Find(root, ControlType.Window) : OwnedWindows()) if (candidate.Current.Name == "Review secondary") { secondary = candidate; return true; } return false; }, "secondary window opens");
+        var windowPattern = Pattern<WindowPattern>(secondary, WindowPattern.Pattern);
+        Invoke(root, "Disable secondary");
+        Wait(() => !secondary.Current.IsEnabled, "secondary disabled by application");
+        verify(!windowPattern.Current.IsModal && windowPattern.Current.WindowInteractionState == WindowInteractionState.Running, "R2-14 manually disabled window is not modal-blocked");
+        Invoke(root, "Enable secondary");
+        Wait(() => secondary.Current.IsEnabled, "secondary enabled");
+        int boundsEvents = 0;
+        Automation.AddAutomationPropertyChangedEventHandler(secondary, TreeScope.Element, (s,e) => Interlocked.Increment(ref boundsEvents), AutomationElement.BoundingRectangleProperty);
+        var secondaryChild = Find(secondary, ControlType.Button).Find(candidate => !candidate.Current.IsOffscreen);
+        Check(secondaryChild != null, "visible secondary-window descendant");
+        int childBoundsEvents = 0;
+        Automation.AddAutomationPropertyChangedEventHandler(secondaryChild, TreeScope.Element, (s,e) => Interlocked.Increment(ref childBoundsEvents), AutomationElement.BoundingRectangleProperty);
+        var childOriginal = secondaryChild.Current.BoundingRectangle;
+        var transform = Pattern<TransformPattern>(secondary, TransformPattern.Pattern);
+        var original = secondary.Current.BoundingRectangle;
+        transform.Move(original.Left + 15, original.Top + 12);
+        Wait(() => boundsEvents > 0 && secondary.Current.BoundingRectangle.Left != original.Left, "R2-22 translation publishes bounding rectangle event");
+        Wait(() => childBoundsEvents > 0 && secondaryChild.Current.BoundingRectangle.Left != childOriginal.Left, "R2-22 translation publishes descendant bounds event");
+        transform.Move(-100000, -100000);
+        var movedBounds = secondary.Current.BoundingRectangle;
+        var rootBounds = root.Current.BoundingRectangle;
+        verify(!movedBounds.IsEmpty && movedBounds.Right > (isHosted ? rootBounds.Left : 0) && movedBounds.Bottom > (isHosted ? rootBounds.Top : 0), "R2-13 inaccessible Move is clamped into window container");
+        windowPattern.Close();
+        Wait(() => secondary.Current.IsOffscreen, "secondary closes before modal session");
+
+        Invoke(root, "Open modal");
+        Wait(() => !secondary.Current.IsOffscreen && windowPattern.Current.IsModal, "R2-14 actual modal session reports IsModal");
+        verify(Pattern<WindowPattern>(root, WindowPattern.Pattern).Current.WindowInteractionState == WindowInteractionState.BlockedByModalWindow, "R2-14 modal owner reports blocked interaction state");
+        windowPattern.Close();
+        Wait(() => root.Current.IsEnabled && !windowPattern.Current.IsModal, "R2-14 closing modal restores owner and clears session state");
+
+        var rootWindow = Pattern<WindowPattern>(root, WindowPattern.Pattern);
+        verify(rootWindow.WaitForInputIdle(2000), "R2-12 settled application reaches idle");
+        string eventName = "Local\\GacUI.UiaBusy." + ownedProcess;
+        IntPtr started = OpenEvent(0x100000, false, eventName + ".Started");
+        IntPtr release = OpenEvent(2, false, eventName + ".Release");
+        Check(started != IntPtr.Zero && release != IntPtr.Zero, "busy synchronization handles");
+        try
+        {
+            Invoke(root, "Busy");
+            Check(WaitForSingleObject(started, 3000) == 0, "UI thread entered controlled busy state");
+            var timer = Stopwatch.StartNew();
+            bool idle = rootWindow.WaitForInputIdle(60);
+            verify(!idle && timer.ElapsedMilliseconds < 1000, "R2-12 busy wait honors timeout and returns false");
+        }
+        finally { SetEvent(release); CloseHandle(started); CloseHandle(release); }
+        verify(rootWindow.WaitForInputIdle(2000), "R2-12 idle wait succeeds after busy work completes");
+        Check(failures.Count == 0, "UIA review 2 failures: " + string.Join("; ", failures.ToArray()));
+    }
+
     public static void Run(int processId, bool hosted, string scenario, int port)
     {
         Check(Thread.CurrentThread.GetApartmentState() == ApartmentState.MTA, "client must be MTA");
         IntPtr hwnd = IntPtr.Zero;
         Wait(() => { EnumWindows((h,p) => { uint id; GetWindowThreadProcessId(h,out id); var text=new StringBuilder(256); GetClassName(h,text,256); if (id==processId && text.ToString()=="VczhWindow" && IsWindowVisible(h)) hwnd=h; return true; },IntPtr.Zero); return hwnd!=IntPtr.Zero; }, "owned HWND");
         Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
-        inputEndpoint = "http://localhost:" + port + "/Automation/" + (scenario == "Transitions" ? "Playground" : hosted ? "CppTest" : "CppTest_Metaonly") + "/IO";
+        inputEndpoint = "http://localhost:" + port + "/Automation/" + (scenario == "Transitions" || scenario == "Review2" ? "Playground" : hosted ? "CppTest" : "CppTest_Metaonly") + "/IO";
         ownedProcess = processId; isHosted = hosted;
         Check(root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI", "owned native GacUI root; HWND=" + hwnd + "; PID=" + root.Current.ProcessId + "; FrameworkId=" + root.Current.FrameworkId + "; Name=" + root.Current.Name);
-        Check(root.Current.Name == (scenario == "Transitions" ? "UIA Review Fixture" : "Complete Control Showcase"), "application title");
+        Check(root.Current.Name == (scenario == "Transitions" || scenario == "Review2" ? "UIA Review Fixture" : "Complete Control Showcase"), "application title");
         if (scenario == "Concurrent")
         {
             Test("concurrent target / independent UIA selection");
@@ -587,6 +933,7 @@ public static class GacUIShowcaseTests
         {
             if (scenario == "All" || scenario == "Review") ReviewContracts();
             if (scenario == "Transitions") TransitionContracts();
+            if (scenario == "Review2") Review2Contracts();
             if (scenario == "All" || scenario == "List") { TextLists(); ListViews(); Trees(); }
             if (scenario == "All" || scenario == "Grid") Grids();
             if (scenario == "All" || scenario == "Text") TextControls();

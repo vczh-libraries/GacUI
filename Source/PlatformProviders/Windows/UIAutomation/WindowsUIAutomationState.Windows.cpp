@@ -36,6 +36,8 @@ namespace vl::presentation::windows
 		roots.Clear();
 		windows.Clear();
 		combos.Clear();
+		openMenus.Clear();
+		menuModeOwner = nullptr;
 		nodes.Clear();
 		dispatcher->Stop();
 	}
@@ -50,7 +52,7 @@ namespace vl::presentation::windows
 			auto root = Control(window);
 			roots.Add(native, root);
 			Scan(window->GetBoundsComposition());
-			if (window->GetOpening()) Notify(root, true, UiaWindowEvent(window, true));
+			if (window->GetOpening()) WindowEvent(root, true);
 		}
 	}
 
@@ -58,6 +60,37 @@ namespace vl::presentation::windows
 	{
 		if (auto control = composition->GetAssociatedControl()) Control(control);
 		for (auto child : composition->Children()) Scan(child);
+	}
+
+	void WindowsUIAutomationContext::WindowEvent(Ptr<WindowsUIAutomationNode> node, bool opening)
+	{
+		if (!dynamic_cast<GuiMenu*>(node->control))
+		{
+			Notify(node, true, UiaWindowEvent(node->control, opening));
+			return;
+		}
+		if (opening)
+		{
+			if (openMenus.Contains(node.Obj())) return;
+			if (openMenus.Count() == 0)
+			{
+				menuModeOwner = Control(GetApplication()->GetMainWindow());
+				UiaRaiseAutomationEvent(menuModeOwner->Provider(), UIA_MenuModeStartEventId);
+			}
+			openMenus.Add(node);
+			UiaRaiseAutomationEvent(node->Provider(), UIA_MenuOpenedEventId);
+		}
+		else
+		{
+			if (!openMenus.Remove(node.Obj())) return;
+			UiaRaiseAutomationEvent(node->Provider(), UIA_MenuClosedEventId);
+			if (openMenus.Count() == 0)
+			{
+				if (menuModeOwner->IsLive()) UiaRaiseAutomationEvent(menuModeOwner->Provider(), UIA_MenuModeEndEventId);
+				menuModeOwner = nullptr;
+			}
+		}
+		Notify(node, true);
 	}
 
 	Ptr<WindowsUIAutomationNode> WindowsUIAutomationContext::Control(GuiControl* control)
@@ -88,26 +121,51 @@ namespace vl::presentation::windows
 		};
 		control->TextChanged.AttachLambda([node](GuiGraphicsComposition*, GuiEventArgs&)
 		{
-			if (node->IsLive()) node->context->Notify(node, false, UiaDocument(node->control) ? UIA_Text_TextChangedEventId : 0);
+			if (!node->IsLive()) return;
+			node->context->Notify(node, false, UiaDocument(node->control) ? UIA_Text_TextChangedEventId : 0);
+			for (auto target : node->context->nodes)
+				if (target->kind == Kind::Control && target->IsLive())
+					if (auto metadata = UiaMetadata(target->control); metadata && metadata->label == node->control)
+						node->context->Notify(target);
 		});
 		control->VisibleChanged.AttachLambda(structure);
 		control->VisuallyEnabledChanged.AttachLambda(changed);
 		control->ControlTemplateChanged.AttachLambda(structure);
 		control->FocusedChanged.AttachLambda([node](GuiGraphicsComposition*, GuiEventArgs&)
 		{
-			if (node->IsLive()) node->context->Notify(node);
+			if (!node->IsLive()) return;
+			for (auto parent = node->control->GetParent(); parent; parent = parent->GetParent())
+			{
+				if (auto calendar = UiaCalendar(parent))
+				{
+					for (vint r = 0; r < 6; r++) for (vint c = 0; c < 7; c++)
+						if (calendar->GetDayButton(r, c) == node->control)
+						{
+							node->context->Notify(node->context->Item(node->context->Control(parent), Kind::CalendarDay, r, c));
+							return;
+						}
+					break;
+				}
+			}
+			node->context->Notify(node);
 		});
 		if (auto window = dynamic_cast<GuiWindow*>(control))
 		{
-			auto windowChanged = [node](EVENTID eventId)
+			window->BoundsChanged.AttachLambda([node](GuiGraphicsComposition*, GuiEventArgs&)
 			{
 				if (!node->IsLive()) return;
-				node->context->Notify(node, true, eventId);
+				for (auto child : node->context->nodes)
+					if (child->IsLive() && child->Window() == node->control) node->context->Notify(child);
+			});
+			auto windowChanged = [node](bool opening)
+			{
+				if (!node->IsLive()) return;
+				node->context->WindowEvent(node, opening);
 				if (node->context->hosted && node->control != GetApplication()->GetMainWindow())
 					node->context->Notify(node->context->Control(GetApplication()->GetMainWindow()), true);
 			};
-			window->WindowOpened.AttachLambda([windowChanged, node](GuiGraphicsComposition*, GuiEventArgs&) { windowChanged(UiaWindowEvent(node->control, true)); });
-			window->WindowClosed.AttachLambda([windowChanged, node](GuiGraphicsComposition*, GuiEventArgs&) { windowChanged(UiaWindowEvent(node->control, false)); });
+			window->WindowOpened.AttachLambda([windowChanged](GuiGraphicsComposition*, GuiEventArgs&) { windowChanged(true); });
+			window->WindowClosed.AttachLambda([windowChanged](GuiGraphicsComposition*, GuiEventArgs&) { windowChanged(false); });
 			window->ChildCompositionUpdated.AttachLambda([node](GuiGraphicsComposition*, GuiCompositionUpdateEventArgs& arguments)
 			{
 				if (!node->IsLive()) return;
@@ -126,10 +184,19 @@ namespace vl::presentation::windows
 		{
 			button->SelectedChanged.AttachLambda([node](GuiGraphicsComposition*, GuiEventArgs&)
 			{
-				if (node->IsLive()) node->context->Notify(node, false, node->Supports(UIA_SelectionItemPatternId) && node->IsSelected() ? UIA_SelectionItem_ElementSelectedEventId : 0);
+				if (!node->IsLive()) return;
+				auto group = UiaRadioGroup(node.Obj());
+				if (group) node->context->Notify(group);
+				node->context->Notify(node, false, !group && node->Supports(UIA_SelectionItemPatternId) && node->IsSelected() ? UIA_SelectionItem_ElementSelectedEventId : 0);
 			});
 			button->AutoSelectionChanged.AttachLambda(changed);
-			button->GroupControllerChanged.AttachLambda(changed);
+			button->GroupControllerChanged.AttachLambda([node](GuiGraphicsComposition*, GuiEventArgs&)
+			{
+				if (!node->IsLive()) return;
+				for (auto group : node->context->nodes) if (group->kind == Kind::RadioGroup && group->owner == node) group->Retire();
+				for (auto group : node->context->nodes) if (group->kind == Kind::RadioGroup && group->IsLive()) node->context->Notify(group);
+				node->context->Notify(node->context->Control(node->Window()), true);
+			});
 		}
 		if (auto menu = dynamic_cast<GuiMenuButton*>(control))
 		{
@@ -212,11 +279,11 @@ namespace vl::presentation::windows
 		return node;
 	}
 
-	Ptr<WindowsUIAutomationNode> WindowsUIAutomationContext::Item(Ptr<WindowsUIAutomationNode> owner, Kind kind, vint row, vint column, Ptr<tree::INodeProvider> treeNode)
+	Ptr<WindowsUIAutomationNode> WindowsUIAutomationContext::Item(Ptr<WindowsUIAutomationNode> owner, Kind kind, vint row, vint column, Ptr<tree::INodeProvider> treeNode, Ptr<DocumentRun> documentRun)
 	{
 		for (auto node : nodes)
 		{
-			if (!node->retired && node->owner == owner && node->kind == kind && node->row == row && node->column == column && node->treeNode == treeNode) return node;
+			if (!node->retired && node->owner == owner && node->kind == kind && node->row == row && node->column == column && node->treeNode == treeNode && node->documentRun == documentRun) return node;
 		}
 		auto node = Ptr(new WindowsUIAutomationNode);
 		node->context = this;
@@ -228,6 +295,7 @@ namespace vl::presentation::windows
 		node->row = row;
 		node->column = column;
 		node->treeNode = treeNode;
+		node->documentRun = documentRun;
 		node->id = nextId++;
 		nodes.Add(node);
 		UpdateProperties(node, false);
@@ -296,7 +364,7 @@ namespace vl::presentation::windows
 		if (!node->IsLive()) return;
 		const PROPERTYID watched[] =
 		{
-			UIA_NamePropertyId, UIA_AcceleratorKeyPropertyId, UIA_ItemStatusPropertyId, UIA_OrientationPropertyId,
+			UIA_NamePropertyId, UIA_HelpTextPropertyId, UIA_LabeledByPropertyId, UIA_AcceleratorKeyPropertyId, UIA_ItemStatusPropertyId, UIA_OrientationPropertyId,
 			UIA_IsEnabledPropertyId, UIA_IsOffscreenPropertyId, UIA_HasKeyboardFocusPropertyId, UIA_IsContentElementPropertyId,
 			UIA_IsPasswordPropertyId, UIA_IsKeyboardFocusablePropertyId, UIA_AccessKeyPropertyId,
 			UIA_BoundingRectanglePropertyId, UIA_GridRowCountPropertyId, UIA_GridColumnCountPropertyId,
@@ -321,6 +389,7 @@ namespace vl::presentation::windows
 				auto old = node->properties.Values()[index];
 				bool bothEmpty = old->value.vt == VT_EMPTY && value->value.vt == VT_EMPTY;
 				bool equal = bothEmpty || VarCmp(&old->value, &value->value, LOCALE_INVARIANT, 0) == VARCMP_EQ;
+				if (old->value.vt == VT_UNKNOWN && value->value.vt == VT_UNKNOWN) equal = old->value.punkVal == value->value.punkVal;
 				if (old->value.vt == VT_R8 && value->value.vt == VT_R8 && std::isnan(old->value.dblVal) && std::isnan(value->value.dblVal)) equal = true;
 				if (property == UIA_BoundingRectanglePropertyId && old->value.vt == (VT_ARRAY | VT_R8) && value->value.vt == (VT_ARRAY | VT_R8))
 				{
@@ -348,6 +417,9 @@ namespace vl::presentation::windows
 		if (retired) return;
 		retired = true;
 		treeNode = nullptr;
+		documentRun = nullptr;
+		// Provider-valued properties (such as LabeledBy) can form cycles.
+		properties.Clear();
 		if (provider)
 		{
 			auto saved = provider;

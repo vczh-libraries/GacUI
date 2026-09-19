@@ -1068,7 +1068,12 @@ GuiDocumentCommonInterface
 					MergeBaselineAndDefaultFont(value);
 				}
 
+				auto previousBegin = GetCaretBegin();
+				auto previousEnd = GetCaretEnd();
 				documentElement->SetDocument(value);
+				documentControl->TextChanged.Execute(documentControl->GetNotifyEventArguments());
+				if (previousBegin != GetCaretBegin() || previousEnd != GetCaretEnd())
+					SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
 			}
 
 			//================ document items
@@ -1191,6 +1196,7 @@ GuiDocumentCommonInterface
 					}
 
 					documentElement->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
+					if (updatedText) documentControl->TextChanged.Execute(documentControl->GetNotifyEventArguments());
 				}
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -1398,6 +1404,17 @@ GuiDocumentCommonInterface
 			WString GuiDocumentCommonInterface::GetActiveHyperlinkReference()
 			{
 				return activeHyperlinks ? activeHyperlinks->hyperlinks[0]->reference : L"";
+			}
+
+			bool GuiDocumentCommonInterface::ExecuteHyperlink(TextPos position)
+			{
+				auto package = GetDocument()->GetHyperlink(position.row, position.column, position.column);
+				if (!package || !documentControl->GetVisuallyEnabled()) return false;
+				auto disposed = documentControl->GetDisposedFlag();
+				SetActiveHyperlink(package);
+				if (disposed->IsDisposed()) return false;
+				ActiveHyperlinkExecuted.Execute(documentControl->GetNotifyEventArguments());
+				return true;
 			}
 
 			GuiDocumentEditMode GuiDocumentCommonInterface::GetEditMode()

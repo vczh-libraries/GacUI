@@ -94,6 +94,14 @@ namespace vl::presentation::windows
 		switch (property)
 		{
 		case UIA_NamePropertyId: string(Name()); break;
+		case UIA_LabeledByPropertyId:
+			if (kind == Kind::Control) if (auto metadata = UiaMetadata(control); metadata && metadata->label && !metadata->labelDisposed->IsDisposed())
+			{
+				auto label = context->Control(metadata->label);
+				if (label->IsLive()) { result->vt = VT_UNKNOWN; result->punkVal = label->Provider(); result->punkVal->AddRef(); }
+			}
+			break;
+		case UIA_HelpTextPropertyId: if (kind == Kind::Control) string(UiaLocalizedText(control, L"HelpText", UiaTooltipText(control->GetTooltipControl()))); break;
 		case UIA_ControlTypePropertyId: number(Role()); break;
 		case UIA_FrameworkIdPropertyId: string(L"GacUI"); break;
 		case UIA_ClassNamePropertyId: string(L"GacUI." + itow(Role())); break;
@@ -104,8 +112,8 @@ namespace vl::presentation::windows
 			{
 				switch (columns->GetSortingState(column))
 				{
-				case ColumnSortingState::Ascending: string(L"Ascending"); break;
-				case ColumnSortingState::Descending: string(L"Descending"); break;
+				case ColumnSortingState::Ascending: string(UiaLocalizedText(control, L"Ascending", L"Ascending")); break;
+				case ColumnSortingState::Descending: string(UiaLocalizedText(control, L"Descending", L"Descending")); break;
 				default: string(L""); break;
 				}
 			}
@@ -124,7 +132,10 @@ namespace vl::presentation::windows
 		case UIA_ProcessIdPropertyId: number(GetCurrentProcessId()); break;
 		case UIA_NativeWindowHandlePropertyId: if (IsRoot()) number((LONG)(LONG_PTR)Handle()); break;
 		case UIA_IsControlElementPropertyId: boolean(true); break;
-		case UIA_IsContentElementPropertyId: boolean(kind != Kind::Header && kind != Kind::HeaderItem && kind != Kind::CalendarHeader && Role() != UIA_MenuBarControlTypeId && Role() != UIA_ScrollBarControlTypeId && Role() != UIA_SeparatorControlTypeId); break;
+		case UIA_IsContentElementPropertyId:
+			if (auto tooltip = dynamic_cast<GuiTooltip*>(control)) boolean(UiaTooltipInteractive(tooltip->GetTemporaryContentControl()));
+			else boolean(kind != Kind::Header && kind != Kind::HeaderItem && kind != Kind::CalendarHeader && Role() != UIA_MenuBarControlTypeId && Role() != UIA_ScrollBarControlTypeId && Role() != UIA_SeparatorControlTypeId);
+			break;
 		case UIA_IsEnabledPropertyId: boolean(control->GetVisuallyEnabled() && Window()->GetNativeWindow()->IsEnabled()); break;
 		case UIA_HasKeyboardFocusPropertyId: boolean(IsFocused()); break;
 		case UIA_IsKeyboardFocusablePropertyId: boolean(IsFocusable()); break;
@@ -144,10 +155,14 @@ namespace vl::presentation::windows
 			if (Supports(UIA_ValuePatternId))
 			{
 				auto text = dynamic_cast<GuiSinglelineTextBox*>(control);
-				if (!text || !text->GetPasswordChar()) string(control->GetText());
+				if (!text || !text->GetPasswordChar())
+				{
+					result->vt = VT_BSTR;
+					return static_cast<WindowsUIAutomationProvider*>(Provider())->get_Value(&result->bstrVal);
+				}
 			}
 			break;
-		case UIA_ValueIsReadOnlyPropertyId: if (Supports(UIA_ValuePatternId)) boolean(UiaDocument(control)->GetEditMode() != GuiDocumentEditMode::Editable); break;
+		case UIA_ValueIsReadOnlyPropertyId: if (Supports(UIA_ValuePatternId)) { BOOL readOnly; static_cast<WindowsUIAutomationProvider*>(Provider())->get_IsReadOnly(&readOnly); boolean(readOnly != FALSE); } break;
 		case UIA_SelectionItemIsSelectedPropertyId: if (Supports(UIA_SelectionItemPatternId)) boolean(IsSelected()); break;
 		case UIA_ToggleToggleStatePropertyId:
 			if (Supports(UIA_TogglePatternId))
@@ -290,7 +305,8 @@ namespace vl::presentation::windows
 		{
 			// UIA may focus before a pattern action: focus must not change selection.
 			if (!node->IsFocusable()) return UIA_E_INVALIDOPERATION;
-			node->control->SetFocused();
+			if (node->kind == Kind::CalendarDay) UiaCalendar(node->control)->GetDayButton(node->row, node->column)->SetFocused();
+			else node->control->SetFocused();
 			return S_OK;
 		}, 0, true);
 	}
@@ -318,7 +334,7 @@ namespace vl::presentation::windows
 			if (child->Window() != node->Window()) continue;
 			if (auto hit = UiaHitTest(child, x, y)) return hit;
 		}
-		return contains ? node : nullptr;
+		return contains && node->kind != Kind::RadioGroup ? node : nullptr;
 	}
 	HRESULT WindowsUIAutomationProvider::ElementProviderFromPoint(double x, double y, IRawElementProviderFragment** result)
 	{

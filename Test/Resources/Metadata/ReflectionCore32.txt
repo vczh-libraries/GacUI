@@ -2540,6 +2540,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function EditText(begin : presentation::TextPos, end : presentation::TextPos, frontSide : system::Boolean, text : system::ReadonlyList<system::String>^, skipFormatting : system::Boolean) : system::Void;
     function EnsureCaretVisible() : system::Void;
     function EnsureTextPositionVisible(caret : presentation::TextPos, frontSide : system::Boolean) : system::Void;
+    function ExecuteHyperlink(position : presentation::TextPos) : system::Boolean;
     function GetActiveHyperlinkReference() : system::String;
     function GetCaretBegin() : presentation::TextPos;
     function GetCaretBounds(caret : presentation::TextPos, frontSide : system::Boolean) : presentation::Rect;
@@ -3466,27 +3467,32 @@ class presentation::controls::GuiVirtualTreeView : presentation::controls::GuiVi
 }
 
 class presentation::controls::GuiWindow : presentation::controls::GuiControlHost {
+    event BoundsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event ChildCompositionUpdated : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::controls::GuiCompositionUpdateEventArgs*>^;
     event ClipboardUpdated : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event FrameConfigChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         FrameConfig,
     }
 
+    property BlockedByModalWindow : system::Boolean { get:GetBlockedByModalWindow }
     property Border : system::Boolean { get:GetBorder set:SetBorder }
     property FrameConfig : presentation::NativeWindowFrameConfig { get:GetFrameConfig event:FrameConfigChanged }
     property Icon : presentation::GuiImageData^ { get:GetIcon set:SetIcon }
     property IconVisible : system::Boolean { get:GetIconVisible set:SetIconVisible }
     property MaximizedBox : system::Boolean { get:GetMaximizedBox set:SetMaximizedBox }
     property MinimizedBox : system::Boolean { get:GetMinimizedBox set:SetMinimizedBox }
+    property Modal : system::Boolean { get:GetModal }
     property SizeBox : system::Boolean { get:GetSizeBox set:SetSizeBox }
     property TitleBar : system::Boolean { get:GetTitleBar set:SetTitleBar }
 
+    function GetBlockedByModalWindow() : system::Boolean;
     function GetBorder() : system::Boolean;
     function GetFrameConfig() : presentation::NativeWindowFrameConfig;
     function GetIcon() : presentation::GuiImageData^;
     function GetIconVisible() : system::Boolean;
     function GetMaximizedBox() : system::Boolean;
     function GetMinimizedBox() : system::Boolean;
+    function GetModal() : system::Boolean;
     function GetSizeBox() : system::Boolean;
     function GetTitleBar() : system::Boolean;
     function MoveToScreenCenter() : system::Void;

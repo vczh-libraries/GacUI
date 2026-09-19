@@ -181,8 +181,9 @@ namespace vl::presentation::windows
 		*result = nullptr;
 		return Read([&]() -> HRESULT
 		{
-			const wchar_t* names[] = { L"BigIcon", L"SmallIcon", L"List", L"Tile", L"Information", L"Detail" };
-			return view < 0 || view >= 6 ? E_INVALIDARG : UiaString(WString::Unmanaged(names[view]), result);
+			const wchar_t* keys[] = { L"BigIcon", L"SmallIcon", L"List", L"Tile", L"Information", L"Detail" };
+			const wchar_t* names[] = { L"Large icons", L"Small icons", L"List", L"Tiles", L"Information", L"Details" };
+			return view < 0 || view >= 6 ? E_INVALIDARG : UiaString(UiaLocalizedText(node->control, WString::Unmanaged(keys[view]), WString::Unmanaged(names[view])), result);
 		}, UIA_MultipleViewPatternId);
 	}
 	HRESULT WindowsUIAutomationProvider::SetCurrentView(int view)
@@ -234,7 +235,11 @@ namespace vl::presentation::windows
 	{
 		if (!result) return E_POINTER;
 		if (milliseconds < 0) return E_INVALIDARG;
-		return Read([&]() -> HRESULT { *result = TRUE; return S_OK; }, UIA_WindowPatternId);
+		return node->dispatcher->WaitForIdle(milliseconds, result, [target = node]() -> HRESULT
+		{
+			if (!target->IsLive()) return UIA_E_ELEMENTNOTAVAILABLE;
+			return target->Supports(UIA_WindowPatternId) ? S_OK : UIA_E_NOTSUPPORTED;
+		});
 	}
 #define UIA_WINDOW_GETTER(NAME, TYPE, VALUE) \
 	HRESULT WindowsUIAutomationProvider::get_##NAME(TYPE* result) \
@@ -245,9 +250,9 @@ namespace vl::presentation::windows
 	UIA_WINDOW_GETTER(CanMaximize, BOOL, window->GetMaximizedBox())
 	UIA_WINDOW_GETTER(CanMinimize, BOOL, window->GetMinimizedBox())
 	UIA_WINDOW_GETTER(IsTopmost, BOOL, window->GetTopMost())
-	UIA_WINDOW_GETTER(IsModal, BOOL, window->GetNativeWindow()->GetParent() && !window->GetNativeWindow()->GetParent()->IsEnabled())
+	UIA_WINDOW_GETTER(IsModal, BOOL, window->GetModal())
 	UIA_WINDOW_GETTER(WindowVisualState, WindowVisualState, window->GetNativeWindow()->GetSizeState() == INativeWindow::Maximized ? WindowVisualState_Maximized : window->GetNativeWindow()->GetSizeState() == INativeWindow::Minimized ? WindowVisualState_Minimized : WindowVisualState_Normal)
-	UIA_WINDOW_GETTER(WindowInteractionState, WindowInteractionState, window->GetNativeWindow()->IsEnabled() ? WindowInteractionState_ReadyForUserInteraction : WindowInteractionState_BlockedByModalWindow)
+	UIA_WINDOW_GETTER(WindowInteractionState, WindowInteractionState, window->GetBlockedByModalWindow() ? WindowInteractionState_BlockedByModalWindow : window->GetNativeWindow()->IsEnabled() ? WindowInteractionState_ReadyForUserInteraction : WindowInteractionState_Running)
 #undef UIA_WINDOW_GETTER
 	HRESULT WindowsUIAutomationProvider::Move(double x, double y)
 	{
@@ -258,6 +263,11 @@ namespace vl::presentation::windows
 			get_CanMove(&canMove);
 			if (!canMove) return UIA_E_INVALIDOPERATION;
 			auto native = node->Window()->GetNativeWindow();
+			RECT container = {};
+			MONITORINFO monitor = { sizeof(MONITORINFO) };
+			POINT requested = { (LONG)max((double)LONG_MIN, min(x, (double)LONG_MAX)), (LONG)max((double)LONG_MIN, min(y, (double)LONG_MAX)) };
+			GetMonitorInfo(MonitorFromPoint(requested, MONITOR_DEFAULTTONEAREST), &monitor);
+			container = monitor.rcWork;
 			if (node->context->hosted)
 			{
 				auto host = GetHostedApplication()->GetNativeWindowHost();
@@ -267,9 +277,14 @@ namespace vl::presentation::windows
 					auto origin = host->GetClientBoundsInScreen().LeftTop();
 					x -= origin.x.value;
 					y -= origin.y.value;
+					auto size = host->GetClientSize();
+					container = { 0, 0, (LONG)size.x.value, (LONG)size.y.value };
 				}
 			}
-			native->SetBounds(NativeRect(NativePoint((vint)x, (vint)y), native->GetBounds().GetSize()));
+			auto size = native->GetBounds().GetSize();
+			x = max((double)container.left, min(x, (double)max((vint)container.left, container.right - size.x.value)));
+			y = max((double)container.top, min(y, (double)max((vint)container.top, container.bottom - size.y.value)));
+			native->SetBounds(NativeRect(NativePoint((vint)x, (vint)y), size));
 			return S_OK;
 		}, UIA_TransformPatternId, true);
 	}

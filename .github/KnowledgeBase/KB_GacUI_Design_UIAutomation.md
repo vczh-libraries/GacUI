@@ -1,204 +1,91 @@
 # Windows UI Automation
 
-This page describes the current source implementation of Windows UI Automation (UIA). It is an inventory of exposed controls, properties, providers and tree construction, not a statement that every Microsoft control contract is satisfied. The separate [UIA review task](../../../GacUI/TODO_Task_UiaReview.md) records requirements and gaps to verify. Operational guidance is in [Running-GacUI.md](../Guidelines/Running-GacUI.md#windows-specific).
+This page describes the Windows provider in `vl::presentation::windows`. It is an implementation inventory, not certification of every Microsoft UIA contract. Historical findings are in [the second review](../../TODO_Task_UiaReview2.md); current investigation evidence is in [Copilot_Investigate.md](../TaskLogs/Copilot_Investigate.md). See [Running-GacUI.md](../Guidelines/Running-GacUI.md#windows-specific) for execution guidance.
 
-## Implementation map
+## Implementation and lifecycle
 
-All provider classes below are in `vl::presentation::windows`. Control classes are in `vl::presentation::controls`, unless another namespace is given.
+Provider sources live in [Source/PlatformProviders/Windows/UIAutomation](../../Source/PlatformProviders/Windows/UIAutomation):
 
-| Source | Responsibility |
+| File stem | Responsibility |
 | --- | --- |
-| [WindowsUIAutomation.Windows.h/.cpp](../../../GacUI/Source/PlatformProviders/Windows/UIAutomation/WindowsUIAutomation.Windows.cpp) | `WindowsUIAutomationListener`, native-window discovery, `WM_GETOBJECT`, and the UI-thread dispatcher. |
-| [WindowsUIAutomationProvider.Windows.h](../../../GacUI/Source/PlatformProviders/Windows/UIAutomation/WindowsUIAutomationProvider.Windows.h) | Shared node, context, lifetime, COM provider and pattern declarations. |
-| [WindowsUIAutomationSemantic.Windows.cpp](../../../GacUI/Source/PlatformProviders/Windows/UIAutomation/WindowsUIAutomationSemantic.Windows.cpp) | Actual-class role dispatch, pattern availability, logical items, parent/child relationships, names and bounds. |
-| [WindowsUIAutomationProvider.Windows.cpp](../../../GacUI/Source/PlatformProviders/Windows/UIAutomation/WindowsUIAutomationProvider.Windows.cpp) | COM interfaces, element properties, fragment navigation, identity, hit testing and focus. |
-| [WindowsUIAutomationActions.Windows.cpp](../../../GacUI/Source/PlatformProviders/Windows/UIAutomation/WindowsUIAutomationActions.Windows.cpp) | Invoke, Toggle, SelectionItem, ExpandCollapse, Value, RangeValue, Scroll, ScrollItem and VirtualizedItem operations. |
-| [WindowsUIAutomationPatterns.Windows.cpp](../../../GacUI/Source/PlatformProviders/Windows/UIAutomation/WindowsUIAutomationPatterns.Windows.cpp) | Selection, Grid, Table, ItemContainer, MultipleView, Window and Transform operations. |
-| [WindowsUIAutomationText.Windows.cpp](../../../GacUI/Source/PlatformProviders/Windows/UIAutomation/WindowsUIAutomationText.Windows.cpp) | `ITextProvider`, `WindowsUIAutomationTextRange` and document-offset conversion. |
-| [WindowsUIAutomationState.Windows.cpp](../../../GacUI/Source/PlatformProviders/Windows/UIAutomation/WindowsUIAutomationState.Windows.cpp) | Control hooks, model callbacks, property snapshots, deferred events and provider retirement. |
+| WindowsUIAutomation | Listener, native-window discovery, WM_GETOBJECT, UI-thread dispatch, accessibility metadata, bounded idle probes. |
+| WindowsUIAutomationProvider | COM interfaces, properties, fragment navigation, identity, hit testing and focus. |
+| WindowsUIAutomationSemantic | Roles, pattern availability, logical nodes, names, bounds and tree relationships. |
+| WindowsUIAutomationActions | Invoke, Toggle, SelectionItem, ExpandCollapse, Value, RangeValue, Scroll and realization. |
+| WindowsUIAutomationPatterns | Selection, Grid/Table, ItemContainer, MultipleView, Window and Transform. |
+| WindowsUIAutomationText | Document snapshots, text ranges and embedded semantic objects. |
+| WindowsUIAutomationState | Control/model hooks, property snapshots, events and retirement. |
 
-The [Direct2D](../../../GacUI/Source/PlatformProviders/Windows/Direct2D/WinDirect2DApplication.cpp) and [GDI](../../../GacUI/Source/PlatformProviders/Windows/GDI/WinGDIApplication.cpp) initialization paths start the listener before their renderer main function and stop it afterward. The listener is compiled under `VCZH_MSVC`. It handles `WM_GETOBJECT` with `UiaRootObjectId` through `INativeMessageHandler`, returning `UiaReturnRawElementProvider`; it does not implement an MSAA bridge.
+The Windows Direct2D and GDI initialization paths install the listener. `WM_GETOBJECT` with `UiaRootObjectId` returns `UiaReturnRawElementProvider`. The listener needs a live `GuiApplication` and main window to bind semantic roots. Remote and TUI renderers do not have an equivalent semantic UIA transport, and the HTTP automation service is independent.
 
-The implementation accesses live GacUI controls and document models in the same process. There is no UIA semantic transport in `Source/PlatformProviders/Remote`, or corresponding TUI provider. A remote renderer's drawing tree and the HTTP automation service do not supply the missing control-model bridge. Raw renderer setup starts the listener through the shared initialization path, but `BindWindows()` needs `GuiApplication` and its main window to bind semantic roots.
+COM references are atomic. Live control/model access is marshalled to the UI thread through the dispatcher. `Read` checks liveness, requested pattern and (for mutations) enabled state. Invoke and Close queue work and revalidate before execution. Clients observe completion separately. A control internal property retains its `WindowsUIAutomationLifetime`; node retirement disconnects providers and prevents retained clients from touching disposed controls. Model nodes and document runs are retained for identity, with validity checked against the current model.
 
-## Common properties and COM providers
+The COM interface set includes Simple, Fragment, FragmentRoot and 19 pattern interfaces. QueryInterface alone does not establish current pattern availability: use GetPatternProvider or the pattern-availability properties. No Text2/TextEdit/TextChild, Selection2, Transform2, LegacyIAccessible or custom navigation interface is currently advertised.
 
-`WindowsUIAutomationProvider` implements `IRawElementProviderSimple`, `IRawElementProviderFragment`, `IRawElementProviderFragmentRoot` and the 19 pattern interfaces listed below. Its `QueryInterface` interface set is fixed. Actual pattern availability comes from `WindowsUIAutomationNode::Supports`, `GetPatternProvider` and the matching `Is...PatternAvailable` properties; a successful COM cast alone does not establish availability.
+## Names, labels and localization
 
-`Read()` marshals control access to the UI thread and checks node lifetime and any requested pattern. Operations that request an enabled target also check the control and its window. `Invoke()` and `Window.Close()` are posted: success means that the work was queued, so clients must observe the resulting state separately.
+Call the Windows C++ helpers in [WindowsUIAutomation.Windows.h](../../Source/PlatformProviders/Windows/UIAutomation/WindowsUIAutomation.Windows.h) on the UI thread:
 
-| Property or fragment member | Current value/source |
+- `SetWindowsUIAutomationName(control, name)` supplies an explicit accessible name, independently of editable contents.
+- `SetWindowsUIAutomationLabel(control, label)` supplies LabeledBy and a name derived from the label's text; passing null clears the relationship. Explicit Name takes precedence. Disposed labels are not dereferenced.
+- `SetWindowsUIAutomationText(control, key, text)` supplies localized presentation strings. Lookup walks control ancestors. Keys are `HelpText`, `BigIcon`, `SmallIcon`, `List`, `Tile`, `Information`, `Detail`, `ColumnHeaders`, `Ascending`, and `Descending`.
+
+Ordinary controls otherwise use GetText; editors/documents and combos have no inferred name from their mutable contents. Applications must provide their label/name. MultipleView numeric IDs remain the `ListViewView` values 0 through 5 regardless of displayed locale. English fallbacks are readable names, not enum spellings.
+
+Tooltip names come from temporary content, recursively collecting control text. The owner's HelpText uses its tooltip contents unless explicitly supplied. Tooltips with focusable content participate in content view; ordinary label tooltips do not. Both remain in control view and belong beneath the tooltip owner.
+
+FrameworkId is `GacUI`; ClassName is `GacUI.` plus role ID; AutomationId is a context-local `gacui-` node ID. AccessKey uses Alt, and toolstrip AcceleratorKey uses the command shortcut. Bounds are physical screen coordinates clipped through composition ancestors; invisible/unrealized nodes have empty bounds. BoundingRectangle is also an element property. NativeWindowHandle is supplied only for native fragment roots. Password, enabled, offscreen, focus, orientation and pattern-state properties are provided where applicable. Unsupported properties return VT_EMPTY.
+
+## Semantic tree and patterns
+
+| Control/node | Role and behavior |
 | --- | --- |
-| `Name` | `GuiControl::GetText()` by default; empty for every `GuiDocumentCommonInterface` and `GuiComboBoxBase`. Logical item names are listed below. |
-| `ControlType` | Actual-class dispatch plus a small number of theme/state distinctions, listed below. |
-| `FrameworkId`, `ClassName` | `GacUI`; `GacUI.` followed by the numeric UIA role ID. The class name is not a reflected C++ class name. |
-| `AutomationId` | `gacui-` followed by a context-assigned node ID. It is not the resource instance name and is not a persistent cross-launch identifier. |
-| `AccessKey`, `AcceleratorKey` | The owning control's `GetAlt()`; for `GuiToolstripButton`, the command shortcut's name when present. |
-| `ProcessId`, `NativeWindowHandle` | Current process ID; HWND only when `IsRoot()` is true. Hosted logical child windows therefore do not report their own HWND. |
-| `IsControlElement` | Always true for every exposed node. |
-| `IsContentElement` | False for logical headers/header items/calendar headers, MenuBar, ScrollBar and Separator; true otherwise. |
-| `IsEnabled` | Control `GetVisuallyEnabled()` and native window `IsEnabled()`. |
-| `HasKeyboardFocus` | Owning control is focused, and the node is a control or a selected logical item. |
-| `IsKeyboardFocusable` | Owning control has a focusable composition, or the node supports SelectionItem. |
-| `IsPassword` | True only for `GuiSinglelineTextBox` with a nonzero password character. |
-| `IsOffscreen` | True when the calculated bounding rectangle has zero width or height. |
-| Fragment `BoundingRectangle` | Composition global bounds, clipped through composition ancestors, converted to physical screen coordinates. Closed windows, invisible compositions and unrealized items produce an empty rectangle. |
-| Fragment runtime ID | Nonroots return `UiaAppendRuntimeId` plus their node ID. Roots return no appended ID and use their HWND host provider. |
-| Pattern availability | Boolean properties for all 19 patterns below, recomputed from `Supports()`. |
+| GuiWindow | Window; Window and Transform. Uses actual modal-session state, not disabled-owner guesses. Move keeps windows inside the nearest monitor work area or hosted client container. |
+| Plain GuiPopup | Pane. It has neither Window nor Transform. |
+| GuiMenu / toolstrip menu | Menu (Group for ribbon group menus); owned by its opener. Popup wrappers do not expose Window/Transform. |
+| GuiTooltip | ToolTip with owner/content metadata described above. |
+| Ordinary button | Button / Invoke; selectable checkbox uses CheckBox / Toggle. Menu-button patterns depend on command, submenu and selection behavior. |
+| Mutex selectable button | RadioButton / SelectionItem. A logical RadioGroup exposes Selection and contains the actual mutex-controller peers. Different groups stay distinct; peers under different layout controls share one group under their common container. |
+| Tab | Tab / Selection. Contains TabItems; selected TabItem contains a TabContent Pane with its page controls. Ribbon before/after-header controls are also enumerated. |
+| Calendar | Selection, Grid, Table and ItemContainer. Six week rows, seven columns, logical CalendarDays and weekday headers. Logical day focus, SetFocus and focus events map to the underlying day button. |
+| List / Tree | Model-backed Items/TreeNodes expose SelectionItem, ScrollItem and VirtualizedItem as applicable; checkable list items also Toggle. Tree ancestry follows the model; leaves report LeafNode. |
+| List view | MultipleView; Detail exposes Grid/Table. View names are localized without changing numeric IDs. |
+| Grid cell | DataItem with GridItem/TableItem, SelectionItem, ScrollItem and VirtualizedItem. Editor factory enables Invoke. String binding values expose Value; absence of an editor factory makes them read-only. |
+| Grid header | Header with HeaderItems. Headers are outside content view. HeaderItem Invoke sorts; Transform.Resize changes width. Sorting ItemStatus and header names support localization. |
+| Scroll view | Scroll when both scroll objects exist. Ordinary descendant controls expose ScrollItem. |
+| Scroll / tracker / progress | RangeValue. Progress is read-only and reports NaN increments. |
+| Document / textbox | Text and Value outside password restrictions, with logical document children described below. |
 
-The element-property switch explicitly handles the properties above and the pattern state in the following tables. Other property IDs return `VT_EMPTY`; for example, it does not supply `LabeledBy`, `HelpText` or `ControllerFor`. Several pattern members are implemented through their provider interface without a separate entry in the element-property switch. In particular, fragment bounds exist even though the switch has no `UIA_BoundingRectanglePropertyId` case.
+Single-selection AddToSelection rejects an already-selected different tab, calendar day, radio or grid/list item without changing selection. Radio SelectionContainer follows the actual mutex controller. Grid GetSelection returns the active logical cell; only that cell reports grid keyboard focus. Focusing and scrolling do not implicitly select another item.
 
-## Control inventory
+Default grid cells contain the active editor or realized visualizer controls. Their logical cell identity survives editor changes. String Value writes update the binding model without opening an editor or changing selection. Other editor types continue to use their exposed editor controls/Invoke.
 
-Pattern names in the tables map to `I<Name>Provider`, for example Text means `ITextProvider`. Every row also receives the common properties above. Base-class capabilities are cumulative unless a condition is stated. A Scroll capability below requires a `GuiScrollView` with both horizontal and vertical scroll objects; it does not require a currently scrollable range.
+List nodes are cached by owner/kind/index; tree nodes additionally retain model identity. Model insertions shift unaffected indices; replacement/removal retires affected nodes. Detail-mode cells/headers become unavailable outside Detail. Realize expands ancestors and realizes rows; ScrollIntoView additionally adjusts horizontal and vertical ancestor view positions to expose the requested cell/control.
 
-| Actual control family | UIA role | Available patterns and specific state |
-| --- | --- | --- |
-| `GuiWindow`, including a plain `GuiPopup` | Window | Window, Transform. Window visual/interaction state, modal/topmost state, maximize/minimize capabilities and move/resize capabilities. |
-| `GuiMenu`, `GuiToolstripMenu`, `GuiRibbonToolstripMenu` | Menu; Group for `ThemeName::RibbonGroupMenu` | Window and Transform inherited from `GuiWindow`, despite the different role. Popup children are described below. |
-| `GuiTooltip` | ToolTip | Window and Transform inherited from `GuiWindow`. Tooltip open/close event IDs are used. |
-| `GuiButton` without selectable-button behavior | Button | Invoke. Template child controls are not enumerated as children. |
-| `GuiSelectableButton` outside the menu special case | RadioButton with a group controller; otherwise CheckBox | SelectionItem for grouped buttons; otherwise Toggle. Selected state comes from `GetSelected()`. The role follows group membership, not the CheckBox/RadioButton theme name. |
-| `GuiMenuButton`, including `GuiToolstripButton` | With a submenu: SplitButton when `GetSubMenuHost() != this`, otherwise MenuItem. Without a submenu: Button in a toolbar, MenuItem under menu/menu bar, otherwise Button. | ExpandCollapse when a submenu exists. Invoke only when auto-selection and group membership are absent and there is no submenu or it has a separate host. Toggle for ungrouped auto-selection buttons; SelectionItem for grouped buttons. Toolstrip command shortcuts also supply `AcceleratorKey`. |
-| `GuiComboBoxBase`, `GuiComboButton`, `GuiDateComboBox` | ComboBox | ExpandCollapse from their submenu; no Invoke or Value. Their normal menu-button initialization disables auto-selection. The base mapping has no Selection; changing inherited group/auto-selection settings still affects the generic SelectionItem/Toggle predicates. |
-| `GuiComboBoxListControl` | ComboBox | Base combo patterns plus Selection, aggregated from its contained list. `CanSelectMultiple=false`, `IsSelectionRequired=false`; current selected text is not the Name or Value. |
-| `GuiSinglelineTextBox` | Edit | Value and Text; password mode removes Text, denies Value reads and leaves Value write support subject to edit mode/enabled state. `ValueIsReadOnly` follows `GuiDocumentEditMode`. |
-| `GuiMultilineTextBox` | Document | Value, Text and conditional Scroll. Value read-only state follows edit mode. |
-| `GuiDocumentViewer`, `GuiDocumentLabel`, and XML virtual type `GuiDocumentTextBox` | Document | Text; viewer also has conditional Scroll. These classes do not receive Value merely because edit mode is Editable. |
-| `GuiScrollView`, `GuiScrollContainer` | Pane unless a more-derived class supplies a role | Conditional Scroll, with percentages, view sizes and scrollable-axis flags. |
-| `GuiScroll` | ProgressBar for ProgressBar theme; Slider for HTracker/VTracker; otherwise ScrollBar | RangeValue. Position, minimum 0, maximum `GetMaxPosition()`, small/big move; progress is read-only. Orientation is vertical for VScroll/VTracker and horizontal otherwise. |
-| `GuiTab`, `GuiRibbonTab` | Tab | Selection; single selection required. Children are page controls, not template header buttons. |
-| `GuiTabPage`, `GuiRibbonTabPage` | TabItem | SelectionItem; selected state and SelectionContainer reference the owner tab. Bounds use the header button whose Context references the page when found. |
-| `GuiListControl` | List | ItemContainer and conditional Scroll. No Selection unless it is also a `GuiSelectableListControl`. |
-| `GuiSelectableListControl`, `GuiVirtualTextList`, `GuiTextList`, `GuiBindableTextList` | List | Selection, ItemContainer and conditional Scroll. Multi-selection follows `GetMultiSelect()`; selection is not required. Text-list checked state is on logical items. |
-| `GuiListViewBase`, `GuiVirtualListView`, `GuiListView`, `GuiBindableListView` | List; DataGrid for `GuiVirtualListView` in Detail view | Base list patterns; `GuiVirtualListView` adds MultipleView, and Detail adds Grid/Table. Six views: BigIcon, SmallIcon, List, Tile, Information, Detail. |
-| `GuiVirtualDataGrid`, `GuiBindableDataGrid` | DataGrid | Selection, ItemContainer, conditional Scroll, and Grid/Table when `IDataGridView` is available or the inherited list view is in Detail. MultipleView is suppressed when `IDataGridView` is available; a custom model without that view uses the ordinary `GuiVirtualListView` availability rules. Cell editing and selection are described below. |
-| `GuiVirtualTreeListControl`, `GuiVirtualTreeView`, `GuiTreeView`, `GuiBindableTreeView` | Tree | Selection, ItemContainer and conditional Scroll. Tree items come from the hierarchical node model. |
-| `GuiDatePicker` | Calendar | Selection, Grid, Table and ItemContainer when a `templates::GuiCommonDatePickerLook` is found in its composition subtree. Calendar grid dimensions are six weeks by seven days. |
-| `GuiMenuBar`, `GuiToolstripMenuBar` | MenuBar | No specific pattern. Not a content element. |
-| `GuiToolstripToolBar`, `GuiRibbonToolstrips` | ToolBar | No specific pattern. |
-| `GuiRibbonGroup`, `GuiRibbonButtons`, `GuiRibbonGallery` | Group | No specific pattern. `GuiBindableRibbonGalleryList` adds ExpandCollapse using its popup and `RequestedDropdown` event; it has no aggregate Selection pattern. |
-| `GuiLabel` | Text | Name from text, no Text pattern. |
-| Other `GuiControl`/`GuiCustomControl` descendants, including `GuiRibbonIconLabel` | Pane by fallback | No specific pattern. GroupBox theme maps to Group; MenuSplitter/ToolstripSplitter/ToolstripSplitterInMenu/RibbonSplitter map to Separator; RibbonToolstripHeader maps to Text. Visible associated child controls are collected through compositions. |
+Native popups keep their HWND host provider and native FragmentRoot while exposing logical owner navigation. This follows Microsoft's explicit [Assigning a New Parent](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-serversideprovider#assigning-a-new-parent) exception. Hosted popups share the host fragment and retain the same semantic owner. Other hosted windows appear below the main root. Removing native logical ownership solely to follow the generic root navigation rule would regress the documented popup composition.
 
-Class definitions are in [GuiBasicControls.h](../../../GacUI/Source/Application/Controls/GuiBasicControls.h), [GuiWindowControls.h](../../../GacUI/Source/Application/Controls/GuiWindowControls.h), [GuiButtonControls.h](../../../GacUI/Source/Controls/GuiButtonControls.h), [GuiContainerControls.h](../../../GacUI/Source/Controls/GuiContainerControls.h), [GuiScrollControls.h](../../../GacUI/Source/Controls/GuiScrollControls.h), [GuiDateTimeControls.h](../../../GacUI/Source/Controls/GuiDateTimeControls.h), the [list control package](../../../GacUI/Source/Controls/ListControlPackage/GuiListControls.h), the [toolstrip package](../../../GacUI/Source/Controls/ToolstripPackage/GuiMenuControls.h) and [GuiDocumentViewer.h](../../../GacUI/Source/Controls/TextEditorPackage/GuiDocumentViewer.h). Bindable subclasses use the same runtime class dispatch; reflection is not required by this implementation.
+## Text ranges and objects
 
-## Logical item inventory
+The text provider adapts GuiDocumentCommonInterface, including both textbox families. ViewOnly reports no selection; Selectable and Editable report one range, including a caret. Value writes require Editable. Password mode hides Text and plaintext Value; retained ranges reject access while protected. Read-only and disabled mutation checks apply independently.
 
-`WindowsUIAutomationNodeKind` supplies semantic items independently of whether a list has realized their templates.
+Snapshots flatten text with CRLF paragraph separators and U+FFFC nontext placeholders. UIA offsets count UTF-16 code units; renderer positions keep surrogate pairs and CRLF pairs indivisible. Character/Format attribute scans use complete character intervals. Caret attributes use the following character, or the preceding character at document end. Word units include trailing separators. Format boundaries include style/alignment differences and object boundaries; Line uses rendered lines, Paragraph uses model rows, and Page/Document use document extent. Failed movement preserves the original range; returned counts reflect actual boundaries crossed.
 
-| Node kind | Role, name and parent | Patterns and properties |
-| --- | --- | --- |
-| Item in an ordinary list | ListItem; `IItemProvider::GetTextValue(row)`; parent is list | ScrollItem and VirtualizedItem; SelectionItem for a selectable list. Text lists also expose Toggle when view is not `TextListView::Text`. Both check and radio visual styles use the model's independent checked value. |
-| Item in a Grid-capable list | DataItem row; item text; parent is grid | Same list-item patterns, without GridItem/TableItem. Children are logical Cells. |
-| TreeNode | TreeItem; root provider `GetTextValue(node)`; actual tree parent or tree control | SelectionItem, ScrollItem, VirtualizedItem, ExpandCollapse. Leaf nodes report LeafNode and reject expand/collapse actions. |
-| Cell | DataItem; first-column text or corresponding `IListViewItemView::GetSubItem`; parent is row Item | GridItem, TableItem, SelectionItem, ScrollItem, VirtualizedItem; Invoke when `IDataGridView::GetCellDataEditorFactory` returns a factory. Row/column, spans of 1, containing grid and column header association. |
-| Header | Header; `Column headers`; parent is list/grid | No specific pattern; not content. Children are HeaderItems. |
-| HeaderItem | HeaderItem; `GetColumnText(column)`; parent is Header | Invoke for every logical header; Transform when `IColumnItemView` exists. With that view, `ItemStatus` is an empty string, Ascending or Descending; otherwise it is `VT_EMPTY`. Resize sets column width; move/rotate are unavailable. |
-| CalendarDay | ListItem; `year-month-day`; parent is calendar | SelectionItem, GridItem, TableItem. Position is week/day; selected state compares year/month/day with picker date. No ScrollItem or VirtualizedItem. |
-| CalendarHeader | HeaderItem; locale short weekday name; parent is calendar | No specific pattern; not content; no composition/bounding rectangle. |
+Supported attributes include read-only, paragraph alignment, font name/size/weight, italic, underline, strikethrough, foreground and background. Mixed and unsupported sentinels are distinct. Text ranges retain their originating DocumentModel, so replacement invalidates old ranges. Same-model edits adjust offsets using common prefixes/suffixes; this is not an edit-history tracker.
 
-Items are cached by owner, kind, row, column and tree-node identity. List model changes shift the row indices of unaffected nodes; replaced/removed ranges retire their old nodes. Tree providers retain the model-node identity. Column rebuilds retire Cells and HeaderItems. Switching a list view away from Detail makes its Cells/Headers unavailable through `IsLive()`.
+Named embedded controls, hyperlink runs and image runs are semantic children in text order. Hyperlinks expose their text and Invoke through the document's ExecuteHyperlink action; images use their source as Name. Application image descriptions therefore need meaningful model sources. RangeFromChild, enclosing-element lookup and point hit testing preserve object identity. GetChildren returns contained children without repeating the enclosing object. Bounds come from the rendered character intervals. Nested run identity follows run parentage.
 
-All list rows are enumerated, including offscreen rows. Tree enumeration follows expanded branches; ItemContainer search traverses the complete tree, including collapsed descendants. `FindItemByProperty` supports Name, AutomationId, SelectionItemIsSelected, ControlType, or property ID 0 for enumeration. `Realize()` expands tree ancestors and calls `EnsureItemVisible`; `ScrollIntoView()` delegates to the same operation. Thus UIA virtualization availability is not limited to items that currently lack a visual template.
+Text scrolling handles both axes through the document's visibility API and preserves the caret. Visible ranges include a degenerate range for an empty document. Bounding rectangles describe visible nondegenerate text. A point over an embedded child returns that child's range; other points resolve to a caret.
 
-## Pattern state and actions
+## Notifications and verification
 
-The controls and items above receive the following implemented members through their available providers. This table also distinguishes explicit element-property support from provider-only state.
+Most notifications are posted/coalesced and compare previous property snapshots. Watched properties include Name/HelpText/LabeledBy, bounds, password/read-only, focus, window state, grid dimensions, selection policy, range/scroll values and pattern availability. Password transitions clear cached plaintext before notification. Document SetDocument and direct NotifyParagraphUpdated changes publish TextChanged; replacement also reports caret changes. GuiWindow.BoundsChanged and hosted proxy movement publish translation changes for window descendants.
 
-| Provider | Implemented state/actions |
-| --- | --- |
-| `IInvokeProvider` | Queued button BeforeClicked/Clicked/AfterClicked, column-click event, or cell `SelectCell(..., true)`. Raises Invoked before dispatching the action. |
-| `IToggleProvider` | Toggle and ToggleState; explicit `ToggleToggleState` property; only On/Off. |
-| `ISelectionProvider` | GetSelection, CanSelectMultiple, IsSelectionRequired; these state members have no explicit element-property cases. Text and Selection share the C++ GetSelection signature, dispatched by pattern support. |
-| `ISelectionItemProvider` | Select/AddToSelection/RemoveFromSelection, IsSelected, SelectionContainer; explicit `SelectionItemIsSelected`. |
-| `IExpandCollapseProvider` | Expand/Collapse, ExpandCollapseState; explicit `ExpandCollapseExpandCollapseState`. |
-| `IValueProvider` | Whole-text SetValue, Value, IsReadOnly; explicit `ValueValue` and `ValueIsReadOnly`. |
-| `IRangeValueProvider` | Numeric SetValue, Value, Minimum/Maximum, SmallChange/LargeChange, IsReadOnly; corresponding element-property cases. Numeric writes are converted to `vint` positions. |
-| `IScrollProvider` | Scroll/SetScrollPercent, horizontal/vertical percentages and view sizes, scrollable flags; corresponding element-property cases. |
-| `IScrollItemProvider`, `IVirtualizedItemProvider` | ScrollIntoView and Realize use the same list realization/visibility path. |
-| `IGridProvider`, `IGridItemProvider` | GetItem, RowCount/ColumnCount; Row/Column, RowSpan/ColumnSpan, ContainingGrid. These members are provider-only in the property switch. |
-| `ITableProvider`, `ITableItemProvider` | Column headers and the matching cell column header; empty row-header arrays; RowOrColumnMajor is RowMajor. These members are provider-only. |
-| `IItemContainerProvider` | FindItemByProperty over logical model items. |
-| `IMultipleViewProvider` | GetViewName, SetCurrentView, CurrentView and GetSupportedViews; explicit `MultipleViewCurrentView`. |
-| `IWindowProvider` | SetVisualState, Close, WaitForInputIdle and window capability/state getters. WaitForInputIdle validates a nonnegative timeout and immediately reports true. These state getters have no explicit element-property cases. |
-| `ITransformProvider` | Move/Resize/Rotate and CanMove/CanResize/CanRotate. Rotate always fails; window move/resize use physical coordinates, header resize converts physical width to GacUI units. State getters are provider-only. |
-| `ITextProvider` | DocumentRange, GetSelection, SupportedTextSelection, GetVisibleRanges, RangeFromPoint and RangeFromChild. Ranges implement `ITextRangeProvider`, described below. |
+Selection notifications compare the container selection: one selected item uses ElementSelected, while multi-selection additions/removals use their respective events. Menu mode starts before the first MenuOpened and ends after the last MenuClosed. Those boundary events are ordered rather than deduplicated with ordinary queued changes. Tooltip open/close and window lifecycle use their corresponding IDs.
 
-No Text2, TextEdit, TextChild, Selection2, Transform2, LegacyIAccessible, spreadsheet or custom-navigation interfaces are declared by this provider.
+WaitForInputIdle posts a retained probe and completes it from a low-priority UI-thread timer after pending work. Client waiting is bounded by the requested timeout; a busy UI thread does not block a synchronous dispatch before the timeout starts. Shutdown signals pending probes unavailable.
 
-## Text boxes and documents
+[Test/UIA_CppTest_Shared.ps1](../../Test/UIA_CppTest_Shared.ps1) drives an out-of-process MTA client. Review uses the full showcase; Review2 and Transitions use the controlled Playground fixture. Run both ordinary and hosted modes. All also checks lists, trees, grids, text, calendars, tab traversal and window lifecycle. The scripts use repository execution wrappers, restore project user arguments and clean up owned processes. Reflection changes require metadata generation in Win32 then x64, followed by Metadata_Test; C++ changes also require configured UnitTest and leak-log inspection. See the investigation for exact completed results, not the existence of test code alone.
 
-The text provider adapts `GuiDocumentCommonInterface`, declared in [GuiDocumentCommonInterface.h](../../../GacUI/Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.h). [GuiDocumentViewer.h/.cpp](../../../GacUI/Source/Controls/TextEditorPackage/GuiDocumentViewer.cpp) implements both textbox families on that same document infrastructure: `GuiSinglelineTextBox` derives from `GuiDocumentLabel`; `GuiMultilineTextBox` derives from `GuiDocumentViewer`. The XML `GuiDocumentTextBox` is a virtual type for `GuiDocumentLabel`, registered in [GuiInstanceLoader_Document.cpp](../../../GacUI/Source/Compiler/InstanceLoaders/GuiInstanceLoader_Document.cpp).
+The focus checks always require one reachable logical focused element and check calendar focus events. Global desktop focus requires an active Windows session with the test application in the foreground: the client checks both prerequisites and explicitly reports that check as unverified when either is absent. Otherwise it requires exact desktop focus identity. Pointer and keyboard menu tests use the application's IO endpoint, so they verify application input routing rather than physical desktop input delivery.
 
-`GuiDocumentEditMode` controls the exposed operations. ViewOnly returns no selection and SupportedTextSelection=None. Selectable and Editable return one range, including a degenerate caret range, and SupportedTextSelection=Single. Text remains available in read-only modes. Value setters require Editable. Text range selection calls `SetCaret`; it does not perform an edit. Whole-text Value replacement calls the control's `SetText`. There is no UIA range deletion, insertion or clipboard operation in this implementation.
-
-The text adapter has these concrete behaviors:
-
-- `WindowsUIAutomationTextSnapshot` flattens document runs into a string and parallel `TextPos` offsets. It inserts one CRLF between model paragraphs and U+FFFC for each nontext content run. Named embedded runs also map their names to offsets.
-- Offsets count Windows UTF-16 code units. CRLF and low-surrogate offsets map to the preceding caret position, including surrogate pairs across run boundaries.
-- Text ranges retain their originating `DocumentModel`. Replacing that model invalidates a retained range. Edits within the same model adjust endpoints using the common text prefix/suffix and clamp them to the new text length; this is not an edit-history tracker.
-- Character boundaries follow distinct caret positions. Word boundaries use `iswalnum`/`iswspace` transitions. Line boundaries use paragraph or rendered caret-y changes; Paragraph uses model rows. Format compares eight style attributes. Page and Document have only whole-document boundaries.
-- Supported attributes are IsReadOnly, HorizontalTextAlignment, FontName, FontSize, FontWeight, IsItalic, UnderlineStyle, StrikethroughStyle, ForegroundColor and BackgroundColor. They come from style/alignment summaries, return the mixed sentinel when the summary lacks one value, and use the not-supported sentinel for other attributes. Font size is converted with `size * 72 / 96`.
-- `GetBoundingRectangles` builds and merges visible character rectangles using caret bounds, excludes CR/LF, and clips them to the node rectangle. Degenerate ranges produce no rectangles. `RangeFromPoint` converts physical-screen coordinates back to document coordinates and returns a caret range.
-- `GetVisibleRanges` scans visible caret rectangles and groups contiguous offsets. `ScrollIntoView` adjusts only the vertical position of a `GuiScrollView`; it does not scroll a single-line label-based editor horizontally.
-- Named embedded controls become document children through `GetDocumentItems()` in text order. Range `GetChildren` filters them to its offset interval; `RangeFromChild` returns the one-character placeholder range. Plain image runs and hyperlink runs do not get dedicated semantic nodes from this adapter. `GetEnclosingElement` always returns the document provider.
-
-Password mode is special to `GuiSinglelineTextBox`: Name remains empty, Text is unavailable, the Value element property stays empty, and `IValueProvider::get_Value` returns `E_ACCESSDENIED`. The Value setter still follows the ordinary Editable/enabled checks.
-
-## Combo boxes and menu popups
-
-[GuiComboControls.cpp](../../../GacUI/Source/Controls/ListControlPackage/GuiComboControls.cpp) implements `GuiComboBoxBase` as a `GuiMenuButton` that creates a `GuiMenu` submenu. `GuiComboButton` inserts arbitrary dropdown content; `GuiComboBoxListControl` inserts its selectable list into the submenu container. [GuiDateTimeControls.cpp](../../../GacUI/Source/Controls/GuiDateTimeControls.cpp) inserts a date picker for `GuiDateComboBox`.
-
-The UIA mapping currently recognizes a combo's role, ExpandCollapse and list selection, but **does not attach its dropdown subtree to the combo node**. `Children()` suppresses ordinary `GuiButton` descendants and has no combo-specific dropdown branch. `Parent()` does not redirect a combo submenu or contained list to its combo. Standard Windows mode exposes the submenu through its own HWND root, as it does other menus. Hosted mode adds every opening logical child window, including that menu, directly below the main-window root.
-
-The current standard-window shape is therefore a ComboBox in its owner's fragment and a separate Menu fragment containing the List/Calendar/other dropdown control. Hosted mode instead has the ComboBox and opening Menu in different branches below the main root. Ordinary menus also use separate HWND roots in standard mode and main-root children in hosted mode; submenu host buttons do not enumerate their submenu as a child.
-
-List-combo selection has a separate explicit bridge: `UiaCombo()` finds a registered combo whose contained list owns the item. Item selected state comes from `GetSelectedIndex()`, SelectionContainer becomes the combo, and selecting an item updates `SetSelectedIndex()` and closes the popup. The combo's `GetSelection()` searches the contained list even though the combo does not enumerate it as a child. This selection association is not a parent/child association.
-
-The intended combo-owned dropdown tree requested for accessibility review is consequently an outstanding gap, not an implemented feature. The [review task](../../../GacUI/TODO_Task_UiaReview.md) evaluates that requirement and menu topology separately. Name is currently empty for list, date and arbitrary-content combos, and no Value is supplied for their selected display text.
-
-## Data grid cells, visualizers and editors
-
-[GuiDataGridControls.cpp](../../../GacUI/Source/Controls/ListControlPackage/GuiDataGridControls.cpp) and [GuiDataGridInterfaces.h](../../../GacUI/Source/Controls/ListControlPackage/GuiDataGridInterfaces.h) define `GuiVirtualDataGrid`, `list::DefaultDataGridItemTemplate`, `list::IDataGridView`, `list::IDataVisualizer` and `list::IDataEditor`. The semantic hierarchy for the default grid is:
-
-```text
-DataGrid
-  Header
-    HeaderItem (column)
-  DataItem (row)
-    DataItem (cell: row, column)
-      controls from the active editor, or controls from the visualizer
-```
-
-The row Item creates one Cell per model column. Cell identity and GridItem/TableItem relationships remain on the logical Cell, independently of its visible contents. `GetItem(row, column)` returns that logical node without requiring a realized template. Cell bounds use the actual `GuiCellComposition` when the realized row is a `DefaultDataGridItemTemplate`; other list-view detail cells derive bounds from the row and column widths.
-
-When the selected cell has an opened editor, `Cell.Children()` collects associated controls from the editor template. Otherwise it collects them from the cell composition. The default template physically puts the editor inside that cell and hides the visualizer while editing; closing the editor removes it and restores the visualizer. `Parent()` recognizes a control's enclosing `GuiCellComposition` under a default grid item and returns the matching logical Cell. Thus the active visualizer/editor controls are inside the cell in the UIA tree, rather than siblings of the row or grid. Plain graphics/compositions without an associated control do not become extra semantic children.
-
-Selecting a Cell calls `SelectCell(position, false)`; invoking an editable Cell queues `SelectCell(position, true)`. Editing needs a realized `DefaultDataGridItemTemplate` and an editor factory. The queued UIA Invoke path ignores the boolean result, so returning success does not prove an editor opened; offscreen callers can first use ScrollItem/VirtualizedItem and then inspect the Cell's children. Custom template layouts are not covered by a general composition-override API.
-
-Current selection has two levels: row Item selection follows the list, while a data-grid Cell compares `GetSelectedCell()`. The container's `GetSelection()` collects direct selected rows and recurses only through tree nodes, so it does not return the selected Cell. This distinction, editor replacement eventing and retained editor-provider behavior are review targets. The cell Name continues to come from the item view while its children switch between visualizer and editor.
-
-## Tree lifetime, events and limits
-
-Ordinary containers collect visible associated controls through intervening compositions. Buttons and scroll controls suppress their template children; lists synthesize logical items instead of exposing background buttons; documents expose named embedded controls; tabs expose their pages. There is no generic composition internal-property override in the current UIA code, so a layout table or a composition-only splitter does not acquire UIA semantics by itself.
-
-`Control()` stores one `WindowsUIAutomationLifetime` under the control internal-property key `GacUI.Windows.UIAutomation`. Binding a window scans its composition tree before clients enumerate children. Window composition updates trigger another deferred scan, including controls added later. The retained lifetime object avoids duplicate control event hookups, attaches list/tree/column callbacks and retires nodes on destruction. `IsLive()` rejects disposed controls, stopped contexts, retired nodes, unavailable detail nodes and controls without a registered related `GuiWindow`. Provider retirement queues `UiaDisconnectProvider`; immutable runtime IDs remain readable during disconnection.
-
-Notifications are posted through the UI dispatcher and coalesced per node. `Notify()` compares a watched subset of element properties, raises PropertyChanged for differences, optionally raises ChildrenInvalidated, and then raises queued automation events. This is the actual event inventory:
-
-| Trigger | Notification path |
-| --- | --- |
-| Control text, visibility, enabled state, template or focus changes | Property comparison; structure invalidation for visibility/template; TextChanged for document text and AutomationFocusChanged when focus becomes true. |
-| Window open/close and child composition updates | Window/Menu/ToolTip event IDs according to actual class, structure invalidation, plus main-root invalidation for hosted child windows. |
-| Selectable-button state/group/auto-selection; menu opening/shortcut text | Property comparison; submenu opening also requests structure invalidation. |
-| Scroll position/total/page size | Property comparison for scroll control and nearest ancestor scroll view. |
-| List item/template/arranger/column changes; tree expansion/model changes | Logical-node maintenance and structure invalidation. |
-| List selection | Selection_Invalidated on the list. Explicit UIA item selection also queues ElementSelected or ElementRemovedFromSelection on the item. |
-| Grid selected-cell changes; date navigation | Structure invalidation. Date changes also compare properties. |
-| Document caret/selection changes | Text_TextSelectionChanged. |
-| UIA Invoke | Invoke_Invoked before the queued action. |
-
-The watched property list includes Name, AcceleratorKey, ItemStatus, Orientation, Enabled/Offscreen/Focus/Content flags, Value, Toggle, selected/expanded state, range and scroll state, current view, ControlType and selected pattern-availability properties. It does not cover every readable property or provider member: bounds, password state, window state, grid counts and selection policy have no watched entries. Edit-mode and password changes also have no dedicated hook in this module. These are facts about present notification coverage; the [review task](../../../GacUI/TODO_Task_UiaReview.md) specifies the contract checks still needed.
-
-For the underlying layout, model and platform mechanisms, see [List Control Architecture](./KB_GacUI_Design_ListControlArchitecture.md), [Hosted Mode Window Management](./KB_GacUI_Design_HostedModeWindowManagement.md), [Control Focus Switching](./KB_GacUI_Design_ControlFocusSwitchingAndTabAltHandling.md) and [Platform Initialization](./KB_GacUI_Design_PlatformInitialization.md).
+Related design: [lists](./KB_GacUI_Design_ListControlArchitecture.md), [hosted windows](./KB_GacUI_Design_HostedModeWindowManagement.md), [focus](./KB_GacUI_Design_ControlFocusSwitchingAndTabAltHandling.md), and [platform initialization](./KB_GacUI_Design_PlatformInitialization.md).

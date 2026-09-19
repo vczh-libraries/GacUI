@@ -76,6 +76,7 @@ GuiNonMainHostedWindowProxy
 
 			void UpdateBounds() override
 			{
+				for (auto listener : data->listeners) listener->Moved();
 			}
 
 			void UpdateTitle() override

@@ -800,6 +800,7 @@ GuiWindow
 			{
 				GuiControlHost::Moved();
 				TypedControlTemplateObject(true)->SetMaximized(IsRenderedAsMaximized());
+				BoundsChanged.Execute(GetNotifyEventArguments());
 			}
 
 			void GuiWindow::DpiChanged(bool preparing)
@@ -931,6 +932,7 @@ GuiWindow
 				SetAltComposition(boundsComposition);
 				SetAltControl(this, true);
 				ChildCompositionUpdated.SetAssociatedComposition(boundsComposition);
+				BoundsChanged.SetAssociatedComposition(boundsComposition);
 
 				INativeWindow* window = GetCurrentController()->WindowService()->CreateNativeWindow(windowMode);
 				SetNativeWindow(window);
@@ -1073,6 +1075,16 @@ GuiWindow
 					});
 				}
 				Show();
+			}
+
+			bool GuiWindow::GetModal()
+			{
+				return showModalRecord && showModalRecord->origin != this;
+			}
+
+			bool GuiWindow::GetBlockedByModalWindow()
+			{
+				return showModalRecord && showModalRecord->current != this;
 			}
 
 			void GuiWindow::ShowModal(GuiWindow* owner, const Func<void()>& callback)

@@ -318,6 +318,9 @@ Window
 				/// <summary>Frame configuration changed event.</summary>
 				compositions::GuiNotifyEvent			FrameConfigChanged;
 				compositions::GuiGraphicsEvent<GuiCompositionUpdateEventArgs>	ChildCompositionUpdated;
+				compositions::GuiNotifyEvent			BoundsChanged;
+				bool									GetModal();
+				bool									GetBlockedByModalWindow();
 
 				/// <summary>Move the window to the center of the screen. If multiple screens exist, the window move to the screen that contains the biggest part of the window.</summary>
 				void									MoveToScreenCenter();

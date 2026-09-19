@@ -672,16 +672,13 @@ WindowsDirect2DParagraph (Formatting)
 						}
 						else
 						{
-							if (inlineElements.Keys().Contains(properties.backgroundImage.Obj()))
-							{
-								return false;
-							}
 							if (start < inlineObject->GetStart() + inlineObject->GetLength() && inlineObject->GetStart() < start + length)
 							{
 								return false;
 							}
 						}
 					}
+					if (reuseIndex == -1 && inlineElements.Keys().Contains(properties.backgroundImage.Obj())) return false;
 					formatDataAvailable = false;
 
 					auto inlineObject = reuseIndex != -1 ? inlineElements.Values().Get(reuseIndex) : ComPtr(new WindowsDirect2DElementInlineObject(this, start, length));

@@ -36,7 +36,7 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 
 - The Windows GDI and Direct2D providers expose GacUI controls and logical list/tree/grid/calendar items through UIA COM providers.
 - The inventory records actual control roles, properties and conditional patterns, document-backed text ranges, default grid visualizer/editor children, and standard/hosted window topology.
-- Combo selection is associated with its contained list, but the current implementation still exposes the dropdown as a separate menu window rather than a child of the combo.
+- Combo/menu/tooltip popups retain logical ownership in both ordinary HWND and hosted modes. The provider also supports explicit accessible labels, localized metadata, document objects and mutex-based radio selection groups.
 - Lifecycle hooks, deferred events and implementation limits are documented separately from the Microsoft-contract review task.
 
 [Design Explanation](./KB_GacUI_Design_UIAutomation.md)

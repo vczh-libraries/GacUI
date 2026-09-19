@@ -13,24 +13,46 @@ namespace vl::presentation::windows
 {
 	class WindowsUIAutomationProvider;
 	class WindowsUIAutomationTextRange;
+	struct WindowsUIAutomationIdleRequest;
 	struct WindowsUIAutomationNode;
+
+	struct WindowsUIAutomationMetadata : Object
+	{
+		Nullable<WString>					name;
+		controls::GuiControl*				label = nullptr;
+		Ptr<controls::GuiDisposedFlag>		labelDisposed;
+		collections::Dictionary<WString, WString> texts;
+	};
+	extern Ptr<WindowsUIAutomationMetadata> UiaMetadata(controls::GuiControl* control, bool create = false);
+	extern WString UiaLocalizedText(controls::GuiControl* control, const WString& key, const WString& fallback);
+	extern WString UiaTooltipText(controls::GuiControl* control);
+	extern bool UiaTooltipInteractive(controls::GuiControl* control);
+	extern bool UiaDocumentObjectRange(WindowsUIAutomationNode* node, vint& begin, vint& end);
+	extern WString UiaDocumentObjectName(WindowsUIAutomationNode* node);
+	extern UiaRect UiaDocumentObjectBounds(WindowsUIAutomationNode* node);
+	extern void UiaInvokeDocumentObject(WindowsUIAutomationNode* node);
+	extern Ptr<WindowsUIAutomationNode> UiaDocumentObjectParent(WindowsUIAutomationNode* node);
+	extern Ptr<WindowsUIAutomationNode> UiaRadioGroup(WindowsUIAutomationNode* node);
 
 	class WindowsUIAutomationDispatcher : public Object
 	{
 		std::atomic<HWND>					window = nullptr;
 		DWORD								threadId;
+		SpinLock							lockPosting;
+		collections::List<Ptr<WindowsUIAutomationIdleRequest>> idleRequests;
 		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 	public:
 		WindowsUIAutomationDispatcher();
 		~WindowsUIAutomationDispatcher();
 		HRESULT Run(const Func<HRESULT()>& action);
+		HRESULT WaitForIdle(int milliseconds, BOOL* result, const Func<HRESULT()>& validate);
 		void Queue(const Func<void()>& action);
 		void Stop();
 	};
 
 	enum class WindowsUIAutomationNodeKind
 	{
-		Control, Item, Cell, Header, HeaderItem, TreeNode, CalendarDay, CalendarHeader, TabContent,
+		Control, Item, Cell, Header, HeaderItem, TreeNode, CalendarDay, CalendarHeader, TabContent, DocumentObject, RadioGroup,
 	};
 
 	struct WindowsUIAutomationValue : Object
@@ -48,6 +70,7 @@ namespace vl::presentation::windows
 		controls::GuiControl*				control = nullptr;
 		Ptr<WindowsUIAutomationNode>			owner;
 		Ptr<controls::tree::INodeProvider>	treeNode;
+		Ptr<DocumentRun>						documentRun;
 		WindowsUIAutomationNodeKind			kind = WindowsUIAutomationNodeKind::Control;
 		vint								id = 0;
 		vint								row = -1;
@@ -112,12 +135,15 @@ namespace vl::presentation::windows
 		collections::Dictionary<INativeWindow*, Ptr<WindowsUIAutomationNode>> roots;
 		collections::List<Ptr<WindowsUIAutomationNode>> nodes;
 		collections::List<Ptr<WindowsUIAutomationNode>> combos;
+		collections::List<Ptr<WindowsUIAutomationNode>> openMenus;
+		Ptr<WindowsUIAutomationNode>			menuModeOwner;
 		WindowsUIAutomationContext(bool isHostedMode);
 		void Stop();
 		void BindWindows();
+		void WindowEvent(Ptr<WindowsUIAutomationNode> node, bool opening);
 		void Scan(compositions::GuiGraphicsComposition* composition);
 		Ptr<WindowsUIAutomationNode> Control(controls::GuiControl* control);
-		Ptr<WindowsUIAutomationNode> Item(Ptr<WindowsUIAutomationNode> owner, WindowsUIAutomationNodeKind kind, vint row = -1, vint column = -1, Ptr<controls::tree::INodeProvider> treeNode = nullptr);
+		Ptr<WindowsUIAutomationNode> Item(Ptr<WindowsUIAutomationNode> owner, WindowsUIAutomationNodeKind kind, vint row = -1, vint column = -1, Ptr<controls::tree::INodeProvider> treeNode = nullptr, Ptr<DocumentRun> documentRun = nullptr);
 		void Notify(Ptr<WindowsUIAutomationNode> node, bool structure = false, EVENTID eventId = 0);
 		void UpdateProperties(Ptr<WindowsUIAutomationNode> node, bool raiseEvents);
 		void UpdateSelection(Ptr<WindowsUIAutomationNode> node, bool raiseEvents);

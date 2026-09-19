@@ -696,7 +696,7 @@
       "root": null
     },
     {
-      "frameId": 28,
+      "frameId": 29,
       "frameName": "Expand IDEs",
       "windowSize": {
         "bounds": {
@@ -723,7 +723,7 @@
       "root": null
     },
     {
-      "frameId": 32,
+      "frameId": 33,
       "frameName": "Click All IDE Count",
       "windowSize": {
         "bounds": {
@@ -750,7 +750,7 @@
       "root": null
     },
     {
-      "frameId": 34,
+      "frameId": 35,
       "frameName": "Close Popup",
       "windowSize": {
         "bounds": {
@@ -777,7 +777,7 @@
       "root": null
     },
     {
-      "frameId": 36,
+      "frameId": 38,
       "frameName": "Expand Companies",
       "windowSize": {
         "bounds": {
@@ -804,7 +804,7 @@
       "root": null
     },
     {
-      "frameId": 40,
+      "frameId": 42,
       "frameName": "Click All Companies",
       "windowSize": {
         "bounds": {
@@ -831,7 +831,7 @@
       "root": null
     },
     {
-      "frameId": 42,
+      "frameId": 44,
       "frameName": "Close Popup",
       "windowSize": {
         "bounds": {

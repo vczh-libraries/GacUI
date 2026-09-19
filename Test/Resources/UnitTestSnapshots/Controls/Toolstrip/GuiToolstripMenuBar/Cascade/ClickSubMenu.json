@@ -197,7 +197,7 @@
       "root": null
     },
     {
-      "frameId": 17,
+      "frameId": 18,
       "frameName": "Hover on File",
       "windowSize": {
         "bounds": {
@@ -224,7 +224,7 @@
       "root": null
     },
     {
-      "frameId": 22,
+      "frameId": 23,
       "frameName": "Hover on File\/New",
       "windowSize": {
         "bounds": {
@@ -251,7 +251,7 @@
       "root": null
     },
     {
-      "frameId": 24,
+      "frameId": 25,
       "frameName": "Hover on File\/Save",
       "windowSize": {
         "bounds": {
@@ -278,7 +278,7 @@
       "root": null
     },
     {
-      "frameId": 26,
+      "frameId": 27,
       "frameName": "Click",
       "windowSize": {
         "bounds": {
