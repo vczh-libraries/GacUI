@@ -150,3 +150,5 @@ No worry about this, just set the range to GuiCellComposition, overlapping will 
 **review comment**: `../Release/Tutorial/GacUI_Controls/AddressBook/UI/Resource.xml` contains an interactive `ColumnSplitter`, and `ColorPicker2/UI/Resource.xml` uses `SharedSizeRoot`, `RepeatFlow`, and `SharedSizeItem` for dynamically repeated, wrapping, equally sized palette entries. The proposed descriptor grammar has neither splitter access to its generated table nor repeated-flow/shared-size equivalents. Replacing every existing layout solely with these descriptors cannot preserve those behaviors.
 
 **suggested solution**: Convert ordinary arrangements to `ez:Layout` while retaining necessary specialized composition subtrees as the permitted single-composition payload, and document each exception. If "all layouts" requires eliminating these specialized subtrees too, extend the specification with their missing behavior before starting tutorial conversion.
+
+Since ez:Layout knky covera partial of features, for apps that uses above compositions that cannot not be rewritten, you only rewrite part of the app where doable.
