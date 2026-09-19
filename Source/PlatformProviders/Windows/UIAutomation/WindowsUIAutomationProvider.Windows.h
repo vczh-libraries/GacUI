@@ -19,6 +19,7 @@ namespace vl::presentation::windows
 	struct WindowsUIAutomationMetadata : Object
 	{
 		Nullable<WString>					name;
+		WString								id;
 		controls::GuiControl*				label = nullptr;
 		Ptr<controls::GuiDisposedFlag>		labelDisposed;
 		collections::Dictionary<WString, WString> texts;
@@ -33,6 +34,9 @@ namespace vl::presentation::windows
 	extern void UiaInvokeDocumentObject(WindowsUIAutomationNode* node);
 	extern Ptr<WindowsUIAutomationNode> UiaDocumentObjectParent(WindowsUIAutomationNode* node);
 	extern Ptr<WindowsUIAutomationNode> UiaRadioGroup(WindowsUIAutomationNode* node);
+	extern Size UiaSpatialGrid(controls::GuiControl* control);
+	extern bool UiaSpatialColumnMajor(controls::GuiControl* control);
+	extern GridPos UiaGridPosition(WindowsUIAutomationNode* node);
 
 	class WindowsUIAutomationDispatcher : public Object
 	{

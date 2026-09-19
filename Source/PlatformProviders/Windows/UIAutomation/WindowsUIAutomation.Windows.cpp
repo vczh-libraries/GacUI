@@ -49,6 +49,12 @@ namespace vl::presentation::windows
 		UiaMetadataChanged(control);
 	}
 
+	void SetWindowsUIAutomationId(GuiControl* control, const WString& id)
+	{
+		UiaMetadata(control, true)->id = id;
+		UiaMetadataChanged(control);
+	}
+
 	void SetWindowsUIAutomationText(GuiControl* control, const WString& key, const WString& text)
 	{
 		UiaMetadata(control, true)->texts.Set(key, text);

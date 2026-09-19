@@ -330,6 +330,9 @@ GuiVirtualRepeatCompositionBase
 				GuiRepeatFixedSizeMultiColumnItemComposition() = default;
 				~GuiRepeatFixedSizeMultiColumnItemComposition() = default;
 
+				/// <summary>Get the column capacity used by the current layout and keyboard navigation.</summary>
+				vint												GetColumnCount();
+
 				vint												FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
 			};
@@ -363,6 +366,9 @@ GuiVirtualRepeatCompositionBase
 				/// <summary>Create the arranger.</summary>
 				GuiRepeatFixedHeightMultiColumnItemComposition() = default;
 				~GuiRepeatFixedHeightMultiColumnItemComposition() = default;
+
+				/// <summary>Get the row capacity used by the current layout and keyboard navigation.</summary>
+				vint												GetRowCount();
 
 				vint												FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;

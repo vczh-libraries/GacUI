@@ -212,6 +212,7 @@ GuiDocumentCommonInterface
 			protected:
 
 				WString										UserInput_ConvertDocumentToText(Ptr<DocumentModel> model);
+				void										InvokeActiveHyperlinkExecuted();
 
 			public:
 				GuiDocumentCommonInterface(const GuiDocumentConfig& _config);
@@ -219,6 +220,8 @@ GuiDocumentCommonInterface
 
 				/// <summary>Active hyperlink changed event.</summary>
 				compositions::GuiNotifyEvent				ActiveHyperlinkChanged;
+				/// <summary>Raised before application hyperlink execution handlers.</summary>
+				compositions::GuiNotifyEvent				BeforeActiveHyperlinkExecuted;
 				/// <summary>Active hyperlink executed event.</summary>
 				compositions::GuiNotifyEvent				ActiveHyperlinkExecuted;
 
@@ -396,6 +399,8 @@ GuiDocumentCommonInterface
 				/// <summary>Get the href attribute of the active hyperlink.</summary>
 				/// <returns>The href attribute of the active hyperlink.</returns>
 				WString										GetActiveHyperlinkReference();
+				/// <summary>Get the active hyperlink run, or null if no hyperlink is active.</summary>
+				Ptr<DocumentHyperlinkRun>					GetActiveHyperlink();
 				bool										ExecuteHyperlink(TextPos position);
 				/// <summary>Get the edit mode of this control.</summary>
 				/// <returns>The edit mode.</returns>

@@ -105,7 +105,10 @@ namespace vl::presentation::windows
 		case UIA_ControlTypePropertyId: number(Role()); break;
 		case UIA_FrameworkIdPropertyId: string(L"GacUI"); break;
 		case UIA_ClassNamePropertyId: string(L"GacUI." + itow(Role())); break;
-		case UIA_AutomationIdPropertyId: string(L"gacui-" + itow(id)); break;
+		case UIA_AutomationIdPropertyId:
+			if (auto metadata = UiaMetadata(control); kind == Kind::Control && metadata) string(metadata->id);
+			else string(L"");
+			break;
 		case UIA_AccessKeyPropertyId: string(control->GetAlt()); break;
 		case UIA_ItemStatusPropertyId:
 			if (kind == Kind::HeaderItem) if (auto columns = UiaColumns(control))
@@ -122,7 +125,12 @@ namespace vl::presentation::windows
 			if (auto button = dynamic_cast<GuiToolstripButton*>(control); button && button->GetCommand() && button->GetCommand()->GetShortcut()) string(button->GetCommand()->GetShortcut()->GetName());
 			break;
 		case UIA_OrientationPropertyId:
-			if (kind == Kind::Header || kind == Kind::Control && (dynamic_cast<GuiTab*>(control) || dynamic_cast<GuiMenuBar*>(control))) number(OrientationType_Horizontal);
+			if (auto tab = dynamic_cast<GuiTab*>(control); kind == Kind::Control && tab)
+			{
+				auto order = tab->TypedControlTemplateObject(true)->GetTabOrder();
+				number(order == TabPageOrder::TopToBottom || order == TabPageOrder::BottomToTop ? OrientationType_Vertical : OrientationType_Horizontal);
+			}
+			else if (kind == Kind::Header || kind == Kind::Control && dynamic_cast<GuiMenuBar*>(control)) number(OrientationType_Horizontal);
 			else if (dynamic_cast<GuiScroll*>(control))
 			{
 				auto theme = control->GetControlThemeName();

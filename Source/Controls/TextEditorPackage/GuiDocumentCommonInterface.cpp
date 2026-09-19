@@ -302,6 +302,7 @@ GuiDocumentCommonInterface
 
 				undoRedoProcessor->Setup(documentElement, documentComposition);
 				ActiveHyperlinkChanged.SetAssociatedComposition(eventComposition);
+				BeforeActiveHyperlinkExecuted.SetAssociatedComposition(eventComposition);
 				ActiveHyperlinkExecuted.SetAssociatedComposition(eventComposition);
 				SelectionChanged.SetAssociatedComposition(eventComposition);
 				EditModeChanged.SetAssociatedComposition(eventComposition);
@@ -691,7 +692,7 @@ GuiDocumentCommonInterface
 							{
 								if (package && CompareEnumerable(activeHyperlinks->hyperlinks, package->hyperlinks) == 0)
 								{
-									ActiveHyperlinkExecuted.Execute(documentControl->GetNotifyEventArguments());
+									InvokeActiveHyperlinkExecuted();
 								}
 								else
 								{
@@ -1413,8 +1414,20 @@ GuiDocumentCommonInterface
 				auto disposed = documentControl->GetDisposedFlag();
 				SetActiveHyperlink(package);
 				if (disposed->IsDisposed()) return false;
-				ActiveHyperlinkExecuted.Execute(documentControl->GetNotifyEventArguments());
+				InvokeActiveHyperlinkExecuted();
 				return true;
+			}
+
+			Ptr<DocumentHyperlinkRun> GuiDocumentCommonInterface::GetActiveHyperlink()
+			{
+				return activeHyperlinks ? activeHyperlinks->hyperlinks[0] : nullptr;
+			}
+
+			void GuiDocumentCommonInterface::InvokeActiveHyperlinkExecuted()
+			{
+				auto disposed = documentControl->GetDisposedFlag();
+				BeforeActiveHyperlinkExecuted.Execute(documentControl->GetNotifyEventArguments());
+				if (!disposed->IsDisposed()) ActiveHyperlinkExecuted.Execute(documentControl->GetNotifyEventArguments());
 			}
 
 			GuiDocumentEditMode GuiDocumentCommonInterface::GetEditMode()

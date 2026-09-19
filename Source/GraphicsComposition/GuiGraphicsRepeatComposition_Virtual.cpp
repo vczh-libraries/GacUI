@@ -1024,12 +1024,17 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				);
 			}
 
+			vint GuiRepeatFixedSizeMultiColumnItemComposition::GetColumnCount()
+			{
+				auto count = viewBounds.Width() / itemSize.x;
+				return count > 0 ? count : 1;
+			}
+
 			vint GuiRepeatFixedSizeMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
 				if (itemIndex < 0 || itemIndex >= count) return -1;
-				vint columnCount = viewBounds.Width() / itemSize.x;
-				if (columnCount == 0) columnCount = 1;
+				vint columnCount = GetColumnCount();
 				vint rowCount = viewBounds.Height() / itemSize.y;
 				if (rowCount == 0) rowCount = 1;
 
@@ -1312,12 +1317,17 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 				return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, rowCount, itemHeight));
 			}
 
+			vint GuiRepeatFixedHeightMultiColumnItemComposition::GetRowCount()
+			{
+				auto count = viewBounds.Height() / itemHeight;
+				return count > 0 ? count : 1;
+			}
+
 			vint GuiRepeatFixedHeightMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
 				if (itemIndex < 0 || itemIndex >= count) return -1;
-				vint rowCount = viewBounds.Height() / itemHeight;
-				if (rowCount == 0) rowCount = 1;
+				vint rowCount = GetRowCount();
 
 				switch (key)
 				{

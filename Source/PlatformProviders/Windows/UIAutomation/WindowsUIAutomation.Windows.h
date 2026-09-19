@@ -13,6 +13,8 @@ namespace vl::presentation::windows
 	class WindowsUIAutomationContext;
 
 	extern void SetWindowsUIAutomationName(controls::GuiControl* control, const WString& name);
+	// Stable application identity; omit it for dynamically generated controls.
+	extern void SetWindowsUIAutomationId(controls::GuiControl* control, const WString& id);
 	extern void SetWindowsUIAutomationLabel(controls::GuiControl* control, controls::GuiControl* label);
 	extern void SetWindowsUIAutomationText(controls::GuiControl* control, const WString& key, const WString& text);
 

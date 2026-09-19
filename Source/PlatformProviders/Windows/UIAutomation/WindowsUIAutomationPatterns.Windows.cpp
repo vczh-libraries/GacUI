@@ -63,7 +63,14 @@ namespace vl::presentation::windows
 			int rows, columns;
 			get_RowCount(&rows); get_ColumnCount(&columns);
 			if (row < 0 || column < 0 || row >= rows || column >= columns) return E_INVALIDARG;
-			auto item = node->context->Item(node, UiaCalendar(node->control) ? Kind::CalendarDay : Kind::Cell, row, column);
+			Ptr<WindowsUIAutomationNode> item;
+			if (auto size = UiaSpatialGrid(node->control); size.x >= 0)
+			{
+				auto index = UiaSpatialColumnMajor(node->control) ? column * size.y + row : row * size.x + column;
+				if (index >= dynamic_cast<GuiListControl*>(node->control)->GetItemProvider()->Count()) return E_INVALIDARG;
+				item = node->context->Item(node, Kind::Item, index);
+			}
+			else item = node->context->Item(node, UiaCalendar(node->control) ? Kind::CalendarDay : Kind::Cell, row, column);
 			*result = item->Provider(); (*result)->AddRef();
 			return S_OK;
 		}, UIA_GridPatternId);
@@ -71,12 +78,12 @@ namespace vl::presentation::windows
 	HRESULT WindowsUIAutomationProvider::get_RowCount(int* result)
 	{
 		if (!result) return E_POINTER;
-		return Read([&]() -> HRESULT { auto calendar = UiaCalendar(node->control); *result = (int)(calendar ? 6 /* GuiCommonDatePickerLook stores six weeks; its dimension getters are transposed. */ : dynamic_cast<GuiListControl*>(node->control)->GetItemProvider()->Count()); return S_OK; }, UIA_GridPatternId);
+		return Read([&]() -> HRESULT { auto size = UiaSpatialGrid(node->control); *result = (int)(size.x >= 0 ? size.y : UiaCalendar(node->control) ? 6 : dynamic_cast<GuiListControl*>(node->control)->GetItemProvider()->Count()); return S_OK; }, UIA_GridPatternId);
 	}
 	HRESULT WindowsUIAutomationProvider::get_ColumnCount(int* result)
 	{
 		if (!result) return E_POINTER;
-		return Read([&]() -> HRESULT { auto calendar = UiaCalendar(node->control); *result = (int)(calendar ? 7 : UiaListView(node->control)->GetColumnCount()); return S_OK; }, UIA_GridPatternId);
+		return Read([&]() -> HRESULT { auto size = UiaSpatialGrid(node->control); *result = (int)(size.x >= 0 ? size.x : UiaCalendar(node->control) ? 7 : UiaListView(node->control)->GetColumnCount()); return S_OK; }, UIA_GridPatternId);
 	}
 #define UIA_CELL_GETTER(NAME, VALUE) \
 	HRESULT WindowsUIAutomationProvider::get_##NAME(int* result) \
@@ -84,8 +91,8 @@ namespace vl::presentation::windows
 		if (!result) return E_POINTER; \
 		return Read([&]() -> HRESULT { *result = (int)(VALUE); return S_OK; }, UIA_GridItemPatternId); \
 	}
-	UIA_CELL_GETTER(Row, node->row)
-	UIA_CELL_GETTER(Column, node->column)
+	UIA_CELL_GETTER(Row, UiaGridPosition(node.Obj()).row)
+	UIA_CELL_GETTER(Column, UiaGridPosition(node.Obj()).column)
 	UIA_CELL_GETTER(RowSpan, 1)
 	UIA_CELL_GETTER(ColumnSpan, 1)
 #undef UIA_CELL_GETTER
@@ -254,6 +261,28 @@ namespace vl::presentation::windows
 	UIA_WINDOW_GETTER(WindowVisualState, WindowVisualState, window->GetNativeWindow()->GetSizeState() == INativeWindow::Maximized ? WindowVisualState_Maximized : window->GetNativeWindow()->GetSizeState() == INativeWindow::Minimized ? WindowVisualState_Minimized : WindowVisualState_Normal)
 	UIA_WINDOW_GETTER(WindowInteractionState, WindowInteractionState, window->GetBlockedByModalWindow() ? WindowInteractionState_BlockedByModalWindow : window->GetNativeWindow()->IsEnabled() ? WindowInteractionState_ReadyForUserInteraction : WindowInteractionState_Running)
 #undef UIA_WINDOW_GETTER
+	NativeRect UiaConstrainWindowBounds(WindowsUIAutomationNode* node, NativeRect bounds)
+	{
+		RECT container;
+		if (node->context->hosted && !node->IsRoot())
+		{
+			auto size = GetHostedApplication()->GetNativeWindowHost()->GetClientSize();
+			container = { 0, 0, (LONG)size.x.value, (LONG)size.y.value };
+		}
+		else
+		{
+			auto coordinate = [](NativeCoordinate value) { return (LONG)max((vint)LONG_MIN, min(value.value, (vint)LONG_MAX)); };
+			RECT requested = { coordinate(bounds.x1), coordinate(bounds.y1), coordinate(bounds.x2), coordinate(bounds.y2) };
+			MONITORINFO monitor = { sizeof(MONITORINFO) };
+			GetMonitorInfo(MonitorFromRect(&requested, MONITOR_DEFAULTTOPRIMARY), &monitor);
+			container = monitor.rcWork;
+		}
+		auto size = bounds.GetSize();
+		auto x = max((vint)container.left, min(bounds.x1.value, max((vint)container.left, container.right - size.x.value)));
+		auto y = max((vint)container.top, min(bounds.y1.value, max((vint)container.top, container.bottom - size.y.value)));
+		return NativeRect(NativePoint(x, y), size);
+	}
+
 	HRESULT WindowsUIAutomationProvider::Move(double x, double y)
 	{
 		return Read([&]() -> HRESULT
@@ -263,11 +292,6 @@ namespace vl::presentation::windows
 			get_CanMove(&canMove);
 			if (!canMove) return UIA_E_INVALIDOPERATION;
 			auto native = node->Window()->GetNativeWindow();
-			RECT container = {};
-			MONITORINFO monitor = { sizeof(MONITORINFO) };
-			POINT requested = { (LONG)max((double)LONG_MIN, min(x, (double)LONG_MAX)), (LONG)max((double)LONG_MIN, min(y, (double)LONG_MAX)) };
-			GetMonitorInfo(MonitorFromPoint(requested, MONITOR_DEFAULTTONEAREST), &monitor);
-			container = monitor.rcWork;
 			if (node->context->hosted)
 			{
 				auto host = GetHostedApplication()->GetNativeWindowHost();
@@ -277,14 +301,13 @@ namespace vl::presentation::windows
 					auto origin = host->GetClientBoundsInScreen().LeftTop();
 					x -= origin.x.value;
 					y -= origin.y.value;
-					auto size = host->GetClientSize();
-					container = { 0, 0, (LONG)size.x.value, (LONG)size.y.value };
 				}
 			}
 			auto size = native->GetBounds().GetSize();
-			x = max((double)container.left, min(x, (double)max((vint)container.left, container.right - size.x.value)));
-			y = max((double)container.top, min(y, (double)max((vint)container.top, container.bottom - size.y.value)));
-			native->SetBounds(NativeRect(NativePoint((vint)x, (vint)y), size));
+			// Keep the requested rectangle representable before monitor containment on Win32.
+			x = max((double)LONG_MIN, min(x, (double)LONG_MAX - size.x.value));
+			y = max((double)LONG_MIN, min(y, (double)LONG_MAX - size.y.value));
+			native->SetBounds(UiaConstrainWindowBounds(node.Obj(), NativeRect(NativePoint((vint)x, (vint)y), size)));
 			return S_OK;
 		}, UIA_TransformPatternId, true);
 	}
@@ -292,7 +315,7 @@ namespace vl::presentation::windows
 	{
 		return Read([&]() -> HRESULT
 		{
-			if (!std::isfinite(width) || !std::isfinite(height) || width <= 0 || height <= 0) return E_INVALIDARG;
+			if (!std::isfinite(width) || !std::isfinite(height) || width <= 0 || height <= 0 || width > LONG_MAX || height > LONG_MAX) return E_INVALIDARG;
 			BOOL canResize = FALSE;
 			get_CanResize(&canResize);
 			if (!canResize) return UIA_E_INVALIDOPERATION;
@@ -303,7 +326,7 @@ namespace vl::presentation::windows
 				return S_OK;
 			}
 			if (node->context->hosted && node->IsRoot()) native = GetHostedApplication()->GetNativeWindowHost();
-			native->SetBounds(NativeRect(native->GetBounds().LeftTop(), NativeSize((vint)width, (vint)height)));
+			native->SetBounds(UiaConstrainWindowBounds(node.Obj(), NativeRect(native->GetBounds().LeftTop(), NativeSize((vint)width, (vint)height))));
 			return S_OK;
 		}, UIA_TransformPatternId, true);
 	}

@@ -2,7 +2,7 @@ param(
     [ValidateSet('CppTest','CppTest_Metaonly','Playground')][string]$Application,
     [ValidateRange(1,65535)][int]$AsPort,
     [int]$ClientProcessId = 0,
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Walk','Window','Concurrent','Review','Review2','Transitions')][string]$Scenario = 'All',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Walk','Window','Concurrent','Review','Review2','Review3','Transitions')][string]$Scenario = 'All',
     [switch]$HostedFixture,
     [switch]$SkipBuild
 )

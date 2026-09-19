@@ -11,6 +11,7 @@
         var native : PlaygroundUia^ = new PlaygroundUia^();
         var secondary : demo::ReviewSecondary* = new demo::ReviewSecondary*();
         var plainPopup : GuiPopup* = new GuiPopup*(ThemeName::Window);
+        var third : demo::ReviewThird* = new demo::ReviewThird*();
       ]]></ref.Members>
       <ref.Ctor><![CDATA[{
         plainPopup.Text = "Review plain popup";
@@ -27,8 +28,13 @@
       <ref.Dtor><![CDATA[{
         delete plainPopup;
         delete secondary;
+        delete third;
       }]]></ref.Dtor>
       <Window ref.Name="self" Text="UIA Review Fixture" ClientSize="x:1050 y:760">
+        <Button Text="Open review 3">
+          <att.BoundsComposition-set ExpectedBounds="x1:760 y1:650 x2:930 y2:685"/>
+          <ev.Clicked-eval><![CDATA[{ self.third.ShowWithOwner(self); }]]></ev.Clicked-eval>
+        </Button>
         <cpp:PlaygroundIndependentGroup ref.Name="independentGroup"/>
         <x:MutexGroupController ref.Name="groupA"/>
         <x:MutexGroupController ref.Name="groupB"/>
@@ -248,6 +254,151 @@
             </Button>
           </DocumentItem>
         </DocumentLabel>
+      </Window>
+    </Instance>
+  </Instance>
+  <Instance name="RadioEditorResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::ReviewRadioEditor" xmlns:x="presentation::controls::GuiSelectableButton::*">
+      <GridEditorTemplate FocusControl-ref="radioA">
+        <x:MutexGroupController ref.Name="group"/>
+        <CustomControl>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <RadioButton ref.Name="radioA" Text="Editor A" Selected="true" GroupController-ref="group">
+            <att.BoundsComposition-set ExpectedBounds="x1:0 y1:0 x2:100 y2:30"/>
+          </RadioButton>
+          <RadioButton Text="Editor B" GroupController-ref="group">
+            <att.BoundsComposition-set ExpectedBounds="x1:110 y1:0 x2:210 y2:30"/>
+          </RadioButton>
+        </CustomControl>
+      </GridEditorTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="ReviewThirdResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::ReviewThird" xmlns:cpp="*">
+      <ref.Members><![CDATA[
+        var wrapWidth : int = 180;
+        var password : GuiSinglelineTextBox* = new GuiSinglelineTextBox*(ThemeName::SinglelineTextBox, {pasteAsPlainText:false});
+        var rows : observe string[] = {"Radio row"};
+        var placed : demo::ReviewSecondary* = new demo::ReviewSecondary*();
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        password.BoundsComposition.ExpectedBounds = {x1:10 y1:10 x2:310 y2:45};
+        self.AddChild(password);
+        var protectedModel = new DocumentModel^();
+        var protectedParagraph = new DocumentParagraphRun^();
+        var protectedLink = new DocumentHyperlinkRun^();
+        var protectedText = new DocumentTextRun^();
+        protectedText.text = "secret";
+        protectedLink.reference = "secret://target";
+        protectedLink.runs.Add(protectedText);
+        protectedParagraph.runs.Add(protectedLink);
+        protectedModel.paragraphs.Add(protectedParagraph);
+        password.Document = protectedModel;
+        PlaygroundUia::SetName(password, "Rich password");
+        PlaygroundUia::SetName(alignment, "Paragraph alignment");
+        PlaygroundUia::SetName(uniform, "Uniform paragraphs");
+        PlaygroundUia::SetName(wrapped, "Wrapped emoji");
+        PlaygroundUia::SetName(changing, "Changing objects");
+        PlaygroundUia::SetName(icons, "Spatial icons");
+        PlaygroundUia::SetName(grid, "Radio grid");
+        PlaygroundUia::SetName(vertical, "Vertical tabs");
+        PlaygroundUia::SetId(vertical, "review3.vertical-tabs");
+        for (item in range[0, 24))
+        {
+          var entry = new ListViewItem^();
+          entry.Text = "Icon " & cast string item;
+          icons.Items.Add(entry);
+        }
+      }]]></ref.Ctor>
+      <ref.Dtor><![CDATA[{ delete placed; }]]></ref.Dtor>
+      <Window ref.Name="self" Text="UIA Review 3" ClientSize="x:980 y:720">
+        <Button Text="Mask rich password">
+          <att.BoundsComposition-set ExpectedBounds="x1:320 y1:10 x2:500 y2:45"/>
+          <ev.Clicked-eval><![CDATA[{ self.password.PasswordChar = cast char '*'; }]]></ev.Clicked-eval>
+        </Button>
+        <DocumentLabel ref.Name="alignment" EditMode="Selectable">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:60 x2:310 y2:135"/>
+          <att.Document><DocumentModel><att.paragraphs>
+            <DocumentParagraphRun alignment="Left"><att.runs><DocumentTextRun text="first"/></att.runs></DocumentParagraphRun>
+            <DocumentParagraphRun alignment="Right"><att.runs><DocumentTextRun text="second"/></att.runs></DocumentParagraphRun>
+          </att.paragraphs></DocumentModel></att.Document>
+        </DocumentLabel>
+        <DocumentLabel ref.Name="uniform" EditMode="Selectable">
+          <att.BoundsComposition-set ExpectedBounds="x1:320 y1:60 x2:620 y2:135"/>
+          <att.Document><DocumentModel><att.paragraphs>
+            <DocumentParagraphRun><att.runs><DocumentTextRun text="a"/></att.runs></DocumentParagraphRun>
+            <DocumentParagraphRun><att.runs><DocumentTextRun text="b"/></att.runs></DocumentParagraphRun>
+          </att.paragraphs></DocumentModel></att.Document>
+        </DocumentLabel>
+        <DocumentLabel ref.Name="wrapped" EditMode="Selectable">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:150 x2:190 y2:250" MinSizeLimitation="NoLimit"/>
+          <att.Document><DocumentModel><att.paragraphs><DocumentParagraphRun><att.runs><DocumentTextRun text="mmmm😀z"/></att.runs></DocumentParagraphRun></att.paragraphs></DocumentModel></att.Document>
+        </DocumentLabel>
+        <Button Text="Narrow emoji">
+          <att.BoundsComposition-set ExpectedBounds="x1:320 y1:150 x2:500 y2:185"/>
+          <ev.Clicked-eval><![CDATA[{ if (self.wrapWidth > 70) { self.wrapWidth = 70; } else { self.wrapWidth = self.wrapWidth - 2; } wrapped.BoundsComposition.ExpectedBounds = {x1:10; y1:150; x2:10 + self.wrapWidth; y2:250;}; }]]></ev.Clicked-eval>
+        </Button>
+        <Bounds ref.Name="clip" ExpectedBounds="x1:10 y1:270 x2:300 y2:315" MinSizeLimitation="NoLimit">
+          <Button ref.Name="moving" Text="Moving button"><att.BoundsComposition-set ExpectedBounds="x1:0 y1:0 x2:140 y2:30"/></Button>
+        </Bounds>
+        <Button Text="Move button">
+          <att.BoundsComposition-set ExpectedBounds="x1:320 y1:270 x2:500 y2:305"/>
+          <ev.Clicked-eval><![CDATA[{ moving.BoundsComposition.ExpectedBounds = {x1:40 y1:5 x2:190 y2:40}; }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Clip button">
+          <att.BoundsComposition-set ExpectedBounds="x1:510 y1:270 x2:650 y2:305"/>
+          <ev.Clicked-eval><![CDATA[{ moving.BoundsComposition.ExpectedBounds = {x1:350 y1:0 x2:500 y2:35}; }]]></ev.Clicked-eval>
+        </Button>
+        <DocumentLabel ref.Name="changing" Text="same" EditMode="ViewOnly">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:330 x2:310 y2:380" MinSizeLimitation="NoLimit"/>
+          <ev.ActiveHyperlinkExecuted-eval><![CDATA[{ status.Text = status.Text & "!"; }]]></ev.ActiveHyperlinkExecuted-eval>
+        </DocumentLabel>
+        <Label ref.Name="status" Text="Clicks"><att.BoundsComposition-set ExpectedBounds="x1:320 y1:330 x2:500 y2:365"/></Label>
+        <Button Text="Add hyperlink">
+          <att.BoundsComposition-set ExpectedBounds="x1:510 y1:330 x2:650 y2:365"/>
+          <ev.Clicked-eval><![CDATA[{
+            var model = new DocumentModel^();
+            var paragraph = new DocumentParagraphRun^();
+            var link = new DocumentHyperlinkRun^();
+            var text = new DocumentTextRun^();
+            text.text = "same"; link.reference = "review://same";
+            link.runs.Add(text); paragraph.runs.Add(link); model.paragraphs.Add(paragraph);
+            changing.Document = model;
+          }]]></ev.Clicked-eval>
+        </Button>
+        <ListView ref.Name="icons" View="BigIcon">
+          <att.BoundsComposition-set ExpectedBounds="x1:660 y1:10 x2:960 y2:245"/>
+        </ListView>
+        <Button Text="Narrow icons">
+          <att.BoundsComposition-set ExpectedBounds="x1:660 y1:270 x2:800 y2:305"/>
+          <ev.Clicked-eval><![CDATA[{ icons.BoundsComposition.ExpectedBounds = {x1:660 y1:10 x2:820 y2:245}; }]]></ev.Clicked-eval>
+        </Button>
+        <BindableDataGrid ref.Name="grid" env.ItemType="string" ItemSource-eval="self.rows">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:405 x2:440 y2:525"/>
+          <att.Columns><DataColumn Text="Radio editor" Size="400">
+            <att.TextProperty>item</att.TextProperty>
+            <att.EditorFactory>demo::ReviewRadioEditor</att.EditorFactory>
+          </DataColumn></att.Columns>
+        </BindableDataGrid>
+        <Tab ref.Name="vertical">
+          <att.BoundsComposition-set ExpectedBounds="x1:460 y1:405 x2:750 y2:525"/>
+          <att.ControlTemplate-eval><![CDATA[func(viewModel : object): GuiControlTemplate* {
+            var result = new GuiTabTemplate*();
+            result.TabOrder = TabPageOrder::TopToBottom;
+            result.FocusableComposition = result;
+            result.ContainerComposition = result;
+            return result;
+          }]]></att.ControlTemplate-eval>
+          <att.Pages><TabPage Text="Vertical first"/><TabPage Text="Vertical second"/></att.Pages>
+        </Tab>
+        <Button Text="Open deleting modal">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:550 x2:210 y2:585"/>
+          <ev.Clicked-eval><![CDATA[{ var dialog = new demo::ReviewSecondary*(); dialog.Text = "Deleting modal"; dialog.ShowModalAndDelete(self, func(): void {}); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Place resize window">
+          <att.BoundsComposition-set ExpectedBounds="x1:220 y1:550 x2:420 y2:585"/>
+          <ev.Clicked-eval><![CDATA[{ self.placed.ShowWithOwner(self); self.placed.SetBounds({x:{value:-900} y:{value:100}}, {x:1200 y:300}); }]]></ev.Clicked-eval>
+        </Button>
       </Window>
     </Instance>
   </Instance>

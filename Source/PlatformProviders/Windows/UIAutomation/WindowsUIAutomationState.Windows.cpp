@@ -58,6 +58,17 @@ namespace vl::presentation::windows
 
 	void WindowsUIAutomationContext::Scan(GuiGraphicsComposition* composition)
 	{
+		auto key = WString::Unmanaged(L"GacUI.Windows.UIAutomation.Bounds");
+		if (auto window = composition->GetRelatedControlHost(); window && composition->GetInternalProperty(key) != dispatcher)
+		{
+			composition->SetInternalProperty(key, dispatcher);
+			composition->CachedBoundsChanged.AttachLambda([anchor = Control(window)](GuiGraphicsComposition* sender, GuiEventArgs&)
+			{
+				// The sender may have moved to another window since this hook was installed.
+				if (anchor->context)
+					if (auto window = sender->GetRelatedControlHost()) anchor->context->Notify(anchor->context->Control(window));
+			});
+		}
 		if (auto control = composition->GetAssociatedControl()) Control(control);
 		for (auto child : composition->Children()) Scan(child);
 	}
@@ -66,7 +77,9 @@ namespace vl::presentation::windows
 	{
 		if (!dynamic_cast<GuiMenu*>(node->control))
 		{
-			Notify(node, true, UiaWindowEvent(node->control, opening));
+			// Hosted ShowModalAndDelete can retire the provider before a queued callback.
+			if (!opening) UiaRaiseAutomationEvent(node->Provider(), UiaWindowEvent(node->control, false));
+			Notify(node, true, opening ? UiaWindowEvent(node->control, true) : 0);
 			return;
 		}
 		if (opening)
@@ -122,7 +135,8 @@ namespace vl::presentation::windows
 		control->TextChanged.AttachLambda([node](GuiGraphicsComposition*, GuiEventArgs&)
 		{
 			if (!node->IsLive()) return;
-			node->context->Notify(node, false, UiaDocument(node->control) ? UIA_Text_TextChangedEventId : 0);
+			auto document = UiaDocument(node->control);
+			node->context->Notify(node, document != nullptr, document ? UIA_Text_TextChangedEventId : 0);
 			for (auto target : node->context->nodes)
 				if (target->kind == Kind::Control && target->IsLive())
 					if (auto metadata = UiaMetadata(target->control); metadata && metadata->label == node->control)
@@ -258,6 +272,14 @@ namespace vl::presentation::windows
 		}
 		if (auto document = UiaDocument(control))
 		{
+			document->BeforeActiveHyperlinkExecuted.AttachLambda([node](GuiGraphicsComposition*, GuiEventArgs&)
+			{
+				if (!node->IsLive()) return;
+				auto run = UiaDocument(node->control)->GetActiveHyperlink();
+				if (!run) return;
+				auto child = node->context->Item(node, Kind::DocumentObject, -1, -1, nullptr, run);
+				if (child->IsLive()) UiaRaiseAutomationEvent(child->Provider(), UIA_Invoke_InvokedEventId);
+			});
 			document->EditModeChanged.AttachLambda(changed);
 			document->SelectionChanged.AttachLambda([node](GuiGraphicsComposition*, GuiEventArgs&)
 			{
@@ -271,7 +293,9 @@ namespace vl::presentation::windows
 				if (!node->IsLive()) return;
 				// Drop plaintext before any queued callback can publish it as oldValue.
 				node->properties.Remove(UIA_ValueValuePropertyId);
-				node->context->Notify(node);
+				for (auto child : node->context->nodes)
+					if (child->owner == node && child->kind == Kind::DocumentObject) child->Retire();
+				node->context->Notify(node, true);
 			});
 		}
 		UpdateProperties(node, false);
@@ -327,7 +351,7 @@ namespace vl::presentation::windows
 			context->UpdateSelection(node, true);
 			for (auto child : context->nodes)
 			{
-				if (child != node && (child->owner == node || structure && node->IsRoot()) && child->IsLive()) context->UpdateProperties(child, true);
+				if (child != node && child->IsLive() && (child->owner == node || dynamic_cast<GuiWindow*>(node->control) && child->Window() == node->control || structure && node->IsRoot())) context->UpdateProperties(child, true);
 			}
 			if (structure) UiaRaiseStructureChangedEvent(node->Provider(), StructureChangeType_ChildrenInvalidated, nullptr, 0);
 			for (auto eventId : events) UiaRaiseAutomationEvent(node->Provider(), eventId);
@@ -364,7 +388,7 @@ namespace vl::presentation::windows
 		if (!node->IsLive()) return;
 		const PROPERTYID watched[] =
 		{
-			UIA_NamePropertyId, UIA_HelpTextPropertyId, UIA_LabeledByPropertyId, UIA_AcceleratorKeyPropertyId, UIA_ItemStatusPropertyId, UIA_OrientationPropertyId,
+			UIA_NamePropertyId, UIA_AutomationIdPropertyId, UIA_HelpTextPropertyId, UIA_LabeledByPropertyId, UIA_AcceleratorKeyPropertyId, UIA_ItemStatusPropertyId, UIA_OrientationPropertyId,
 			UIA_IsEnabledPropertyId, UIA_IsOffscreenPropertyId, UIA_HasKeyboardFocusPropertyId, UIA_IsContentElementPropertyId,
 			UIA_IsPasswordPropertyId, UIA_IsKeyboardFocusablePropertyId, UIA_AccessKeyPropertyId,
 			UIA_BoundingRectanglePropertyId, UIA_GridRowCountPropertyId, UIA_GridColumnCountPropertyId,

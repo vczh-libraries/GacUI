@@ -1558,10 +1558,18 @@ class presentation::compositions::GuiRepeatFixedHeightItemComposition : presenta
 }
 
 class presentation::compositions::GuiRepeatFixedHeightMultiColumnItemComposition : presentation::compositions::GuiVirtualRepeatCompositionBase {
+    property RowCount : system::Int64 { get:GetRowCount }
+
+    function GetRowCount() : system::Int64;
+
     constructor () : presentation::compositions::GuiRepeatFixedHeightMultiColumnItemComposition*;
 }
 
 class presentation::compositions::GuiRepeatFixedSizeMultiColumnItemComposition : presentation::compositions::GuiVirtualRepeatCompositionBase {
+    property ColumnCount : system::Int64 { get:GetColumnCount }
+
+    function GetColumnCount() : system::Int64;
+
     constructor () : presentation::compositions::GuiRepeatFixedSizeMultiColumnItemComposition*;
 }
 
@@ -2498,6 +2506,7 @@ class presentation::controls::GuiDisposedFlag : system::ReferenceType {
 class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType {
     event ActiveHyperlinkChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event ActiveHyperlinkExecuted : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
+    event BeforeActiveHyperlinkExecuted : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event EditModeChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         EditMode,
     }
@@ -2510,6 +2519,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     }
     event UndoRedoChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
 
+    property ActiveHyperlink : presentation::DocumentHyperlinkRun^ { get:GetActiveHyperlink }
     property ActiveHyperlinkReference : system::String { get:GetActiveHyperlinkReference }
     property CaretBegin : presentation::TextPos { get:GetCaretBegin }
     property CaretEnd : presentation::TextPos { get:GetCaretEnd }
@@ -2541,6 +2551,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function EnsureCaretVisible() : system::Void;
     function EnsureTextPositionVisible(caret : presentation::TextPos, frontSide : system::Boolean) : system::Void;
     function ExecuteHyperlink(position : presentation::TextPos) : system::Boolean;
+    function GetActiveHyperlink() : presentation::DocumentHyperlinkRun^;
     function GetActiveHyperlinkReference() : system::String;
     function GetCaretBegin() : presentation::TextPos;
     function GetCaretBounds(caret : presentation::TextPos, frontSide : system::Boolean) : presentation::Rect;

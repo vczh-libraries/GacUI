@@ -29,8 +29,12 @@ namespace vl::presentation::windows
 	{
 		auto button = dynamic_cast<GuiSelectableButton*>(control);
 		if (!button) return nullptr;
-		for (auto parent = control->GetParent(); parent; parent = parent->GetParent())
+		for (auto composition = control->GetBoundsComposition()->GetParent(); composition; composition = composition->GetParent())
 		{
+			// Item and cell templates contain application controls. The surrounding
+			// list does not turn their radio groups into implementation details.
+			if (dynamic_cast<templates::GuiGridCellTemplate*>(composition) || dynamic_cast<templates::GuiListItemTemplate*>(composition)) break;
+			auto parent = composition->GetAssociatedControl();
 			if (dynamic_cast<GuiTabPage*>(parent)) break;
 			if (dynamic_cast<GuiTab*>(parent) || dynamic_cast<GuiListControl*>(parent) || dynamic_cast<GuiDatePicker*>(parent) || dynamic_cast<GuiButton*>(parent)) return nullptr;
 		}
@@ -80,9 +84,48 @@ namespace vl::presentation::windows
 		return dynamic_cast<GuiDatePicker*>(control) ? UiaFindComposition<templates::GuiCommonDatePickerLook>(control->GetBoundsComposition()) : nullptr;
 	}
 
+	bool UiaSpatialColumnMajor(GuiControl* control)
+	{
+		auto list = dynamic_cast<GuiListControl*>(control);
+		return list && dynamic_cast<list::FixedHeightMultiColumnItemArranger*>(list->GetArranger());
+	}
+
+	Size UiaSpatialGrid(GuiControl* control)
+	{
+		auto list = dynamic_cast<GuiListControl*>(control);
+		if (!list) return Size(-1, -1);
+		auto count = list->GetItemProvider()->Count();
+		if (dynamic_cast<list::FixedSizeMultiColumnItemArranger*>(list->GetArranger()))
+		{
+			auto repeat = UiaFindComposition<GuiRepeatFixedSizeMultiColumnItemComposition>(control->GetBoundsComposition());
+			if (!repeat) return Size(-1, -1);
+			auto columns = repeat->GetColumnCount();
+			return Size(columns, (count + columns - 1) / columns);
+		}
+		if (UiaSpatialColumnMajor(control))
+		{
+			auto repeat = UiaFindComposition<GuiRepeatFixedHeightMultiColumnItemComposition>(control->GetBoundsComposition());
+			if (!repeat) return Size(-1, -1);
+			auto rows = repeat->GetRowCount();
+			return Size((count + rows - 1) / rows, rows);
+		}
+		return Size(-1, -1);
+	}
+
+	GridPos UiaGridPosition(WindowsUIAutomationNode* node)
+	{
+		if (node->kind != Kind::Item) return GridPos(node->row, node->column);
+		auto size = UiaSpatialGrid(node->control);
+		return UiaSpatialColumnMajor(node->control)
+			? GridPos(node->row % size.y, node->row / size.y)
+			: GridPos(node->row / size.x, node->row % size.x);
+	}
+
 	bool WindowsUIAutomationNode::IsLive()
 	{
 		if (retired || !context || context->stopped || disposed->IsDisposed()) return false;
+		for (auto parent = control->GetParent(); parent; parent = parent->GetParent())
+			if (auto text = dynamic_cast<GuiSinglelineTextBox*>(parent); text && text->GetPasswordChar()) return false;
 		if (owner && !owner->IsLive()) return false;
 		if (kind == Kind::DocumentObject)
 		{
@@ -280,7 +323,7 @@ namespace vl::presentation::windows
 		if (kind == Kind::DocumentObject) return documentRun.Cast<DocumentHyperlinkRun>() ? UIA_HyperlinkControlTypeId : UIA_ImageControlTypeId;
 		switch (kind)
 		{
-		case Kind::Item: return owner->Supports(UIA_GridPatternId) ? UIA_DataItemControlTypeId : UIA_ListItemControlTypeId;
+		case Kind::Item: return owner->Supports(UIA_TablePatternId) ? UIA_DataItemControlTypeId : UIA_ListItemControlTypeId;
 		case Kind::TreeNode: return UIA_TreeItemControlTypeId;
 		case Kind::Cell: return UIA_DataItemControlTypeId;
 		case Kind::Header: return UIA_HeaderControlTypeId;
@@ -359,7 +402,8 @@ namespace vl::presentation::windows
 			case UIA_ScrollItemPatternId: case UIA_VirtualizedItemPatternId: return list && row >= 0 || kind == Kind::TreeNode;
 			case UIA_ExpandCollapsePatternId: return kind == Kind::TreeNode;
 			case UIA_TogglePatternId: return kind == Kind::Item && text && text->GetView() != TextListView::Text;
-			case UIA_GridItemPatternId: case UIA_TableItemPatternId: return kind == Kind::Cell || kind == Kind::CalendarDay;
+			case UIA_GridItemPatternId: return kind == Kind::Cell || kind == Kind::CalendarDay || kind == Kind::Item && UiaSpatialGrid(control).x >= 0;
+			case UIA_TableItemPatternId: return kind == Kind::Cell || kind == Kind::CalendarDay;
 			case UIA_TransformPatternId: return kind == Kind::HeaderItem && UiaColumns(control);
 			case UIA_ValuePatternId:
 				if (kind == Kind::Cell) if (auto grid = UiaDataGrid(control))
@@ -391,7 +435,8 @@ namespace vl::presentation::windows
 		case UIA_ScrollPatternId:
 			if (auto view = dynamic_cast<GuiScrollView*>(control)) return view->GetHorizontalScroll() && view->GetVerticalScroll();
 			return false;
-		case UIA_GridPatternId: case UIA_TablePatternId: return UiaDataGrid(control) || listView && listView->GetView() == ListViewView::Detail || calendar;
+		case UIA_GridPatternId: return UiaSpatialGrid(control).x >= 0 || Supports(UIA_TablePatternId);
+		case UIA_TablePatternId: return UiaDataGrid(control) || listView && listView->GetView() == ListViewView::Detail || calendar;
 		case UIA_ItemContainerPatternId: return list || calendar;
 		case UIA_MultipleViewPatternId: return listView && !UiaDataGrid(control);
 		case UIA_WindowPatternId: case UIA_TransformPatternId: return dynamic_cast<GuiWindow*>(control) && !dynamic_cast<GuiPopup*>(control);
@@ -504,7 +549,7 @@ namespace vl::presentation::windows
 		{
 			for (vint c = 0; c < UiaListView(control)->GetColumnCount(); c++) result.Add(context->Item(owner, Kind::HeaderItem, -1, c));
 		}
-		else if (kind == Kind::Item && owner->Supports(UIA_GridPatternId))
+		else if (kind == Kind::Item && owner->Supports(UIA_TablePatternId))
 		{
 			for (vint c = 0; c < UiaListView(control)->GetColumnCount(); c++) result.Add(context->Item(owner, Kind::Cell, row, c));
 		}

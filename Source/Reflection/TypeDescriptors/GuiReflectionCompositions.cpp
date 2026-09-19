@@ -455,11 +455,13 @@ Type Declaration (Class)
 			BEGIN_CLASS_MEMBER(GuiRepeatFixedSizeMultiColumnItemComposition)
 				CLASS_MEMBER_BASE(GuiVirtualRepeatCompositionBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiRepeatFixedSizeMultiColumnItemComposition*(), NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnCount)
 			END_CLASS_MEMBER(GuiRepeatFixedSizeMultiColumnItemComposition)
 
 			BEGIN_CLASS_MEMBER(GuiRepeatFixedHeightMultiColumnItemComposition)
 				CLASS_MEMBER_BASE(GuiVirtualRepeatCompositionBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiRepeatFixedHeightMultiColumnItemComposition*(), NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(RowCount)
 			END_CLASS_MEMBER(GuiRepeatFixedHeightMultiColumnItemComposition)
 
 			BEGIN_CLASS_MEMBER(GuiResponsiveCompositionBase)

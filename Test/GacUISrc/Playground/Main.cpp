@@ -71,6 +71,11 @@ public:
 		windows::SetWindowsUIAutomationLabel(control, label);
 	}
 
+	static void SetId(GuiControl* control, const WString& id)
+	{
+		windows::SetWindowsUIAutomationId(control, id);
+	}
+
 	static void SetText(GuiControl* control, const WString& key, const WString& text)
 	{
 		windows::SetWindowsUIAutomationText(control, key, text);
@@ -105,6 +110,7 @@ namespace vl::reflection::description
 		CLASS_MEMBER_CONSTRUCTOR(Ptr<PlaygroundUia>(), NO_PARAMETER)
 		CLASS_MEMBER_METHOD(WaitUntilReleased, NO_PARAMETER)
 		CLASS_MEMBER_STATIC_METHOD(SetName, { L"control" _ L"name" })
+		CLASS_MEMBER_STATIC_METHOD(SetId, { L"control" _ L"id" })
 		CLASS_MEMBER_STATIC_METHOD(SetLabel, { L"control" _ L"label" })
 		CLASS_MEMBER_STATIC_METHOD(SetText, { L"control" _ L"key" _ L"text" })
 	END_CLASS_MEMBER(PlaygroundUia)

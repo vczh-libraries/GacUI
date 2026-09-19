@@ -9,6 +9,49 @@ using System.Windows.Automation.Text;
 
 public static class GacUIShowcaseTests
 {
+    [ComImport, Guid("d22108aa-8ac5-49a5-837b-37bbb3d7591e"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    public interface INativeAutomationElement {
+        void SetFocus();
+        [return: MarshalAs(UnmanagedType.SafeArray, SafeArraySubType=VarEnum.VT_I4)] int[] GetRuntimeId();
+    }
+    [ComVisible(true), Guid("146c3c17-f12e-4e22-8c27-f894b9b79c69"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    public interface INativeAutomationEventHandler {
+        void HandleAutomationEvent(INativeAutomationElement sender, int eventId);
+    }
+    // System.Windows.Automation synthesizes WindowClosed from HWND events and
+    // deliberately does not subscribe to provider WindowClosed. Use native UIA
+    // for the hosted-window contract. Slots are from IUIAutomation in the SDK.
+    [ComVisible(true), ClassInterface(ClassInterfaceType.None)]
+    public sealed class NativeWindowEvents : INativeAutomationEventHandler, IDisposable {
+        [DllImport("ole32.dll")] static extern int CoCreateInstance(ref Guid clsid, IntPtr outer, uint context, ref Guid iid, out IntPtr instance);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)] delegate int GetRoot(IntPtr self, out IntPtr root);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)] delegate int AddHandler(IntPtr self, int id, IntPtr element, int scope, IntPtr cache, [MarshalAs(UnmanagedType.Interface)] INativeAutomationEventHandler handler);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)] delegate int RemoveHandler(IntPtr self, int id, IntPtr element, [MarshalAs(UnmanagedType.Interface)] INativeAutomationEventHandler handler);
+        IntPtr instance, desktop;
+        string expected;
+        public int Closed;
+        static T Method<T>(IntPtr self, int slot) where T : class {
+            return (T)(object)Marshal.GetDelegateForFunctionPointer(Marshal.ReadIntPtr(Marshal.ReadIntPtr(self), slot * IntPtr.Size), typeof(T));
+        }
+        public NativeWindowEvents(int[] runtimeId) {
+            expected = string.Join(",", Array.ConvertAll(runtimeId, id => id.ToString()));
+            var clsid = new Guid("ff48dba4-60ef-4201-aa87-54103eef594e");
+            var iid = new Guid("30cbe57d-d9d0-452a-ab13-7ac5ac4825ee");
+            Marshal.ThrowExceptionForHR(CoCreateInstance(ref clsid, IntPtr.Zero, 1, ref iid, out instance));
+            Marshal.ThrowExceptionForHR(Method<GetRoot>(instance, 5)(instance, out desktop));
+            Marshal.ThrowExceptionForHR(Method<AddHandler>(instance, 32)(instance, 20017, desktop, 7, IntPtr.Zero, this));
+        }
+        public void HandleAutomationEvent(INativeAutomationElement sender, int eventId) {
+            try {
+                if (eventId == 20017 && string.Join(",", Array.ConvertAll(sender.GetRuntimeId(), id => id.ToString())) == expected) Interlocked.Increment(ref Closed);
+            }
+            finally { Marshal.ReleaseComObject(sender); }
+        }
+        public void Dispose() {
+            Marshal.ThrowExceptionForHR(Method<RemoveHandler>(instance, 33)(instance, 20017, desktop, this));
+            Marshal.Release(desktop); Marshal.Release(instance);
+        }
+    }
     delegate bool EnumProc(IntPtr hwnd, IntPtr parameter);
     [DllImport("user32.dll")] static extern bool EnumWindows(EnumProc callback, IntPtr parameter);
     [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint process);
@@ -17,6 +60,10 @@ public static class GacUIShowcaseTests
     [DllImport("user32.dll")] static extern IntPtr GetForegroundWindow();
     [StructLayout(LayoutKind.Sequential)] struct NativeRect { public int Left, Top, Right, Bottom; }
     [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr hwnd, out NativeRect rectangle);
+    delegate bool MonitorProc(IntPtr monitor, IntPtr dc, ref NativeRect rectangle, IntPtr parameter);
+    [StructLayout(LayoutKind.Sequential)] struct MonitorInfo { public int Size; public NativeRect Monitor, Work; public uint Flags; }
+    [DllImport("user32.dll")] static extern bool EnumDisplayMonitors(IntPtr dc, IntPtr clip, MonitorProc callback, IntPtr parameter);
+    [DllImport("user32.dll")] static extern bool GetMonitorInfo(IntPtr monitor, ref MonitorInfo info);
     [StructLayout(LayoutKind.Sequential)] struct NativePoint { public int X, Y; }
     [DllImport("user32.dll")] static extern bool ScreenToClient(IntPtr hwnd, ref NativePoint point);
     [DllImport("user32.dll")] static extern uint GetDpiForWindow(IntPtr hwnd);
@@ -232,7 +279,8 @@ public static class GacUIShowcaseTests
             {
                 Test("ListView / " + views.GetViewName(view));
                 views.SetCurrentView(view); Check(views.Current.CurrentView == view, "view changed");
-                if (view == 5) Pattern<GridPattern>(list, GridPattern.Pattern); else Absent(list, GridPattern.Pattern);
+                if (view == 4) Absent(list, GridPattern.Pattern); else Pattern<GridPattern>(list, GridPattern.Pattern);
+                if (view == 5) Pattern<TablePattern>(list, TablePattern.Pattern); else Absent(list, TablePattern.Pattern);
                 Check(Pattern<SelectionItemPattern>(retained, SelectionItemPattern.Pattern).Current.IsSelected, "selection survives view change");
             }
         }
@@ -402,7 +450,7 @@ public static class GacUIShowcaseTests
             {
                 var current = element.Current;
                 Check(current.FrameworkId == "GacUI", "native semantic descendant");
-                Check(seen.Add(current.AutomationId), "duplicate logical node: " + current.Name);
+                Check(seen.Add(string.Join(",", Array.ConvertAll(element.GetRuntimeId(), id => id.ToString()))), "duplicate logical node: " + current.Name);
                 foreach (var pattern in element.GetSupportedPatterns()) element.GetCurrentPattern(pattern);
                 if (current.ControlType == ControlType.Slider && current.IsEnabled)
                 {
@@ -905,16 +953,233 @@ public static class GacUIShowcaseTests
         Check(failures.Count == 0, "UIA review 2 failures: " + string.Join("; ", failures.ToArray()));
     }
 
+    static void Review3Contracts()
+    {
+        Invoke(root, "Open review 3");
+        AutomationElement review = null;
+        Wait(() => { foreach (var candidate in isHosted ? Find(root, ControlType.Window) : OwnedWindows()) if (candidate.Current.Name == "UIA Review 3") { review = candidate; return true; } return false; }, "review 3 opens");
+        var idle = Pattern<WindowPattern>(review, WindowPattern.Pattern);
+        Action settle = () => Check(idle.WaitForInputIdle(2000), "review fixture settles");
+        var failures = new List<string>();
+        Action<string, Action> regression = (name, action) => {
+            Test(name);
+            try { settle(); action(); Console.WriteLine("PASS " + name); }
+            catch (Exception error) { failures.Add(name + ": " + error.Message); Console.WriteLine("FAIL " + name + ": " + error.Message); }
+        };
+        regression("R3-01 protected rich document children", () => {
+            var edit = Named(review, "Rich password", ControlType.Edit);
+            var link = Named(edit, "secret", ControlType.Hyperlink);
+            Invoke(review, "Mask rich password");
+            Wait(() => edit.Current.IsPassword, "rich password becomes protected");
+            bool unavailable = false;
+            try { Check(link.Current.Name != "secret", "retained hyperlink exposes secret"); }
+            catch (ElementNotAvailableException) { unavailable = true; }
+            Check(unavailable, "retained protected child is unavailable");
+            Check(Find(edit, ControlType.Hyperlink).Count == 0, "protected children omitted from discovery");
+        });
+        regression("R3-02 grid editor radio selection group", () => {
+            var grid = Named(review, "Radio grid", ControlType.DataGrid);
+            var cell = Pattern<GridPattern>(grid, GridPattern.Pattern).GetItem(0, 0);
+            Pattern<InvokePattern>(cell, InvokePattern.Pattern).Invoke();
+            AutomationElement a = null;
+            Wait(() => { a = cell.FindFirst(TreeScope.Descendants, new PropertyCondition(AutomationElement.NameProperty, "Editor A")); return a != null; }, "radio editor opens beneath cell");
+            var b = Named(cell, "Editor B", ControlType.RadioButton);
+            var selectionA = Pattern<SelectionItemPattern>(a, SelectionItemPattern.Pattern);
+            var selectionB = Pattern<SelectionItemPattern>(b, SelectionItemPattern.Pattern);
+            var container = selectionB.Current.SelectionContainer;
+            var selection = Pattern<SelectionPattern>(container, SelectionPattern.Pattern);
+            Same(container, selectionA.Current.SelectionContainer, "editor radios share Selection container");
+            Same(selection.Current.GetSelection()[0], a, "editor selection reports A");
+            bool rejected = false;
+            try { selectionB.AddToSelection(); } catch (InvalidOperationException) { rejected = true; }
+            Check(rejected && selectionA.Current.IsSelected && !selectionB.Current.IsSelected, "conflicting add rejected without mutation");
+        });
+        regression("R3-03 spatial list coordinates", () => {
+            var icons = Named(review, "Spatial icons", ControlType.List);
+            var grid = Pattern<GridPattern>(icons, GridPattern.Pattern);
+            Action<bool> verify = columnMajor => {
+                int columns = grid.Current.ColumnCount, rows = grid.Current.RowCount;
+                Check(columns >= 1 && rows >= 1, "spatial fixture has rows and columns");
+                var items = Items(icons);
+                Check(items.Count == 24 && (columnMajor ? columns == (24 + rows - 1) / rows : rows == (24 + columns - 1) / columns), "spatial dimensions cover model");
+                for (int i = 0; i < items.Count; i++) {
+                    var item = Pattern<GridItemPattern>(items[i], GridItemPattern.Pattern).Current;
+                    Check(item.Row == (columnMajor ? i % rows : i / columns) && item.Column == (columnMajor ? i / rows : i % columns) && item.RowSpan == 1 && item.ColumnSpan == 1, "spatial item coordinates " + i);
+                    Same(item.ContainingGrid, icons, "spatial containing grid");
+                    Same(grid.GetItem(item.Row, item.Column), items[i], "GetItem returns existing list item");
+                }
+                var first = items[0].Current.BoundingRectangle;
+                var next = items[columnMajor ? 1 : columns].Current.BoundingRectangle;
+                Check(!first.IsEmpty && !next.IsEmpty && next.Top > first.Top && Math.Abs(next.Left - first.Left) < 2, "row coordinates match rendered arrangement");
+                Absent(icons, TablePattern.Pattern);
+            };
+            verify(false); int before = grid.Current.ColumnCount;
+            Invoke(review, "Narrow icons"); settle();
+            Wait(() => grid.Current.ColumnCount != before, "spatial columns follow resize");
+            verify(false);
+            var views = Pattern<MultipleViewPattern>(icons, MultipleViewPattern.Pattern);
+            foreach (int view in new [] { 1, 2, 3 }) {
+                views.SetCurrentView(view); settle();
+                grid = Pattern<GridPattern>(icons, GridPattern.Pattern);
+                verify(view == 2);
+            }
+        });
+        regression("R3-04 optional stable AutomationId", () => {
+            var stable = Named(review, "Vertical tabs", ControlType.Tab);
+            Check(stable.Current.AutomationId == "review3.vertical-tabs", "explicit application ID survives native and hosted sessions");
+            Check(Named(review, "Spatial icons", ControlType.List).Current.AutomationId == "", "unspecified ID remains optional");
+            foreach (AutomationElement element in review.FindAll(TreeScope.Descendants, Condition.TrueCondition))
+                Check(!element.Current.AutomationId.StartsWith("gacui-"), "runtime allocation counter exposed as AutomationId");
+        });
+        regression("R3-05 vertical tab orientation and input", () => {
+            var tab = Named(review, "Vertical tabs", ControlType.Tab);
+            Check(tab.Current.Orientation == OrientationType.Vertical, "vertical Tab reports Vertical");
+            tab.SetFocus();
+            var hwnd = new IntPtr(isHosted ? root.Current.NativeWindowHandle : review.Current.NativeWindowHandle);
+            Check(PostMessage(hwnd, 0x100, new IntPtr(0x28), IntPtr.Zero) && PostMessage(hwnd, 0x101, new IntPtr(0x28), IntPtr.Zero), "vertical arrow input posted");
+            Wait(() => Pattern<SelectionItemPattern>(Named(tab, "Vertical second", ControlType.TabItem), SelectionItemPattern.Pattern).Current.IsSelected, "Down follows vertical tab order");
+        });
+        regression("R3-06 exclusive paragraph alignment", () => {
+            var text = Pattern<TextPattern>(Named(review, "Paragraph alignment", ControlType.Document), TextPattern.Pattern);
+            var first = text.DocumentRange.FindText("first", false, false);
+            first.ExpandToEnclosingUnit(TextUnit.Paragraph);
+            Check(first.GetText(-1) == "first\r\n", "first paragraph includes its separator");
+            Check(Object.Equals(first.GetAttributeValue(TextPattern.HorizontalTextAlignmentAttribute), HorizontalTextAlignment.Left), "first paragraph alignment excludes second paragraph");
+            var found = text.DocumentRange.FindAttribute(TextPattern.HorizontalTextAlignmentAttribute, HorizontalTextAlignment.Left, false);
+            Check(found != null && found.GetText(-1) == "first\r\n", "alignment search includes first separator only");
+            first.ExpandToEnclosingUnit(TextUnit.Format);
+            Check(first.GetText(-1) == "first\r\n", "Format ends at alignment boundary");
+        });
+        regression("R3-07 uniform paragraph separator formatting", () => {
+            var text = Pattern<TextPattern>(Named(review, "Uniform paragraphs", ControlType.Document), TextPattern.Pattern);
+            Check(text.DocumentRange.GetText(-1) == "a\r\nb", "uniform paragraph fixture");
+            var separator = text.DocumentRange.FindText("\r\n", false, false);
+            Check(Object.Equals(separator.GetAttributeValue(TextPattern.FontWeightAttribute), 400), "separator has uniform font weight");
+            Check(separator.GetAttributeValue(TextPattern.FontNameAttribute) is string, "separator has font name");
+            var format = text.DocumentRange.FindText("a", false, false);
+            format.ExpandToEnclosingUnit(TextUnit.Format);
+            Check(format.GetText(-1) == "a\r\nb", "uniform Format crosses paragraph separator");
+            foreach (bool backward in new [] { false, true }) {
+                var found = text.DocumentRange.FindAttribute(TextPattern.FontWeightAttribute, 400, backward);
+                Check(found != null && found.GetText(-1) == "a\r\nb", "uniform attribute search crosses separator");
+            }
+        });
+        regression("R3-08 Direct2D supplementary character geometry", () => {
+            var text = Pattern<TextPattern>(Named(review, "Wrapped emoji", ControlType.Document), TextPattern.Pattern);
+            var emoji = text.DocumentRange.FindText("\uD83D\uDE00", false, false);
+            Check(emoji != null, "emoji exists");
+            Console.WriteLine("GEOMETRY unwrapped=" + string.Join(";", Array.ConvertAll(emoji.GetBoundingRectangles(), r => r.ToString())));
+            bool wrapped = false;
+            for (int i = 0; i < 30; i++) {
+                var line = emoji.Clone(); line.ExpandToEnclosingUnit(TextUnit.Line);
+                Console.WriteLine("GEOMETRY step=" + i + " line=" + line.GetText(-1));
+                if (line.GetText(-1).StartsWith("\uD83D\uDE00")) { wrapped = true; break; }
+                Invoke(review, "Narrow emoji"); settle();
+            }
+            Check(wrapped, "Direct2D soft wrap immediately before emoji");
+            var before = text.DocumentRange.FindText("mmmm", false, false).GetBoundingRectangles();
+            var rectangles = emoji.GetBoundingRectangles();
+            Console.WriteLine("GEOMETRY previous=" + string.Join(";", Array.ConvertAll(before, r => r.ToString())) + " emoji=" + string.Join(";", Array.ConvertAll(rectangles, r => r.ToString())));
+            Check(rectangles.Length == 1 && rectangles[0].Top >= before[before.Length - 1].Bottom - 1, "emoji rectangle excludes previous line");
+        });
+        regression("R3-09 composition bounds and clipping events", () => {
+            var button = Named(review, "Moving button", ControlType.Button);
+            var original = button.Current.BoundingRectangle;
+            int bounds = 0, offscreen = 0;
+            Automation.AddAutomationPropertyChangedEventHandler(button, TreeScope.Element, (s,e) => { if (e.Property == AutomationElement.BoundingRectangleProperty) Interlocked.Increment(ref bounds); else Interlocked.Increment(ref offscreen); }, AutomationElement.BoundingRectangleProperty, AutomationElement.IsOffscreenProperty);
+            Invoke(review, "Move button");
+            Wait(() => bounds > 0 && button.Current.BoundingRectangle != original, "composition-only move emits bounds");
+            Invoke(review, "Clip button");
+            Wait(() => offscreen > 0 && button.Current.IsOffscreen, "composition-only move emits offscreen");
+        });
+        regression("R3-10 logical document structure notification", () => {
+            var document = Named(review, "Changing objects", ControlType.Document);
+            int changes = 0;
+            Automation.AddStructureChangedEventHandler(document, TreeScope.Element, (s,e) => Interlocked.Increment(ref changes));
+            Invoke(review, "Add hyperlink");
+            Wait(() => Find(document, ControlType.Hyperlink).Count == 1, "same text gains hyperlink identity");
+            Wait(() => changes > 0, "logical document children emit structure event");
+        });
+        regression("R3-11 hyperlink pointer and Invoke events", () => {
+            var document = Named(review, "Changing objects", ControlType.Document);
+            var link = Named(document, "same", ControlType.Hyperlink);
+            int events = 0;
+            Automation.AddAutomationEventHandler(InvokePattern.InvokedEvent, link, TreeScope.Element, (s,e) => Interlocked.Increment(ref events));
+            var rectangle = link.Current.BoundingRectangle;
+            var hwnd = new IntPtr(isHosted ? root.Current.NativeWindowHandle : review.Current.NativeWindowHandle);
+            var point = new NativePoint { X = (int)(rectangle.Left + rectangle.Width / 2), Y = (int)(rectangle.Top + rectangle.Height / 2) };
+            Check(ScreenToClient(hwnd, ref point), "hyperlink pointer coordinates");
+            var position = new IntPtr((point.Y << 16) | (point.X & 0xffff));
+            foreach (uint message in new uint[] { 0x200, 0x201, 0x202 }) Check(PostMessage(hwnd, message, message == 0x201 ? new IntPtr(1) : IntPtr.Zero, position), "hyperlink pointer input posted");
+            Wait(() => review.FindFirst(TreeScope.Descendants, new PropertyCondition(AutomationElement.NameProperty, "Clicks!")) != null, "pointer activates document hyperlink");
+            Wait(() => events == 1, "pointer emits one hyperlink Invoked");
+            Pattern<InvokePattern>(link, InvokePattern.Pattern).Invoke();
+            Wait(() => events == 2, "UIA emits one additional hyperlink Invoked");
+            settle(); Thread.Sleep(100);
+            Check(events == 2, "hyperlink Invoke does not duplicate events");
+        });
+        regression("R3-12 modal-and-delete WindowClosed", () => {
+            for (int cycle = 0; cycle < 25; cycle++) {
+                Invoke(review, "Open deleting modal");
+                AutomationElement modal = null;
+                Wait(() => { foreach (var candidate in isHosted ? Find(root, ControlType.Window) : OwnedWindows()) if (candidate.Current.Name == "Deleting modal") { modal = candidate; return true; } return false; }, "deleting modal opens");
+                using (var events = new NativeWindowEvents(modal.GetRuntimeId())) {
+                    Pattern<WindowPattern>(modal, WindowPattern.Pattern).Close();
+                    Wait(() => review.Current.IsEnabled, "modal deletion restores owner");
+                    Wait(() => events.Closed > 0, "WindowClosed delivered before provider retirement");
+                }
+            }
+            Console.WriteLine("PASS 25 consecutive modal deletion/subscription cycles");
+        });
+        regression("R3-13 Resize retains accessible placement", () => {
+            Invoke(review, "Place resize window");
+            AutomationElement window = null;
+            Wait(() => { foreach (var candidate in isHosted ? Find(root, ControlType.Window) : OwnedWindows()) if (candidate.Current.Name == "Review secondary") { window = candidate; return true; } return false; }, "placed window opens");
+            var transform = Pattern<TransformPattern>(window, TransformPattern.Pattern);
+            transform.Resize(400, 300);
+            var rectangle = window.Current.BoundingRectangle;
+            Check(!rectangle.IsEmpty && rectangle.Right > (isHosted ? root.Current.BoundingRectangle.Left : 0), "shrunk window remains accessible");
+            Pattern<WindowPattern>(window, WindowPattern.Pattern).Close();
+        });
+        regression("R3-14 off-desktop primary monitor fallback", () => {
+            if (isHosted) { Console.WriteLine("Hosted child uses host containment; desktop fallback is covered in native mode."); return; }
+            var monitors = new List<MonitorInfo>();
+            EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, (IntPtr monitor, IntPtr dc, ref NativeRect rectangle, IntPtr parameter) => {
+                var info = new MonitorInfo { Size = Marshal.SizeOf(typeof(MonitorInfo)) };
+                Check(GetMonitorInfo(monitor, ref info), "monitor geometry"); monitors.Add(info); return true;
+            }, IntPtr.Zero);
+            var primary = monitors.Find(m => (m.Flags & 1) != 0);
+            if (monitors.Count == 1) Console.WriteLine("LIMITATION: secondary-monitor distinction requires a multimonitor desktop.");
+            var secondary = monitors.Count > 1 ? monitors.Find(m => (m.Flags & 1) == 0) : primary;
+            var transform = Pattern<TransformPattern>(review, TransformPattern.Pattern);
+            transform.Move(secondary.Work.Left + 10, secondary.Work.Top + 10);
+            var valid = review.Current.BoundingRectangle;
+            Check(valid.Left >= secondary.Work.Left && valid.Left < secondary.Work.Right, "valid secondary-monitor placement preserved");
+            double x = (secondary.Monitor.Left + secondary.Monitor.Right) / 2.0;
+            double y = secondary.Monitor.Top < primary.Monitor.Top ? -100000 : 100000;
+            transform.Move(x, y);
+            var corrected = review.Current.BoundingRectangle;
+            Check(corrected.Left >= primary.Work.Left && corrected.Left < primary.Work.Right && corrected.Top >= primary.Work.Top && corrected.Top < primary.Work.Bottom, "off-desktop request falls back to primary monitor");
+            foreach (double extreme in new [] { double.MaxValue, -double.MaxValue }) {
+                transform.Move(extreme, extreme);
+                corrected = review.Current.BoundingRectangle;
+                Check(corrected.Left >= primary.Work.Left && corrected.Left < primary.Work.Right && corrected.Top >= primary.Work.Top && corrected.Top < primary.Work.Bottom, "extreme finite Move remains representable and accessible");
+            }
+        });
+        idle.Close();
+        Check(failures.Count == 0, "UIA review 3 failures: " + string.Join("; ", failures.ToArray()));
+    }
+
     public static void Run(int processId, bool hosted, string scenario, int port)
     {
         Check(Thread.CurrentThread.GetApartmentState() == ApartmentState.MTA, "client must be MTA");
         IntPtr hwnd = IntPtr.Zero;
         Wait(() => { EnumWindows((h,p) => { uint id; GetWindowThreadProcessId(h,out id); var text=new StringBuilder(256); GetClassName(h,text,256); if (id==processId && text.ToString()=="VczhWindow" && IsWindowVisible(h)) hwnd=h; return true; },IntPtr.Zero); return hwnd!=IntPtr.Zero; }, "owned HWND");
         Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
-        inputEndpoint = "http://localhost:" + port + "/Automation/" + (scenario == "Transitions" || scenario == "Review2" ? "Playground" : hosted ? "CppTest" : "CppTest_Metaonly") + "/IO";
+        inputEndpoint = "http://localhost:" + port + "/Automation/" + (scenario == "Transitions" || scenario == "Review2" || scenario == "Review3" ? "Playground" : hosted ? "CppTest" : "CppTest_Metaonly") + "/IO";
         ownedProcess = processId; isHosted = hosted;
         Check(root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI", "owned native GacUI root; HWND=" + hwnd + "; PID=" + root.Current.ProcessId + "; FrameworkId=" + root.Current.FrameworkId + "; Name=" + root.Current.Name);
-        Check(root.Current.Name == (scenario == "Transitions" || scenario == "Review2" ? "UIA Review Fixture" : "Complete Control Showcase"), "application title");
+        Check(root.Current.Name == (scenario == "Transitions" || scenario == "Review2" || scenario == "Review3" ? "UIA Review Fixture" : "Complete Control Showcase"), "application title");
         if (scenario == "Concurrent")
         {
             Test("concurrent target / independent UIA selection");
@@ -934,6 +1199,7 @@ public static class GacUIShowcaseTests
             if (scenario == "All" || scenario == "Review") ReviewContracts();
             if (scenario == "Transitions") TransitionContracts();
             if (scenario == "Review2") Review2Contracts();
+            if (scenario == "Review3") Review3Contracts();
             if (scenario == "All" || scenario == "List") { TextLists(); ListViews(); Trees(); }
             if (scenario == "All" || scenario == "Grid") Grids();
             if (scenario == "All" || scenario == "Text") TextControls();
@@ -984,7 +1250,10 @@ public static class GacUIShowcaseTests
             Wait(() => (int)richText.DocumentRange.GetAttributeValue(TextPattern.FontWeightAttribute) != weight, "toolbar Invoke changes document formatting");
             Test("Misc / Dialogs / modal Invoke returns before dismissal");
             var messagePage = Page(Page(Page(root, "Misc"), "Dialogs"), "MessageDialog");
-            var timer = Stopwatch.StartNew(); Invoke(messagePage, "Show Dialog"); Check(timer.ElapsedMilliseconds < 3000, "Invoke must return before modal dismissal");
+            var showDialog = Pattern<InvokePattern>(Named(messagePage, "Show Dialog", ControlType.Button), InvokePattern.Pattern);
+            var timer = Stopwatch.StartNew(); showDialog.Invoke(); timer.Stop();
+            Console.WriteLine("Modal Invoke returned in " + timer.ElapsedMilliseconds + " ms");
+            Check(timer.ElapsedMilliseconds < 3000, "Invoke must return before modal dismissal");
             AutomationElement modal = null;
             Wait(() => { var windows = hosted ? Find(root, ControlType.Window, TreeScope.Children) : OwnedWindows(); foreach (var w in windows) if (w.Current.Name == "The Title") { modal = w; return true; } return false; }, "message dialog opened");
             Check(Pattern<WindowPattern>(modal, WindowPattern.Pattern).Current.IsModal, "modal window state");

@@ -16,7 +16,6 @@ namespace vl::presentation::windows
 		{
 			if (target->kind == Kind::DocumentObject)
 			{
-				UiaRaiseAutomationEvent(target->Provider(), UIA_Invoke_InvokedEventId);
 				UiaInvokeDocumentObject(target.Obj());
 			}
 			else if (target->kind == Kind::Cell)

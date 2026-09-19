@@ -96,6 +96,7 @@ namespace vl::presentation::windows
 
 	bool UiaDocumentObjectRange(WindowsUIAutomationNode* node, vint& begin, vint& end)
 	{
+		if (auto text = dynamic_cast<GuiSinglelineTextBox*>(node->control); text && text->GetPasswordChar()) return false;
 		WindowsUIAutomationTextSnapshot snapshot(UiaDocument(node->control));
 		for (auto object : snapshot.runs) if (object.run == node->documentRun)
 		{
@@ -117,6 +118,7 @@ namespace vl::presentation::windows
 	List<Ptr<WindowsUIAutomationNode>> UiaTextChildren(WindowsUIAutomationNode* node, vint begin, vint end)
 	{
 		List<Ptr<WindowsUIAutomationNode>> children;
+		if (auto text = dynamic_cast<GuiSinglelineTextBox*>(node->control); text && text->GetPasswordChar()) return children;
 		List<Pair<vint, Ptr<WindowsUIAutomationNode>>> ordered;
 		auto document = UiaDocument(node->control);
 		WindowsUIAutomationTextSnapshot snapshot(document);
@@ -352,18 +354,53 @@ namespace vl::presentation::windows
 				first = snapshot.CharacterStart(first == snapshot.text.Length() ? first - 1 : first);
 				last = snapshot.CharacterEnd(first);
 			}
-			auto style = document->SummarizeStyle(snapshot.positions[first], snapshot.positions[last]);
+			if (attribute == UIA_HorizontalTextAlignmentAttributeId)
+			{
+				auto alignment = document->SummarizeParagraphAlignment(snapshot.positions[first], snapshot.positions[last > first ? last - 1 : first]);
+				if (!alignment) return mixed();
+				result->vt = VT_I4;
+				result->lVal = alignment.Value() == Alignment::Center ? HorizontalTextAlignment_Centered : alignment.Value() == Alignment::Right ? HorizontalTextAlignment_Right : HorizontalTextAlignment_Left;
+				return S_OK;
+			}
+			if (first < last && snapshot.CharacterEnd(first) < last)
+			{
+				WindowsUIAutomationValue value;
+				Attribute(snapshot, attribute, first, snapshot.CharacterEnd(first), &value.value);
+				for (auto i = snapshot.CharacterEnd(first); i < last; i = snapshot.CharacterEnd(i))
+				{
+					WindowsUIAutomationValue next;
+					Attribute(snapshot, attribute, i, snapshot.CharacterEnd(i), &next.value);
+					auto same = value.value.vt == VT_UNKNOWN && next.value.vt == VT_UNKNOWN
+						? value.value.punkVal == next.value.punkVal
+						: VarCmp(&value.value, &next.value, LOCALE_INVARIANT, 0) == VARCMP_EQ;
+					if (!same) return mixed();
+				}
+				return VariantCopy(result, &value.value);
+			}
+			// A paragraph separator inherits its paragraph's final character.
+			// Empty paragraphs use the document default instead of an empty summary.
+			auto sampleFirst = snapshot.positions[first], sampleLast = snapshot.positions[last];
+			if (first < snapshot.text.Length() && (snapshot.text[first] == L'\r' || snapshot.text[first] == L'\n'))
+			{
+				sampleLast = sampleFirst;
+				if (sampleFirst.column > 0) sampleFirst = snapshot.positions[snapshot.CharacterStart(first - 1)];
+			}
+			auto style = document->SummarizeStyle(sampleFirst, sampleLast);
+			if (sampleFirst == sampleLast)
+			{
+				auto resolved = document->GetDocument()->GetStyle(DocumentModel::DefaultStyleName, DocumentModel::ResolvedStyle());
+				style->face = resolved.style.fontFamily;
+				style->size = DocumentFontSize((double)resolved.style.size, false);
+				style->bold = resolved.style.bold;
+				style->italic = resolved.style.italic;
+				style->underline = resolved.style.underline;
+				style->strikeline = resolved.style.strikeline;
+				style->color = resolved.color;
+				style->backgroundColor = resolved.backgroundColor;
+			}
 			switch (attribute)
 			{
 			case UIA_IsReadOnlyAttributeId: result->vt = VT_BOOL; result->boolVal = document->GetEditMode() == GuiDocumentEditMode::Editable ? VARIANT_FALSE : VARIANT_TRUE; return S_OK;
-			case UIA_HorizontalTextAlignmentAttributeId:
-				{
-					auto alignment = document->SummarizeParagraphAlignment(snapshot.positions[first], snapshot.positions[last]);
-					if (!alignment) return mixed();
-					result->vt = VT_I4;
-					result->lVal = alignment.Value() == Alignment::Center ? HorizontalTextAlignment_Centered : alignment.Value() == Alignment::Right ? HorizontalTextAlignment_Right : HorizontalTextAlignment_Left;
-					return S_OK;
-				}
 			case UIA_FontNameAttributeId: if (!style->face) return mixed(); result->vt = VT_BSTR; return UiaString(style->face.Value(), &result->bstrVal);
 			case UIA_FontSizeAttributeId: if (!style->size) return mixed(); result->vt = VT_R8; result->dblVal = style->size.Value().size * 72.0 / 96.0; return S_OK;
 			case UIA_FontWeightAttributeId: if (!style->bold) return mixed(); result->vt = VT_I4; result->lVal = style->bold.Value() ? FW_BOLD : FW_NORMAL; return S_OK;
@@ -469,10 +506,10 @@ namespace vl::presentation::windows
 			{
 				List<UiaRect> rectangles;
 				auto document = UiaDocument(node->control);
-				for (vint i = begin; i < end; i++)
+				for (vint i = begin < end ? snapshot.CharacterStart(begin) : end; i < end; i = snapshot.CharacterEnd(i))
 				{
 					if (snapshot.text[i] == L'\r' || snapshot.text[i] == L'\n') continue;
-					auto a = document->GetCaretBounds(snapshot.positions[i], false), b = document->GetCaretBounds(snapshot.positions[i + 1], true);
+					auto a = document->GetCaretBounds(snapshot.positions[i], false), b = document->GetCaretBounds(snapshot.positions[snapshot.CharacterEnd(i)], true);
 					auto rect = UiaTextRectangle(node, Rect(min(a.x1, b.x1), min(a.y1, b.y1), max(a.x2, b.x2), max(a.y2, b.y2)));
 					if (!rect.width || !rect.height) continue;
 					if (rectangles.Count())

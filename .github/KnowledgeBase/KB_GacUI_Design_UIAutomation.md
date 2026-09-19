@@ -29,6 +29,7 @@ The COM interface set includes Simple, Fragment, FragmentRoot and 19 pattern int
 Call the Windows C++ helpers in [WindowsUIAutomation.Windows.h](../../Source/PlatformProviders/Windows/UIAutomation/WindowsUIAutomation.Windows.h) on the UI thread:
 
 - `SetWindowsUIAutomationName(control, name)` supplies an explicit accessible name, independently of editable contents.
+- `SetWindowsUIAutomationId(control, id)` supplies a stable application identifier. Omitted identifiers are empty; RuntimeId remains the identity for an element during a session.
 - `SetWindowsUIAutomationLabel(control, label)` supplies LabeledBy and a name derived from the label's text; passing null clears the relationship. Explicit Name takes precedence. Disposed labels are not dereferenced.
 - `SetWindowsUIAutomationText(control, key, text)` supplies localized presentation strings. Lookup walks control ancestors. Keys are `HelpText`, `BigIcon`, `SmallIcon`, `List`, `Tile`, `Information`, `Detail`, `ColumnHeaders`, `Ascending`, and `Descending`.
 
@@ -36,13 +37,13 @@ Ordinary controls otherwise use GetText; editors/documents and combos have no in
 
 Tooltip names come from temporary content, recursively collecting control text. The owner's HelpText uses its tooltip contents unless explicitly supplied. Tooltips with focusable content participate in content view; ordinary label tooltips do not. Both remain in control view and belong beneath the tooltip owner.
 
-FrameworkId is `GacUI`; ClassName is `GacUI.` plus role ID; AutomationId is a context-local `gacui-` node ID. AccessKey uses Alt, and toolstrip AcceleratorKey uses the command shortcut. Bounds are physical screen coordinates clipped through composition ancestors; invisible/unrealized nodes have empty bounds. BoundingRectangle is also an element property. NativeWindowHandle is supplied only for native fragment roots. Password, enabled, offscreen, focus, orientation and pattern-state properties are provided where applicable. Unsupported properties return VT_EMPTY.
+FrameworkId is `GacUI`; ClassName is `GacUI.` plus role ID. AutomationId uses explicit application metadata and is otherwise empty. AccessKey uses Alt, and toolstrip AcceleratorKey uses the command shortcut. Bounds are physical screen coordinates clipped through composition ancestors; invisible/unrealized nodes have empty bounds. BoundingRectangle is also an element property. NativeWindowHandle is supplied only for native fragment roots. Password, enabled, offscreen, focus, orientation and pattern-state properties are provided where applicable. Unsupported properties return VT_EMPTY.
 
 ## Semantic tree and patterns
 
 | Control/node | Role and behavior |
 | --- | --- |
-| GuiWindow | Window; Window and Transform. Uses actual modal-session state, not disabled-owner guesses. Move keeps windows inside the nearest monitor work area or hosted client container. |
+| GuiWindow | Window; Window and Transform. Uses actual modal-session state. Move and Resize constrain placement to the intersected monitor work area or hosted client container. A rectangle outside every monitor uses the primary monitor. |
 | Plain GuiPopup | Pane. It has neither Window nor Transform. |
 | GuiMenu / toolstrip menu | Menu (Group for ribbon group menus); owned by its opener. Popup wrappers do not expose Window/Transform. |
 | GuiTooltip | ToolTip with owner/content metadata described above. |
@@ -51,7 +52,7 @@ FrameworkId is `GacUI`; ClassName is `GacUI.` plus role ID; AutomationId is a co
 | Tab | Tab / Selection. Contains TabItems; selected TabItem contains a TabContent Pane with its page controls. Ribbon before/after-header controls are also enumerated. |
 | Calendar | Selection, Grid, Table and ItemContainer. Six week rows, seven columns, logical CalendarDays and weekday headers. Logical day focus, SetFocus and focus events map to the underlying day button. |
 | List / Tree | Model-backed Items/TreeNodes expose SelectionItem, ScrollItem and VirtualizedItem as applicable; checkable list items also Toggle. Tree ancestry follows the model; leaves report LeafNode. |
-| List view | MultipleView; Detail exposes Grid/Table. View names are localized without changing numeric IDs. |
+| List view | MultipleView; Detail exposes Grid/Table. Built-in spatial arrangements expose Grid/GridItem on existing list items, using the repeat composition's current row/column capacity. Table remains limited to tabular views. View names are localized without changing numeric IDs. |
 | Grid cell | DataItem with GridItem/TableItem, SelectionItem, ScrollItem and VirtualizedItem. Editor factory enables Invoke. String binding values expose Value; absence of an editor factory makes them read-only. |
 | Grid header | Header with HeaderItems. Headers are outside content view. HeaderItem Invoke sorts; Transform.Resize changes width. Sorting ItemStatus and header names support localization. |
 | Scroll view | Scroll when both scroll objects exist. Ordinary descendant controls expose ScrollItem. |
@@ -80,13 +81,17 @@ Text scrolling handles both axes through the document's visibility API and prese
 
 ## Notifications and verification
 
-Most notifications are posted/coalesced and compare previous property snapshots. Watched properties include Name/HelpText/LabeledBy, bounds, password/read-only, focus, window state, grid dimensions, selection policy, range/scroll values and pattern availability. Password transitions clear cached plaintext before notification. Document SetDocument and direct NotifyParagraphUpdated changes publish TextChanged; replacement also reports caret changes. GuiWindow.BoundsChanged and hosted proxy movement publish translation changes for window descendants.
+Most notifications are posted/coalesced and compare previous property snapshots. Watched properties include Name/HelpText/LabeledBy, bounds, password/read-only, focus, window state, grid dimensions, selection policy, range/scroll values and pattern availability. Password transitions clear cached plaintext and retire document-object providers; protected document children are omitted. Document SetDocument and direct NotifyParagraphUpdated changes publish TextChanged and structure invalidation; replacement also reports caret changes. Composition CachedBoundsChanged, GuiWindow.BoundsChanged and hosted proxy movement update descendant geometry. Hooks use the composition's current host and coalesce on its window.
+
+Paragraph alignment uses the last included character, preserving exclusive range ends. Separators inherit the preceding character's formatting within the paragraph; empty paragraphs use document defaults. Rectangle iteration uses complete UTF-16 characters. Tab orientation follows the template's TabOrder. Application radios under item/cell templates retain their mutex group semantics.
+
+Document BeforeActiveHyperlinkExecuted exposes the active run before application callbacks, so pointer input and UIA Invoke raise one Invoked event for the same logical hyperlink. WindowClosed is raised synchronously before hosted modal deletion can retire its provider.
 
 Selection notifications compare the container selection: one selected item uses ElementSelected, while multi-selection additions/removals use their respective events. Menu mode starts before the first MenuOpened and ends after the last MenuClosed. Those boundary events are ordered rather than deduplicated with ordinary queued changes. Tooltip open/close and window lifecycle use their corresponding IDs.
 
 WaitForInputIdle posts a retained probe and completes it from a low-priority UI-thread timer after pending work. Client waiting is bounded by the requested timeout; a busy UI thread does not block a synchronous dispatch before the timeout starts. Shutdown signals pending probes unavailable.
 
-[Test/UIA_CppTest_Shared.ps1](../../Test/UIA_CppTest_Shared.ps1) drives an out-of-process MTA client. Review uses the full showcase; Review2 and Transitions use Playground's [ResourceUiaReview.xml](../../Test/GacUISrc/Playground/Resources/ResourceUiaReview.xml). Select that resource in Playground's `GuiMain`; the fixture UI and handlers are authored in XML/Workflow, with native C++ hooks for Windows metadata and the busy-wait test. Run both ordinary and hosted modes (`-HostedFixture`). All also checks lists, trees, grids, text, calendars, tab traversal and window lifecycle. The scripts use repository execution wrappers, restore project user arguments and clean up owned processes. Reflection changes require metadata generation in Win32 then x64, followed by Metadata_Test; C++ changes also require configured UnitTest and leak-log inspection. See the investigation for exact completed results, not the existence of test code alone.
+[Test/UIA_CppTest_Shared.ps1](../../Test/UIA_CppTest_Shared.ps1) drives an out-of-process MTA client. Review uses the full showcase; Review2, Review3 and Transitions use Playground's [ResourceUiaReview.xml](../../Test/GacUISrc/Playground/Resources/ResourceUiaReview.xml). Select that resource in Playground's `GuiMain`; the fixture UI and handlers are authored in XML/Workflow, with native C++ hooks for Windows metadata and the busy-wait test. Run both ordinary and hosted modes (`-HostedFixture`). Review3 uses native IUIAutomation for WindowClosed because the managed client synthesizes that event from HWND messages and omits provider subscriptions. Each run repeats modal creation, subscription, deletion and disposal 25 times. Its secondary-monitor fallback check requires multiple monitors and reports the limitation on a single-monitor desktop. All also checks lists, trees, grids, text, calendars, tab traversal and window lifecycle. The scripts use repository execution wrappers, restore project user arguments and clean up owned processes. Reflection changes require metadata generation in Win32 then x64, followed by Metadata_Test; C++ changes also require configured UnitTest and leak-log inspection. See the investigation for exact completed results, not the existence of test code alone.
 
 The focus checks always require one reachable logical focused element and check calendar focus events. Global desktop focus requires an active Windows session with the test application in the foreground: the client checks both prerequisites and explicitly reports that check as unverified when either is absent. Otherwise it requires exact desktop focus identity. Pointer and keyboard menu tests use the application's IO endpoint, so they verify application input routing rather than physical desktop input delivery.
 
