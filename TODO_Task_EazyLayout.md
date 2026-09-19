@@ -1,0 +1,51 @@
+The goal of this task is to create a `<ez:Layout/>` element in GacUI XML Resource:
+- `xmlns:ez` will becomes a predefined namespace, just like how the default namespace is defined, `ez` will be inserted.
+  - The namespace will be `(vl::)presentation::compositions::eazy_layout::GuiEasy*(Composition|Layout)`.
+- `ez:Layout` is the `GuiEasyLayoutComposition` class inheriting from `GuiBoundsComposition` with properties set in its constructors:
+  - `MinSizeLimitation`: `LimitToElementAndChildren`.
+  - `AlignmentToParent`: `0, 0, 0, 0`.
+
+Specification:
+- Here are a list of `ez:Layout` properties:
+  - `Padding`: default to 5, it means the gap between all `GuiEasy*Layout` visually. If they are implemented in different nested levels of stacks and tables, properties of stacks and tables should be carefully adjusted.
+  - `Border`: default to true, it means the gap between `ez:Layout` to its container. This could be implemented by `AlignmentToParent`, but there is no need to listen to the changing of `AlignmentToParent`.
+    - Top level layouts should not have gap between them and `ez:Layout`.
+- Here are a list of `ez:*` type which can be used inside `ez:Layout`, but they are not compositions.
+  - `ez:Top`, `ez:Bottom`, `ez:Left`, `ez:Right`.
+  - `ez:Row`, `ez:Column`, with `CellOption` set to `MinSize` by default, and `CellSpan` set to `1` by default.
+  - `ez:Fill`, with `Percentage` property of `double` default to `1`, `Direction` property of a enum class set to `Inherited` chosen from Inherited/Horizontal/Vertical
+  - These are in the `GuiEasy*Layout` category.
+  - Layout could have children of layouts, one composition or control, but layouts could not mix with composition or control.
+    - It could have a list of `Ptr<GuiEasyLayout>` and a `GuiGraphicsCompositions*`.
+    - Layouts, compositions or controls as children, or other constraints, are syntax sugar that could be handled in an instance loader.
+- Property binding:
+  - Do not allow any binding on `CellOption` and `Percentage`, making them known constant in GacUI XML Resource during compiling.
+- Usage:
+  - When children is a composition or a control, it is implemented as a `<Bounds/>`. For `ez:Layout` itself it is already a `<Bounds/>`:
+    - The composition or `BoundsComposition` of control will have `AlignmentToParent` set to `0, 0, 0, 0` automatically.
+  - When children are layouts, mixing of these types could appear in the same level, others are not allowed:
+    - 0..x fills, mixing `Direction` properties of optional `Inherited`, multiple `Horizontal` and `Vertical` (but these two cannot mix)
+      - When there are only fills, we should go through `Direction` to decide the orientation.
+      - This will be implemented using a table with only one row/column.
+    - non zero of (0..x tops + 0..x bottoms) + 0..x fills
+      - This will be implemented using a table with only one column, all tops/bottoms become first few rows or last few rows with `MinSize`, others become `Percentage`.
+    - non zero of (0..x tops + 0..x bottoms)
+      - Similar to the second category, but a empty row of `Percentage=1` will be automatically inserted.
+      - Optimization: if only tops or bottoms appear, stack could be used to avoid the need of empty row, which is also more optimal than a table.
+    - 0..x tops + 0..x bottoms + 0..x rows
+      - Similar to the second category, but rows have their on `CellOption`.
+    - Horizontal version of the last 3 categories above.
+  - Columns not in a row directly only allow to have rows in it, vice versa.
+    - Such structure forms a table, and perform the following verification. Assuming rows is the higher level one, the reverse version will be applied when columns is the higher level one:
+      - Each row could have different columns, but at least there should be a column in any row with `CellSpan` set to 1 for any column position, and for any column position all columns with `CellSpan` should have the same `CellOption`, and when different, `MinSize` will be ignored.
+      - `CellOption` will be ignored when `CellSpan` is not `1`.
+- The generated code will calls `GuiEasyLayoutComposition::BuildLayout` to build the layout.
+  - When such class is built from code, before calling `BuildLayout` nothing will happen.
+  - When it is destroyed, all attached compositions should be deleted using `SafeDeleteComposition`.
+    - This ensures that no matter the first `BuildLayout` is called or not, they are deleted safely.
+  - `BuildLayout` will throw an exception if the rules in usage does not satisfy, but it doesn't need to be catched, as such scenario the app should just crash.
+
+In `Release` repo.
+- Make sure all `GacUI_Controls` tutorials accepts `/AsPort` for a automation service which runs only on debug profile. They can only be compiled on Windows so we could just use the windows http instead of minihttp.
+- This allows you to know the original layout of them, remember them.
+- Change all layouts to use `ez:Layout`, make sure the visible shape does not change.
