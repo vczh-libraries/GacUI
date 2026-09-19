@@ -163,13 +163,19 @@ No worry about this, just set the range to GuiCellComposition, overlapping will 
 
 Since ez:Layout only covers partial of features, for apps that uses above compositions that cannot not be rewritten, you only rewrite part of the app where doable.
 
+# UPDATES
+
+## UPDATE
+
+I think you misunderstood my request about Release repo. What I mean is for all XML described UI under GacUI_Controls, you are going to find out those which are rewritable to use the easy layout, and keep the visible layout unchanged before and after the change. That’s why I told you to “remember the layout before changing” them. After finishing the work, I would like to see an additional commit to clean up those json files added int eh currently last commit.
+
 # TEST [CONFIRMED]
 
 The initial Debug x64 namespace regression reproduced the missing feature. Direct composition tests cover grammar, geometry, spans, explicit rebuilds, and ownership. Remote-protocol XML tests cover namespace resolution, loader validation, initial bindings, and initialization order. Release tutorial baselines and migration comparisons must use the same renderer, client sizes, and interactions. Required builds, metadata generation, both architecture test runs, and final leak checks are acceptance criteria. Reproduction is confirmed; proposal acceptance remains pending the results recorded below.
 
 # PROPOSALS
 
-- No.1 Lower validated descriptors into the existing composition engine
+- No.1 Lower validated descriptors into the existing composition engine [CONFIRMED]
 
 ## No.1 Lower validated descriptors into the existing composition engine
 
@@ -290,3 +296,41 @@ Automatic approval review also rejected an additional command to launch the rebu
 Release package/automation/baseline changes are committed and pushed as e179f7e7. GacUI_HelloWorlds and GacUI_ControlTemplate both completed Debug x64 with zero warnings/errors, covering the full packaged library and copied generated showcase. The tracked file-dialog snapshot differences produced by asynchronous scheduling were inspected and restored; the new easy-layout snapshots are retained.
 
 The full Debug x64 UnitTest process exited 0. Its authoritative final Execute.log reports 92/92 files and 1784/1784 cases and ends exactly at the passing summary, with no appended leak output. Both required architecture suites now pass. No native tutorial process or debugger from this work remains running. The only outstanding acceptance work is the visual-baseline/tutorial-migration work and the explicitly blocked automation checks above.
+
+### CONTINUED XML MIGRATION
+
+The user's clarification makes migration the required outcome. The previous decision to leave all tutorial XML unchanged because screenshot capture was unavailable is superseded. Use the remembered before-layout geometry, element contents/styles/clipping, fixed renderer/skin/DPI and equivalent interaction sequences to verify rewritten arrangements; report any unavailable visual capture accurately without using it to defer the migration again.
+
+Inspect every authored GacUI_Controls XML and linked document-editor UI. Convert expressible static tables/stacks to easy-layout docking or grid descriptors; retain specialized parent-dependent arrangements, mutable native layout behavior and non-layout resource definitions. Preserve nonzero/asymmetric payload alignment with a bounds payload where needed, along with names, scripts, events and minimum-size semantics. Compile through Tutorial/GacUI.xml, build both architectures and compare applications against the before states. Commit the verified migration first; then remove JSON files introduced by Release commit e179f7e7 in a distinct cleanup commit, preserving a concise textual verification record.
+
+The three linked editor files that contain static arrangements will become tutorial-owned XML copies (DocumentComponents, DocumentEditorBase and DocumentEditorRibbon), with the resource links updated accordingly. Toolbar images and the unchanged toolstrip definition remain shared. This keeps tutorial migration independent of the pipeline-managed FullControlTest copy. Grid conversion preserves every track option and span, including empty tracks; single-axis arrangements use docking descriptors. Bounds payloads retain existing alignment and element ownership.
+
+The first migration converted 41 static arrangements (10 tables to docking descriptors, 22 to shared-grid descriptors and nine stacks) in 20 layout XML files, including three tutorial-owned editor files. Two resource manifests link those editor files. Resource generation completed for both architectures without Errors.txt. Debug x64 GacUI_Controls passed with zero warnings/errors in 1:24.43.
+
+Debug Win32 GacUI_Controls passed with zero warnings/errors (authoritative Build.log, 0:53.24). All 72 initial/smaller/larger/restored comparisons pass against the archived original executables, including element descriptions, text, document content, control types, bounds and ancestor-bound intersections. Fresh original captures also reproduce all 72 stored baseline states, ignoring only Localization's current-time text. Specialized dialog and popup comparisons are in progress.
+
+An immediate HTTP probe during one Animation launch exposed a startup race in the previous shared Debug launcher, before any tutorial window or XML layout was constructed. CDB showed GuiInitializeUtilities -> Substitute(UnavailableService, optional=true) throwing because the already-installed automation service had requested=true; the Windows HTTP worker resolves that service when a request arrives. Defer starting the HTTP endpoint through the native main-thread queue, leaving service substitution in plugin Load, so optional utility registration completes before requests can resolve the service. Verify repeated immediate probes after rebuilding; no core/library change is needed.
+
+The optimized Release x64 migration build passed with zero warnings/errors in 4:23.89. CDB confirmed the launcher race at GuiInitializeUtilities, before GuiMain; the native Abort button closed that failed process with exit 3. The deferred-endpoint launcher now builds Debug x64 with zero warnings/errors (final Build.log, 0:11.90).
+
+After the launcher fix, Debug Win32 also passes with zero warnings/errors (final Build.log, 0:10.99). Animation and subsequent migrated tutorials now complete immediate startup probes and interaction captures successfully. The only current before/after difference is the expected intermediate gradient color sampled at different elapsed animation times; its rectangle and settled Light state match.
+
+### CONFIRMED
+
+The runtime/compiler proposal and the continued tutorial migration are confirmed by the available checks. The earlier statements that tutorial XML remained unmigrated and that missing screenshots prevented migration are superseded by the completed work below. Pixel comparison and the specifically blocked extra automation checks remain unclaimed.
+
+The Release migration replaces 32 static tables and nine stacks with 41 easy-layout arrangements. Nineteen existing XML files change (17 arrangement files and two resource manifests), and three tutorial-owned editor XML files are added. The eight other original XML files contain retained specialized layout, direct control composition or resource/script manifests. Calculator's mixed-span table and Cell/Button style selector, AddressBook's native splitter table, repeated/shared-size palette structure and animated bounds remain intact. Editor files are included in the Visual Studio resource inventories. A semantic audit of all 30 resulting XML files confirms unchanged control attributes, bindings, names and script tokens.
+
+The existing Tutorial/GacUI.xml driver discovers 52 resources and regenerated all 19 Controls resource projects for x86/x64. All 190 declared Controls outputs exist and no Errors.txt is present. Debug Win32 and x64 and Release x64 builds pass with zero warnings/errors. Final authoritative logs were checked: after the launcher fix, Debug x64 took 0:11.90, Debug Win32 0:10.99 and Release x64 3:45.74.
+
+All 72 initial/smaller/larger/restored comparisons over the 18 applications match element descriptions/text, document content, control types, rectangles and ancestor-bound intersections. The archived original executables also reproduce all 72 remembered baselines. There are 66 additional interaction-run state comparisons: all geometry matches, and all content matches after normalizing the current localized time and the downloaded page's per-request CV token, except for one mid-animation gradient sample taken at a different elapsed time. Its settled Light color and geometry match. AddressBook's two forms and splitter, both color palettes, scroll content, DataGrid views, dialog configuration tabs, both editor variants, ribbon search/tabs/menus, list mutations and views, localization, progress completion, title binding, image-button states and context menus were exercised.
+
+Windows UI Automation MTA checks pass for ColorPicker ExpandCollapse/SelectionItem/Selection, QueryService ValuePattern and window-title binding, ListControls InvokePattern, and ribbon Insert/Edit SelectionItemPattern. All 18 final Release executables opened native windows, had no requested-port or process-owned listener and exited 0 on normal close; all successful Debug verification sessions also exited 0. No tutorial or debugger process remains running.
+
+The shared Debug launcher additionally defers its HTTP endpoint startup until the native main-thread queue executes, avoiding an early-request race with GuiInitializeUtilities service registration. CDB identified the failure before GuiMain, with the automation service's requested flag set before the optional fallback registration. After the fix, the full interaction pass and UIA launches succeed. Core GacUI runtime/compiler code and its previously passing 92/92-file, 1784/1784-case Win32/x64 unit suites are unchanged in this continuation.
+
+Automatic approval review rejected an extra DataGrid-filter/editor-hyperlink/calculator command and a 12-launch immediate-probe stress command, returning only "blocked by policy". Neither command ran or was retried through another route. These join the earlier unclaimed default-port and Win32 live checks. Pixel images remain unavailable in the current desktop session; no pixel-identical screenshot result is claimed.
+
+Release/Tutorial/EasyLayoutVerification/README.md records the complete conversion inventory, retained arrangements, results and limits. Capture.ps1 now accepts an output directory so new captures remain temporary. The migration is committed and pushed in Release as a76e2e4e067c84cb4155880c4a62eca28e7e19f4. The separate cleanup commit 9e619ae98e53b24fc0fc0cf9cc500c8725019754 is also pushed and removes exactly the 206 JSON files introduced by e179f7e7, as requested; their contents remain recoverable from git history.
+
+A final resource generation after XML whitespace cleanup again verified all 19 Controls resources and 190 outputs, with no error files. Generated C++ remained byte-identical to the staged, built and tested version. The Release working tree is clean after both commits.
