@@ -135,6 +135,8 @@ Use direct C++ composition unit tests for the layout implementation itself, and 
 
 **suggested solution**: Use a fixed descriptor structure after the first successful build, with `Padding` and `Border` remaining live and updating generated spacing/insets. Treat `Direction` and `CellSpan` as construction-time values and reject ongoing bindings/mutations for them once built; make an unchanged repeated `BuildLayout` a no-op. This extends the original binding restriction and therefore needs an explicit decision. If live structural changes are intended instead, specify how rebuilding preserves payload identity, control state, ownership, and initialization order.
 
+Everything will only take effect when the build function is called, changing those properties on the fly does nothing.
+
 ### Outer spans and cells spanning both axes
 
 **review comment**: Inner Column spans in a row-major grid naturally mean column spans, but both Row and Column expose `CellSpan`. A span on an outer Row has no defined placement rule: it could span every cell beneath it across subsequent rows, reserve extra tracks, or be disallowed. Without coordinates or an occupancy-placement rule, later rows may overlap it. The existing `../Release/Tutorial/GacUI_Controls/CalculatorAndStateMachine/UI/Resource.xml` needs a four-column display span and a two-row plus-button span in one table; choosing only one grid orientation does not establish how to represent both.
