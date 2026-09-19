@@ -19,7 +19,6 @@ When the model `gpt-5.3-codex-spark` is available:
 ## Automation Service via HTTP
 
 This is a very useful way for coding agent to debug GacUI applications.
-Computer use via UI Automation may not work when the computer screen is locked.
 
 Automation is composed explicitly by each application:
 - Construct the concrete automation service that matches the active controller: `WindowsAutomationService` for an ordinary Windows app, `WindowsAutomationServiceHosted` for hosted mode, `WindowsAutomationServiceRenderer` for a Windows remote renderer, `RemoteProtocolAutomationService` for a remote core, or the platform renderer service on Linux/macOS.
@@ -51,18 +50,24 @@ When remote protocol is in use:
   - Performaning IO via no matter renderer or core should result in the same UI state.
 - If GacJS connects to the core side, automation service only works on core.
 
-### UI Automation
-
-Local Windows applications expose native UI Automation providers in ordinary and hosted GDI/Direct2D modes. Hosted logical windows share the actual host HWND. Remote renderers do not expose a transported semantic tree.
-
-Use a windowless MTA client and identify the application's owned HWND with EnumWindows; Process.MainWindowHandle can be zero in a locked session. UIA provider calls can work while locked, so verify the actual connection instead of assuming failure. HTTP automation remains available for complementary inspection and input.
-
 ## Windows Specific
+
+### Verifying GacUI application
+
+The automation service is the best way to check rendering and perform operations because it maps directly to GacUI compositions, elements, and IO operations. Use the HTTP automation surface described above to inspect the UI, exercise the target test operations, and verify the resulting rendering and state.
+
+Always try Windows UI Automation afterwards to verify that the same target test operations can also be performed through UIA. Record any missing properties, patterns, tree relationships, or operations that prevent completion, even when the automation-service checks pass.
 
 - While polling automation endpoints or waiting for application processes, repeatedly inspect the target processes for a top-level window titled exactly `Microsoft Visual C++ Runtime Library`.
   - Treat this window as a blocking crash signal immediately. Do not keep retrying the application-level endpoint, because the modal dialog can block the UI thread and make a crash look like an ordinary timeout.
   - Capture the dialog text and buttons with the Win32 procedure in `Running-ComputerUse.md`, dismiss it deliberately, and record the process exit code.
   - Check again after every automation timeout and before declaring a run successful.
+
+### UI Automation
+
+UI Automation is Windows-specific. Local Windows applications expose native UI Automation providers in ordinary and hosted GDI/Direct2D modes. Hosted logical windows share the actual host HWND. Remote renderers do not expose a transported semantic tree; use a local Windows application to verify the corresponding GacUI controls through UIA.
+
+Use a windowless MTA client and identify the application's owned HWND with `EnumWindows`; `Process.MainWindowHandle` can be zero in a locked session. UIA provider calls can work while locked, so verify the actual connection instead of assuming failure. Record any session or provider limitation that prevents the required UIA verification.
 
 ## Linux Specific
 
