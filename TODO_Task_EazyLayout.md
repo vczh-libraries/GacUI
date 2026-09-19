@@ -151,4 +151,4 @@ No worry about this, just set the range to GuiCellComposition, overlapping will 
 
 **suggested solution**: Convert ordinary arrangements to `ez:Layout` while retaining necessary specialized composition subtrees as the permitted single-composition payload, and document each exception. If "all layouts" requires eliminating these specialized subtrees too, extend the specification with their missing behavior before starting tutorial conversion.
 
-Since ez:Layout knky covera partial of features, for apps that uses above compositions that cannot not be rewritten, you only rewrite part of the app where doable.
+Since ez:Layout only covers partial of features, for apps that uses above compositions that cannot not be rewritten, you only rewrite part of the app where doable.
