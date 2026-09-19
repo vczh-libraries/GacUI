@@ -1,6 +1,6 @@
 > Superseded naming requirements: the later TODO_Task_UiaList.md task renames the ordinary suite to Test/UIA_CppTest_Metaonly.ps1, shared files to Test/UIA_CppTest_Shared.*, and the parser to Test/GacUISrc/SharedArguments.h. Original wording below is preserved as historical task input.
 
-`Tools\UiaList\Planning.md` stores the last completed mission to create the `UiaList` tool. But when I am running it manually I notice some issues:
+The completed UiaList mission's current behavior and preserved acceptance criteria are in [Tools/UiaList/README.md](Tools/UiaList/README.md) and [Verification/README.md](Tools/UiaList/Verification/README.md#acceptance-matrix). The original issue report follows:
 - When opening the detail window for an UI element, IInvokeProvider seems never appear in `Actions` tab.
 - It seems almost all UI element implements `ILegacyIAccessibleProvider`, but clicking `DoDefaultAction` always crash.
 - In `Actions`, getter functions without side effects should just display the result directly instead of making a button.
@@ -30,7 +30,7 @@ Implement UIA support for GacUI on Windows:
   - When hosted mode is used, sub window is treated as control of main window. The easiest way to determine is to pass a `isHostedMode` to `WindowsUIAutomationListener`'s constructor.
 
 Verification:
-- The research report for implementing UIA for GacUI is in `Todo\Task_UIA.md`.
+- Current implemented behavior is documented in [the GacUI UI Automation knowledge-base page](.github/KnowledgeBase/KB_GacUI_Design_UIAutomation.md); Microsoft requirement gaps and checks are tracked in [TODO_Task_UiaReview.md](TODO_Task_UiaReview.md).
 - `FullControlTest` already has all controls in use, you could run `CppTest` for hosted mode and `CppTest_Metaonly` for normal mode.
 - Use `UIAList` to view `CppTest` and `CppTest_Metaonly` and make sure every control is exposed expectedly.
   - Every test app including `UiaListApp`, which already runs an automation service, should be able to receive a `/AsPort:xxxx` to specify the http port for automation service.
@@ -49,7 +49,7 @@ Verification:
 ### Scope and integration
 
 - Treat the three UiaList observations above as defects to reproduce, not established root causes. Complete the UiaList fixes, Windows providers, automation-port migration, and verification scripts as parts of this task.
-- Use [Todo/Task_UIA.md](Todo/Task_UIA.md) for UIA control-type, pattern, property, event, text, and virtualization contracts. This task's newer integration requirements take precedence over that report's older architectural proposals. Implement local Windows ordinary and hosted applications here; remote semantic transport and public provider-extension APIs are not added by this task. The automation-port migration still includes the existing remoting applications.
+- This is the historical Windows integration task. Use [the GacUI UI Automation knowledge-base page](.github/KnowledgeBase/KB_GacUI_Design_UIAutomation.md) for current control families, properties and providers, and [TODO_Task_UiaReview.md](TODO_Task_UiaReview.md) for Microsoft control-type, pattern, property, event, text and virtualization requirements still needing verification. References below to the report's contracts refer to that requirements review; they are not claims that every contract is implemented. The original scope covered local Windows ordinary and hosted applications, without remote semantic transport or public provider-extension APIs; its automation-port migration included the existing remoting applications.
 - Keep the Windows provider implementation in new `*.Windows.h` / `*.Windows.cpp` files under `Source/PlatformProviders/Windows/UIAutomation`. The explicitly requested setup-function wiring, composition event and its reflection registration, UiaList fixes, application argument parsing, project inventories, scripts, and documentation necessarily modify their existing owning files. This is not permission to scatter provider implementations through shared controls.
 - Enumerate new Windows files in `Test/GacUISrc/Source_GacUI_Windows/Source_GacUI_Windows.vcxitems` and its `.filters` file. Preserve platform guards and Windows-only CodePack ownership; do not hand-edit `Import`, `Release`, metadata, or other generated output.
 

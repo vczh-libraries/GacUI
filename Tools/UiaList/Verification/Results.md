@@ -1,6 +1,6 @@
 # Implementation verification — 2026-09-13
 
-Environment: Windows 11 Pro 10.0.26200, Windows SDK 10.0.26100.0, MSVC 14.51.36231/v145, 96 DPI. These are observed results, not a declaration that every acceptance scenario in Planning.md has passed.
+Environment: Windows 11 Pro 10.0.26200, Windows SDK 10.0.26100.0, MSVC 14.51.36231/v145, 96 DPI. These are observed results, not a declaration that every scenario in the [acceptance matrix](README.md#acceptance-matrix) has passed. The case IDs and unexecuted criteria remain available there; relocating their documentation does not rerun or extend this historical evidence.
 
 ## Build and generation
 

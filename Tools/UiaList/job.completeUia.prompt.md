@@ -1,3 +1,4 @@
-- Verify if `REPO-ROOT/ToDo/Task_UIA.md` already enumerates complete UIA node and provider types, fix this document if not.
+- Compare the selected Windows SDK's named control types, patterns, properties, text attributes and metadata with `UiaList/ViewModel/UiaCatalog.Windows.h/.cpp`, the action/dispatch/text-range adapters, and `Verification/CheckCatalog.ps1`; update the inspector inventory and its [acceptance matrix](Verification/README.md#acceptance-matrix) for any verified omissions.
+- Use [the GacUI UI Automation knowledge-base page](../../.github/KnowledgeBase/KB_GacUI_Design_UIAutomation.md) for current GacUI provider facts and [TODO_Task_UiaReview.md](../../TODO_Task_UiaReview.md) for its Microsoft requirements review. GacUI's supported subset must not limit what UiaList can inspect in other Windows applications.
 - Verify the source code of the current tool (details in `AGENTS.md`) and see if it renders all node and provider types, as well as properties.
 - commit and push all local changes.
