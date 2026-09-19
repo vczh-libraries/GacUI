@@ -2,7 +2,7 @@ param(
     [ValidateSet('CppTest','CppTest_Metaonly')][string]$Application,
     [ValidateRange(1,65535)][int]$AsPort,
     [int]$ClientProcessId = 0,
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Walk','Window','Concurrent')][string]$Scenario = 'All'
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Walk','Window','Concurrent','Review')][string]$Scenario = 'All'
 )
 $ErrorActionPreference = 'Stop'
 $repository = Split-Path $PSScriptRoot -Parent

@@ -351,6 +351,90 @@ public static class GacUIShowcaseTests
             WalkTabs(page, depth+1);
         }
     }
+    static void ReviewContracts()
+    {
+        var failures = new List<string>();
+        Action<bool,string> verify = (condition, message) => {
+            Console.WriteLine((condition ? "PASS " : "FAIL ") + message);
+            if (condition) assertions++; else failures.Add(message);
+        };
+        Test("review / text range contracts");
+        var textPage = Page(Page(Page(root, "Control"), "TextBox"), "TextBox");
+        var edit = Find(textPage, ControlType.Edit)[0];
+        var value = Pattern<ValuePattern>(edit, ValuePattern.Pattern);
+        var text = Pattern<TextPattern>(edit, TextPattern.Pattern);
+        value.SetValue("");
+        var visible = text.GetVisibleRanges();
+        verify(visible.Length == 1 && visible[0].GetText(-1) == "", "X3 empty document has one degenerate visible range");
+        value.SetValue("0123456789");
+        foreach (bool add in new [] {true, false})
+        {
+            var selected = text.DocumentRange.FindText("123", false, false); selected.Select();
+            var caret = text.DocumentRange.Clone();
+            caret.MoveEndpointByRange(TextPatternRangeEndpoint.End, caret, TextPatternRangeEndpoint.Start);
+            caret.Move(TextUnit.Character, 6);
+            bool accepted = true;
+            try { if (add) caret.AddToSelection(); else caret.RemoveFromSelection(); }
+            catch (InvalidOperationException) { accepted = false; }
+            var current = text.GetSelection();
+            verify(accepted && current.Length == 1 && current[0].Compare(caret), "X2 degenerate " + (add ? "Add" : "Remove") + " moves insertion point");
+        }
+        var rectangle = edit.Current.BoundingRectangle;
+        Check(!rectangle.IsEmpty && rectangle.Width > 0 && rectangle.Height > 0, "visible editor geometry");
+        var hit = AutomationElement.FromPoint(new System.Windows.Point(rectangle.Left + rectangle.Width / 2, rectangle.Top + rectangle.Height / 2));
+        verify(Automation.Compare(hit, edit), "T5 root hit test reaches selected tab body editor");
+
+        var embeddedPage = Page(Page(root, "Control"), "Embedded Controls");
+        var document = Pattern<TextPattern>(Find(embeddedPage, ControlType.Document)[0], TextPattern.Pattern);
+        var child = document.DocumentRange.GetChildren()[0];
+        var childRange = document.RangeFromChild(child);
+        verify(Automation.Compare(childRange.GetEnclosingElement(), child), "X4 embedded range enclosure identifies child");
+        bool repeatsChild = false;
+        foreach (var nested in childRange.GetChildren()) if (Automation.Compare(nested, child)) repeatsChild = true;
+        verify(!repeatsChild, "X4 embedded range children do not repeat enclosing child");
+
+        Test("review / combo ownership and atomic rejection");
+        var listPage = Page(Page(root, "List"), "TextList");
+        var combo = Find(listPage, ControlType.ComboBox)[0];
+        var expansion = Pattern<ExpandCollapsePattern>(combo, ExpandCollapsePattern.Pattern);
+        expansion.Expand();
+        Wait(() => expansion.Current.ExpandCollapseState == ExpandCollapseState.Expanded, "review combo opens");
+        verify(Find(combo, ControlType.ListItem).Count > 0, "T1 combo dropdown items descend from combo");
+        var selection = Pattern<SelectionPattern>(combo, SelectionPattern.Pattern);
+        var before = selection.Current.GetSelection();
+        Check(before.Length == 1, "review combo initially selected");
+        bool rejected = false;
+        try { Pattern<SelectionItemPattern>(before[0], SelectionItemPattern.Pattern).RemoveFromSelection(); }
+        catch (InvalidOperationException) { rejected = true; }
+        var after = selection.Current.GetSelection();
+        verify(rejected && after.Length == 1 && Automation.Compare(before[0], after[0]), "T1 rejected combo removal preserves selection");
+        expansion.Collapse();
+
+        Test("review / grid selection, focus and header metadata");
+        var gridPage = Page(Page(root, "List"), "BindableDataGrid");
+        var grid = Find(gridPage, ControlType.DataGrid)[0];
+        var cell = Pattern<GridPattern>(grid, GridPattern.Pattern).GetItem(0, 0);
+        Pattern<SelectionItemPattern>(cell, SelectionItemPattern.Pattern).Select();
+        var selectedCells = Pattern<SelectionPattern>(grid, SelectionPattern.Pattern).Current.GetSelection();
+        verify(selectedCells.Length == 1 && Automation.Compare(selectedCells[0], cell), "T4 data grid selection returns active cell");
+        cell.SetFocus();
+        int focused = grid.Current.HasKeyboardFocus ? 1 : 0;
+        foreach (AutomationElement item in grid.FindAll(TreeScope.Descendants, new PropertyCondition(AutomationElement.HasKeyboardFocusProperty, true))) focused++;
+        verify(focused == 1, "P2 one focused semantic element in grid");
+        var headers = Find(grid, ControlType.Header);
+        verify(headers.Count == 1 && headers[0].Current.Orientation == OrientationType.Horizontal, "P2 header orientation is horizontal");
+
+        var calendarPage = Page(Page(root, "Misc"), "DatePicker");
+        var calendar = Find(calendarPage, ControlType.Calendar)[0];
+        var weekdayHeaders = Pattern<TablePattern>(calendar, TablePattern.Pattern).Current.GetColumnHeaders();
+        bool visibleHeaders = weekdayHeaders.Length == 7;
+        foreach (var header in weekdayHeaders) { var bounds = header.Current.BoundingRectangle; visibleHeaders &= !bounds.IsEmpty && bounds.Width > 0 && bounds.Height > 0; }
+        verify(visibleHeaders, "T6 calendar weekday headers have visible geometry");
+        var tabs = Find(root, ControlType.Tab, TreeScope.Children);
+        verify(tabs.Count > 0 && tabs[0].Current.Orientation == OrientationType.Horizontal, "P2 tab orientation is horizontal");
+
+        Check(failures.Count == 0, "UIA review contract failures: " + string.Join("; ", failures.ToArray()));
+    }
     public static void Run(int processId, bool hosted, string scenario, int port)
     {
         Check(Thread.CurrentThread.GetApartmentState() == ApartmentState.MTA, "client must be MTA");
@@ -377,6 +461,7 @@ public static class GacUIShowcaseTests
         Automation.AddAutomationEventHandler(TextPattern.TextSelectionChangedEvent, root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref selectionEvents));
         try
         {
+            if (scenario == "Review") ReviewContracts();
             if (scenario == "All" || scenario == "List") { TextLists(); ListViews(); Trees(); }
             if (scenario == "All" || scenario == "Grid") Grids();
             if (scenario == "All" || scenario == "Text") TextControls();
