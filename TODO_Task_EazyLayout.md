@@ -54,6 +54,7 @@ In `Release` repo.
 
 ### Runtime representation and ownership
 
+- Put the headers and implementation files defining all easy-layout types, including the root composition, layout descriptors, and direction enum, in `Source/GraphicsComposition/EazyLayout`. Add these files to the public composition includes and explicit project source inventories through the existing mechanisms.
 - The existing composition pointer type is `vl::presentation::compositions::GuiGraphicsComposition*`, declared in `Source/Application/GraphicsCompositions/GuiGraphicsComposition.h`.
 - Each descriptor has either layout children or one composition/control payload. Reject mixed content, multiple payloads, reused payload ownership, and cyclic/shared descriptor trees. Empty layouts are valid and must not require constructing a zero-row or zero-column table.
 - A control payload contributes its existing `BoundsComposition`; preserve the control instance, names, bindings, events, and its own child hierarchy. Descriptors are configuration objects, not extra controls or compositions exposed as user content.
@@ -97,9 +98,12 @@ In `Release` repo.
 
 These are execution requirements for the future implementation; this review changes only the task document.
 
+Use direct C++ composition unit tests for the layout implementation itself, and the remote protocol based GacUI unit test framework for GacUI XML Compiler integration. Keep these responsibilities explicit in the test coverage.
+
 ### Layout and ownership tests
 
-- Extend the composition test patterns in `Test/GacUISrc/UnitTest/TestCompositions_Table.cpp`, `TestCompositions_Stack.cpp`, and `TestCompositions_AllNested.cpp`. Compare measured minimum sizes and final child rectangles against independently specified expected results, not just generated composition types.
+- Add direct C++ tests following `Test/GacUISrc/UnitTest/TestCompositions_*.cpp`, particularly `TestCompositions_Table.cpp`, `TestCompositions_Stack.cpp`, and `TestCompositions_AllNested.cpp`. Construct descriptors and payloads directly, call `BuildLayout`, calculate layout using the existing composition-test pattern, and compare measured minimum sizes and final child rectangles against independently specified expected results. Do not use the remote protocol based unit test framework or XML compilation to verify the layout algorithm itself.
+- Provide a coverage matrix and enough cases to exercise every valid and invalid sibling-type combination and parent/child category in the specification. Include zero, one, and multiple occurrences where applicable, declaration-order variations, both axes, nested combinations, payload kinds, and property boundary values. Assert expected geometry for valid cases and the expected failure for invalid cases; a few representative happy paths or snapshot-only checks are insufficient.
 - Cover empty and single-payload roots; every permitted vertical group and its horizontal transpose; Top-only/Bottom-only/Left-only/Right-only stack optimizations; interleaved declarations; unequal Fill weights; and minimum-size versus enlarged-parent behavior.
 - Verify explicit/inherited directions through multiple nesting levels, root all-Inherited defaults, and conflicting directions. Check default/zero/nondefault padding, both Border settings, nested containers, and the synthetic spacer's minimum gutter.
 - Cover row-major and column-major grids, MinSize/Absolute/Percentage option merging, inner spans, ragged trailing cells, missing single-span declarations, and conflicting non-MinSize options. Add the outer-span and mixed-axis cases after their contract is settled below.
@@ -109,8 +113,9 @@ These are execution requirements for the future implementation; this review chan
 
 ### XML and generated-code tests
 
+- Use the remote protocol based GacUI unit test framework for GacUI XML Compiler tests. For valid resources, follow the resource-compilation and frame-assertion pattern documented in `.github/KnowledgeBase/manual/unittest/gacui.md`; verify that compiled XML constructs and initializes the intended layout and payload objects. Keep exhaustive layout-algorithm verification in the direct composition tests above.
 - Test implicit `ez`, an explicit `xmlns:ez`, a custom default namespace, and namespace serialization round-trips. Instantiate every descriptor type with defaults and explicit constant values using both attributes and `<att.*>` forms.
-- Use the compiler-error harness in `Test/GacUISrc/UnitTest/TestResource.cpp` and `Test/Resources/CompilerErrorTests` for prohibited bindings, runtime-dependent `CellOption` fields, and statically detectable invalid child structures. Verify useful source-position diagnostics as well as rejection.
+- Add negative XML cases in the remote protocol based framework for prohibited bindings, runtime-dependent `CellOption` fields, and statically detectable invalid child structures. Run compilation in the framework's test context and retain the collected compiler errors to assert rejection and useful source-position diagnostics before attempting to instantiate a window; do not pass expected failures through a convenience helper that treats all compilation errors as unexpected fatal failures.
 - Verify automatic payload alignment and named-object/event/binding preservation. Check that generated initialization calls `BuildLayout` after all required initial values are ready, including empty and nested layouts and any permitted bound properties.
 - Exercise Workflow-loaded resources with full reflection, and generated C++ in the supported full, metadata-only, and no-reflection configurations. Follow `Project.md`: build Debug Win32 and run `Metadata_Generate`; build Debug x64, run `Metadata_Generate`, then `Metadata_Test`. Run required code generation and the relevant UnitTest coverage with the prescribed build/execute wrappers, respecting the existing test filter. Inspect final logs and leak reports; ensure no new `*.UI.errors.txt` remains.
 
