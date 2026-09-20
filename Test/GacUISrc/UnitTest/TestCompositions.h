@@ -463,3 +463,19 @@ namespace composition_bounds_tests
 		});
 	}
 }
+namespace easy_layout_tests
+{
+	using namespace vl::presentation::compositions::eazy_layout;
+
+	extern GuiBoundsComposition* Payload(vint width = 10, vint height = 10);
+	extern Ptr<GuiEasyLayout> Descriptor(vint kind);
+
+	template<typename T>
+	Ptr<T> Leaf(vint width = 10, vint height = 10)
+	{
+		auto result = Ptr(new T);
+		result->SetComposition(Payload(width, height));
+		return result;
+	}
+
+}

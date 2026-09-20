@@ -29,6 +29,8 @@ namespace vl::presentation::windows
 	{
 		auto button = dynamic_cast<GuiSelectableButton*>(control);
 		if (!button) return nullptr;
+		auto group = dynamic_cast<GuiSelectableButton::MutexGroupController*>(button->GetGroupController());
+		if (!group) return nullptr;
 		for (auto composition = control->GetBoundsComposition()->GetParent(); composition; composition = composition->GetParent())
 		{
 			// Item and cell templates contain application controls. The surrounding
@@ -38,24 +40,37 @@ namespace vl::presentation::windows
 			if (dynamic_cast<GuiTabPage*>(parent)) break;
 			if (dynamic_cast<GuiTab*>(parent) || dynamic_cast<GuiListControl*>(parent) || dynamic_cast<GuiDatePicker*>(parent) || dynamic_cast<GuiButton*>(parent)) return nullptr;
 		}
-		return dynamic_cast<GuiSelectableButton::MutexGroupController*>(button->GetGroupController());
+		return group;
 	}
+	void UiaCollectControls(GuiControl* control, List<GuiControl*>& result)
+	{
+		result.Add(control);
+		for (vint i = 0; i < control->GetChildrenCount(); i++) UiaCollectControls(control->GetChild(i), result);
+	}
+
+	List<GuiControl*> UiaControls(GuiControl* control = nullptr)
+	{
+		List<GuiControl*> result;
+		if (control) UiaCollectControls(control, result);
+		else for (auto root : GetApplication()->GetWindows()) UiaCollectControls(root, result);
+		return result;
+	}
+
 	Ptr<WindowsUIAutomationNode> UiaRadioGroup(WindowsUIAutomationNode* node)
 	{
 		auto group = UiaRadioController(node->control);
 		if (!group) return nullptr;
 		Ptr<WindowsUIAutomationNode> anchor;
-		for (auto candidate : node->context->nodes)
-			if (candidate->kind == Kind::Control && candidate->IsLive() && UiaRadioController(candidate->control) == group) { anchor = candidate; break; }
+		for (auto candidate : UiaControls())
+			if (auto button = dynamic_cast<GuiSelectableButton*>(candidate); button && button->GetGroupController() == group && UiaRadioController(candidate)) { anchor = node->context->Control(candidate); break; }
 		return anchor ? node->context->Item(anchor, Kind::RadioGroup) : nullptr;
 	}
 	GuiComboBoxListControl* UiaCombo(WindowsUIAutomationNode* node)
 	{
 		if (!dynamic_cast<GuiSelectableListControl*>(node->control)) return nullptr;
-		for (auto candidate : node->context->combos)
+		for (auto candidate : UiaControls())
 		{
-			if (candidate->kind != Kind::Control || !candidate->IsLive()) continue;
-			if (auto combo = dynamic_cast<GuiComboBoxListControl*>(candidate->control); combo && combo->GetContainedListControl() == node->control) return combo;
+			if (auto combo = dynamic_cast<GuiComboBoxListControl*>(candidate); combo && combo->GetContainedListControl() == node->control) return combo;
 		}
 		return nullptr;
 	}
@@ -63,11 +78,10 @@ namespace vl::presentation::windows
 	{
 		if (dynamic_cast<GuiTooltip*>(node->control)) return GetApplication()->GetTooltipOwner();
 		if (!dynamic_cast<GuiMenu*>(node->control)) return nullptr;
-		for (auto candidate : node->context->nodes)
+		for (auto candidate : UiaControls())
 		{
-			if (candidate->kind != Kind::Control || !candidate->IsLive()) continue;
-			if (auto menu = dynamic_cast<GuiMenuButton*>(candidate->control); menu && menu->GetSubMenu() == node->control) return menu;
-			if (auto gallery = dynamic_cast<GuiBindableRibbonGalleryList*>(candidate->control); gallery && gallery->GetSubMenu() == node->control) return gallery;
+			if (auto menu = dynamic_cast<GuiMenuButton*>(candidate); menu && menu->GetSubMenu() == node->control) return menu;
+			if (auto gallery = dynamic_cast<GuiBindableRibbonGalleryList*>(candidate); gallery && gallery->GetSubMenu() == node->control) return gallery;
 		}
 		return nullptr;
 	}
@@ -534,8 +548,8 @@ namespace vl::presentation::windows
 		if (kind == Kind::RadioGroup)
 		{
 			auto group = UiaRadioController(control);
-			for (auto candidate : context->nodes)
-				if (candidate->kind == Kind::Control && candidate->IsLive() && UiaRadioController(candidate->control) == group) result.Add(candidate);
+			for (auto candidate : UiaControls())
+				if (auto button = dynamic_cast<GuiSelectableButton*>(candidate); button && button->GetGroupController() == group && UiaRadioController(candidate)) result.Add(context->Control(candidate));
 		}
 		else if (kind == Kind::DocumentObject)
 		{
@@ -618,13 +632,15 @@ namespace vl::presentation::windows
 		}
 		if (kind == Kind::Control && !dynamic_cast<GuiTabPage*>(control) || kind == Kind::TabContent && owner->IsSelected())
 		{
-			List<Ptr<WindowsUIAutomationNode>> radios;
-			for (auto candidate : context->nodes)
-				if (candidate->kind == Kind::Control && candidate->IsLive() && candidate->Window() == Window() && UiaRadioController(candidate->control)) radios.Add(candidate);
-			for (auto radio : radios)
+			SortedList<GuiSelectableButton::MutexGroupController*> groups;
+			for (auto candidate : UiaControls(control))
 			{
-				auto group = UiaRadioGroup(radio.Obj());
-				if (group->Parent() == self && !result.Contains(group.Obj())) result.Add(group);
+				if (auto controller = UiaRadioController(candidate); controller && !groups.Contains(controller))
+				{
+					groups.Add(controller);
+					auto group = UiaRadioGroup(context->Control(candidate).Obj());
+					if (group->Parent() == self) result.Add(group);
+				}
 			}
 		}
 		return result;
@@ -700,10 +716,29 @@ namespace vl::presentation::windows
 		return nullptr;
 	}
 
-	IRawElementProviderSimple* WindowsUIAutomationNode::Provider()
+	ComPtr<IRawElementProviderSimple> WindowsUIAutomationNode::ExistingProvider()
 	{
-		if (!provider) provider = new WindowsUIAutomationProvider(context->nodes[context->nodes.IndexOf(this)]);
-		return provider.Obj();
+		ComPtr<IRawElementProviderSimple> result;
+		SPIN_LOCK(lockProvider)
+		{
+			if (provider) { provider->AddRef(); result = provider; }
+		}
+		return result;
+	}
+
+	ComPtr<IRawElementProviderSimple> WindowsUIAutomationNode::Provider()
+	{
+		CHECK_ERROR(IsLive(), L"Cannot materialize a retired UI Automation attachment.");
+		auto self = context->nodes[context->nodes.IndexOf(this)];
+		ComPtr<IRawElementProviderSimple> result;
+		SPIN_LOCK(lockProvider)
+		{
+			if (provider) provider->AddRef();
+			else provider = new WindowsUIAutomationProvider(self);
+			result = provider;
+		}
+		context->Observe(self);
+		return result;
 	}
 
 	HRESULT UiaString(const WString& value, BSTR* result)
@@ -718,7 +753,7 @@ namespace vl::presentation::windows
 		if (!result) return E_POINTER;
 		*result = SafeArrayCreateVector(VT_UNKNOWN, 0, (ULONG)nodes.Count());
 		if (!*result) return E_OUTOFMEMORY;
-		for (LONG i = 0; i < nodes.Count(); i++) SafeArrayPutElement(*result, &i, nodes[i]->Provider());
+		for (LONG i = 0; i < nodes.Count(); i++) SafeArrayPutElement(*result, &i, nodes[i]->Provider().Obj());
 		return S_OK;
 	}
 }

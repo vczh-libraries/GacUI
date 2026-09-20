@@ -166,9 +166,17 @@ namespace vl::presentation::windows
 
 	void WindowsUIAutomationDispatcher::Queue(const Func<void()>& action)
 	{
-		CHECK_ERROR(GetCurrentThreadId() == threadId, L"Queue UI Automation work on the UI thread.");
+		// Final COM Release may arrive on any thread. Stop closes this posting
+		// boundary before draining callbacks, so cleanup cannot target a reused HWND.
 		auto callback = new Func<void()>(action);
-		if (!PostMessage(window.load(), UiaQueueMessage, (WPARAM)this, (LPARAM)callback)) delete callback;
+		bool posted = false;
+		SPIN_LOCK(lockPosting)
+		{
+			auto hwnd = window.load();
+			if (hwnd) posted = PostMessage(hwnd, UiaQueueMessage, (WPARAM)this, (LPARAM)callback) != FALSE;
+		}
+		// Releasing captures can itself queue final-reference cleanup.
+		if (!posted) delete callback;
 	}
 
 	HRESULT WindowsUIAutomationDispatcher::WaitForIdle(int milliseconds, BOOL* result, const Func<HRESULT()>& validate)
@@ -250,7 +258,11 @@ namespace vl::presentation::windows
 		if (context->hosted) GetCurrentController()->CallbackService()->UninstallListener(this);
 		for (auto native : context->windows.Keys())
 		{
-			if (auto form = dynamic_cast<IWindowsForm*>(native)) form->UninstallMessageHandler(messageHandler);
+			if (auto form = dynamic_cast<IWindowsForm*>(native))
+			{
+				form->UninstallMessageHandler(messageHandler);
+				UiaReturnRawElementProvider(form->GetWindowHandle(), 0, 0, nullptr);
+			}
 		}
 		context->Stop();
 		UiaDisconnectAllProviders();
@@ -267,7 +279,7 @@ namespace vl::presentation::windows
 			form->InstallMessageHandler(messageHandler);
 		}
 		context->windows.Add(native, hwnd);
-		context->dispatcher->Queue([state = context]() { if (!state->stopped) state->BindWindows(); });
+		if (context->Subscribed()) context->dispatcher->Queue([state = context]() { if (!state->stopped && state->Subscribed()) state->BindWindows(); });
 	}
 
 	void WindowsUIAutomationListener::NativeWindowDestroying(INativeWindow* native)
@@ -276,7 +288,7 @@ namespace vl::presentation::windows
 		if (index != -1)
 		{
 			auto root = context->roots.Values()[index];
-			root->Retire();
+			context->RetireSubtree(root->control->GetBoundsComposition());
 			context->roots.Remove(native);
 		}
 		if (auto form = dynamic_cast<IWindowsForm*>(native))
@@ -285,6 +297,7 @@ namespace vl::presentation::windows
 			UiaReturnRawElementProvider(form->GetWindowHandle(), 0, 0, nullptr);
 		}
 		context->windows.Remove(native);
+		context->Collect();
 	}
 
 	void WindowsUIAutomationListener::BeforeHandle(HWND, UINT, WPARAM, LPARAM, bool&)
@@ -299,7 +312,7 @@ namespace vl::presentation::windows
 		{
 			if (root->IsLive() && root->IsRoot() && root->Handle() == hwnd)
 			{
-				result = UiaReturnRawElementProvider(hwnd, wParam, lParam, root->Provider());
+				result = UiaReturnRawElementProvider(hwnd, wParam, lParam, root->Provider().Obj());
 				skip = true;
 				return;
 			}

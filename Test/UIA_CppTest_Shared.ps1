@@ -2,16 +2,25 @@ param(
     [ValidateSet('CppTest','CppTest_Metaonly','Playground')][string]$Application,
     [ValidateRange(1,65535)][int]$AsPort,
     [int]$ClientProcessId = 0,
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Walk','Window','Concurrent','Review','Review2','Review3','Transitions')][string]$Scenario = 'All',
+    [string]$BusyClick = '',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime')][string]$Scenario = 'All',
     [switch]$HostedFixture,
+    [switch]$GdiFixture,
     [switch]$SkipBuild
 )
 $ErrorActionPreference = 'Stop'
 $repository = Split-Path $PSScriptRoot -Parent
 $solution = Join-Path $PSScriptRoot 'GacUISrc'
 if ($ClientProcessId) {
+    if ($Scenario -eq 'Lifetime') {
+        Add-Type -Path (Join-Path $PSScriptRoot 'UIA_Lifetime.cs')
+        try { [GacUILifetimeTests]::Run($ClientProcessId, $AsPort, [bool]$HostedFixture) }
+        catch { [Console]::Error.WriteLine($_.Exception.ToString()); exit 1 }
+        exit 0
+    }
     Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, WindowsBase
     Add-Type -Path (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase
+    [GacUIShowcaseTests]::BusyCommand = $BusyClick
     try { [GacUIShowcaseTests]::Run($ClientProcessId, ($Application -eq 'CppTest' -or $HostedFixture), $Scenario, $AsPort) }
     catch { [Console]::Error.WriteLine($_.Exception.ToString()); exit 1 }
     exit 0
@@ -65,6 +74,7 @@ try {
     $argument = $settings.CreateElement('LocalDebuggerCommandArguments', $settings.DocumentElement.NamespaceURI)
     $argument.InnerText = "/AsPort:$AsPort"
     if ($HostedFixture) { $argument.InnerText += ' /UiaHosted' }
+    if ($GdiFixture) { $argument.InnerText += ' /UiaGdi' }
     $null = $group.AppendChild($argument)
     $null = $settings.DocumentElement.AppendChild($group)
     $settings.Save($userFile)
@@ -89,6 +99,15 @@ try {
     if (!$state.MainWindow) { throw 'Automation endpoint did not become ready.' }
     # A separate windowless MTA process provides a hard deadline even if a provider blocks.
     $clientArguments = @('-NoProfile','-Mta','-File',"`"$PSCommandPath`"",'-Application',$Application,'-AsPort',$AsPort,'-ClientProcessId',$owned.Id,'-Scenario',$Scenario)
+    if ($Scenario -eq 'Review2') {
+        function Find-Busy($node) {
+            if ($node.elementText -eq 'Busy') { return $node.bounds }
+            foreach ($child in $node.children) { $found = Find-Busy $child; if ($found) { return $found } }
+        }
+        $bounds = Find-Busy $state.MainWindow.composition
+        if (!$bounds) { throw 'Missing Busy button in automation layout.' }
+        $clientArguments += @('-BusyClick', ('!LeftClick:{0},{1}' -f [int](($bounds.x1+$bounds.x2)/2), [int](($bounds.y1+$bounds.y2)/2)))
+    }
     if ($HostedFixture) { $clientArguments += '-HostedFixture' }
     $client = Start-Process powershell.exe -WindowStyle Hidden -ArgumentList $clientArguments -RedirectStandardOutput (Join-Path $env:TEMP "$Application-uia.stdout.txt") -RedirectStandardError (Join-Path $env:TEMP "$Application-uia.stderr.txt") -PassThru
     $lastCount = 0

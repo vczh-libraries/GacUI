@@ -1,7 +1,4 @@
 #include "TestControls.h"
-#include "../../../Source/Compiler/GuiInstanceRepresentation.h"
-#include "../../../Source/Resources/GuiParserManager.h"
-#include "../../../Source/Compiler/GuiCppGen.h"
 
 using namespace vl::presentation::compositions::eazy_layout;
 
@@ -16,85 +13,6 @@ namespace easy_layout_xml_tests
 
 TEST_FILE
 {
-	TEST_CASE(L"Easy layout namespace is predefined independently of the default namespace")
-	{
-		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
-		{
-			protocol->GetEvents()->OnControllerConnect({});
-			GuiResourceError::List errors;
-			auto parser = GetParserManager()->GetParser<glr::xml::XmlDocument>(L"XML");
-			for (vint customized = 0; customized < 2; customized++)
-			for (vint explicitEz = 0; explicitEz < 2; explicitEz++)
-			{
-				auto xml = parser->Parse({}, L"<Instance "
-					+ WString(customized ? L"xmlns=\"presentation::controls::Gui*\" " : L"")
-					+ WString(explicitEz ? L"xmlns:ez=\"presentation::compositions::Gui*Composition\" " : L"")
-					+ L"><Window/></Instance>", errors);
-				auto context = GuiInstanceContext::LoadFromXml(nullptr, xml, errors);
-				for (vint round = 0; round < 2; round++)
-				{
-					TEST_ASSERT(errors.Count() == 0);
-					TEST_ASSERT(context->namespaces.Keys().Contains(GlobalStringKey::Get(L"ez")));
-					auto mapping = context->namespaces[GlobalStringKey::Get(L"ez")];
-					TEST_ASSERT(mapping->namespaces.Count() == (explicitEz ? 1 : 2));
-					TEST_ASSERT(mapping->namespaces[0]->prefix == (explicitEz ? L"presentation::compositions::Gui" : L"presentation::compositions::eazy_layout::GuiEasy"));
-					context = GuiInstanceContext::LoadFromXml(nullptr, context->SaveToXml(), errors);
-				}
-			}
-		});
-		GacUIUnitTest_Start(L"EasyLayout/Namespace");
-	});
-
-	TEST_CASE(L"Compiler rejects constant-property bindings, runtime struct fields and static child grammar with source positions")
-	{
-		collections::List<WString> cases;
-		for (auto binder : { L"eval",L"ref",L"uri",L"bind",L"set" })
-		for (vint element = 0; element < 2; element++)
-		{
-			auto percentage = element
-				? L"<ez:Fill><att.Percentage-" + WString(binder) + L">1.0</att.Percentage-" + binder + L"></ez:Fill>"
-				: L"<ez:Fill Percentage-" + WString(binder) + L"=\"1.0\"/>";
-			auto option = element
-				? L"<ez:Row><att.CellOption-" + WString(binder) + L">{composeType:MinSize}</att.CellOption-" + binder + L"><ez:Column/></ez:Row>"
-				: L"<ez:Row CellOption-" + WString(binder) + L"=\"{composeType:MinSize}\"><ez:Column/></ez:Row>";
-			cases.Add(L"<ez:Layout>" + percentage + L"</ez:Layout>");
-			cases.Add(L"<ez:Layout>" + option + L"</ez:Layout>");
-		}
-		cases.Add(L"<ez:Layout><ez:Row CellOption=\"composeType:Absolute absolute:self.ClientSize.x\"><ez:Column/></ez:Row></ez:Layout>");
-		cases.Add(L"<ez:Layout><ez:Row><ez:Column><att.CellOption>composeType:Percentage percentage:(cast double self.ClientSize.x)</att.CellOption></ez:Column></ez:Row></ez:Layout>");
-		cases.Add(L"<ez:Layout><ez:Top/><Button/></ez:Layout>");
-		cases.Add(L"<ez:Layout><Button/><Button/></ez:Layout>");
-		cases.Add(L"<ez:Layout><ez:Top/><ez:Left/></ez:Layout>");
-		cases.Add(L"<ez:Layout><ez:Fill/><ez:Row><ez:Column/></ez:Row></ez:Layout>");
-		cases.Add(L"<ez:Layout><ez:Row><Button/></ez:Row></ez:Layout>");
-		cases.Add(L"<ez:Layout><ez:Column><ez:Top/></ez:Column></ez:Layout>");
-		cases.Add(L"<ez:Layout><Cell/></ez:Layout>");
-		cases.Add(L"<ez:Layout><ez:Fill><StackItem/></ez:Fill></ez:Layout>");
-		for (auto [content, index] : indexed(cases))
-		{
-			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
-			{
-				protocol->GetEvents()->OnControllerConnect({});
-				GuiResourceError::List errors;
-				auto parser = GetParserManager()->GetParser<glr::xml::XmlDocument>(L"XML");
-				auto xml = parser->Parse({}, easy_layout_xml_tests::Resource(content), errors);
-				TEST_ASSERT(xml && errors.Count() == 0);
-				auto resource = GuiResource::LoadFromXml(xml, L"TestControls_EasyLayout.xml", L".", errors);
-				TEST_ASSERT(resource);
-				if (errors.Count() == 0) PrecompileResource(resource, GuiResourceCpuArchitecture::Unspecified, nullptr, errors);
-				TEST_ASSERT(errors.Count() > 0);
-				bool positioned = false;
-				for (auto error : errors)
-				{
-					TEST_PRINT(error.message);
-					positioned |= error.position.row >= 0 && error.position.column >= 0;
-				}
-				TEST_ASSERT(positioned);
-			});
-			GacUIUnitTest_Start(L"EasyLayout/Rejected" + itow(index));
-		}
-	});
-
 	TEST_CASE(L"XML instantiates every descriptor with defaults and both constant property syntaxes")
 	{
 		for (vint syntax = 0; syntax < 3; syntax++)

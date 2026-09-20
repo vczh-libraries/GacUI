@@ -25,6 +25,7 @@ public static class GacUIShowcaseTests
     public sealed class NativeWindowEvents : INativeAutomationEventHandler, IDisposable {
         [DllImport("ole32.dll")] static extern int CoCreateInstance(ref Guid clsid, IntPtr outer, uint context, ref Guid iid, out IntPtr instance);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)] delegate int GetRoot(IntPtr self, out IntPtr root);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)] delegate int ElementFromHandle(IntPtr self, IntPtr hwnd, out IntPtr root);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)] delegate int AddHandler(IntPtr self, int id, IntPtr element, int scope, IntPtr cache, [MarshalAs(UnmanagedType.Interface)] INativeAutomationEventHandler handler);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)] delegate int RemoveHandler(IntPtr self, int id, IntPtr element, [MarshalAs(UnmanagedType.Interface)] INativeAutomationEventHandler handler);
         IntPtr instance, desktop;
@@ -33,12 +34,14 @@ public static class GacUIShowcaseTests
         static T Method<T>(IntPtr self, int slot) where T : class {
             return (T)(object)Marshal.GetDelegateForFunctionPointer(Marshal.ReadIntPtr(Marshal.ReadIntPtr(self), slot * IntPtr.Size), typeof(T));
         }
-        public NativeWindowEvents(int[] runtimeId) {
+        public NativeWindowEvents(int[] runtimeId, IntPtr hwnd) {
             expected = string.Join(",", Array.ConvertAll(runtimeId, id => id.ToString()));
             var clsid = new Guid("ff48dba4-60ef-4201-aa87-54103eef594e");
             var iid = new Guid("30cbe57d-d9d0-452a-ab13-7ac5ac4825ee");
             Marshal.ThrowExceptionForHR(CoCreateInstance(ref clsid, IntPtr.Zero, 1, ref iid, out instance));
-            Marshal.ThrowExceptionForHR(Method<GetRoot>(instance, 5)(instance, out desktop));
+            Marshal.ThrowExceptionForHR(hwnd == IntPtr.Zero
+                ? Method<GetRoot>(instance, 5)(instance, out desktop)
+                : Method<ElementFromHandle>(instance, 6)(instance, hwnd, out desktop));
             Marshal.ThrowExceptionForHR(Method<AddHandler>(instance, 32)(instance, 20017, desktop, 7, IntPtr.Zero, this));
         }
         public void HandleAutomationEvent(INativeAutomationElement sender, int eventId) {
@@ -102,6 +105,7 @@ public static class GacUIShowcaseTests
     static int textEvents;
     static int selectionEvents;
     static int ownedProcess;
+    public static string BusyCommand;
     static bool isHosted;
     // The Windows event IDs exist in UIAutomationTypes but its managed public
     // surface omits these two identifiers. Register them for this client.
@@ -759,6 +763,27 @@ public static class GacUIShowcaseTests
         lock (errors) Check(errors.Count == 0, errors.Count == 0 ? "concurrent MTA reads agree" : errors[0].ToString());
     }
 
+    static void BusyIdleContract()
+    {
+        var rootWindow = Pattern<WindowPattern>(root, WindowPattern.Pattern);
+        Check(rootWindow.WaitForInputIdle(2000), "R2-12 settled application reaches idle");
+        string eventName = "Local\\GacUI.UiaBusy." + ownedProcess;
+        IntPtr started = OpenEvent(0x100000, false, eventName + ".Started");
+        IntPtr release = OpenEvent(2, false, eventName + ".Release");
+        Check(started != IntPtr.Zero && release != IntPtr.Zero, "busy synchronization handles");
+        try
+        {
+            Input(BusyCommand);
+            Check(WaitForSingleObject(started, 3000) == 0, "UI thread entered controlled busy state");
+            var timer = Stopwatch.StartNew();
+            bool idle = rootWindow.WaitForInputIdle(60);
+            Console.WriteLine("Busy WaitForInputIdle: " + timer.ElapsedMilliseconds + " ms; idle=" + idle);
+            Check(!idle && timer.ElapsedMilliseconds < 1000, "R2-12 busy wait honors timeout and returns false");
+        }
+        finally { SetEvent(release); CloseHandle(started); CloseHandle(release); }
+        Check(rootWindow.WaitForInputIdle(2000), "R2-12 idle wait succeeds after busy work completes");
+    }
+
     static void Review2Contracts()
     {
         var failures = new List<string>();
@@ -934,22 +959,6 @@ public static class GacUIShowcaseTests
         windowPattern.Close();
         Wait(() => root.Current.IsEnabled && !windowPattern.Current.IsModal, "R2-14 closing modal restores owner and clears session state");
 
-        var rootWindow = Pattern<WindowPattern>(root, WindowPattern.Pattern);
-        verify(rootWindow.WaitForInputIdle(2000), "R2-12 settled application reaches idle");
-        string eventName = "Local\\GacUI.UiaBusy." + ownedProcess;
-        IntPtr started = OpenEvent(0x100000, false, eventName + ".Started");
-        IntPtr release = OpenEvent(2, false, eventName + ".Release");
-        Check(started != IntPtr.Zero && release != IntPtr.Zero, "busy synchronization handles");
-        try
-        {
-            Invoke(root, "Busy");
-            Check(WaitForSingleObject(started, 3000) == 0, "UI thread entered controlled busy state");
-            var timer = Stopwatch.StartNew();
-            bool idle = rootWindow.WaitForInputIdle(60);
-            verify(!idle && timer.ElapsedMilliseconds < 1000, "R2-12 busy wait honors timeout and returns false");
-        }
-        finally { SetEvent(release); CloseHandle(started); CloseHandle(release); }
-        verify(rootWindow.WaitForInputIdle(2000), "R2-12 idle wait succeeds after busy work completes");
         Check(failures.Count == 0, "UIA review 2 failures: " + string.Join("; ", failures.ToArray()));
     }
 
@@ -1123,7 +1132,7 @@ public static class GacUIShowcaseTests
                 Invoke(review, "Open deleting modal");
                 AutomationElement modal = null;
                 Wait(() => { foreach (var candidate in isHosted ? Find(root, ControlType.Window) : OwnedWindows()) if (candidate.Current.Name == "Deleting modal") { modal = candidate; return true; } return false; }, "deleting modal opens");
-                using (var events = new NativeWindowEvents(modal.GetRuntimeId())) {
+                using (var events = new NativeWindowEvents(modal.GetRuntimeId(), isHosted ? IntPtr.Zero : new IntPtr(modal.Current.NativeWindowHandle))) {
                     Pattern<WindowPattern>(modal, WindowPattern.Pattern).Close();
                     Wait(() => review.Current.IsEnabled, "modal deletion restores owner");
                     Wait(() => events.Closed > 0, "WindowClosed delivered before provider retirement");
@@ -1190,6 +1199,8 @@ public static class GacUIShowcaseTests
             Console.WriteLine("PASS concurrent target " + processId + " / " + assertions + " assertions");
             return;
         }
+        // Isolate idle timing from UIA event-cache work that can block behind the busy UI thread.
+        if (scenario == "Review2") BusyIdleContract();
         Automation.AddStructureChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref structureEvents));
         Automation.AddAutomationPropertyChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref propertyEvents), AutomationElement.NameProperty, SelectionItemPattern.IsSelectedProperty, TogglePattern.ToggleStateProperty);
         Automation.AddAutomationEventHandler(TextPattern.TextChangedEvent, root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref textEvents));
@@ -1290,6 +1301,10 @@ public static class GacUIShowcaseTests
             Check(structureEvents > 0 && propertyEvents > 0, "structure and property notifications");
             Test("palette replacement / preserved state");
             var palette = Named(page, "Aurora", ControlType.RadioButton); Pattern<SelectionItemPattern>(palette, SelectionItemPattern.Pattern).Select();
+            Wait(() => { try { var name = palette.Current.Name; return false; } catch (ElementNotAvailableException) { return true; } }, "old palette attachment retired by template replacement");
+            root = AutomationElement.FromHandle(hwnd);
+            page = Page(root, "Window Manager");
+            palette = Named(page, "Aurora", ControlType.RadioButton);
             Check(Pattern<SelectionItemPattern>(palette, SelectionItemPattern.Pattern).Current.IsSelected, "palette selection");
             }
             Console.WriteLine("PASS " + assertions + " assertions; structure=" + structureEvents + "; property=" + propertyEvents + "; text=" + textEvents);

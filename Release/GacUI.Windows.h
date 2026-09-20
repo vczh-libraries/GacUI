@@ -2399,6 +2399,14 @@ namespace vl::presentation::windows
 	class WindowsUIAutomationTextRange;
 	struct WindowsUIAutomationIdleRequest;
 	struct WindowsUIAutomationNode;
+	struct WindowsUIAutomationBounds;
+
+	struct WindowsUIAutomationSubscriptions : Object
+	{
+		collections::Dictionary<vint, vint> events;
+		collections::Dictionary<vint, vint> properties;
+	};
+	extern void UiaChangeSubscription(collections::Dictionary<vint, vint>& counts, vint id, vint change);
 
 	struct WindowsUIAutomationMetadata : Object
 	{
@@ -2468,7 +2476,9 @@ namespace vl::presentation::windows
 		bool								structurePending = false;
 		collections::SortedList<EVENTID>	pendingEvents;
 		collections::List<vint>				selection;
-		ComPtr<IRawElementProviderSimple>	provider;
+		// Serializes provider acquisition against final COM Release.
+		SpinLock							lockProvider;
+		WindowsUIAutomationProvider*		provider = nullptr;
 		collections::Dictionary<PROPERTYID, Ptr<WindowsUIAutomationValue>> properties;
 
 		bool IsLive();
@@ -2489,7 +2499,8 @@ namespace vl::presentation::windows
 		Ptr<WindowsUIAutomationNode> Parent();
 		collections::List<Ptr<WindowsUIAutomationNode>> Children();
 		HRESULT Property(PROPERTYID property, VARIANT* result);
-		IRawElementProviderSimple* Provider();
+		ComPtr<IRawElementProviderSimple> Provider();
+		ComPtr<IRawElementProviderSimple> ExistingProvider();
 		void Retire();
 	};
 
@@ -2500,7 +2511,19 @@ namespace vl::presentation::windows
 		controls::list::IItemProvider*		items = nullptr;
 		Ptr<controls::tree::INodeRootProvider> tree;
 		controls::list::IColumnItemView*		columns = nullptr;
+		bool								attached = false;
+		collections::List<Func<void()>>		detachHandlers;
 		~WindowsUIAutomationLifetime();
+		void Detach();
+		template<typename T, typename F>
+		void Attach(controls::GuiControl* target, compositions::GuiGraphicsEvent<T>& event, F callback)
+		{
+			auto handler = event.AttachLambda(callback);
+			detachHandlers.Add([flag = target->GetDisposedFlag(), pointer = &event, handler]()
+			{
+				if (!flag->IsDisposed()) pointer->Detach(handler);
+			});
+		}
 		void OnAttached(controls::list::IItemProvider* provider)override;
 		void OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 		void OnAttached(controls::tree::INodeRootProvider* provider)override;
@@ -2522,7 +2545,8 @@ namespace vl::presentation::windows
 		collections::Dictionary<INativeWindow*, HWND> windows;
 		collections::Dictionary<INativeWindow*, Ptr<WindowsUIAutomationNode>> roots;
 		collections::List<Ptr<WindowsUIAutomationNode>> nodes;
-		collections::List<Ptr<WindowsUIAutomationNode>> combos;
+		collections::List<Ptr<WindowsUIAutomationBounds>> boundsHooks;
+		WindowsUIAutomationSubscriptions subscriptions;
 		collections::List<Ptr<WindowsUIAutomationNode>> openMenus;
 		Ptr<WindowsUIAutomationNode>			menuModeOwner;
 		WindowsUIAutomationContext(bool isHostedMode);
@@ -2530,6 +2554,13 @@ namespace vl::presentation::windows
 		void BindWindows();
 		void WindowEvent(Ptr<WindowsUIAutomationNode> node, bool opening);
 		void Scan(compositions::GuiGraphicsComposition* composition);
+		void Observe(Ptr<WindowsUIAutomationNode> node);
+		void Collect();
+		void RetireSubtree(compositions::GuiGraphicsComposition* composition);
+		void RefreshObservation();
+		bool Subscribed(EVENTID eventId = 0);
+		void Raise(Ptr<WindowsUIAutomationNode> node, EVENTID eventId);
+		void RemoveSubscriptions(Ptr<WindowsUIAutomationSubscriptions> value);
 		Ptr<WindowsUIAutomationNode> Control(controls::GuiControl* control);
 		Ptr<WindowsUIAutomationNode> Item(Ptr<WindowsUIAutomationNode> owner, WindowsUIAutomationNodeKind kind, vint row = -1, vint column = -1, Ptr<controls::tree::INodeProvider> treeNode = nullptr, Ptr<DocumentRun> documentRun = nullptr);
 		void Notify(Ptr<WindowsUIAutomationNode> node, bool structure = false, EVENTID eventId = 0);
@@ -2542,18 +2573,23 @@ namespace vl::presentation::windows
 		public IExpandCollapseProvider, public IValueProvider, public IRangeValueProvider, public IScrollProvider,
 		public IScrollItemProvider, public IGridProvider, public IGridItemProvider, public ITableProvider,
 		public ITableItemProvider, public IItemContainerProvider, public IVirtualizedItemProvider,
-		public IMultipleViewProvider, public IWindowProvider, public ITransformProvider, public ITextProvider
+		public IMultipleViewProvider, public IWindowProvider, public ITransformProvider, public ITextProvider,
+		public IRawElementProviderAdviseEvents
 	{
 		std::atomic<ULONG>					references = 1;
 		const bool							rootProvider;
 	public:
 		Ptr<WindowsUIAutomationNode>			node;
+		Ptr<WindowsUIAutomationSubscriptions> subscriptions;
 		WindowsUIAutomationProvider(Ptr<WindowsUIAutomationNode> value);
 		HRESULT Read(const Func<HRESULT()>& action, PATTERNID pattern = 0, bool enabled = false);
 		HRESULT Queue(const Func<void()>& action, PATTERNID pattern);
 		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** result)override;
 		ULONG STDMETHODCALLTYPE AddRef()override;
 		ULONG STDMETHODCALLTYPE Release()override;
+		HRESULT AdviseEvent(EVENTID eventId, SAFEARRAY* propertyIds, bool adding);
+		HRESULT STDMETHODCALLTYPE AdviseEventAdded(EVENTID eventId, SAFEARRAY* propertyIds)override;
+		HRESULT STDMETHODCALLTYPE AdviseEventRemoved(EVENTID eventId, SAFEARRAY* propertyIds)override;
 		HRESULT STDMETHODCALLTYPE get_ProviderOptions(ProviderOptions* result)override;
 		HRESULT STDMETHODCALLTYPE GetPatternProvider(PATTERNID pattern, IUnknown** result)override;
 		HRESULT STDMETHODCALLTYPE GetPropertyValue(PROPERTYID property, VARIANT* result)override;

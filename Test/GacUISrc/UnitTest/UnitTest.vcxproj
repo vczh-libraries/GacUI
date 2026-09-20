@@ -198,6 +198,7 @@
     <ClCompile Include="TestCompositions_Specialized.cpp" />
     <ClCompile Include="TestCompositions_Stack.cpp" />
     <ClCompile Include="TestCompositions_EasyLayout.cpp" />
+    <ClCompile Include="TestCompositions_EazyLayoutFailures.cpp" />
     <ClCompile Include="TestCompositions_Table.cpp" />
     <ClCompile Include="TestCompositions_VirtualRepeat.cpp" />
     <ClCompile Include="TestControls_Basic_GuiButton.cpp" />

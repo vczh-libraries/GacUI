@@ -148,7 +148,11 @@ namespace vl::reflection::description
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
 	if (!gacui_test::automationArguments.ParseWindowsCommandLine()) return 1;
-	int result = wcsstr(GetCommandLineW(), L"/UiaHosted") ? SetupHostedWindowsDirect2DRenderer() : SetupWindowsDirect2DRenderer();
+	bool hosted = wcsstr(GetCommandLineW(), L"/UiaHosted") != nullptr;
+	bool gdi = wcsstr(GetCommandLineW(), L"/UiaGdi") != nullptr;
+	int result = gdi
+		? (hosted ? SetupHostedWindowsGDIRenderer() : SetupWindowsGDIRenderer())
+		: (hosted ? SetupHostedWindowsDirect2DRenderer() : SetupWindowsDirect2DRenderer());
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif

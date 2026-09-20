@@ -1,5 +1,6 @@
 #include "WindowsUIAutomationProvider.Windows.h"
 #include "../../Hosted/GuiHostedApplication.h"
+#include <limits>
 
 #ifdef VCZH_MSVC
 namespace vl::presentation::windows
@@ -18,16 +19,82 @@ namespace vl::presentation::windows
 	ULONG WindowsUIAutomationProvider::AddRef() { return ++references; }
 	ULONG WindowsUIAutomationProvider::Release()
 	{
-		auto count = --references;
-		if (!count) delete this;
+		ULONG count;
+		SPIN_LOCK(node->lockProvider)
+		{
+			count = --references;
+			if (!count && node->provider == this) node->provider = nullptr;
+		}
+		if (!count)
+		{
+			node->dispatcher->Queue([target = node, removed = subscriptions]()
+			{
+				if (auto context = target->context; context && !context->stopped)
+				{
+					context->RemoveSubscriptions(removed);
+					context->Collect();
+				}
+			});
+			delete this;
+		}
 		return count;
 	}
+
+	void UiaChangeSubscription(Dictionary<vint, vint>& counts, vint id, vint change)
+	{
+		auto index = counts.Keys().IndexOf(id);
+		auto count = (index == -1 ? 0 : counts.Values()[index]) + change;
+		CHECK_ERROR(count >= 0, L"Unbalanced UI Automation subscription.");
+		if (count) counts.Set(id, count); else counts.Remove(id);
+	}
+
+	HRESULT WindowsUIAutomationProvider::AdviseEvent(EVENTID eventId, SAFEARRAY* propertyIds, bool adding)
+	{
+		List<vint> properties;
+		if (propertyIds)
+		{
+			VARTYPE type;
+			if (SafeArrayGetDim(propertyIds) != 1 || FAILED(SafeArrayGetVartype(propertyIds, &type)) || type != VT_I4) return E_INVALIDARG;
+			LONG first, last;
+			if (FAILED(SafeArrayGetLBound(propertyIds, 1, &first)) || FAILED(SafeArrayGetUBound(propertyIds, 1, &last))) return E_INVALIDARG;
+			for (LONG i = first; i <= last; i++)
+			{
+				LONG property;
+				if (FAILED(SafeArrayGetElement(propertyIds, &i, &property))) return E_INVALIDARG;
+				if (!properties.Contains(property)) properties.Add(property);
+			}
+		}
+		if (eventId == UIA_AutomationPropertyChangedEventId && properties.Count() == 0) properties.Add(0);
+		return Read([&]() -> HRESULT
+		{
+			if (!subscriptions) subscriptions = Ptr(new WindowsUIAutomationSubscriptions);
+			if (!adding)
+			{
+				if (!subscriptions->events.Keys().Contains(eventId)) return E_INVALIDARG;
+				for (auto property : properties) if (!subscriptions->properties.Keys().Contains(property)) return E_INVALIDARG;
+			}
+			auto change = adding ? 1 : -1;
+			UiaChangeSubscription(subscriptions->events, eventId, change);
+			UiaChangeSubscription(node->context->subscriptions.events, eventId, change);
+			for (auto property : properties)
+			{
+				UiaChangeSubscription(subscriptions->properties, property, change);
+				UiaChangeSubscription(node->context->subscriptions.properties, property, change);
+			}
+			node->context->RefreshObservation();
+			return S_OK;
+		});
+	}
+	HRESULT WindowsUIAutomationProvider::AdviseEventAdded(EVENTID eventId, SAFEARRAY* propertyIds) { return AdviseEvent(eventId, propertyIds, true); }
+	HRESULT WindowsUIAutomationProvider::AdviseEventRemoved(EVENTID eventId, SAFEARRAY* propertyIds) { return AdviseEvent(eventId, propertyIds, false); }
+
 	HRESULT WindowsUIAutomationProvider::QueryInterface(REFIID iid, void** result)
 	{
 		if (!result) return E_POINTER;
 		*result = nullptr;
 		if (iid == __uuidof(IUnknown) || iid == __uuidof(IRawElementProviderSimple)) *result = static_cast<IRawElementProviderSimple*>(this);
 		else if (iid == __uuidof(IRawElementProviderFragment)) *result = static_cast<IRawElementProviderFragment*>(this);
+		else if (iid == __uuidof(IRawElementProviderAdviseEvents) && rootProvider) *result = static_cast<IRawElementProviderAdviseEvents*>(this);
 		else if (iid == __uuidof(IRawElementProviderFragmentRoot)) *result = static_cast<IRawElementProviderFragmentRoot*>(this);
 #define UIA_QUERY(NAME) else if (iid == __uuidof(I##NAME##Provider)) *result = static_cast<I##NAME##Provider*>(this);
 		UIA_PATTERNS(UIA_QUERY)
@@ -98,7 +165,7 @@ namespace vl::presentation::windows
 			if (kind == Kind::Control) if (auto metadata = UiaMetadata(control); metadata && metadata->label && !metadata->labelDisposed->IsDisposed())
 			{
 				auto label = context->Control(metadata->label);
-				if (label->IsLive()) { result->vt = VT_UNKNOWN; result->punkVal = label->Provider(); result->punkVal->AddRef(); }
+				if (label->IsLive()) { result->vt = VT_UNKNOWN; label->Provider()->QueryInterface(IID_PPV_ARGS(&result->punkVal)); }
 			}
 			break;
 		case UIA_HelpTextPropertyId: if (kind == Kind::Control) string(UiaLocalizedText(control, L"HelpText", UiaTooltipText(control->GetTooltipControl()))); break;
@@ -166,11 +233,11 @@ namespace vl::presentation::windows
 				if (!text || !text->GetPasswordChar())
 				{
 					result->vt = VT_BSTR;
-					return static_cast<WindowsUIAutomationProvider*>(Provider())->get_Value(&result->bstrVal);
+					return UiaString(kind == Kind::Cell ? reflection::description::UnboxValue<WString>(UiaDataGrid(control)->GetBindingCellValue(row, column)) : control->GetText(), &result->bstrVal);
 				}
 			}
 			break;
-		case UIA_ValueIsReadOnlyPropertyId: if (Supports(UIA_ValuePatternId)) { BOOL readOnly; static_cast<WindowsUIAutomationProvider*>(Provider())->get_IsReadOnly(&readOnly); boolean(readOnly != FALSE); } break;
+		case UIA_ValueIsReadOnlyPropertyId: if (Supports(UIA_ValuePatternId)) boolean(kind == Kind::Cell ? !UiaDataGrid(control)->GetCellDataEditorFactory(row, column) : UiaDocument(control)->GetEditMode() != GuiDocumentEditMode::Editable); break;
 		case UIA_SelectionItemIsSelectedPropertyId: if (Supports(UIA_SelectionItemPatternId)) boolean(IsSelected()); break;
 		case UIA_ToggleToggleStatePropertyId:
 			if (Supports(UIA_TogglePatternId))
@@ -192,49 +259,67 @@ namespace vl::presentation::windows
 		case UIA_RangeValueValuePropertyId:
 			if (Supports(UIA_RangeValuePatternId)) { result->vt = VT_R8; result->dblVal = (double)dynamic_cast<GuiScroll*>(control)->GetPosition(); }
 			break;
-#define UIA_DOUBLE_PROPERTY(NAME, PATTERN, METHOD) \
-		case UIA_##NAME##PropertyId: \
-			if (Supports(UIA_##PATTERN##PatternId)) { result->vt = VT_R8; return static_cast<WindowsUIAutomationProvider*>(Provider())->METHOD(&result->dblVal); } \
+#define UIA_RANGE_PROPERTY(NAME, VALUE) \
+		case UIA_RangeValue##NAME##PropertyId: \
+			if (Supports(UIA_RangeValuePatternId)) { auto scroll = dynamic_cast<GuiScroll*>(control); result->vt = VT_R8; result->dblVal = (double)(VALUE); } \
 			break;
-		UIA_DOUBLE_PROPERTY(RangeValueMinimum, RangeValue, get_Minimum)
-		UIA_DOUBLE_PROPERTY(RangeValueMaximum, RangeValue, get_Maximum)
-		UIA_DOUBLE_PROPERTY(RangeValueSmallChange, RangeValue, get_SmallChange)
-		UIA_DOUBLE_PROPERTY(RangeValueLargeChange, RangeValue, get_LargeChange)
-		UIA_DOUBLE_PROPERTY(ScrollHorizontalScrollPercent, Scroll, get_HorizontalScrollPercent)
-		UIA_DOUBLE_PROPERTY(ScrollVerticalScrollPercent, Scroll, get_VerticalScrollPercent)
-		UIA_DOUBLE_PROPERTY(ScrollHorizontalViewSize, Scroll, get_HorizontalViewSize)
-		UIA_DOUBLE_PROPERTY(ScrollVerticalViewSize, Scroll, get_VerticalViewSize)
-#undef UIA_DOUBLE_PROPERTY
+		UIA_RANGE_PROPERTY(Minimum, 0)
+		UIA_RANGE_PROPERTY(Maximum, scroll->GetMaxPosition())
+		UIA_RANGE_PROPERTY(SmallChange, Role() == UIA_ProgressBarControlTypeId ? std::numeric_limits<double>::quiet_NaN() : scroll->GetSmallMove())
+		UIA_RANGE_PROPERTY(LargeChange, Role() == UIA_ProgressBarControlTypeId ? std::numeric_limits<double>::quiet_NaN() : scroll->GetBigMove())
+#undef UIA_RANGE_PROPERTY
+#define UIA_SCROLL_PROPERTY(NAME, AXIS, VALUE) \
+		case UIA_Scroll##NAME##PropertyId: \
+			if (Supports(UIA_ScrollPatternId)) { auto scroll = dynamic_cast<GuiScrollView*>(control)->Get##AXIS##Scroll(); result->vt = VT_R8; result->dblVal = (VALUE); } \
+			break;
+		UIA_SCROLL_PROPERTY(HorizontalScrollPercent, Horizontal, scroll->GetMaxPosition() ? 100.0 * scroll->GetPosition() / scroll->GetMaxPosition() : UIA_ScrollPatternNoScroll)
+		UIA_SCROLL_PROPERTY(VerticalScrollPercent, Vertical, scroll->GetMaxPosition() ? 100.0 * scroll->GetPosition() / scroll->GetMaxPosition() : UIA_ScrollPatternNoScroll)
+		UIA_SCROLL_PROPERTY(HorizontalViewSize, Horizontal, scroll->GetTotalSize() ? min(100.0, 100.0 * scroll->GetPageSize() / scroll->GetTotalSize()) : 100.0)
+		UIA_SCROLL_PROPERTY(VerticalViewSize, Vertical, scroll->GetTotalSize() ? min(100.0, 100.0 * scroll->GetPageSize() / scroll->GetTotalSize()) : 100.0)
+#undef UIA_SCROLL_PROPERTY
 		case UIA_RangeValueIsReadOnlyPropertyId: if (Supports(UIA_RangeValuePatternId)) boolean(Role() == UIA_ProgressBarControlTypeId); break;
 		case UIA_ScrollHorizontallyScrollablePropertyId: if (Supports(UIA_ScrollPatternId)) boolean(dynamic_cast<GuiScrollView*>(control)->GetHorizontalScroll()->GetMaxPosition() > 0); break;
 		case UIA_ScrollVerticallyScrollablePropertyId: if (Supports(UIA_ScrollPatternId)) boolean(dynamic_cast<GuiScrollView*>(control)->GetVerticalScroll()->GetMaxPosition() > 0); break;
 		case UIA_MultipleViewCurrentViewPropertyId: if (Supports(UIA_MultipleViewPatternId)) number((LONG)dynamic_cast<GuiVirtualListView*>(control)->GetView()); break;
-#define UIA_BOOL_PROPERTY(NAME, PATTERN, METHOD) \
-		case UIA_##NAME##PropertyId: \
-			if (Supports(UIA_##PATTERN##PatternId)) { BOOL value = FALSE; auto hr = static_cast<WindowsUIAutomationProvider*>(Provider())->METHOD(&value); if (FAILED(hr)) return hr; boolean(value != FALSE); } \
+		case UIA_SelectionCanSelectMultiplePropertyId:
+			if (Supports(UIA_SelectionPatternId)) { auto list = dynamic_cast<GuiSelectableListControl*>(control); boolean(list && !UiaDataGrid(list) && list->GetMultiSelect()); }
 			break;
-		UIA_BOOL_PROPERTY(SelectionCanSelectMultiple, Selection, get_CanSelectMultiple)
-		UIA_BOOL_PROPERTY(SelectionIsSelectionRequired, Selection, get_IsSelectionRequired)
-		UIA_BOOL_PROPERTY(WindowCanMaximize, Window, get_CanMaximize)
-		UIA_BOOL_PROPERTY(WindowCanMinimize, Window, get_CanMinimize)
-		UIA_BOOL_PROPERTY(WindowIsModal, Window, get_IsModal)
-		UIA_BOOL_PROPERTY(WindowIsTopmost, Window, get_IsTopmost)
-#undef UIA_BOOL_PROPERTY
+		case UIA_SelectionIsSelectionRequiredPropertyId:
+			if (Supports(UIA_SelectionPatternId))
+			{
+				if (auto tab = dynamic_cast<GuiTab*>(control)) boolean(tab->GetPages().Count() > 0);
+				else if (kind == Kind::RadioGroup) boolean(From(Children()).Any([](auto child) { return child->IsSelected(); }));
+				else if (auto combo = dynamic_cast<GuiComboBoxListControl*>(control)) boolean(combo->GetSelectedIndex() >= 0);
+				else if (auto grid = dynamic_cast<GuiVirtualDataGrid*>(control)) boolean(grid->GetSelectedCell().row >= 0);
+				else boolean(dynamic_cast<GuiDatePicker*>(control) != nullptr);
+			}
+			break;
+#define UIA_WINDOW_PROPERTY(NAME, VALUE) \
+		case UIA_Window##NAME##PropertyId: \
+			if (Supports(UIA_WindowPatternId)) { auto window = dynamic_cast<GuiWindow*>(control); boolean(VALUE); } \
+			break;
+		UIA_WINDOW_PROPERTY(CanMaximize, window->GetMaximizedBox())
+		UIA_WINDOW_PROPERTY(CanMinimize, window->GetMinimizedBox())
+		UIA_WINDOW_PROPERTY(IsModal, window->GetModal())
+		UIA_WINDOW_PROPERTY(IsTopmost, window->GetTopMost())
+#undef UIA_WINDOW_PROPERTY
 		case UIA_GridRowCountPropertyId: case UIA_GridColumnCountPropertyId:
 			if (Supports(UIA_GridPatternId))
 			{
-				auto provider = static_cast<WindowsUIAutomationProvider*>(Provider());
-				int value = 0;
-				auto hr = property == UIA_GridRowCountPropertyId ? provider->get_RowCount(&value) : provider->get_ColumnCount(&value);
-				if (FAILED(hr)) return hr;
-				number(value);
+				auto size = UiaSpatialGrid(control);
+				if (property == UIA_GridRowCountPropertyId) number((LONG)(size.x >= 0 ? size.y : UiaCalendar(control) ? 6 : dynamic_cast<GuiListControl*>(control)->GetItemProvider()->Count()));
+				else number((LONG)(size.x >= 0 ? size.x : UiaCalendar(control) ? 7 : UiaListView(control)->GetColumnCount()));
 			}
 			break;
 		case UIA_WindowWindowVisualStatePropertyId:
-			if (Supports(UIA_WindowPatternId)) { WindowVisualState value; auto hr = static_cast<WindowsUIAutomationProvider*>(Provider())->get_WindowVisualState(&value); if (FAILED(hr)) return hr; number(value); }
+			if (Supports(UIA_WindowPatternId))
+			{
+				auto state = Window()->GetNativeWindow()->GetSizeState();
+				number(state == INativeWindow::Maximized ? WindowVisualState_Maximized : state == INativeWindow::Minimized ? WindowVisualState_Minimized : WindowVisualState_Normal);
+			}
 			break;
 		case UIA_WindowWindowInteractionStatePropertyId:
-			if (Supports(UIA_WindowPatternId)) { WindowInteractionState value; auto hr = static_cast<WindowsUIAutomationProvider*>(Provider())->get_WindowInteractionState(&value); if (FAILED(hr)) return hr; number(value); }
+			if (Supports(UIA_WindowPatternId)) number(Window()->GetBlockedByModalWindow() ? WindowInteractionState_BlockedByModalWindow : Window()->GetNativeWindow()->IsEnabled() ? WindowInteractionState_ReadyForUserInteraction : WindowInteractionState_Running);
 			break;
 #define UIA_AVAILABLE(NAME) case UIA_Is##NAME##PatternAvailablePropertyId: boolean(Supports(UIA_##NAME##PatternId)); break;
 		UIA_PATTERNS(UIA_AVAILABLE)

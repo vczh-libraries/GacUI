@@ -3468,7 +3468,10 @@ Closures
 		if (((static_cast<bool>(::vl::__vwsn::This(__vwsnthis_0->self)->menuNode) && (! ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->menuNode.Obj())->GetIsSyntheticRoot())) && (! ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetIsBusy())))
 		{
 			::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SelectNode(::vl::__vwsn::This(__vwsnthis_0->self)->menuNode);
-			::vl::__vwsn::This(__vwsnthis_0->nodeMenu)->ShowPopup(static_cast<::vl::presentation::controls::GuiControl*>(__vwsnthis_0->nodeTree), [&](){ ::vl::presentation::Point __vwsn_temp__; __vwsn_temp__.x = ::vl::__vwsn::This(arguments)->x; __vwsn_temp__.y = ::vl::__vwsn::This(arguments)->y; return __vwsn_temp__; }());
+			auto index = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->nodeTree)->GetNodeItemView())->CalculateNodeVisibilityIndex(::vl::__vwsn::This(arguments)->node);
+			auto itemBounds = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->nodeTree)->GetArranger())->GetVisibleStyle(index))->GetGlobalBounds();
+			auto ownerBounds = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->nodeTree)->GetBoundsComposition())->GetGlobalBounds();
+			::vl::__vwsn::This(__vwsnthis_0->nodeMenu)->ShowPopup(static_cast<::vl::presentation::controls::GuiControl*>(__vwsnthis_0->nodeTree), [&](){ ::vl::presentation::Point __vwsn_temp__; __vwsn_temp__.x = ((::vl::__vwsn::This(arguments)->x + itemBounds.x1) - ownerBounds.x1); __vwsn_temp__.y = ((::vl::__vwsn::This(arguments)->y + itemBounds.y1) - ownerBounds.y1); return __vwsn_temp__; }());
 		}
 		else
 		{

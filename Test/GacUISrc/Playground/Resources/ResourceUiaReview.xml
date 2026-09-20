@@ -12,6 +12,7 @@
         var secondary : demo::ReviewSecondary* = new demo::ReviewSecondary*();
         var plainPopup : GuiPopup* = new GuiPopup*(ThemeName::Window);
         var third : demo::ReviewThird* = new demo::ReviewThird*();
+        var lifetime : demo::ReviewLifetime* = new demo::ReviewLifetime*();
       ]]></ref.Members>
       <ref.Ctor><![CDATA[{
         plainPopup.Text = "Review plain popup";
@@ -29,8 +30,13 @@
         delete plainPopup;
         delete secondary;
         delete third;
+        delete lifetime;
       }]]></ref.Dtor>
       <Window ref.Name="self" Text="UIA Review Fixture" ClientSize="x:1050 y:760">
+        <Button Text="Open lifetime">
+          <att.BoundsComposition-set ExpectedBounds="x1:760 y1:700 x2:930 y2:735"/>
+          <ev.Clicked-eval><![CDATA[{ self.lifetime.ShowWithOwner(self); }]]></ev.Clicked-eval>
+        </Button>
         <Button Text="Open review 3">
           <att.BoundsComposition-set ExpectedBounds="x1:760 y1:650 x2:930 y2:685"/>
           <ev.Clicked-eval><![CDATA[{ self.third.ShowWithOwner(self); }]]></ev.Clicked-eval>
@@ -398,6 +404,68 @@
         <Button Text="Place resize window">
           <att.BoundsComposition-set ExpectedBounds="x1:220 y1:550 x2:420 y2:585"/>
           <ev.Clicked-eval><![CDATA[{ self.placed.ShowWithOwner(self); self.placed.SetBounds({x:{value:-900} y:{value:100}}, {x:1200 y:300}); }]]></ev.Clicked-eval>
+        </Button>
+      </Window>
+    </Instance>
+  </Instance>
+  <Instance name="LifetimeResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::ReviewLifetime" xmlns:cpp="*">
+      <ref.Members><![CDATA[
+        var destination : demo::ReviewSecondary* = new demo::ReviewSecondary*();
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        destination.Text = "Lifetime destination";
+        PlaygroundUia::SetName(document, "Lifetime document");
+        PlaygroundUia::SetLabel(document, label);
+      }]]></ref.Ctor>
+      <ref.Dtor><![CDATA[{
+        if (document.BoundsComposition.Parent != holder.ContainerComposition)
+        {
+          if (document.BoundsComposition.Parent != (null of GuiGraphicsComposition*))
+          {
+            document.BoundsComposition.Parent.RemoveChild(document.BoundsComposition);
+          }
+          holder.ContainerComposition.AddChild(document.BoundsComposition);
+        }
+        delete destination;
+      }]]></ref.Dtor>
+      <Window ref.Name="self" Text="UIA Lifetime" ClientSize="x:620 y:410">
+        <Label ref.Name="label" Text="Lifetime label"><att.BoundsComposition-set ExpectedBounds="x1:10 y1:10 x2:300 y2:35"/></Label>
+        <CustomControl ref.Name="holder">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:40 x2:600 y2:110"/>
+          <DocumentViewer ref.Name="document" Text="retained text" EditMode="Editable">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </DocumentViewer>
+        </CustomControl>
+        <Button Text="Detach"><att.BoundsComposition-set ExpectedBounds="x1:10 y1:130 x2:150 y2:165"/>
+          <ev.Clicked-eval><![CDATA[{ document.BoundsComposition.Parent.RemoveChild(document.BoundsComposition); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Reinsert"><att.BoundsComposition-set ExpectedBounds="x1:160 y1:130 x2:300 y2:165"/>
+          <ev.Clicked-eval><![CDATA[{ holder.ContainerComposition.AddChild(document.BoundsComposition); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Move across windows"><att.BoundsComposition-set ExpectedBounds="x1:310 y1:130 x2:600 y2:165"/>
+          <ev.Clicked-eval><![CDATA[{ document.BoundsComposition.Parent.RemoveChild(document.BoundsComposition); self.destination.ContainerComposition.AddChild(document.BoundsComposition); self.destination.ShowWithOwner(self); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Move back"><att.BoundsComposition-set ExpectedBounds="x1:10 y1:180 x2:150 y2:215"/>
+          <ev.Clicked-eval><![CDATA[{ document.BoundsComposition.Parent.RemoveChild(document.BoundsComposition); holder.ContainerComposition.AddChild(document.BoundsComposition); self.destination.Hide(); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Replace model"><att.BoundsComposition-set ExpectedBounds="x1:160 y1:180 x2:300 y2:215"/>
+          <ev.Clicked-eval><![CDATA[{ var model = new DocumentModel^(); var paragraph = new DocumentParagraphRun^(); var run = new DocumentTextRun^(); run.text = "replacement text"; paragraph.runs.Add(run); model.paragraphs.Add(paragraph); document.Document = model; }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Replace template"><att.BoundsComposition-set ExpectedBounds="x1:310 y1:180 x2:600 y2:215"/>
+          <ev.Clicked-eval><![CDATA[{ holder.ControlTemplate = func(viewModel : object): GuiControlTemplate* { var result = new GuiControlTemplate*(); result.ContainerComposition = result; return result; }; }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Change label"><att.BoundsComposition-set ExpectedBounds="x1:10 y1:230 x2:150 y2:265"/>
+          <ev.Clicked-eval><![CDATA[{ label.Text = label.Text & "!"; }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="New descendant"><att.BoundsComposition-set ExpectedBounds="x1:160 y1:230 x2:300 y2:265"/>
+          <ev.Clicked-eval><![CDATA[{ var button = new GuiButton*(ThemeName::Button); button.Text = "Unvisited descendant"; button.BoundsComposition.ExpectedBounds = {x1:10 y1:300 x2:250 y2:335}; self.AddChild(button); button.Text = "Unvisited descendant ready"; button.SetFocused(); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Deleting child"><att.BoundsComposition-set ExpectedBounds="x1:310 y1:230 x2:600 y2:265"/>
+          <ev.Clicked-eval><![CDATA[{ var dialog = new demo::ReviewLifetime*(); dialog.Text = "Deleting lifetime"; dialog.ShowModalAndDelete(self, func(): void {}); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Close lifetime"><att.BoundsComposition-set ExpectedBounds="x1:310 y1:300 x2:600 y2:335"/>
+          <ev.Clicked-eval><![CDATA[{ self.Close(); }]]></ev.Clicked-eval>
         </Button>
       </Window>
     </Instance>

@@ -190,7 +190,10 @@
                     if (self.menuNode is not null and not self.menuNode.IsSyntheticRoot and not ViewModel.IsBusy)
                     {
                       ViewModel.SelectNode(self.menuNode);
-                      nodeMenu.ShowPopup(nodeTree, { x:arguments.x y:arguments.y } of Point);
+                      var index = nodeTree.NodeItemView.CalculateNodeVisibilityIndex(arguments.node);
+                      var itemBounds = nodeTree.Arranger.GetVisibleStyle(index).GlobalBounds;
+                      var ownerBounds = nodeTree.BoundsComposition.GlobalBounds;
+                      nodeMenu.ShowPopup(nodeTree, { x:arguments.x + itemBounds.x1 - ownerBounds.x1; y:arguments.y + itemBounds.y1 - ownerBounds.y1; } of Point);
                     }
                     else { if (nodeMenu.GetOpening()) { nodeMenu.Hide(); } self.menuNode = null; }
                   }]]></ev.NodeRightButtonUp-eval>

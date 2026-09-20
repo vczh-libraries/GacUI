@@ -220,12 +220,14 @@ namespace vl::presentation::windows
 	public:
 		Ptr<WindowsUIAutomationNode> node;
 		Ptr<WindowsUIAutomationNode> embedded;
+		ComPtr<IRawElementProviderSimple> attachment;
+		ComPtr<IRawElementProviderSimple> embeddedAttachment;
 		Ptr<DocumentModel> document;
 		WString previousText;
 		vint begin, end;
 
 		WindowsUIAutomationTextRange(Ptr<WindowsUIAutomationNode> target, vint first, vint last, Ptr<WindowsUIAutomationNode> child = nullptr)
-			: node(target), embedded(child), document(UiaDocument(target->control)->GetDocument()), begin(first), end(last)
+			: node(target), embedded(child), attachment(target->Provider()), embeddedAttachment(child ? child->Provider() : nullptr), document(UiaDocument(target->control)->GetDocument()), begin(first), end(last)
 		{
 			WindowsUIAutomationTextSnapshot snapshot(UiaDocument(node->control));
 			previousText = snapshot.text;
@@ -234,7 +236,7 @@ namespace vl::presentation::windows
 		{
 			return node->dispatcher->Run([&]() -> HRESULT
 			{
-				if (!node->IsLive() || !node->Supports(UIA_TextPatternId) || UiaDocument(node->control)->GetDocument() != document) return UIA_E_ELEMENTNOTAVAILABLE;
+				if (!node->IsLive() || embedded && !embedded->IsLive() || !node->Supports(UIA_TextPatternId) || UiaDocument(node->control)->GetDocument() != document) return UIA_E_ELEMENTNOTAVAILABLE;
 				WindowsUIAutomationTextSnapshot snapshot(UiaDocument(node->control));
 				Normalize(snapshot);
 				return action(snapshot);
@@ -484,7 +486,7 @@ namespace vl::presentation::windows
 		{
 			if (!result) return E_POINTER;
 			*result = nullptr;
-			return Read([&](auto& snapshot) -> HRESULT { *result = EnclosingElement(snapshot)->Provider(); (*result)->AddRef(); return S_OK; });
+			return Read([&](auto& snapshot) -> HRESULT { EnclosingElement(snapshot)->Provider()->QueryInterface(IID_PPV_ARGS(result)); return S_OK; });
 		}
 		HRESULT STDMETHODCALLTYPE GetChildren(SAFEARRAY** result)override
 		{
@@ -683,7 +685,7 @@ namespace vl::presentation::windows
 				return child;
 			};
 			auto children = UiaTextChildren(node.Obj(), 0, -1);
-			for (auto child : children) if (auto target = hit(child)) return RangeFromChild(target->Provider(), result);
+			for (auto child : children) if (auto target = hit(child)) return RangeFromChild(target->Provider().Obj(), result);
 			auto document = UiaDocument(node->control);
 			auto native = node->Window()->GetNativeWindow();
 			auto screen = node->ScreenOrigin();

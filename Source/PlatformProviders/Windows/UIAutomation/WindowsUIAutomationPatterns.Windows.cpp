@@ -71,7 +71,7 @@ namespace vl::presentation::windows
 				item = node->context->Item(node, Kind::Item, index);
 			}
 			else item = node->context->Item(node, UiaCalendar(node->control) ? Kind::CalendarDay : Kind::Cell, row, column);
-			*result = item->Provider(); (*result)->AddRef();
+			item->Provider()->QueryInterface(IID_PPV_ARGS(result));
 			return S_OK;
 		}, UIA_GridPatternId);
 	}
@@ -100,7 +100,7 @@ namespace vl::presentation::windows
 	{
 		if (!result) return E_POINTER;
 		*result = nullptr;
-		return Read([&]() -> HRESULT { *result = node->owner->Provider(); (*result)->AddRef(); return S_OK; }, UIA_GridItemPatternId);
+		return Read([&]() -> HRESULT { node->owner->Provider()->QueryInterface(IID_PPV_ARGS(result)); return S_OK; }, UIA_GridItemPatternId);
 	}
 	HRESULT WindowsUIAutomationProvider::GetRowHeaders(SAFEARRAY** result)
 	{
@@ -176,7 +176,7 @@ namespace vl::presentation::windows
 				if (property) child->Property(property, &candidate.value);
 				if (!property || VarCmp(&candidate.value, &value, LOCALE_INVARIANT, 0) == VARCMP_EQ)
 				{
-					*result = child->Provider(); (*result)->AddRef(); return S_OK;
+					child->Provider()->QueryInterface(IID_PPV_ARGS(result)); return S_OK;
 				}
 			}
 			return S_OK;

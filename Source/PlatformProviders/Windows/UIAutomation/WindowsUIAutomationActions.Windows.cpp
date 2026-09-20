@@ -20,13 +20,13 @@ namespace vl::presentation::windows
 			}
 			else if (target->kind == Kind::Cell)
 			{
-				UiaRaiseAutomationEvent(target->Provider(), UIA_Invoke_InvokedEventId);
+				target->context->Raise(target, UIA_Invoke_InvokedEventId);
 				dynamic_cast<GuiVirtualDataGrid*>(target->control)->EnsureItemVisible(target->row);
 				dynamic_cast<GuiVirtualDataGrid*>(target->control)->SelectCell(GridPos(target->row, target->column), true);
 			}
 			else if (target->kind == Kind::HeaderItem)
 			{
-				UiaRaiseAutomationEvent(target->Provider(), UIA_Invoke_InvokedEventId);
+				target->context->Raise(target, UIA_Invoke_InvokedEventId);
 				auto list = dynamic_cast<GuiListViewBase*>(target->control);
 				GuiItemEventArgs arguments(list->GetBoundsComposition());
 				arguments.itemIndex = target->column;
@@ -138,7 +138,7 @@ namespace vl::presentation::windows
 		{
 			auto parent = node->owner ? node->owner : node->Parent();
 			if (node->owner) if (auto combo = UiaCombo(node.Obj())) parent = node->context->Control(combo);
-			if (parent) { *result = parent->Provider(); (*result)->AddRef(); }
+			if (parent) { parent->Provider()->QueryInterface(IID_PPV_ARGS(result)); }
 			return S_OK;
 		}, UIA_SelectionItemPatternId);
 	}

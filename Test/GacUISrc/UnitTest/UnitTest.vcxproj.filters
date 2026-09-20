@@ -110,6 +110,9 @@
     <ClCompile Include="TestCompositions_EasyLayout.cpp">
       <Filter>Source Files\Compositions</Filter>
     </ClCompile>
+    <ClCompile Include="TestCompositions_EazyLayoutFailures.cpp">
+      <Filter>Source Files\Compositions</Filter>
+    </ClCompile>
     <ClCompile Include="TestCompositions_Table.cpp">
       <Filter>Source Files\Compositions</Filter>
     </ClCompile>
