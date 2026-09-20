@@ -1,8 +1,6 @@
 # Eazy Layout
 
-`<ez:Layout>` arranges controls using docking, proportional space, or rows and columns. It builds the ordinary GacUI compositions needed for the arrangement. You normally do not need to write their tables, cells, stacks, or bounds wrappers yourself.
-
-This document describes the existing feature, extracted from [the original task](TODO_Task_EazyLayout.md) and [the EazyLayout refactoring notes](TODO_Task_Refactor.md#eazylayout). The proposed `<ez:Splitter>` extension is described separately at the end; it is not implemented yet.
+`<ez:Layout>` arranges controls using docking, proportional space, or rows and columns. Layout descriptors specify the arrangement, and the layout creates the required tables, cells, stacks, and bounds wrappers. Splitters let users resize adjacent parts by dragging their shared boundary.
 
 ## Getting started
 
@@ -33,12 +31,13 @@ The title and button use their minimum heights. The text box takes the remaining
 | `ez:Left`, `ez:Right` | Put minimum-width parts before or after the middle. | No additional layout properties. |
 | `ez:Fill` | Shares the remaining space with other fills. | `Percentage="1"`, `Direction="Inherited"` |
 | `ez:Row`, `ez:Column` | Describe table tracks and cells. | `CellOption="composeType:MinSize"`, `CellSpan="1"` |
+| `ez:Splitter` | Marks a resizing boundary after the preceding row or column. | No additional layout properties. |
 
 `ez:Layout` is a bounds composition. It starts with `MinSizeLimitation="LimitToElementAndChildren"` and zero `AlignmentToParent`; building applies its border setting. The other elements are layout descriptions, not extra controls or compositions.
 
-## What can go inside
+## Content
 
-A layout or descriptor can be empty, contain a list of layout descriptors, or contain one control or independently positioned composition. Do not mix descriptors and a control/composition at the same level, or put two controls directly in one descriptor. Use child descriptors or a single container when you need multiple controls.
+A layout or descriptor can be empty, contain a list of layout descriptors, or contain one control or independently positioned composition. `ez:Splitter` is always empty. Descriptors and a control/composition cannot be mixed at the same level, and a descriptor cannot contain two controls directly. Multiple controls require child descriptors or a single container.
 
 An outer `Row` or `Column` has the additional grid rules below. A nested `ez:Layout` counts as one composition, with its own settings.
 
@@ -58,19 +57,19 @@ Each sibling group can use one of these arrangements:
 | Rows | Rows, optionally with Tops and/or Bottoms. |
 | Columns | Columns, optionally with Lefts and/or Rights. |
 
-Do not mix vertical and horizontal docking at the same level. Do not mix Fill with Row or Column siblings. Nest another descriptor group to change the arrangement.
+Each arrangement also accepts Splitter descriptors at its internal boundaries, as described under [Splitters](#splitters). Vertical and horizontal docking cannot be mixed at the same level, and Fill cannot be mixed with Row or Column siblings. A nested descriptor group can use a different arrangement.
 
 The visual order is Top, middle, Bottom, or Left, middle, Right. Declaration order is preserved within each of those groups, including Bottom and Right. Thus a Bottom written before a Top still appears below that Top.
 
-Docking without fills or explicit rows/columns leaves unused space between the leading and trailing groups. If there is only one docking side, it stays against that side. These one-sided groups may be built as stacks; the others use tables. The choice of generated composition must preserve the same visible spacing.
+Docking without fills or explicit rows/columns leaves unused space between the leading and trailing groups. If there is only one docking side, it stays against that side. One-sided groups without splitters may be built as stacks; the others use tables. Adding a splitter forces its containing group to use a table while preserving edge alignment, visual order, and spacing.
 
 `Percentage` is a relative weight. Two default fills divide their space equally; weights `1` and `3` divide it in a 1:3 ratio. The weights do not need to add up to 1 or 100.
 
 ## Direction
 
-Top, Bottom, and Row siblings establish a vertical arrangement. Left, Right, and Column siblings establish a horizontal arrangement.
+Top, Bottom, and Row siblings establish a vertical arrangement. Left, Right, and Column siblings establish a horizontal arrangement. Splitters follow that direction and do not participate in direction inference.
 
-For fills-only siblings:
+For groups whose non-splitter children are all Fills:
 
 1. Use an explicit `Direction="Horizontal"` or `Direction="Vertical"` if one is present. One declaration is enough for the whole sibling group.
 2. Otherwise inherit the enclosing descriptor arrangement's direction.
@@ -93,7 +92,7 @@ These text boxes are above and below each other, with relative heights 1:2. A se
 
 ## Rows and columns
 
-Write rows containing columns, or columns containing rows. A Row that is not directly inside a Column accepts only Column descriptors; a Column that is not directly inside a Row accepts only Row descriptors. Those inner descriptors can then contain ordinary content or another layout group.
+Grids consist of rows containing columns, or columns containing rows. A Row that is not directly inside a Column accepts Column descriptors and optional Splitters; a Column that is not directly inside a Row accepts Row descriptors and optional Splitters. The inner Row or Column descriptors can contain ordinary content or another layout group.
 
 ```xml
 <ez:Layout>
@@ -141,6 +140,44 @@ To find a shared option, consider only descriptors whose `CellSpan` is 1. Ignore
 
 Transpose those rules for columns containing rows. Cell ranges go to the ordinary table in declaration order. Overlapping, out-of-range, or nonpositive-span sites follow the native table's rejection behavior: a rejected cell remains unsited and does not appear. Easy layout does not move it elsewhere or add a separate range-conflict exception. The shared-track declaration rules still apply.
 
+## Splitters
+
+`<ez:Splitter/>` attaches to the immediately preceding descriptor in its sibling list and marks the boundary after that descriptor's row or column. The association is preserved when docking descriptors are arranged into leading, middle, and trailing groups. Splitters do not add tracks or cells, change spans, or contribute sizing options.
+
+In a vertical arrangement, a splitter forms a horizontal bar that moves up and down. In a horizontal arrangement, it forms a vertical bar that moves left and right. A splitter has no separate direction, size, span, or row/column index property.
+
+```xml
+<ez:Layout>
+  <ez:Column CellOption="composeType:Absolute absolute:180">
+    <ez:Row CellOption="composeType:Percentage percentage:1">
+      <MultilineTextBox/>
+    </ez:Row>
+  </ez:Column>
+  <ez:Splitter/>
+  <ez:Column CellOption="composeType:Percentage percentage:1">
+    <ez:Row>
+      <MultilineTextBox/>
+    </ez:Row>
+  </ez:Column>
+</ez:Layout>
+```
+
+The first column starts at 180 pixels, and the second takes the remaining width. The Columns establish the horizontal direction. Dragging the splitter changes the first column's absolute width.
+
+At least one immediately adjacent track must have an `Absolute` option for dragging to resize the layout. Only adjacent Absolute options change; boundaries between MinSize or Percentage tracks do not resize. A splitter can resize an Absolute track on either side of its boundary.
+
+### Grid boundaries
+
+In rows containing columns, a splitter among the outer Rows selects a row boundary. A splitter among inner Columns selects a shared column boundary and extends across the table's cell area. Reverse these rules for columns containing rows.
+
+After an outer Row or Column, the boundary follows its starting track; an outer `CellSpan` changes cell coverage without declaring extra tracks. After an inner Column or Row, the boundary follows its accumulated span. Multiple distinct Splitter descriptors resolving to the same table boundary produce one splitter. They do not affect shared track options or the requirement for single-span declarations.
+
+### Placement rules
+
+A splitter requires a preceding descriptor and an internal table boundary. It cannot be the first child, follow another splitter directly, or contain children or a payload. A group containing only splitters is invalid.
+
+A splitter written last in a sibling list is valid only when its preceding descriptor has a following track after layout ordering. A boundary after the final track is invalid. Invalid cell ranges retain the table behavior described above; a splitter's boundary is checked independently.
+
 ## Spacing
 
 `Padding` is a nonnegative gap between neighboring parts in one layout tree. Nested generated tables and stacks do not add extra copies of that gap.
@@ -149,11 +186,13 @@ Transpose those rules for columns containing rows. Cell ranges go to the ordinar
 
 A no-fill docking arrangement has one minimum gap between neighboring visible parts, including across its automatic empty space. Enlarging the container can open that space further.
 
-A separately written nested `ez:Layout` has its own padding and border. Use `Border="false"` there when the enclosing layout already supplies the required gap. Preserve deliberate values such as 3 or 10 when converting an existing UI.
+A splitter occupies the existing padding gap and adds no extra gap. Its thickness is `Padding`; with `Padding="0"`, it has no mouse hit area. Docking groups retain one minimum gap between neighboring visible parts when splitters are present.
+
+A separately written nested `ez:Layout` has its own padding and border. `Border="false"` removes its outside gap when the enclosing layout already supplies the required spacing.
 
 ## Values, bindings, and rebuilding
 
-Fill weights and percentage cell options used to size tracks must be finite and positive. Used absolute sizes and padding must be nonnegative. An inner descriptor's `CellOption` is ignored when its span is not 1. Within each generated row or column axis, the smallest percentage weight must be at least `0.001` times the largest; more extreme ratios are rejected.
+Fill weights and percentage cell options used to size tracks must be finite and positive. Absolute track sizes and padding must be nonnegative. An inner descriptor's `CellOption` is ignored when its span is not 1. Within each generated row or column axis, the smallest percentage weight must be at least `0.001` times the largest; more extreme ratios are rejected.
 
 `CellOption` and `Percentage` must be constants in XML. No binding form is allowed, including `-bind`, `-eval`, `-ref`, or `-uri`, in either attributes or property elements. Numeric constant expressions are allowed in `CellOption` fields, but runtime expressions are not.
 
@@ -161,26 +200,8 @@ Bindings on `Padding`, `Border`, `Direction`, and `CellSpan` are allowed. These 
 
 XML initialization calls `BuildLayout` after the descriptor tree, content, assignments, and initial binding values are ready. In C++, call it explicitly. Call it again to apply later property or structural changes. Rebuilding preserves reused controls and their state, bindings, and handlers, while replacing generated containers as needed. Normal parent resizing and content minimum-size changes work without rebuilding.
 
-The layout owns supplied content even before the first build. Destroying it must safely delete that content once, whether it is still pending or already attached to the built composition tree.
+Dragging a splitter updates the generated table immediately without changing descriptor values. Window resizing retains the adjusted track sizes. An explicit `BuildLayout` restores the sizes specified by the descriptors.
+
+The layout owns supplied content even before the first build. Destroying it safely deletes that content once, whether it is still pending or already attached to the built composition tree.
 
 Invalid layout grammar, conflicting options, unsupported values, and invalid ownership fail at compilation where detectable, or at `BuildLayout`. They are programming errors. Native cell-site rejection follows the separate rule above.
-
-## Keep tutorial XML simple
-
-Omit default properties. Omit Fill directions that docking or inheritance already determines, and keep only one necessary explicit direction in a fills-only group. Equal fill weights may all be omitted together; changing only one weight can change the ratio.
-
-State a shared nondefault track option only once. Do not remove an outer row's or column's option merely because another outer track has the same value: those are separate tracks. Keep empty structural descriptors and meaningful spans.
-
-Specialized layouts such as wrapping/repeated content, shared-size groups, and tables with placement that cannot be expressed equivalently may remain as ordinary composition subtrees.
-
-## Planned splitter extension
-
-`<ez:Splitter/>` is planned as a descriptor between layout parts. Its direction will follow the existing inference rules, and it will attach to the preceding row or column. A splitter will force its containing arrangement to use a table when it would otherwise use a stack.
-
-See [the splitter implementation and tutorial migration plan](TODO_Task_EazyLayoutSplitter.md) for the proposed placement, spacing, interaction, and verification rules. Until that work is implemented, keep native `RowSplitter` and `ColumnSplitter` compositions with their owning tables.
-
-## Implementation references
-
-- [GuiEasyLayout.h](Source/GraphicsComposition/EazyLayout/GuiEasyLayout.h) declares the types in `vl::presentation::compositions::eazy_layout`, including `GuiEasyLayoutComposition` and its `BuildLayout` method.
-- [GuiEasyLayout.cpp](Source/GraphicsComposition/EazyLayout/GuiEasyLayout.cpp) validates and builds the arrangements.
-- [GuiInstanceLoader_EasyLayout.cpp](Source/Compiler/InstanceLoaders/GuiInstanceLoader_EasyLayout.cpp) handles XML content and initialization.
