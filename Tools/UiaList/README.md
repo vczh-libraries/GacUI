@@ -43,7 +43,7 @@ Returned elements and text ranges are references, not additional raw-tree childr
 
 The inspector covers named standard descriptors in the selected SDK. Unknown vendor registrations, provider implementation internals and arbitrary returned COM object methods are outside generic discovery. Opaque ObjectModel and IAccessible results remain opaque. Supported false, zero, empty, null and mixed values are distinct from Unsupported. UIA has no generic property setter: the [property-editor contract](Verification/README.md#property-editor-acceptance-contract) lists the explicit method mappings and the verified native single-line Edit predicate.
 
-GacUI's own Windows provider implementation is documented separately in the [GacUI UI Automation knowledge-base page](../../.github/KnowledgeBase/KB_GacUI_Design_UIAutomation.md). Its [requirements review](../../TODO_Task_UiaReview.md) tracks implementation gaps against Microsoft contracts. Neither document is a replacement for the inspector's broader SDK catalog.
+GacUI's own Windows provider implementation is documented separately in the [GacUI UI Automation knowledge-base page](../../.github/KnowledgeBase/KB_GacUI_Design_UIAutomation.md). Its [gap report](../../ToDo/UiaGap.md) tracks implementation gaps against Microsoft contracts. Neither document is a replacement for the inspector's broader SDK catalog.
 
 ## Preview semantics
 

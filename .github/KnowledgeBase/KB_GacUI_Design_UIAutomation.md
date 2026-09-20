@@ -1,6 +1,6 @@
 # Windows UI Automation
 
-This page describes the Windows provider in `vl::presentation::windows`. It is an implementation inventory, not certification of every Microsoft UIA contract. Historical findings are in [the second review](../../TODO_Task_UiaReview2.md); current investigation evidence is in [Copilot_Investigate.md](../TaskLogs/Copilot_Investigate.md). See [Running-GacUI.md](../Guidelines/Running-GacUI.md#windows-specific) for execution guidance.
+This page describes the Windows provider in `vl::presentation::windows`. It is an implementation inventory, not certification of every Microsoft UIA contract. Current gaps, historical review dispositions and verification requirements are consolidated in [the UI Automation gap report](../../ToDo/UiaGap.md); investigation evidence is in [Copilot_Investigate.md](../TaskLogs/Copilot_Investigate.md). See [Running-GacUI.md](../Guidelines/Running-GacUI.md#windows-specific) for execution guidance.
 
 ## Implementation and lifecycle
 
