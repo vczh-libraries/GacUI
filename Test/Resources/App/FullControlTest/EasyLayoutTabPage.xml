@@ -16,6 +16,7 @@
               <ez:Fill Direction-bind="vertical.Selected ? Vertical : Horizontal">
                 <SinglelineTextBox ref.Name="editor" Text="This text survives rebuilding."/>
               </ez:Fill>
+              <ez:Splitter/>
               <ez:Fill Percentage="2">
                 <Label Text-bind="editor.Text"/>
               </ez:Fill>
