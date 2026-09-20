@@ -30,9 +30,19 @@ GPU Accelerated C++ User Interface, with:
 - macOS implementation is released in [the iGac repo](https://github.com/vczh-libraries/iGac)
 - HTML5 implementation is released in [the GacJS repo](https://github.com/vczh-libraries/GacJS)
 
+## Screenshots
+
+### GPU Accelerated Renderer
+
 ![](./Screenshots/FCT_Default.png)
 
+### TUI Renderer
+
 ![](./Screenshots/TUI_SkyBlue%20(default).png)
+
+### Windows UI Automation Inspector (Tools/UiaList)
+
+![](./Screenshots/UiaList.png)
 
 ## License
 
