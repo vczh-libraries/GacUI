@@ -18134,7 +18134,7 @@ namespace vl::presentation
 Static grammar and final initialization
 ***********************************************************************/
 
-	enum class EasyKind { Other, Root, Top, Bottom, Left, Right, Row, Column, Fill };
+	enum class EasyKind { Other, Root, Top, Bottom, Left, Right, Row, Column, Fill, Splitter };
 
 	EasyKind GetEasyKind(ITypeDescriptor* td)
 	{
@@ -18148,6 +18148,7 @@ Static grammar and final initialization
 		EASY_KIND(GuiEasyRowLayout, Row)
 		EASY_KIND(GuiEasyColumnLayout, Column)
 		EASY_KIND(GuiEasyFillLayout, Fill)
+		EASY_KIND(GuiEasySplitterLayout, Splitter)
 #undef EASY_KIND
 		return EasyKind::Other;
 	}
@@ -18169,6 +18170,7 @@ Static grammar and final initialization
 		{
 			auto property = repr->setters.Keys()[index];
 			bool content = property == GlobalStringKey::Empty || property == GlobalStringKey::Get(L"Layouts") || property == GlobalStringKey::Get(L"Composition");
+			EasyKind previous = EasyKind::Other;
 			for (auto value : setter->values)
 			{
 				auto child = value.Cast<GuiAttSetterRepr>();
@@ -18179,7 +18181,16 @@ Static grammar and final initialization
 				{
 					bool descriptor = childKind != EasyKind::Other && childKind != EasyKind::Root;
 					if (descriptor) layoutCount++; else payloadCount++;
-					if ((groupingRow && childKind != EasyKind::Column) || (groupingColumn && childKind != EasyKind::Row))
+					if (kind == EasyKind::Splitter)
+					{
+						errors->Add(GuiResourceError({ result.resource }, child->tagPosition, L"Easy layout: splitters cannot contain descriptors or a payload."));
+					}
+					if (childKind == EasyKind::Splitter && (previous == EasyKind::Other || previous == EasyKind::Root || previous == EasyKind::Splitter))
+					{
+						errors->Add(GuiResourceError({ result.resource }, child->tagPosition, L"Easy layout: a splitter must immediately follow an ordinary descriptor."));
+					}
+					previous = childKind;
+					if (childKind != EasyKind::Splitter && ((groupingRow && childKind != EasyKind::Column) || (groupingColumn && childKind != EasyKind::Row)))
 					{
 						errors->Add(GuiResourceError({ result.resource }, child->tagPosition, L"Easy layout: outer rows/columns only accept opposite-axis track descriptors."));
 					}

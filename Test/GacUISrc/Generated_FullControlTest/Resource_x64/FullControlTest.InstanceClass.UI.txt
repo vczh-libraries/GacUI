@@ -21089,46 +21089,49 @@ namespace demo
         var <precompile>6 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+        var <precompile>7 : ::presentation::compositions::eazy_layout::GuiEasySplitterLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasySplitterLayout^);
 
         @cpp:Protected
-        var <precompile>8 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>8 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
 
         @cpp:Protected
-        var <precompile>9 : ::presentation::compositions::eazy_layout::GuiEasyBottomLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^);
+        var <precompile>9 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>10 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+        var <precompile>10 : ::presentation::compositions::eazy_layout::GuiEasyBottomLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^);
 
         @cpp:Protected
-        var <precompile>11 : ::presentation::compositions::eazy_layout::GuiEasyRowLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRowLayout^);
+        var <precompile>11 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
-        var <precompile>12 : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
+        var <precompile>12 : ::presentation::compositions::eazy_layout::GuiEasyRowLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRowLayout^);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>13 : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
 
         @cpp:Protected
-        var <precompile>14 : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
+        var <precompile>14 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>15 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>15 : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
 
         @cpp:Protected
-        var <precompile>16 : ::presentation::compositions::eazy_layout::GuiEasyRowLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRowLayout^);
+        var <precompile>16 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>17 : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
+        var <precompile>17 : ::presentation::compositions::eazy_layout::GuiEasyRowLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRowLayout^);
 
         @cpp:Protected
-        var <precompile>18 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>18 : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
 
         @cpp:Protected
-        var <precompile>19 : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
+        var <precompile>19 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>20 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+        var <precompile>20 : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
+
+        @cpp:Protected
+        var <precompile>21 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
         var content : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
@@ -21194,18 +21197,22 @@ namespace demo
             {
                 content.Layouts.Add(<precompile>6);
             }
-            (<precompile>7 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
-            {
-                (<precompile>7.Percentage = 2 of (::system::Double));
-            }
-            {
-                (<precompile>8 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
-            }
-            {
-                (<precompile>7.Composition = <precompile>8.BoundsComposition);
-            }
+            (<precompile>7 = new (::presentation::compositions::eazy_layout::GuiEasySplitterLayout^)());
             {
                 content.Layouts.Add(<precompile>7);
+            }
+            (<precompile>8 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            {
+                (<precompile>8.Percentage = 2 of (::system::Double));
+            }
+            {
+                (<precompile>9 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            {
+                (<precompile>8.Composition = <precompile>9.BoundsComposition);
+            }
+            {
+                content.Layouts.Add(<precompile>8);
             }
             {
                 (<precompile>5.Composition = content);
@@ -21213,83 +21220,83 @@ namespace demo
             {
                 <precompile>1.Layouts.Add(<precompile>5);
             }
-            (<precompile>9 = new (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^)());
-            (<precompile>10 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            (<precompile>10 = new (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^)());
+            (<precompile>11 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
             {
-                (<precompile>10.Border = false);
+                (<precompile>11.Border = false);
             }
-            (<precompile>11 = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
+            (<precompile>12 = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
             {
-                (<precompile>11.CellOption = {composeType : ::presentation::compositions::GuiCellOption::ComposeType::Absolute; absolute : 24;} of (::presentation::compositions::GuiCellOption));
+                (<precompile>12.CellOption = {composeType : ::presentation::compositions::GuiCellOption::ComposeType::Absolute; absolute : 24;} of (::presentation::compositions::GuiCellOption));
             }
-            (<precompile>12 = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
+            (<precompile>13 = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
             {
-                (<precompile>12.CellOption = {composeType : ::presentation::compositions::GuiCellOption::ComposeType::Percentage; percentage : 1;} of (::presentation::compositions::GuiCellOption));
-            }
-            {
-                (<precompile>13 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (<precompile>13.CellOption = {composeType : ::presentation::compositions::GuiCellOption::ComposeType::Percentage; percentage : 1;} of (::presentation::compositions::GuiCellOption));
             }
             {
-                (<precompile>13.Text = "First column");
+                (<precompile>14 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
             {
-                (<precompile>12.Composition = <precompile>13.BoundsComposition);
+                (<precompile>14.Text = "First column");
+            }
+            {
+                (<precompile>13.Composition = <precompile>14.BoundsComposition);
+            }
+            {
+                <precompile>12.Layouts.Add(<precompile>13);
+            }
+            (<precompile>15 = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
+            {
+                (<precompile>15.CellOption = {composeType : ::presentation::compositions::GuiCellOption::ComposeType::Percentage; percentage : 2;} of (::presentation::compositions::GuiCellOption));
+            }
+            {
+                (<precompile>16 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            {
+                (<precompile>16.Text = "Second column (twice the width)");
+            }
+            {
+                (<precompile>15.Composition = <precompile>16.BoundsComposition);
+            }
+            {
+                <precompile>12.Layouts.Add(<precompile>15);
             }
             {
                 <precompile>11.Layouts.Add(<precompile>12);
             }
-            (<precompile>14 = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
+            (<precompile>17 = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
+            (<precompile>18 = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
             {
-                (<precompile>14.CellOption = {composeType : ::presentation::compositions::GuiCellOption::ComposeType::Percentage; percentage : 2;} of (::presentation::compositions::GuiCellOption));
+                (<precompile>19 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
             {
-                (<precompile>15 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (<precompile>19.Text = "Shared tracks");
             }
             {
-                (<precompile>15.Text = "Second column (twice the width)");
+                (<precompile>18.Composition = <precompile>19.BoundsComposition);
             }
             {
-                (<precompile>14.Composition = <precompile>15.BoundsComposition);
+                <precompile>17.Layouts.Add(<precompile>18);
+            }
+            (<precompile>20 = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
+            (<precompile>21 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            {
+                (<precompile>21.Border = false);
             }
             {
-                <precompile>11.Layouts.Add(<precompile>14);
+                (<precompile>20.Composition = <precompile>21);
             }
             {
-                <precompile>10.Layouts.Add(<precompile>11);
-            }
-            (<precompile>16 = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
-            (<precompile>17 = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
-            {
-                (<precompile>18 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <precompile>17.Layouts.Add(<precompile>20);
             }
             {
-                (<precompile>18.Text = "Shared tracks");
+                <precompile>11.Layouts.Add(<precompile>17);
             }
             {
-                (<precompile>17.Composition = <precompile>18.BoundsComposition);
+                (<precompile>10.Composition = <precompile>11);
             }
             {
-                <precompile>16.Layouts.Add(<precompile>17);
-            }
-            (<precompile>19 = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
-            (<precompile>20 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
-            {
-                (<precompile>20.Border = false);
-            }
-            {
-                (<precompile>19.Composition = <precompile>20);
-            }
-            {
-                <precompile>16.Layouts.Add(<precompile>19);
-            }
-            {
-                <precompile>10.Layouts.Add(<precompile>16);
-            }
-            {
-                (<precompile>9.Composition = <precompile>10);
-            }
-            {
-                <precompile>1.Layouts.Add(<precompile>9);
+                <precompile>1.Layouts.Add(<precompile>10);
             }
             {
                 <precompile>0.ContainerComposition.AddChild(<precompile>1);
@@ -21437,13 +21444,13 @@ namespace demo
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>8.Text;
+                    var <old> = <precompile>9.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>8.Text = <new>);
+                    (<precompile>9.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -21521,8 +21528,8 @@ namespace demo
                 <this>.AddSubscription(<created-subscription>);
             }
             content.BuildLayout();
-            <precompile>20.BuildLayout();
-            <precompile>10.BuildLayout();
+            <precompile>21.BuildLayout();
+            <precompile>11.BuildLayout();
             <precompile>1.BuildLayout();
         }
 

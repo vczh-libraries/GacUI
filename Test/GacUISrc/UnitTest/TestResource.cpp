@@ -130,6 +130,19 @@ TEST_FILE
 			}
 		});
 
+		TEST_CASE(L"Compiler accepts easy splitter descriptors between fill tracks")
+		{
+			GuiResourceError::List errors;
+			auto parser = GetParserManager()->GetParser<glr::xml::XmlDocument>(L"XML");
+			auto xml = parser->Parse({}, easy_layout_xml_tests::Resource(L"<ez:Layout><ez:Fill/><ez:Splitter/><ez:Fill/></ez:Layout>"), errors);
+			TEST_ASSERT(xml && errors.Count() == 0);
+			auto resource = GuiResource::LoadFromXml(xml, L"TestControls_EasyLayout.xml", L".", errors);
+			TEST_ASSERT(resource);
+			if (errors.Count() == 0) PrecompileResource(resource, GuiResourceCpuArchitecture::Unspecified, nullptr, errors);
+			for (auto error : errors) TEST_PRINT(error.message);
+			TEST_ASSERT(errors.Count() == 0);
+		});
+
 		TEST_CASE(L"Compiler rejects constant-property bindings, runtime struct fields and static child grammar with source positions")
 		{
 			collections::List<WString> cases;
@@ -155,6 +168,15 @@ TEST_FILE
 			cases.Add(L"<ez:Layout><ez:Column><ez:Top/></ez:Column></ez:Layout>");
 			cases.Add(L"<ez:Layout><Cell/></ez:Layout>");
 			cases.Add(L"<ez:Layout><ez:Fill><StackItem/></ez:Fill></ez:Layout>");
+			cases.Add(L"<ez:Layout><ez:Splitter/></ez:Layout>");
+			cases.Add(L"<ez:Layout><ez:Splitter/><ez:Fill/></ez:Layout>");
+			cases.Add(L"<ez:Layout><ez:Fill/><ez:Splitter/><ez:Splitter/><ez:Fill/></ez:Layout>");
+			cases.Add(L"<ez:Layout><ez:Fill/><ez:Splitter><Bounds/></ez:Splitter><ez:Fill/></ez:Layout>");
+			cases.Add(L"<ez:Layout><ez:Fill/><ez:Splitter><att.Composition><Bounds/></att.Composition></ez:Splitter><ez:Fill/></ez:Layout>");
+			cases.Add(L"<ez:Layout><ez:Fill/><ez:Splitter><att.Layouts><ez:Fill/></att.Layouts></ez:Splitter><ez:Fill/></ez:Layout>");
+			cases.Add(L"<ez:Layout><att.Layouts><ez:Splitter/><ez:Fill/></att.Layouts></ez:Layout>");
+			cases.Add(L"<ez:Layout><ez:Row><ez:Splitter/><ez:Column/></ez:Row></ez:Layout>");
+			cases.Add(L"<ez:Layout><ez:Column><att.Layouts><ez:Row/><ez:Splitter/><ez:Splitter/><ez:Row/></att.Layouts></ez:Column></ez:Layout>");
 			for (auto content : cases)
 			{
 				GuiResourceError::List errors;

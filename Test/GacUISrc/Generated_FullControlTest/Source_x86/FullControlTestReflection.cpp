@@ -1255,6 +1255,8 @@ namespace vl
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Protected)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_20)
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Protected)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_21)
+				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Protected)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_cpp_Protected)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)

@@ -249,6 +249,7 @@ Type List (Compositions)
 			F(presentation::compositions::eazy_layout::GuiEasyRowLayout)\
 			F(presentation::compositions::eazy_layout::GuiEasyColumnLayout)\
 			F(presentation::compositions::eazy_layout::GuiEasyFillLayout)\
+			F(presentation::compositions::eazy_layout::GuiEasySplitterLayout)\
 			F(presentation::compositions::KeyDirection)\
 			F(presentation::compositions::IGuiAxis)\
 			F(presentation::compositions::GuiDefaultAxis)\

@@ -1179,6 +1179,11 @@ Type Declaration (Extra)
 				CLASS_MEMBER_PROPERTY_FAST(Direction)
 			END_CLASS_MEMBER(GuiEasyFillLayout)
 
+			BEGIN_CLASS_MEMBER(GuiEasySplitterLayout)
+				CLASS_MEMBER_BASE(GuiEasyLayout)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiEasySplitterLayout>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiEasySplitterLayout)
+
 			BEGIN_CLASS_MEMBER(GuiEasyLayoutComposition)
 				CLASS_MEMBER_BASE(GuiBoundsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiEasyLayoutComposition*(), NO_PARAMETER)

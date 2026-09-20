@@ -190,6 +190,14 @@ A splitter occupies the existing padding gap and adds no extra gap. Its thicknes
 
 A separately written nested `ez:Layout` has its own padding and border. `Border="false"` removes its outside gap when the enclosing layout already supplies the required spacing.
 
+### Removing redundant Bounds wrappers
+
+`ez:Layout` is itself a bounds composition. A Bounds whose only child is an easy layout usually adds nothing when it fills its parent with `AlignmentToParent="left:0 top:0 right:0 bottom:0"`. Remove that Bounds and put the layout directly in its parent. The same applies when a descriptor supplies the wrapper's zero alignment during `BuildLayout`.
+
+Do not copy `AlignmentToParent` to the layout: `BuildLayout` replaces it with the outside inset selected by `Padding` and `Border`. A uniform wrapper inset equal to the layout's padding can replace `Border="false"` with `Border="true"`. Preserve the inner gaps when making this conversion. For example, an outside inset of 3 and inner gaps of 5 still need a wrapper; changing Padding to 3 would also change the inner gaps.
+
+Keep a wrapper for asymmetric insets, one-sided anchoring, or unanchored scroll content that these settings cannot reproduce. There is no separate Margin property. Preserve any other meaningful bounds properties, and check minimum-size propagation as well as the visible layout at different window sizes.
+
 ## Values, bindings, and rebuilding
 
 Fill weights and percentage cell options used to size tracks must be finite and positive. Absolute track sizes and padding must be nonnegative. An inner descriptor's `CellOption` is ignored when its span is not 1. Within each generated row or column axis, the smallest percentage weight must be at least `0.001` times the largest; more extreme ratios are rejected.

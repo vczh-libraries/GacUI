@@ -2029,6 +2029,10 @@ class presentation::compositions::eazy_layout::GuiEasyRowLayout : presentation::
     constructor () : presentation::compositions::eazy_layout::GuiEasyRowLayout^;
 }
 
+class presentation::compositions::eazy_layout::GuiEasySplitterLayout : presentation::compositions::eazy_layout::GuiEasyLayout {
+    constructor () : presentation::compositions::eazy_layout::GuiEasySplitterLayout^;
+}
+
 class presentation::compositions::eazy_layout::GuiEasyTopLayout : presentation::compositions::eazy_layout::GuiEasyLayout {
     constructor () : presentation::compositions::eazy_layout::GuiEasyTopLayout^;
 }

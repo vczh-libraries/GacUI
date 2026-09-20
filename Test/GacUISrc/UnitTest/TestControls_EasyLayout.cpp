@@ -13,6 +13,90 @@ namespace easy_layout_xml_tests
 
 TEST_FILE
 {
+	TEST_CASE(L"XML shared splitters resize both axes and rebuilding retains bound controls")
+	{
+		const auto content = LR"GacUISrc(
+<ez:Layout ref.Name="layout">
+  <ez:Column CellOption="composeType:Absolute absolute:180">
+    <ez:Row CellOption="composeType:Absolute absolute:80">
+      <Button ref.Name="button" Text-bind="self.Text"><ev.Clicked-eval><![CDATA[{ self.Text = "Retained"; }]]></ev.Clicked-eval></Button>
+    </ez:Row>
+    <ez:Splitter ref.Name="horizontal"/>
+    <ez:Row CellOption="composeType:Percentage percentage:1"><Label Text="Bottom left"/></ez:Row>
+  </ez:Column>
+  <ez:Splitter ref.Name="vertical"/>
+  <ez:Column CellOption="composeType:Percentage percentage:1">
+    <ez:Row><Label Text="Top right"/></ez:Row>
+    <ez:Splitter/>
+    <ez:Row><ez:Layout Border="false"><ez:Fill><Label Text="Nested"/></ez:Fill><ez:Splitter/><ez:Fill><Label Text="Fills"/></ez:Fill></ez:Layout></ez:Row>
+  </ez:Column>
+</ez:Layout>
+)GacUISrc";
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Shared splitter grid initialized", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto layout = FindObjectByName<GuiEasyLayoutComposition>(window, L"layout");
+				TEST_ASSERT(FindObjectByName<GuiEasySplitterLayout>(window, L"horizontal"));
+				TEST_ASSERT(FindObjectByName<GuiEasySplitterLayout>(window, L"vertical"));
+				auto table = dynamic_cast<GuiTableComposition*>(layout->Children()[0]->Children()[0]);
+				TEST_ASSERT(table->Children().Count() == 6);
+				auto splitter = dynamic_cast<GuiColumnSplitterComposition*>(table->Children()[4]);
+				auto point = protocol->LocationOf(splitter);
+				protocol->_LDown(point);
+				point.x += 25;
+				protocol->MouseMove(point);
+				protocol->_LUp(point);
+			});
+			protocol->OnNextIdleFrame(L"Column enlarged by dragging", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto layout = FindObjectByName<GuiEasyLayoutComposition>(window, L"layout");
+				auto table = dynamic_cast<GuiTableComposition*>(layout->Children()[0]->Children()[0]);
+				TEST_ASSERT(table->GetColumnOption(0).absolute == 205);
+				auto splitter = dynamic_cast<GuiRowSplitterComposition*>(table->Children()[5]);
+				auto point = protocol->LocationOf(splitter);
+				protocol->_LDown(point);
+				point.y += 15;
+				protocol->MouseMove(point);
+				protocol->_LUp(point);
+			});
+			protocol->OnNextIdleFrame(L"Row enlarged by dragging", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto layout = FindObjectByName<GuiEasyLayoutComposition>(window, L"layout");
+				auto table = dynamic_cast<GuiTableComposition*>(layout->Children()[0]->Children()[0]);
+				TEST_ASSERT(table->GetRowOption(0).absolute == 95);
+				window->SetClientSize({ 400,300 });
+			});
+			protocol->OnNextIdleFrame(L"Window resizing retains dragged sizes", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto layout = FindObjectByName<GuiEasyLayoutComposition>(window, L"layout");
+				auto table = dynamic_cast<GuiTableComposition*>(layout->Children()[0]->Children()[0]);
+				TEST_ASSERT(table->GetColumnOption(0).absolute == 205 && table->GetRowOption(0).absolute == 95);
+				layout->BuildLayout();
+			});
+			protocol->OnNextIdleFrame(L"Rebuild restores configured sizes", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto layout = FindObjectByName<GuiEasyLayoutComposition>(window, L"layout");
+				auto table = dynamic_cast<GuiTableComposition*>(layout->Children()[0]->Children()[0]);
+				TEST_ASSERT(table->GetColumnOption(0).absolute == 180 && table->GetRowOption(0).absolute == 80);
+				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiButton>(window, L"button")));
+			});
+			protocol->OnNextIdleFrame(L"Retained control updates its binding", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				TEST_ASSERT(window->GetText() == L"Retained");
+				TEST_ASSERT(FindObjectByName<GuiButton>(window, L"button")->GetText() == L"Retained");
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(L"EasyLayout/Splitters", L"easy_test::MainWindow", easy_layout_xml_tests::Resource(content));
+	});
+
 	TEST_CASE(L"XML instantiates every descriptor with defaults and both constant property syntaxes")
 	{
 		for (vint syntax = 0; syntax < 3; syntax++)
@@ -34,7 +118,8 @@ TEST_FILE
 				+ field(L"CellOption", L"composeType:Absolute absolute:12") + field(L"CellSpan", L"1")
 				+ L"<ez:Column ref.Name=\"column\"" + attribute(L"CellOption", L"composeType:Percentage percentage:2") + attribute(L"CellSpan", L"1") + L">"
 				+ field(L"CellOption", L"composeType:Percentage percentage:2") + field(L"CellSpan", L"1") + L"<Bounds/></ez:Column></ez:Row></ez:Layout>"
-				L"<ez:Layout><ez:Column><ez:Row><Bounds/></ez:Row></ez:Column></ez:Layout>";
+				L"<ez:Layout><ez:Column><ez:Row><Bounds/></ez:Row></ez:Column></ez:Layout>"
+				L"<ez:Layout Padding=\"0\"><att.Layouts><ez:Fill/><ez:Splitter ref.Name=\"splitter\"/><ez:Fill/></att.Layouts></ez:Layout>";
 			auto resource = easy_layout_xml_tests::Resource(content);
 			if (customNamespace)
 			{
@@ -52,6 +137,7 @@ TEST_FILE
 					TEST_ASSERT(FindObjectByName<GuiEasyBottomLayout>(window, L"bottom"));
 					TEST_ASSERT(FindObjectByName<GuiEasyLeftLayout>(window, L"left"));
 					TEST_ASSERT(FindObjectByName<GuiEasyRightLayout>(window, L"right"));
+					TEST_ASSERT(FindObjectByName<GuiEasySplitterLayout>(window, L"splitter"));
 					auto fill = FindObjectByName<GuiEasyFillLayout>(window, L"fill");
 					TEST_ASSERT(fill->GetPercentage() == (syntax ? 3 : 1));
 					TEST_ASSERT(fill->GetDirection() == (syntax ? GuiEasyLayoutDirection::Horizontal : GuiEasyLayoutDirection::Inherited));

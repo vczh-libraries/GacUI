@@ -7,6 +7,67 @@ using namespace easy_layout_tests;
 
 TEST_FILE
 {
+	TEST_CASE(L"Splitters reject missing predecessors, final boundaries, payloads, children and reuse")
+	{
+		for (vint scenario = 0; scenario < 8; scenario++)
+		{
+			auto root = new GuiEasyLayoutComposition;
+			auto marker = Ptr(new GuiEasySplitterLayout);
+			if (scenario != 0) root->GetLayouts().Add(Leaf<GuiEasyTopLayout>());
+			root->GetLayouts().Add(marker);
+			if (scenario == 2) root->GetLayouts().Add(Ptr(new GuiEasySplitterLayout));
+			if (scenario == 3) marker->SetComposition(Payload());
+			if (scenario == 4) marker->GetLayouts().Add(Leaf<GuiEasyFillLayout>());
+			if (scenario == 5) marker->GetLayouts().Add(marker);
+			if (scenario >= 2) root->GetLayouts().Add(Leaf<GuiEasyTopLayout>());
+			if (scenario == 6) root->GetLayouts().Add(marker);
+			if (scenario == 7) root->GetLayouts().Add(Leaf<GuiEasyLeftLayout>());
+			TEST_ERROR(root->BuildLayout());
+			marker->GetLayouts().Clear();
+			SafeDeleteComposition(root);
+		}
+		for (vint transpose = 0; transpose < 2; transpose++)
+		for (vint scenario = 0; scenario < 4; scenario++)
+		{
+			auto root = new GuiEasyLayoutComposition;
+			auto outer = transpose ? Ptr<GuiEasyCellLayout>(new GuiEasyColumnLayout) : Ptr<GuiEasyCellLayout>(new GuiEasyRowLayout);
+			root->GetLayouts().Add(outer);
+			auto inner = transpose ? Ptr<GuiEasyCellLayout>(new GuiEasyRowLayout) : Ptr<GuiEasyCellLayout>(new GuiEasyColumnLayout);
+			if (scenario != 0) outer->GetLayouts().Add(inner);
+			outer->GetLayouts().Add(Ptr(new GuiEasySplitterLayout));
+			if (scenario == 2) outer->GetLayouts().Add(Ptr(new GuiEasySplitterLayout));
+			if (scenario == 3) inner->SetCellSpan(0);
+			TEST_ERROR(root->BuildLayout());
+			SafeDeleteComposition(root);
+		}
+	});
+
+	TEST_CASE(L"Invalid marker mutations retain the old tree and marker ownership is released on rebuild")
+	{
+		auto root = new GuiEasyLayoutComposition;
+		auto first = Leaf<GuiEasyFillLayout>();
+		auto marker = Ptr(new GuiEasySplitterLayout);
+		root->GetLayouts().Add(first);
+		root->GetLayouts().Add(marker);
+		root->GetLayouts().Add(Leaf<GuiEasyFillLayout>());
+		root->BuildLayout();
+		auto oldParent = first->GetComposition()->GetParent();
+		marker->GetLayouts().Add(Leaf<GuiEasyFillLayout>());
+		TEST_ERROR(root->BuildLayout());
+		TEST_ASSERT(first->GetComposition()->GetParent() == oldParent);
+		marker->GetLayouts().Clear();
+		auto other = new GuiEasyLayoutComposition;
+		other->GetLayouts().Add(Leaf<GuiEasyFillLayout>());
+		other->GetLayouts().Add(marker);
+		other->GetLayouts().Add(Leaf<GuiEasyFillLayout>());
+		TEST_ERROR(other->BuildLayout());
+		root->GetLayouts().RemoveAt(1);
+		root->BuildLayout();
+		other->BuildLayout();
+		SafeDeleteComposition(other);
+		SafeDeleteComposition(root);
+	});
+
 	TEST_CASE(L"Invalid sibling subsets reject every multiplicity and declaration order")
 	{
 		for (vint mask = 0; mask < 128; mask++)

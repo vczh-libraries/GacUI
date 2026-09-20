@@ -76843,6 +76843,7 @@ Descriptor properties
 	GuiEasyBottomLayout::GuiEasyBottomLayout() : GuiEasyLayout(Kind::Bottom) {}
 	GuiEasyLeftLayout::GuiEasyLeftLayout() : GuiEasyLayout(Kind::Left) {}
 	GuiEasyRightLayout::GuiEasyRightLayout() : GuiEasyLayout(Kind::Right) {}
+	GuiEasySplitterLayout::GuiEasySplitterLayout() : GuiEasyLayout(Kind::Splitter) {}
 	GuiEasyCellLayout::GuiEasyCellLayout(Kind _kind) : GuiEasyLayout(_kind) {}
 	GuiCellOption GuiEasyCellLayout::GetCellOption() { return cellOption; }
 	void GuiEasyCellLayout::SetCellOption(GuiCellOption value) { cellOption = value; }
@@ -76872,12 +76873,16 @@ GuiEasyLayoutBuilder
 			bool						stack = false;
 			bool						reversed = false;
 			bool						spacer = false;
+			bool						edgeAligned = false;
 			List<GuiCellOption>			tracks;
 			List<GuiCellOption>			crossTracks;
+			SortedList<vint>				splitters;
+			SortedList<vint>				crossSplitters;
 			List<Ptr<Plan>>				children;
 			List<Rect>					sites;
 			List<bool>					insets;
 			List<bool>					fullWidth;
+			List<bool>					alignTrailing;
 		};
 
 		GuiEasyLayoutComposition*		root;
@@ -76893,6 +76898,8 @@ GuiEasyLayoutBuilder
 			CHECK_ERROR(!descriptors.Contains(layout.Obj()), ERROR_MESSAGE_PREFIX L"Descriptor trees cannot be cyclic or shared.");
 			CHECK_ERROR(!layout->owner || layout->owner == root, ERROR_MESSAGE_PREFIX L"The descriptor belongs to another layout.");
 			descriptors.Add(layout);
+			CHECK_ERROR(layout->kind != Kind::Splitter || (layout->layouts.Count() == 0 && !layout->GetComposition()),
+				ERROR_MESSAGE_PREFIX L"Splitters cannot contain descriptors or a payload.");
 			if (layout->payload && layout->payload->composition)
 			{
 				CHECK_ERROR(layout->layouts.Count() == 0, ERROR_MESSAGE_PREFIX L"Cannot mix layouts and a payload.");
@@ -76983,9 +76990,20 @@ GuiEasyLayoutBuilder
 
 			bool vertical = false, horizontal = false, fills = false, cells = false;
 			Nullable<bool> explicitVertical;
+			SortedList<GuiEasyLayout*> marked;
+			GuiEasyLayout* previous = nullptr;
 			for (auto child : layout->layouts)
 			{
 				CHECK_ERROR(child, ERROR_MESSAGE_PREFIX L"A descriptor cannot be null.");
+				if (child->kind == Kind::Splitter)
+				{
+					Register(child);
+					CHECK_ERROR(previous && previous->kind != Kind::Splitter, ERROR_MESSAGE_PREFIX L"A splitter must immediately follow an ordinary descriptor.");
+					marked.Add(previous);
+					previous = child.Obj();
+					continue;
+				}
+				previous = child.Obj();
 				switch (child->kind)
 				{
 				case Kind::Top: case Kind::Bottom: vertical = true; break;
@@ -77025,15 +77043,19 @@ GuiEasyLayoutBuilder
 			vint leadingCount = ordered.Count();
 			for (auto child : layout->layouts) if (child->kind == Kind::Fill || child->kind == outer) ordered.Add(child);
 			for (auto child : layout->layouts) if (child->kind == trailing) ordered.Add(child);
-			plan->stack = !fills && !cells && (leadingCount == 0 || leadingCount == ordered.Count());
-			plan->reversed = plan->stack && leadingCount == 0;
-			plan->spacer = !fills && !cells && !plan->stack;
+			bool oneSided = !fills && !cells && (leadingCount == 0 || leadingCount == ordered.Count());
+			bool mixedDocking = !fills && !cells && !oneSided;
+			plan->stack = oneSided && marked.Count() == 0;
+			plan->edgeAligned = oneSided && marked.Count() > 0;
+			plan->reversed = oneSided && leadingCount == 0;
+			plan->spacer = mixedDocking && marked.Count() == 0;
 
 			Dictionary<vint, GuiCellOption> crossOptions;
 			vint width = 0;
 			for (auto [child, index] : indexed(ordered))
 			{
 				vint track = index + (plan->spacer && index >= leadingCount ? 1 : 0);
+				if (marked.Contains(child.Obj())) plan->splitters.Add(track + 1);
 				if (plan->spacer && index == leadingCount) plan->tracks.Add(GuiCellOption::PercentageOption(1));
 				if (child->kind == outer)
 				{
@@ -77042,9 +77064,19 @@ GuiEasyLayoutBuilder
 					auto outerCell = static_cast<GuiEasyCellLayout*>(child.Obj());
 					plan->tracks.Add(outerCell->GetCellOption());
 					vint column = 0;
+					GuiEasyLayout* previousInner = nullptr;
 					for (auto nested : child->layouts)
 					{
+						if (nested && nested->kind == Kind::Splitter)
+						{
+							Register(nested);
+							CHECK_ERROR(previousInner && previousInner->kind != Kind::Splitter, ERROR_MESSAGE_PREFIX L"A splitter must immediately follow an ordinary descriptor.");
+							if (!plan->crossSplitters.Contains(column)) plan->crossSplitters.Add(column);
+							previousInner = nested.Obj();
+							continue;
+						}
 						CHECK_ERROR(nested && nested->kind == inner, ERROR_MESSAGE_PREFIX L"Outer rows/columns only accept opposite-axis tracks.");
+						previousInner = nested.Obj();
 						auto innerCell = static_cast<GuiEasyCellLayout*>(nested.Obj());
 						vint span = innerCell->GetCellSpan();
 						if (span == 1 && column >= 0)
@@ -77058,6 +77090,7 @@ GuiEasyLayoutBuilder
 						plan->sites.Add(Rect(column, track, column + span, track + outerCell->GetCellSpan()));
 						plan->insets.Add(false);
 						plan->fullWidth.Add(false);
+						plan->alignTrailing.Add(false);
 						column += span;
 						if (width < column) width = column;
 					}
@@ -77067,11 +77100,14 @@ GuiEasyLayoutBuilder
 					auto option = child->kind == Kind::Fill
 						? GuiCellOption::PercentageOption(static_cast<GuiEasyFillLayout*>(child.Obj())->GetPercentage())
 						: GuiCellOption::MinSizeOption();
+					bool alignTrailing = mixedDocking && marked.Count() > 0 && index == leadingCount;
+					if (alignTrailing) option = GuiCellOption::PercentageOption(1);
 					plan->tracks.Add(option);
 					plan->children.Add(Prepare(child, plan->vertical));
 					plan->sites.Add(Rect(0, track, -1, track + 1));
 					plan->insets.Add(plan->spacer && index > 0);
 					plan->fullWidth.Add(true);
+					plan->alignTrailing.Add(alignTrailing);
 				}
 			}
 			if (cells && width > 0)
@@ -77089,6 +77125,14 @@ GuiEasyLayoutBuilder
 			}
 			Normalize(plan->tracks);
 			Normalize(plan->crossTracks);
+			for (auto boundary : plan->splitters)
+			{
+				CHECK_ERROR(0 < boundary && boundary < plan->tracks.Count(), ERROR_MESSAGE_PREFIX L"A splitter boundary must be inside its table.");
+			}
+			for (auto boundary : plan->crossSplitters)
+			{
+				CHECK_ERROR(0 < boundary && boundary < plan->crossTracks.Count(), ERROR_MESSAGE_PREFIX L"A shared splitter boundary must be inside its table.");
+			}
 			return plan;
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -77132,6 +77176,12 @@ GuiEasyLayoutBuilder
 				auto table = new GuiTableComposition;
 				table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				table->SetAlignmentToParent({ 0,0,0,0 });
+				if (plan->edgeAligned)
+				{
+					table->SetAlignmentToParent(plan->vertical
+						? (plan->reversed ? Margin(0, -1, 0, 0) : Margin(0, 0, 0, -1))
+						: (plan->reversed ? Margin(-1, 0, 0, 0) : Margin(0, 0, -1, 0)));
+				}
 				table->SetBorderVisible(false);
 				table->SetCellPadding(plan->spacer ? 0 : root->padding);
 				table->SetRowsAndColumns(plan->vertical ? plan->tracks.Count() : plan->crossTracks.Count(), plan->vertical ? plan->crossTracks.Count() : plan->tracks.Count());
@@ -77157,8 +77207,25 @@ GuiEasyLayoutBuilder
 					bounds->SetAlignmentToParent(plan->insets[index]
 						? (plan->vertical ? Margin(0, root->padding, 0, 0) : Margin(root->padding, 0, 0, 0))
 						: Margin(0, 0, 0, 0));
+					if (plan->alignTrailing[index]) bounds->SetAlignmentToParent(plan->vertical ? Margin(0, -1, 0, 0) : Margin(-1, 0, 0, 0));
 					cell->AddChild(bounds);
 					Build(child, bounds);
+				}
+				for (vint axis = 0; axis < 2; axis++)
+				for (auto boundary : (axis == 0 ? plan->splitters : plan->crossSplitters))
+				{
+					if (plan->vertical == (axis == 0))
+					{
+						auto splitter = new GuiRowSplitterComposition;
+						table->AddChild(splitter);
+						splitter->SetRowsToTheTop(boundary);
+					}
+					else
+					{
+						auto splitter = new GuiColumnSplitterComposition;
+						table->AddChild(splitter);
+						splitter->SetColumnsToTheLeft(boundary);
+					}
 				}
 			}
 		}

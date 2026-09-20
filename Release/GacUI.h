@@ -26237,7 +26237,7 @@ namespace vl::presentation::compositions::eazy_layout
 		friend class GuiEasyLayoutComposition;
 		friend class GuiEasyLayoutBuilder;
 	protected:
-		enum class Kind { Root, Top, Bottom, Left, Right, Row, Column, Fill };
+		enum class Kind { Root, Top, Bottom, Left, Right, Row, Column, Fill, Splitter };
 
 		Kind										kind;
 		collections::List<Ptr<GuiEasyLayout>>			layouts;
@@ -26276,6 +26276,12 @@ namespace vl::presentation::compositions::eazy_layout
 	{
 	public:
 		GuiEasyRightLayout();
+	};
+
+	class GuiEasySplitterLayout : public GuiEasyLayout, public Description<GuiEasySplitterLayout>
+	{
+	public:
+		GuiEasySplitterLayout();
 	};
 
 	class GuiEasyCellLayout : public GuiEasyLayout, public Description<GuiEasyCellLayout>

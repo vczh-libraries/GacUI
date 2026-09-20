@@ -11,6 +11,9 @@ namespace easy_test
         var self : ::easy_test::MainWindow* = null of (::easy_test::MainWindow*);
 
         @cpp:Protected
+        var vertical : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
@@ -38,7 +41,13 @@ namespace easy_test
         var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var vertical : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+        var <precompile>9 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+
+        @cpp:Protected
+        var <precompile>10 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+
+        @cpp:Protected
+        var <precompile>11 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
 
         @cpp:Protected
         var bottom : ::presentation::compositions::eazy_layout::GuiEasyBottomLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^);
@@ -60,6 +69,9 @@ namespace easy_test
 
         @cpp:Protected
         var column : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
+
+        @cpp:Protected
+        var splitter : ::presentation::compositions::eazy_layout::GuiEasySplitterLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasySplitterLayout^);
 
         @cpp:Protected
         func <easy_test-MainWindow>Initialize(<this> : ::easy_test::MainWindow*) : (::system::Void)
@@ -170,11 +182,35 @@ namespace easy_test
             {
                 self.ContainerComposition.AddChild(<precompile>5);
             }
+            (<precompile>9 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            {
+                (<precompile>9.Padding = 0 of (::system::Int64));
+            }
+            (<precompile>10 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            {
+                var <collection> = <precompile>9.Layouts;
+                <collection>.Add(<precompile>10);
+            }
+            (splitter = new (::presentation::compositions::eazy_layout::GuiEasySplitterLayout^)());
+            <this>.SetNamedObject("splitter", splitter);
+            {
+                var <collection> = <precompile>9.Layouts;
+                <collection>.Add(splitter);
+            }
+            (<precompile>11 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            {
+                var <collection> = <precompile>9.Layouts;
+                <collection>.Add(<precompile>11);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>9);
+            }
             vertical.BuildLayout();
             <precompile>0.BuildLayout();
             <precompile>1.BuildLayout();
             <precompile>3.BuildLayout();
             <precompile>5.BuildLayout();
+            <precompile>9.BuildLayout();
         }
 
         new ()
