@@ -3,7 +3,6 @@
 Unplanned features with detailed are stored in the same folder, here lists all ideas that cannot be categorized.
 - [Control Features](./ControlFeatures.md)
 - [Drag and Drop](./DragAndDrop.md)
-- [Eazy Layout](./EazyLayout.md)
 - [Eazy Resource and XML Upgrades](./EazyResource.md)
 - [GacUI Shared Libs](./GacUISharedLibs.md)
 - [Graphics](./Graphics.md)
