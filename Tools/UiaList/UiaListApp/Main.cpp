@@ -1,4 +1,5 @@
 #include "GacUI.Windows.h"
+#undef GetRoleText
 #include "DarkSkin.h"
 #include "../UiaList/Source/UiaList.h"
 #include "../UiaList/ViewModel/UiaListViewModel.h"
