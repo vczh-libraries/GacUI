@@ -28,18 +28,6 @@ namespace easy_test
         var self : ::easy_test::MainWindow* = null of (::easy_test::MainWindow*);
 
         @cpp:Protected
-        var layout : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
-
-        @cpp:Protected
-        var button : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var horizontal : ::presentation::compositions::eazy_layout::GuiEasySplitterLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasySplitterLayout^);
-
-        @cpp:Protected
-        var vertical : ::presentation::compositions::eazy_layout::GuiEasySplitterLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasySplitterLayout^);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyColumnLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^);
 
         @cpp:Protected
@@ -83,6 +71,18 @@ namespace easy_test
 
         @cpp:Protected
         var <precompile>14 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var button : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var layout : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+
+        @cpp:Protected
+        var horizontal : ::presentation::compositions::eazy_layout::GuiEasySplitterLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasySplitterLayout^);
+
+        @cpp:Protected
+        var vertical : ::presentation::compositions::eazy_layout::GuiEasySplitterLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasySplitterLayout^);
 
         @cpp:Protected
         func <easy_test-MainWindow>Initialize(<this> : ::easy_test::MainWindow*) : (::system::Void)

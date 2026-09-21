@@ -83,6 +83,9 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("group1", group1);
             }
             {
+                (group1.Expandable = true);
+            }
+            {
                 (label1 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
                 <this>.SetNamedObject("label1", label1);
             }
@@ -92,9 +95,6 @@ namespace gacuisrc_unittest
             {
                 var <collection> = group1.Items;
                 <collection>.Add(label1);
-            }
-            {
-                (group1.Expandable = true);
             }
             {
                 (group1.Text = "1st");

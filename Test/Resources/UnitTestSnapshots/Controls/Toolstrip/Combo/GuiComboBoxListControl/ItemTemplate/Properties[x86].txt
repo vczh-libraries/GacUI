@@ -31,10 +31,10 @@ namespace gacuisrc_unittest
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
+        var combo : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
 
         @cpp:Protected
-        var combo : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
+        var list : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)

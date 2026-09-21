@@ -259,6 +259,12 @@ namespace gacuisrc_unittest
                 (listFiles = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("listFiles", listFiles);
             }
+            {
+                (listFiles.VerticalAlwaysVisible = false);
+            }
+            {
+                (listFiles.HorizontalAlwaysVisible = false);
+            }
             (<precompile>10 = new (::presentation::controls::list::TextItem^)());
             {
                 (<precompile>10.Text = "First");
@@ -306,12 +312,6 @@ namespace gacuisrc_unittest
             {
                 var <collection> = listFiles.Items;
                 <collection>.Add(<precompile>15);
-            }
-            {
-                (listFiles.VerticalAlwaysVisible = false);
-            }
-            {
-                (listFiles.HorizontalAlwaysVisible = false);
             }
             (<precompile>9 = listFiles.BoundsComposition);
             {

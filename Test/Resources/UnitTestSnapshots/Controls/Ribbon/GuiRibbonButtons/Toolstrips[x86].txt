@@ -183,6 +183,9 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("group1", group1);
             }
             {
+                (group1.Expandable = true);
+            }
+            {
                 (<precompile>2 = new (::presentation::controls::GuiRibbonToolstrips*)(::presentation::theme::ThemeName::RibbonToolstrips));
             }
             {
@@ -315,9 +318,6 @@ namespace gacuisrc_unittest
                 <collection>.Add(<precompile>2);
             }
             {
-                (group1.Expandable = true);
-            }
-            {
                 (group1.Text = "Buttons");
             }
             {
@@ -373,9 +373,6 @@ namespace gacuisrc_unittest
                 (commandLight.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Light", true)));
             }
             {
-                (group1.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
-            }
-            {
                 (<precompile>4.Command = self.commandCert);
             }
             {
@@ -419,6 +416,9 @@ namespace gacuisrc_unittest
             }
             {
                 (<precompile>22.Command = self.commandLight);
+            }
+            {
+                (group1.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
             }
         }
 
