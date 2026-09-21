@@ -1,6 +1,7 @@
 <Folder>
   <Script name="Palette">
-    <Workflow><![CDATA[
+    <Workflow>
+        <![CDATA[
     module TuiPalette;
     using presentation::*;
     namespace tuiskin
@@ -42,6 +43,9 @@
         tuiColors = colors;
       }
 
+      /*
+      * Calling GuiApplication::GetApplication().RefreshThemes will reload the new baseline document.
+      */
       func CreateBaselineDocument() : DocumentModel^
       {
         var document = new DocumentModel^();

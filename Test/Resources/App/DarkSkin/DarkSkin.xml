@@ -120,6 +120,9 @@
         darkColors = colors;
       }
 
+      /*
+      * Calling GuiApplication::GetApplication().RefreshThemes will reload the new baseline document.
+      */
       func CreateBaselineDocument() : DocumentModel^
       {
         var document = new DocumentModel^();
