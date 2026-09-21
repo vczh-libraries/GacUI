@@ -239,6 +239,8 @@ The server maps the token to its logical connection, queues server messages when
 
 ### Windows HTTP Callback Responses
 
+`windows_http::HttpServerApi::Stop`, defined in `Source/InterProcess/Windows/HttpServerApi.Windows.cpp`, drains registered wait callbacks and explicitly cancels and waits for its outstanding receive before closing the request queue. Closing the queue alone can leave the kernel writing cancellation results into an already freed `OVERLAPPED`. A never-started server has no initialized receive to drain; repeated Stop remains supported. The idle-listener lifecycle test in `Test/Source/TestInterProcess.cpp` covers these boundaries without sleeps.
+
 The Windows `windows_http::HttpServerConnection` in `Source/InterProcess/Windows/HttpServer.Windows.cpp` can return the first message generated during an inbound `/Response` callback in that HTTP response. Extra messages are queued for `/Request` delivery. When `SubmitResponse` finishes, it must also send the queue head through any poll already waiting; otherwise the client can wait on an open poll while the server waits for a reply to its unsent message. The normal poll-delivery error and acknowledgement handling applies to this send.
 
 ## Starting on Windows, Linux and macOS

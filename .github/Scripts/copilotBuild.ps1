@@ -21,6 +21,14 @@ Remove-Item -Path $logFile, $logFileUnfinished -Force -ErrorAction SilentlyConti
 $solutionFolder = GetSolutionDir
 $solutionFile = "$solutionFolder\$((Get-ChildItem -Path $solutionFolder -Filter "*.sln" -ErrorAction SilentlyContinue)[0].Name)"
 
+# Some tool solutions name the 32-bit solution platform x86 while projects use Win32.
+$solutionContent = Get-Content -LiteralPath $solutionFile -Raw
+$requestedPlatform = "(?m)^\s*" + [regex]::Escape("$Configuration|$Platform") + "\s*="
+$x86Platform = "(?m)^\s*" + [regex]::Escape("$Configuration|x86") + "\s*="
+if ($Platform -eq "Win32" -and $solutionContent -notmatch $requestedPlatform -and $solutionContent -match $x86Platform) {
+    $Platform = "x86"
+}
+
 $vsdevcmd = $env:VLPP_VSDEVCMD_PATH
 if ($vsdevcmd -eq $null) {
     $MESSAGE_1 = "You have to add an environment variable named VLPP_VSDEVCMD_PATH and set its value to the path of VsDevCmd.bat, e.g.:"
