@@ -6,6 +6,8 @@
 - `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` have details of verification.
 - `CppTest_Tui` uses [DebugTuiControlTestSop.md](DebugTuiControlTestSop.md) for its separate Windows Terminal page/function coverage and verification record. It starts no automation endpoint and has no transport or renderer replacement matrix.
 - You must fix any issue you see during verification.
+  - DO NOT preventively fix any issue, a fixing must be applied only when an issue is observed during verification.
+  - For unstable issues, try to run that specific verification item up to 5 times, it counts an issue when you see more than one failures.
 
 ## Maintain a Test Matrix Card
 
@@ -36,6 +38,14 @@ If an issue is not tight to a specific platform, put the experience in the `## S
 Try to limit changes in `GacUI` only, unless there are fundemental issues to fix in upstream repos.
 Follow `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` to make sure all test apps are behaving expectedly.
 Without explicitly instructed, the complete matrix of all combinations of test apps, test UI loaded with remote protocol, and available network protocol choices, should be verified.
+
+Local test apps (aka remote protocol not involved) should also be verified, including:
+- `CppTest` (normal mode) and `CppTest_Metaonly` (hosted mode):
+  - `DebugRemoteProtocolSop.md` already covers `FullControlTest` verifications, follow the instructions there.
+- `CppTest_Tui`
+  - Follow `DebugTuiControlTestSop.md`.
+UI Automation related tests are not needed here.
+Succeeded local test apps verification could be considered as a baseline, when issues are seen in remote protocol tests, you are much easier to trace their root cause.
 
 ## Finishing
 

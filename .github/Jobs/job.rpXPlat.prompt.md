@@ -17,6 +17,12 @@
   - `DebugRemoteProtocolWithGacJS.md`
   - `DebugTuiControlTestSop.md`
 - You must fix any issue you see during verification.
+  - DO NOT preventively fix any issue, a fixing must be applied only when an issue is observed during verification.
+  - For unstable issues, try to run that specific verification item up to 5 times, it counts an issue when you see more than one failures.
+  - `import.sh` and `build.sh` must succeed.
+  - If `build.sh` hits dependency issues:
+    - In `wGac` repo `build-prerequisites-ubuntu.sh` should be fixed.
+    - In `iGac` repo cmake configurations should be fixed.
 
 ## Maintain a Test Matrix Card
 
@@ -126,6 +132,13 @@ Try to limit changes in `GacUI` to only include making release or fixing cross-p
 
 Follow `DebugRemoteProtocolWithNativeRenderer.md`, `DebugRemoteProtocolWithGacJS.md`, and `DebugTuiControlTestSop.md` to make sure all test apps are behaving expectedly. TUI is an independent terminal matrix; it does not multiply the remote application/transport matrix.
 Without explicitly instructed, the complete matrix of all combinations of test apps, test UI loaded with remote protocol, and available network protocol choices, should be verified.
+
+Local test apps (aka remote protocol not involved) should also be verified, including:
+- `test.sh --app:fct` with or without `--hosted`:
+  - `DebugRemoteProtocolSop.md` already covers `FullControlTest` verifications, follow the instructions there.
+- `test.sh --app:tui`
+  - Follow `DebugTuiControlTestSop.md`.
+Succeeded local test apps verification could be considered as a baseline, when issues are seen in remote protocol tests, you are much easier to trace their root cause.
 
 ## Finishing
 
