@@ -2,6 +2,18 @@
 
 ## Shared
 
+- Audit shortcut checks separately before and after renderer replacement. A repeated mouse payload or retained editor marker does not prove that replacement-window shortcut activation was repeated; require fresh canonical labels and the exact Ctrl+Q dialog on the replacement renderer.
+
+- A hosted dialog can expose its exact text before its button bounds settle. Compare the target button bounds across consecutive fresh reads before clicking. In five native RPT Document repetitions, the initial OK rectangle moved upward by 14 pixels; one click at the stable rectangle dismissed every dialog. A stale first rectangle caused the earlier apparent missed clicks.
+
+- In FullControlTest, clearing TextList items does not reset the Add counter. Run the required initial 0–9 sequence once in a fresh app; exploratory Add/Clear operations advance later sequences.
+
+- The ribbon document showcase binds Ctrl+A directly to `document.SelectAll()`, including when its Search box has focus. To replace Search text, use Home followed by Shift+End; retain exact text assertions in both Controls and the active renderer DOM.
+
+- Renderer IO returning `Queued` does not mean the input has crossed the remote channel. For blocked-RPC checks, a Core Controls read can overtake that input and finish normally. Retry those completed reads within a short bound until one stays pending; only then terminate the suspended host and measure the fatal outcome.
+
+- After a browser renderer takeover, activate a harmless visible Core control before checking window shortcuts. Focusing `#gacui-screen` alone does not establish hosted-window activation: a recorded Ctrl/Q sequence produced no dialog until a mouse click reactivated the RPT surface. Inspect the current window or popup state and repeat from that active surface before diagnosing a shortcut regression.
+
 - After refreshing TUI palettes, drag an existing column resize handle again. The retained splitter is a bounds-composition overlay; template replacement must preserve child stacking order or the new template covers its hit target. The native GUI layout keeps splitters inside retained containers, so its ordinary resize check does not expose this TUI regression.
 
 - Locate input targets again from the current rendered tree after text or tab changes. An idle notification from an earlier mouse move can precede the button result; wait for the exact expected visible text before judging the next transition.
@@ -13,6 +25,13 @@
 - Audit generated snapshot differences before preserving baselines: resolve element references and compare rendered content, distinguish regenerated identities from layout changes, and inspect current-day date-picker highlights. Keep real changes and new regression snapshots. GacJS snapshot imports normalize CRLF to LF to preserve its established checkout format; a second codegen run must remain clean.
 
 ## Windows
+
+- Do not start or time out Controls/Dom reads while a native modal dialog blocks the UI. Inspect and dismiss the dialog from a separate Win32 client first. A queued read whose HTTP client has already disconnected can later hit the existing SendResponseUtf8 fail-fast check when the modal closes; that abort is a test-sequencing failure, not evidence that the original dialog remained open.
+
+- A queued automation KeyPress can remain inside a nested modal until the dialog closes. Inspect the complete hosted Controls tree, locate the active localized confirmation button, and dismiss it before issuing another key command. Repeating Ctrl+Q while the first dialog is open correctly trips the already-pressed-key invariant; Queued does not mean the first KeyPress has finished.
+
+- A cold Workflow Debug x64 build can exceed the GacJS RPC integration test’s ten-minute child-process limit. Inspect the owned build processes before retrying; let the build finish, then rerun the integration suite. A clean incremental retry distinguishes build latency from RPC conformance failures.
+- If a PowerShell/.NET HTTP reader rejects the automation response’s `charset=utf8`, decode the response bytes explicitly as UTF-8 or use Node `fetch`. A client-side charset exception is not an application-state failure; retain the required POST content type `application/json; charset=utf8`.
 
 - The standalone RVM application's custom caption close button uses native hit testing. Clicking its composition through local automation does not exercise that caption path; exact `!Exit` on the standalone application's native automation endpoint performs its normal application shutdown.
 - Retain an operating-system process handle until termination when recording an exit code. Looking up a PID after it disappears loses the original exit status.
