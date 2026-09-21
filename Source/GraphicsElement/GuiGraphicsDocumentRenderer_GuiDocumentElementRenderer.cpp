@@ -364,7 +364,8 @@ GuiDocumentElementRenderer
 				vint count = end.row - begin.row + 1;
 				NotifyParagraphUpdateLastTotalWidth(begin.row, count);
 				lastTotalHeightWithoutParagraphDistance += pgCache.ResetStyleCache(begin, end);
-				FixMinSize();
+				// Keep the measured extent until rendering measures the new styles.
+				// A transient empty extent would clamp a scrolled document to zero.
 
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -379,7 +380,7 @@ GuiDocumentElementRenderer
 				CHECK_ERROR(0 <= index && index + count <= newParagraphCount, ERROR_MESSAGE_PREFIX L"index + count is out of range.");
 				NotifyParagraphUpdateLastTotalWidth(index, count);
 				lastTotalHeightWithoutParagraphDistance += pgCache.ResetStyleCache(index, count);
-				FixMinSize();
+				// Rendering replaces the previous minimum with the updated metrics.
 #undef ERROR_MESSAGE_PREFIX
 			}
 

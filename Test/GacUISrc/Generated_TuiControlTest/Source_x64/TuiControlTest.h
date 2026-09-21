@@ -627,8 +627,6 @@ namespace tuidemo
 	class TuiGenderItemTemplate;
 	class TuiGenderVisualizerConstructor;
 	class TuiGenderVisualizer;
-	class TuiGridTextBoxTemplateConstructor;
-	class TuiGridTextBoxTemplate;
 	class TuiHyperlinkWindowConstructor;
 	class TuiHyperlinkWindow;
 	class TuiListViewTabPageConstructor;
@@ -2049,30 +2047,6 @@ namespace tuidemo
 	public:
 		TuiGenderVisualizer();
 		~TuiGenderVisualizer();
-	};
-
-	class TuiGridTextBoxTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<TuiGridTextBoxTemplateConstructor>
-	{
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiGridTextBoxTemplateConstructor>;
-#endif
-	protected:
-		::tuidemo::TuiGridTextBoxTemplate* self;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		void __vwsn_tuidemo_TuiGridTextBoxTemplate_Initialize(::tuidemo::TuiGridTextBoxTemplate* __vwsn_this_);
-	public:
-		TuiGridTextBoxTemplateConstructor();
-	};
-
-	class TuiGridTextBoxTemplate : public ::vl::presentation::templates::GuiDocumentLabelTemplate, public ::tuidemo::TuiGridTextBoxTemplateConstructor, public ::vl::reflection::Description<TuiGridTextBoxTemplate>
-	{
-		friend class ::tuidemo::TuiGridTextBoxTemplateConstructor;
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiGridTextBoxTemplate>;
-#endif
-	public:
-		TuiGridTextBoxTemplate();
-		~TuiGridTextBoxTemplate();
 	};
 
 	class TuiHyperlinkWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<TuiHyperlinkWindowConstructor>

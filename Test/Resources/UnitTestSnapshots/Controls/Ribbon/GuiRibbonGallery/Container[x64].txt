@@ -77,6 +77,9 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("group1", group1);
             }
             {
+                (group1.Expandable = true);
+            }
+            {
                 (gallery = new (::presentation::controls::GuiRibbonGallery*)(::presentation::theme::ThemeName::RibbonGallery));
                 <this>.SetNamedObject("gallery", gallery);
             }
@@ -101,9 +104,6 @@ namespace gacuisrc_unittest
             {
                 var <collection> = group1.Items;
                 <collection>.Add(gallery);
-            }
-            {
-                (group1.Expandable = true);
             }
             {
                 (group1.Text = "Gallery");
@@ -131,14 +131,14 @@ namespace gacuisrc_unittest
                 self.AddChild(tab);
             }
             {
-                (group1.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
-            }
-            {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     (self.Text = "Clicked!");
                 };
                 attach(button.Clicked, <event-handler>);
+            }
+            {
+                (group1.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
             }
         }
 

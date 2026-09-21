@@ -36,12 +36,17 @@ namespace tuiskin
         ButtonTextPressed : Color;
     }
 
-    var tuiColors : ColorPackage = {};
-
-    func InstallColorPackage(colors : ColorPackage) : (void)
+    func CreateColorPackageInternal(accent : Color, highlight : Color) : (ColorPackage)
     {
-        (tuiColors = colors);
+        return {ControlBackground : (cast (Color) "#000000"); ControlText : (cast (Color) "#FFFFFF"); ControlBorder : (cast (Color) "#808080"); ControlBorderDisabled : (cast (Color) "#404040"); ControlBorderFocused : accent; LabelText : (cast (Color) "#808080"); ShortcutKeyBackground : (cast (Color) "#FFFFFF"); ShortcutKeyText : (cast (Color) "#000000"); MenuBackground : (cast (Color) "#404040"); MenuText : (cast (Color) "#FFFFFF"); MenuTextDisabled : (cast (Color) "#808080"); MenuBackgroundHighlighted : highlight; MenuTextHighlighted : (cast (Color) "#FFFFFF"); ItemBackground : (cast (Color) "#000000"); ItemText : (cast (Color) "#FFFFFF"); ItemTextDisabled : (cast (Color) "#808080"); ItemBackgroundHighlighted : highlight; ItemTextHighlighted : (cast (Color) "#FFFFFF"); ItemBackgroundSelected : accent; ItemTextSelected : (cast (Color) "#404040"); ButtonBackground : (cast (Color) "#404040"); ButtonText : (cast (Color) "#FFFFFF"); ButtonIcon : (cast (Color) "#808080"); ButtonTextDisabled : (cast (Color) "#808080"); ButtonBackgroundHighlighted : accent; ButtonTextHighlighted : (cast (Color) "#404040"); ButtonBackgroundPressed : (cast (Color) "#C0C0C0"); ButtonTextPressed : (cast (Color) "#FFFFFF");};
     }
+
+    func CreateDefaultColorPackage() : (ColorPackage)
+    {
+        return CreateColorPackageInternal((cast (Color) "#87CEFA"), (cast (Color) "#000080"));
+    }
+
+    var tuiColors : ColorPackage = CreateDefaultColorPackage();
 
     func CreateBaselineDocument() : (DocumentModel^)
     {

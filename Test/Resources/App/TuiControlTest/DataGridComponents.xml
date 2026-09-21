@@ -1,11 +1,4 @@
 <Folder>
-  <Instance name="GridTextBoxTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiGridTextBoxTemplate">
-      <DocumentLabelTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" CaretColor-eval="tuiskin::TuiTheme::GetColorPackage().ControlText" BaselineDocument-eval="tuiskin::TuiTheme::CreateBaselineDocument()">
-        <SolidBackground Color-eval="tuiskin::TuiTheme::GetColorPackage().ControlBackground" />
-      </DocumentLabelTemplate>
-    </Instance>
-  </Instance>
   <Folder name="GenderComponents">
     <Instance name="GenderDisplayerResource">
       <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiGenderDisplayer">
@@ -134,7 +127,7 @@
   <Instance name="TextEditorResource">
     <Instance ref.CodeBehind="false" ref.Class="tuidemo::TuiTextEditor">
       <GridEditorTemplate ref.Name="self" CellValue-bind="textBox.Text" FocusControl-ref="textBox">
-        <SinglelineTextBox ControlTemplate="tuidemo::TuiGridTextBoxTemplate" ref.Name="textBox" Text-bind="(cast string self.CellValue) ?? ''">
+        <SinglelineTextBox ControlTemplate="tuiskin::TuiDocumentLabelTemplate" ref.Name="textBox" Text-bind="(cast string self.CellValue) ?? ''">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" />
         </SinglelineTextBox>
       </GridEditorTemplate>

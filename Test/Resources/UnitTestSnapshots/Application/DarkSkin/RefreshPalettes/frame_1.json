@@ -506,7 +506,7 @@
             "id": 75,
             "text": "Edited Retained document",
             "wrapLine": false,
-            "maxWidth": 1,
+            "maxWidth": 172,
             "alignment": "Left",
             "runsDiff": [
               {

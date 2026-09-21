@@ -11233,6 +11233,20 @@ GuiVirtualDataGrid (Editor)
 				return GuiVirtualListView::GetActivatingAltHost();
 			}
 
+			void GuiVirtualDataGrid::ReloadVisibleStyles()
+			{
+				if (currentEditor)
+				{
+					NotifyCloseEditor();
+					auto editorTemplate = currentEditor->GetTemplate();
+					// Keep the editor in the control tree so theme refresh reaches its controls.
+					// The replacement row will show and reparent it after layout.
+					editorTemplate->SetVisible(false);
+					if (!editorTemplate->GetParent()) GetContainerComposition()->AddChild(editorTemplate);
+				}
+				GuiVirtualListView::ReloadVisibleStyles();
+			}
+
 			void GuiVirtualDataGrid::NotifySelectionChanged(bool triggeredByItemContentModified)
 			{
 				GuiVirtualListView::NotifySelectionChanged(triggeredByItemContentModified);
@@ -11279,6 +11293,31 @@ GuiVirtualDataGrid (Editor)
 					if (selectedCell.row == index && selectedCell.column != -1)
 					{
 						itemStyle->NotifySelectCell(selectedCell.column);
+					}
+					if (!refreshPropertiesOnly && currentEditor && currentEditorPos.row == index)
+					{
+						auto editorTemplate = currentEditor->GetTemplate();
+						auto controlTemplate = GetListViewControlTemplate();
+						editorTemplate->SetPrimaryTextColor(controlTemplate->GetPrimaryTextColor());
+						editorTemplate->SetSecondaryTextColor(controlTemplate->GetSecondaryTextColor());
+						editorTemplate->SetItemSeparatorColor(controlTemplate->GetItemSeparatorColor());
+						editorTemplate->SetVisible(true);
+						itemStyle->NotifyOpenEditor(currentEditorPos.column, currentEditor.Obj());
+						if (auto host = GetBoundsComposition()->GetRelatedGraphicsHost())
+						{
+							auto flag = GetDisposedFlag();
+							auto editor = currentEditor;
+							host->InvokeAfterRendering([=, this]()
+							{
+								if (!flag->IsDisposed() && currentEditor == editor && !host->GetFocusedComposition())
+								{
+									if (auto focusControl = editor->GetTemplate()->GetFocusControl())
+									{
+										if (focusControl->GetFocused()) focusControl->SetFocused();
+									}
+								}
+							}, { this,1 });
+						}
 					}
 				}
 			}
@@ -12555,10 +12594,15 @@ GuiListControl
 				if (itemArranger)
 				{
 					auto viewPosition = GetViewPosition();
-					itemArranger->ReloadVisibleStyles();
+					ReloadVisibleStyles();
 					SetViewPosition(viewPosition);
 					CalculateView();
 				}
+			}
+
+			void GuiListControl::ReloadVisibleStyles()
+			{
+				itemArranger->ReloadVisibleStyles();
 			}
 
 			void GuiListControl::OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
@@ -12608,7 +12652,7 @@ GuiListControl
 				if (itemArranger && renderTarget)
 				{
 					auto viewPosition = GetViewPosition();
-					itemArranger->ReloadVisibleStyles();
+					ReloadVisibleStyles();
 					SetViewPosition(viewPosition);
 					CalculateView();
 				}
@@ -30490,7 +30534,8 @@ GuiDocumentElementRenderer
 				vint count = end.row - begin.row + 1;
 				NotifyParagraphUpdateLastTotalWidth(begin.row, count);
 				lastTotalHeightWithoutParagraphDistance += pgCache.ResetStyleCache(begin, end);
-				FixMinSize();
+				// Keep the measured extent until rendering measures the new styles.
+				// A transient empty extent would clamp a scrolled document to zero.
 
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -30505,7 +30550,7 @@ GuiDocumentElementRenderer
 				CHECK_ERROR(0 <= index && index + count <= newParagraphCount, ERROR_MESSAGE_PREFIX L"index + count is out of range.");
 				NotifyParagraphUpdateLastTotalWidth(index, count);
 				lastTotalHeightWithoutParagraphDistance += pgCache.ResetStyleCache(index, count);
-				FixMinSize();
+				// Rendering replaces the previous minimum with the updated metrics.
 #undef ERROR_MESSAGE_PREFIX
 			}
 

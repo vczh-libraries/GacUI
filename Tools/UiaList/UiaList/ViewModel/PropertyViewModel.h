@@ -29,7 +29,8 @@ namespace uialist
 		native::PropertyData data;
 		PropertyDialogViewModel* owner = nullptr;
 		vl::collections::ObservableList<vl::WString> choices;
-		vl::WString display, details, draft, validation;
+		vl::collections::List<vl::WString> choiceValues;
+		vl::WString key, display, details, draft, validation;
 		bool selected = false, editing = false;
 		vl::WString GetKey() override;
 		vl::WString GetLabel() override;

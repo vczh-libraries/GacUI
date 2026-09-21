@@ -159,6 +159,22 @@ TEST_FILE
 					TEST_ASSERT(textBox->GetText() == L"Cx+");
 					protocol->KeyPress(VKEY::KEY_RETURN);
 					TEST_ASSERT(grid->GetOpenedEditor() && textBox->GetText() == L"Cx+");
+					textBox->SetCaret(TextPos(0, 1), TextPos(0, 2));
+					auto openedEditor = grid->GetOpenedEditor();
+					auto document = textBox->GetDocument();
+					GetApplication()->RefreshThemes();
+					TEST_ASSERT(grid->GetOpenedEditor() == openedEditor);
+					TEST_ASSERT(textBox->GetDocument() == document);
+				});
+				protocol->OnNextIdleFrame(L"Refresh preserves the active grid document editor", [=]()
+				{
+					auto grid = FindObjectByName<GuiBindableDataGrid>(GetApplication()->GetMainWindow(), L"dataGrid");
+					TEST_ASSERT(grid->GetOpenedEditor());
+					auto textBox = FindObjectByName<GuiSinglelineTextBox>(grid->GetOpenedEditor()->GetTemplate(), L"textBox");
+					TEST_ASSERT(textBox->GetFocused() && textBox->GetText() == L"Cx+");
+					TEST_ASSERT(textBox->GetSelectionText() == L"x" && textBox->CanUndo());
+					TEST_ASSERT(textBox->Undo() && textBox->GetText() == L"C++");
+					TEST_ASSERT(textBox->Redo() && textBox->GetText() == L"Cx+");
 					protocol->KeyPress(VKEY::KEY_ESCAPE);
 				});
 				protocol->OnNextIdleFrame(L"Navigate after editor dismissal", [=]()
@@ -177,6 +193,14 @@ TEST_FILE
 					TEST_ASSERT(grid->GetOpenedEditor());
 					auto textBox = FindObjectByName<GuiSinglelineTextBox>(grid->GetOpenedEditor()->GetTemplate(), L"textBox");
 					TEST_ASSERT(textBox->GetText() == L"Cx+");
+					grid->SetFocused();
+					GetApplication()->RefreshThemes();
+				});
+				protocol->OnNextIdleFrame(L"Refresh preserves focus outside the open editor", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto grid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					TEST_ASSERT(grid->GetOpenedEditor() && grid->GetFocused());
 					protocol->KeyPress(VKEY::KEY_ESCAPE);
 					TEST_ASSERT(!grid->GetOpenedEditor() && grid->GetFocused());
 					window->Hide();

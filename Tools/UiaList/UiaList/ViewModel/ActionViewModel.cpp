@@ -31,13 +31,7 @@ namespace uialist
 		root->SelectNode(node); root->SetActiveTab(2); owner->Close();
 	}
 
-	WString ActionParameterViewModel::GetLabel()
-	{
-		auto label = spec->name;
-		if (spec->kind == native::ArgumentKind::Number || spec->kind == native::ArgumentKind::Integer) label += L" [" + ftow(spec->minimum) + L".." + ftow(spec->maximum) + L"]";
-		if (spec->kind == native::ArgumentKind::Variant) label += L" (VT=" + itow(variantType) + L")";
-		return label;
-	}
+	WString ActionParameterViewModel::GetLabel() { return label; }
 	vint ActionParameterViewModel::GetKind()
 	{
 		using native::ArgumentKind;
@@ -48,7 +42,7 @@ namespace uialist
 	void ActionParameterViewModel::SetDraftText(const WString& value)
 	{
 		if (owner->owner->busy || draft == value) return;
-		draft = value; DraftTextChanged(); owner->Validate();
+		draft = value; owner->Validate(); DraftTextChanged();
 	}
 	Ptr<IValueList> ActionParameterViewModel::GetChoices() { return UnboxValue<Ptr<IValueList>>(BoxParameter(choices)); }
 	vint ActionParameterViewModel::GetChoiceIndex()
@@ -60,25 +54,27 @@ namespace uialist
 	{
 		if (owner->owner->busy || value < 0 || value >= choiceValues.Count()) return;
 		if (value == GetChoiceIndex()) return;
-		reference = choiceValues[value]; draft = itow(reference); DraftTextChanged(); ChoiceIndexChanged(); owner->Validate(); Commit();
+		reference = choiceValues[value]; draft = itow(reference); owner->Validate(); DraftTextChanged(); ChoiceIndexChanged(); Commit();
 	}
 	bool ActionParameterViewModel::GetIsMultiline() { return spec->multiline || (spec->kind == native::ArgumentKind::Variant && (variantType == VT_BSTR || variantType == (VT_ARRAY | VT_BSTR))); }
-	WString ActionParameterViewModel::GetSelectedReferences()
+	WString ActionParameterViewModel::GetSelectedReferences() { return selectedReferenceLabels; }
+	void ActionParameterViewModel::UpdateSelectedReferences()
 	{
 		WString result;
 		for (auto key : selectedReferences) for (auto&& value : owner->owner->referenceData) if (value.key == key)
 			result += (result.Length() ? L"\r\n" : L"") + value.label;
-		return result.Length() ? result : L"[]";
+		selectedReferenceLabels = result.Length() ? result : L"[]";
+		SelectedReferencesChanged();
 	}
 	void ActionParameterViewModel::AddReference()
 	{
 		if (owner->owner->busy || !reference || !choiceValues.Contains(reference)) return;
-		selectedReferences.Add(reference); SelectedReferencesChanged(); owner->Validate();
+		selectedReferences.Add(reference); UpdateSelectedReferences(); owner->Validate();
 	}
 	void ActionParameterViewModel::ClearReferences()
 	{
 		if (owner->owner->busy) return;
-		selectedReferences.Clear(); SelectedReferencesChanged(); owner->Validate();
+		selectedReferences.Clear(); UpdateSelectedReferences(); owner->Validate();
 	}
 	WString ActionParameterViewModel::GetValidationMessage() { return validation; }
 	void ActionParameterViewModel::EditText()
@@ -92,6 +88,9 @@ namespace uialist
 	}
 	void ActionParameterViewModel::UpdateChoices()
 	{
+		label = spec->name;
+		if (spec->kind == native::ArgumentKind::Number || spec->kind == native::ArgumentKind::Integer) label += L" [" + ftow(spec->minimum) + L".." + ftow(spec->maximum) + L"]";
+		if (spec->kind == native::ArgumentKind::Variant) label += L" (VT=" + itow(variantType) + L")";
 		choices.Clear(); choiceValues.Clear();
 		using native::ArgumentKind;
 		if (spec->kind == ArgumentKind::Choice) for (auto&& choice : spec->choices) { choices.Add(choice.label); choiceValues.Add(choice.id); }
@@ -114,6 +113,7 @@ namespace uialist
 				choices.Add(value.label); choiceValues.Add(value.key);
 			}
 		}
+		UpdateSelectedReferences();
 		ChoicesChanged(); ChoiceIndexChanged(); KindChanged(); LabelChanged();
 	}
 	void ActionParameterViewModel::Commit()
@@ -178,22 +178,25 @@ namespace uialist
 	Ptr<IValueList> ActionResultViewModel::GetReferences() { return UnboxValue<Ptr<IValueList>>(BoxParameter(references)); }
 	void ActionResultViewModel::OpenDetails() { owner->OpenDetails(operation, details); }
 
-	WString ActionCommandViewModel::GetKey() { return itow(spec->pattern) + L"/" + itow(spec->rangeKey) + L"/" + itow(static_cast<vint>(spec->code)); }
+	WString ActionCommandViewModel::GetKey() { return key; }
 	WString ActionCommandViewModel::GetLabel() { return spec->name; }
 	Ptr<IValueList> ActionCommandViewModel::GetParameters() { return UnboxValue<Ptr<IValueList>>(BoxParameter(parameters)); }
 	bool ActionCommandViewModel::GetCanExecute()
 	{
 		if (!owner->open || owner->busy || owner->owner->treeBusy || generation != owner->generation || !spec->enabled) return false;
-		for (auto&& value : parameters) { native::ActionArgument argument; if (!value.Cast<ActionParameterViewModel>()->Parse(argument)) return false; }
+		for (auto&& value : parameters) if (!value.Cast<ActionParameterViewModel>()->argumentValid) return false;
 		return true;
 	}
 	bool ActionCommandViewModel::GetIsBusy() { return executing; }
 	bool ActionCommandViewModel::GetIsGetter() { return spec->pureGetter; }
 	WString ActionCommandViewModel::GetStatus() { return executing ? owner->owner->strings->Loading() : status; }
-	void ActionCommandViewModel::Validate()
+	void ActionCommandViewModel::Validate(bool invalidateQuery)
 	{
-		querySerial++;
-		if (spec->pureGetter) executing = false;
+		if (invalidateQuery)
+		{
+			querySerial++;
+			if (spec->pureGetter) executing = false;
+		}
 		for (auto&& item : parameters)
 		{
 			auto p = item.Cast<ActionParameterViewModel>();
@@ -207,12 +210,13 @@ namespace uialist
 				for (vint i = 0; i < count; i++) if (catalog[i].id == id) { type = catalog[i].expectedType; elements = catalog[i].elementArray; }
 				if (type != p->variantType || elements != p->variantElements)
 				{
-					p->variantType = type; p->variantElements = elements; p->selectedReferences.Clear(); p->SelectedReferencesChanged();
+					p->variantType = type; p->variantElements = elements; p->selectedReferences.Clear();
 					p->draft = {}; p->reference = 0; p->DraftTextChanged(); p->IsMultilineChanged(); p->UpdateChoices();
 				}
 			}
 			native::ActionArgument value;
-			auto message = p->Parse(value) ? WString() : owner->owner->strings->InvalidValue();
+			p->argumentValid = p->Parse(value);
+			auto message = p->argumentValid ? WString() : owner->owner->strings->InvalidValue();
 			if (message != p->validation) { p->validation = message; p->ValidationMessageChanged(); }
 		}
 		CanExecuteChanged();
@@ -336,7 +340,7 @@ namespace uialist
 				dialog->results.Add(result);
 				if (range) for (auto&& item : dialog->textRanges)
 				{
-					auto vm = item.Cast<TextRangeViewModel>(); if (vm->key == range->rangeKey) { vm->section = Ptr(new ActionSectionViewModel(*dialog.Obj(), range)); vm->SectionChanged(); vm->SectionsChanged(); }
+					auto vm = item.Cast<TextRangeViewModel>(); if (vm->key == range->rangeKey) vm->SetSection(Ptr(new ActionSectionViewModel(*dialog.Obj(), range)));
 				}
 				if (outcome->mutation) root.RefreshWindowInternal(false);
 			});
@@ -351,6 +355,7 @@ namespace uialist
 		{
 			if (command->pureGetter && command->parameters.Count() == 0) continue;
 			auto vm = Ptr(new ActionCommandViewModel); vm->owner = &dialog; vm->spec = command; vm->generation = dialog.generation;
+			vm->key = itow(command->pattern) + L"/" + itow(command->rangeKey) + L"/" + itow(static_cast<vint>(command->code));
 			for (auto&& argument : command->parameters)
 			{
 				auto p = Ptr(new ActionParameterViewModel); p->owner = vm.Obj(); p->spec = argument; p->draft = argument->initial; vm->parameters.Add(p);

@@ -219,6 +219,9 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("group1", group1);
             }
             {
+                (group1.Expandable = true);
+            }
+            {
                 (buttonLarge = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::RibbonLargeDropdownButton));
                 <this>.SetNamedObject("buttonLarge", buttonLarge);
             }
@@ -453,9 +456,6 @@ namespace gacuisrc_unittest
                 <collection>.Add(<precompile>21);
             }
             {
-                (group1.Expandable = true);
-            }
-            {
                 (group1.Text = "Buttons");
             }
             {
@@ -511,9 +511,6 @@ namespace gacuisrc_unittest
                 (commandLight.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Light", true)));
             }
             {
-                (group1.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
-            }
-            {
                 (<precompile>3.Command = self.commandCert);
             }
             {
@@ -548,6 +545,9 @@ namespace gacuisrc_unittest
             }
             {
                 (<precompile>26.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/SmallImages/Light", true)));
+            }
+            {
+                (group1.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
             }
         }
 

@@ -1,4 +1,4 @@
-﻿================================(1/110)================================
+﻿================================(1/108)================================
 module <constructor>tuidemo::TuiDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -792,7 +792,7 @@ namespace tuidemo
     }
 }
 
-================================(2/110)================================
+================================(2/108)================================
 module <instance>tuidemo::TuiDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -844,7 +844,7 @@ namespace tuidemo
     }
 }
 
-================================(3/110)================================
+================================(3/108)================================
 module <constructor>tuidemo::TuiListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1382,7 +1382,7 @@ namespace tuidemo
     }
 }
 
-================================(4/110)================================
+================================(4/108)================================
 module <instance>tuidemo::TuiListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1441,7 +1441,7 @@ namespace tuidemo
     }
 }
 
-================================(5/110)================================
+================================(5/108)================================
 module <constructor>tuidemo::TuiMainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4296,7 +4296,7 @@ namespace tuidemo
     }
 }
 
-================================(6/110)================================
+================================(6/108)================================
 module <instance>tuidemo::TuiMainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4442,7 +4442,7 @@ namespace tuidemo
     }
 }
 
-================================(7/110)================================
+================================(7/108)================================
 module <constructor>tuidemo::TuiRepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5101,7 +5101,7 @@ namespace tuidemo
     }
 }
 
-================================(8/110)================================
+================================(8/108)================================
 module <instance>tuidemo::TuiRepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5144,7 +5144,7 @@ namespace tuidemo
     }
 }
 
-================================(9/110)================================
+================================(9/108)================================
 module <constructor>tuidemo::TuiSubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6366,7 +6366,7 @@ namespace tuidemo
     }
 }
 
-================================(10/110)================================
+================================(10/108)================================
 module <instance>tuidemo::TuiSubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6411,7 +6411,7 @@ namespace tuidemo
     }
 }
 
-================================(11/110)================================
+================================(11/108)================================
 module <constructor>tuidemo::TuiTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7134,7 +7134,7 @@ namespace tuidemo
     }
 }
 
-================================(12/110)================================
+================================(12/108)================================
 module <instance>tuidemo::TuiTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7181,7 +7181,7 @@ namespace tuidemo
     }
 }
 
-================================(13/110)================================
+================================(13/108)================================
 module <constructor>tuidemo::TuiTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7737,7 +7737,7 @@ namespace tuidemo
     }
 }
 
-================================(14/110)================================
+================================(14/108)================================
 module <instance>tuidemo::TuiTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7788,7 +7788,7 @@ namespace tuidemo
     }
 }
 
-================================(15/110)================================
+================================(15/108)================================
 module <constructor>tuidemo::TuiDateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7995,7 +7995,7 @@ namespace tuidemo
     }
 }
 
-================================(16/110)================================
+================================(16/108)================================
 module <instance>tuidemo::TuiDateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8037,7 +8037,7 @@ namespace tuidemo
     }
 }
 
-================================(17/110)================================
+================================(17/108)================================
 module <constructor>tuidemo::TuiDateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8381,7 +8381,7 @@ namespace tuidemo
     }
 }
 
-================================(18/110)================================
+================================(18/108)================================
 module <instance>tuidemo::TuiDateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8484,109 +8484,7 @@ namespace tuidemo
     }
 }
 
-================================(19/110)================================
-module <constructor>tuidemo::TuiGridTextBoxTemplate;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::elements::*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace tuidemo
-{
-    class TuiGridTextBoxTemplateConstructor
-    {
-        @cpp:Protected
-        var self : ::tuidemo::TuiGridTextBoxTemplate* = null of (::tuidemo::TuiGridTextBoxTemplate*);
-
-        @cpp:Protected
-        var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        func <tuidemo-TuiGridTextBoxTemplate>Initialize(<this> : ::tuidemo::TuiGridTextBoxTemplate*) : (::system::Void)
-        {
-            (self = <this>);
-            {
-                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>0 = new (::presentation::elements::GuiSolidBackgroundElement^)());
-            {
-                (self.OwnedElement = <precompile>0);
-            }
-            {
-                (<precompile>0.Color = tuiskin::TuiTheme::GetColorPackage().ControlBackground);
-            }
-            {
-                (self.CaretColor = tuiskin::TuiTheme::GetColorPackage().ControlText);
-            }
-            {
-                (self.BaselineDocument = tuiskin::TuiTheme::CreateBaselineDocument());
-            }
-        }
-
-        new ()
-        {
-        }
-    }
-}
-
-================================(20/110)================================
-module <instance>tuidemo::TuiGridTextBoxTemplate;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::elements::*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace tuidemo
-{
-    @cpp:Friend(typeof(TuiGridTextBoxTemplateConstructor))
-    class TuiGridTextBoxTemplate : ::presentation::templates::GuiDocumentLabelTemplate, TuiGridTextBoxTemplateConstructor
-    {
-        new* ()
-        {
-            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("tuidemo::TuiGridTextBoxTemplate");
-            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
-            this.SetResourceResolver(<resolver>);
-            this.<tuidemo-TuiGridTextBoxTemplate>Initialize(this);
-        }
-
-        delete
-        {
-            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
-        }
-    }
-}
-
-================================(21/110)================================
+================================(19/108)================================
 module <constructor>tuidemo::TuiTextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8637,7 +8535,7 @@ namespace tuidemo
                 (textBox.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
                 {
                     {
-                        return new (::tuidemo::TuiGridTextBoxTemplate*)();
+                        return new (::tuiskin::TuiDocumentLabelTemplate*)();
                     }
                 });
             }
@@ -8801,7 +8699,7 @@ namespace tuidemo
     }
 }
 
-================================(22/110)================================
+================================(20/108)================================
 module <instance>tuidemo::TuiTextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8843,7 +8741,7 @@ namespace tuidemo
     }
 }
 
-================================(23/110)================================
+================================(21/108)================================
 module <constructor>tuidemo::TuiCellFocusTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9076,7 +8974,7 @@ namespace tuidemo
     }
 }
 
-================================(24/110)================================
+================================(22/108)================================
 module <instance>tuidemo::TuiCellFocusTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9118,7 +9016,7 @@ namespace tuidemo
     }
 }
 
-================================(25/110)================================
+================================(23/108)================================
 module <constructor>tuidemo::TuiCategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9440,7 +9338,7 @@ namespace tuidemo
     }
 }
 
-================================(26/110)================================
+================================(24/108)================================
 module <instance>tuidemo::TuiCategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9525,7 +9423,7 @@ namespace tuidemo
     }
 }
 
-================================(27/110)================================
+================================(25/108)================================
 module <constructor>tuidemo::TuiCategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9869,7 +9767,7 @@ namespace tuidemo
     }
 }
 
-================================(28/110)================================
+================================(26/108)================================
 module <instance>tuidemo::TuiCategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9913,7 +9811,7 @@ namespace tuidemo
     }
 }
 
-================================(29/110)================================
+================================(27/108)================================
 module <constructor>tuidemo::TuiCategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10127,7 +10025,7 @@ namespace tuidemo
     }
 }
 
-================================(30/110)================================
+================================(28/108)================================
 module <instance>tuidemo::TuiCategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10180,7 +10078,7 @@ namespace tuidemo
     }
 }
 
-================================(31/110)================================
+================================(29/108)================================
 module <constructor>tuidemo::TuiCategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10454,7 +10352,7 @@ namespace tuidemo
     }
 }
 
-================================(32/110)================================
+================================(30/108)================================
 module <instance>tuidemo::TuiCategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10496,7 +10394,7 @@ namespace tuidemo
     }
 }
 
-================================(33/110)================================
+================================(31/108)================================
 module <constructor>tuidemo::TuiGenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10699,7 +10597,7 @@ namespace tuidemo
     }
 }
 
-================================(34/110)================================
+================================(32/108)================================
 module <instance>tuidemo::TuiGenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10784,7 +10682,7 @@ namespace tuidemo
     }
 }
 
-================================(35/110)================================
+================================(33/108)================================
 module <constructor>tuidemo::TuiGenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11121,7 +11019,7 @@ namespace tuidemo
     }
 }
 
-================================(36/110)================================
+================================(34/108)================================
 module <instance>tuidemo::TuiGenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11165,7 +11063,7 @@ namespace tuidemo
     }
 }
 
-================================(37/110)================================
+================================(35/108)================================
 module <constructor>tuidemo::TuiGenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11379,7 +11277,7 @@ namespace tuidemo
     }
 }
 
-================================(38/110)================================
+================================(36/108)================================
 module <instance>tuidemo::TuiGenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11432,7 +11330,7 @@ namespace tuidemo
     }
 }
 
-================================(39/110)================================
+================================(37/108)================================
 module <constructor>tuidemo::TuiGenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11706,7 +11604,7 @@ namespace tuidemo
     }
 }
 
-================================(40/110)================================
+================================(38/108)================================
 module <instance>tuidemo::TuiGenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11748,7 +11646,7 @@ namespace tuidemo
     }
 }
 
-================================(41/110)================================
+================================(39/108)================================
 module <constructor>tuidemo::TuiHyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11996,7 +11894,7 @@ namespace tuidemo
     }
 }
 
-================================(42/110)================================
+================================(40/108)================================
 module <instance>tuidemo::TuiHyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12060,7 +11958,7 @@ namespace tuidemo
     }
 }
 
-================================(43/110)================================
+================================(41/108)================================
 module <constructor>tuidemo::TuiLocaleSelector;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12241,7 +12139,7 @@ namespace tuidemo
     }
 }
 
-================================(44/110)================================
+================================(42/108)================================
 module <instance>tuidemo::TuiLocaleSelector;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12304,7 +12202,7 @@ namespace tuidemo
     }
 }
 
-================================(45/110)================================
+================================(43/108)================================
 module <constructor>tuidemo::TuiTestWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12423,7 +12321,7 @@ namespace tuidemo
     }
 }
 
-================================(46/110)================================
+================================(44/108)================================
 module <instance>tuidemo::TuiTestWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12466,7 +12364,7 @@ namespace tuidemo
     }
 }
 
-================================(47/110)================================
+================================(45/108)================================
 module <constructor>tuidemo::TuiRefreshBindableDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13307,7 +13205,7 @@ namespace tuidemo
     }
 }
 
-================================(48/110)================================
+================================(46/108)================================
 module <instance>tuidemo::TuiRefreshBindableDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13357,7 +13255,7 @@ namespace tuidemo
     }
 }
 
-================================(49/110)================================
+================================(47/108)================================
 module <constructor>tuidemo::TuiRefreshBindableListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14014,7 +13912,7 @@ namespace tuidemo
     }
 }
 
-================================(50/110)================================
+================================(48/108)================================
 module <instance>tuidemo::TuiRefreshBindableListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14064,7 +13962,7 @@ namespace tuidemo
     }
 }
 
-================================(51/110)================================
+================================(49/108)================================
 module <constructor>tuidemo::TuiRefreshBindableTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14390,7 +14288,7 @@ namespace tuidemo
     }
 }
 
-================================(52/110)================================
+================================(50/108)================================
 module <instance>tuidemo::TuiRefreshBindableTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14435,7 +14333,7 @@ namespace tuidemo
     }
 }
 
-================================(53/110)================================
+================================(51/108)================================
 module <constructor>tuidemo::TuiRefreshBindableTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14748,7 +14646,7 @@ namespace tuidemo
     }
 }
 
-================================(54/110)================================
+================================(52/108)================================
 module <instance>tuidemo::TuiRefreshBindableTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14798,7 +14696,7 @@ namespace tuidemo
     }
 }
 
-================================(55/110)================================
+================================(53/108)================================
 module <constructor>tuidemo::TuiRefreshListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15480,7 +15378,7 @@ namespace tuidemo
     }
 }
 
-================================(56/110)================================
+================================(54/108)================================
 module <instance>tuidemo::TuiRefreshListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15523,7 +15421,7 @@ namespace tuidemo
     }
 }
 
-================================(57/110)================================
+================================(55/108)================================
 module <constructor>tuidemo::TuiRefreshTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15830,7 +15728,7 @@ namespace tuidemo
     }
 }
 
-================================(58/110)================================
+================================(56/108)================================
 module <instance>tuidemo::TuiRefreshTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15873,7 +15771,7 @@ namespace tuidemo
     }
 }
 
-================================(59/110)================================
+================================(57/108)================================
 module <constructor>tuidemo::TuiRefreshTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16169,7 +16067,7 @@ namespace tuidemo
     }
 }
 
-================================(60/110)================================
+================================(58/108)================================
 module <instance>tuidemo::TuiRefreshTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16212,7 +16110,7 @@ namespace tuidemo
     }
 }
 
-================================(61/110)================================
+================================(59/108)================================
 module <constructor>tuidemo::TuiEnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16672,7 +16570,7 @@ namespace tuidemo
     }
 }
 
-================================(62/110)================================
+================================(60/108)================================
 module <instance>tuidemo::TuiEnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16916,7 +16814,7 @@ namespace tuidemo
     }
 }
 
-================================(63/110)================================
+================================(61/108)================================
 module <constructor>tuidemo::TuiEnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17015,7 +16913,7 @@ namespace tuidemo
     }
 }
 
-================================(64/110)================================
+================================(62/108)================================
 module <instance>tuidemo::TuiEnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17097,7 +16995,7 @@ namespace tuidemo
     }
 }
 
-================================(65/110)================================
+================================(63/108)================================
 module <constructor>tuidemo::TuiRepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17216,7 +17114,7 @@ namespace tuidemo
     }
 }
 
-================================(66/110)================================
+================================(64/108)================================
 module <instance>tuidemo::TuiRepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17269,7 +17167,7 @@ namespace tuidemo
     }
 }
 
-================================(67/110)================================
+================================(65/108)================================
 module <constructor>tuidemo::TuiSharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17404,7 +17302,7 @@ namespace tuidemo
     }
 }
 
-================================(68/110)================================
+================================(66/108)================================
 module <instance>tuidemo::TuiSharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17457,7 +17355,7 @@ namespace tuidemo
     }
 }
 
-================================(69/110)================================
+================================(67/108)================================
 module <constructor>tuidemo::TuiSharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17729,7 +17627,7 @@ namespace tuidemo
     }
 }
 
-================================(70/110)================================
+================================(68/108)================================
 module <instance>tuidemo::TuiSharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17782,7 +17680,7 @@ namespace tuidemo
     }
 }
 
-================================(71/110)================================
+================================(69/108)================================
 module <constructor>tuidemo::TuiDocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18195,7 +18093,7 @@ namespace tuidemo
     }
 }
 
-================================(72/110)================================
+================================(70/108)================================
 module <instance>tuidemo::TuiDocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18259,7 +18157,7 @@ namespace tuidemo
     }
 }
 
-================================(73/110)================================
+================================(71/108)================================
 module <constructor>tuidemo::TuiTextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18538,7 +18436,7 @@ namespace tuidemo
     }
 }
 
-================================(74/110)================================
+================================(72/108)================================
 module <instance>tuidemo::TuiTextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18602,7 +18500,7 @@ namespace tuidemo
     }
 }
 
-================================(75/110)================================
+================================(73/108)================================
 module <constructor>tuidemo::TuiTextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19006,7 +18904,7 @@ namespace tuidemo
     }
 }
 
-================================(76/110)================================
+================================(74/108)================================
 module <instance>tuidemo::TuiTextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19065,7 +18963,7 @@ namespace tuidemo
     }
 }
 
-================================(77/110)================================
+================================(75/108)================================
 module <constructor>tuidemo::TuiDatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19936,7 +19834,7 @@ namespace tuidemo
     }
 }
 
-================================(78/110)================================
+================================(76/108)================================
 module <instance>tuidemo::TuiDatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19979,7 +19877,7 @@ namespace tuidemo
     }
 }
 
-================================(79/110)================================
+================================(77/108)================================
 module <constructor>tuidemo::TuiDocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23679,7 +23577,7 @@ namespace tuidemo
     }
 }
 
-================================(80/110)================================
+================================(78/108)================================
 module <instance>tuidemo::TuiDocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23929,7 +23827,7 @@ namespace tuidemo
     }
 }
 
-================================(81/110)================================
+================================(79/108)================================
 module <constructor>tuidemo::TuiDocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24582,7 +24480,7 @@ namespace tuidemo
     }
 }
 
-================================(82/110)================================
+================================(80/108)================================
 module <instance>tuidemo::TuiDocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24624,7 +24522,7 @@ namespace tuidemo
     }
 }
 
-================================(83/110)================================
+================================(81/108)================================
 module <constructor>tuidemo::TuiEmbeddedControlsSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25660,7 +25558,7 @@ namespace tuidemo
     }
 }
 
-================================(84/110)================================
+================================(82/108)================================
 module <instance>tuidemo::TuiEmbeddedControlsSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25703,7 +25601,7 @@ namespace tuidemo
     }
 }
 
-================================(85/110)================================
+================================(83/108)================================
 module <constructor>tuidemo::TuiLocalizedColorDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26054,7 +25952,7 @@ namespace tuidemo
     }
 }
 
-================================(86/110)================================
+================================(84/108)================================
 module <instance>tuidemo::TuiLocalizedColorDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26118,7 +26016,7 @@ namespace tuidemo
     }
 }
 
-================================(87/110)================================
+================================(85/108)================================
 module <constructor>tuidemo::TuiLocalizedDialogsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26379,7 +26277,7 @@ namespace tuidemo
     }
 }
 
-================================(88/110)================================
+================================(86/108)================================
 module <instance>tuidemo::TuiLocalizedDialogsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26422,7 +26320,7 @@ namespace tuidemo
     }
 }
 
-================================(89/110)================================
+================================(87/108)================================
 module <constructor>tuidemo::TuiLocalizedFileDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27475,7 +27373,7 @@ namespace tuidemo
     }
 }
 
-================================(90/110)================================
+================================(88/108)================================
 module <instance>tuidemo::TuiLocalizedFileDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27566,7 +27464,7 @@ namespace tuidemo
     }
 }
 
-================================(91/110)================================
+================================(89/108)================================
 module <constructor>tuidemo::TuiLocalizedFontDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27738,7 +27636,7 @@ namespace tuidemo
     }
 }
 
-================================(92/110)================================
+================================(90/108)================================
 module <instance>tuidemo::TuiLocalizedFontDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27781,7 +27679,7 @@ namespace tuidemo
     }
 }
 
-================================(93/110)================================
+================================(91/108)================================
 module <constructor>tuidemo::TuiLocalizedMessageDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28513,7 +28411,7 @@ namespace tuidemo
     }
 }
 
-================================(94/110)================================
+================================(92/108)================================
 module <instance>tuidemo::TuiLocalizedMessageDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28580,7 +28478,7 @@ namespace tuidemo
     }
 }
 
-================================(95/110)================================
+================================(93/108)================================
 module <constructor>tuidemo::TuiLocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -29988,7 +29886,7 @@ namespace tuidemo
     }
 }
 
-================================(96/110)================================
+================================(94/108)================================
 module <instance>tuidemo::TuiLocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30058,7 +29956,7 @@ namespace tuidemo
     }
 }
 
-================================(97/110)================================
+================================(95/108)================================
 module <constructor>tuidemo::TuiResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30686,7 +30584,7 @@ namespace tuidemo
     }
 }
 
-================================(98/110)================================
+================================(96/108)================================
 module <instance>tuidemo::TuiResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30729,7 +30627,7 @@ namespace tuidemo
     }
 }
 
-================================(99/110)================================
+================================(97/108)================================
 module <constructor>tuidemo::TuiResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31357,7 +31255,7 @@ namespace tuidemo
     }
 }
 
-================================(100/110)================================
+================================(98/108)================================
 module <instance>tuidemo::TuiResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31400,7 +31298,7 @@ namespace tuidemo
     }
 }
 
-================================(101/110)================================
+================================(99/108)================================
 module <constructor>tuidemo::TuiResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31622,7 +31520,7 @@ namespace tuidemo
     }
 }
 
-================================(102/110)================================
+================================(100/108)================================
 module <instance>tuidemo::TuiResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31665,7 +31563,7 @@ namespace tuidemo
     }
 }
 
-================================(103/110)================================
+================================(101/108)================================
 module <constructor>tuidemo::TuiResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -32579,7 +32477,7 @@ namespace tuidemo
     }
 }
 
-================================(104/110)================================
+================================(102/108)================================
 module <instance>tuidemo::TuiResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -32622,7 +32520,7 @@ namespace tuidemo
     }
 }
 
-================================(105/110)================================
+================================(103/108)================================
 module <localized-strings-injection>tuidemo::TuiDialogStringsInjection;
 
 namespace tuidemo
@@ -32844,7 +32742,7 @@ namespace tuidemo
     }
 }
 
-================================(106/110)================================
+================================(104/108)================================
 module listviewdata;
 using presentation::*;
 using presentation::controls::*;
@@ -33086,7 +32984,7 @@ func LoadListView(callback : (func (ListViewItem^) : (void))) : (void)
     }
 }
 
-================================(107/110)================================
+================================(105/108)================================
 module viewmodel;
 using system::*;
 using presentation::*;
@@ -33310,7 +33208,7 @@ namespace tuidemo
     }
 }
 
-================================(108/110)================================
+================================(106/108)================================
 module refresh_viewmodel;
 using system::*;
 using presentation::*;
@@ -33465,7 +33363,7 @@ namespace tuidemo
     }
 }
 
-================================(109/110)================================
+================================(107/108)================================
 module fontHelper;
 using presentation::*;
 
@@ -33474,7 +33372,7 @@ func ChangeFontSize(oldFont : FontProperties, deltaSize : int) : (FontProperties
     return {fontFamily : oldFont.fontFamily; size : (oldFont.size + deltaSize); antialias : true;};
 }
 
-================================(110/110)================================
+================================(108/108)================================
 module <localized-strings>tuidemo::TuiStringResource;
 
 namespace tuidemo

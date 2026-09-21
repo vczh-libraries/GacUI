@@ -207,12 +207,19 @@ TEST_FILE
 							TEST_ASSERT(selected.backgroundColor == colors.GeneralAccent);
 							TEST_ASSERT(selected.color == colors.TextBright);
 							TEST_ASSERT(document->GetStyle(DocumentModel::DefaultStyleName, {}).backgroundColor.a == 0);
+							auto editorTemplate = dynamic_cast<templates::GuiDocumentViewerTemplate*>(editor->GetControlTemplateObject());
+							TEST_ASSERT(editorTemplate->GetCaretColor() == colors.TextBright);
+							TEST_ASSERT(editorTemplate->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->GetColor() == colors.ContentBackground);
 							{
 								darkskin::Theme anotherTheme;
+								GuiWindow anotherWindow(theme::ThemeName::Window);
 								TEST_ASSERT(darkskin::Theme::GetColorPackage().GeneralAccent == colors.GeneralAccent);
 								GuiSinglelineTextBox fresh(theme::ThemeName::SinglelineTextBox);
 								TEST_ASSERT(fresh.GetControlTemplateObject() != nullptr);
 								TEST_ASSERT(fresh.GetDocument()->GetStyle(DocumentModel::SelectionStyleName, {}).backgroundColor == colors.GeneralAccent);
+								auto freshTemplate = dynamic_cast<templates::GuiDocumentLabelTemplate*>(fresh.GetControlTemplateObject());
+								TEST_ASSERT(freshTemplate->GetCaretColor() == colors.TextBright);
+								TEST_ASSERT(freshTemplate->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->GetColor() == colors.ContentBackground);
 							}
 							protocol->MouseMove(protocol->LocationOf(button));
 							TEST_ASSERT(buttonColor() == colors.ButtonBackgroundHovered);

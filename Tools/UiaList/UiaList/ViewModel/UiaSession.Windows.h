@@ -137,6 +137,7 @@ namespace uialist::native
 		vl::WString					name;
 		vl::WString					client;
 		vl::WString					role;
+		CONTROLTYPEID				controlType = 0;
 		vl::WString					providers;
 		RECT						bounds = {};
 		bool						offscreen = false;

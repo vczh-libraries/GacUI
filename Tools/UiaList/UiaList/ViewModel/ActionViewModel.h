@@ -29,10 +29,11 @@ namespace uialist
 	public:
 		ActionCommandViewModel* owner;
 		vl::Ptr<native::ArgumentSpec> spec;
-		vl::WString draft, validation;
+		vl::WString label, draft, validation, selectedReferenceLabels;
 		vl::vint reference = 0;
 		VARTYPE variantType = VT_BSTR;
 		bool variantElements = false;
+		bool argumentValid = false;
 		vl::collections::List<vl::vint> selectedReferences;
 		vl::collections::ObservableList<vl::WString> choices;
 		vl::collections::List<vl::vint> choiceValues;
@@ -52,6 +53,7 @@ namespace uialist
 		void Commit() override;
 		bool Parse(native::ActionArgument& result);
 		void UpdateChoices();
+		void UpdateSelectedReferences();
 	};
 
 	class ActionResultViewModel : public vl::Object, public virtual vm::IActionResultViewModel
@@ -74,7 +76,7 @@ namespace uialist
 		vl::vint generation;
 		vl::vint querySerial = 0;
 		vl::collections::ObservableList<vl::Ptr<vm::IActionParameterViewModel>> parameters;
-		vl::WString status;
+		vl::WString key, status;
 		bool executing = false;
 		vl::WString GetKey() override;
 		vl::WString GetLabel() override;
@@ -84,7 +86,7 @@ namespace uialist
 		bool GetIsGetter() override;
 		vl::WString GetStatus() override;
 		void Execute() override;
-		void Validate();
+		void Validate(bool invalidateQuery = true);
 		void Query();
 	};
 

@@ -941,7 +941,7 @@ Closures
 	::vl::presentation::templates::GuiControlTemplate* __vwsnf128_TuiControlTest_tuidemo_TuiTextEditorConstructor___vwsn_tuidemo_TuiTextEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuidemo::TuiGridTextBoxTemplate());
+			return static_cast<::vl::presentation::templates::GuiControlTemplate*>(new ::tuiskin::TuiDocumentLabelTemplate());
 		}
 	}
 
@@ -21307,54 +21307,6 @@ Class (::tuidemo::TuiGenderVisualizer)
 	}
 
 	TuiGenderVisualizer::~TuiGenderVisualizer()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
-Class (::tuidemo::TuiGridTextBoxTemplateConstructor)
-***********************************************************************/
-
-	void TuiGridTextBoxTemplateConstructor::__vwsn_tuidemo_TuiGridTextBoxTemplate_Initialize(::tuidemo::TuiGridTextBoxTemplate* __vwsn_this_)
-	{
-		(this->self = __vwsn_this_);
-		{
-			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
-		{
-			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(::tuiskin::TuiTheme::GetColorPackage().ControlBackground);
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetCaretColor(::tuiskin::TuiTheme::GetColorPackage().ControlText);
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetBaselineDocument(::tuiskin::TuiTheme::CreateBaselineDocument());
-		}
-	}
-
-	TuiGridTextBoxTemplateConstructor::TuiGridTextBoxTemplateConstructor()
-		: self(static_cast<::tuidemo::TuiGridTextBoxTemplate*>(nullptr))
-		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
-	{
-	}
-
-/***********************************************************************
-Class (::tuidemo::TuiGridTextBoxTemplate)
-***********************************************************************/
-
-	TuiGridTextBoxTemplate::TuiGridTextBoxTemplate()
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"tuidemo::TuiGridTextBoxTemplate"));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_tuidemo_TuiGridTextBoxTemplate_Initialize(this);
-	}
-
-	TuiGridTextBoxTemplate::~TuiGridTextBoxTemplate()
 	{
 		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
 	}

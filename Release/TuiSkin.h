@@ -1996,7 +1996,7 @@ namespace tuiskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TuiTheme>;
 #endif
 	public:
-		static ::vl::Ptr<::vl::presentation::DocumentModel> CreateBaselineDocument();
+		static void SetColorPackage(::tuiskin::ColorPackage colors);
 		static ::tuiskin::ColorPackage GetColorPackage();
 		TuiTheme();
 		~TuiTheme();
@@ -2254,7 +2254,8 @@ namespace vl_workflow_global
 
 		::tuiskin::ColorPackage tuiColors;
 
-		void InstallColorPackage(::tuiskin::ColorPackage colors);
+		::tuiskin::ColorPackage CreateColorPackageInternal(::vl::presentation::Color accent, ::vl::presentation::Color highlight);
+		::tuiskin::ColorPackage CreateDefaultColorPackage();
 		::vl::Ptr<::vl::presentation::DocumentModel> CreateBaselineDocument();
 
 		static TuiSkin& Instance();
@@ -6286,7 +6287,6 @@ namespace tuiskin
 	extern ColorPackage CreateOrangeColorPackage();
 	extern ColorPackage CreateGrassPackage();
 	extern ColorPackage CreateEmeraldPackage();
-	extern ColorPackage CreateSkyblueColorPackage();
 	extern ColorPackage CreatePurplePackage();
 	/// <summary>Install colors for new templates. Refresh existing themed controls with GuiApplication::RefreshThemes.</summary>
 	extern void SetColorPackage(const ColorPackage& colors);

@@ -37,7 +37,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_TuiSkin)
 	vl_workflow_global::TuiSkin instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.tuiColors = ::tuiskin::ColorPackage{};
+		instance.tuiColors = GLOBAL_NAME CreateDefaultColorPackage();
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_TuiSkin)
@@ -48,9 +48,14 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	void TuiSkin::InstallColorPackage(::tuiskin::ColorPackage colors)
+	::tuiskin::ColorPackage TuiSkin::CreateColorPackageInternal(::vl::presentation::Color accent, ::vl::presentation::Color highlight)
 	{
-		(GLOBAL_NAME tuiColors = colors);
+		return [&](){ ::tuiskin::ColorPackage __vwsn_temp__; __vwsn_temp__.ControlBackground = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#000000")); __vwsn_temp__.ControlText = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.ControlBorder = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#808080")); __vwsn_temp__.ControlBorderDisabled = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#404040")); __vwsn_temp__.ControlBorderFocused = accent; __vwsn_temp__.LabelText = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#808080")); __vwsn_temp__.ShortcutKeyBackground = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.ShortcutKeyText = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#000000")); __vwsn_temp__.MenuBackground = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#404040")); __vwsn_temp__.MenuText = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.MenuTextDisabled = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#808080")); __vwsn_temp__.MenuBackgroundHighlighted = highlight; __vwsn_temp__.MenuTextHighlighted = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.ItemBackground = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#000000")); __vwsn_temp__.ItemText = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.ItemTextDisabled = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#808080")); __vwsn_temp__.ItemBackgroundHighlighted = highlight; __vwsn_temp__.ItemTextHighlighted = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.ItemBackgroundSelected = accent; __vwsn_temp__.ItemTextSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#404040")); __vwsn_temp__.ButtonBackground = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#404040")); __vwsn_temp__.ButtonText = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.ButtonIcon = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#808080")); __vwsn_temp__.ButtonTextDisabled = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#808080")); __vwsn_temp__.ButtonBackgroundHighlighted = accent; __vwsn_temp__.ButtonTextHighlighted = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#404040")); __vwsn_temp__.ButtonBackgroundPressed = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#C0C0C0")); __vwsn_temp__.ButtonTextPressed = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); return __vwsn_temp__; }();
+	}
+
+	::tuiskin::ColorPackage TuiSkin::CreateDefaultColorPackage()
+	{
+		return GLOBAL_NAME CreateColorPackageInternal(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#87CEFA")), ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#000080")));
 	}
 
 	::vl::Ptr<::vl::presentation::DocumentModel> TuiSkin::CreateBaselineDocument()
@@ -15038,9 +15043,9 @@ Class (::tuiskin::TuiThemeConstructor)
 Class (::tuiskin::TuiTheme)
 ***********************************************************************/
 
-	::vl::Ptr<::vl::presentation::DocumentModel> TuiTheme::CreateBaselineDocument()
+	void TuiTheme::SetColorPackage(::tuiskin::ColorPackage colors)
 	{
-		return GLOBAL_NAME CreateBaselineDocument();
+		(GLOBAL_NAME tuiColors = colors);
 	}
 
 	::tuiskin::ColorPackage TuiTheme::GetColorPackage()

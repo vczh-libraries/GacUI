@@ -99,6 +99,6 @@ namespace darkskin
 
 	void SetColorPackage(const ColorPackage& colors)
 	{
-		vl_workflow_global::DarkSkin::Instance().InstallColorPackage(colors);
+		Theme::SetColorPackage(colors);
 	}
 }

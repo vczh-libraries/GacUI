@@ -675,6 +675,8 @@ class PredefinedListItemTemplate : public TBase
 - `currentEditorPos`: Position of edited cell (`GridPos`)
 - `currentEditorOpeningEditor`: Flag preventing recursive calls
 
+`GuiListControl::ReloadVisibleStyles` is a protected hook used for template/render-target reloads. The grid override removes its editor from the retiring row and temporarily keeps the hidden editor template under the grid container, so recursive theme refresh still reaches its controls. The replacement row reattaches the same editor and updates its presentation colors without calling `BeforeEditCell` again. Deferred focus restoration waits until the row is attached and does not replace another control's restored focus. Ordinary row removal and explicit dismissal still close the editor.
+
 **Opening Editor** (`StartEdit` in `GuiVirtualDataGrid`):
 
 1. Calls `StopEdit()` to close any existing editor

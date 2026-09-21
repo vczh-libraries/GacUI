@@ -24,6 +24,29 @@
           </ez:Fill>
           <ez:Bottom>
             <ez:Layout Border="false">
+              <ez:Row>
+                <ez:Column CellSpan="2">
+                  <ez:Layout Border="false">
+                    <ez:Right>
+                      <ComboBox ref.Name="easyChoice" SelectedIndex="0">
+                        <att.ListControl>
+                          <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                            <att.Items>
+                              <TextItem Text="First choice"/>
+                              <TextItem Text="Second choice"/>
+                              <TextItem Text="Third choice"/>
+                            </att.Items>
+                          </TextList>
+                        </att.ListControl>
+                      </ComboBox>
+                    </ez:Right>
+                    <ez:Right><CheckBox ref.Name="easyCheck" Text="Right check"/></ez:Right>
+                    <ez:Left><Button ref.Name="easyLeft1" Text="Left one"/></ez:Left>
+                    <ez:Left><Button ref.Name="easyLeft2" Text="Left two"/></ez:Left>
+                    <ez:Left><Button ref.Name="easyLeft3" Text="Left three"/></ez:Left>
+                  </ez:Layout>
+                </ez:Column>
+              </ez:Row>
               <ez:Row CellOption="composeType:Absolute absolute:24">
                 <ez:Column CellOption="composeType:Percentage percentage:1"><Label Text="First column"/></ez:Column>
                 <ez:Column><att.CellOption>composeType:Percentage percentage:2</att.CellOption><Label Text="Second column (twice the width)"/></ez:Column>

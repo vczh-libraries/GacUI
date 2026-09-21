@@ -4,16 +4,20 @@
 - When creating a new skin (a set of control templates), it is required to list all templates using a `<ThemeTemplates/>` instance.
   - Missing specific control templates will lead to failure of creating controls, but this is also another way to disable some controls with a certain skin. If such disabling is intentional, it is not a bug.
   - Multiple skins could be stacked one on top of another, if any control template is offered in another skin below, the related control could still be created.
-- Control/item templates are also recommended and almost the only way to change the look of controls. If a template is created for a specific feature instead of app-wise theme, `<ThemeTemplate/>` is not needed here, instead setting the template to a control explicitly would also work.
-- `DarkSkin` is the official default skin for GUI based GacUI application, which is also a great example for learning how to create fully functional templates for any controls.
+- Control/item templates are also recommended and almost the only way to change the look of controls. If a template is created for a specific feature instead of app-wise theme, `<ThemeTemplates/>` is not needed here, instead setting the template to a control explicitly would also work.
+- `DarkSkin` is the official GUI skin and `TuiSkin` is the terminal skin. Both demonstrate complete control templates and a shared palette installation/refresh pattern.
+
+## Using EazyLayout
+
+Use EazyLayout first for application layout. Its docking, shared table tracks, minimum-size propagation and spacing automatically cover many of these practices. Read [the EazyLayout guide](./GacUIEazyLayout.md) for descriptors, examples, rebuilding and splitter rules. Use the composition guidance below when you need more control. For terminal layouts, choose cell-sized spacing explicitly, usually `Padding="0"` and `Border="false"`.
 
 ## Best Practice for Using Compositions and Controls Appropriately
 
 - Layout of a control applies to its `BoundsComposition` property.
-- Tt is recommended to set a composition's `MinSizeLimitation` to `LimitToElementAndChildren`, so it automatically expands to make all children visible.
+- It is recommended to set a composition's `MinSizeLimitation` to `LimitToElementAndChildren`, so it automatically expands to make all children visible.
   - This value needs to be explicitly set, because the default value is `NoLimit`, meaning not caring about its `OwnedElement` or children.
   - If a composition is known to have no children, `LimitToElement` would also be an more optimal option to ensure the `IGuiGraphicsElement` is visible completely.
-- There is no such thing like setting an absolute position.
+- Bounds compositions use `ExpectedBounds` for requested parent-relative position and size. Parent alignment and minimum-size constraints can override those requests; prefer layout relationships for resizable interfaces.
   - Use `AlignmentToParent` to define how it sticks to the border of its parent composition, a component of -1 means it doesn't care where is the parent's border in this direction.
   - Use `PreferredMinSize` if a minimum size is known.
   - All these properties are combined to calculate the actual position and size of a composition.
@@ -29,8 +33,38 @@
 
 - Ideal distance between objects are 5 pixels.
   - It should be the distance between two visible objects, not between positions of two GacUI classes.
-  - For example, a table with `CellSpan` set to 5 will a fixed distance between cells. But when a cell embeds another table with `CellSpan` set to 5 with `Border` set to true, the distance between inner table cells to outer table cells is actually 10, which does not maintain the 5 pixels rule.
-  - Another example, if a container has `InternalMargin` all values set to 5, if a control in it also has `Margin` all values set to 5, the distance between the border of the container and the child control is actually 10, which does not maintain the 5 pixels rule.
+  - For example, a table with `CellPadding` set to 5 leaves a fixed distance between cells. But when a cell embeds another table with `CellPadding` set to 5 with `BorderVisible` set to true, the distance between inner table cells to outer table cells is actually 10, which does not maintain the 5 pixels rule.
+  - Account for the visible insets inside control templates as well as composition spacing. Measure the resulting bounds; adding five pixels at each nesting level can double the intended gap.
+
+### Adding New DarkSkin Theme
+
+Create a color package for a new palette; reuse the existing templates. The authored `Test/Resources/App/DarkSkin/DarkSkin.xml` defines `darkskin::ColorPackage`, `CreateColorPackageInternal` and the complete default. Native preset factories belong in `Source/Skins/DarkSkin/Config/DarkSkinConfig.cpp`.
+
+`CreateColorPackageInternal(accents)` accepts a ColorPackage whose twelve accent fields are populated. It copies those fields and supplies every neutral field. Follow an existing named factory, pass its accent package to `vl_workflow_global::DarkSkin::Instance().CreateColorPackageInternal`, and return the complete result. In Workflow, call `darkskin::CreateColorPackageInternal` directly. The fields have these roles:
+
+| Fields | Role |
+| --- | --- |
+| `GeneralBackground`, `GeneralBorder`, `GeneralAccent` | General surface, outline and primary accent. |
+| `ContentBackground`, `ContentBorder`, `Transparent` | Editor/content surfaces, outlines and explicitly transparent paint. |
+| `WindowBorderActive` | Active window outline. |
+| `TextSecondary`, `TextDisabled`, `GroupText`, `TextNormal`, `TextBright` | Secondary, disabled, group-caption, normal and bright text. |
+| `ButtonBackgroundHovered`, `ButtonBorderHovered`, `ControlAccentHovered` | Hovered button surface/outline and emphasized control outline. |
+| `ListColumnBorder` | List/grid column separators. |
+| `TabHighlightedSelected`, `TabHighlightedHovered`, `TabHighlightedBackground` | Selected, hovered and base colors of highlighted tabs. |
+| `ScrollBackground`, `ArrowDisabled`, `ArrowAccentHovered` | Scroll track and disabled/hovered arrow colors. |
+| `ScrollHandle`, `ScrollHandleHovered`, `ScrollHandlePressed` | Normal, hovered and pressed scroll handles. |
+| `ProgressBackground`, `ProgressBorder`, `ProgressFilling` | Progress track, border and completed portion. |
+| `ItemBackgroundSelected` | Selected list/tree/grid item surface. |
+| `MenuBackground`, `MenuBorder`, `MenuItemHovered` | Menu surface, outline and hovered item. |
+| `SplitterDark`, `SplitterLight` | The two splitter lines. |
+| `ComboArrowBackgroundHovered` | Hovered combo arrow region. |
+| `ColumnHeaderBackground`, `ColumnHeaderBackgroundHovered` | Normal and hovered column headers. |
+| `ExpandingArrowHovered` | Hovered tree expansion arrow. |
+| `RibbonExpandingArrow`, `RibbonExpandingArrowPressed` | Normal and pressed ribbon expansion arrows. |
+
+The twelve inputs are `GeneralAccent`, `WindowBorderActive`, `ControlAccentHovered`, `ArrowAccentHovered`, `ItemBackgroundSelected`, `ExpandingArrowHovered`, `RibbonExpandingArrow`, `RibbonExpandingArrowPressed`, `TabHighlightedSelected`, `TabHighlightedHovered`, `TabHighlightedBackground` and `ProgressFilling`. Other fields in the input are ignored. Preserve neutral roles when making an accent-only preset; use the returned full package to make intentional neutral overrides.
+
+The installed palette initializes once from the Workflow default. `darkskin::CreateDefaultColorPackage()` forwards to that default; creating a theme or window does not reinstall it. Install a new package with native `darkskin::SetColorPackage` or Workflow `darkskin::Theme::SetColorPackage`, then call `GuiApplication::RefreshThemes()` on the UI thread to update existing controls.
 
 ## Best Practice for TUI Based Layout
 
@@ -47,92 +81,35 @@
 - Center form labels vertically while keeping their text left aligned, using local layout or an explicitly assigned template. A three-row table with percentage/minimum/percentage rows can center a label of its natural height in a bordered textbox's cell without changing every label's defaults.
 - A preferred minimum height of one does not prevent a tracker from stretching. Center an HTracker in an absolute one-cell middle row between equal percentage rows, and stretch it horizontally only. Its enclosing RGB component can still accommodate a three-cell bordered textbox. Do not place the actual text/control into either percentage spacer row.
 
-## Best Practice for Creating/Updating Official TuiSkin
+### Adding New TuiSkin Theme
 
-- Exclude ribbon and toolbar since they requires image.
-  - Using them in GacUI XML Resource leading to crash is expected, due to not offering proper control templates.
-- Colors are listed in fields of a struct in a workflow global variable. `-eval` binding could be used in XML to use them.
-  - The type name will be `tuiskin::ColorPackage`.
-  - The variable name will be `tuiColors`.
-  - When a color is needed, there is only two ways: using `tuiColors` or any color property from a template. Hardcoded color values are not allowed.
-  - Besides of generated C++ code, there are a pair of manually written C++ file for TuiSkin calls `TuiSkinConfig.(h|cpp)`.
-    - `tuiskin::CreatePinkColorPackage`, `CreateOrangeColorPackage`, `CreateGrassPackage`, `CreateEmeraldPackage`, `CreateSkyblueColorPackage`, and `CreatePurplePackage` create complete opaque palettes with muted accents and darker highlights. Every neutral role is shared.
-    - `tuiskin::CreateDefaultColorPackage` returns the unchanged SkyBlue palette. `CreateColorPackageInternal` initializes all fields for the six factories.
-    - `tuiskin::SetColorPackage` installs the global palette for new templates. To recolor existing default-themed controls, call `GuiApplication::RefreshThemes()` on the UI thread. From an input callback, queue installation and refresh together with `InvokeInMainThread`, capturing the preset by value.
-    - `GuiControl::RefreshThemes()` preserves an assigned `ControlTemplate` while traversing its descendants. Application-owned `Color-eval` elements also retain their captured colors; these presets deliberately share their neutral roles. Arbitrary custom templates and captured element colors are not made reactive by installing a palette.
-    - A palette selector uses one mutex group and processes only newly selected radio buttons. Keep selection in the persistent controls, with no selection-reset callback during refresh. Window Manager uses two equal percentage columns, existing controls on the left and a compact vertical palette group on the right.
-    - `TuiSkinConfig.(h|cpp)` will `#include` generated files from TuiSkin's XML resource.
-- Polygons on darkskin is to render icons without actually using an image, such thing should be replaced by one character in TuiSkin.
+The authored `Test/Resources/App/TuiSkin/TuiSkin.xml` owns `tuiskin::ColorPackage`, `CreateColorPackageInternal(accent, highlight)` and the default. The initializer accepts two opaque Colors: the accent supplies focused borders, selected items and hovered buttons; the darker highlight supplies hovered menu/list items. It fills every neutral role. Native factories in `Source/Skins/TuiSkin/Config/TuiSkinConfig.cpp` call `vl_workflow_global::TuiSkin::Instance().CreateColorPackageInternal`; Workflow calls `tuiskin::CreateColorPackageInternal`.
 
-### Color List (CreateDefaultColorPackage's values)
+| Fields | Role |
+| --- | --- |
+| `ControlBackground`, `ControlText` | General control surface and text. |
+| `ControlBorder`, `ControlBorderDisabled`, `ControlBorderFocused` | Normal, disabled and focused outlines; grid lines retain the normal border. |
+| `LabelText` | Labels, group captions and checkbox/radio captions. |
+| `ShortcutKeyBackground`, `ShortcutKeyText` | Opaque ALT-key hint surface and text. |
+| `MenuBackground`, `MenuText`, `MenuTextDisabled` | Menu bar/item surface, normal text/separators and disabled text. |
+| `MenuBackgroundHighlighted`, `MenuTextHighlighted` | Highlighted menu surface and text. |
+| `ItemBackground`, `ItemText`, `ItemTextDisabled` | List/tree/grid items and tab headers in normal/disabled states. |
+| `ItemBackgroundHighlighted`, `ItemTextHighlighted` | Hovered/highlighted item surface and text. |
+| `ItemBackgroundSelected`, `ItemTextSelected` | Selected item surface and text; an active grid cell uses these within the highlighted row. |
+| `ButtonBackground`, `ButtonText`, `ButtonIcon`, `ButtonTextDisabled` | Normal/disabled button surface, normal text, normal icon and disabled text. |
+| `ButtonBackgroundHighlighted`, `ButtonTextHighlighted` | Hovered button surface and text. |
+| `ButtonBackgroundPressed`, `ButtonTextPressed` | Pressed button surface and text. |
 
-- General, unless described below, these colors should be used:
-  - `ControlBackground`: black, for any control background.
-  - `ControlText`: white, for any control text.
-  - `ControlBorder`: gray.
-  - `ControlBorderDisabled`: dark gray.
-  - `ControlBorderFocused`: light sky blue.
-  - `LabelText`: gray.
-- Menus (includes menu item in dropdown, and menu button in menu bar):
-  - `MenuBackground`: dark gray, for normal or disabled menu item and menu bar backgrounds.
-  - `MenuText`: white, for normal menu text and menu separator.
-  - `MenuTextDisabled`: gray.
-  - `MenuBackgroundHighlighted`, dark blue.
-  - `MenuTextHighlighted`, white.
-- List items, tab headers:
-  - `ItemBackground`: black, for normal or disabled item background.
-  - `ItemText`: white, for normal item text.
-  - `ItemTextDisabled`: gray.
-  - `ItemBackgroundHighlighted`: dark blue.
-  - `ItemTextHighlighted`: white.
-  - `ItemBackgroundSelected`: light sky blue.
-  - `ItemTextSelected`: drak gray.
-  - In data grid, when a cell is selected, only the selected cell uses selected color, other cells in this row use highlighted color.
-- Buttons:
-  - `ButtonBackground`: dark gray, for normal or disabled button background.
-  - `ButtonText`: white, for normal button text.
-  - `ButtonIcon`: gray.
-  - `ButtonTextDisabled`: gray.
-  - `ButtonBackgroundHighlighted`: light sky blue.
-  - `ButtonTextHighlighted`: dark gray.
-  - `ButtonBackgroundPressed`: light gray.
-  - `ButtonTextPressed`: white.
-- Exceptions:
-  - Although check boxes and radio buttons are buttons, but they should use label colors.
-  - Group boxes also use label colors.
-  - Combo box dropdown button and scroll bar arrow buttons are button with icon not with text.
-    - When the button is in any state except normal, icon colors are text colors.
-  - The mark of a check box of a radio button will use text color instead of icon color.
-  - Grid lines in list view or data grid would use the control border colors, but when the control is focused, grid lines still use the normal color.
+Combo/scroll arrows use icon colors normally and state text colors when highlighted or pressed. Checkbox/radio marks use text colors. Keep alpha at 255 for opaque terminal surfaces and preserve readable contrast for focused, disabled, hovered and selected states.
 
-### Style and Layout
+`CreateDefaultColorPackage` returns the SkyBlue default (`#87CEFA` accent and `#000080` highlight). Workflow initializes the installed palette once from it, so application startup needs no default setter. Create and install a named package with native `tuiskin::SetColorPackage` or Workflow `tuiskin::TuiTheme::SetColorPackage`, then refresh existing themes on the UI thread. New themes/windows retain the current package.
 
-- Window frame.
-  - Main window do not have a frame, its template will be a pure background with nothing.
-    - It will use the frame from the OS CLI window.\
-    - When query for all components (border, sizebox, maximizing button, minimizing button, etc) are all invisible.
-  - Sub window could have a frame apon user settings:
-    - When there is a sizable box, use double line.
-    - When there is a border, use thick line.
-    - When there is no box, there is no line.
-      - Actual menus retain their own thin border. Ordinary popups, tooltips and combo/date/filter content dropdowns use opaque borderless templates; content controls keep their own borders.
-- Unlike darkskin, scroll bars, buttons and menu items will have no border.
-  - Two spaces are added around the control text, so that buttons, or menu buttons in a menu bar, could just be stacked together without spaces between them horizontally.
-  - Do not add spaces around the text, instead use 1 pixel of distance in layout, which will be rendered with a space.
-- Group box will be a round line, the group header is directly on the top border from the 3rd pixel.
-- Focused control is represented by its border color when there is a border, and by bold plus underline when there is text. Include button, check/radio, combo and menu text; tab headers use `OwnerTab.Focused`.
-  - Main window won't have difference because it is always activated.
-- For buttons and menus, highlighted state renders underline on its text.
-  - Pressed buttons also need underline on its text.
-- Tab consists of tab buttons and a container. The container has a thin border in `ItemBackgroundSelected`, or `ItemBackground` when disabled.
-  - The row of horizontally aligned tab headers, or the last row when there is multiple, is directly on the top border from the 3rd pixel.
-- Any container control do not need a margin between the content to the border, meaning its `ContainerComposition` is located from (1,1), meanwhile the left-top position is defined as (0,0).
+## Creating New Skin
 
-- Ordinary and date combos occupy one row, with button state colors, horizontal text insets and a separate dropdown arrow. Preserve selected-item compositions and `TextVisible`.
-- ALT sequence labels use an opaque `ShortcutKeyBackground` (white by default) and `ShortcutKeyText` (black by default).
-- Paint the whole scrollbar/tracker handle uniformly. Disabled handles blend into the track.
-- Put a header sorting glyph before its title, using the title text color. Keep the right submenu button separate and reserve the following header's first cell for resizing the preceding column.
-- `Table.CellPadding` adds both outer and inter-cell spacing. Use zero around already bordered lists/textboxes and between compact form rows; retain only insets inside actual borders.
-- For a physical terminal main window, keep the outer bounds independent of child minimum sizes (`MinSizeLimitation="NoLimit"`). Aligned page contents must use the available viewport and scrolling; a hidden page must not enlarge the main window beyond the terminal.
-- Embedded grid text editors should use an explicitly assigned borderless one-row template. Derive row heights from content and retain bottom/right separators; do not reserve rows for the ordinary bordered textbox template.
-- In editable DataGrid view, selected-cell and highlighted-row backgrounds cover content only. Preserve the entire bottom separator row's normal `ItemBackground` and separator foreground, including intersections and the space beyond the last column. Inset both the row highlight and the cell selection fill; keep the existing compact row height and editor insets. Detail view, TextList and TreeView have no such separator row and keep selection across their full content height.
+Start from DarkSkin for GUI geometry or TuiSkin for character-cell geometry. Copy the authored resource structure into an independent resource/namespace, give its ThemeTemplates registration a distinct name, and update resource dependencies and generation inventories. Supply templates for every control family your application creates, including their nested scrollbars, popups, menus, item templates, grid editors and dialogs. Missing templates may fall through to a lower registered skin; intentionally unsupported families must remain explicit.
+
+Choose renderer-compatible elements and dimensions. GUI skins can use images and polygons; TUI skins need supported cell-based elements, text glyphs and compact borders. Define document baselines from the palette, including normal text/background and selection colors. A borderless grid document editor can reuse a suitable document-label template instead of copying it.
+
+Follow the shared palette pattern: define the complete default and initializer in Workflow, initialize the installed package once, and let native named factories supply accents. A setter changes the installed package for future templates. To update existing controls, install the palette and call `GuiApplication::RefreshThemes()` together on the UI thread. From an input callback, defer both operations with `InvokeInMainThread`, capturing the selected preset by value. Theme/window constructors must not reset the selected package.
+
+An explicitly assigned `ControlTemplate` factory survives refresh, although its descendants are visited. Application-owned `Color-eval` values retain the color captured during construction. Palette installation alone does not make custom templates or captured colors reactive. Check new and existing windows, hidden popups, focus, selection, document identity, undo/redo and scroll position after a refresh; include both native and Workflow resource consumers.

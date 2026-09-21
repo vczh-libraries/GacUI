@@ -3,7 +3,7 @@ param(
     [ValidateRange(1,65535)][int]$AsPort,
     [int]$ClientProcessId = 0,
     [string]$BusyClick = '',
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime')][string]$Scenario = 'All',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime')][string]$Scenario = 'All',
     [switch]$HostedFixture,
     [switch]$GdiFixture,
     [switch]$SkipBuild
@@ -82,6 +82,8 @@ try {
     Write-Host "TEST $Application / launch /AsPort:$AsPort"
     $wrapper = Join-Path $repository '.github/Scripts/copilotExecute.ps1'
     $launcher = Start-Process powershell.exe -WindowStyle Hidden -WorkingDirectory $solution -ArgumentList @('-NoProfile','-File',"`"$wrapper`"",'-Mode','CLI','-Executable',$Application,'-Configuration','Debug','-Platform','x64') -PassThru
+    # Windows PowerShell needs a retained handle to read ExitCode after exit.
+    $launcherHandle = $launcher.Handle
     $deadline = [DateTime]::UtcNow.AddSeconds(30)
     do {
         if ($launcher.HasExited) { throw "Launcher exited early: $($launcher.ExitCode)" }
@@ -110,6 +112,7 @@ try {
     }
     if ($HostedFixture) { $clientArguments += '-HostedFixture' }
     $client = Start-Process powershell.exe -WindowStyle Hidden -ArgumentList $clientArguments -RedirectStandardOutput (Join-Path $env:TEMP "$Application-uia.stdout.txt") -RedirectStandardError (Join-Path $env:TEMP "$Application-uia.stderr.txt") -PassThru
+    $clientHandle = $client.Handle
     $lastCount = 0
     $deadline = [DateTime]::UtcNow.AddMinutes(20)
     do {
@@ -121,7 +124,7 @@ try {
     } while ([DateTime]::UtcNow -lt $deadline)
     if (!$client.HasExited) { $client.Kill(); throw 'MTA UIA test deadline exceeded.' }
     Get-Content (Join-Path $env:TEMP "$Application-uia.stdout.txt") | Select-Object -Skip $lastCount | Write-Host
-    if ($client.ExitCode -ne 0) { throw (Get-Content (Join-Path $env:TEMP "$Application-uia.stderr.txt") -Raw) }
+    if ($client.ExitCode -ne 0) { throw "UIA client exit: $($client.ExitCode). $(Get-Content (Join-Path $env:TEMP "$Application-uia.stderr.txt") -Raw)" }
     if (!$launcher.WaitForExit(30000)) { throw 'Normal UIA Window.Close did not stop the launched application.' }
     if ($launcher.ExitCode -ne 0) { throw "Application exit: $($launcher.ExitCode)" }
     if (Get-Process -Id $owned.Id -ErrorAction SilentlyContinue) { throw 'Owned process survived shutdown.' }

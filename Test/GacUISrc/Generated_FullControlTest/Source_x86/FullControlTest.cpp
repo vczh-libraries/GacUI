@@ -21953,71 +21953,192 @@ Class (::demo::EasyLayoutTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetBorder(false);
 		}
 		(this->__vwsn_precompile_12 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyRowLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyRowLayout()));
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->SetCellOption([&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = static_cast<::vl::vint32_t>(24); return __vwsn_temp__; }());
-		}
 		(this->__vwsn_precompile_13 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetCellOption([&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetCellSpan(static_cast<::vl::vint32_t>(2));
+		}
+		(this->__vwsn_precompile_14 = new ::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetBorder(false);
+		}
+		(this->__vwsn_precompile_15 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyRightLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyRightLayout()));
+		{
+			(this->__vwsn_precompile_16 = new ::vl::presentation::controls::GuiTextList(::vl::presentation::theme::ThemeName::TextList));
+		}
+		(this->__vwsn_precompile_17 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>(new ::vl::presentation::controls::list::TextItem()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17.Obj())->SetText(::vl::WString::Unmanaged(L"First choice"));
 		}
 		{
-			(this->__vwsn_precompile_14 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_16)->GetItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_17));
+		}
+		(this->__vwsn_precompile_18 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>(new ::vl::presentation::controls::list::TextItem()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetText(::vl::WString::Unmanaged(L"Second choice"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetText(::vl::WString::Unmanaged(L"First column"));
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_16)->GetItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_18));
+		}
+		(this->__vwsn_precompile_19 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>(new ::vl::presentation::controls::list::TextItem()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_19.Obj())->SetText(::vl::WString::Unmanaged(L"Third choice"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_14)->GetBoundsComposition()));
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_16)->GetItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_19));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetVerticalAlwaysVisible(false);
+		}
+		{
+			(this->easyChoice = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_16)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"easyChoice"), ::vl::__vwsn::Box(this->easyChoice));
+		}
+		{
+			::vl::__vwsn::This(this->easyChoice)->SetSelectedIndex(static_cast<::vl::vint32_t>(0));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->easyChoice)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_14)->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_15));
+		}
+		(this->__vwsn_precompile_20 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyRightLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyRightLayout()));
+		{
+			(this->easyCheck = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"easyCheck"), ::vl::__vwsn::Box(this->easyCheck));
+		}
+		{
+			::vl::__vwsn::This(this->easyCheck)->SetText(::vl::WString::Unmanaged(L"Right check"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_20.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->easyCheck)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_14)->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_20));
+		}
+		(this->__vwsn_precompile_21 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout()));
+		{
+			(this->easyLeft1 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"easyLeft1"), ::vl::__vwsn::Box(this->easyLeft1));
+		}
+		{
+			::vl::__vwsn::This(this->easyLeft1)->SetText(::vl::WString::Unmanaged(L"Left one"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_21.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->easyLeft1)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_14)->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_21));
+		}
+		(this->__vwsn_precompile_22 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout()));
+		{
+			(this->easyLeft2 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"easyLeft2"), ::vl::__vwsn::Box(this->easyLeft2));
+		}
+		{
+			::vl::__vwsn::This(this->easyLeft2)->SetText(::vl::WString::Unmanaged(L"Left two"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_22.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->easyLeft2)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_14)->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_22));
+		}
+		(this->__vwsn_precompile_23 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout()));
+		{
+			(this->easyLeft3 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"easyLeft3"), ::vl::__vwsn::Box(this->easyLeft3));
+		}
+		{
+			::vl::__vwsn::This(this->easyLeft3)->SetText(::vl::WString::Unmanaged(L"Left three"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_23.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->easyLeft3)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_14)->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_23));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_14));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_13));
 		}
-		(this->__vwsn_precompile_15 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout()));
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15.Obj())->SetCellOption([&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(2); return __vwsn_temp__; }());
-		}
-		{
-			(this->__vwsn_precompile_16 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetText(::vl::WString::Unmanaged(L"Second column (twice the width)"));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_16)->GetBoundsComposition()));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_12.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_15));
-		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_11)->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_12));
 		}
-		(this->__vwsn_precompile_17 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyRowLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyRowLayout()));
-		(this->__vwsn_precompile_18 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout()));
+		(this->__vwsn_precompile_24 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyRowLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyRowLayout()));
 		{
-			(this->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetCellOption([&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = static_cast<::vl::vint32_t>(24); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_25 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_25.Obj())->SetCellOption([&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetText(::vl::WString::Unmanaged(L"Shared tracks"));
+			(this->__vwsn_precompile_26 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_19)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_26)->SetText(::vl::WString::Unmanaged(L"First column"));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_17.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_18));
-		}
-		(this->__vwsn_precompile_20 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout()));
-		(this->__vwsn_precompile_21 = new ::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_21)->SetBorder(false);
+			::vl::__vwsn::This(this->__vwsn_precompile_25.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_26)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_20.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_21));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_25));
+		}
+		(this->__vwsn_precompile_27 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetCellOption([&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(2); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_17.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_20));
+			(this->__vwsn_precompile_28 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_11)->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_17));
+			::vl::__vwsn::This(this->__vwsn_precompile_28)->SetText(::vl::WString::Unmanaged(L"Second column (twice the width)"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_28)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_27));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_11)->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_24));
+		}
+		(this->__vwsn_precompile_29 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyRowLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyRowLayout()));
+		(this->__vwsn_precompile_30 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout()));
+		{
+			(this->__vwsn_precompile_31 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_31)->SetText(::vl::WString::Unmanaged(L"Shared tracks"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_30.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_31)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_29.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_30));
+		}
+		(this->__vwsn_precompile_32 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout()));
+		(this->__vwsn_precompile_33 = new ::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_33)->SetBorder(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_32.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_33));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_29.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_32));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_11)->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_29));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_11));
@@ -22048,7 +22169,8 @@ Class (::demo::EasyLayoutTabPageConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		::vl::__vwsn::This(this->content)->BuildLayout();
-		::vl::__vwsn::This(this->__vwsn_precompile_21)->BuildLayout();
+		::vl::__vwsn::This(this->__vwsn_precompile_14)->BuildLayout();
+		::vl::__vwsn::This(this->__vwsn_precompile_33)->BuildLayout();
 		::vl::__vwsn::This(this->__vwsn_precompile_11)->BuildLayout();
 		::vl::__vwsn::This(this->__vwsn_precompile_1)->BuildLayout();
 	}
@@ -22068,17 +22190,34 @@ Class (::demo::EasyLayoutTabPageConstructor)
 		, __vwsn_precompile_11(static_cast<::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*>(nullptr))
 		, __vwsn_precompile_12(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyRowLayout>())
 		, __vwsn_precompile_13(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>())
-		, __vwsn_precompile_14(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
-		, __vwsn_precompile_15(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>())
-		, __vwsn_precompile_16(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
-		, __vwsn_precompile_17(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyRowLayout>())
-		, __vwsn_precompile_18(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>())
-		, __vwsn_precompile_19(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
-		, __vwsn_precompile_20(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>())
-		, __vwsn_precompile_21(static_cast<::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*>(nullptr))
+		, __vwsn_precompile_14(static_cast<::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*>(nullptr))
+		, __vwsn_precompile_15(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyRightLayout>())
+		, __vwsn_precompile_16(static_cast<::vl::presentation::controls::GuiTextList*>(nullptr))
+		, __vwsn_precompile_17(::vl::Ptr<::vl::presentation::controls::list::TextItem>())
+		, __vwsn_precompile_18(::vl::Ptr<::vl::presentation::controls::list::TextItem>())
+		, __vwsn_precompile_19(::vl::Ptr<::vl::presentation::controls::list::TextItem>())
+		, __vwsn_precompile_20(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyRightLayout>())
+		, __vwsn_precompile_21(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>())
+		, __vwsn_precompile_22(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>())
+		, __vwsn_precompile_23(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>())
+		, __vwsn_precompile_24(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyRowLayout>())
+		, __vwsn_precompile_25(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>())
+		, __vwsn_precompile_26(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_27(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>())
+		, __vwsn_precompile_28(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_29(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyRowLayout>())
+		, __vwsn_precompile_30(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>())
+		, __vwsn_precompile_31(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_32(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>())
+		, __vwsn_precompile_33(static_cast<::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*>(nullptr))
 		, content(static_cast<::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*>(nullptr))
 		, vertical(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, editor(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
+		, easyChoice(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
+		, easyCheck(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
+		, easyLeft1(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, easyLeft2(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, easyLeft3(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
 	{
 	}
 

@@ -181,10 +181,15 @@ GuiListControl
 				if (itemArranger)
 				{
 					auto viewPosition = GetViewPosition();
-					itemArranger->ReloadVisibleStyles();
+					ReloadVisibleStyles();
 					SetViewPosition(viewPosition);
 					CalculateView();
 				}
+			}
+
+			void GuiListControl::ReloadVisibleStyles()
+			{
+				itemArranger->ReloadVisibleStyles();
 			}
 
 			void GuiListControl::OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
@@ -234,7 +239,7 @@ GuiListControl
 				if (itemArranger && renderTarget)
 				{
 					auto viewPosition = GetViewPosition();
-					itemArranger->ReloadVisibleStyles();
+					ReloadVisibleStyles();
 					SetViewPosition(viewPosition);
 					CalculateView();
 				}

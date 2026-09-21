@@ -168,6 +168,10 @@ public static class GacUIShowcaseTests
         Check(found != null, "Missing " + type.ProgrammaticName + ": " + name);
         return found;
     }
+    static AutomationElement FindNamed(AutomationElement parent, string name, ControlType type)
+    {
+        return parent.FindFirst(TreeScope.Descendants, new AndCondition(new PropertyCondition(AutomationElement.NameProperty, name), new PropertyCondition(AutomationElement.ControlTypeProperty, type)));
+    }
     static T Pattern<T>(AutomationElement element, AutomationPattern pattern) { object value; Check(element.TryGetCurrentPattern(pattern, out value), "Missing " + pattern.ProgrammaticName + " on " + element.Current.Name); return (T)value; }
     static void Absent(AutomationElement element, AutomationPattern pattern) { object value; Check(!element.TryGetCurrentPattern(pattern, out value), "Unexpected " + pattern.ProgrammaticName + " on " + element.Current.Name); }
     static void Invoke(AutomationElement parent, string name) { Pattern<InvokePattern>(Named(parent, name, ControlType.Button), InvokePattern.Pattern).Invoke(); }
@@ -434,6 +438,128 @@ public static class GacUIShowcaseTests
             Check(day.Current.HasKeyboardFocus, "calendar logical focus");
             CheckFocus(day, "calendar focus");
         }
+    }
+    static void EasyLayout()
+    {
+        Test("Layout / Easy Layout / mixed docking controls");
+        var page = Page(Page(root, "Layout"), "Easy Layout");
+        var left = new[] { Named(page, "Left one", ControlType.Button), Named(page, "Left two", ControlType.Button), Named(page, "Left three", ControlType.Button) };
+        var check = Named(page, "Right check", ControlType.CheckBox);
+        var combos = Find(page, ControlType.ComboBox);
+        Check(combos.Count == 1, "one Easy Layout choice control");
+        var combo = combos[0];
+        // A combo's selected text is Selection, not its accessible Name.
+        Check(combo.Current.Name == "", "unlabeled combo does not use its changing value as Name");
+        var selection = Pattern<SelectionPattern>(combo, SelectionPattern.Pattern);
+        var expansion = Pattern<ExpandCollapsePattern>(combo, ExpandCollapsePattern.Pattern);
+        var toggle = Pattern<TogglePattern>(check, TogglePattern.Pattern);
+        Check(selection.Current.GetSelection().Length == 1 && selection.Current.GetSelection()[0].Current.Name == "First choice", "initial static choice");
+        var row = new[] { left[0], left[1], left[2], combo, check };
+        Action geometry = () => {
+            Wait(() => {
+                var first = row[0].Current.BoundingRectangle;
+                double right = first.Left - 1;
+                foreach (var control in row) {
+                    var bounds = control.Current.BoundingRectangle;
+                    if (control.Current.IsOffscreen || bounds.Width <= 0 || bounds.Height <= 0 || bounds.Top != first.Top || bounds.Bottom != first.Bottom || bounds.Left <= right) return false;
+                    right = bounds.Right;
+                }
+                return true;
+            }, "five nonoverlapping controls share their outer top and bottom");
+            Check(combo.Current.BoundingRectangle.Left - left[2].Current.BoundingRectangle.Right > left[1].Current.BoundingRectangle.Left - left[0].Current.BoundingRectangle.Right, "left and right docking groups leave unused space");
+            Check(Named(page, "First column", ControlType.Text).Current.BoundingRectangle.Top >= check.Current.BoundingRectangle.Bottom, "new row precedes the two existing bottom rows");
+            Named(page, "Shared tracks", ControlType.Text);
+        };
+        geometry();
+        foreach (var button in left) Pattern<InvokePattern>(button, InvokePattern.Pattern).Invoke();
+        Check(toggle.Current.ToggleState == ToggleState.Off && selection.Current.GetSelection()[0].Current.Name == "First choice", "inert buttons preserve local state");
+        toggle.Toggle(); Wait(() => toggle.Current.ToggleState == ToggleState.On, "new checkbox toggles");
+        expansion.Expand(); Wait(() => expansion.Current.ExpandCollapseState == ExpandCollapseState.Expanded, "new combo opens");
+        AutomationElement popup = null;
+        Wait(() => { popup = Popup(ControlType.List, combo); return popup != null; }, "static choice popup");
+        var choices = Items(popup);
+        Check(choices.Count == 3 && choices[0].Current.Name == "First choice" && choices[1].Current.Name == "Second choice" && choices[2].Current.Name == "Third choice", "static choice names");
+        Pattern<SelectionItemPattern>(choices[1], SelectionItemPattern.Pattern).Select();
+        Wait(() => selection.Current.GetSelection().Length == 1 && selection.Current.GetSelection()[0].Current.Name == "Second choice", "new combo selection");
+        expansion.Collapse(); Wait(() => expansion.Current.ExpandCollapseState == ExpandCollapseState.Collapsed, "new combo dismisses");
+        geometry();
+
+        var editor = Find(page, ControlType.Edit)[0];
+        var value = Pattern<ValuePattern>(editor, ValuePattern.Pattern);
+        value.SetValue("UIA Easy Layout retained text");
+        var direction = Pattern<TogglePattern>(Named(page, "Store vertical arrangement (press Rebuild to apply)", ControlType.CheckBox), TogglePattern.Pattern);
+        for (int i = 0; i < 2; i++) {
+            direction.Toggle(); Invoke(page, "Rebuild");
+            Wait(() => {
+                var editors = Find(page, ControlType.Edit);
+                if (editors.Count != 1) return false;
+                editor = editors[0]; value = Pattern<ValuePattern>(editor, ValuePattern.Pattern);
+                return value.Current.Value == "UIA Easy Layout retained text" && Find(page, ControlType.Text).Exists(text => text.Current.Name == "UIA Easy Layout retained text");
+            }, "rebuild preserves editor and label binding");
+            geometry();
+        }
+        var transform = Pattern<TransformPattern>(root, TransformPattern.Pattern);
+        var original = root.Current.BoundingRectangle;
+        var resizeWindowHandle = new IntPtr(root.Current.NativeWindowHandle);
+        transform.Resize(original.Width + 160, original.Height + 100);
+        Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000);
+        root = AutomationElement.FromHandle(resizeWindowHandle);
+        transform = Pattern<TransformPattern>(root, TransformPattern.Pattern);
+        var expanded = root.Current.BoundingRectangle;
+        Check(expanded.Width > original.Width && expanded.Height > original.Height, "larger Transform.Resize increases both dimensions");
+        geometry();
+        transform.Resize(original.Width, original.Height);
+        Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000);
+        root = AutomationElement.FromHandle(resizeWindowHandle);
+        transform = Pattern<TransformPattern>(root, TransformPattern.Pattern);
+        geometry();
+        transform.Resize(Math.Max(320, original.Width - 80), Math.Max(240, original.Height - 40));
+        Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000);
+        root = AutomationElement.FromHandle(resizeWindowHandle);
+        transform = Pattern<TransformPattern>(root, TransformPattern.Pattern);
+        var smaller = root.Current.BoundingRectangle;
+        Check(smaller.Width < expanded.Width && smaller.Height < expanded.Height, "smaller Transform.Resize reduces both dimensions from expanded size (minimum client size may clamp the request)");
+        geometry();
+        transform.Resize(original.Width, original.Height);
+        geometry();
+        var mainWindowHandle = new IntPtr(root.Current.NativeWindowHandle);
+        foreach (var palette in new[] { "Aurora", "Ember", "Moonstone", "Lagoon", "Rosewood", "Default" }) {
+            Test("palette refresh / " + palette);
+            var manager = Page(root, "Window Manager");
+            var oldRadio = Named(manager, palette, ControlType.RadioButton);
+            Pattern<SelectionItemPattern>(oldRadio, SelectionItemPattern.Pattern).Select();
+            Wait(() => { try { var name = oldRadio.Current.Name; return false; } catch (ElementNotAvailableException) { return true; } }, "old palette attachment retired after " + palette);
+            root = AutomationElement.FromHandle(mainWindowHandle);
+            manager = Page(root, "Window Manager");
+            var currentRadio = Named(manager, palette, ControlType.RadioButton);
+            Check(Pattern<SelectionItemPattern>(currentRadio, SelectionItemPattern.Pattern).Current.IsSelected, "palette " + palette + " selected after theme refresh");
+            page = Page(Page(root, "Layout"), "Easy Layout");
+            Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000);
+            root = AutomationElement.FromHandle(mainWindowHandle);
+            var currentLayoutPage = FindNamed(root, "Layout", ControlType.TabItem);
+            Check(currentLayoutPage != null, "Layout page reacquired after palette refresh " + palette);
+            var currentEasyPage = FindNamed(currentLayoutPage, "Easy Layout", ControlType.TabItem);
+            Check(currentEasyPage != null, "Easy Layout page reacquired after palette refresh " + palette);
+            Check(Pattern<SelectionItemPattern>(currentLayoutPage, SelectionItemPattern.Pattern).Current.IsSelected, "Layout remains selected after palette refresh " + palette);
+            Check(Pattern<SelectionItemPattern>(currentEasyPage, SelectionItemPattern.Pattern).Current.IsSelected, "Easy Layout remains selected after palette refresh " + palette);
+            page = currentEasyPage;
+            left = new[] { Named(page, "Left one", ControlType.Button), Named(page, "Left two", ControlType.Button), Named(page, "Left three", ControlType.Button) };
+            check = Named(page, "Right check", ControlType.CheckBox);
+            var currentCombos = Find(page, ControlType.ComboBox);
+            var editors = Find(page, ControlType.Edit);
+            Check(currentCombos.Count == 1 && editors.Count == 1, "palette refresh retains current controls");
+            combo = currentCombos[0]; editor = editors[0];
+            selection = Pattern<SelectionPattern>(combo, SelectionPattern.Pattern);
+            toggle = Pattern<TogglePattern>(check, TogglePattern.Pattern);
+            value = Pattern<ValuePattern>(editor, ValuePattern.Pattern);
+            row = new[] { left[0], left[1], left[2], combo, check };
+            Check(toggle.Current.ToggleState == ToggleState.On && value.Current.Value == "UIA Easy Layout retained text", "palette refresh preserves editor and checkbox state");
+            var comboSelection = selection.Current.GetSelection();
+            Check(comboSelection.Length == 1 && comboSelection[0].Current.Name == "Second choice", "palette refresh preserves combo selection");
+            Check(FindNamed(page, "UIA Easy Layout retained text", ControlType.Text) != null && FindNamed(page, "Shared tracks", ControlType.Text) != null, "palette refresh preserves bound labels and shared tracks");
+            geometry();
+        }
+        toggle.Toggle();
     }
     static void WalkTabs(AutomationElement container, int depth)
     {
@@ -1216,6 +1342,7 @@ public static class GacUIShowcaseTests
             if (scenario == "All" || scenario == "Text") TextControls();
             if (scenario == "All" || scenario == "Refresh") RefreshLists();
             if (scenario == "All" || scenario == "Calendar") Calendars();
+            if (scenario == "All" || scenario == "Layout") EasyLayout();
             if (scenario == "All" || scenario == "Walk") WalkTabs(root, 0);
             if (scenario == "All" || scenario == "Window") {
             Test("Window / Transform.Move uses physical screen coordinates");

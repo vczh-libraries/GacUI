@@ -274,8 +274,10 @@ GuiDocumentCommonInterface
 				/// </summary>
 				/// <param name="begin">The begin position of the selection area.</param>
 				/// <param name="end">The end position of the selection area.</param>
-				void										SetCaret(TextPos begin, TextPos end);				/// <summary>Ensure the caret is visible by scrolling the view if necessary.</summary>
-				void												EnsureCaretVisible();				/// <summary>Calculate a caret using a specified point.</summary>
+				void										SetCaret(TextPos begin, TextPos end);
+				/// <summary>Ensure the caret is visible by scrolling the view if necessary.</summary>
+				void										EnsureCaretVisible();
+				/// <summary>Calculate a caret using a specified point.</summary>
 				/// <returns>The calculated caret.</returns>
 				/// <param name="point">The specified point.</param>
 				TextPos										CalculateCaretFromPoint(Point point);
@@ -400,7 +402,11 @@ GuiDocumentCommonInterface
 				/// <returns>The href attribute of the active hyperlink.</returns>
 				WString										GetActiveHyperlinkReference();
 				/// <summary>Get the active hyperlink run, or null if no hyperlink is active.</summary>
+				/// <returns>The first run in the active hyperlink, or null.</returns>
 				Ptr<DocumentHyperlinkRun>					GetActiveHyperlink();
+				/// <summary>Activate the hyperlink at a text position and raise its execution events.</summary>
+				/// <returns>True if execution was requested; false if there is no hyperlink, the control is disabled, or activating the hyperlink disposes the control.</returns>
+				/// <param name="position">A text position inside the hyperlink.</param>
 				bool										ExecuteHyperlink(TextPos position);
 				/// <summary>Get the edit mode of this control.</summary>
 				/// <returns>The edit mode.</returns>

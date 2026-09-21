@@ -166,6 +166,69 @@ function Assert-Property([string]$property, [string]$expected) {
 function Synthetic-Count([string]$method, [int]$target = 1) {
     return @(Get-Content (Join-Path $PSScriptRoot "UiaFixture-$FixtureProcessId.synthetic.txt") -Encoding Unicode | Where-Object { $_ -match ("target=$target\s+" + [regex]::Escape($method) + "\s") }).Count
 }
+function Wait-PropertyText([string]$text) {
+    $deadline = [DateTime]::UtcNow.AddSeconds(30)
+    do {
+        $composition = (State).SubWindows[0].composition
+        if (@(Get-TextNodes $composition | Where-Object Text -CEQ $text).Count) { return }
+        $pending = [Collections.Generic.Stack[object]]::new(); $pending.Push($composition)
+        while ($pending.Count) {
+            $node = $pending.Pop()
+            if ($node.elementDocument) {
+                [xml]$document = $node.elementDocument
+                if ($document.Doc.Content.InnerText -ceq $text) { return }
+            }
+            foreach ($child in $node.children) { $pending.Push($child) }
+        }
+        Start-Sleep -Milliseconds 100
+    } while ([DateTime]::UtcNow -lt $deadline)
+    throw "Property text '$text' did not appear."
+}
+function Test-InlineDrafts {
+    Write-Host 'TEST inspector / inline drafts, recycling, Escape and explicit commit'
+    & $driver -AsPort $AsPort -Window 1 -ClickLabel 'UIA_RangeValueValuePropertyId*' -Scroll | Out-Null
+    $labels = @(Get-TextNodes (State).SubWindows[0].composition)
+    $row = @($labels | Where-Object Text -Like 'UIA_RangeValueValuePropertyId*')[0]
+    $value = @($labels | Where-Object { $_.Control -eq 'ListItemBackground' -and $_.Bounds.x1 -gt $row.Bounds.x2 -and $_.Bounds.y1 -eq $row.Bounds.y1 })[0]
+    if (!$value) { throw 'Missing numeric value cell.' }
+    $original = $value.Text
+    $draft = if ($original -eq '42') { '43' } else { '42' }
+    $writes = Synthetic-Count 'SetValue(R8)'
+    $editPoint = '!LeftClick:{0},{1}' -f [int](($value.Bounds.x1+$value.Bounds.x2)/2), [int](($value.Bounds.y1+$value.Bounds.y2)/2)
+    Input $editPoint 1
+    Input '!KeyPress:Ctrl+A' 1
+    Input "!Type:$draft" 1
+    Wait-PropertyText $draft
+    Input ('!MouseMove:{0},{1}' -f [int](($row.Bounds.x1+$row.Bounds.x2)/2), [int](($row.Bounds.y1+$row.Bounds.y2)/2)) 1
+    Input '!MouseWheelDown:9' 1
+    $pending = [Collections.Generic.Stack[object]]::new(); $pending.Push((State).SubWindows[0].composition)
+    while ($pending.Count) {
+        $node = $pending.Pop()
+        if ($node.control -eq 'SinglelineTextBox') { throw 'Inline editor was not recycled out of view.' }
+        foreach ($child in $node.children) { $pending.Push($child) }
+    }
+    Input '!MouseWheelUp:9' 1
+    Wait-PropertyText $draft
+    if ((Synthetic-Count 'SetValue(R8)') -ne $writes) { throw 'Recycling committed the draft.' }
+    Input '!KeyPress:Esc' 1
+    Wait-PropertyText $original
+    if ((Synthetic-Count 'SetValue(R8)') -ne $writes) { throw 'Escape wrote to the provider.' }
+    Input $editPoint 1
+    Input '!KeyPress:Ctrl+A' 1
+    Input '!Type:invalid' 1
+    Input '!KeyPress:Enter' 1
+    Wait-PropertyText 'Enter a valid value within the supported range.'
+    if ((Synthetic-Count 'SetValue(R8)') -ne $writes) { throw 'Invalid draft reached the provider.' }
+    Input '!KeyPress:Esc' 1
+    Wait-PropertyText $original
+    Input $editPoint 1
+    Input '!KeyPress:Ctrl+A' 1
+    Input "!Type:$draft" 1
+    Input '!KeyPress:Enter' 1
+    Wait-Ready 1
+    Wait-PropertyText $draft
+    if ((Synthetic-Count 'SetValue(R8)') -ne $writes+1) { throw 'Explicit inline commit did not call the setter exactly once.' }
+}
 function Getter-Field([string]$getter, [string]$parameter) {
     & $driver -AsPort $AsPort -Window 1 -ClickLabel $getter -Scroll | Out-Null
     $composition = (State).SubWindows[0].composition
@@ -218,9 +281,11 @@ for ($cycle = 1; $cycle -le $Cycles; $cycle++) {
     if (Get-Process UiaListApp -ErrorAction SilentlyContinue) { throw 'An inspector is already running.' }
     $before = Invoke-Count
     $started = [DateTime]::UtcNow
-    $hostExecutable = (Get-Process -Id $PID).Path
+    $hostExecutable = Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'
     # The repository wrapper launches each ordinary Debug GUI run.
-    $process = Start-Process -FilePath $hostExecutable -WindowStyle Hidden -WorkingDirectory $product -ArgumentList @('-NoProfile','-File',$wrapper,'-Mode','CLI','-Executable','UiaListApp','-Configuration','Debug','-Platform',$Platform) -PassThru
+    $process = Start-Process -FilePath $hostExecutable -WindowStyle Hidden -WorkingDirectory $product -ArgumentList @('-NoProfile','-File',"`"$wrapper`"",'-Mode','CLI','-Executable','UiaListApp','-Configuration','Debug','-Platform',$Platform) -PassThru
+    # Retain the handle so Windows PowerShell preserves ExitCode after shutdown.
+    $processHandle = $process.Handle
     $deadline = [DateTime]::UtcNow.AddSeconds(30)
     do {
         if ($process.HasExited) { throw "Inspector startup exited with $($process.ExitCode)." }
@@ -304,6 +369,7 @@ for ($cycle = 1; $cycle -le $Cycles; $cycle++) {
         Assert-Property 'UIA_LabeledByPropertyId' 'No result*'
         Assert-Property 'UIA_ControllerForPropertyId' '*, 0)*'
         Assert-Property 'UIA_HelpTextPropertyId' 'Synthetic combinations*'
+        Test-InlineDrafts
         Click 'Actions' 1
         $toggles=Synthetic-Count 'Toggle'
         Click 'Toggle' 1 -OnlyButton

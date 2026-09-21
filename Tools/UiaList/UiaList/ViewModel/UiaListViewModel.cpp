@@ -58,11 +58,34 @@ namespace uialist
 		auto size = GetImageSize();
 		if (!GetIsAvailable() || x < 0 || y < 0 || x >= size.x || y >= size.y) return 0;
 		auto px = x + capture->bounds.left, py = y + capture->bounds.top;
-		vint key = 0, depth = -1;
-		for (auto&& node : owner->snapshot->nodes)
+		auto contains = [&](const native::NodeData& node)
 		{
 			auto b = node.bounds;
-			if (!node.offscreen && b.right > b.left && b.bottom > b.top && px >= b.left && py >= b.top && px < b.right && py < b.bottom && node.depth > depth)
+			return !node.offscreen && b.right > b.left && b.bottom > b.top && px >= b.left && py >= b.top && px < b.right && py < b.bottom;
+		};
+		auto&& nodes = owner->snapshot->nodes;
+		vint begin = 0, end = nodes.Count(), windowDepth = -1;
+		for (vint i = 0; i < nodes.Count(); i++)
+		{
+			auto&& node = nodes[i];
+			if (node.controlType == UIA_WindowControlTypeId && contains(node) && node.depth > windowDepth)
+			{
+				begin = i;
+				windowDepth = node.depth;
+			}
+		}
+		// Hosted windows can be shallower than the page behind them. Resolve the
+		// window branch before comparing descendant depths. Raw nodes are preorder.
+		if (windowDepth >= 0)
+		{
+			end = begin + 1;
+			while (end < nodes.Count() && nodes[end].depth > windowDepth) end++;
+		}
+		vint key = 0, depth = -1;
+		for (vint i = begin; i < end; i++)
+		{
+			auto&& node = nodes[i];
+			if (contains(node) && node.depth > depth)
 			{
 				key = node.key;
 				depth = node.depth;

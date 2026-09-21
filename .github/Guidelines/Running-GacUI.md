@@ -1,10 +1,10 @@
-# Running a GacUI Application Project
+﻿# Running a GacUI Application Project
 
 - Go to `Windows Specific` section if you are on Windows.
 - Go to `Linux Specific` section if you are on Linux.
 - Go to `macOS Specific` section if you are on macOS.
 
-When the model `gpt-5.3-codex-spark` is available:
+When the model `gpt-5.6-luna` is available:
 - If multiple steps need to be done to operate the GUI:
   - Summarize what to look for and what to do.
   - Start a sub agent with this model to perform all GUI operations.
@@ -18,7 +18,7 @@ When the model `gpt-5.3-codex-spark` is available:
 
 ## Automation Service via HTTP
 
-This is a very useful way for coding agent to debug GacUI applications.
+Prefer automation Controls/Dom geometry and IO state when debugging layout. Use screenshots as a last resort when those observations cannot explain the issue. Screenshots are useful for native renderer output and for applications without an automation endpoint, such as CppTest_Tui; follow their documented interaction workflow.
 
 Automation is composed explicitly by each application:
 - Construct the concrete automation service that matches the active controller: `WindowsAutomationService` for an ordinary Windows app, `WindowsAutomationServiceHosted` for hosted mode, `WindowsAutomationServiceRenderer` for a Windows remote renderer, `RemoteProtocolAutomationService` for a remote core, or the platform renderer service on Linux/macOS.

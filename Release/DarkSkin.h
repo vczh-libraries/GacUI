@@ -4242,7 +4242,6 @@ namespace vl_workflow_global
 
 		::darkskin::ColorPackage CreateColorPackageInternal(::darkskin::ColorPackage accents);
 		::darkskin::ColorPackage CreateDefaultColorPackage();
-		void InstallColorPackage(::darkskin::ColorPackage colors);
 		::vl::Ptr<::vl::presentation::DocumentModel> CreateBaselineDocument();
 
 		static DarkSkin& Instance();

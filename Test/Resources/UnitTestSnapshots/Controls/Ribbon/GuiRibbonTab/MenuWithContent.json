@@ -85,6 +85,8 @@
     [83, "Polygon"],
     [84, "Polygon"],
     [85, "SolidBackground"],
+    [86, "SolidBackground"],
+    [87, "SolidLabel"],
     [88, "SolidBackground"],
     [89, "SolidLabel"],
     [90, "SolidBackground"],
@@ -94,9 +96,7 @@
     [94, "SolidBackground"],
     [95, "SolidLabel"],
     [96, "SolidBackground"],
-    [97, "SolidLabel"],
-    [98, "SolidBackground"],
-    [99, "SolidLabel"]
+    [97, "SolidLabel"]
   ],
   "imageCreations": [
     {"id": 15, "imageData": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAABpUlEQVR4nKWSMXLUQBBF37ioQhupRcISSZsRihOsHEGRIG4gTmCTEa4jTIRu4A0hYsnIrL2BOIGGBOxoeiIN0RC4vF5sLxvwq7qmuv\/Ur99\/xsQY+R88+BfZftOGQCMJBQkW6AXauhJ7fcfscrD4pJ3xfu5i9AQAVASRBESkbF5ciWwcvPmwjvnj9HDRlF1z2nfGmLkbo\/eXPgXFjRGZllRPQa3toCwADgDalRUCaGDZvO\/bbGLmGsB7nwK4Ma5FUHO5Tr\/\/MCnJjdMDgOO6UBLB\/87y7NHsaAi5V2tBFTe6t\/2yrkSo3Bi9G51XFf1LAEADqF6ds6lJ3c\/hq4vxsF\/WLcBqUdssm6UE4OF9rxDABigASeDZy9ev8jRt76SbCBj0joAGEBS9sHRWIUAf7PmiOTIAZbMqsklGNjGpqus2gjHGe+vLuZPtPn\/+sare2dic2rg9P2AH6uomKIAiL1sRwbnhZHu+8yNdo2m1sNZWWTY7i27wq7aUbX6ng002F1pkT2Znqhb7q29u83sFZCqFc8OJG4as\/9ysbvN7V9iHvQ724Q+vreVhBisRLgAAAABJRU5ErkJggg==", "imageDataOmitted": false},

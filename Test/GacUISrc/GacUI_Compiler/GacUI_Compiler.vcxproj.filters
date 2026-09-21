@@ -192,9 +192,6 @@
     <Xml Include="..\..\Resources\App\FullControlTest\RefreshListTabPages.xml">
       <Filter>Resource Files\FullControlTest</Filter>
     </Xml>
-    <Xml Include="..\..\Resources\App\DarkSkin\BaselineDocuments.xml">
-      <Filter>Resource Files\DarkSkin</Filter>
-    </Xml>
     <Xml Include="..\..\Resources\App\RemoteProtocolTest\Resource.xml">
       <Filter>Resource Files\RemoteProtocolTest</Filter>
     </Xml>

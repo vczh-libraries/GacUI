@@ -191,10 +191,36 @@ TEST_FILE
 {
 	TEST_CASE(L"TUI presets share every neutral role and preserve the default palette")
 	{
-		auto skyblue = tuiskin::CreateSkyblueColorPackage();
-		TEST_ASSERT(tuiskin::CreateDefaultColorPackage() == skyblue);
+		auto skyblue = tuiskin::CreateDefaultColorPackage();
+		TEST_ASSERT(tuiskin::TuiTheme::GetColorPackage() == skyblue);
+		TEST_ASSERT(skyblue.ControlBackground == Color(0x00, 0x00, 0x00));
+		TEST_ASSERT(skyblue.ControlText == Color(0xFF, 0xFF, 0xFF));
+		TEST_ASSERT(skyblue.ControlBorder == Color(0x80, 0x80, 0x80));
+		TEST_ASSERT(skyblue.ControlBorderDisabled == Color(0x40, 0x40, 0x40));
 		TEST_ASSERT(skyblue.ControlBorderFocused == Color(0x87, 0xCE, 0xFA));
-		TEST_ASSERT(skyblue.MenuBackgroundHighlighted == Color(0, 0, 0x80));
+		TEST_ASSERT(skyblue.LabelText == Color(0x80, 0x80, 0x80));
+		TEST_ASSERT(skyblue.ShortcutKeyBackground == Color(0xFF, 0xFF, 0xFF));
+		TEST_ASSERT(skyblue.ShortcutKeyText == Color(0x00, 0x00, 0x00));
+		TEST_ASSERT(skyblue.MenuBackground == Color(0x40, 0x40, 0x40));
+		TEST_ASSERT(skyblue.MenuText == Color(0xFF, 0xFF, 0xFF));
+		TEST_ASSERT(skyblue.MenuTextDisabled == Color(0x80, 0x80, 0x80));
+		TEST_ASSERT(skyblue.MenuBackgroundHighlighted == Color(0x00, 0x00, 0x80));
+		TEST_ASSERT(skyblue.MenuTextHighlighted == Color(0xFF, 0xFF, 0xFF));
+		TEST_ASSERT(skyblue.ItemBackground == Color(0x00, 0x00, 0x00));
+		TEST_ASSERT(skyblue.ItemText == Color(0xFF, 0xFF, 0xFF));
+		TEST_ASSERT(skyblue.ItemTextDisabled == Color(0x80, 0x80, 0x80));
+		TEST_ASSERT(skyblue.ItemBackgroundHighlighted == Color(0x00, 0x00, 0x80));
+		TEST_ASSERT(skyblue.ItemTextHighlighted == Color(0xFF, 0xFF, 0xFF));
+		TEST_ASSERT(skyblue.ItemBackgroundSelected == Color(0x87, 0xCE, 0xFA));
+		TEST_ASSERT(skyblue.ItemTextSelected == Color(0x40, 0x40, 0x40));
+		TEST_ASSERT(skyblue.ButtonBackground == Color(0x40, 0x40, 0x40));
+		TEST_ASSERT(skyblue.ButtonText == Color(0xFF, 0xFF, 0xFF));
+		TEST_ASSERT(skyblue.ButtonIcon == Color(0x80, 0x80, 0x80));
+		TEST_ASSERT(skyblue.ButtonTextDisabled == Color(0x80, 0x80, 0x80));
+		TEST_ASSERT(skyblue.ButtonBackgroundHighlighted == Color(0x87, 0xCE, 0xFA));
+		TEST_ASSERT(skyblue.ButtonTextHighlighted == Color(0x40, 0x40, 0x40));
+		TEST_ASSERT(skyblue.ButtonBackgroundPressed == Color(0xC0, 0xC0, 0xC0));
+		TEST_ASSERT(skyblue.ButtonTextPressed == Color(0xFF, 0xFF, 0xFF));
 		List<Color> accents;
 		for (auto colors : { tuiskin::CreatePinkColorPackage(), tuiskin::CreateOrangeColorPackage(), tuiskin::CreateGrassPackage(), tuiskin::CreateEmeraldPackage(), skyblue, tuiskin::CreatePurplePackage() })
 		{
@@ -236,7 +262,6 @@ TEST_FILE
 				controller->CallbackService()->InstallListener(&resources);
 				RegisterTuiRenderers();
 				hosted.Initialize();
-				tuiskin::SetColorPackage(tuiskin::CreateDefaultColorPackage());
 				auto skin = Ptr(new tuiskin::TuiTheme);
 				theme::RegisterTheme(skin);
 				{
@@ -314,6 +339,14 @@ TEST_FILE
 					date->SetSelectedDate(selectedDate);
 					auto treeView = new GuiTreeView(theme::ThemeName::TreeView);
 					add(treeView, Rect(50, 0, 75, 12));
+					auto editor = new GuiMultilineTextBox(theme::ThemeName::MultilineTextBox);
+					add(editor, Rect(50, 14, 100, 18));
+					editor->LoadTextAndClearUndoRedo(L"01234567890123456789012345678901234567890123456789012345678901234567890123456789");
+					editor->SetCaret(TextPos(0, 80), TextPos(0, 80));
+					editor->SetSelectionText(L"first");
+					editor->SetSelectionText(L"second");
+					TEST_ASSERT(editor->Undo());
+					editor->SetCaret(TextPos(0, 70), TextPos(0, 73));
 					GuiWindow modal(theme::ThemeName::Window);
 					modal.SetClientSize(Size(30, 8));
 					auto node = Ptr(new tree::MemoryNodeProvider);
@@ -325,6 +358,9 @@ TEST_FILE
 					node->SetExpanding(true);
 					List<Func<void()>> steps;
 					Point viewPosition;
+					Point editorPosition;
+					Ptr<DocumentModel> editorDocument;
+					WString editorText;
 					NativeRect mainBounds;
 					NativeRect modalBounds;
 					list::ListViewColumnItemArranger* arranger = nullptr;
@@ -363,12 +399,18 @@ TEST_FILE
 						TEST_ASSERT(arranger && arranger->GetColumnButtons().Count() == 2);
 						header = arranger->GetColumnButtons()[0];
 						headerFlag = header->GetDisposedFlag();
+						editorPosition = editor->GetViewPosition();
+						editorDocument = editor->GetDocument();
+						editorText = editor->GetText();
+						TEST_ASSERT(editorPosition.x > 0 && editor->GetSelectionText() == L"012");
+						TEST_ASSERT(editor->CanUndo() && editor->CanRedo());
 					});
 					steps.Add(checkColumnResizing);
-					for (auto colors : { tuiskin::CreatePinkColorPackage(), tuiskin::CreateOrangeColorPackage(), tuiskin::CreateGrassPackage(), tuiskin::CreateEmeraldPackage(), tuiskin::CreatePurplePackage(), tuiskin::CreateSkyblueColorPackage() })
+					for (auto colors : { tuiskin::CreatePinkColorPackage(), tuiskin::CreateOrangeColorPackage(), tuiskin::CreateGrassPackage(), tuiskin::CreateEmeraldPackage(), tuiskin::CreatePurplePackage(), tuiskin::CreateDefaultColorPackage() })
 					{
 						steps.Add([&, colors]()
 						{
+							editor->SetFocused();
 							arrowFlag = header->GetSubMenuHost()->GetDisposedFlag();
 							tuiskin::SetColorPackage(colors);
 							GetApplication()->RefreshThemes();
@@ -377,6 +419,14 @@ TEST_FILE
 						steps.Add([&, colors]()
 						{
 							checkLabelColors(colors);
+							{
+								auto anotherSkin = Ptr(new tuiskin::TuiTheme);
+								GuiWindow anotherWindow(theme::ThemeName::Window);
+								TEST_ASSERT(tuiskin::TuiTheme::GetColorPackage() == colors);
+								auto label = new GuiLabel(theme::ThemeName::Label);
+								anotherWindow.GetContainerComposition()->AddChild(label->GetBoundsComposition());
+								TEST_ASSERT(label->GetTextColor() == colors.LabelText);
+							}
 							TEST_ASSERT(main.GetOpening() && main.GetNativeWindow()->GetBounds() == mainBounds);
 							TEST_ASSERT(!headerFlag->IsDisposed() && arranger->GetColumnButtons()[0] == header);
 							TEST_ASSERT(arrowFlag->IsDisposed());
@@ -389,6 +439,9 @@ TEST_FILE
 							TEST_ASSERT(headerTemplate->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->GetColor() == colors.ButtonBackgroundPressed);
 							TEST_ASSERT(listView->GetSelected(20) && node->GetExpanding());
 							TEST_ASSERT(listView->GetViewPosition() == viewPosition);
+							TEST_ASSERT(editor->GetFocused() && editor->GetDocument() == editorDocument && editor->GetText() == editorText);
+							TEST_ASSERT(editor->GetSelectionText() == L"012" && editor->GetViewPosition() == editorPosition);
+							TEST_ASSERT(editor->CanUndo() && editor->CanRedo());
 							TEST_ASSERT(date->GetSelectedDate().osMilliseconds == selectedDate.osMilliseconds);
 							TEST_ASSERT(contentPopup->GetControlTemplateObject() == contentTemplate);
 							TEST_ASSERT(content->GetText() == L"Retained content");
@@ -404,7 +457,7 @@ TEST_FILE
 					});
 					steps.Add([&]()
 					{
-						checkLabelColors(tuiskin::CreateSkyblueColorPackage());
+						checkLabelColors(tuiskin::CreateDefaultColorPackage());
 						disabledLabel->SetEnabled(false);
 					});
 					steps.Add([&]()

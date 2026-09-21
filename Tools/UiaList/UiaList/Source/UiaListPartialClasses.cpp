@@ -2711,12 +2711,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf240_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf240_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf240_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::__vwsnf240_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf240_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf240_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto choice = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_item_);
 		return choice;
@@ -2724,84 +2724,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf241_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf241_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf241_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::__vwsnf241_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf241_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf242_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf242_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf242_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf243_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf243_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf243_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetFont();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetFont(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf244_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf244_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf244_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->GetVisible();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->SetVisible(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf245_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf245_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf245_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf241_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->inlineEditor)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -2814,33 +2742,51 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf246_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf246_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf242_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::__vwsnf242_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf246_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const
+	void __vwsnf242_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const
 	{
-		if ((::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN))
+		if (((::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN) || (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_ESCAPE)))
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetRow().Obj())->Commit();
-			(::vl::__vwsn::This(arguments)->handled = true);
-		}
-		if ((::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_ESCAPE))
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetRow().Obj())->Cancel();
+			auto commit = (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN);
+			auto row = __vwsnthis_0->ViewModel;
+			::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost(), vl::Func(::vl_workflow_global::__vwsnf243_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__(commit, row, __vwsnthis_0)));
 			(::vl::__vwsn::This(arguments)->handled = true);
 		}
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf247_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf247_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf243_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__::__vwsnf243_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__(bool __vwsnctor_commit, ::vl::Ptr<::uialist::vm::IPropertyRowViewModel> __vwsnctor_row, ::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
+		:commit(__vwsnctor_commit)
+		, row(__vwsnctor_row)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf243_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__::operator()() const
+	{
+		if (this->commit)
+		{
+			::vl::__vwsn::This(this->row.Obj())->Commit();
+		}
+		else
+		{
+			::vl::__vwsn::This(this->row.Obj())->Cancel();
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf244_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::__vwsnf244_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf247_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf244_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->inlineEditor)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -2853,12 +2799,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf248_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf248_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf245_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::__vwsnf245_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf248_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf245_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->inlineEditor)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -2871,16 +2817,73 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf249_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf249_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf246_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::__vwsnf246_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf249_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf246_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		if (::vl::__vwsn::This(__vwsnthis_0->self)->GetEditing())
+		if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetIsEditing())
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetRow().Obj())->SetDraftText(::vl::__vwsn::This(__vwsnthis_0->inlineEditor)->GetText());
+			::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetDraftText(::vl::__vwsn::This(__vwsnthis_0->inlineEditor)->GetText());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf247_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::__vwsnf247_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf247_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetItemSource();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueEnumerable>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetItemSource(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf248_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::__vwsnf248_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf248_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const
+	{
+		if (((::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN) || (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_ESCAPE)))
+		{
+			auto commit = (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN);
+			auto row = __vwsnthis_0->ViewModel;
+			::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost(), vl::Func(::vl_workflow_global::__vwsnf249_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__(commit, row, __vwsnthis_0)));
+			(::vl::__vwsn::This(arguments)->handled = true);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf249_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__::__vwsnf249_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__(bool __vwsnctor_commit, ::vl::Ptr<::uialist::vm::IPropertyRowViewModel> __vwsnctor_row, ::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
+		:commit(__vwsnctor_commit)
+		, row(__vwsnctor_row)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf249_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__::operator()() const
+	{
+		if (this->commit)
+		{
+			::vl::__vwsn::This(this->row.Obj())->Commit();
+		}
+		else
+		{
+			::vl::__vwsn::This(this->row.Obj())->Cancel();
 		}
 	}
 
@@ -2904,51 +2907,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf250_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf250_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf250_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::__vwsnf250_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf250_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->GetItemSource();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueEnumerable>>(__vwsn_value_);
-		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_5)->SetItemSource(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf251_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf251_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf251_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const
-	{
-		if ((::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN))
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetRow().Obj())->Commit();
-			(::vl::__vwsn::This(arguments)->handled = true);
-		}
-		if ((::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_ESCAPE))
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetRow().Obj())->Cancel();
-			(::vl::__vwsn::This(arguments)->handled = true);
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf252_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf252_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf252_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf250_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->choiceEditor)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -2961,12 +2925,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf253_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf253_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf251_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::__vwsnf251_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf253_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf251_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->choiceEditor)->GetVisible();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -2979,12 +2943,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf254_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf254_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf252_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::__vwsnf252_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf254_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf252_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->choiceEditor)->GetSelectedIndex();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint>(__vwsn_value_);
@@ -2997,17 +2961,53 @@ Closures
 
 	//-------------------------------------------------------------------
 
+	__vwsnf253_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::__vwsnf253_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf253_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetIsEditing())
+		{
+			::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetChoiceIndex(::vl::__vwsn::This(__vwsnthis_0->choiceEditor)->GetSelectedIndex());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf254_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::__vwsnf254_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf254_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetFocusControl();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::controls::GuiControl*>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetFocusControl(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
 	__vwsnf255_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf255_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf255_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	::vl::presentation::templates::GuiTemplate* __vwsnf255_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		if (::vl::__vwsn::This(__vwsnthis_0->self)->GetEditing())
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetRow().Obj())->SetChoiceIndex(::vl::__vwsn::This(__vwsnthis_0->choiceEditor)->GetSelectedIndex());
+			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::uialist::vm::IPropertyRowViewModel>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			{
+				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::uialist::PropertyInlineEditor(::vl::__vwsn::Unbox<::vl::Ptr<::uialist::vm::IPropertyRowViewModel>>(__vwsn_viewModel_)));
+			}
 		}
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
 	}
 
 	//-------------------------------------------------------------------
@@ -3017,12 +3017,15 @@ Closures
 	{
 	}
 
-	void __vwsnf256_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const
+	void __vwsnf256_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		if (((::vl::__vwsn::This(arguments)->button == ::vl::presentation::NativeMouseButton::Left) && static_cast<bool>(::vl::__vwsn::This(__vwsnthis_0->self)->GetRow())))
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetRow().Obj())->BeginEdit();
+			return;
 		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3034,13 +3037,13 @@ Closures
 
 	void __vwsnf257_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetRow();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::uialist::vm::IPropertyRowViewModel>>(__vwsn_value_);
-		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetRow(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3052,13 +3055,13 @@ Closures
 
 	void __vwsnf258_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetEditing();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetEditing(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2.Obj())->SetFont(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3068,12 +3071,15 @@ Closures
 	{
 	}
 
-	void __vwsnf259_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()() const
+	void __vwsnf259_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		if (::vl::__vwsn::This(__vwsnthis_0->self)->GetEditing())
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->GetVisible();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost(), vl::Func(::vl_workflow_global::__vwsnf260_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__(__vwsnthis_0)));
+			return;
 		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->SetVisible(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -3090,23 +3096,85 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf260_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__::__vwsnf260_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf260_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf260_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf260_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__::operator()() const
+	void __vwsnf260_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiMouseEventArgs* arguments) const
 	{
+		if (((::vl::__vwsn::This(arguments)->button == ::vl::presentation::NativeMouseButton::Left) && static_cast<bool>(::vl::__vwsn::This(__vwsnthis_0->self)->GetRow())))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetRow().Obj())->BeginEdit();
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf261_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf261_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf261_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetRow();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::uialist::vm::IPropertyRowViewModel>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetRow(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf262_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf262_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf262_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetEditing();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetEditing(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf263_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::__vwsnf263_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf263_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_::operator()() const
+	{
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->editorRows.Obj())->Clear();
 		if (::vl::__vwsn::This(__vwsnthis_0->self)->GetEditing())
 		{
-			if ((::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetRow().Obj())->GetEditorKind() == static_cast<::vl::vint>(3)))
-			{
-				::vl::__vwsn::This(__vwsnthis_0->choiceEditor)->SetFocused();
-			}
-			else
-			{
-				::vl::__vwsn::This(__vwsnthis_0->inlineEditor)->SetFocused();
-			}
+			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->editorRows.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(__vwsnthis_0->self)->GetRow()));
+			::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost(), vl::Func(::vl_workflow_global::__vwsnf264_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__(__vwsnthis_0)));
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf264_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__::__vwsnf264_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf264_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__::operator()() const
+	{
+		if ((::vl::__vwsn::This(__vwsnthis_0->self)->GetEditing() && (::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(__vwsnthis_0->editorItems)->GetStackItems()).Obj())->GetCount() != static_cast<::vl::vint>(0))))
+		{
+			auto editor = ::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::vl::presentation::templates::GuiGridEditorTemplate>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->editorItems)->GetStackItems()[static_cast<::vl::vint>(0)])->Children()[static_cast<::vl::vint>(0)]));
+			::vl::__vwsn::This(::vl::__vwsn::This(editor)->GetFocusControl())->SetFocused();
 		}
 	}
 
@@ -7957,55 +8025,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc150_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsnc150_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnc150_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsnc150_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
-		this->__vwsn_bind_cache_1 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc150_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc150_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetDisplayValue(); } catch(...){ return ::vl::WString::Unmanaged(L""); } }();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetDraftText();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc150_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		if (static_cast<bool>(__vwsn_bind_handler_1_0))
-		{
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->DisplayValueChanged, __vwsn_bind_handler_1_0);
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-		}
-		(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-		(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->DisplayValueChanged, ::vl::Func<void()>(this, &__vwsnc150_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc150_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
+	void __vwsnc150_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc150_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc150_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowChanged, ::vl::Func<void()>(this, &__vwsnc150_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->DisplayValueChanged, ::vl::Func<void()>(this, &__vwsnc150_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->DraftTextChanged, ::vl::Func<void()>(this, &__vwsnc150_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc150_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc150_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8015,85 +8067,17 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc150_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc150_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->DraftTextChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->DisplayValueChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
-			(__vwsn_bind_cache_1 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc151_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsnc151_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc151_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPrimaryTextColor();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc151_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc151_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PrimaryTextColorChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc151_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc151_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc151_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PrimaryTextColorChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -8102,39 +8086,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc152_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsnc152_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnc151_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsnc151_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc152_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc151_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetCanEdit();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc152_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc151_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc152_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc151_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc152_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CanEditChanged, ::vl::Func<void()>(this, &__vwsnc151_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc152_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc151_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8144,17 +8128,17 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc152_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc151_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CanEditChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -8163,39 +8147,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc153_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsnc153_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnc152_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsnc152_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc153_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc152_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetEditing());
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetEditorKind() != static_cast<::vl::vint>(3));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc153_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc152_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc153_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc152_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->EditingChanged, ::vl::Func<void()>(this, &__vwsnc153_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->EditorKindChanged, ::vl::Func<void()>(this, &__vwsnc152_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc153_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc152_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8205,17 +8189,17 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc153_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc152_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->EditingChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->EditorKindChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -8224,55 +8208,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc154_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsnc154_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnc153_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsnc153_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
-		this->__vwsn_bind_cache_1 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc154_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc153_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetDraftText(); } catch(...){ return ::vl::WString::Unmanaged(L""); } }();
+		auto __vwsn_bind_activator_result_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetChoices());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc154_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		if (static_cast<bool>(__vwsn_bind_handler_1_0))
-		{
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->DraftTextChanged, __vwsn_bind_handler_1_0);
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-		}
-		(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-		(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->DraftTextChanged, ::vl::Func<void()>(this, &__vwsnc154_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc154_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
+	void __vwsnc153_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc154_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc153_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowChanged, ::vl::Func<void()>(this, &__vwsnc154_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->DraftTextChanged, ::vl::Func<void()>(this, &__vwsnc154_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ChoicesChanged, ::vl::Func<void()>(this, &__vwsnc153_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc154_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc153_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8282,25 +8250,18 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc154_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc153_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ChoicesChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->DraftTextChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
-			(__vwsn_bind_cache_1 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -8308,55 +8269,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc155_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsnc155_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnc154_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsnc154_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
-		this->__vwsn_bind_cache_1 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc155_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc154_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetCanEdit(); } catch(...){ return false; } }();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetCanEdit();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc155_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		if (static_cast<bool>(__vwsn_bind_handler_1_0))
-		{
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->CanEditChanged, __vwsn_bind_handler_1_0);
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-		}
-		(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-		(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->CanEditChanged, ::vl::Func<void()>(this, &__vwsnc155_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc155_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
+	void __vwsnc154_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc155_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc154_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowChanged, ::vl::Func<void()>(this, &__vwsnc155_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->CanEditChanged, ::vl::Func<void()>(this, &__vwsnc155_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CanEditChanged, ::vl::Func<void()>(this, &__vwsnc154_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc155_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc154_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8366,25 +8311,18 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc155_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc154_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CanEditChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->CanEditChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
-			(__vwsn_bind_cache_1 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -8392,64 +8330,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnc155_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsnc155_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
-		this->__vwsn_bind_cache_2 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc155_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ try{ return (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetEditing() && (::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->GetEditorKind() != static_cast<::vl::vint>(3))); } catch(...){ return false; } }();
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetEditorKind() == static_cast<::vl::vint>(3));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc155_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
-	{
-		if (static_cast<bool>(__vwsn_bind_handler_2_0))
-		{
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->EditorKindChanged, __vwsn_bind_handler_2_0);
-			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-		}
-		(__vwsn_bind_cache_2 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-		(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->EditorKindChanged, ::vl::Func<void()>(this, &__vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc155_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_cache_2 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->EditingChanged, ::vl::Func<void()>(this, &__vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->RowChanged, ::vl::Func<void()>(this, &__vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->EditorKindChanged, ::vl::Func<void()>(this, &__vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->EditorKindChanged, ::vl::Func<void()>(this, &__vwsnc155_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc155_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8459,32 +8372,18 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc155_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->EditingChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->EditorKindChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->RowChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_2_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->EditorKindChanged, __vwsn_bind_handler_2_0);
-				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
-			(__vwsn_bind_cache_2 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -8492,55 +8391,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc157_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsnc157_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnc156_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsnc156_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
-		this->__vwsn_bind_cache_1 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc157_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc156_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>([&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetChoices(); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IValueList>(); } }());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetChoiceIndex();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc157_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		if (static_cast<bool>(__vwsn_bind_handler_1_0))
-		{
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->ChoicesChanged, __vwsn_bind_handler_1_0);
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-		}
-		(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-		(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->ChoicesChanged, ::vl::Func<void()>(this, &__vwsnc157_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc157_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
+	void __vwsnc156_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc157_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc156_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowChanged, ::vl::Func<void()>(this, &__vwsnc157_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->ChoicesChanged, ::vl::Func<void()>(this, &__vwsnc157_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ChoiceIndexChanged, ::vl::Func<void()>(this, &__vwsnc156_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc157_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc156_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -8550,25 +8433,79 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc157_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc156_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ChoiceIndexChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->ChoicesChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
-			(__vwsn_bind_cache_1 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc157_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsnc157_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyInlineEditorConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc157_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ((::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetEditorKind() == static_cast<::vl::vint>(3)) ? static_cast<::vl::presentation::controls::GuiControl*>(__vwsnthis_0->choiceEditor) : static_cast<::vl::presentation::controls::GuiControl*>(__vwsnthis_0->inlineEditor));
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc157_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc157_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->EditorKindChanged, ::vl::Func<void()>(this, &__vwsnc157_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc157_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc157_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->EditorKindChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -8589,7 +8526,7 @@ Closures
 
 	void __vwsnc158_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetCanEdit(); } catch(...){ return false; } }();
+		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetDisplayValue(); } catch(...){ return ::vl::WString::Unmanaged(L""); } }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -8597,11 +8534,11 @@ Closures
 	{
 		if (static_cast<bool>(__vwsn_bind_handler_1_0))
 		{
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->CanEditChanged, __vwsn_bind_handler_1_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->DisplayValueChanged, __vwsn_bind_handler_1_0);
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 		}
 		(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-		(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->CanEditChanged, ::vl::Func<void()>(this, &__vwsnc158_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+		(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->DisplayValueChanged, ::vl::Func<void()>(this, &__vwsnc158_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 		this->__vwsn_bind_activator_();
 	}
 
@@ -8618,7 +8555,7 @@ Closures
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
 			(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
 			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowChanged, ::vl::Func<void()>(this, &__vwsnc158_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->CanEditChanged, ::vl::Func<void()>(this, &__vwsnc158_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->DisplayValueChanged, ::vl::Func<void()>(this, &__vwsnc158_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -8646,7 +8583,7 @@ Closures
 			}
 			if (static_cast<bool>(__vwsn_bind_handler_1_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->CanEditChanged, __vwsn_bind_handler_1_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->DisplayValueChanged, __vwsn_bind_handler_1_0);
 				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
@@ -8664,39 +8601,18 @@ Closures
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
-		this->__vwsn_bind_cache_2 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc159_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ try{ return (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetEditing() && (::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->GetEditorKind() == static_cast<::vl::vint>(3))); } catch(...){ return false; } }();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPrimaryTextColor();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc159_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc159_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
-	{
-		if (static_cast<bool>(__vwsn_bind_handler_2_0))
-		{
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->EditorKindChanged, __vwsn_bind_handler_2_0);
-			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-		}
-		(__vwsn_bind_cache_2 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-		(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->EditorKindChanged, ::vl::Func<void()>(this, &__vwsnc159_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc159_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0()
+	void __vwsnc159_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -8707,11 +8623,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_cache_2 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->EditingChanged, ::vl::Func<void()>(this, &__vwsnc159_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->RowChanged, ::vl::Func<void()>(this, &__vwsnc159_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->EditorKindChanged, ::vl::Func<void()>(this, &__vwsnc159_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PrimaryTextColorChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc159_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -8734,25 +8646,11 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->EditingChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PrimaryTextColorChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->RowChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_2_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_2.Obj())->EditorKindChanged, __vwsn_bind_handler_2_0);
-				(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
 			(__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
-			(__vwsn_bind_cache_2 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -8848,32 +8746,18 @@ Closures
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
-		this->__vwsn_bind_cache_1 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc160_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetChoiceIndex(); } catch(...){ return (- static_cast<::vl::vint>(1)); } }();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc160_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		if (static_cast<bool>(__vwsn_bind_handler_1_0))
-		{
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->ChoiceIndexChanged, __vwsn_bind_handler_1_0);
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-		}
-		(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-		(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->ChoiceIndexChanged, ::vl::Func<void()>(this, &__vwsnc160_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc160_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
+	void __vwsnc160_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -8884,9 +8768,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowChanged, ::vl::Func<void()>(this, &__vwsnc160_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->ChoiceIndexChanged, ::vl::Func<void()>(this, &__vwsnc160_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc160_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -8909,18 +8791,11 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->ChoiceIndexChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
 			(__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
-			(__vwsn_bind_cache_1 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -8939,11 +8814,11 @@ Closures
 
 	void __vwsnc161_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::uialist::vm::IPropertyRowViewModel>>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRowValue());
+		auto __vwsn_bind_activator_result_ = (! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetEditing());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc161_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc161_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -8954,7 +8829,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowValueChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc161_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->EditingChanged, ::vl::Func<void()>(this, &__vwsnc161_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -8977,7 +8852,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowValueChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->EditingChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
@@ -8993,53 +8868,18 @@ Closures
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
-		this->__vwsn_bind_cache_1 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
-		this->__vwsn_bind_cache_2 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
-		this->__vwsn_bind_cache_3 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ try{ return (::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetIsEditing() && (! ::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->GetIsMultiline())); } catch(...){ return false; } }();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::uialist::vm::IPropertyRowViewModel>>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRowValue());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		if (static_cast<bool>(__vwsn_bind_handler_1_0))
-		{
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->IsEditingChanged, __vwsn_bind_handler_1_0);
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-		}
-		(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-		(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->IsEditingChanged, ::vl::Func<void()>(this, &__vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0()
-	{
-		if (static_cast<bool>(__vwsn_bind_handler_3_0))
-		{
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->IsMultilineChanged, __vwsn_bind_handler_3_0);
-			(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-		}
-		(__vwsn_bind_cache_3 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-		(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->IsMultilineChanged, ::vl::Func<void()>(this, &__vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0()
+	void __vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -9050,13 +8890,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-			(__vwsn_bind_cache_3 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowChanged, ::vl::Func<void()>(this, &__vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->IsEditingChanged, ::vl::Func<void()>(this, &__vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->RowChanged, ::vl::Func<void()>(this, &__vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->IsMultilineChanged, ::vl::Func<void()>(this, &__vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowValueChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -9073,6 +8907,108 @@ Closures
 	}
 
 	bool __vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowValueChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(::uialist::PropertyValueVisualizerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
+		this->__vwsn_bind_cache_1 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
+		this->__vwsn_bind_cache_2 = static_cast<::uialist::PropertyValueVisualizer*>(nullptr);
+		this->__vwsn_bind_cache_3 = ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>();
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_2_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = [&](){ try{ return (::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->GetIsEditing() && (! ::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->GetIsMultiline())); } catch(...){ return false; } }();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		if (static_cast<bool>(__vwsn_bind_handler_1_0))
+		{
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->IsEditingChanged, __vwsn_bind_handler_1_0);
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+		}
+		(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
+		(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->IsEditingChanged, ::vl::Func<void()>(this, &__vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0()
+	{
+		if (static_cast<bool>(__vwsn_bind_handler_3_0))
+		{
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->IsMultilineChanged, __vwsn_bind_handler_3_0);
+			(__vwsn_bind_handler_3_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+		}
+		(__vwsn_bind_cache_3 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
+		(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->IsMultilineChanged, ::vl::Func<void()>(this, &__vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
+			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::uialist::PropertyValueVisualizer*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
+			(__vwsn_bind_cache_3 = [&](){ try{ return ::vl::__vwsn::This(__vwsn_bind_cache_2)->GetRow(); } catch(...){ return ::vl::Ptr<::uialist::vm::IPropertyRowViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->RowChanged, ::vl::Func<void()>(this, &__vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1.Obj())->IsEditingChanged, ::vl::Func<void()>(this, &__vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->RowChanged, ::vl::Func<void()>(this, &__vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3.Obj())->IsMultilineChanged, ::vl::Func<void()>(this, &__vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -9112,648 +9048,648 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::__vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings()
+	__vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::__vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings()
 	{
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Actions()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Actions()
 	{
 		return ::vl::WString::Unmanaged(L"Actions");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::AddReference()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::AddReference()
 	{
 		return ::vl::WString::Unmanaged(L"Add reference");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::AppTitle()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::AppTitle()
 	{
 		return ::vl::WString::Unmanaged(L"UiaList — Windows UI Automation Inspector");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Cancel()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Cancel()
 	{
 		return ::vl::WString::Unmanaged(L"Cancel");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::CapabilityChanged()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::CapabilityChanged()
 	{
 		return ::vl::WString::Unmanaged(L"This value is no longer writable with the supplied value. Capabilities have been refreshed.");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Captured()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Captured()
 	{
 		return ::vl::WString::Unmanaged(L"Captured");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::CatalogHelp()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::CatalogHelp()
 	{
 		return ::vl::WString::Unmanaged(L"Standard SDK properties and patterns are shown. Vendor registrations and opaque COM internals are not discoverable. Use a period for decimals; separate numeric array values with commas. Enter one string-array item per line; an empty draft creates an empty array.");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::ChooseWindow()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::ChooseWindow()
 	{
 		return ::vl::WString::Unmanaged(L"Select a process, then click a window to inspect it.");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::ClearReferences()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::ClearReferences()
 	{
 		return ::vl::WString::Unmanaged(L"Clear references");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Completed()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Completed()
 	{
 		return ::vl::WString::Unmanaged(L"Completed");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Details()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Details()
 	{
 		return ::vl::WString::Unmanaged(L"Details");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::EditText()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::EditText()
 	{
 		return ::vl::WString::Unmanaged(L"Edit text…");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Help()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Help()
 	{
 		return ::vl::WString::Unmanaged(L"Help");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Inspect()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Inspect()
 	{
 		return ::vl::WString::Unmanaged(L"Inspect");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::InvalidValue()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::InvalidValue()
 	{
 		return ::vl::WString::Unmanaged(L"Enter a valid value within the supported range.");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Loading()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Loading()
 	{
 		return ::vl::WString::Unmanaged(L"Loading…");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Mixed()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Mixed()
 	{
 		return ::vl::WString::Unmanaged(L"Mixed");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Nodes()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Nodes()
 	{
 		return ::vl::WString::Unmanaged(L"Nodes");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::NotSupported()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::NotSupported()
 	{
 		return ::vl::WString::Unmanaged(L"Not supported");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Null()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Null()
 	{
 		return ::vl::WString::Unmanaged(L"No result");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::OK()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::OK()
 	{
 		return ::vl::WString::Unmanaged(L"OK");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::OutsideTree()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::OutsideTree()
 	{
 		return ::vl::WString::Unmanaged(L"This reference is outside the selected raw tree.");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Preview()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Preview()
 	{
 		return ::vl::WString::Unmanaged(L"UI");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::PreviewGeometryChanged()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::PreviewGeometryChanged()
 	{
 		return ::vl::WString::Unmanaged(L"The window moved or resized during capture. Refresh after it settles.");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::PreviewHelp()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::PreviewHelp()
 	{
 		return ::vl::WString::Unmanaged(L"Snapshot: one captured pixel per preview unit. Outlines estimate UIA rectangles; clicking selects an inspector node.");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::PreviewUnavailable()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::PreviewUnavailable()
 	{
 		return ::vl::WString::Unmanaged(L"Preview unavailable. The window must be visible and capture must be supported.");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Processes()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Processes()
 	{
 		return ::vl::WString::Unmanaged(L"Processes");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Properties()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Properties()
 	{
 		return ::vl::WString::Unmanaged(L"Properties");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Property()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Property()
 	{
 		return ::vl::WString::Unmanaged(L"Property");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::ProviderHelp()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::ProviderHelp()
 	{
 		return ::vl::WString::Unmanaged(L"Provider names are the documented counterparts of acquired client patterns.");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Providers()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Providers()
 	{
 		return ::vl::WString::Unmanaged(L"Providers");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Ready()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Ready()
 	{
 		return ::vl::WString::Unmanaged(L"Ready");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::References()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::References()
 	{
 		return ::vl::WString::Unmanaged(L"References");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Refresh()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Refresh()
 	{
 		return ::vl::WString::Unmanaged(L"Refresh");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Results()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Results()
 	{
 		return ::vl::WString::Unmanaged(L"Results");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Reveal()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Reveal()
 	{
 		return ::vl::WString::Unmanaged(L"Reveal in Nodes");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::TextRanges()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::TextRanges()
 	{
 		return ::vl::WString::Unmanaged(L"Text ranges");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Untitled()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Untitled()
 	{
 		return ::vl::WString::Unmanaged(L"Untitled");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Value()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::Value()
 	{
 		return ::vl::WString::Unmanaged(L"Value");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::WindowClass()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::WindowClass()
 	{
 		return ::vl::WString::Unmanaged(L"Window class");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::WindowHandle()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::WindowHandle()
 	{
 		return ::vl::WString::Unmanaged(L"HWND");
 	}
 
-	::vl::WString __vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::WindowTitle()
+	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings::WindowTitle()
 	{
 		return ::vl::WString::Unmanaged(L"Title");
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::__vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings()
+	__vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::__vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings()
 	{
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Actions()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Actions()
 	{
 		return ::vl::WString::Unmanaged(L"操作");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::AddReference()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::AddReference()
 	{
 		return ::vl::WString::Unmanaged(L"添加引用");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::AppTitle()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::AppTitle()
 	{
 		return ::vl::WString::Unmanaged(L"UiaList — Windows UI 自动化检查器");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Cancel()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Cancel()
 	{
 		return ::vl::WString::Unmanaged(L"取消");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::CapabilityChanged()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::CapabilityChanged()
 	{
 		return ::vl::WString::Unmanaged(L"当前无法写入提供的值。功能状态已刷新。");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Captured()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Captured()
 	{
 		return ::vl::WString::Unmanaged(L"捕获时间");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::CatalogHelp()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::CatalogHelp()
 	{
 		return ::vl::WString::Unmanaged(L"显示标准 SDK 属性和模式。不支持发现厂商注册项或不透明 COM 对象内部。小数使用句点，数字数组使用逗号分隔。字符串数组每行一项；空白内容生成空数组。");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::ChooseWindow()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::ChooseWindow()
 	{
 		return ::vl::WString::Unmanaged(L"选择进程，然后单击窗口进行检查。");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::ClearReferences()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::ClearReferences()
 	{
 		return ::vl::WString::Unmanaged(L"清空引用");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Completed()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Completed()
 	{
 		return ::vl::WString::Unmanaged(L"已完成");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Details()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Details()
 	{
 		return ::vl::WString::Unmanaged(L"详情");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::EditText()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::EditText()
 	{
 		return ::vl::WString::Unmanaged(L"编辑文本…");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Help()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Help()
 	{
 		return ::vl::WString::Unmanaged(L"帮助");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Inspect()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Inspect()
 	{
 		return ::vl::WString::Unmanaged(L"检查");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::InvalidValue()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::InvalidValue()
 	{
 		return ::vl::WString::Unmanaged(L"请输入支持范围内的有效值。");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Loading()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Loading()
 	{
 		return ::vl::WString::Unmanaged(L"正在加载…");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Mixed()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Mixed()
 	{
 		return ::vl::WString::Unmanaged(L"混合值");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Nodes()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Nodes()
 	{
 		return ::vl::WString::Unmanaged(L"节点");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::NotSupported()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::NotSupported()
 	{
 		return ::vl::WString::Unmanaged(L"不支持");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Null()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Null()
 	{
 		return ::vl::WString::Unmanaged(L"无结果");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::OK()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::OK()
 	{
 		return ::vl::WString::Unmanaged(L"确定");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::OutsideTree()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::OutsideTree()
 	{
 		return ::vl::WString::Unmanaged(L"此引用不在所选的原始树中。");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Preview()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Preview()
 	{
 		return ::vl::WString::Unmanaged(L"界面");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::PreviewGeometryChanged()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::PreviewGeometryChanged()
 	{
 		return ::vl::WString::Unmanaged(L"捕获期间窗口发生移动或调整大小。请在窗口稳定后刷新。");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::PreviewHelp()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::PreviewHelp()
 	{
 		return ::vl::WString::Unmanaged(L"快照：每个预览单位对应一个捕获像素。轮廓根据 UIA 矩形估算；单击可选择检查器中的节点。");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::PreviewUnavailable()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::PreviewUnavailable()
 	{
 		return ::vl::WString::Unmanaged(L"预览不可用。窗口必须可见且支持捕获。");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Processes()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Processes()
 	{
 		return ::vl::WString::Unmanaged(L"进程");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Properties()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Properties()
 	{
 		return ::vl::WString::Unmanaged(L"属性");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Property()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Property()
 	{
 		return ::vl::WString::Unmanaged(L"属性");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::ProviderHelp()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::ProviderHelp()
 	{
 		return ::vl::WString::Unmanaged(L"提供程序名称是已获取客户端模式的文档对应名称。");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Providers()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Providers()
 	{
 		return ::vl::WString::Unmanaged(L"提供程序");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Ready()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Ready()
 	{
 		return ::vl::WString::Unmanaged(L"就绪");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::References()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::References()
 	{
 		return ::vl::WString::Unmanaged(L"引用");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Refresh()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Refresh()
 	{
 		return ::vl::WString::Unmanaged(L"刷新");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Results()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Results()
 	{
 		return ::vl::WString::Unmanaged(L"结果");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Reveal()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Reveal()
 	{
 		return ::vl::WString::Unmanaged(L"在节点中显示");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::TextRanges()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::TextRanges()
 	{
 		return ::vl::WString::Unmanaged(L"文本范围");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Untitled()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Untitled()
 	{
 		return ::vl::WString::Unmanaged(L"无标题");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Value()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::Value()
 	{
 		return ::vl::WString::Unmanaged(L"值");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::WindowClass()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::WindowClass()
 	{
 		return ::vl::WString::Unmanaged(L"窗口类");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::WindowHandle()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::WindowHandle()
 	{
 		return ::vl::WString::Unmanaged(L"窗口句柄");
 	}
 
-	::vl::WString __vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::WindowTitle()
+	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings::WindowTitle()
 	{
 		return ::vl::WString::Unmanaged(L"标题");
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::__vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings()
+	__vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::__vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings()
 	{
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Actions()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Actions()
 	{
 		return ::vl::WString::Unmanaged(L"操作");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::AddReference()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::AddReference()
 	{
 		return ::vl::WString::Unmanaged(L"参照を追加");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::AppTitle()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::AppTitle()
 	{
 		return ::vl::WString::Unmanaged(L"UiaList — Windows UI オートメーション インスペクター");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Cancel()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Cancel()
 	{
 		return ::vl::WString::Unmanaged(L"キャンセル");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::CapabilityChanged()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::CapabilityChanged()
 	{
 		return ::vl::WString::Unmanaged(L"指定した値を書き込めなくなりました。機能の状態を更新しました。");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Captured()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Captured()
 	{
 		return ::vl::WString::Unmanaged(L"キャプチャ日時");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::CatalogHelp()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::CatalogHelp()
 	{
 		return ::vl::WString::Unmanaged(L"標準 SDK のプロパティとパターンを表示します。独自登録や不透明な COM の内部は検出できません。小数点にはピリオド、数値配列の区切りにはコンマを使います。文字列配列は1行につき1項目です。空の入力は空の配列になります。");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::ChooseWindow()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::ChooseWindow()
 	{
 		return ::vl::WString::Unmanaged(L"プロセスを選択し、ウィンドウをクリックして検査します。");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::ClearReferences()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::ClearReferences()
 	{
 		return ::vl::WString::Unmanaged(L"参照をクリア");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Completed()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Completed()
 	{
 		return ::vl::WString::Unmanaged(L"完了");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Details()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Details()
 	{
 		return ::vl::WString::Unmanaged(L"詳細");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::EditText()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::EditText()
 	{
 		return ::vl::WString::Unmanaged(L"テキストを編集…");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Help()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Help()
 	{
 		return ::vl::WString::Unmanaged(L"ヘルプ");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Inspect()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Inspect()
 	{
 		return ::vl::WString::Unmanaged(L"検査");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::InvalidValue()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::InvalidValue()
 	{
 		return ::vl::WString::Unmanaged(L"対応範囲内の有効な値を入力してください。");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Loading()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Loading()
 	{
 		return ::vl::WString::Unmanaged(L"読み込み中…");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Mixed()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Mixed()
 	{
 		return ::vl::WString::Unmanaged(L"混在");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Nodes()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Nodes()
 	{
 		return ::vl::WString::Unmanaged(L"ノード");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::NotSupported()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::NotSupported()
 	{
 		return ::vl::WString::Unmanaged(L"非対応");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Null()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Null()
 	{
 		return ::vl::WString::Unmanaged(L"結果なし");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::OK()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::OK()
 	{
 		return ::vl::WString::Unmanaged(L"OK");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::OutsideTree()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::OutsideTree()
 	{
 		return ::vl::WString::Unmanaged(L"この参照は選択した Raw ツリーの外にあります。");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Preview()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Preview()
 	{
 		return ::vl::WString::Unmanaged(L"UI");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::PreviewGeometryChanged()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::PreviewGeometryChanged()
 	{
 		return ::vl::WString::Unmanaged(L"キャプチャ中にウィンドウが移動またはサイズ変更されました。静止後に更新してください。");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::PreviewHelp()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::PreviewHelp()
 	{
 		return ::vl::WString::Unmanaged(L"スナップショット：1 ピクセルを 1 プレビュー単位で表示。枠は UIA 矩形の推定です。クリックでノードを選択します。");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::PreviewUnavailable()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::PreviewUnavailable()
 	{
 		return ::vl::WString::Unmanaged(L"プレビューを利用できません。ウィンドウが表示され、キャプチャに対応している必要があります。");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Processes()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Processes()
 	{
 		return ::vl::WString::Unmanaged(L"プロセス");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Properties()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Properties()
 	{
 		return ::vl::WString::Unmanaged(L"プロパティ");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Property()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Property()
 	{
 		return ::vl::WString::Unmanaged(L"プロパティ");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::ProviderHelp()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::ProviderHelp()
 	{
 		return ::vl::WString::Unmanaged(L"プロバイダー名は取得したクライアントパターンに対応する文書上の名称です。");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Providers()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Providers()
 	{
 		return ::vl::WString::Unmanaged(L"プロバイダー");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Ready()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Ready()
 	{
 		return ::vl::WString::Unmanaged(L"準備完了");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::References()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::References()
 	{
 		return ::vl::WString::Unmanaged(L"参照");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Refresh()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Refresh()
 	{
 		return ::vl::WString::Unmanaged(L"更新");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Results()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Results()
 	{
 		return ::vl::WString::Unmanaged(L"結果");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Reveal()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Reveal()
 	{
 		return ::vl::WString::Unmanaged(L"ノードに表示");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::TextRanges()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::TextRanges()
 	{
 		return ::vl::WString::Unmanaged(L"テキスト範囲");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Untitled()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Untitled()
 	{
 		return ::vl::WString::Unmanaged(L"無題");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Value()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::Value()
 	{
 		return ::vl::WString::Unmanaged(L"値");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::WindowClass()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::WindowClass()
 	{
 		return ::vl::WString::Unmanaged(L"ウィンドウクラス");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::WindowHandle()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::WindowHandle()
 	{
 		return ::vl::WString::Unmanaged(L"ウィンドウハンドル");
 	}
 
-	::vl::WString __vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::WindowTitle()
+	::vl::WString __vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings::WindowTitle()
 	{
 		return ::vl::WString::Unmanaged(L"タイトル");
 	}
@@ -17899,6 +17835,142 @@ Class (::uialist::PropertyDetailsVisualizer)
 	}
 
 /***********************************************************************
+Class (::uialist::PropertyInlineEditorConstructor)
+***********************************************************************/
+
+	void PropertyInlineEditorConstructor::__vwsn_uialist_PropertyInlineEditor_Initialize(::uialist::PropertyInlineEditor* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		{
+			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			(this->inlineEditor = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"inlineEditor"), ::vl::__vwsn::Box(this->inlineEditor));
+		}
+		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->inlineEditor)->GetFocusableComposition());
+		(this->__vwsn_precompile_0 = ::vl::__vwsn::This(this->inlineEditor)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->inlineEditor)->GetBoundsComposition()));
+		}
+		{
+			(this->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf240_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(this)));
+		}
+		{
+			(this->choiceEditor = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_2)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"choiceEditor"), ::vl::__vwsn::Box(this->choiceEditor));
+		}
+		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->choiceEditor)->GetFocusableComposition());
+		(this->__vwsn_precompile_3 = ::vl::__vwsn::This(this->choiceEditor)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->choiceEditor)->GetBoundsComposition()));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc150_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf241_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf242_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_1)->GetEventReceiver()->keyDown, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc151_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf244_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc152_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf245_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf246_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->inlineEditor)->TextChanged, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc153_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf247_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf248_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_4)->GetEventReceiver()->keyDown, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc154_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf250_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc155_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf251_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc156_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf252_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf253_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->choiceEditor)->SelectedIndexChanged, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc157_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf254_UiaList_uialist_PropertyInlineEditorConstructor___vwsn_uialist_PropertyInlineEditor_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	PropertyInlineEditorConstructor::PropertyInlineEditorConstructor()
+		: ViewModel(::vl::Ptr<::uialist::vm::IPropertyRowViewModel>())
+		, self(static_cast<::uialist::PropertyInlineEditor*>(nullptr))
+		, inlineEditor(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
+		, choiceEditor(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::uialist::PropertyInlineEditor)
+***********************************************************************/
+
+	::vl::Ptr<::uialist::vm::IPropertyRowViewModel> PropertyInlineEditor::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	PropertyInlineEditor::PropertyInlineEditor(::vl::Ptr<::uialist::vm::IPropertyRowViewModel> __vwsn_ctor_parameter_ViewModel)
+		: __vwsn_parameter_ViewModel(::vl::Ptr<::uialist::vm::IPropertyRowViewModel>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"uialist::PropertyInlineEditor"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_uialist_PropertyInlineEditor_Initialize(this);
+	}
+
+	PropertyInlineEditor::~PropertyInlineEditor()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
+	}
+
+/***********************************************************************
 Class (::uialist::PropertyValueVisualizerConstructor)
 ***********************************************************************/
 
@@ -17932,142 +18004,72 @@ Class (::uialist::PropertyValueVisualizerConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
+		(this->editorItems = new ::vl::presentation::compositions::GuiRepeatStackComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"editorItems"), ::vl::__vwsn::Box(this->editorItems));
 		{
-			(this->inlineEditor = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
-			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"inlineEditor"), ::vl::__vwsn::Box(this->inlineEditor));
-		}
-		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->inlineEditor)->GetFocusableComposition());
-		(this->__vwsn_precompile_3 = ::vl::__vwsn::This(this->inlineEditor)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->editorItems)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf255_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->inlineEditor)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->editorItems)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Vertical);
 		}
 		{
-			(this->__vwsn_precompile_5 = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
+			::vl::__vwsn::This(this->editorItems)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf240_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
-		}
-		{
-			(this->choiceEditor = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_5)));
-			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"choiceEditor"), ::vl::__vwsn::Box(this->choiceEditor));
-		}
-		(this->__vwsn_precompile_7 = ::vl::__vwsn::This(this->choiceEditor)->GetFocusableComposition());
-		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->choiceEditor)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->choiceEditor)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->editorItems));
 		}
 		{
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc150_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf241_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc151_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf242_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc152_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf243_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc153_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf244_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc154_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf245_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf246_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_4)->GetEventReceiver()->keyDown, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc155_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf247_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc156_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf248_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf249_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->inlineEditor)->TextChanged, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc157_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf250_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf251_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_7)->GetEventReceiver()->keyDown, __vwsn_event_handler_);
-		}
-		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc158_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf252_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf256_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc159_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf253_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc160_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf254_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf255_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->choiceEditor)->SelectedIndexChanged, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf256_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetEventReceiver()->mouseDown, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc161_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf257_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc160_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf258_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf259_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc161_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf259_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			::vl::__vwsn::This(this->editorItems)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(this->self)->editorRows));
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf260_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetEventReceiver()->mouseDown, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc162_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf261_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc163_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf262_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf263_UiaList_uialist_PropertyValueVisualizerConstructor___vwsn_uialist_PropertyValueVisualizer_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->EditingChanged, __vwsn_event_handler_);
 		}
 	}
 
 	PropertyValueVisualizerConstructor::PropertyValueVisualizerConstructor()
 		: self(static_cast<::uialist::PropertyValueVisualizer*>(nullptr))
-		, inlineEditor(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
-		, choiceEditor(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
+		, editorItems(static_cast<::vl::presentation::compositions::GuiRepeatStackComposition*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
-		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
-		, __vwsn_precompile_5(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
-		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
 	{
 	}
 
@@ -18104,6 +18106,7 @@ Class (::uialist::PropertyValueVisualizer)
 	PropertyValueVisualizer::PropertyValueVisualizer()
 		: __vwsn_prop_Row(::vl::Ptr<::uialist::vm::IPropertyRowViewModel>())
 		, __vwsn_prop_Editing(false)
+		, editorRows(::vl::reflection::description::IValueObservableList::Create())
 	{
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"uialist::PropertyValueVisualizer"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
@@ -19021,17 +19024,17 @@ Class (::uialist::Strings)
 
 	::vl::Ptr<::uialist::IStringsStrings> Strings::__vwsn_ls_en_US_BuildStrings(::vl::Locale __vwsn_ls_locale)
 	{
-		return ::vl::Ptr<::uialist::IStringsStrings>(new ::vl_workflow_global::__vwsnc163_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings());
+		return ::vl::Ptr<::uialist::IStringsStrings>(new ::vl_workflow_global::__vwsnc164_UiaList_uialist_Strings___vwsn_ls_en_US_BuildStrings__uialist_IStringsStrings());
 	}
 
 	::vl::Ptr<::uialist::IStringsStrings> Strings::__vwsn_ls_zh_CN_BuildStrings(::vl::Locale __vwsn_ls_locale)
 	{
-		return ::vl::Ptr<::uialist::IStringsStrings>(new ::vl_workflow_global::__vwsnc164_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings());
+		return ::vl::Ptr<::uialist::IStringsStrings>(new ::vl_workflow_global::__vwsnc165_UiaList_uialist_Strings___vwsn_ls_zh_CN_BuildStrings__uialist_IStringsStrings());
 	}
 
 	::vl::Ptr<::uialist::IStringsStrings> Strings::__vwsn_ls_ja_JP_BuildStrings(::vl::Locale __vwsn_ls_locale)
 	{
-		return ::vl::Ptr<::uialist::IStringsStrings>(new ::vl_workflow_global::__vwsnc165_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings());
+		return ::vl::Ptr<::uialist::IStringsStrings>(new ::vl_workflow_global::__vwsnc166_UiaList_uialist_Strings___vwsn_ls_ja_JP_BuildStrings__uialist_IStringsStrings());
 	}
 
 	void Strings::Install(::vl::Locale __vwsn_ls_locale, ::vl::Ptr<::uialist::IStringsStrings> __vwsn_ls_impl)

@@ -75,7 +75,7 @@ namespace uialist
 	void TextDialogViewModel::Accept() { if (GetCanAccept() && accept) accept(draft); }
 	void TextDialogViewModel::Cancel() { if (open) { open = false; accept = {}; IsOpenChanged(); } }
 
-	WString PropertyRowViewModel::GetKey() { return data.id ? itow(data.id) : itow(data.sourcePattern) + L"/" + data.name; }
+	WString PropertyRowViewModel::GetKey() { return key; }
 	WString PropertyRowViewModel::GetLabel() { return data.name; }
 	WString PropertyRowViewModel::GetDisplayValue() { return display; }
 	bool PropertyRowViewModel::GetCanEdit() { return owner->open && !owner->busy && !owner->owner->treeBusy && data.setter && data.setter->kind != native::SetterKind::None; }
@@ -86,8 +86,7 @@ namespace uialist
 	Ptr<IValueList> PropertyRowViewModel::GetChoices() { return UnboxValue<Ptr<IValueList>>(BoxParameter(choices)); }
 	vint PropertyRowViewModel::GetChoiceIndex()
 	{
-		if (data.setter) for (vint i = 0; i < data.setter->choices.Count(); i++) if (itow(data.setter->choices[i].id) == draft) return i;
-		return -1;
+		return choiceValues.IndexOf(draft);
 	}
 	void PropertyRowViewModel::SetChoiceIndex(vint value)
 	{
@@ -180,6 +179,7 @@ namespace uialist
 	Ptr<PropertyRowViewModel> PropertyDialogViewModel::CreateRow(const native::PropertyData& property)
 	{
 		auto row = Ptr(new PropertyRowViewModel); row->owner = this; row->data = property;
+		row->key = property.id ? itow(property.id) : itow(property.sourcePattern) + L"/" + property.name;
 		row->details = FormatValue(*property.value.Obj(), *owner->strings.Obj()); row->display = CompactValue(row->details);
 		if (property.value->kind == native::ValueKind::Signed)
 		{
@@ -189,7 +189,7 @@ namespace uialist
 			if (name.Length()) row->details = row->display = name;
 		}
 		if (property.id == UIA_ControlTypePropertyId && property.value->kind == native::ValueKind::Signed) row->display = native::IdName(native::ControlTypeCatalog, native::ControlTypeCatalogCount, static_cast<LONG>(property.value->signedValue));
-		if (property.setter) for (auto&& choice : property.setter->choices) row->choices.Add(choice.label);
+		if (property.setter) for (auto&& choice : property.setter->choices) { row->choices.Add(choice.label); row->choiceValues.Add(itow(choice.id)); }
 		row->details = L"VARTYPE=" + itow(property.value->type) + L"\r\n" + row->details;
 		return row;
 	}
@@ -210,7 +210,7 @@ namespace uialist
 			{
 				auto value = command.Cast<ActionCommandViewModel>(); value->generation = generation;
 				for (auto&& parameter : value->parameters) parameter.Cast<ActionParameterViewModel>()->UpdateChoices();
-				command->CanExecuteChanged();
+				value->Validate(false);
 			}
 		};
 		for (auto&& section : sections) notify(section.Cast<ActionSectionViewModel>());

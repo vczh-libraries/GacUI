@@ -7,7 +7,14 @@ namespace uialist
 {
 	WString TextRangeViewModel::GetLabel() { return section->GetHeading(); }
 	Ptr<vm::IActionSectionViewModel> TextRangeViewModel::GetSection() { return section; }
-	Ptr<IValueList> TextRangeViewModel::GetSections() { auto result = IValueList::Create(); result->Add(BoxValue(Ptr<vm::IActionSectionViewModel>(section))); return result; }
+	Ptr<IValueList> TextRangeViewModel::GetSections() { return sections; }
+	void TextRangeViewModel::SetSection(Ptr<ActionSectionViewModel> value)
+	{
+		section = value;
+		sections = IValueList::Create();
+		sections->Add(BoxValue(Ptr<vm::IActionSectionViewModel>(section)));
+		SectionChanged(); SectionsChanged();
+	}
 
 	void PropertyDialogViewModel::OpenRange(vint key)
 	{
@@ -27,7 +34,7 @@ namespace uialist
 				dialog->PublishReferences(*references.Obj());
 				if (result)
 				{
-					auto range = Ptr(new TextRangeViewModel); range->key = key; range->section = Ptr(new ActionSectionViewModel(*dialog.Obj(), result)); dialog->textRanges.Add(range);
+					auto range = Ptr(new TextRangeViewModel); range->key = key; range->SetSection(Ptr(new ActionSectionViewModel(*dialog.Obj(), result))); dialog->textRanges.Add(range);
 				}
 				dialog->busy = false; dialog->NotifyAvailability();
 			});

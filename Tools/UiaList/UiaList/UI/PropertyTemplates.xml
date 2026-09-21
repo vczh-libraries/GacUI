@@ -1,20 +1,61 @@
 <Folder>
+  <Instance name="PropertyInlineEditor">
+    <Instance ref.CodeBehind="false" ref.Class="uialist::PropertyInlineEditor">
+      <ref.Parameter Name="ViewModel" Class="uialist::vm::IPropertyRowViewModel"/>
+      <GridEditorTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" FocusControl-bind="ViewModel.EditorKind == 3 ? (choiceEditor as GuiControl*) : (inlineEditor as GuiControl*)">
+        <SinglelineTextBox ref.Name="inlineEditor" Text-bind="ViewModel.DraftText" Visible-bind="ViewModel.EditorKind != 3" Enabled-bind="ViewModel.CanEdit">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <ev.TextChanged-eval>if (ViewModel.IsEditing) { ViewModel.DraftText = inlineEditor.Text; }</ev.TextChanged-eval>
+          <att.FocusableComposition-set>
+            <ev.keyDown-eval><![CDATA[{
+              if (arguments.code == VKEY::KEY_RETURN or arguments.code == VKEY::KEY_ESCAPE)
+              {
+                var commit = arguments.code == VKEY::KEY_RETURN;
+                var row = ViewModel;
+                GuiApplication::GetApplication().InvokeInMainThread(self.RelatedControlHost, func() : void { if (commit) { row.Commit(); } else { row.Cancel(); } });
+                arguments.handled = true;
+              }
+            }]]></ev.keyDown-eval>
+          </att.FocusableComposition-set>
+        </SinglelineTextBox>
+        <ComboBox ref.Name="choiceEditor" SelectedIndex-bind="ViewModel.ChoiceIndex" Visible-bind="ViewModel.EditorKind == 3" Enabled-bind="ViewModel.CanEdit">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.ListControl><BindableTextList env.ItemType="string" env.ItemName="choice" ItemSource-bind="ViewModel.Choices"><att.TextProperty>choice</att.TextProperty></BindableTextList></att.ListControl>
+          <ev.SelectedIndexChanged-eval>if (ViewModel.IsEditing) { ViewModel.ChoiceIndex = choiceEditor.SelectedIndex; }</ev.SelectedIndexChanged-eval>
+          <att.FocusableComposition-set>
+            <ev.keyDown-eval><![CDATA[{
+              if (arguments.code == VKEY::KEY_RETURN or arguments.code == VKEY::KEY_ESCAPE)
+              {
+                var commit = arguments.code == VKEY::KEY_RETURN;
+                var row = ViewModel;
+                GuiApplication::GetApplication().InvokeInMainThread(self.RelatedControlHost, func() : void { if (commit) { row.Commit(); } else { row.Cancel(); } });
+                arguments.handled = true;
+              }
+            }]]></ev.keyDown-eval>
+          </att.FocusableComposition-set>
+        </ComboBox>
+      </GridEditorTemplate>
+    </Instance>
+  </Instance>
   <Instance name="PropertyValueVisualizer">
     <Instance ref.CodeBehind="false" ref.Class="uialist::PropertyValueVisualizer">
       <ref.Members><![CDATA[
         prop Row : uialist::vm::IPropertyRowViewModel^ = null {}
         prop Editing : bool = false {}
+        var editorRows : observe uialist::vm::IPropertyRowViewModel^[] = {};
       ]]></ref.Members>
       <GridVisualizerTemplate ref.Name="self" Row-bind="self.RowValue as uialist::vm::IPropertyRowViewModel^" Editing-bind="(self.Row.IsEditing and not self.Row.IsMultiline) ?? false" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="y:30">
         <ev.EditingChanged-eval><![CDATA[{
+          self.editorRows.Clear();
           if (self.Editing)
           {
+            self.editorRows.Add(self.Row);
             GuiApplication::GetApplication().InvokeInMainThread(self.RelatedControlHost, func() : void
             {
-              if (self.Editing)
+              if (self.Editing and editorItems.StackItems.Count != 0)
               {
-                if (self.Row.EditorKind == 3) { choiceEditor.SetFocused(); }
-                else { inlineEditor.SetFocused(); }
+                var editor = cast (GuiGridEditorTemplate*) editorItems.StackItems[0].Children[0];
+                editor.FocusControl.SetFocused();
               }
             });
           }
@@ -24,27 +65,9 @@
           <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" Visible-bind="not self.Editing">
             <SolidLabel Text-bind="self.Row.DisplayValue ?? ''" Color-bind="self.PrimaryTextColor" Font-bind="self.Font" Ellipse="true" VerticalAlignment="Center"/>
           </Bounds>
-          <SinglelineTextBox ref.Name="inlineEditor" Text-bind="self.Row.DraftText ?? ''" Visible-bind="(self.Editing and self.Row.EditorKind != 3) ?? false" Enabled-bind="self.Row.CanEdit ?? false">
-            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            <ev.TextChanged-eval><![CDATA[if (self.Editing) { self.Row.DraftText = inlineEditor.Text; }]]></ev.TextChanged-eval>
-            <att.FocusableComposition-set>
-              <ev.keyDown-eval><![CDATA[{
-                if (arguments.code == VKEY::KEY_RETURN) { self.Row.Commit(); arguments.handled = true; }
-                if (arguments.code == VKEY::KEY_ESCAPE) { self.Row.Cancel(); arguments.handled = true; }
-              }]]></ev.keyDown-eval>
-            </att.FocusableComposition-set>
-          </SinglelineTextBox>
-          <ComboBox ref.Name="choiceEditor" SelectedIndex-bind="self.Row.ChoiceIndex ?? -1" Visible-bind="(self.Editing and self.Row.EditorKind == 3) ?? false" Enabled-bind="self.Row.CanEdit ?? false">
-            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            <att.ListControl><BindableTextList env.ItemType="string" env.ItemName="choice" ItemSource-bind="self.Row.Choices ?? null"><att.TextProperty>choice</att.TextProperty></BindableTextList></att.ListControl>
-            <ev.SelectedIndexChanged-eval><![CDATA[if (self.Editing) { self.Row.ChoiceIndex = choiceEditor.SelectedIndex; }]]></ev.SelectedIndexChanged-eval>
-            <att.FocusableComposition-set>
-              <ev.keyDown-eval><![CDATA[{
-                if (arguments.code == VKEY::KEY_RETURN) { self.Row.Commit(); arguments.handled = true; }
-                if (arguments.code == VKEY::KEY_ESCAPE) { self.Row.Cancel(); arguments.handled = true; }
-              }]]></ev.keyDown-eval>
-            </att.FocusableComposition-set>
-          </ComboBox>
+          <RepeatStack ref.Name="editorItems" Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" ItemSource-eval="self.editorRows">
+            <att.ItemTemplate>uialist::PropertyInlineEditor</att.ItemTemplate>
+          </RepeatStack>
         </Bounds>
       </GridVisualizerTemplate>
     </Instance>

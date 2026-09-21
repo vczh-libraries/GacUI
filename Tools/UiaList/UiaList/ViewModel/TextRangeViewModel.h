@@ -10,6 +10,8 @@ namespace uialist
 	public:
 		vl::vint key;
 		vl::Ptr<ActionSectionViewModel> section;
+		vl::Ptr<vl::reflection::description::IValueList> sections;
+		void SetSection(vl::Ptr<ActionSectionViewModel> value);
 		vl::WString GetLabel() override;
 		vl::Ptr<vm::IActionSectionViewModel> GetSection() override;
 		vl::Ptr<vl::reflection::description::IValueList> GetSections() override;

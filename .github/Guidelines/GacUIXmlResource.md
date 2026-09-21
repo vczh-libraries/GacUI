@@ -1,4 +1,4 @@
-# Syntax of GacUI XML Resources
+﻿# Syntax of GacUI XML Resources
 
 - This is a brief introduction to GacUI XML Resource.
 - Detailed document can be found in `REPO-ROOT/.github/KnowledgeBase/Index.md` under `# Copy of Online Manual`:
@@ -14,7 +14,7 @@ Most XML tags call constructors for classes in the following folders:
 - Source\GraphicsCompositions
 - Source\GraphicsElement
 
-All mappings are:
+The predefined unprefixed namespace mappings are:
 
 - presentation::controls::Gui*
 - presentation::elements::Gui*Element
@@ -36,9 +36,15 @@ All mappings are:
 - presentation::templates::*
 - presentation::theme::*
 
+The independent predefined `ez` namespace is:
+
+`presentation::compositions::eazy_layout::GuiEasy*Composition;presentation::compositions::eazy_layout::GuiEasy*Layout`
+
+An explicit `xmlns` replaces only the unprefixed defaults. An explicit `xmlns:ez` replaces only the `ez` defaults. Either default remains available when only the other is overridden. These lists are defined by `GuiInstanceContext` in `Source/Compiler/GuiInstanceRepresentation.cpp`.
+
 When you see `<Button>`,
-try all mappings and for example `presentation::elements::Gui*`;
-replacing `*` with the tag gives you `presentation::elements::GuiButton`,
+try all mappings, including `presentation::controls::Gui*`;
+replacing `*` with the tag gives you `presentation::controls::GuiButton`,
 it is an existing C++ class!
 So `<Button>` means `presentation::controls::GuiButton`.
 Following the same rule, `<Table>` would be `presentation::compositions::GuiTableComposition` and `<SolidLabel>` would be `presentation::elements::GuiSolidLabelElement`.

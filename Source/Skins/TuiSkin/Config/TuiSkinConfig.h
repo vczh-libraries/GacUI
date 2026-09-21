@@ -25,7 +25,6 @@ namespace tuiskin
 	extern ColorPackage CreateOrangeColorPackage();
 	extern ColorPackage CreateGrassPackage();
 	extern ColorPackage CreateEmeraldPackage();
-	extern ColorPackage CreateSkyblueColorPackage();
 	extern ColorPackage CreatePurplePackage();
 	/// <summary>Install colors for new templates. Refresh existing themed controls with GuiApplication::RefreshThemes.</summary>
 	extern void SetColorPackage(const ColorPackage& colors);

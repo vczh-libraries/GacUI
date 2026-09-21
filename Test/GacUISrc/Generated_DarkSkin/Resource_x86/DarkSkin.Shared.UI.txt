@@ -60,11 +60,6 @@ namespace darkskin
 
     var darkColors : ColorPackage = CreateDefaultColorPackage();
 
-    func InstallColorPackage(colors : ColorPackage) : (void)
-    {
-        (darkColors = colors);
-    }
-
     func CreateBaselineDocument() : (DocumentModel^)
     {
         var document = new (DocumentModel^)();

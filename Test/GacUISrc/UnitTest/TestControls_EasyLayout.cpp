@@ -228,4 +228,73 @@ TEST_FILE
 		});
 		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(L"EasyLayout/Bindings", L"easy_test::MainWindow", easy_layout_xml_tests::Resource(content));
 	});
+
+	TEST_CASE(L"Mixed docking payloads stretch to the row height through resizing and rebuilding")
+	{
+		const auto content = LR"GacUISrc(
+<ez:Layout>
+  <ez:Bottom>
+    <ez:Layout Border="false">
+      <ez:Row>
+        <ez:Column CellSpan="2">
+          <ez:Layout ref.Name="row" Border="false">
+            <ez:Right>
+              <ComboBox ref.Name="combo" SelectedIndex="0">
+                <att.ListControl><TextList><att.Items><TextItem Text="One"/><TextItem Text="Two"/></att.Items></TextList></att.ListControl>
+              </ComboBox>
+            </ez:Right>
+            <ez:Right><CheckBox ref.Name="check" Text="Check"/></ez:Right>
+            <ez:Left><Button ref.Name="first" Text="A"/></ez:Left>
+            <ez:Left><Button ref.Name="second" Text="B"/></ez:Left>
+            <ez:Left><Button ref.Name="third" Text="C"/></ez:Left>
+            <ez:Left><Bounds ref.Name="payload" PreferredMinSize="x:10 y:55"/></ez:Left>
+          </ez:Layout>
+        </ez:Column>
+      </ez:Row>
+      <ez:Row><ez:Column><Label Text="Left"/></ez:Column><ez:Column><Label Text="Right"/></ez:Column></ez:Row>
+    </ez:Layout>
+  </ez:Bottom>
+</ez:Layout>
+)GacUISrc";
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			auto assertRow = []()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto payload = FindObjectByName<GuiBoundsComposition>(window, L"payload");
+				auto expected = payload->GetGlobalBounds();
+				TEST_ASSERT(expected.Height() == 55);
+				TEST_ASSERT(payload->GetAlignmentToParent() == Margin(0, 0, 0, 0));
+				vint right = -1;
+				for (auto name : { L"first",L"second",L"third",L"combo",L"check" })
+				{
+					auto bounds = FindObjectByName<GuiControl>(window, name)->GetBoundsComposition();
+					auto actual = bounds->GetGlobalBounds();
+					TEST_ASSERT(bounds->GetAlignmentToParent() == Margin(0, 0, 0, 0));
+					TEST_ASSERT(actual.Top() == expected.Top() && actual.Bottom() == expected.Bottom());
+					TEST_ASSERT(actual.Left() > right);
+					right = actual.Right();
+				}
+				TEST_ASSERT(FindObjectByName<GuiEasyLayoutComposition>(window, L"row")->GetAlignmentToParent() == Margin(0, 0, 0, 0));
+			};
+			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				assertRow();
+				GetApplication()->GetMainWindow()->SetClientSize({ 500,300 });
+			});
+			protocol->OnNextIdleFrame(L"Row expanded", [=]()
+			{
+				assertRow();
+				auto window = GetApplication()->GetMainWindow();
+				FindObjectByName<GuiEasyLayoutComposition>(window, L"row")->BuildLayout();
+				window->SetClientSize({ 320,240 });
+			});
+			protocol->OnNextIdleFrame(L"Row rebuilt and reduced", [=]()
+			{
+				assertRow();
+				GetApplication()->GetMainWindow()->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(L"EasyLayout/MixedHeights", L"easy_test::MainWindow", easy_layout_xml_tests::Resource(content));
+	});
 }

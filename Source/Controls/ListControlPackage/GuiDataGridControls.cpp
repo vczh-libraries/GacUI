@@ -439,6 +439,20 @@ GuiVirtualDataGrid (Editor)
 				return GuiVirtualListView::GetActivatingAltHost();
 			}
 
+			void GuiVirtualDataGrid::ReloadVisibleStyles()
+			{
+				if (currentEditor)
+				{
+					NotifyCloseEditor();
+					auto editorTemplate = currentEditor->GetTemplate();
+					// Keep the editor in the control tree so theme refresh reaches its controls.
+					// The replacement row will show and reparent it after layout.
+					editorTemplate->SetVisible(false);
+					if (!editorTemplate->GetParent()) GetContainerComposition()->AddChild(editorTemplate);
+				}
+				GuiVirtualListView::ReloadVisibleStyles();
+			}
+
 			void GuiVirtualDataGrid::NotifySelectionChanged(bool triggeredByItemContentModified)
 			{
 				GuiVirtualListView::NotifySelectionChanged(triggeredByItemContentModified);
@@ -485,6 +499,31 @@ GuiVirtualDataGrid (Editor)
 					if (selectedCell.row == index && selectedCell.column != -1)
 					{
 						itemStyle->NotifySelectCell(selectedCell.column);
+					}
+					if (!refreshPropertiesOnly && currentEditor && currentEditorPos.row == index)
+					{
+						auto editorTemplate = currentEditor->GetTemplate();
+						auto controlTemplate = GetListViewControlTemplate();
+						editorTemplate->SetPrimaryTextColor(controlTemplate->GetPrimaryTextColor());
+						editorTemplate->SetSecondaryTextColor(controlTemplate->GetSecondaryTextColor());
+						editorTemplate->SetItemSeparatorColor(controlTemplate->GetItemSeparatorColor());
+						editorTemplate->SetVisible(true);
+						itemStyle->NotifyOpenEditor(currentEditorPos.column, currentEditor.Obj());
+						if (auto host = GetBoundsComposition()->GetRelatedGraphicsHost())
+						{
+							auto flag = GetDisposedFlag();
+							auto editor = currentEditor;
+							host->InvokeAfterRendering([=, this]()
+							{
+								if (!flag->IsDisposed() && currentEditor == editor && !host->GetFocusedComposition())
+								{
+									if (auto focusControl = editor->GetTemplate()->GetFocusControl())
+									{
+										if (focusControl->GetFocused()) focusControl->SetFocused();
+									}
+								}
+							}, { this,1 });
+						}
 					}
 				}
 			}

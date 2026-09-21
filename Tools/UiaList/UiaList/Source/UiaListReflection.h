@@ -53,6 +53,8 @@ namespace vl
 			DECL_TYPE_INFO(::uialist::MultilineWindowConstructor)
 			DECL_TYPE_INFO(::uialist::PropertyDetailsVisualizer)
 			DECL_TYPE_INFO(::uialist::PropertyDetailsVisualizerConstructor)
+			DECL_TYPE_INFO(::uialist::PropertyInlineEditor)
+			DECL_TYPE_INFO(::uialist::PropertyInlineEditorConstructor)
 			DECL_TYPE_INFO(::uialist::PropertyValueVisualizer)
 			DECL_TYPE_INFO(::uialist::PropertyValueVisualizerConstructor)
 			DECL_TYPE_INFO(::uialist::PropertyWindow)

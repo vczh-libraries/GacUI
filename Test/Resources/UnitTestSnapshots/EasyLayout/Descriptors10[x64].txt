@@ -28,9 +28,6 @@ namespace easy_test
         var self : ::easy_test::MainWindow* = null of (::easy_test::MainWindow*);
 
         @cpp:Protected
-        var vertical : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
@@ -65,6 +62,9 @@ namespace easy_test
 
         @cpp:Protected
         var <precompile>11 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+
+        @cpp:Protected
+        var vertical : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
         var bottom : ::presentation::compositions::eazy_layout::GuiEasyBottomLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^);

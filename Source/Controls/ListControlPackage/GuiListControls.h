@@ -284,6 +284,7 @@ List Control
 				Size											adoptedSizeDiffWithoutScroll = { -1,-1 };
 				bool											displayItemBackground = true;
 
+				virtual void									ReloadVisibleStyles();
 				virtual void									OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated);
 				virtual void									OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly);
 				virtual void									OnStyleUninstalled(ItemStyle* style);

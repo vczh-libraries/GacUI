@@ -551,7 +551,7 @@ namespace darkskin
 
         static func SetColorPackage(colors : ColorPackage) : (void)
         {
-            InstallColorPackage(colors);
+            (darkColors = colors);
         }
 
         new* ()
@@ -3156,10 +3156,10 @@ namespace darkskin
                 (<precompile>0.Color = darkskin::darkColors.ContentBackground);
             }
             {
-                (self.CaretColor = darkskin::darkColors.TextBright);
+                (self.BaselineDocument = darkskin::CreateBaselineDocument());
             }
             {
-                (self.BaselineDocument = darkskin::CreateBaselineDocument());
+                (self.CaretColor = darkskin::darkColors.TextBright);
             }
         }
 
@@ -3383,10 +3383,10 @@ namespace darkskin
                 (<precompile>2.Color = darkskin::darkColors.ContentBackground);
             }
             {
-                (self.CaretColor = darkskin::darkColors.TextBright);
+                (self.BaselineDocument = darkskin::CreateBaselineDocument());
             }
             {
-                (self.BaselineDocument = darkskin::CreateBaselineDocument());
+                (self.CaretColor = darkskin::darkColors.TextBright);
             }
             {
                 (self.ContainerComposition = container);
@@ -3626,10 +3626,10 @@ namespace darkskin
                 (<precompile>2.Color = darkskin::darkColors.ContentBackground);
             }
             {
-                (self.CaretColor = darkskin::darkColors.TextBright);
+                (self.BaselineDocument = darkskin::CreateBaselineDocument());
             }
             {
-                (self.BaselineDocument = darkskin::CreateBaselineDocument());
+                (self.CaretColor = darkskin::darkColors.TextBright);
             }
             {
                 (self.ContainerComposition = look.ContainerComposition);
@@ -34199,11 +34199,6 @@ namespace darkskin
     }
 
     var darkColors : ColorPackage = CreateDefaultColorPackage();
-
-    func InstallColorPackage(colors : ColorPackage) : (void)
-    {
-        (darkColors = colors);
-    }
 
     func CreateBaselineDocument() : (DocumentModel^)
     {

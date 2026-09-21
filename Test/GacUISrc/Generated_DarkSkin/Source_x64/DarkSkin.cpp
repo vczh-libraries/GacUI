@@ -58,11 +58,6 @@ Global Functions
 		return GLOBAL_NAME CreateColorPackageInternal([&](){ ::darkskin::ColorPackage __vwsn_temp__; __vwsn_temp__.GeneralAccent = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#007ACC")); __vwsn_temp__.WindowBorderActive = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#017ACC")); __vwsn_temp__.ControlAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#1C97EA")); __vwsn_temp__.ArrowAccentHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#1997EA")); __vwsn_temp__.ItemBackgroundSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#3399FF")); __vwsn_temp__.ExpandingArrowHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#0A75B9")); __vwsn_temp__.RibbonExpandingArrow = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#A0D0FF")); __vwsn_temp__.RibbonExpandingArrowPressed = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#004879")); __vwsn_temp__.TabHighlightedSelected = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#CC7ACC")); __vwsn_temp__.TabHighlightedHovered = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#EA97EA")); __vwsn_temp__.TabHighlightedBackground = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#604360")); __vwsn_temp__.ProgressFilling = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#07B023")); return __vwsn_temp__; }());
 	}
 
-	void DarkSkin::InstallColorPackage(::darkskin::ColorPackage colors)
-	{
-		(GLOBAL_NAME darkColors = colors);
-	}
-
 	::vl::Ptr<::vl::presentation::DocumentModel> DarkSkin::CreateBaselineDocument()
 	{
 		auto document = ::vl::Ptr<::vl::presentation::DocumentModel>(new ::vl::presentation::DocumentModel());
@@ -25884,10 +25879,10 @@ Class (::darkskin::DocumentLabelTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0.Obj())->SetColor(GLOBAL_NAME darkColors.ContentBackground);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetCaretColor(GLOBAL_NAME darkColors.TextBright);
+			::vl::__vwsn::This(this->self)->SetBaselineDocument(GLOBAL_NAME CreateBaselineDocument());
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetBaselineDocument(GLOBAL_NAME CreateBaselineDocument());
+			::vl::__vwsn::This(this->self)->SetCaretColor(GLOBAL_NAME darkColors.TextBright);
 		}
 	}
 
@@ -25962,10 +25957,10 @@ Class (::darkskin::DocumentTextBoxTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(GLOBAL_NAME darkColors.ContentBackground);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetCaretColor(GLOBAL_NAME darkColors.TextBright);
+			::vl::__vwsn::This(this->self)->SetBaselineDocument(GLOBAL_NAME CreateBaselineDocument());
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetBaselineDocument(GLOBAL_NAME CreateBaselineDocument());
+			::vl::__vwsn::This(this->self)->SetCaretColor(GLOBAL_NAME darkColors.TextBright);
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->container));
@@ -26049,10 +26044,10 @@ Class (::darkskin::DocumentViewerTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(GLOBAL_NAME darkColors.ContentBackground);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetCaretColor(GLOBAL_NAME darkColors.TextBright);
+			::vl::__vwsn::This(this->self)->SetBaselineDocument(GLOBAL_NAME CreateBaselineDocument());
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetBaselineDocument(GLOBAL_NAME CreateBaselineDocument());
+			::vl::__vwsn::This(this->self)->SetCaretColor(GLOBAL_NAME darkColors.TextBright);
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetContainerComposition(::vl::__vwsn::This(this->look)->GetContainerComposition());
@@ -31805,7 +31800,7 @@ Class (::darkskin::Theme)
 
 	void Theme::SetColorPackage(::darkskin::ColorPackage colors)
 	{
-		GLOBAL_NAME InstallColorPackage(colors);
+		(GLOBAL_NAME darkColors = colors);
 	}
 
 	Theme::Theme()

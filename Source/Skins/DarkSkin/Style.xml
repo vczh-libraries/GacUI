@@ -150,17 +150,6 @@
       ]]>
     </att.Color-bind>
   </Style>
-  <Style ref.Path="//*.tabDropdownBackground">
-    <att.Color-bind>
-      <![CDATA[
-        cast Color let state = self.State in (
-          state == ButtonState::Active ? darkskin::darkColors.ControlAccentHovered :
-          state == ButtonState::Pressed ? darkskin::darkColors.ControlAccentHovered :
-          darkskin::darkColors.GeneralBorder
-        )
-      ]]>
-    </att.Color-bind>
-  </Style>
   <Style ref.Path="//*.controlText">
     <att.Color-bind>
       <![CDATA[
@@ -490,11 +479,6 @@
         )
       ]]>
     </att.BackgroundColor-bind>
-  </Style>
-  <Style ref.Path="//*.textBoxBackgroundAndColor">
-    <att.TextColor-eval>{normal:{text:(cast Color darkskin::darkColors.TextBright) background:(cast Color darkskin::darkColors.Transparent)} selectedFocused:{text:(cast Color darkskin::darkColors.TextBright) background:(cast Color darkskin::darkColors.GeneralAccent)} selectedUnfocused:{text:(cast Color darkskin::darkColors.TextBright) background:(cast Color darkskin::darkColors.GeneralAccent)}}</att.TextColor-eval>
-    <att.CaretColor-eval>darkskin::darkColors.TextBright</att.CaretColor-eval>
-    <SolidBackground Color-eval="darkskin::darkColors.ContentBackground"/>
   </Style>
   <Style ref.Path="//*.documentBoxBackgroundAndColor" BaselineDocument-eval="darkskin::CreateBaselineDocument()">
     <att.CaretColor-eval>darkskin::darkColors.TextBright</att.CaretColor-eval>

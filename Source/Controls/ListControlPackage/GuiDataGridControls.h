@@ -92,6 +92,7 @@ GuiVirtualDataGrid
 				bool													currentEditorOpeningEditor = false;
 
 				compositions::IGuiAltActionHost*						GetActivatingAltHost()override;
+				void													ReloadVisibleStyles()override;
 				void													NotifySelectionChanged(bool triggeredByItemContentModified)override;
 				void													OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 				void													OnStyleInstalled(vint index, ItemStyle* style, bool refreshPropertiesOnly)override;

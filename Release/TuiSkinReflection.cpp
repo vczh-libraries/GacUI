@@ -1042,8 +1042,8 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::presentation::theme::ThemeTemplates)
 				CLASS_MEMBER_BASE(::tuiskin::TuiThemeConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::tuiskin::TuiTheme*(), NO_PARAMETER)
-				CLASS_MEMBER_STATIC_METHOD(CreateBaselineDocument, NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(GetColorPackage, NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(SetColorPackage, { L"colors" })
 			END_CLASS_MEMBER(::tuiskin::TuiTheme)
 
 			BEGIN_CLASS_MEMBER(::tuiskin::TuiThemeConstructor)

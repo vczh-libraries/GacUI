@@ -10142,20 +10142,31 @@ Control Host
 Window
 ***********************************************************************/
 
+			/// <summary>The kind of change to a window's composition tree.</summary>
 			enum class CompositionUpdateType
 			{
+				/// <summary>A child was inserted into its parent.</summary>
 				Inserted,
+				/// <summary>A child was removed from its parent.</summary>
 				Removed,
+				/// <summary>A child changed order within its parent.</summary>
 				Moved,
 			};
 
+			/// <summary>Arguments describing a change to a window's composition tree.</summary>
 			struct GuiCompositionUpdateEventArgs : compositions::GuiEventArgs, Description<GuiCompositionUpdateEventArgs>
 			{
+				/// <summary>The kind of composition change.</summary>
 				CompositionUpdateType					updateType = CompositionUpdateType::Inserted;
+				/// <summary>The parent whose child collection changed.</summary>
 				compositions::GuiGraphicsComposition*	parent = nullptr;
+				/// <summary>The inserted, removed or reordered child.</summary>
 				compositions::GuiGraphicsComposition*	child = nullptr;
 
+				/// <summary>Create empty arguments.</summary>
 				GuiCompositionUpdateEventArgs() = default;
+				/// <summary>Create arguments associated with a composition.</summary>
+				/// <param name="composition">The event's associated composition.</param>
 				GuiCompositionUpdateEventArgs(compositions::GuiGraphicsComposition* composition);
 			};
 
@@ -10224,9 +10235,15 @@ Window
 				compositions::GuiNotifyEvent			ClipboardUpdated;
 				/// <summary>Frame configuration changed event.</summary>
 				compositions::GuiNotifyEvent			FrameConfigChanged;
+				/// <summary>A descendant composition was inserted, removed or reordered.</summary>
 				compositions::GuiGraphicsEvent<GuiCompositionUpdateEventArgs>	ChildCompositionUpdated;
+				/// <summary>The native window's position or size changed.</summary>
 				compositions::GuiNotifyEvent			BoundsChanged;
+				/// <summary>Test whether this window belongs to a modal session as a modal window.</summary>
+				/// <returns>True for a modal window, including one blocked by a nested modal window.</returns>
 				bool									GetModal();
+				/// <summary>Test whether another window in the modal session blocks this window.</summary>
+				/// <returns>True when a modal descendant is the current window in the session.</returns>
 				bool									GetBlockedByModalWindow();
 
 				/// <summary>Move the window to the center of the screen. If multiple screens exist, the window move to the screen that contains the biggest part of the window.</summary>
@@ -14236,6 +14253,7 @@ List Control
 				Size											adoptedSizeDiffWithoutScroll = { -1,-1 };
 				bool											displayItemBackground = true;
 
+				virtual void									ReloadVisibleStyles();
 				virtual void									OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated);
 				virtual void									OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly);
 				virtual void									OnStyleUninstalled(ItemStyle* style);
@@ -17444,6 +17462,7 @@ GuiVirtualDataGrid
 				bool													currentEditorOpeningEditor = false;
 
 				compositions::IGuiAltActionHost*						GetActivatingAltHost()override;
+				void													ReloadVisibleStyles()override;
 				void													NotifySelectionChanged(bool triggeredByItemContentModified)override;
 				void													OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 				void													OnStyleInstalled(vint index, ItemStyle* style, bool refreshPropertiesOnly)override;
@@ -19757,8 +19776,10 @@ GuiDocumentCommonInterface
 				/// </summary>
 				/// <param name="begin">The begin position of the selection area.</param>
 				/// <param name="end">The end position of the selection area.</param>
-				void										SetCaret(TextPos begin, TextPos end);				/// <summary>Ensure the caret is visible by scrolling the view if necessary.</summary>
-				void												EnsureCaretVisible();				/// <summary>Calculate a caret using a specified point.</summary>
+				void										SetCaret(TextPos begin, TextPos end);
+				/// <summary>Ensure the caret is visible by scrolling the view if necessary.</summary>
+				void										EnsureCaretVisible();
+				/// <summary>Calculate a caret using a specified point.</summary>
 				/// <returns>The calculated caret.</returns>
 				/// <param name="point">The specified point.</param>
 				TextPos										CalculateCaretFromPoint(Point point);
@@ -19883,7 +19904,11 @@ GuiDocumentCommonInterface
 				/// <returns>The href attribute of the active hyperlink.</returns>
 				WString										GetActiveHyperlinkReference();
 				/// <summary>Get the active hyperlink run, or null if no hyperlink is active.</summary>
+				/// <returns>The first run in the active hyperlink, or null.</returns>
 				Ptr<DocumentHyperlinkRun>					GetActiveHyperlink();
+				/// <summary>Activate the hyperlink at a text position and raise its execution events.</summary>
+				/// <returns>True if execution was requested; false if there is no hyperlink, the control is disabled, or activating the hyperlink disposes the control.</returns>
+				/// <param name="position">A text position inside the hyperlink.</param>
 				bool										ExecuteHyperlink(TextPos position);
 				/// <summary>Get the edit mode of this control.</summary>
 				/// <returns>The edit mode.</returns>

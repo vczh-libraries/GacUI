@@ -12,7 +12,6 @@ using namespace vl::presentation;
 
 void GuiMain()
 {
-	tuiskin::SetColorPackage(tuiskin::CreateDefaultColorPackage());
 	theme::RegisterTheme(Ptr(new tuiskin::TuiTheme));
 	tuidemo::TuiMainWindow window;
 	window.PaletteSelected.Add([&window](vint preset)
@@ -26,7 +25,7 @@ void GuiMain()
 			case 1: colors = tuiskin::CreateOrangeColorPackage(); break;
 			case 2: colors = tuiskin::CreateGrassPackage(); break;
 			case 3: colors = tuiskin::CreateEmeraldPackage(); break;
-			case 4: colors = tuiskin::CreateSkyblueColorPackage(); break;
+			case 4: colors = tuiskin::CreateDefaultColorPackage(); break;
 			case 5: colors = tuiskin::CreatePurplePackage(); break;
 			default: return;
 			}

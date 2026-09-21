@@ -12156,8 +12156,8 @@ class tuiskin::TuiTextListTemplateConstructor : system::ReferenceType {
 @FullName:tuiskin::TuiTheme
 @system::workflow_attributes::att_cpp_Friend(system::reflection::TypeDescriptor:tuiskin::TuiThemeConstructor)
 class tuiskin::TuiTheme : presentation::theme::ThemeTemplates, tuiskin::TuiThemeConstructor {
-    static function CreateBaselineDocument() : presentation::DocumentModel^;
     static function GetColorPackage() : tuiskin::ColorPackage;
+    static function SetColorPackage(colors : tuiskin::ColorPackage) : system::Void;
 
     constructor () : tuiskin::TuiTheme*;
 }

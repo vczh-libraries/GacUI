@@ -252,6 +252,7 @@ namespace uialist::native
 			referenceNames.Set(node.key, node.name);
 			CONTROLTYPEID role = 0;
 			CheckUia(current.element->get_CachedControlType(&role), L"CachedControlType");
+			node.controlType = role;
 			node.role = IdName(ControlTypeCatalog, ControlTypeCatalogCount, role);
 			CheckUia(current.element->get_CachedBoundingRectangle(&node.bounds), L"CachedBoundingRectangle");
 			BOOL offscreen = FALSE;
