@@ -24,7 +24,11 @@
 - Automation HTTP returns 404 only for protocol-level rejection [2]
 - `RemoteViewModelTest` control messages are business-only [2]
 - `/Cli` host transport is independent from Core renderer transport [2]
-- Keep renderer automation port configurable with default 8889 [1]
+- Keep UiaList inspection gestures distinct from tree navigation [2]
+- Prefer EazyLayout for arrangements it can express [2]
+- Omit redundant EazyLayout sample properties and wrappers [2]
+- Keep skin defaults internal and showcase palette selection external [2]
+- Use /AsPort for automation with default 8888 [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
 - Use `EventObject` for renderer-connection waits after channel server start [1]
 - `TreeViewItemBindableRootProvider::UpdateBindingProperties` is root-scoped [1]
@@ -33,7 +37,7 @@
 - Use `CHECK_ERROR` + `ERROR_MESSAGE_PREFIX` for invalid `NodeItemProvider` inputs [1]
 - Use full namespace `ERROR_MESSAGE_PREFIX` in remote renderer `CHECK_ERROR` messages [1]
 - Prefer `TreeViewItemRootProvider::GetTreeViewData` over `GetData().Cast<TreeViewItem>()` [1]
-- Keep header changes comment-free [1]
+- Keep header rationale concise and document public APIs consistently [1]
 - `DiffRuns` must not drop old ranges (use `CHECK_ERROR`) [1]
 - Compare `IGuiGraphicsParagraph::TextStyle` flags against `(TextStyle)0` [1]
 - `GuiDocumentCommonInterface::ProcessKey` ignores Enter in `GuiDocumentParagraphMode::Singleline` [1]
@@ -80,7 +84,12 @@
 - Always synchronize retained control state into replacement templates [1]
 - Keep manual skin configuration in canonical Config folders [1]
 - Preserve realized list rows during temporary render-target detachment [1]
-- Keep showcase palette selection outside DarkSkin [1]
+- UiaList presents side-effect-free getters as readouts [1]
+- Keep visible UI gaps compact and uniform [1]
+- Apply EazyLayout configuration only through BuildLayout [1]
+- Delegate EazyLayout cell-site rejection to GuiTableComposition [1]
+- Create UIA providers and observation only for demand [1]
+- Cache UiaList presentation values until an explicit query [1]
 
 # Refinements
 
@@ -116,9 +125,9 @@ For `vl::presentation::remote_renderer::GuiRemoteRendererSingle` and related rem
 
 When working with nodes whose data is known to be `TreeViewItem`, use `TreeViewItemRootProvider::GetTreeViewData(node)` to obtain `Ptr<TreeViewItem>` instead of calling `node->GetData().Cast<TreeViewItem>()`. This is the intended API, keeps code cleaner, and avoids repeating casts.
 
-## Keep header changes comment-free
+## Keep header rationale concise and document public APIs consistently
 
-Avoid adding explanatory comments in header-file code changes unless they are required for correctness. Prefer keeping headers clean and moving rationale to `.cpp` files or task documentation when needed.
+Avoid adding implementation-rationale comments to unrelated header changes; keep that explanation in the implementation or design documentation. This does not prohibit public API documentation. When adding or auditing public functions, events and argument types in an already documented API, supply missing comments in the neighboring style and verify parameter and return semantics against the implementation.
 
 ## Place helpers in the primary-responsibility namespace
 
@@ -391,9 +400,9 @@ Keep `ViewModelHostClient` state directly in the owner: channel-name map, generi
 
 Start automation only after the native controller exists. Each test app constructs the platform- and mode-specific service as a stack value, substitutes it directly, starts Windows HTTP or MiniHTTP, runs the app, then performs endpoint stop, service stop, and unsubstitution in straight-line normal shutdown order. Do not add a generic service enum, host abstraction, scope wrapper, global service pointer, or cleanup-only catch; the platform provider must not automatically install test automation.
 
-## Keep renderer automation port configurable with default 8889
+## Use /AsPort for automation with default 8888
 
-`RemotingTest_Rendering_Win32` should accept a validated `/port:<port>` argument and use the selected port for either Windows HTTP or MiniHTTP automation. Preserve 8889 when the argument is omitted, and keep documentation explicit about both the configurable port and its default.
+Test applications that already expose automation accept one validated `/AsPort:<decimal port>` argument, defaulting to 8888. This supersedes the renderer-only `/port` spelling and default 8889. Use distinct explicit automation ports to run applications together; paired renderer examples normally select `/AsPort:8889`. The argument controls only the automation endpoint: remote HTTP and MiniHTTP protocol servers and clients remain on port 8888. Preserve shared versus separately owned MiniHTTP endpoint lifetimes and update active scripts and documentation together.
 
 ## RVM accepted-host loss poisons the requester dispatcher outside locks
 
@@ -465,6 +474,48 @@ Maintain native skin configuration in `Source/Skins/<Skin>/Config`, outside gene
 
 In `vl::presentation::controls::GuiListControl::OnRenderTargetChanged` (`Source/Controls/ListControlPackage/GuiListControls.cpp`), do not rebuild realized rows while the render target is null during ancestor template replacement. Temporary measurement can shrink the reported total size and clamp an existing scroll offset. Wait for a real renderer before reloading rows. Keep this lifecycle regression distinct from asynchronous remote full-text measurement: preserving rows during detachment does not prove that an inactive remote list preserves scrolling through every theme refresh.
 
-## Keep showcase palette selection outside DarkSkin
+## Keep skin defaults internal and showcase palette selection external
 
-Keep shared neutral and automatic default initialization in `Test/Resources/App/DarkSkin/DarkSkin.xml`; the default C++ factory forwards to Workflow, and named factories in `Source/Skins/DarkSkin/Config/DarkSkinConfig.cpp` call the shared initializer and own their accent assignments. Preserve public signatures and exact values. DarkSkin must not own a showcase preset selector, callback plugin or availability policy. Follow TuiControlTest: FullControlTest raises `PaletteSelected(int)` only for a newly selected radio, and every showcase entry point attaches the shared native handler in manually maintained `Test/GacUISrc/Generated_FullControlTest/FullControlTestPalette.h/.cpp`. Queue preset creation, installation and `GuiApplication::RefreshThemes()` together after input dispatch, capturing the selection by value. The Workflow-binary showcase attaches the reflected event to the same handler and uses native DarkSkin, keeping every preset available.
+DarkSkin and TuiSkin share the same ownership pattern: authored Workflow resources own the common palette initializer, complete default palette and one-time installed default. Native code in `Source/Skins/<Skin>/Config` supplies named accents through that initializer and forwards the default factory and setter to Workflow. `SetColorPackage` directly updates installed palette state; remove redundant `InstallColorPackage` wrappers and application startup default installation. Creating another theme or window must not reset the chosen palette. Keep internal palette-based document helpers that still have template callers, even when obsolete public wrappers or resource files are removed.
+
+Showcase selection stays outside reusable skins. FullControlTest raises `PaletteSelected(int)`, and each entry point attaches the shared native handler in `Test/GacUISrc/Generated_FullControlTest/FullControlTestPalette.h/.cpp`. Queue palette creation, installation and `GuiApplication::RefreshThemes()` together after input dispatch, capturing the selection by value. The Workflow-binary showcase attaches the same handler through reflection and uses native DarkSkin. Do not add selector plugins or availability policy to a skin.
+
+## UiaList presents side-effect-free getters as readouts
+
+In `Tools/UiaList`, show parameterless side-effect-free getter results directly when their section loads or refreshes instead of adding a button for every getter. Parameterized getters retain argument editors and query when valid input is committed. Distinguish pure reads from mutations, subscriptions and explicit text-range workspace commands; a non-mutation flag alone does not establish automatic-query safety.
+
+## Keep UiaList inspection gestures distinct from tree navigation
+
+In `Tools/UiaList`, reserve node double-click for ordinary tree expansion and collapse. Open inspection through an Inspect context menu for the node actually right-clicked, retaining Enter inspection. Capture that node, reject stale tree generations, and do not fall back to a previously selected node when the command target disappears.
+
+Position the Inspect popup at the actual item click. Item mouse coordinates can be relative to a realized style while `GuiPopup::ShowPopup` expects coordinates relative to its owner control; translate through the style and owner bounds before opening. Preserve normal screen-edge adjustment and verify after scrolling and moving the inspector.
+
+## Keep visible UI gaps compact and uniform
+
+For UiaList provider groups and action rows, prefer compact, consistent visible gaps of about five pixels. Always-visible group boxes should remain visually distinct without large blank command or status areas. Measure the resulting layout through automation: nested table padding, stack gaps, margins and template insets accumulate, so identical XML numbers alone do not establish equal visible spacing.
+
+## Apply EazyLayout configuration only through BuildLayout
+
+`GuiEasyLayoutComposition::BuildLayout`, declared in `Source/GraphicsComposition/EazyLayout/GuiEasyLayout.h`, is the boundary that applies descriptor configuration. Setters and permitted bindings only store values; changing `Padding`, `Border`, `Direction` or `CellSpan` does not rebuild or immediately change generated geometry. Each explicit build applies current values and structure while preserving reused payload controls, bindings, handlers and state. Normal parent resizing continues to lay out the already-built tree.
+
+## Delegate EazyLayout cell-site rejection to GuiTableComposition
+
+When lowering EazyLayout row and column spans, pass their ranges to `GuiCellComposition::SetSite` and `GuiTableComposition` in `Source/GraphicsComposition/GuiGraphicsTableComposition.cpp`. Do not add another overlap/range validator or convert native site rejection into an EazyLayout exception: invalid cells remain unsited and invisible. Use fresh generated cells on rebuild so rejected placement cannot preserve a previous valid site. EazyLayout still validates its own descriptor grammar and shared-track option rules.
+
+## Prefer EazyLayout for arrangements it can express
+
+Prefer `ez:Layout` for ordinary authored GacUI arrangements because its defaults encode the usual layout conventions. For tutorial migration, inspect every applicable XML resource and rewrite the expressible portions while preserving visible geometry and behavior. Retain specialized composition subtrees where the current EazyLayout API cannot express them; partial conversion is valid. Use the detailed composition guidance when finer control is needed.
+
+## Omit redundant EazyLayout sample properties and wrappers
+
+Keep tutorial XML small enough to teach the intended defaults and inference. Omit default properties, Fill directions already determined by their sibling group, and duplicate shared-track `CellOption` declarations. Retain the single nondefault declaration needed for each shared track, structural descriptors and nondefault spans. Verify omission itself rather than preserving redundant declarations to hide a runtime or compiler defect; the resulting visible layout must remain unchanged.
+
+Remove a redundant Bounds around a sole `ez:Layout` when the layout itself can preserve the required properties and minimum-size propagation. `BuildLayout` owns the layout root alignment, so do not blindly copy the wrapper `AlignmentToParent`. The old `Margin` property no longer exists. Use current `Padding`/`Border` behavior only when it preserves both outer insets and inner gaps; retain wrappers for asymmetric insets, anchoring or other behavior that cannot be reproduced.
+
+## Create UIA providers and observation only for demand
+
+Windows UIA implementation under `Source/PlatformProviders/Windows/UIAutomation` must avoid creating COM providers, full-tree hooks or property snapshots merely because a window exists or its layout changes. Materialize providers for requests and subscribed event delivery, and detach owned observation when its final consumer disappears. Avoid owning provider/node cycles; coordinate final COM release with acquisition, UI-thread cleanup and shutdown. Retire removed attachments synchronously while composition event arguments are valid. Preserve event-only clients, retained ranges and other clients still using the same observation; loss of one client is not necessarily the final COM reference.
+
+## Cache UiaList presentation values until an explicit query
+
+UiaList view models own cached display values and derived presentation state. Scrolling, painting, recycling a row or revisiting a loaded tab must not reread the target or reconstruct expensive presentation collections. Preserve initial loading, explicit Refresh and committed parameterized queries, plus readback after successful edits/actions. Keep drafts and validation in the view model so editor recreation preserves them. Profile the actual repeated work before assuming every getter is making a UIA call.

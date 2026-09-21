@@ -3,15 +3,15 @@
 # Orders
 
 - Verify generated artifacts with downstream consumer checks [25]
-- Keep design documentation aligned with code after refactoring [21]
-- Process staged tasks one by one with verification [20]
-- Proactively remove code made redundant by refactoring [20]
+- Keep design documentation aligned with code after refactoring [23]
+- Process staged tasks one by one with verification [22]
+- Proactively remove code made redundant by refactoring [21]
 - Port fixes from imports to source repositories [18]
 - Crash early instead of adding error-tolerance fallbacks [15]
 - Verify and localize portability on every target OS [15]
 - Extract abstractions only for real shared behavior [14]
 - Fix behavior at the owning state instead of patching symptoms [12]
-- Validate expectations against implementation and existing tests [11]
+- Validate expectations against implementation and existing tests [12]
 - Make `Stop()` drain asynchronous work before returning [8]
 - Do not assume async callback owners are heap allocated [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
@@ -53,6 +53,7 @@
 - Normalize checkout line endings at golden comparison boundaries [1]
 - Preserve ordered HTTP messages at upload and completion boundaries [1]
 - Preserve an existing `Ptr` counter across asynchronous ownership handoffs [1]
+- Reuse established MSBuild project configurations [1]
 
 # Refinements
 
@@ -83,6 +84,8 @@ Test applications should also preserve their intended executable boundary. When 
 When a request is split into explicit tasks, complete and verify each task before starting the next one. This keeps commits easy to understand and review, limits side effects to the current task, and avoids having to diagnose many unrelated issues at the same time. If a task has its own finishing instructions, finish that task properly before moving on.
 
 When a task boundary says to commit and push, do that before starting the next task so each task remains independently reviewable.
+
+When requested for an XML refactor, commit the authored XML changes together first, then commit source, generated artifacts and other remaining changes separately. Honor that review boundary even when the XML commit depends on the following implementation commit.
 
 ## Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages
 
@@ -399,3 +402,7 @@ Assign a stable sequence to each submitted request and buffer completed response
 ## Preserve an existing `Ptr` counter across asynchronous ownership handoffs
 
 When a callback or adapter must retain an object beyond the caller's synchronized scope, carry the producer's existing owning `Ptr<T>` through every layer. Never construct another `Ptr<T>` from a raw callback argument or from `.Obj()`; with the default `ReferenceCounterOperator` in `Vlpp/Source/Primitives/Pointer.h`, that creates an independent reference counter and can double-delete the same object. Use `.Obj()` only for a temporary operation that explicitly requires a raw pointer.
+
+## Reuse established MSBuild project configurations
+
+When adding a solution or project, start from a comparable existing `.vcxproj` configuration and adapt its dependencies and source inventory. Reuse established architecture, runtime, compiler and linker settings instead of reconstructing the build configuration from scratch.

@@ -19,6 +19,7 @@
 - Native modal dialogs block GacUI HTTP automation [3]
 - Verify native shortcut delivery through the focused renderer or terminal [3]
 - Compare TUI control regressions with the GUI showcase [3]
+- Prefer automation geometry before screenshots for layout verification [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -80,6 +81,9 @@
 - Verify renderer-localized shortcut labels in the remoting SOP [1]
 - Regenerate compiler snapshots through UnitTest after XML namespace changes [1]
 - Match native theme regressions to the initialized harness [1]
+- Author Playground UI entirely in XML and Workflow [1]
+- Keep layout rejection and compiler-only tests outside remote frames [1]
+- Keep FullControlTest UIA checks synchronized with showcase changes [1]
 
 # Refinements
 
@@ -517,3 +521,19 @@ After a live refresh, wait for settled control and label bounds before calculati
 ## Match native theme regressions to the initialized harness
 
 The native theme harness does not automatically register DarkSkin reflection descriptors, so a missing descriptor alone is not evidence of a skin defect. Test the native contract directly and use metadata and interpreted consumers to validate reflection. Set an explicit window client size before the first render, materialize a lazy template with `GetControlTemplateObject` before inspecting it, and keep final assertions and shutdown together when another idle frame would contain no rendering change.
+
+## Prefer automation geometry before screenshots for layout verification
+
+Use the automation service to inspect control and composition bounds when diagnosing or comparing GacUI layouts. Compare the same application state, size and coordinate space, including spacing, alignment and clipping. Treat screenshots as the last choice for layout questions; use them when the question concerns native rendering or when the application has no suitable automation endpoint.
+
+## Author Playground UI entirely in XML and Workflow
+
+Playground exists to try UI authored in XML. Put its controls, layout, document content and UI interaction handlers in XML/Workflow resources, including UIA regression fixtures. C++ selects a resource candidate and loads or opens its reflected window; do not assemble the fixture UI in C++. Narrow native interop hooks called by Workflow remain allowed. Selecting one of several resource candidates by changing `GuiMain` is an intended use of this application.
+
+## Keep layout rejection and compiler-only tests outside remote frames
+
+Remote-protocol GacUI frame tests verify instantiated UI and its visible layout. Put direct EazyLayout `BuildLayout` rejection cases in `Test/GacUISrc/UnitTest/TestCompositions_EazyLayoutFailures.cpp`, with no window or frame loop. Keep compiler-only binding, constant-expression and grammar rejection tests in the existing `TestResource.cpp` compiler harness, preserving diagnostics and source positions. Positive XML construction and rendered-frame checks remain in `TestControls_EasyLayout.cpp`; direct layout geometry stays in composition tests.
+
+## Keep FullControlTest UIA checks synchronized with showcase changes
+
+When FullControlTest changes, update the affected assertions in `Test/UIA_CppTest_Shared.cs` and run both `Test/UIA_CppTest.ps1` and `Test/UIA_CppTest_Metaonly.ps1`. Check meaningful roles, properties, pattern actions and their resulting state, not only generic tab traversal. Inspect with UiaList through its automation endpoint when helpful. Keep the script entry points, prerequisites and hosted/native distinctions under `Project.md` Windows Specific.
