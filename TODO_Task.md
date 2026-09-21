@@ -1,5 +1,8 @@
+## FullControlHost::EazyLayout
+
 In `FullControlHost` there is a `EazyLayout` page:
-- Currently there are two rows at the end, insert a third row above them with 1 `<ez:Right/>` having a check button, and 3 `<ez:Left/>` each having a button, they do nothing.
+- Currently there are two rows at the end, insert a third row above them with 2 `<ez:Right/>` having a combo box and a check button, and 3 `<ez:Left/>` each having a button, they do nothing.
+  - This is to check if embedded composition or bounds composition of control have `AlignmentToParent` set to 0, if so, all controls will have the same height.
 
 ### DETAILS
 
@@ -13,13 +16,14 @@ In `FullControlHost` there is a `EazyLayout` page:
 - Through automation, open `Easy Layout` and verify three left-aligned buttons and one right-aligned checkbox above the existing rows, with non-overlapping bounds at normal and smaller window sizes. Invoke each button and toggle the checkbox without application side effects.
 - Rebuild horizontal/vertical content, drag the existing splitter and verify that editor text and its label binding survive. Exercise the generated showcase and the Workflow-loaded `GacUI_Host` path; include the new controls in both UIA script runs described below.
 
-DarkSkin:
-  - `Test\Resources\App\DarkSkin\BaselineDocuments.xml`:
-    - This file is not used anymore, remove it and clean up references to avoid build breaks.
-  - `Test\Resources\App\DarkSkin\Style.xml`:
-    - `textBoxBackgroundAndColor` seems not in use anymore, remove it, and clean up any styles that is not used.
-  - `Test\Resources\App\TuiSkin\Index.xml`
-    - Remove `InstallColorPackage` and just update the variable in `SetColorPackage`.
+## DarkSkin
+
+- `Test\Resources\App\DarkSkin\BaselineDocuments.xml`:
+  - This file is not used anymore, remove it and clean up references to avoid build breaks.
+- `Test\Resources\App\DarkSkin\Style.xml`:
+  - `textBoxBackgroundAndColor` seems not in use anymore, remove it, and clean up any styles that is not used.
+- `Test\Resources\App\TuiSkin\Index.xml`
+  - Remove `InstallColorPackage` and just update the variable in `SetColorPackage`.
 
 ### DETAILS
 
@@ -35,13 +39,14 @@ DarkSkin:
 - Exercise all DarkSkin presets and a return to default. New windows must retain the selected palette; existing document controls must retain text, selection, undo/redo and scroll state after theme refresh. Check textbox and document backgrounds, caret and selection colors, including a document-based grid editor.
 - Complete the shared build, generation and unit-test checks in the TuiSkin section.
 
-TuiSkin:
-  - `Test\Resources\App\TuiSkin\Index.xml`
-    - `CreateBaselineDocument` should be removed.
-    - Remove `InstallColorPackage` and add `SetColorPackage` in this file as a static function to replace it.
-  - Delete `CreateSkyblueColorPackage` from `TuiSkinConfig.cpp`.
-  - Move `CreateColorPackageInternal` and `CreateDefaultColorPackage` from `TuiSkinConfig.cpp` to `TuiSkin.xml`, so that `tuiColors` could be initialized by `CreateDefaultColorPackage`.
-  - This remove the requirement for every Tui application to call `tuiskin::SetColorPackage(tuiskin::CreateDefaultColorPackage());` in their `GuiMain` function, clean this up from test apps.
+## TuiSkin
+
+- `Test\Resources\App\TuiSkin\Index.xml`
+  - `CreateBaselineDocument` should be removed.
+  - Remove `InstallColorPackage` and add `SetColorPackage` in this file as a static function to replace it.
+- Delete `CreateSkyblueColorPackage` from `TuiSkinConfig.cpp`.
+- Move `CreateColorPackageInternal` and `CreateDefaultColorPackage` from `TuiSkinConfig.cpp` to `TuiSkin.xml`, so that `tuiColors` could be initialized by `CreateDefaultColorPackage`.
+- This remove the requirement for every Tui application to call `tuiskin::SetColorPackage(tuiskin::CreateDefaultColorPackage());` in their `GuiMain` function, clean this up from test apps.
 
 The above requests is to mirror APIs between DarkSkin and TuiSkin so it becomes a pattern.
 
@@ -62,7 +67,8 @@ The above requests is to mirror APIs between DarkSkin and TuiSkin so it becomes 
 - Start `CppTest_Tui` without any startup palette installation and require the same default appearance. Follow `.github/Jobs/DebugTuiControlTestSop.md` for terminal launch and interaction; this application has no HTTP automation endpoint. Select each preset and return to SkyBlue at 120x40 and 80x25, then open a new window to check the palette is not reset.
 - Verify existing controls and an active grid document editor retain text, selection, edits and scroll state through refresh. Confirm fake TUI dialogs and new document controls use the selected palette. Check authored and regenerated files for removed API references, including unit tests and native declarations.
 
-UiaList tool
+## UiaList Tool
+
 - ListView in property windows still feel low performance to scroll, since almost all pages have the refresh buttons, make sure those values are actually cached inside corresponding view model classes until refresh button is clicked.
 - When running with `CppTest`, it seems the UI tab can highlight any sub window components, fix it.
 
@@ -82,7 +88,8 @@ UiaList tool
 - Hover controls in the hosted main window and an opened child window; require the correct descendant label and rectangle. Clicking the preview must select that same node and expand ancestors without sending input to the target. Repeat after preview scrolling, target move/resize followed by refresh, and target switching; compare native-window `CppTest_Metaonly` behavior.
 - Include U02-U06 coverage for coordinates/DPI, overlap, clipping and snapshot consistency. Use automation geometry first and pixel captures only where needed to verify native capture/highlight rendering. Build UiaList's solution and run its documented regression checks in addition to applicable GacUISrc verification.
 
-`Project.md`:
+## Project.md
+
 - `Test/UIA_CppTest(_Metaonly)?.ps1` should be updated when `FullControlTest` is changed, to sync changes to this script, as well as making sure that UIA is working properly. `UiaList` tool could help reviewing the change, operate `UiaList` with automation service.
 - All UIA related stuff should be in the `## Windows Specific` section.
 
@@ -97,7 +104,9 @@ UiaList tool
 - Run both UIA entry scripts against fresh processes after rebuilding FullControlTest. Require their assertions to pass and their owned processes/endpoints to shut down normally.
 - Review the final Windows section for complete script paths and distinct automation-port examples; keep existing hosted/native distinctions and UiaList's Debug-only endpoint restriction accurate.
 
-`ToDo/1.4.1.3.md` under `New added functions`:
+## ToDo/1.4.1.3.md
+
+under `New added functions`:
 - Check out commits since `1.4.1.2` tags, some functions are added to controls due to implementing UIA and EazyLayout, list all of them, no need to explain what they do.
 - This is a good time to check if they have proper comments. Add them when similar functions or objects are already commented.
 - Do not include UIA and EazyLayout themselves to this list.
@@ -114,7 +123,8 @@ UiaList tool
 - Cross-check the names against the tag diff and current headers, with no pre-existing functions, duplicate inherited listings or implementation-only entries. Keep the release note free of behavior descriptions as requested.
 - Review added comments against implementation behavior, and run the required C++ build/unit-test checks if headers are edited. Regenerate metadata only if reflection changes require it or as part of the skin generation already requested above.
 
-In `Tools` repo:
+## Tools repo
+
 - Update `GacUILayout.md`:
   - Fix stale fact.
   - Delete `## Best Practice for Creating/Updating Official TuiSkin` section and its sub sections as it is already in the code.
