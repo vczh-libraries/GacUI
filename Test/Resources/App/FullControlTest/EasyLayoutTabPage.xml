@@ -2,61 +2,52 @@
   <Instance name="EasyLayoutTabPageResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::EasyLayoutTabPage">
       <TabPage Text="Easy Layout">
-        <ez:Layout>
+        <ez:Layout ref.Name="layout">
           <ez:Top>
             <CheckBox ref.Name="vertical" Text="Store vertical arrangement (press Rebuild to apply)"/>
           </ez:Top>
           <ez:Top>
             <Button Text="Rebuild">
-              <ev.Clicked-eval><![CDATA[{ content.BuildLayout(); }]]></ev.Clicked-eval>
+              <ev.Clicked-eval><![CDATA[{ layout.BuildLayout(); }]]></ev.Clicked-eval>
             </Button>
           </ez:Top>
           <ez:Fill>
-            <ez:Layout ref.Name="content" Border="false" Padding-bind="vertical.Selected ? 10 : 5">
-              <ez:Fill Direction-bind="vertical.Selected ? Vertical : Horizontal">
-                <SinglelineTextBox ref.Name="editor" Text="This text survives rebuilding."/>
-              </ez:Fill>
-              <ez:Splitter/>
-              <ez:Fill Percentage="2">
-                <Label Text-bind="editor.Text"/>
-              </ez:Fill>
-            </ez:Layout>
+            <ez:Fill Direction-bind="vertical.Selected ? Vertical : Horizontal">
+              <SinglelineTextBox ref.Name="editor" Text="This text survives rebuilding."/>
+            </ez:Fill>
+            <ez:Fill Percentage="2">
+              <Label Text-bind="editor.Text"/>
+            </ez:Fill>
           </ez:Fill>
           <ez:Bottom>
-            <ez:Layout Border="false">
-              <ez:Row>
-                <ez:Column CellSpan="2">
-                  <ez:Layout Border="false">
-                    <ez:Right>
-                      <ComboBox ref.Name="easyChoice" SelectedIndex="0">
-                        <att.BoundsComposition-set PreferredMinSize="x:120"/>
-                        <att.ListControl>
-                          <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                            <att.Items>
-                              <TextItem Text="First choice"/>
-                              <TextItem Text="Second choice"/>
-                              <TextItem Text="Third choice"/>
-                            </att.Items>
-                          </TextList>
-                        </att.ListControl>
-                      </ComboBox>
-                    </ez:Right>
-                    <ez:Right><CheckBox ref.Name="easyCheck" Text="Right check"/></ez:Right>
-                    <ez:Left><Button ref.Name="easyLeft1" Text="Left one"/></ez:Left>
-                    <ez:Left><Button ref.Name="easyLeft2" Text="Left two"/></ez:Left>
-                    <ez:Left><Button ref.Name="easyLeft3" Text="Left three"/></ez:Left>
-                  </ez:Layout>
-                </ez:Column>
-              </ez:Row>
-              <ez:Row CellOption="composeType:Absolute absolute:24">
-                <ez:Column CellOption="composeType:Percentage percentage:1"><Label Text="First column"/></ez:Column>
-                <ez:Column><att.CellOption>composeType:Percentage percentage:2</att.CellOption><Label Text="Second column (twice the width)"/></ez:Column>
-              </ez:Row>
-              <ez:Row>
-                <ez:Column><Label Text="Shared tracks"/></ez:Column>
-                <ez:Column><ez:Layout Border="false"/></ez:Column>
-              </ez:Row>
-            </ez:Layout>
+            <ez:Right>
+              <ComboBox SelectedIndex="0">
+                <att.BoundsComposition-set PreferredMinSize="x:120"/>
+                <att.ListControl>
+                  <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                    <att.Items>
+                      <TextItem Text="First choice"/>
+                      <TextItem Text="Second choice"/>
+                      <TextItem Text="Third choice"/>
+                    </att.Items>
+                  </TextList>
+                </att.ListControl>
+              </ComboBox>
+            </ez:Right>
+            <ez:Right><CheckBox Text="Right check"/></ez:Right>
+            <ez:Left><Button Text="Left one"/></ez:Left>
+            <ez:Left><Button Text="Left two"/></ez:Left>
+            <ez:Left><Button Text="Left three"/></ez:Left>
+          </ez:Bottom>
+          <ez:Bottom>
+            <ez:Row CellOption="composeType:Absolute absolute:24">
+              <ez:Column CellOption="composeType:Absolute percentage:120"><Label Text="First column"/></ez:Column>
+              <ez:Splitter/>
+              <ez:Column CellOption="composeType:Percentage percentage:1"><Label Text="Second column"/></ez:Column>
+            </ez:Row>
+          </ez:Bottom>
+          <ez:Bottom>
+            <Label Text="Shared tracks"/>
           </ez:Bottom>
         </ez:Layout>
       </TabPage>

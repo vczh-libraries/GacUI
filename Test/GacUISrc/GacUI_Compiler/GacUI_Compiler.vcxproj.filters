@@ -210,6 +210,9 @@
     <Xml Include="..\..\Resources\App\RemoteViewModelTest\Resource.xml">
       <Filter>Resource Files\RemoteViewModelTest</Filter>
     </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\EasyLayoutTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files\TuiControlTest">

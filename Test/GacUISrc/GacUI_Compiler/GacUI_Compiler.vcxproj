@@ -206,6 +206,7 @@
     <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorBase.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorRibbon.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\DocumentEditorToolstrip.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\EasyLayoutTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\ElementTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\EmbeddedControlsSubTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\Images\ImageLoader.xml" />
