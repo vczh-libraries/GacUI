@@ -155,6 +155,7 @@
 ../../../Source/GraphicsComposition/GuiGraphicsSpecializedComposition.cpp
 ../../../Source/GraphicsComposition/GuiGraphicsStackComposition.cpp
 ../../../Source/GraphicsComposition/GuiGraphicsTableComposition.cpp
+../../../Source/GraphicsComposition/EazyLayout/GuiEasyLayout.cpp
 ../../../Source/Controls/ListControlPackage/TuiItemTemplates.cpp
 ../../../Source/Reflection/GuiInstanceCompiledWorkflow.cpp
 ../../../Source/Reflection/TypeDescriptors/GuiReflectionBasic.cpp
@@ -190,6 +191,7 @@
 ../../../Source/Compiler/GuiInstanceRepresentation.cpp
 ../../../Source/Compiler/GuiInstanceSharedScript.cpp
 ../../../Source/Compiler/InstanceLoaders/GuiInstanceLoader_Compositions.cpp
+../../../Source/Compiler/InstanceLoaders/GuiInstanceLoader_EasyLayout.cpp
 ../../../Source/Compiler/InstanceLoaders/GuiInstanceLoader_Document.cpp
 ../../../Source/Compiler/InstanceLoaders/GuiInstanceLoader_List.cpp
 ../../../Source/Compiler/InstanceLoaders/GuiInstanceLoader_Plugin.cpp
@@ -244,6 +246,8 @@
 ../../GacUISrc/UnitTest/TestCompositions_SharedSize.cpp
 ../../GacUISrc/UnitTest/TestCompositions_Specialized.cpp
 ../../GacUISrc/UnitTest/TestCompositions_Stack.cpp
+../../GacUISrc/UnitTest/TestCompositions_EasyLayout.cpp
+../../GacUISrc/UnitTest/TestCompositions_EazyLayoutFailures.cpp
 ../../GacUISrc/UnitTest/TestCompositions_Table.cpp
 ../../GacUISrc/UnitTest/TestCompositions_VirtualRepeat.cpp
 ../../GacUISrc/UnitTest/TestControls_Basic_GuiButton.cpp
@@ -255,6 +259,7 @@
 ../../GacUISrc/UnitTest/TestControls_CoreApplication_GuiControl.cpp
 ../../GacUISrc/UnitTest/TestControls_CoreApplication_GuiLabel.cpp
 ../../GacUISrc/UnitTest/TestControls_CoreApplication_GuiWindow.cpp
+../../GacUISrc/UnitTest/TestControls_EasyLayout.cpp
 ../../GacUISrc/UnitTest/TestControls_Editor.cpp
 ../../GacUISrc/UnitTest/TestControls_Editor_Key.cpp
 ../../GacUISrc/UnitTest/TestControls_Editor_RichText.cpp

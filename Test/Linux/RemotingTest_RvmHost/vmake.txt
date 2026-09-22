@@ -153,6 +153,7 @@
 ../../../Source/GraphicsComposition/GuiGraphicsSpecializedComposition.cpp
 ../../../Source/GraphicsComposition/GuiGraphicsStackComposition.cpp
 ../../../Source/GraphicsComposition/GuiGraphicsTableComposition.cpp
+../../../Source/GraphicsComposition/EazyLayout/GuiEasyLayout.cpp
 ../../../Source/Controls/ListControlPackage/TuiItemTemplates.cpp
 ../../../Source/Utilities/FakeServices/GuiFakeClipboardService.cpp
 ../../../Source/Utilities/FakeServices/GuiFakeDialogServiceBase.cpp

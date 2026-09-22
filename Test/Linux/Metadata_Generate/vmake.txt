@@ -155,6 +155,7 @@
 ../../../Source/GraphicsComposition/GuiGraphicsSpecializedComposition.cpp
 ../../../Source/GraphicsComposition/GuiGraphicsStackComposition.cpp
 ../../../Source/GraphicsComposition/GuiGraphicsTableComposition.cpp
+../../../Source/GraphicsComposition/EazyLayout/GuiEasyLayout.cpp
 ../../../Source/Controls/ListControlPackage/TuiItemTemplates.cpp
 ../../../Source/Reflection/GuiInstanceCompiledWorkflow.cpp
 ../../../Source/Reflection/TypeDescriptors/GuiReflectionBasic.cpp
