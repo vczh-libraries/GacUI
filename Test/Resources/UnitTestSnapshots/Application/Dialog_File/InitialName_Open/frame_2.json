@@ -1490,14 +1490,14 @@
         {
           "paragraph": {
             "id": 119,
-            "text": "C:\\Code\\VczhLibraries\\Tools\\Tools\\A\\a.txt",
+            "text": "\/A\/a.txt",
             "wrapLine": false,
             "maxWidth": -1,
             "alignment": "Left",
             "runsDiff": [
               {
                 "caretBegin": 0,
-                "caretEnd": 41,
+                "caretEnd": 8,
                 "props": [
                   "DocumentTextRunProperty",
                   {
@@ -1511,7 +1511,7 @@
             "createdInlineObjects": null,
             "removedInlineObjects": null
           },
-          "caret": {"id": 119, "caret": 18, "caretColor": "#FFFFFF", "frontSide": true}
+          "caret": {"id": 119, "caret": 8, "caretColor": "#FFFFFF", "frontSide": true}
         }
       ]
     ],
@@ -2984,27 +2984,15 @@
                                 },
                                 "children": [
                                   {
-                                    "id": 477,
+                                    "id": 476,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": null,
-                                      "bounds": {"x1": 167, "y1": 364, "x2": 426, "y2": 380},
-                                      "validArea": {"x1": 167, "y1": 364, "x2": 426, "y2": 380}
+                                      "element": 119,
+                                      "bounds": {"x1": 167, "y1": 364, "x2": 224, "y2": 380},
+                                      "validArea": {"x1": 167, "y1": 364, "x2": 224, "y2": 380}
                                     },
-                                    "children": [
-                                      {
-                                        "id": 476,
-                                        "content": {
-                                          "hitTestResult": null,
-                                          "cursor": null,
-                                          "element": 119,
-                                          "bounds": {"x1": 167, "y1": 364, "x2": 462, "y2": 380},
-                                          "validArea": {"x1": 167, "y1": 364, "x2": 426, "y2": 380}
-                                        },
-                                        "children": null
-                                      }
-                                    ]
+                                    "children": null
                                   }
                                 ]
                               }
