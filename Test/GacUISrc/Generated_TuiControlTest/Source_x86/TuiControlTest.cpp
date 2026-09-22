@@ -20819,7 +20819,7 @@ Class (::tuidemo::TuiEnglishNumbersController)
 			}
 			else if ((__vwsn_switch_7 == static_cast<::vl::vint32_t>(8)))
 			{
-				return ::vl::WString::Unmanaged(L"eightteen");
+				return ::vl::WString::Unmanaged(L"eighteen");
 			}
 			else if ((__vwsn_switch_7 == static_cast<::vl::vint32_t>(9)))
 			{

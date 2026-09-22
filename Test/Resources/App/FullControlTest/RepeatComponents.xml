@@ -73,7 +73,7 @@
               case 5: { return "fifteen"; }
               case 6: { return "sixteen"; }
               case 7: { return "seventeen"; }
-              case 8: { return "eightteen"; }
+              case 8: { return "eighteen"; }
               case 9: { return "nineteen"; }
             }
             raise "ToText_11to19: Number out of range.";

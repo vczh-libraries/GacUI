@@ -26,6 +26,8 @@ cd SOLUTION-ROOT
 
 For a TUI application, open Windows Terminal in the solution folder and add `-Interactive` to CLI mode. This opt-in path inherits the terminal's input/output handles and waits for the application to exit without redirecting its output. For example, use `copilotExecute.ps1 -Mode CLI -Executable CppTest_Tui -Configuration Debug -Platform x64 -Interactive`. Ordinary CLI and UnitTest execution remain unchanged.
 
+If computer use cannot operate Windows Terminal, continue through an interactive CLI session with the same wrapper. An owned Windows pseudoconsole can also provide native console input, live cell-buffer inspection and viewport resizing. Verify that the application inherits valid interactive console handles. Record console replay separately from physical keyboard/mouse delivery and displayed terminal appearance; skip only checks that require the unavailable desktop surface.
+
 `-Configuration` and `-Platform` arguments are available to specify the target configuration:
 - When both arguments are omitted, the last build configuration will be picked up.
 - Both arguments should be provided together or omitted together.

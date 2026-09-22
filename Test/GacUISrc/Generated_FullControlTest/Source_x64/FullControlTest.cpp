@@ -23967,7 +23967,7 @@ Class (::demo::EnglishNumbersController)
 			}
 			else if ((__vwsn_switch_9 == static_cast<::vl::vint64_t>(8L)))
 			{
-				return ::vl::WString::Unmanaged(L"eightteen");
+				return ::vl::WString::Unmanaged(L"eighteen");
 			}
 			else if ((__vwsn_switch_9 == static_cast<::vl::vint64_t>(9L)))
 			{

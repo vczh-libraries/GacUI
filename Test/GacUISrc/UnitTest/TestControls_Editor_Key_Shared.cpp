@@ -1,4 +1,5 @@
 #include "TestControls.h"
+#include "../../../Source/Resources/GuiDocumentClipboard.h"
 
 using namespace gacui_unittest_template;
 
@@ -8,6 +9,58 @@ void RunTextBoxKeyTestCases(const wchar_t* resource, const WString& controlName)
 {
 	TEST_CATEGORY(L"Scaffold")
 	{
+		TEST_CASE(L"SupplementaryCharacterInput")
+		{
+			TooltipTimer timer;
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Init", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto textBox = FindObjectByName<TTextBox>(window, L"textBox");
+					textBox->LoadTextAndClearUndoRedo(L"old");
+					textBox->SetCaret(TextPos(0, 0), TextPos(0, 3));
+					textBox->SetFocused();
+					auto emoji = WString::Unmanaged(L"\U0001F600");
+#ifdef VCZH_WCHAR_UTF16
+					protocol->TypeString(emoji.Left(1));
+					TEST_ASSERT(textBox->GetText() == L"old");
+					TEST_ASSERT(!textBox->CanUndo());
+					protocol->TypeString(emoji.Right(1));
+#else
+					protocol->TypeString(emoji);
+#endif
+					TEST_ASSERT(textBox->GetText() == emoji);
+					TEST_ASSERT(textBox->GetCaretEnd() == TextPos(0, emoji.Length()));
+					TEST_ASSERT(textBox->Undo());
+					TEST_ASSERT(textBox->GetText() == L"old");
+					TEST_ASSERT(textBox->Redo());
+					TEST_ASSERT(textBox->GetText() == emoji);
+					TEST_ASSERT(textBox->GetSelectionText() == emoji);
+					textBox->SetCaret(TextPos(0, emoji.Length()), TextPos(0, emoji.Length()));
+					protocol->TypeString(L"\u6F22\u5B57!");
+					TEST_ASSERT(textBox->GetText() == emoji + L"\u6F22\u5B57!");
+
+					AString header, content, footer;
+					SaveDocumentToHtmlUtf8(textBox->GetDocument(), header, content, footer);
+					auto html = u8tow(U8String::Unmanaged((const char8_t*)content.Buffer()));
+					TEST_ASSERT(INVLOC.FindFirst(html, emoji, Locale::None).key != -1);
+					stream::MemoryStream clipboard;
+					SaveDocumentToClipboardStream(textBox->GetDocument(), clipboard);
+					TEST_ASSERT(clipboard.Size() > 0);
+				});
+				protocol->OnNextIdleFrame(L"Typed, undone, redone and exported supplementary character", [=]()
+				{
+					GetApplication()->GetMainWindow()->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Editor/") + controlName + L"/Key/Scaffold_SupplementaryCharacterInput",
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resource
+			);
+		});
+
 		TEST_CASE(L"SmokeTest")
 		{
 			TooltipTimer timer;

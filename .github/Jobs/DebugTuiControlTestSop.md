@@ -4,6 +4,8 @@ Run `CppTest_Tui` in Windows Terminal after building `Test/GacUISrc/GacUISrc.sln
 
 From `Test/GacUISrc` in Windows Terminal, run `& C:\Code\VczhLibraries\GacUI\.github\Scripts\copilotExecute.ps1 -Mode CLI -Executable CppTest_Tui -Configuration Debug -Platform x64 -Interactive`. Adjust the absolute repository path for another checkout. The interactive flag preserves native console handles. This app has no HTTP automation endpoint, Core process, renderer process, or renderer-replacement procedure. Terminal font and color settings belong to Windows Terminal.
 
+When computer use cannot operate Windows Terminal, continue all feasible checks in an interactive CLI or owned Windows pseudoconsole using the same wrapper. Native console-record replay, live cell-buffer capture and pseudoconsole resizing can verify application behavior and layout. Keep these results separate from physical input and displayed font/color/profile checks, and skip only the desktop-dependent observations. Follow `Running-CLI.md` and the Windows notes in `Learning_RpJob.md` for launcher and evidence requirements.
+
 ## Linux and macOS launch
 
 On Linux use sibling `wGac`; on macOS use sibling `iGac`. Refresh the owning upstream releases, then run `./import.sh`, `./syncProj.sh`, and `./build.sh` from that platform repository. Start `./test.sh --app:tui` in a foreground interactive terminal. The target is `Test_TuiControlTest` under `WGacTuiControlTest` or `MacTuiControlTest`. Keep stdin/stdout attached; `--unblock`, `--hosted`, and `--port` do not apply. Complete the same page checks below and maintain `TestMatrix_Tui.md` in the platform repository.

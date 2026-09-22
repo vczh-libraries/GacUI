@@ -30504,7 +30504,7 @@ namespace demo
                 }
                 else if ((<switch>9 == 8 of (::system::Int64)))
                 {
-                    return "eightteen";
+                    return "eighteen";
                 }
                 else if ((<switch>9 == 9 of (::system::Int64)))
                 {

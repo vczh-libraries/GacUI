@@ -491,8 +491,60 @@ TEST_FILE
 					steps.Add([&]()
 					{
 						TEST_ASSERT(modal.GetOpening() && modal.GetNativeWindow()->GetBounds() == modalBounds);
-						modal.Hide();
 					});
+					for (auto sizeBox : { false, true })
+					{
+						for (auto caption : { WString::Empty, WString::Unmanaged(L"Short"), WString::Unmanaged(L"\u4E2D\u6587"), WString::Unmanaged(L"A caption too long to fit beside the close button") })
+						{
+							steps.Add([&, sizeBox, caption]()
+							{
+								modal.SetSizeBox(sizeBox);
+								modal.SetText(caption);
+							});
+							steps.Add([&, sizeBox, caption]()
+							{
+								auto bounds = modal.GetNativeWindow()->GetBounds();
+								auto x1 = bounds.x1.value;
+								auto x2 = bounds.x2.value;
+								auto y = bounds.y1.value;
+								auto cell = [&](vint x) {return backend->frame[y * backend->width + x].GetChar32(); };
+								auto border = sizeBox ? U'\u2550' : U'\u2501';
+								TEST_ASSERT(cell(x2 - 5) == U'[' && cell(x2 - 4) == U'x' && cell(x2 - 3) == U']');
+								TEST_ASSERT(cell(x2 - 2) == border);
+								if (caption.Length() > 20)
+								{
+									TEST_ASSERT(cell(x2 - 6) == U'\u2026');
+								}
+								else
+								{
+									auto x = x1 + 2;
+									if (caption.Length() > 0)
+									{
+										TEST_ASSERT(cell(x++) == U' ');
+										for (vint i = 0; i < caption.Length(); i++)
+										{
+											auto c = caption[i];
+											TEST_ASSERT(cell(x) == (char32_t)c);
+											x += TUI::MeasureChar((char32_t)c);
+										}
+										TEST_ASSERT(cell(x++) == U' ');
+									}
+									for (; x < x2 - 5; x++) TEST_ASSERT(cell(x) == border);
+								}
+							});
+						}
+					}
+					steps.Add([&]() {modal.SetTitleBar(false); });
+					steps.Add([&]()
+					{
+						auto bounds = modal.GetNativeWindow()->GetBounds();
+						for (vint x = bounds.x1.value + 1; x < bounds.x2.value - 1; x++)
+						{
+							TEST_ASSERT(backend->frame[bounds.y1.value * backend->width + x].GetChar32() == U'\u2550');
+						}
+						modal.SetTitleBar(true);
+					});
+					steps.Add([&]() {modal.Hide(); });
 					steps.Add([&]() {main.Hide(); });
 					vint nextStep = 0;
 					Func<void()> runStep;

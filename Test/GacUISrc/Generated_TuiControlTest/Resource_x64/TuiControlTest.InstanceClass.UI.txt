@@ -16715,7 +16715,7 @@ namespace tuidemo
                 }
                 else if ((<switch>7 == 8 of (::system::Int64)))
                 {
-                    return "eightteen";
+                    return "eighteen";
                 }
                 else if ((<switch>7 == 9 of (::system::Int64)))
                 {
