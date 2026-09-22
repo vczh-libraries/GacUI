@@ -466,6 +466,7 @@ public static class GacUIShowcaseTests
                 }
                 return true;
             }, "five nonoverlapping controls share their outer top and bottom");
+            Check(combo.Current.BoundingRectangle.Width >= 120, "choice control leaves room for its selected text");
             Check(combo.Current.BoundingRectangle.Left - left[2].Current.BoundingRectangle.Right > left[1].Current.BoundingRectangle.Left - left[0].Current.BoundingRectangle.Right, "left and right docking groups leave unused space");
             Check(Named(page, "First column", ControlType.Text).Current.BoundingRectangle.Top >= check.Current.BoundingRectangle.Bottom, "new row precedes the two existing bottom rows");
             Named(page, "Shared tracks", ControlType.Text);

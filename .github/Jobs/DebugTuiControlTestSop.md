@@ -273,6 +273,17 @@ Append a completed card here for each legacy-terminal failure that prompts a Kit
 | Platform limits | wGac global-shortcut registration currently returns an ID without OS registration; global F8 is unavailable. GNOME terminal mouse tests verify Left/Middle/Right and Alt; extended buttons, independent Super and horizontal wheel delivery are not established. |
 | Evidence | `wGac/TestMatrix_Tui.md`, `/tmp/rpxplat-legacy-super-failure.png`, `/tmp/rpxplat-tui.input`, `/tmp/rpxplat-kitty-tui.input`; all six normal exit paths passed, and the temporary terminals, apps and helper servers were closed. |
 
+### Linux terminal comparison, 2026-09-21
+
+| Field | Observed result |
+| --- | --- |
+| Host / build | Ubuntu 24.04 under XWayland; synchronized wGac TuiControlTest. Official import, sync and full build passed. |
+| Legacy terminal attempted first | GNOME Terminal 3.52.0 / VTE 0.76.0, ordinary profile. Native XTest Ctrl+Q opens the expected dialog. Ctrl+Alt+Super+Q emits `1b11`, losing Super, and does not activate the Super shortcut. Ordinary Ctrl+Q still works afterward. |
+| Kitty retry | Kitty 0.32.2, X11 and its ordinary keyboard protocol. Native XTest Ctrl+Alt+Super+Q emits `ESC[113;15u` and opens exactly `You pressed Ctrl+Alt+Win+Q!`. Left/right Super and both modifier release orders pass; Enter dismisses each dialog. |
+| Mouse and keyboard scope | Native SGR input delivers Left/Middle/Right down/up, Alt, movement and both wheel axes. Physical input, Linux global hotkeys, SGR Super and Mouse4/5 remain unavailable or unobserved. POSIX has no KeyUp: use Tab/Enter for buttons and palettes; Space cannot complete button activation. |
+| Separate byte replay | Injected CSI-u Super and SGR three-button sequences pass as decoder/application checks. They do not establish native delivery. All 62 VlppOS TUI unit cases pass separately. |
+| Functional evidence | [wGac terminal matrix](../../../wGac/TestMatrix_Tui.md) records the current page, palette, compact-layout and normal-shutdown results. GNOME exited normally with code 0; its wrapper restored the outer terminal and accepted shell typing before the Kitty retry. |
+
 ### macOS locked-desktop terminal comparison, 2026-09-10
 
 | Field | Observed result |

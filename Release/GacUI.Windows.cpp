@@ -14574,120 +14574,153 @@ namespace vl::presentation::windows
 		return AutomationServiceRenderer::CanRunIOCommands();
 	}
 
-	namespace
+	bool IsValidWindowId(const wchar_t* windowId)
 	{
-		bool IsValidWindowId(const wchar_t* windowId)
+		if (!*windowId)
 		{
-			if (!*windowId)
+			return false;
+		}
+		for (auto current = windowId; *current; current++)
+		{
+			if (*current < L'0' || *current > L'9')
 			{
 				return false;
 			}
-			for (auto current = windowId; *current; current++)
-			{
-				if (*current < L'0' || *current > L'9')
+		}
+		return true;
+	}
+
+	struct HttpAutomationRequestState : Object
+	{
+		CriticalSection											lockRequests;
+		bool													stopped = false;
+	};
+
+	class HttpAutomationService : public inter_process::windows_http::HttpServerApi
+	{
+	private:
+		WString												urlControls;
+		WString												urlDom;
+		WString												urlIO;
+
+		Ptr<HttpAutomationRequestState>						requestState = Ptr(new HttpAutomationRequestState);
+
+		void DumpTreeAsync(PHTTP_REQUEST request, INativeWindow* mainWindow, INativeAsyncService* asyncService, INativeAutomationService* automationService, bool controlTree)
+		{
+			auto pendingState = requestState;
+			auto requestQueue = GetHttpRequestQueue();
+			auto requestId = request->RequestId;
+			asyncService->InvokeInMainThread(mainWindow, [pendingState, requestQueue, requestId, automationService, controlTree]()
 				{
-					return false;
-				}
-			}
-			return true;
+					// Stop cancels queued reads before destroying the automation service or request queue.
+					CS_LOCK(pendingState->lockRequests)
+					{
+						if (pendingState->stopped) return;
+						try
+						{
+							auto response = controlTree ? automationService->DumpControlTree() : automationService->DumpDomTree();
+							SendResponseUtf8(requestQueue, requestId, response);
+						}
+						catch (...)
+						{
+							std::terminate();
+						}
+					}
+				});
 		}
 
-		class HttpAutomationService : public inter_process::windows_http::HttpServerApi
+		void ProcessHttpRequest(PHTTP_REQUEST request)
 		{
-		private:
-			WString												urlControls;
-			WString												urlDom;
-			WString												urlIO;
+			auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+			auto asyncService = GetCurrentController()->AsyncService();
+			auto automationService = GetCurrentController()->AutomationService();
+			Nullable<WString> response;
 
-			void ProcessHttpRequest(PHTTP_REQUEST request)
+			if (request->Verb == HttpVerbGET)
 			{
-				auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
-				auto asyncService = GetCurrentController()->AsyncService();
-				auto automationService = GetCurrentController()->AutomationService();
-				Nullable<WString> response;
-
-				if (request->Verb == HttpVerbGET)
+				if (request->CookedUrl.pAbsPath == urlControls && automationService->CanDumpControlTree())
 				{
-					if (request->CookedUrl.pAbsPath == urlControls && automationService->CanDumpControlTree())
-					{
-						asyncService->InvokeInMainThreadAndWait(mainWindow, [&]()
-							{
-								response = automationService->DumpControlTree();
-							});
-					}
-					else if (request->CookedUrl.pAbsPath == urlDom && automationService->CanDumpDomTree())
-					{
-						asyncService->InvokeInMainThreadAndWait(mainWindow, [&]()
-							{
-								response = automationService->DumpDomTree();
-							});
-					}
+					DumpTreeAsync(request, mainWindow, asyncService, automationService, true);
+					return;
 				}
-				else if (request->Verb == HttpVerbPOST)
+				else if (request->CookedUrl.pAbsPath == urlDom && automationService->CanDumpDomTree())
 				{
-					if (wcsncmp(request->CookedUrl.pAbsPath, urlIO.Buffer(), (size_t)urlIO.Length()) == 0)
+					DumpTreeAsync(request, mainWindow, asyncService, automationService, false);
+					return;
+				}
+			}
+			else if (request->Verb == HttpVerbPOST)
+			{
+				if (wcsncmp(request->CookedUrl.pAbsPath, urlIO.Buffer(), (size_t)urlIO.Length()) == 0)
+				{
+					Nullable<WString> windowId;
+					auto id = request->CookedUrl.pAbsPath + urlIO.Length();
+					if (*id == L'/')
 					{
-						Nullable<WString> windowId;
-						auto id = request->CookedUrl.pAbsPath + urlIO.Length();
-						if (*id == L'/')
-						{
-							windowId = ++id;
-							if (!IsValidWindowId(id))
-							{
-								SendResponse(GetHttpRequestQueue(), request->RequestId, { 404, L"URL not supported." });
-								return;
-							}
-						}
-						else if (*id)
+						windowId = ++id;
+						if (!IsValidWindowId(id))
 						{
 							SendResponse(GetHttpRequestQueue(), request->RequestId, { 404, L"URL not supported." });
 							return;
 						}
+					}
+					else if (*id)
+					{
+						SendResponse(GetHttpRequestQueue(), request->RequestId, { 404, L"URL not supported." });
+						return;
+					}
 
-						if (automationService->CanRunIOCommands() != INativeAutomationService::IOCommandAvailability::Disabled)
+					if (automationService->CanRunIOCommands() != INativeAutomationService::IOCommandAvailability::Disabled)
+					{
+						auto body = GetUtf8Body(request);
+						if (body)
 						{
-							auto body = GetUtf8Body(request);
-							if (body)
-							{
-								response = automationService->RunIOCommand(windowId, body.Value());
-							}
+							response = automationService->RunIOCommand(windowId, body.Value());
 						}
 					}
 				}
-
-				if (response)
-				{
-					SendResponseUtf8(GetHttpRequestQueue(), request->RequestId, response.Value());
-					return;
-				}
-				SendResponse(GetHttpRequestQueue(), request->RequestId, { 404, L"URL not supported." });
 			}
 
-		protected:
-			void OnHttpRequestReceived(PHTTP_REQUEST request)
+			if (response)
 			{
-				try
-				{
-					ProcessHttpRequest(request);
-				}
-				catch (...)
-				{
-					std::terminate();
-				}
+				SendResponseUtf8(GetHttpRequestQueue(), request->RequestId, response.Value());
+				return;
 			}
+			SendResponse(GetHttpRequestQueue(), request->RequestId, { 404, L"URL not supported." });
+		}
 
-		public:
-			HttpAutomationService(const WString& applicationName, vint port)
-				: HttpServerApi(WString::Unmanaged(L"http://localhost:") + itow(port) + WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/"), false)
-				, urlControls(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/Controls"))
-				, urlDom(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/Dom"))
-				, urlIO(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/IO"))
+	protected:
+		void OnHttpServerStopping() override
+		{
+			CS_LOCK(requestState->lockRequests)
 			{
+				requestState->stopped = true;
 			}
-		};
+		}
 
-		HttpAutomationService* httpAutomationService = nullptr;
-	}
+		void OnHttpRequestReceived(PHTTP_REQUEST request)
+		{
+			try
+			{
+				ProcessHttpRequest(request);
+			}
+			catch (...)
+			{
+				std::terminate();
+			}
+		}
+
+	public:
+		HttpAutomationService(const WString& applicationName, vint port)
+			: HttpServerApi(WString::Unmanaged(L"http://localhost:") + itow(port) + WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/"), false)
+			, urlControls(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/Controls"))
+			, urlDom(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/Dom"))
+			, urlIO(WString::Unmanaged(L"/") + applicationName + WString::Unmanaged(L"/IO"))
+		{
+		}
+	};
+
+	HttpAutomationService* httpAutomationService = nullptr;
 
 	void StartWindowsHttpAutomationService(const WString& applicationName, vint port)
 	{

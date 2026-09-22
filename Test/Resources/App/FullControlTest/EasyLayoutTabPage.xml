@@ -29,6 +29,7 @@
                   <ez:Layout Border="false">
                     <ez:Right>
                       <ComboBox ref.Name="easyChoice" SelectedIndex="0">
+                        <att.BoundsComposition-set PreferredMinSize="x:120"/>
                         <att.ListControl>
                           <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
                             <att.Items>

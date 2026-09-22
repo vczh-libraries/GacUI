@@ -19582,6 +19582,9 @@ GuiDocumentCommonInterface
 				Ptr<DocumentHyperlinkRun::Package>			activeHyperlinks;
 				bool										dragging = false;
 				GuiDocumentEditMode							editMode = GuiDocumentEditMode::ViewOnly;
+#ifdef VCZH_WCHAR_UTF16
+				wchar_t										pendingHighSurrogate = 0;
+#endif
 
 				Ptr<GuiDocumentUndoRedoProcessor>			undoRedoProcessor;
 				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;

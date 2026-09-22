@@ -17,8 +17,11 @@
 - After refreshing TUI palettes, drag an existing column resize handle again. The retained splitter is a bounds-composition overlay; template replacement must preserve child stacking order or the new template covers its hit target. The native GUI layout keeps splitters inside retained containers, so its ordinary resize check does not expose this TUI regression.
 
 - Locate input targets again from the current rendered tree after text or tab changes. An idle notification from an earlier mouse move can precede the button result; wait for the exact expected visible text before judging the next transition.
-- Wait for a dialog's control bounds to settle before clicking its confirmation button. Its text can appear before the final centered layout. FullControlTest uses the visible localized confirmation label `确定`; RemoteProtocolTest uses `OK`.
+- Wait for a dialog's control bounds to settle before clicking its confirmation button. Its text can appear before the final centered layout. Locate the current localized confirmation label: FullControlTest can show `OK` or `确定`; RemoteProtocolTest uses `OK`.
+- After selecting a combo item, verify the selected label inside the combo itself. A matching label in its still-open popup does not establish that the selection committed. In terminal dialogs, match the action inside the innermost modal frame; an underlying launch button can contain the same word.
 - Group DataGrid cells by their vertical centers when checking rows. Different cell templates can give text in the same row different top and bottom bounds.
+- Dismiss a DataGrid editor by selecting another real cell; clicking blank space can leave the editor active. To check directory-only file validation, disable FileMustExist: missing-file validation takes precedence over missing-directory validation.
+- TextList's Radio view still exposes each item's independent Checked value; it does not create a mutex group. The showcase's two Dummy radio buttons do share a mutex group. Verify these behaviors separately.
 - Automation `DbClick` already performs down/up, double-click, and the final up. Sending an additional up violates the automation input-state contract and correctly raises an error.
 
 - Native renderer takeover can terminate the displaced renderer normally. Read Core/current-renderer state for retention; an old renderer's closed automation endpoint is not a stale-input response. After a queued normal close, wait for process exit instead of requiring another DOM read from that process.
@@ -54,6 +57,10 @@
 - Preserve stalled Core and renderer processes for CDB before cleanup. A repeated `/RVMT /Http` replacement stall showed Core awaiting a paragraph response whose outgoing request remained queued beside an available Windows HTTP poll. This identified a missing delivery in VlppOS `HttpServerConnection::SubmitResponse`; a deterministic real-transport test reproduced it. Earlier `/RPT /Http` document-dialog timeouts may have shared that cause, but no debugger state was captured for those incidents. A passing rerun alone does not establish the cause of an earlier timeout.
 
 ## Linux (wGac repo specific)
+
+- Run terminal XTest operations separately from native application/renderer verification. Native automation can activate or map its Wayland window while the terminal test is sending desktop events, redirecting those events. A fresh isolated native run distinguishes this interference from a control defect.
+- For terminal-restoration checks, compare the child PTY's complete termios state before launch and immediately after child exit, before the wrapper restores its outer terminal.
+- For stdio host-loss injection, identify the actual host executable among the requester's descendants. Killing only the intermediate shell can leave the host and its inherited pipe handles alive. Confirm that a Controls read remains pending before injecting loss during a blocked RPC; an earlier read can overtake queued renderer input.
 
 - For TUI, use a real terminal and distinguish native terminal-generated keys/mouse from raw byte replay. Kitty X11 under XWayland allows native XTest input and actual window captures; byte injection alone does not prove Super delivery.
 - TUI controls have natural cell-sized hit targets. Click the actual short Hide/Close caption, use the current dropdown arrow, and locate localized dialog actions again after resizing. Drag an existing dialog by its visible border into a smaller viewport when necessary.

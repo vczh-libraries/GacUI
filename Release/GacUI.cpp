@@ -18871,6 +18871,9 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
+#ifdef VCZH_WCHAR_UTF16
+				pendingHighSurrogate = 0;
+#endif
 				if(documentControl->GetVisuallyEnabled())
 				{
 					documentElement->SetCaretVisible(false);
@@ -18906,6 +18909,21 @@ GuiDocumentCommonInterface
 					{
 						Array<WString> text(1);
 						text[0] = WString::FromChar(arguments.code);
+#ifdef VCZH_WCHAR_UTF16
+						// Insert a complete scalar so rich-text runs and undo records never split a surrogate pair.
+						if (arguments.code >= 0xD800 && arguments.code <= 0xDBFF)
+						{
+							pendingHighSurrogate = arguments.code;
+							return;
+						}
+						if (arguments.code >= 0xDC00 && arguments.code <= 0xDFFF)
+						{
+							if (!pendingHighSurrogate) return;
+							wchar_t pair[] = { pendingHighSurrogate, arguments.code };
+							text[0] = WString::CopyFrom(pair, 2);
+						}
+						pendingHighSurrogate = 0;
+#endif
 						EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 					}
 				}
