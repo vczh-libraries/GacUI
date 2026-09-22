@@ -160,6 +160,7 @@
                   <demo:RepeatTabPage Alt="R"/>
                   <demo:ResponsiveTabPage Alt="R"/>
                   <demo:EasyLayoutTabPage Alt="E"/>
+                  <demo:EazyLayoutTablePage Alt="T"/>
                 </att.Pages>
               </Tab>
             </TabPage>

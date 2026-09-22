@@ -79,10 +79,10 @@ namespace easy_test
         var layout : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
-        var horizontal : ::presentation::compositions::eazy_layout::GuiEasySplitterLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasySplitterLayout^);
+        var vertical : ::presentation::compositions::eazy_layout::GuiEasySplitterLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasySplitterLayout^);
 
         @cpp:Protected
-        var vertical : ::presentation::compositions::eazy_layout::GuiEasySplitterLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasySplitterLayout^);
+        var horizontal : ::presentation::compositions::eazy_layout::GuiEasySplitterLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasySplitterLayout^);
 
         @cpp:Protected
         func <easy_test-MainWindow>Initialize(<this> : ::easy_test::MainWindow*) : (::system::Void)

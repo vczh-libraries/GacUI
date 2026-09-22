@@ -11,6 +11,9 @@ namespace easy_test
         var self : ::easy_test::MainWindow* = null of (::easy_test::MainWindow*);
 
         @cpp:Protected
+        var vertical : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
@@ -45,9 +48,6 @@ namespace easy_test
 
         @cpp:Protected
         var <precompile>11 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
-
-        @cpp:Protected
-        var vertical : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
         var bottom : ::presentation::compositions::eazy_layout::GuiEasyBottomLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^);
@@ -116,10 +116,10 @@ namespace easy_test
             (fill = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
             <this>.SetNamedObject("fill", fill);
             {
-                (fill.Direction = Horizontal of (::presentation::compositions::eazy_layout::GuiEasyLayoutDirection));
+                (fill.Percentage = 3 of (::system::Double));
             }
             {
-                (fill.Percentage = 3 of (::system::Double));
+                (fill.Direction = Horizontal of (::presentation::compositions::eazy_layout::GuiEasyLayoutDirection));
             }
             {
                 (<precompile>2 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));

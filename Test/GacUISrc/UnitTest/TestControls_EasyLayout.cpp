@@ -13,6 +13,87 @@ namespace easy_layout_xml_tests
 
 TEST_FILE
 {
+	TEST_CASE(L"An owning layout rebuilds from its button and retains nested payload state")
+	{
+		const auto content = LR"GacUISrc(
+<ez:Layout ref.Name="layout">
+  <ez:Top><CheckBox ref.Name="vertical" Text="Vertical"/></ez:Top>
+  <ez:Top>
+    <Button ref.Name="rebuild" Text="Rebuild">
+      <ev.Clicked-eval><![CDATA[{ layout.BuildLayout(); }]]></ev.Clicked-eval>
+    </Button>
+  </ez:Top>
+  <ez:Fill>
+    <ez:Fill Direction-bind="vertical.Selected ? Vertical : Horizontal">
+      <SinglelineTextBox ref.Name="editor" Text="Initial"/>
+    </ez:Fill>
+    <ez:Fill Percentage="2"><Label ref.Name="label" Text-bind="editor.Text"/></ez:Fill>
+  </ez:Fill>
+  <ez:Bottom>
+    <ez:Row CellOption="composeType:Absolute absolute:24">
+      <ez:Column CellOption="composeType:Absolute absolute:120"><Label ref.Name="first" Text="First"/></ez:Column>
+      <ez:Splitter/>
+      <ez:Column CellOption="composeType:Percentage percentage:1"><Label ref.Name="second" Text="Second"/></ez:Column>
+    </ez:Row>
+  </ez:Bottom>
+</ez:Layout>
+)GacUISrc";
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto editor = FindObjectByName<GuiSinglelineTextBox>(window, L"editor");
+				auto label = FindObjectByName<GuiLabel>(window, L"label");
+				TEST_ASSERT(editor->GetBoundsComposition()->GetGlobalBounds().Top() == label->GetBoundsComposition()->GetGlobalBounds().Top());
+				editor->SetFocused();
+				protocol->KeyPress(VKEY::KEY_A, true, false, false);
+				protocol->TypeString(L"Retained");
+				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiSelectableButton>(window, L"vertical")));
+			});
+			protocol->OnNextIdleFrame(L"Text edited and vertical arrangement stored", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto editor = FindObjectByName<GuiSinglelineTextBox>(window, L"editor");
+				auto label = FindObjectByName<GuiLabel>(window, L"label");
+				TEST_ASSERT(editor->GetText() == L"Retained" && label->GetText() == L"Retained");
+				TEST_ASSERT(editor->GetBoundsComposition()->GetGlobalBounds().Top() == label->GetBoundsComposition()->GetGlobalBounds().Top());
+				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiButton>(window, L"rebuild")));
+			});
+			protocol->OnNextIdleFrame(L"Owning layout rebuilt vertically", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto editor = FindObjectByName<GuiSinglelineTextBox>(window, L"editor");
+				auto label = FindObjectByName<GuiLabel>(window, L"label");
+				auto a = editor->GetBoundsComposition()->GetGlobalBounds();
+				auto b = label->GetBoundsComposition()->GetGlobalBounds();
+				TEST_ASSERT(a.Left() == b.Left() && a.Right() == b.Right() && b.Top() - a.Bottom() == 5);
+				TEST_ASSERT(b.Height() >= 2 * a.Height() && b.Height() <= 2 * a.Height() + 2);
+				TEST_ASSERT(editor->GetText() == L"Retained" && label->GetText() == L"Retained");
+				auto first = FindObjectByName<GuiLabel>(window, L"first")->GetBoundsComposition()->GetGlobalBounds();
+				auto second = FindObjectByName<GuiLabel>(window, L"second")->GetBoundsComposition()->GetGlobalBounds();
+				TEST_ASSERT(first.Width() == 120 && first.Height() == 24 && first.Top() == second.Top() && second.Left() - first.Right() == 5);
+				editor->SetFocused();
+				protocol->KeyPress(VKEY::KEY_END);
+				protocol->TypeString(L" again");
+				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiSelectableButton>(window, L"vertical")));
+				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiButton>(window, L"rebuild")));
+			});
+			protocol->OnNextIdleFrame(L"Repeated rebuild restores horizontal arrangement", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto editor = FindObjectByName<GuiSinglelineTextBox>(window, L"editor");
+				auto label = FindObjectByName<GuiLabel>(window, L"label");
+				auto a = editor->GetBoundsComposition()->GetGlobalBounds();
+				auto b = label->GetBoundsComposition()->GetGlobalBounds();
+				TEST_ASSERT(a.Top() == b.Top() && a.Bottom() == b.Bottom() && b.Left() - a.Right() == 5);
+				TEST_ASSERT(editor->GetText() == L"Retained again" && label->GetText() == L"Retained again");
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(L"EasyLayout/OwnerRebuild", L"easy_test::MainWindow", easy_layout_xml_tests::Resource(content));
+	});
+
 	TEST_CASE(L"XML shared splitters resize both axes and rebuilding retains bound controls")
 	{
 		const auto content = LR"GacUISrc(

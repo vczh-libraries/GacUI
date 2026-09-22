@@ -82,12 +82,22 @@ public static class GacUIShowcaseTests
     static void Click(AutomationElement element)
     {
         var bounds = element.Current.BoundingRectangle;
-        var point = new NativePoint { X = (int)(bounds.Left + bounds.Width / 2), Y = (int)(bounds.Top + bounds.Height / 2) };
+        Pointer("LeftClick", bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2);
+    }
+    static void Pointer(string action, double x, double y)
+    {
+        var point = new NativePoint { X = (int)x, Y = (int)y };
         var hwnd = new IntPtr(root.Current.NativeWindowHandle);
         Check(ScreenToClient(hwnd, ref point), "convert pointer to client coordinates");
         uint dpi = GetDpiForWindow(hwnd);
         Check(dpi != 0, "read pointer coordinate DPI");
-        Input("!LeftClick:" + (point.X * 96 / dpi) + "," + (point.Y * 96 / dpi));
+        Input("!" + action + ":" + (point.X * 96 / dpi) + "," + (point.Y * 96 / dpi));
+    }
+    static void Drag(double x, double y, double dx, double dy)
+    {
+        Pointer("LeftDown", x, y);
+        Pointer("MouseMove", x + dx, y + dy);
+        Pointer("LeftUp", x + dx, y + dy);
     }
     static void Input(string command)
     {
@@ -181,6 +191,15 @@ public static class GacUIShowcaseTests
         var selection = Pattern<SelectionItemPattern>(page, SelectionItemPattern.Pattern);
         selection.Select(); Wait(() => selection.Current.IsSelected, name + " selection");
         return page;
+    }
+    static AutomationElement RebuiltLayoutPage(string name)
+    {
+        var hwnd = new IntPtr(root.Current.NativeWindowHandle);
+        // Rebuilding detaches controls and retires their UIA attachments.
+        // Wait for the queued input/Invoke and provider disconnections before enumeration.
+        Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000), "owning layout rebuild reaches idle");
+        root = AutomationElement.FromHandle(hwnd);
+        return Page(Page(root, "Layout"), name);
     }
     static List<AutomationElement> Items(AutomationElement list) { return Find(list, ControlType.ListItem, TreeScope.Children); }
     static void Same(AutomationElement actual, AutomationElement expected, string message) { Check(Automation.Compare(actual, expected), message); }
@@ -443,6 +462,8 @@ public static class GacUIShowcaseTests
     {
         Test("Layout / Easy Layout / mixed docking controls");
         var page = Page(Page(root, "Layout"), "Easy Layout");
+        double scale = GetDpiForWindow(new IntPtr(root.Current.NativeWindowHandle)) / 96.0;
+        double absoluteWidth = 120;
         var left = new[] { Named(page, "Left one", ControlType.Button), Named(page, "Left two", ControlType.Button), Named(page, "Left three", ControlType.Button) };
         var check = Named(page, "Right check", ControlType.CheckBox);
         var combos = Find(page, ControlType.ComboBox);
@@ -456,6 +477,13 @@ public static class GacUIShowcaseTests
         Check(selection.Current.GetSelection().Length == 1 && selection.Current.GetSelection()[0].Current.Name == "First choice", "initial static choice");
         var row = new[] { left[0], left[1], left[2], combo, check };
         Action geometry = () => {
+            left = new[] { Named(page, "Left one", ControlType.Button), Named(page, "Left two", ControlType.Button), Named(page, "Left three", ControlType.Button) };
+            check = Named(page, "Right check", ControlType.CheckBox);
+            combo = Find(page, ControlType.ComboBox)[0];
+            selection = Pattern<SelectionPattern>(combo, SelectionPattern.Pattern);
+            expansion = Pattern<ExpandCollapsePattern>(combo, ExpandCollapsePattern.Pattern);
+            toggle = Pattern<TogglePattern>(check, TogglePattern.Pattern);
+            row = new[] { left[0], left[1], left[2], combo, check };
             Wait(() => {
                 var first = row[0].Current.BoundingRectangle;
                 double right = first.Left - 1;
@@ -468,8 +496,26 @@ public static class GacUIShowcaseTests
             }, "five nonoverlapping controls share their outer top and bottom");
             Check(combo.Current.BoundingRectangle.Width >= 120, "choice control leaves room for its selected text");
             Check(combo.Current.BoundingRectangle.Left - left[2].Current.BoundingRectangle.Right > left[1].Current.BoundingRectangle.Left - left[0].Current.BoundingRectangle.Right, "left and right docking groups leave unused space");
-            Check(Named(page, "First column", ControlType.Text).Current.BoundingRectangle.Top >= check.Current.BoundingRectangle.Bottom, "new row precedes the two existing bottom rows");
-            Named(page, "Shared tracks", ControlType.Text);
+            var firstColumn = Named(page, "First column", ControlType.Text).Current.BoundingRectangle;
+            var secondColumn = Named(page, "Second column", ControlType.Text).Current.BoundingRectangle;
+            var shared = Named(page, "Shared tracks", ControlType.Text).Current.BoundingRectangle;
+            var rebuild = Named(page, "Rebuild", ControlType.Button).Current.BoundingRectangle;
+            var edit = Find(page, ControlType.Edit)[0];
+            var editBounds = edit.Current.BoundingRectangle;
+            var label = Named(page, Pattern<ValuePattern>(edit, ValuePattern.Pattern).Current.Value, ControlType.Text).Current.BoundingRectangle;
+            Check(Math.Abs(firstColumn.Width - absoluteWidth * scale) <= scale && Math.Abs(firstColumn.Height - 24 * scale) <= scale, "absolute column and row sizes");
+            Check(firstColumn.Top == secondColumn.Top && firstColumn.Bottom == secondColumn.Bottom, "independent grid stays horizontal");
+            foreach (double gap in new[] {
+                left[1].Current.BoundingRectangle.Left - left[0].Current.BoundingRectangle.Right,
+                left[2].Current.BoundingRectangle.Left - left[1].Current.BoundingRectangle.Right,
+                check.Current.BoundingRectangle.Left - combo.Current.BoundingRectangle.Right,
+                editBounds.Top - rebuild.Bottom,
+                left[0].Current.BoundingRectangle.Top - Math.Max(editBounds.Bottom, label.Bottom),
+                firstColumn.Top - check.Current.BoundingRectangle.Bottom,
+                secondColumn.Left - firstColumn.Right,
+                shared.Top - firstColumn.Bottom
+            }) Check(Math.Abs(gap - 5 * scale) <= scale, "one padding gap within and between descriptor groups");
+            Check(rebuild.Left == editBounds.Left && editBounds.Left == firstColumn.Left && firstColumn.Left == shared.Left && rebuild.Right == secondColumn.Right && secondColumn.Right == shared.Right, "nested containers add no horizontal inset");
         };
         geometry();
         foreach (var button in left) Pattern<InvokePattern>(button, InvokePattern.Pattern).Invoke();
@@ -484,30 +530,74 @@ public static class GacUIShowcaseTests
         Wait(() => selection.Current.GetSelection().Length == 1 && selection.Current.GetSelection()[0].Current.Name == "Second choice", "new combo selection");
         expansion.Collapse(); Wait(() => expansion.Current.ExpandCollapseState == ExpandCollapseState.Collapsed, "new combo dismisses");
         geometry();
+        Action reopenCombo = () => {
+            expansion.Expand();
+            Wait(() => expansion.Current.ExpandCollapseState == ExpandCollapseState.Expanded, "retained combo opens");
+            Wait(() => { popup = Popup(ControlType.List, combo); return popup != null; }, "retained choice popup");
+            choices = Items(popup);
+            Check(choices.Count == 3 && choices[0].Current.Name == "First choice" && choices[1].Current.Name == "Second choice" && choices[2].Current.Name == "Third choice", "all choices remain available");
+            Check(selection.Current.GetSelection()[0].Current.Name == "Second choice", "opening retains selected choice");
+            expansion.Collapse();
+            Wait(() => expansion.Current.ExpandCollapseState == ExpandCollapseState.Collapsed, "retained combo dismisses");
+        };
 
         var editor = Find(page, ControlType.Edit)[0];
         var value = Pattern<ValuePattern>(editor, ValuePattern.Pattern);
         value.SetValue("UIA Easy Layout retained text");
-        var direction = Pattern<TogglePattern>(Named(page, "Store vertical arrangement (press Rebuild to apply)", ControlType.CheckBox), TogglePattern.Pattern);
+        Action<bool> arrangement = vertical => {
+            Wait(() => {
+                editor = Find(page, ControlType.Edit)[0];
+                var label = FindNamed(page, "UIA Easy Layout retained text", ControlType.Text);
+                if (label == null) return false;
+                var a = editor.Current.BoundingRectangle;
+                var b = label.Current.BoundingRectangle;
+                return vertical
+                    ? a.Left == b.Left && a.Right == b.Right && Math.Abs(b.Top - a.Bottom - 5 * scale) <= 1 && Math.Abs(b.Height - 2 * a.Height) <= 2 * scale
+                    : a.Top == b.Top && a.Bottom == b.Bottom && Math.Abs(b.Left - a.Right - 5 * scale) <= 1 && Math.Abs(b.Width - 2 * a.Width) <= 2 * scale;
+            }, vertical ? "vertical 1:2 payloads with one gap" : "horizontal 1:2 payloads with one gap");
+        };
+        arrangement(false);
         for (int i = 0; i < 2; i++) {
-            direction.Toggle(); Invoke(page, "Rebuild");
+            var direction = Pattern<TogglePattern>(Named(page, "Store vertical arrangement (press Rebuild to apply)", ControlType.CheckBox), TogglePattern.Pattern);
+            direction.Toggle();
+            Wait(() => direction.Current.ToggleState == (i == 0 ? ToggleState.On : ToggleState.Off), "direction stored");
+            arrangement(i != 0);
+            if (i == 0) Click(Named(page, "Rebuild", ControlType.Button)); else Invoke(page, "Rebuild");
+            page = RebuiltLayoutPage("Easy Layout");
             Wait(() => {
                 var editors = Find(page, ControlType.Edit);
                 if (editors.Count != 1) return false;
                 editor = editors[0]; value = Pattern<ValuePattern>(editor, ValuePattern.Pattern);
                 return value.Current.Value == "UIA Easy Layout retained text" && Find(page, ControlType.Text).Exists(text => text.Current.Name == "UIA Easy Layout retained text");
             }, "rebuild preserves editor and label binding");
+            arrangement(i == 0);
             geometry();
+            Check(toggle.Current.ToggleState == ToggleState.On && selection.Current.GetSelection()[0].Current.Name == "Second choice", "rebuild retains docking state");
+            reopenCombo();
         }
         var transform = Pattern<TransformPattern>(root, TransformPattern.Pattern);
         var original = root.Current.BoundingRectangle;
         var resizeWindowHandle = new IntPtr(root.Current.NativeWindowHandle);
+        var beforeDrag = Named(page, "First column", ControlType.Text).Current.BoundingRectangle;
+        var dockingBefore = left[0].Current.BoundingRectangle;
+        var editorBefore = Find(page, ControlType.Edit)[0].Current.BoundingRectangle;
+        Drag(beforeDrag.Right + 2 * scale, beforeDrag.Top + beforeDrag.Height / 2, 20 * scale, 0);
+        absoluteWidth = 140;
+        Wait(() => Math.Abs(Named(page, "First column", ControlType.Text).Current.BoundingRectangle.Width - absoluteWidth * scale) <= scale, "relocated splitter changes adjacent absolute column");
+        Check(left[0].Current.BoundingRectangle == dockingBefore && Find(page, ControlType.Edit)[0].Current.BoundingRectangle == editorBefore, "splitter leaves separate descriptor groups unchanged");
+        geometry();
         transform.Resize(original.Width + 160, original.Height + 100);
         Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000);
         root = AutomationElement.FromHandle(resizeWindowHandle);
         transform = Pattern<TransformPattern>(root, TransformPattern.Pattern);
         var expanded = root.Current.BoundingRectangle;
         Check(expanded.Width > original.Width && expanded.Height > original.Height, "larger Transform.Resize increases both dimensions");
+        geometry();
+        reopenCombo();
+        Invoke(page, "Rebuild");
+        page = RebuiltLayoutPage("Easy Layout");
+        absoluteWidth = 120;
+        Wait(() => Math.Abs(Named(page, "First column", ControlType.Text).Current.BoundingRectangle.Width - absoluteWidth * scale) <= scale, "rebuild resets relocated splitter adjustment");
         geometry();
         transform.Resize(original.Width, original.Height);
         Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000);
@@ -559,8 +649,136 @@ public static class GacUIShowcaseTests
             Check(comboSelection.Length == 1 && comboSelection[0].Current.Name == "Second choice", "palette refresh preserves combo selection");
             Check(FindNamed(page, "UIA Easy Layout retained text", ControlType.Text) != null && FindNamed(page, "Shared tracks", ControlType.Text) != null, "palette refresh preserves bound labels and shared tracks");
             geometry();
+            reopenCombo();
         }
         toggle.Toggle();
+    }
+    static void EasyLayoutTables()
+    {
+        Test("Layout / Eazy Layout (Table) / independent shared grids");
+        var page = Page(Page(root, "Layout"), "Eazy Layout (Table)");
+        var hwnd = new IntPtr(root.Current.NativeWindowHandle);
+        double scale = GetDpiForWindow(hwnd) / 96.0;
+        Func<string, System.Windows.Rect> bounds = name => Named(page, name, ControlType.Text).Current.BoundingRectangle;
+        Action<double, double, string> equal = (actual, expected, message) => Check(Math.Abs(actual - expected) <= scale, message + ": " + actual + " versus " + expected);
+        Action geometry = () => {
+            var a = bounds("Row A"); var b = bounds("Row B");
+            var fixedColumn = bounds("Shared 120");
+            var one = bounds("Column 1x"); var two = bounds("Column 2x");
+            var edit = Find(page, ControlType.Edit)[0].Current.BoundingRectangle;
+            equal(a.Left, b.Left, "minimum column shares left edge");
+            equal(a.Right, b.Right, "minimum column shares right edge");
+            equal(edit.Left, fixedColumn.Left, "nondefault column overrides default declaration");
+            equal(edit.Width, fixedColumn.Width, "shared absolute width");
+            equal(edit.Width, 120 * scale, "configured 120-pixel column");
+            equal(a.Height, 40 * scale, "configured 40-pixel outer row");
+            Check(Math.Abs(two.Width - 2 * one.Width) <= 2 * scale, "percentage columns split remaining width 1:2 with pixel rounding");
+            equal(edit.Left - a.Right, 5 * scale, "minimum to absolute gap");
+            equal(one.Left - edit.Right, 5 * scale, "column splitter occupies one gap");
+            equal(two.Left - one.Right, 5 * scale, "percentage column gap");
+            equal(b.Top - a.Bottom, 5 * scale, "row splitter occupies one gap");
+            var spanning = bounds(Pattern<ValuePattern>(Find(page, ControlType.Edit)[0], ValuePattern.Pattern).Current.Value);
+            equal(spanning.Left, one.Left, "two-column span begins at shared track");
+            equal(spanning.Right, two.Right, "two-column span ends at shared track");
+            var outerSpan = bounds("Two rows"); var shortRow = bounds("Short row");
+            equal(outerSpan.Top - b.Bottom, 5 * scale, "outer span starts at next row");
+            equal(shortRow.Top - outerSpan.Bottom, 5 * scale, "outer span covers two existing rows");
+            equal(shortRow.Left, a.Left, "ragged row uses the same minimum column");
+
+            var ca = bounds("Column A"); var cb = bounds("Column B");
+            var fixedRow = bounds("Shared 40"); var sameRow = bounds("Same row");
+            var r1 = bounds("Row 1x"); var r2 = bounds("Row 2x");
+            equal(ca.Width, 140 * scale, "independent configured 140-pixel column");
+            equal(ca.Top, cb.Top, "transposed minimum row shares top");
+            equal(ca.Bottom, cb.Bottom, "transposed minimum row shares bottom");
+            equal(fixedRow.Top, sameRow.Top, "nondefault row overrides default declaration");
+            equal(fixedRow.Bottom, sameRow.Bottom, "shared absolute row ends together");
+            equal(fixedRow.Height, 40 * scale, "configured 40-pixel shared row");
+            Check(Math.Abs(r2.Height - 2 * r1.Height) <= 2 * scale, "percentage rows split remaining height 1:2 with pixel rounding");
+            equal(fixedRow.Top - ca.Bottom, 5 * scale, "minimum to absolute row gap");
+            equal(r1.Top - fixedRow.Bottom, 5 * scale, "shared row splitter occupies one gap");
+            equal(r2.Top - r1.Bottom, 5 * scale, "percentage row gap");
+            equal(cb.Left - ca.Right, 5 * scale, "outer column splitter occupies one gap");
+            var innerSpan = bounds("Two shared rows"); var wide = bounds("Two columns");
+            equal(innerSpan.Top, r1.Top, "transposed inner span begins at shared row");
+            equal(innerSpan.Bottom, r2.Bottom, "transposed inner span ends at shared row");
+            equal(wide.Left - cb.Right, 5 * scale, "outer column span starts at next column");
+            equal(wide.Width, 125 * scale, "outer span covers two 60-pixel columns and one gap");
+            equal(a.Left, ca.Left, "nested grid groups add no horizontal inset");
+            foreach (var label in Find(page, ControlType.Text)) {
+                var rectangle = label.Current.BoundingRectangle;
+                Check(!label.Current.IsOffscreen && rectangle.Width > 0 && rectangle.Height > 0, "visible table payload: " + label.Current.Name);
+            }
+        };
+        Wait(() => { var label = FindNamed(page, "Row 2x", ControlType.Text); return label != null && label.Current.BoundingRectangle.Height > 0; }, "table layout settled");
+        geometry();
+        var editor = Find(page, ControlType.Edit)[0];
+        string retainedText = "Kept table text";
+        Pattern<ValuePattern>(editor, ValuePattern.Pattern).SetValue(retainedText);
+        Wait(() => FindNamed(page, retainedText, ControlType.Text) != null, "table payload binding updated");
+        var initial = root.Current.BoundingRectangle;
+        var transform = Pattern<TransformPattern>(root, TransformPattern.Pattern);
+        transform.Resize(initial.Width + 180, initial.Height + 160);
+        Wait(() => root.Current.BoundingRectangle.Width > initial.Width, "table window enlarged");
+        Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000);
+        geometry();
+        Test("table splitters / both axes and repeated shared boundaries");
+        var shared = bounds("Shared 120");
+        var unaffected = bounds("Column A");
+        Drag(shared.Right + 2 * scale, shared.Top + shared.Height / 2, 20 * scale, 0);
+        Wait(() => Math.Abs(bounds("Shared 120").Width - 140 * scale) <= scale, "repeated shared column boundary drags once");
+        equal(bounds("Column A").Width, unaffected.Width, "row grid drag leaves transposed table unchanged");
+        var rowA = bounds("Row A");
+        // The later fixed spanning row bounds the native splitter's downward range.
+        Drag(rowA.Left + rowA.Width / 2, rowA.Bottom + 2 * scale, 0, -10 * scale);
+        Wait(() => Math.Abs(bounds("Row A").Height - 30 * scale) <= scale, "outer row splitter changes adjacent absolute row");
+        var columnA = bounds("Column A");
+        Drag(columnA.Right + 2 * scale, columnA.Top + columnA.Height / 2, 15 * scale, 0);
+        Wait(() => Math.Abs(bounds("Column A").Width - 155 * scale) <= scale, "transposed outer column splitter changes absolute width");
+        var same = bounds("Same row");
+        Drag(same.Left + same.Width / 2, same.Bottom + 2 * scale, 0, 12 * scale);
+        Wait(() => Math.Abs(bounds("Shared 40").Height - 52 * scale) <= scale, "repeated shared row boundary drags once");
+        equal(bounds("Shared 120").Width, 140 * scale, "transposed drags leave row grid adjustment intact");
+        transform.Resize(initial.Width + 220, initial.Height + 200);
+        Wait(() => root.Current.BoundingRectangle.Width >= initial.Width + 220, "second resize applied");
+        equal(bounds("Shared 120").Width, 140 * scale, "resize retains first grid adjustment");
+        equal(bounds("Shared 40").Height, 52 * scale, "resize retains transposed adjustment");
+        for (int iteration = 0; iteration < 2; iteration++) {
+            Test("table rebuild / " + (iteration == 0 ? "mouse" : "Invoke"));
+            if (iteration == 0) Click(Named(page, "Rebuild tables", ControlType.Button)); else Invoke(page, "Rebuild tables");
+            page = RebuiltLayoutPage("Eazy Layout (Table)");
+            Wait(() => {
+                var column = FindNamed(page, "Shared 120", ControlType.Text);
+                var row = FindNamed(page, "Shared 40", ControlType.Text);
+                return column != null && row != null && Math.Abs(column.Current.BoundingRectangle.Width - 120 * scale) <= scale && Math.Abs(row.Current.BoundingRectangle.Height - 40 * scale) <= scale;
+            }, "rebuild restores descriptor sizes");
+            geometry();
+            var retainedValue = Pattern<ValuePattern>(Find(page, ControlType.Edit)[0], ValuePattern.Pattern);
+            Check(retainedValue.Current.Value == retainedText, "repeated rebuild retains table text");
+            if (iteration == 0) {
+                retainedText = "Updated table";
+                retainedValue.SetValue(retainedText);
+                Wait(() => FindNamed(page, retainedText, ControlType.Text) != null, "binding remains live after owning rebuild");
+            }
+        }
+        Page(Page(root, "Layout"), "Easy Layout");
+        page = Page(Page(root, "Layout"), "Eazy Layout (Table)");
+        geometry();
+        foreach (var palette in new[] { "Ember", "Default" }) {
+            Test("table palette refresh / " + palette);
+            var manager = Page(root, "Window Manager");
+            var radio = Named(manager, palette, ControlType.RadioButton);
+            Pattern<SelectionItemPattern>(radio, SelectionItemPattern.Pattern).Select();
+            Wait(() => { try { var name = radio.Current.Name; return false; } catch (ElementNotAvailableException) { return true; } }, "table palette refresh completed");
+            root = AutomationElement.FromHandle(hwnd);
+            page = Page(Page(root, "Layout"), "Eazy Layout (Table)");
+            Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000);
+            Check(Pattern<ValuePattern>(Find(page, ControlType.Edit)[0], ValuePattern.Pattern).Current.Value == retainedText, "palette refresh retains table payload");
+            geometry();
+        }
+        Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(initial.Width, initial.Height);
+        Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000);
+        geometry();
     }
     static void WalkTabs(AutomationElement container, int depth)
     {
@@ -1343,7 +1561,7 @@ public static class GacUIShowcaseTests
             if (scenario == "All" || scenario == "Text") TextControls();
             if (scenario == "All" || scenario == "Refresh") RefreshLists();
             if (scenario == "All" || scenario == "Calendar") Calendars();
-            if (scenario == "All" || scenario == "Layout") EasyLayout();
+            if (scenario == "All" || scenario == "Layout") { EasyLayout(); EasyLayoutTables(); }
             if (scenario == "All" || scenario == "Walk") WalkTabs(root, 0);
             if (scenario == "All" || scenario == "Window") {
             Test("Window / Transform.Move uses physical screen coordinates");

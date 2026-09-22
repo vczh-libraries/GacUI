@@ -69,6 +69,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::DocumentEditorToolstripConstructor)
 			DECL_TYPE_INFO(::demo::EasyLayoutTabPage)
 			DECL_TYPE_INFO(::demo::EasyLayoutTabPageConstructor)
+			DECL_TYPE_INFO(::demo::EazyLayoutTablePage)
+			DECL_TYPE_INFO(::demo::EazyLayoutTablePageConstructor)
 			DECL_TYPE_INFO(::demo::ElementTabPage)
 			DECL_TYPE_INFO(::demo::ElementTabPageConstructor)
 			DECL_TYPE_INFO(::demo::EmbeddedControlsSubTabPage)

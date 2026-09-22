@@ -226,6 +226,59 @@ TEST_FILE
 		}
 	});
 
+	TEST_CASE(L"Nested descriptor containers preserve one gap and isolate direction and grid options")
+	{
+		auto host = new GuiBoundsComposition;
+		host->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+		auto root = new GuiEasyLayoutComposition;
+		host->AddChild(root);
+		auto heading = Ptr(new GuiEasyTopLayout);
+		auto first = Leaf<GuiEasyTopLayout>(10, 10);
+		auto second = Leaf<GuiEasyTopLayout>(10, 10);
+		heading->GetLayouts().Add(first);
+		heading->GetLayouts().Add(second);
+		root->GetLayouts().Add(heading);
+		auto group = Ptr(new GuiEasyFillLayout);
+		auto a = Leaf<GuiEasyFillLayout>(10, 10);
+		auto b = Leaf<GuiEasyFillLayout>(10, 10);
+		a->SetDirection(GuiEasyLayoutDirection::Horizontal);
+		b->SetPercentage(2);
+		group->GetLayouts().Add(a);
+		group->GetLayouts().Add(b);
+		root->GetLayouts().Add(group);
+		auto footer = Ptr(new GuiEasyBottomLayout);
+		auto row = Ptr(new GuiEasyRowLayout);
+		row->SetCellOption(GuiCellOption::AbsoluteOption(24));
+		auto c = Leaf<GuiEasyColumnLayout>(10, 10);
+		auto d = Leaf<GuiEasyColumnLayout>(10, 10);
+		c->SetCellOption(GuiCellOption::AbsoluteOption(120));
+		d->SetCellOption(GuiCellOption::PercentageOption(1));
+		row->GetLayouts().Add(c);
+		row->GetLayouts().Add(Ptr(new GuiEasySplitterLayout));
+		row->GetLayouts().Add(d);
+		footer->GetLayouts().Add(row);
+		root->GetLayouts().Add(footer);
+		root->BuildLayout();
+		host->ForceCalculateSizeImmediately();
+		TEST_ASSERT(first->GetComposition()->GetGlobalBounds() == Rect(5, 5, 140, 15));
+		TEST_ASSERT(second->GetComposition()->GetGlobalBounds() == Rect(5, 20, 140, 30));
+		TEST_ASSERT(a->GetComposition()->GetGlobalBounds().Top() == 35);
+		TEST_ASSERT(b->GetComposition()->GetGlobalBounds().Left() - a->GetComposition()->GetGlobalBounds().Right() == 5);
+		TEST_ASSERT(c->GetComposition()->GetGlobalBounds().Top() - a->GetComposition()->GetGlobalBounds().Bottom() == 5);
+		TEST_ASSERT(c->GetComposition()->GetGlobalBounds().GetSize() == Size(120, 24));
+		TEST_ASSERT(d->GetComposition()->GetGlobalBounds().Left() - c->GetComposition()->GetGlobalBounds().Right() == 5);
+		TEST_ASSERT(host->GetCachedMinSize().y - c->GetComposition()->GetGlobalBounds().Bottom() == 5);
+		host->SetExpectedBounds(Rect(0, 0, 315, 240));
+		a->SetDirection(GuiEasyLayoutDirection::Vertical);
+		root->BuildLayout();
+		host->ForceCalculateSizeImmediately();
+		TEST_ASSERT(a->GetComposition()->GetGlobalBounds() == Rect(5, 35, 310, 90));
+		TEST_ASSERT(b->GetComposition()->GetGlobalBounds() == Rect(5, 95, 310, 206));
+		TEST_ASSERT(c->GetComposition()->GetGlobalBounds() == Rect(5, 211, 125, 235));
+		TEST_ASSERT(d->GetComposition()->GetGlobalBounds() == Rect(130, 211, 310, 235));
+		SafeDeleteComposition(host);
+	});
+
 	TEST_CASE(L"Grid option changes wait for rebuild while parent resizing uses the built tracks")
 	{
 		auto host = new GuiBoundsComposition;

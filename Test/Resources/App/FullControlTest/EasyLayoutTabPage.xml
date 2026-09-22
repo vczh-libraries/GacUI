@@ -41,7 +41,7 @@
           </ez:Bottom>
           <ez:Bottom>
             <ez:Row CellOption="composeType:Absolute absolute:24">
-              <ez:Column CellOption="composeType:Absolute percentage:120"><Label Text="First column"/></ez:Column>
+              <ez:Column CellOption="composeType:Absolute absolute:120"><Label Text="First column"/></ez:Column>
               <ez:Splitter/>
               <ez:Column CellOption="composeType:Percentage percentage:1"><Label Text="Second column"/></ez:Column>
             </ez:Row>
@@ -49,6 +49,75 @@
           <ez:Bottom>
             <Label Text="Shared tracks"/>
           </ez:Bottom>
+        </ez:Layout>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="EazyLayoutTablePageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::EazyLayoutTablePage">
+      <TabPage Text="Eazy Layout (Table)">
+        <ez:Layout ref.Name="layout">
+          <ez:Top>
+            <ez:Left>
+              <Button Text="Rebuild tables">
+                <ev.Clicked-eval><![CDATA[{ layout.BuildLayout(); }]]></ev.Clicked-eval>
+              </Button>
+            </ez:Left>
+            <ez:Left><Label Text="Drag the gaps; rebuild resets sizes and keeps your text."/></ez:Left>
+          </ez:Top>
+          <ez:Fill>
+            <ez:Top><Label Text="Rows sharing columns: minimum, 120 pixels, 1:2 remainder"/></ez:Top>
+            <ez:Fill>
+              <ez:Row CellOption="composeType:Absolute absolute:40">
+                <ez:Column><Label Text="Row A"/></ez:Column>
+                <ez:Column CellOption="composeType:Absolute absolute:120">
+                  <SinglelineTextBox ref.Name="editor" Text="Table state"/>
+                </ez:Column>
+                <ez:Splitter/>
+                <ez:Column CellOption="composeType:Percentage percentage:1"><Label Text="Column 1x"/></ez:Column>
+                <ez:Column CellOption="composeType:Percentage percentage:2"><Label Text="Column 2x"/></ez:Column>
+              </ez:Row>
+              <ez:Splitter/>
+              <ez:Row>
+                <ez:Column><Label Text="Row B"/></ez:Column>
+                <ez:Column><Label Text="Shared 120"/></ez:Column>
+                <ez:Splitter/>
+                <ez:Column CellSpan="2"><Label Text-bind="editor.Text"/></ez:Column>
+              </ez:Row>
+              <ez:Row CellSpan="2" CellOption="composeType:Absolute absolute:24">
+                <ez:Column><Label Text="Two rows"/></ez:Column>
+              </ez:Row>
+              <ez:Row CellOption="composeType:Percentage percentage:1"/>
+              <ez:Row>
+                <ez:Column><Label Text="Short row"/></ez:Column>
+                <ez:Column/>
+              </ez:Row>
+            </ez:Fill>
+          </ez:Fill>
+          <ez:Fill>
+            <ez:Top><Label Text="Columns sharing rows: minimum, 40 pixels, 1:2 remainder"/></ez:Top>
+            <ez:Fill>
+              <ez:Column CellOption="composeType:Absolute absolute:140">
+                <ez:Row><Label Text="Column A"/></ez:Row>
+                <ez:Row CellOption="composeType:Absolute absolute:40"><Label Text="Shared 40"/></ez:Row>
+                <ez:Splitter/>
+                <ez:Row CellOption="composeType:Percentage percentage:1"><Label Text="Row 1x"/></ez:Row>
+                <ez:Row CellOption="composeType:Percentage percentage:2"><Label Text="Row 2x"/></ez:Row>
+              </ez:Column>
+              <ez:Splitter/>
+              <ez:Column CellOption="composeType:Percentage percentage:1">
+                <ez:Row><Label Text="Column B"/></ez:Row>
+                <ez:Row><Label Text="Same row"/></ez:Row>
+                <ez:Splitter/>
+                <ez:Row CellSpan="2"><Label Text="Two shared rows"/></ez:Row>
+              </ez:Column>
+              <ez:Column CellSpan="2" CellOption="composeType:Absolute absolute:60">
+                <ez:Row><Label Text="Two columns"/></ez:Row>
+              </ez:Column>
+              <ez:Column CellOption="composeType:Absolute absolute:60"/>
+            </ez:Fill>
+          </ez:Fill>
         </ez:Layout>
       </TabPage>
     </Instance>

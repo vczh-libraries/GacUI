@@ -1765,7 +1765,7 @@
         "ElementDesc_SolidBackground",
         {
           "id": 981,
-          "backgroundColor": "#3399FF",
+          "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -1795,7 +1795,7 @@
         "ElementDesc_SolidBackground",
         {
           "id": 984,
-          "backgroundColor": "#00000000",
+          "backgroundColor": "#3399FF",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]

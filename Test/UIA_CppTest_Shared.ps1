@@ -114,7 +114,8 @@ try {
     $client = Start-Process powershell.exe -WindowStyle Hidden -ArgumentList $clientArguments -RedirectStandardOutput (Join-Path $env:TEMP "$Application-uia.stdout.txt") -RedirectStandardError (Join-Path $env:TEMP "$Application-uia.stderr.txt") -PassThru
     $clientHandle = $client.Handle
     $lastCount = 0
-    $deadline = [DateTime]::UtcNow.AddMinutes(20)
+    # Full showcase coverage includes repeated layout rebuilds and palette replacement.
+    $deadline = [DateTime]::UtcNow.AddMinutes(30)
     do {
         $lines = @(Get-Content (Join-Path $env:TEMP "$Application-uia.stdout.txt") -ErrorAction SilentlyContinue)
         $lines | Select-Object -Skip $lastCount | Write-Host
