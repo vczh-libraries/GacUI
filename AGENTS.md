@@ -7,10 +7,10 @@
 - When commit and/or push are required, you should always commit and push once finishing a request, no matter whatever is pending or not. Github repos and clones are more for the backup purpose, there is no strong requirement of completeness of tasks before committing.
 - Computer Use:
   - You are most of the time running in a locked session, or a remote desktop session when the host machine is locked. Deny of computer use is very common, this should not become a reason to avoid any request.
-  - For any GacUI app, the first choise is always automation service, then UI Automation, then general computer use.
-  - For any CLI app, the first choise is always starting it in an interactive CLI session.
-  - For any TUI app, when interacting with OS terminal host is not doable due to computer use failure, you can still start it in an interactive CLI session.
-  - Checkout `REPO-ROOT/.github/Guidelines/Running-*.md` for details.
+  - For any GacUI app, the first choise is always automation service, then UI Automation, then general computer use, checkout `REPO-ROOT/.github/Guidelines/Running-GacUI.md` for details.
+  - For any CLI app, the first choise is always starting it in an interactive CLI session, checkout `REPO-ROOT/.github/Guidelines/Running-CLI.md` for details.
+  - For any TUI app, when interacting with OS terminal host is not doable due to computer use failure, you can still start it in an interactive CLI session, checkout `REPO-ROOT/.github/Guidelines/Running-CLI.md` for details.
+  - For OS native dialog, for Windows try UIA first, checkout `REPO-ROOT/.github/Guidelines/Running-ComputerUse.md` for details.
 
 ## Keyword Driven Prompt File Selection
 
