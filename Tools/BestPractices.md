@@ -41,5 +41,14 @@ Settings are expected to be aligned with other projects.
     - Binary resource should be printed in C++ so that the app does not need to load an extra binary resource. This is done by adding `CppCompressed`  to `GacGenConfig`.
     - `REPO-ROOT/../Tools/Tools/GacBuild.ps1` should be used to generate this folder.
   - `ViewModel`: View model implementation.
-- `<GUI-NAME>/<GUI-NAME>.vcxproj`: an interactive app running `<TOOL-NAME>`, based on GacUI with native renderer.
-- `<TUI-NAME>/<TUI-NAME>.vcxproj`: an interactive app running `<TOOL-NAME>`, based on GacUI with TUI renderer.
+- `<TOOL-NAME>Tests/<TOOL-NAME>Tests.vcxproj`: a unit test project testing against view models based on `Vlpp` unit test framework. It includes test cases that does not require user interaction and complex environment setup.
+- `<GUI-NAME>/<GUI-NAME>.vcxproj`: an interactive app running `<TOOL-NAME>`, based on GacUI with native renderer. Create this project by default.
+- `<TUI-NAME>/<TUI-NAME>.vcxproj`: an interactive app running `<TOOL-NAME>`, based on GacUI with TUI renderer. DO NOT create this project by default.
+
+`REPO-ROOT/../Tools/Tools/GacBuild.ps1` is recommended for compiling GacUI XML Resource, but DO NOT call this script in any vcxproj pre/post build instructions. When the UI is changed, call this script manually.
+
+## MISC
+
+Follow `REPO-ROOT/.github/Guidelines/GacUIEazyLayout.md` and `REPO-ROOT/.github/Guidelines/GacUILayout.md` to design the UI.
+
+`AGENTS.md` in each tool could override any instruction here.
