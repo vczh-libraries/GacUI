@@ -5,7 +5,6 @@
 #include "../../../Source/PlatformProviders/Hosted/GuiHostedGraphics.h"
 #include "../../../Source/Controls/ListControlPackage/TuiItemTemplates.h"
 #include "../../../Source/Skins/TuiSkin/Config/TuiSkinConfig.h"
-#include "../../../Source/UnitTestUtilities/GuiUnitTestUtilities.h"
 #include <algorithm>
 
 using namespace vl;
@@ -13,6 +12,9 @@ using namespace vl::collections;
 using namespace vl::presentation;
 using namespace vl::presentation::elements;
 using namespace vl::console;
+
+extern void SetGuiMainProxy(const Func<void()>& proxy);
+extern int SetupGacGenNativeController();
 
 namespace tui_provider_tests
 {
@@ -183,6 +185,37 @@ namespace tui_provider_tests
 		TEST_ASSERT(!TUI::IsInUse());
 		TEST_ASSERT(GetTuiApplication() == nullptr);
 	}
+
+	void RunGuiTest(const Func<void()>& test)
+	{
+		SetGuiMainProxy([&]()
+		{
+			TuiRunTest([&](TuiTestBackend*, TuiTestController* controller)
+			{
+				auto previousController = GetNativeController();
+				auto previousResources = GetGuiGraphicsResourceManager();
+				GuiHostedController hosted(controller);
+				TuiGraphicsResourceManager resources;
+				GuiHostedGraphicsResourceManager hostedResources(&hosted, &resources);
+				SetNativeController(&hosted);
+				SetHostedApplication(hosted.GetHostedApplication());
+				SetTuiApplication(controller);
+				SetGuiGraphicsResourceManager(&hostedResources);
+				controller->CallbackService()->InstallListener(&resources);
+				RegisterTuiRenderers();
+				hosted.Initialize();
+				test();
+				hosted.Finalize();
+				controller->CallbackService()->UninstallListener(&resources);
+				SetGuiGraphicsResourceManager(previousResources);
+				SetTuiApplication(nullptr);
+				SetHostedApplication(nullptr);
+				SetNativeController(previousController);
+			}, Size(600, 400));
+		});
+		SetupGacGenNativeController();
+		SetGuiMainProxy({});
+	}
 }
 
 using namespace tui_provider_tests;
@@ -241,8 +274,7 @@ TEST_FILE
 
 	TEST_CASE(L"TUI live themes refresh retained headers, menus, date combos and trees")
 	{
-		using namespace vl::presentation::unittest;
-		GacUIUnitTest_SetGuiMainProxy([](auto, auto)
+		SetGuiMainProxy([]()
 		{
 			TuiRunTest([](TuiTestBackend* backend, TuiTestController* controller)
 			{
@@ -250,12 +282,10 @@ TEST_FILE
 				using namespace compositions;
 				auto previousResources = GetGuiGraphicsResourceManager();
 				auto previousController = GetNativeController();
-				auto previousHosted = GetHostedApplication();
 				GuiHostedController hosted(controller);
 				TuiGraphicsResourceManager resources;
 				GuiHostedGraphicsResourceManager hostedResources(&hosted, &resources);
 				SetNativeController(&hosted);
-				SetHostedApplication(nullptr);
 				SetHostedApplication(hosted.GetHostedApplication());
 				SetTuiApplication(controller);
 				SetGuiGraphicsResourceManager(&hostedResources);
@@ -571,11 +601,11 @@ TEST_FILE
 				SetGuiGraphicsResourceManager(previousResources);
 				SetTuiApplication(nullptr);
 				SetHostedApplication(nullptr);
-				SetHostedApplication(previousHosted);
 				SetNativeController(previousController);
 			}, Size(120, 40));
 		});
-		GacUIUnitTest_Start(L"Tui/RefreshThemes");
+		SetupGacGenNativeController();
+		SetGuiMainProxy({});
 	});
 
 	TEST_CASE(L"TUI document minimum bounds include the final block caret")
@@ -634,8 +664,7 @@ TEST_FILE
 
 	TEST_CASE(L"TUI grid selection preserves separator backgrounds in the composed row")
 	{
-		using namespace vl::presentation::unittest;
-		GacUIUnitTest_SetGuiMainProxy([](auto, auto)
+		SetGuiMainProxy([]()
 		{
 			TuiRunTest([](TuiTestBackend* backend, TuiTestController* controller)
 			{
@@ -739,7 +768,8 @@ TEST_FILE
 				SetGuiGraphicsResourceManager(previousResources);
 			});
 		});
-		GacUIUnitTest_Start(L"Tui/GridSeparators");
+		SetupGacGenNativeController();
+		SetGuiMainProxy({});
 	});
 
 	TEST_CASE(L"TUI configured tabs share paragraph and label geometry")
@@ -1236,20 +1266,17 @@ TEST_FILE
 
 	TEST_CASE(L"TUI application main closing respects hosted modal interception")
 	{
-		using namespace vl::presentation::unittest;
-		GacUIUnitTest_SetGuiMainProxy([](auto, auto)
+		SetGuiMainProxy([]()
 		{
 			TuiRunTest([](TuiTestBackend* backend, TuiTestController* controller)
 			{
 				using namespace controls;
 				auto previousResources = GetGuiGraphicsResourceManager();
 				auto previousController = GetNativeController();
-				auto previousHosted = GetHostedApplication();
 				GuiHostedController hosted(controller);
 				TuiGraphicsResourceManager resources;
 				GuiHostedGraphicsResourceManager hostedResources(&hosted, &resources);
 				SetNativeController(&hosted);
-				SetHostedApplication(nullptr);
 				SetHostedApplication(hosted.GetHostedApplication());
 				SetTuiApplication(controller);
 				SetGuiGraphicsResourceManager(&hostedResources);
@@ -1299,11 +1326,11 @@ TEST_FILE
 				SetGuiGraphicsResourceManager(previousResources);
 				SetTuiApplication(nullptr);
 				SetHostedApplication(nullptr);
-				SetHostedApplication(previousHosted);
 				SetNativeController(previousController);
 			}, Size(100, 30));
 		});
-		GacUIUnitTest_Start(L"Tui/Closing");
+		SetupGacGenNativeController();
+		SetGuiMainProxy({});
 	});
 
 	TEST_CASE(L"TUI registered renderers reuse label paragraphs and layouts")

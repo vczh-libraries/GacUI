@@ -91,6 +91,10 @@ Each Frame_*.json is captured at each `OnNextIdleFrame` call, recording what the
 This is the reason why the name of the frame should say what the previous frame was done,
 so that frame names in snapshot files make sense.
 
+Remote-protocol snapshot tests (`GacUIUnitTest_Start`, `GacUIUnitTest_StartFast_WithResourceAsText`, and related entry points) are for recording and reviewing rendering results. Every such case must capture at least one useful rendering frame; an empty frame list is not allowed. Merely recording a frame does not justify using this framework when the rendered output adds no useful coverage.
+
+Use ordinary unit tests when the coverage consists only of compiler rejection, descriptor properties, geometry, bindings, event handlers, or other non-rendering behavior. Construct the objects directly, or use native service and resource setup when needed, without starting the remote snapshot framework. Keep TUI buffer assertions in ordinary TUI provider tests. When converting or removing a snapshot case, remove its index, frame files, protocol logs and compiler artifacts from `Test/Resources/UnitTestSnapshots` as well.
+
 ### Code Generation Tools
 
 #### REPO-ROOT/../Tools/Tools/GlrParserGen.exe

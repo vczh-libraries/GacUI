@@ -1,6 +1,19 @@
-#include "TestControls.h"
+#include "../../../Source/GacUI.h"
+#include "../../../Source/Resources/GuiParserManager.h"
+#include "../../../Source/Skins/TuiSkin/Config/TuiSkinConfig.h"
+
+using namespace vl;
+using namespace vl::reflection::description;
+using namespace vl::presentation;
+using namespace vl::presentation::compositions;
+using namespace vl::presentation::controls;
 
 using namespace vl::presentation::compositions::eazy_layout;
+
+namespace tui_provider_tests
+{
+	extern void RunGuiTest(const Func<void()>& test);
+}
 
 namespace easy_layout_xml_tests
 {
@@ -9,7 +22,64 @@ namespace easy_layout_xml_tests
 		return L"<Resource>\n<Instance name=\"Main\">\n<Instance ref.Class=\"easy_test::MainWindow\">\n<Window ref.Name=\"self\" Text=\"Easy layout\" ClientSize=\"x:320 y:240\">\n"
 			+ content + L"\n</Window>\n</Instance>\n</Instance>\n</Resource>";
 	}
+
+	void RunResourceTest(const WString& resourceText, const Func<void(GuiWindow*)>& test)
+	{
+		tui_provider_tests::RunGuiTest([&]()
+		{
+			GuiResourceError::List errors;
+			auto parser = GetParserManager()->GetParser<glr::xml::XmlDocument>(L"XML");
+			auto xml = parser->Parse({}, resourceText, errors);
+			TEST_ASSERT(xml && errors.Count() == 0);
+			auto resource = GuiResource::LoadFromXml(xml, L"TestControls_EasyLayout.xml", L".", errors);
+			TEST_ASSERT(resource && errors.Count() == 0);
+			resource->Precompile(
+#ifdef VCZH_64
+				GuiResourceCpuArchitecture::x64,
+#else
+				GuiResourceCpuArchitecture::x86,
+#endif
+				nullptr, errors);
+			for (auto&& error : errors) TEST_PRINT(error.message);
+			TEST_ASSERT(errors.Count() == 0);
+			GetResourceManager()->SetResource(resource, errors, GuiResourceUsage::InstanceClass);
+			TEST_ASSERT(errors.Count() == 0);
+
+			auto skin = Ptr(new tuiskin::TuiTheme);
+			theme::RegisterTheme(skin);
+			{
+				auto value = Value::Create(L"easy_test::MainWindow");
+				TEST_ASSERT(value.GetRawPtr());
+				auto window = Ptr(value.GetRawPtr()->SafeAggregationCast<GuiWindow>());
+				TEST_ASSERT(window);
+				test(window.Obj());
+			}
+			theme::UnregisterTheme(skin->Name);
+		});
+	}
+
+	void Click(GuiButton* button)
+	{
+		GuiEventArgs args(button->GetBoundsComposition());
+		button->Clicked.Execute(args);
+	}
+
+	void Drag(GuiTableSplitterCompositionBase* splitter, vint x, vint y)
+	{
+		TEST_ASSERT(splitter);
+		GuiMouseEventArgs args(splitter);
+		args.button = NativeMouseButton::Left;
+		args.left = true;
+		args.x = args.y = 2;
+		splitter->GetEventReceiver()->mouseDown.Execute(args);
+		args.x += x;
+		args.y += y;
+		splitter->GetEventReceiver()->mouseMove.Execute(args);
+		splitter->GetEventReceiver()->mouseUp.Execute(args);
+	}
 }
+
+using namespace easy_layout_xml_tests;
 
 TEST_FILE
 {
@@ -38,31 +108,30 @@ TEST_FILE
   </ez:Bottom>
 </ez:Layout>
 )GacUISrc";
-		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		RunResourceTest(Resource(content), [](GuiWindow* window)
 		{
-			protocol->OnNextIdleFrame(L"Ready", [=]()
+			// Ready
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				auto editor = FindObjectByName<GuiSinglelineTextBox>(window, L"editor");
 				auto label = FindObjectByName<GuiLabel>(window, L"label");
 				TEST_ASSERT(editor->GetBoundsComposition()->GetGlobalBounds().Top() == label->GetBoundsComposition()->GetGlobalBounds().Top());
-				editor->SetFocused();
-				protocol->KeyPress(VKEY::KEY_A, true, false, false);
-				protocol->TypeString(L"Retained");
-				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiSelectableButton>(window, L"vertical")));
-			});
-			protocol->OnNextIdleFrame(L"Text edited and vertical arrangement stored", [=]()
+				editor->SetText(L"Retained");
+				auto vertical = FindObjectByName<GuiSelectableButton>(window, L"vertical");
+				vertical->SetSelected(!vertical->GetSelected());
+			}
+			// Text edited and vertical arrangement stored
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				auto editor = FindObjectByName<GuiSinglelineTextBox>(window, L"editor");
 				auto label = FindObjectByName<GuiLabel>(window, L"label");
 				TEST_ASSERT(editor->GetText() == L"Retained" && label->GetText() == L"Retained");
 				TEST_ASSERT(editor->GetBoundsComposition()->GetGlobalBounds().Top() == label->GetBoundsComposition()->GetGlobalBounds().Top());
-				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiButton>(window, L"rebuild")));
-			});
-			protocol->OnNextIdleFrame(L"Owning layout rebuilt vertically", [=]()
+				Click(FindObjectByName<GuiButton>(window, L"rebuild"));
+			}
+			// Owning layout rebuilt vertically
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				auto editor = FindObjectByName<GuiSinglelineTextBox>(window, L"editor");
 				auto label = FindObjectByName<GuiLabel>(window, L"label");
 				auto a = editor->GetBoundsComposition()->GetGlobalBounds();
@@ -73,25 +142,22 @@ TEST_FILE
 				auto first = FindObjectByName<GuiLabel>(window, L"first")->GetBoundsComposition()->GetGlobalBounds();
 				auto second = FindObjectByName<GuiLabel>(window, L"second")->GetBoundsComposition()->GetGlobalBounds();
 				TEST_ASSERT(first.Width() == 120 && first.Height() == 24 && first.Top() == second.Top() && second.Left() - first.Right() == 5);
-				editor->SetFocused();
-				protocol->KeyPress(VKEY::KEY_END);
-				protocol->TypeString(L" again");
-				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiSelectableButton>(window, L"vertical")));
-				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiButton>(window, L"rebuild")));
-			});
-			protocol->OnNextIdleFrame(L"Repeated rebuild restores horizontal arrangement", [=]()
+				editor->SetText(editor->GetText() + L" again");
+				auto vertical = FindObjectByName<GuiSelectableButton>(window, L"vertical");
+				vertical->SetSelected(!vertical->GetSelected());
+				Click(FindObjectByName<GuiButton>(window, L"rebuild"));
+			}
+			// Repeated rebuild restores horizontal arrangement
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				auto editor = FindObjectByName<GuiSinglelineTextBox>(window, L"editor");
 				auto label = FindObjectByName<GuiLabel>(window, L"label");
 				auto a = editor->GetBoundsComposition()->GetGlobalBounds();
 				auto b = label->GetBoundsComposition()->GetGlobalBounds();
 				TEST_ASSERT(a.Top() == b.Top() && a.Bottom() == b.Bottom() && b.Left() - a.Right() == 5);
 				TEST_ASSERT(editor->GetText() == L"Retained again" && label->GetText() == L"Retained again");
-				window->Hide();
-			});
+			}
 		});
-		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(L"EasyLayout/OwnerRebuild", L"easy_test::MainWindow", easy_layout_xml_tests::Resource(content));
 	});
 
 	TEST_CASE(L"XML shared splitters resize both axes and rebuilding retains bound controls")
@@ -113,69 +179,59 @@ TEST_FILE
   </ez:Column>
 </ez:Layout>
 )GacUISrc";
-		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		RunResourceTest(Resource(content), [](GuiWindow* window)
 		{
-			protocol->OnNextIdleFrame(L"Shared splitter grid initialized", [=]()
+			// Shared splitter grid initialized
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				auto layout = FindObjectByName<GuiEasyLayoutComposition>(window, L"layout");
 				TEST_ASSERT(FindObjectByName<GuiEasySplitterLayout>(window, L"horizontal"));
 				TEST_ASSERT(FindObjectByName<GuiEasySplitterLayout>(window, L"vertical"));
 				auto table = dynamic_cast<GuiTableComposition*>(layout->Children()[0]->Children()[0]);
 				TEST_ASSERT(table->Children().Count() == 6);
 				auto splitter = dynamic_cast<GuiColumnSplitterComposition*>(table->Children()[4]);
-				auto point = protocol->LocationOf(splitter);
-				protocol->_LDown(point);
-				point.x += 25;
-				protocol->MouseMove(point);
-				protocol->_LUp(point);
-			});
-			protocol->OnNextIdleFrame(L"Column enlarged by dragging", [=]()
+				Drag(splitter, 25, 0);
+			}
+			// Column enlarged by dragging
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				auto layout = FindObjectByName<GuiEasyLayoutComposition>(window, L"layout");
 				auto table = dynamic_cast<GuiTableComposition*>(layout->Children()[0]->Children()[0]);
 				TEST_ASSERT(table->GetColumnOption(0).absolute == 205);
 				auto splitter = dynamic_cast<GuiRowSplitterComposition*>(table->Children()[5]);
-				auto point = protocol->LocationOf(splitter);
-				protocol->_LDown(point);
-				point.y += 15;
-				protocol->MouseMove(point);
-				protocol->_LUp(point);
-			});
-			protocol->OnNextIdleFrame(L"Row enlarged by dragging", [=]()
+				Drag(splitter, 0, 15);
+			}
+			// Row enlarged by dragging
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				auto layout = FindObjectByName<GuiEasyLayoutComposition>(window, L"layout");
 				auto table = dynamic_cast<GuiTableComposition*>(layout->Children()[0]->Children()[0]);
 				TEST_ASSERT(table->GetRowOption(0).absolute == 95);
 				window->SetClientSize({ 400,300 });
-			});
-			protocol->OnNextIdleFrame(L"Window resizing retains dragged sizes", [=]()
+			}
+			// Window resizing retains dragged sizes
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				auto layout = FindObjectByName<GuiEasyLayoutComposition>(window, L"layout");
 				auto table = dynamic_cast<GuiTableComposition*>(layout->Children()[0]->Children()[0]);
 				TEST_ASSERT(table->GetColumnOption(0).absolute == 205 && table->GetRowOption(0).absolute == 95);
 				layout->BuildLayout();
-			});
-			protocol->OnNextIdleFrame(L"Rebuild restores configured sizes", [=]()
+			}
+			// Rebuild restores configured sizes
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				auto layout = FindObjectByName<GuiEasyLayoutComposition>(window, L"layout");
 				auto table = dynamic_cast<GuiTableComposition*>(layout->Children()[0]->Children()[0]);
 				TEST_ASSERT(table->GetColumnOption(0).absolute == 180 && table->GetRowOption(0).absolute == 80);
-				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiButton>(window, L"button")));
-			});
-			protocol->OnNextIdleFrame(L"Retained control updates its binding", [=]()
+				Click(FindObjectByName<GuiButton>(window, L"button"));
+			}
+			// Retained control updates its binding
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				TEST_ASSERT(window->GetText() == L"Retained");
 				TEST_ASSERT(FindObjectByName<GuiButton>(window, L"button")->GetText() == L"Retained");
-				window->Hide();
-			});
+			}
 		});
-		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(L"EasyLayout/Splitters", L"easy_test::MainWindow", easy_layout_xml_tests::Resource(content));
 	});
 
 	TEST_CASE(L"XML instantiates every descriptor with defaults and both constant property syntaxes")
@@ -209,11 +265,11 @@ TEST_FILE
 					L"xmlns:ez=\"presentation::compositions::eazy_layout::GuiEasy*Composition;presentation::compositions::eazy_layout::GuiEasy*Layout\">"
 					L"<Window ref.Name=\"self\" Text=\"Easy layout\" ClientSize=\"x:320 y:240\">" + content + L"</Window></Instance></Instance></Resource>";
 			}
-			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			RunResourceTest(resource, [=](GuiWindow* window)
 			{
-				protocol->OnNextIdleFrame(L"Descriptors initialized", [=]()
+				// Descriptors initialized
 				{
-					auto window = GetApplication()->GetMainWindow();
+					window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 					TEST_ASSERT(FindObjectByName<GuiEasyTopLayout>(window, L"top"));
 					TEST_ASSERT(FindObjectByName<GuiEasyBottomLayout>(window, L"bottom"));
 					TEST_ASSERT(FindObjectByName<GuiEasyLeftLayout>(window, L"left"));
@@ -232,10 +288,8 @@ TEST_FILE
 						TEST_ASSERT(row->GetCellOption().absolute == 12);
 						TEST_ASSERT(column->GetCellOption().percentage == 2);
 					}
-					window->Hide();
-				});
+				}
 			});
-			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(L"EasyLayout/Descriptors" + itow(syntax) + itow(customNamespace), L"easy_test::MainWindow", resource);
 		}
 	});
 
@@ -262,11 +316,11 @@ TEST_FILE
   </ez:Bottom>
 </ez:Layout>
 )GacUISrc";
-		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		RunResourceTest(Resource(content), [](GuiWindow* window)
 		{
-			protocol->OnNextIdleFrame(L"Initial bindings applied before build", [=]()
+			// Initial bindings applied before build
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				auto layout = FindObjectByName<GuiEasyLayoutComposition>(window, L"layout");
 				auto empty = FindObjectByName<GuiEasyLayoutComposition>(window, L"empty");
 				auto button = FindObjectByName<GuiButton>(window, L"button");
@@ -276,10 +330,10 @@ TEST_FILE
 				TEST_ASSERT(button->GetBoundsComposition()->GetAlignmentToParent() == Margin(0, 0, 0, 0));
 				TEST_ASSERT(button->GetText() == window->GetText());
 				FindObjectByName<GuiSelectableButton>(window, L"toggle")->SetSelected(true);
-			});
-			protocol->OnNextIdleFrame(L"Bindings change stored values", [=]()
+			}
+			// Bindings change stored values
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				auto layout = FindObjectByName<GuiEasyLayoutComposition>(window, L"layout");
 				TEST_ASSERT(layout->GetPadding() == 9 && layout->GetBorder());
 				TEST_ASSERT(FindObjectByName<GuiEasyFillLayout>(window, L"first")->GetDirection() == GuiEasyLayoutDirection::Vertical);
@@ -289,25 +343,23 @@ TEST_FILE
 				TEST_ASSERT(table->GetCellPadding() == 3 && table->GetColumns() == 2);
 				layout->BuildLayout();
 				FindObjectByName<GuiEasyLayoutComposition>(window, L"grid")->BuildLayout();
-			});
-			protocol->OnNextIdleFrame(L"Rebuilt with new values", [=]()
+			}
+			// Rebuilt with new values
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				auto layout = FindObjectByName<GuiEasyLayoutComposition>(window, L"layout");
 				TEST_ASSERT(layout->GetAlignmentToParent() == Margin(9, 9, 9, 9));
 				auto table = dynamic_cast<GuiTableComposition*>(layout->Children()[0]->Children()[0]);
 				TEST_ASSERT(table->GetCellPadding() == 9 && table->GetRows() == 2);
-				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiButton>(window, L"button")));
-			});
-			protocol->OnNextIdleFrame(L"Payload event and binding survived", [=]()
+				Click(FindObjectByName<GuiButton>(window, L"button"));
+			}
+			// Payload event and binding survived
 			{
-				auto window = GetApplication()->GetMainWindow();
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				TEST_ASSERT(window->GetText() == L"Clicked");
 				TEST_ASSERT(FindObjectByName<GuiButton>(window, L"button")->GetText() == L"Clicked");
-				window->Hide();
-			});
+			}
 		});
-		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(L"EasyLayout/Bindings", L"easy_test::MainWindow", easy_layout_xml_tests::Resource(content));
 	});
 
 	TEST_CASE(L"Mixed docking payloads stretch to the row height through resizing and rebuilding")
@@ -337,11 +389,10 @@ TEST_FILE
   </ez:Bottom>
 </ez:Layout>
 )GacUISrc";
-		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		RunResourceTest(Resource(content), [](GuiWindow* window)
 		{
-			auto assertRow = []()
+			auto assertRow = [=]()
 			{
-				auto window = GetApplication()->GetMainWindow();
 				auto payload = FindObjectByName<GuiBoundsComposition>(window, L"payload");
 				auto expected = payload->GetGlobalBounds();
 				TEST_ASSERT(expected.Height() == 55);
@@ -358,24 +409,24 @@ TEST_FILE
 				}
 				TEST_ASSERT(FindObjectByName<GuiEasyLayoutComposition>(window, L"row")->GetAlignmentToParent() == Margin(0, 0, 0, 0));
 			};
-			protocol->OnNextIdleFrame(L"Ready", [=]()
+			// Ready
 			{
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				assertRow();
-				GetApplication()->GetMainWindow()->SetClientSize({ 500,300 });
-			});
-			protocol->OnNextIdleFrame(L"Row expanded", [=]()
+				window->SetClientSize({ 500,300 });
+			}
+			// Row expanded
 			{
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				assertRow();
-				auto window = GetApplication()->GetMainWindow();
 				FindObjectByName<GuiEasyLayoutComposition>(window, L"row")->BuildLayout();
 				window->SetClientSize({ 320,240 });
-			});
-			protocol->OnNextIdleFrame(L"Row rebuilt and reduced", [=]()
+			}
+			// Row rebuilt and reduced
 			{
+				window->GetBoundsComposition()->ForceCalculateSizeImmediately();
 				assertRow();
-				GetApplication()->GetMainWindow()->Hide();
-			});
+			}
 		});
-		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(L"EasyLayout/MixedHeights", L"easy_test::MainWindow", easy_layout_xml_tests::Resource(content));
 	});
 }
