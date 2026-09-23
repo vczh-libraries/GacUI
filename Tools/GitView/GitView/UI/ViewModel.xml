@@ -13,6 +13,7 @@ namespace gitview
   {
     prop Text : string {const}
     prop Background : Color {const}
+    prop IsSeparator : bool {const}
   }
   interface IGitViewModel
   {

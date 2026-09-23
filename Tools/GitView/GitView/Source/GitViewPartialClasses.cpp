@@ -63,7 +63,7 @@ Closures
 
 	::vl::WString __vwsnf10_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::gitview::IEntry>>(__vwsn_item_);
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::gitview::IDiffLine>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetText();
 	}
 
@@ -74,7 +74,33 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiListItemTemplate* __vwsnf11_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::WString __vwsnf11_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::gitview::IEntry>>(__vwsn_item_);
+		return ::vl::__vwsn::This(item.Obj())->GetText();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::WString __vwsnf12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::gitview::IEntry>>(__vwsn_item_);
+		return ::vl::__vwsn::This(item.Obj())->GetText();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiListItemTemplate* __vwsnf13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::gitview::IDiffLine>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
@@ -87,12 +113,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::gitview::IDiffLine>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetText();
@@ -100,12 +126,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -118,12 +144,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetItemSource();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueEnumerable>>(__vwsn_value_);
@@ -136,12 +162,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->branches)->GetSelectedIndex();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint>(__vwsn_value_);
@@ -154,44 +180,14 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetBranchIndex(::vl::__vwsn::This(__vwsnthis_0->branches)->GetSelectedIndex());
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->Refresh();
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf18_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf18_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf18_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf18_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetBranchIndex(::vl::__vwsn::This(__vwsnthis_0->branches)->GetSelectedIndex());
 	}
 
 	//-------------------------------------------------------------------
@@ -203,7 +199,7 @@ Closures
 
 	void __vwsnf19_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->Pull(false);
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->Refresh();
 	}
 
 	//-------------------------------------------------------------------
@@ -233,13 +229,13 @@ Closures
 
 	void __vwsnf20_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_15)->GetEnabled();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_15)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -251,7 +247,7 @@ Closures
 
 	void __vwsnf21_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->Pull(true);
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->Pull(false);
 	}
 
 	//-------------------------------------------------------------------
@@ -261,9 +257,15 @@ Closures
 	{
 	}
 
-	void __vwsnf22_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf22_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_15)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_15)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -273,7 +275,31 @@ Closures
 	{
 	}
 
-	void __vwsnf23_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf23_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->Pull(true);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf24_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf24_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf24_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf25_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf25_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf25_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->changes)->GetItemSource();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(__vwsn_value_);
@@ -286,24 +312,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf24_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf24_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf26_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf26_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf24_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf26_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SelectChange(::vl::__vwsn::UnboxWeak<::vl::Ptr<::gitview::IEntry>>(::vl::__vwsn::This(__vwsnthis_0->changes)->GetSelectedItem()));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf25_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf25_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf27_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf27_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf25_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf27_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_28)->GetItemSource();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueEnumerable>>(__vwsn_value_);
@@ -316,12 +342,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf26_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf26_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf28_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf28_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf26_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf28_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->commits)->GetItemSource();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueEnumerable>>(__vwsn_value_);
@@ -334,36 +360,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf27_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf27_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf27_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SelectCommit(::vl::__vwsn::UnboxWeak<::vl::Ptr<::gitview::IEntry>>(::vl::__vwsn::This(__vwsnthis_0->commits)->GetSelectedItem()));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf28_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf28_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf28_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->files)->GetItemSource();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueEnumerable>>(__vwsn_value_);
-		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->files)->SetItemSource(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf29_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf29_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -371,7 +367,7 @@ Closures
 
 	void __vwsnf29_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SelectFile(::vl::__vwsn::UnboxWeak<::vl::Ptr<::gitview::IEntry>>(::vl::__vwsn::This(__vwsnthis_0->files)->GetSelectedItem()));
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SelectCommit(::vl::__vwsn::UnboxWeak<::vl::Ptr<::gitview::IEntry>>(::vl::__vwsn::This(__vwsnthis_0->commits)->GetSelectedItem()));
 	}
 
 	//-------------------------------------------------------------------
@@ -401,6 +397,36 @@ Closures
 
 	void __vwsnf30_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->files)->GetItemSource();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueEnumerable>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->files)->SetItemSource(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf31_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf31_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf31_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SelectFile(::vl::__vwsn::UnboxWeak<::vl::Ptr<::gitview::IEntry>>(::vl::__vwsn::This(__vwsnthis_0->files)->GetSelectedItem()));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf32_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf32_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf32_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_39)->GetItemSource();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueEnumerable>>(__vwsn_value_);
 		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
@@ -412,12 +438,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf31_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf31_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf31_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->status)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -430,24 +456,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf32_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf32_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf34_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf34_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf32_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf34_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__(__vwsnthis_0)));
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(static_cast<::vl::presentation::controls::GuiControlHost*>(__vwsnthis_0->self), vl::Func(::vl_workflow_global::__vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__(__vwsnthis_0)));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__::__vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__::__vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__::operator()() const
+	void __vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__::operator()() const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->status)->SetCaret([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		::vl::__vwsn::This(__vwsnthis_0->status)->SetViewPosition([&](){ ::vl::presentation::Point __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(0); __vwsn_temp__.y = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
@@ -455,12 +481,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf34_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf34_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf36_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf36_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf34_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf36_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetRevision();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint>(__vwsn_value_);
@@ -473,12 +499,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf37_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf37_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()() const
+	void __vwsnf37_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()() const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->changes)->ClearSelection();
 		::vl::__vwsn::This(__vwsnthis_0->commits)->ClearSelection();
@@ -500,12 +526,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf36_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf36_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf38_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf38_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf36_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf38_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->Refresh();
 	}
@@ -530,28 +556,38 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_::__vwsnf4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_(::gitview::DiffLineTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	void __vwsnf4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto branch = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_item_);
-		return branch;
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->GetVisible();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1)->SetVisible(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::__vwsnf5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_::__vwsnf5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_(::gitview::DiffLineTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	void __vwsnf5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::gitview::IEntry>>(__vwsn_item_);
-		return ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(item.Obj())->GetChildren());
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3)->GetVisible();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_3)->SetVisible(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -563,8 +599,8 @@ Closures
 
 	::vl::WString __vwsnf6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::gitview::IEntry>>(__vwsn_item_);
-		return ::vl::__vwsn::This(item.Obj())->GetText();
+		auto branch = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_item_);
+		return branch;
 	}
 
 	//-------------------------------------------------------------------
@@ -574,15 +610,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiListItemTemplate* __vwsnf7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		{
-			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::gitview::IDiffLine>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
-			{
-				return static_cast<::vl::presentation::templates::GuiListItemTemplate*>(new ::gitview::DiffLineTemplate(::vl::__vwsn::Unbox<::vl::Ptr<::gitview::IDiffLine>>(__vwsn_viewModel_)));
-			}
-		}
-		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::gitview::IEntry>>(__vwsn_item_);
+		return ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(item.Obj())->GetChildren());
 	}
 
 	//-------------------------------------------------------------------
@@ -594,7 +625,7 @@ Closures
 
 	::vl::WString __vwsnf8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::gitview::IDiffLine>>(__vwsn_item_);
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::gitview::IEntry>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetText();
 	}
 
@@ -605,10 +636,15 @@ Closures
 	{
 	}
 
-	::vl::WString __vwsnf9_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::presentation::templates::GuiListItemTemplate* __vwsnf9_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::gitview::IEntry>>(__vwsn_item_);
-		return ::vl::__vwsn::This(item.Obj())->GetText();
+		{
+			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::gitview::IDiffLine>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			{
+				return static_cast<::vl::presentation::templates::GuiListItemTemplate*>(new ::gitview::DiffLineTemplate(::vl::__vwsn::Unbox<::vl::Ptr<::gitview::IDiffLine>>(__vwsn_viewModel_)));
+			}
+		}
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
 	}
 
 	//-------------------------------------------------------------------
@@ -624,7 +660,7 @@ Closures
 
 	void __vwsnc10_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetChangeDiff());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetCanPull();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -639,7 +675,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ChangeDiffChanged, ::vl::Func<void()>(this, &__vwsnc10_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CanPullChanged, ::vl::Func<void()>(this, &__vwsnc10_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -662,7 +698,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ChangeDiffChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CanPullChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>());
@@ -685,8 +721,8 @@ Closures
 
 	void __vwsnc11_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetCommits());
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Box(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetChanges());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(__vwsn_bind_activator_result_);
 	}
 
 	void __vwsnc11_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
@@ -700,7 +736,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CommitsChanged, ::vl::Func<void()>(this, &__vwsnc11_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ChangesChanged, ::vl::Func<void()>(this, &__vwsnc11_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -723,7 +759,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CommitsChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ChangesChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>());
@@ -746,7 +782,7 @@ Closures
 
 	void __vwsnc12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetFiles());
+		auto __vwsn_bind_activator_result_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetChangeDiff());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -761,7 +797,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->FilesChanged, ::vl::Func<void()>(this, &__vwsnc12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ChangeDiffChanged, ::vl::Func<void()>(this, &__vwsnc12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -784,7 +820,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->FilesChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ChangeDiffChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>());
@@ -807,7 +843,7 @@ Closures
 
 	void __vwsnc13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetHistoryDiff());
+		auto __vwsn_bind_activator_result_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetCommits());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -822,7 +858,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->HistoryDiffChanged, ::vl::Func<void()>(this, &__vwsnc13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CommitsChanged, ::vl::Func<void()>(this, &__vwsnc13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -845,7 +881,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->HistoryDiffChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CommitsChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>());
@@ -868,7 +904,7 @@ Closures
 
 	void __vwsnc14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetStatus();
+		auto __vwsn_bind_activator_result_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetFiles());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -883,7 +919,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->StatusChanged, ::vl::Func<void()>(this, &__vwsnc14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->FilesChanged, ::vl::Func<void()>(this, &__vwsnc14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -906,7 +942,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->StatusChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->FilesChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>());
@@ -929,7 +965,7 @@ Closures
 
 	void __vwsnc15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetRevision();
+		auto __vwsn_bind_activator_result_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetHistoryDiff());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -944,7 +980,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->RevisionChanged, ::vl::Func<void()>(this, &__vwsnc15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->HistoryDiffChanged, ::vl::Func<void()>(this, &__vwsnc15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -961,6 +997,128 @@ Closures
 	}
 
 	bool __vwsnc15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->HistoryDiffChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>());
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>();
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetStatus();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->StatusChanged, ::vl::Func<void()>(this, &__vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->StatusChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>());
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>();
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetRevision();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->RevisionChanged, ::vl::Func<void()>(this, &__vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -1162,39 +1320,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription(::gitview::DiffLineTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>();
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IDiffLine>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ((::vl::WString::Unmanaged(L"REPO: ") + ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetRepositoryName()) + ::vl::WString::Unmanaged(L" "));
+		auto __vwsn_bind_activator_result_ = (! ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetIsSeparator());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->RepositoryNameChanged, ::vl::Func<void()>(this, &__vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IDiffLine>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->IsSeparatorChanged, ::vl::Func<void()>(this, &__vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -1204,17 +1362,17 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->RepositoryNameChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->IsSeparatorChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>());
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IDiffLine>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -1223,39 +1381,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(::gitview::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription(::gitview::DiffLineTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>();
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IDiffLine>();
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetBranches());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetIsSeparator();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->BranchesChanged, ::vl::Func<void()>(this, &__vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IDiffLine>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->IsSeparatorChanged, ::vl::Func<void()>(this, &__vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -1265,17 +1423,17 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->BranchesChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->IsSeparatorChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>());
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IDiffLine>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -1295,7 +1453,7 @@ Closures
 
 	void __vwsnc6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetBranchIndex();
+		auto __vwsn_bind_activator_result_ = ((::vl::WString::Unmanaged(L"REPO: ") + ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetRepositoryName()) + ::vl::WString::Unmanaged(L" "));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -1310,7 +1468,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->BranchIndexChanged, ::vl::Func<void()>(this, &__vwsnc6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->RepositoryNameChanged, ::vl::Func<void()>(this, &__vwsnc6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -1333,7 +1491,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->BranchIndexChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->RepositoryNameChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>());
@@ -1356,7 +1514,7 @@ Closures
 
 	void __vwsnc7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetCanPull();
+		auto __vwsn_bind_activator_result_ = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetBranches());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -1371,7 +1529,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CanPullChanged, ::vl::Func<void()>(this, &__vwsnc7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->BranchesChanged, ::vl::Func<void()>(this, &__vwsnc7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -1394,7 +1552,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CanPullChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->BranchesChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>());
@@ -1417,7 +1575,7 @@ Closures
 
 	void __vwsnc8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetCanPull();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetBranchIndex();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -1432,7 +1590,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CanPullChanged, ::vl::Func<void()>(this, &__vwsnc8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->BranchIndexChanged, ::vl::Func<void()>(this, &__vwsnc8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -1455,7 +1613,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CanPullChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->BranchIndexChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>());
@@ -1478,8 +1636,8 @@ Closures
 
 	void __vwsnc9_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Box(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetChanges());
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(__vwsn_bind_activator_result_);
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetCanPull();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc9_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
@@ -1493,7 +1651,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::gitview::IGitViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ChangesChanged, ::vl::Func<void()>(this, &__vwsnc9_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CanPullChanged, ::vl::Func<void()>(this, &__vwsnc9_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -1516,7 +1674,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ChangesChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->CanPullChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = ::vl::Ptr<::gitview::IGitViewModel>());
@@ -1538,6 +1696,9 @@ namespace gitview
 	{
 		(this->self = __vwsn_this_);
 		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		{
+			::vl::__vwsn::This(this->self)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.y = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
+		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
@@ -1562,6 +1723,20 @@ namespace gitview
 		{
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::TuiBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::TuiBorderElement>()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#808080")));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_4));
+		}
+		{
+			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
+		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf1_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_(this)));
@@ -1577,6 +1752,16 @@ namespace gitview
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf3_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
 	}
 
 	DiffLineTemplateConstructor::DiffLineTemplateConstructor()
@@ -1585,6 +1770,8 @@ namespace gitview
 		, __vwsn_precompile_0(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>())
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::elements::TuiBorderElement>())
 	{
 	}
 
@@ -1681,7 +1868,7 @@ Class (::gitview::MainWindowConstructor)
 			(this->__vwsn_precompile_7 = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetVerticalAlwaysVisible(false);
@@ -1690,12 +1877,18 @@ Class (::gitview::MainWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetHorizontalAlwaysVisible(false);
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlt(::vl::WString::Unmanaged(L"B"));
+		}
+		{
 			(this->branches = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_7)));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"branches"), ::vl::__vwsn::Box(this->branches));
 		}
 		(this->__vwsn_precompile_8 = ::vl::__vwsn::This(this->branches)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(24); __vwsn_temp__.y = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->branches)->SetAlt(::vl::WString::Unmanaged(L"B"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->branches)->GetBoundsComposition()));
@@ -1733,6 +1926,9 @@ Class (::gitview::MainWindowConstructor)
 			(this->__vwsn_precompile_14 = new ::vl::presentation::controls::GuiToolstripButton(::vl::presentation::theme::ThemeName::MenuItemButton));
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlt(::vl::WString::Unmanaged(L"F"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetText(::vl::WString::Unmanaged(L"FETCH ORIGIN"));
 		}
 		{
@@ -1740,6 +1936,9 @@ Class (::gitview::MainWindowConstructor)
 		}
 		{
 			(this->__vwsn_precompile_15 = new ::vl::presentation::controls::GuiToolstripButton(::vl::presentation::theme::ThemeName::MenuItemButton));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAlt(::vl::WString::Unmanaged(L"B"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetText(::vl::WString::Unmanaged(L"FETCH ORIGIN and REBASE"));
@@ -1787,6 +1986,9 @@ Class (::gitview::MainWindowConstructor)
 			(this->__vwsn_precompile_21 = new ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl));
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_21)->SetAlt(::vl::WString::Unmanaged(L"C"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_21)->SetText(::vl::WString::Unmanaged(L"CHANGES"));
 		}
 		(this->__vwsn_precompile_22 = new ::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition());
@@ -1809,16 +2011,19 @@ Class (::gitview::MainWindowConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"changes"), ::vl::__vwsn::Box(this->changes));
 		}
 		{
-			::vl::__vwsn::This(this->changes)->SetChildrenProperty(vl::Func(::vl_workflow_global::__vwsnf5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(this->changes)->SetChildrenProperty(vl::Func(::vl_workflow_global::__vwsnf7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->changes)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(this->changes)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->changes)->SetVerticalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->changes)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->changes)->SetAlt(::vl::WString::Unmanaged(L"F"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->changes)->GetBoundsComposition()));
@@ -1842,16 +2047,19 @@ Class (::gitview::MainWindowConstructor)
 			(this->__vwsn_precompile_28 = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_28)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_28)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf9_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_28)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_28)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf10_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_28)->SetVerticalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_28)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_28)->SetAlt(::vl::WString::Unmanaged(L"D"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_28)->GetBoundsComposition()));
@@ -1871,6 +2079,9 @@ Class (::gitview::MainWindowConstructor)
 		}
 		{
 			(this->__vwsn_precompile_29 = new ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_29)->SetAlt(::vl::WString::Unmanaged(L"H"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_29)->SetText(::vl::WString::Unmanaged(L"HISTORY"));
@@ -1895,13 +2106,16 @@ Class (::gitview::MainWindowConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commits"), ::vl::__vwsn::Box(this->commits));
 		}
 		{
-			::vl::__vwsn::This(this->commits)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf9_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(this->commits)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf11_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->commits)->SetVerticalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->commits)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->commits)->SetAlt(::vl::WString::Unmanaged(L"M"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_32.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->commits)->GetBoundsComposition()));
@@ -1926,13 +2140,16 @@ Class (::gitview::MainWindowConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"files"), ::vl::__vwsn::Box(this->files));
 		}
 		{
-			::vl::__vwsn::This(this->files)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf10_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(this->files)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->files)->SetVerticalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->files)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->files)->SetAlt(::vl::WString::Unmanaged(L"F"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_35.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->files)->GetBoundsComposition()));
@@ -1956,16 +2173,19 @@ Class (::gitview::MainWindowConstructor)
 			(this->__vwsn_precompile_39 = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_39)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf11_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_39)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_39)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_39)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_39)->SetVerticalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_39)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_39)->SetAlt(::vl::WString::Unmanaged(L"D"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_38.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_39)->GetBoundsComposition()));
@@ -2008,6 +2228,9 @@ Class (::gitview::MainWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_41)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(0); __vwsn_temp__.y = static_cast<::vl::vint>(5); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->status)->SetAlt(::vl::WString::Unmanaged(L"S"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_40.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->status)->GetBoundsComposition()));
 		}
 		{
@@ -2017,107 +2240,107 @@ Class (::gitview::MainWindowConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->branches)->SelectedIndexChanged, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_13)->Clicked, __vwsn_event_handler_);
-		}
-		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf18_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf19_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_14)->Clicked, __vwsn_event_handler_);
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf18_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->branches)->SelectedIndexChanged, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf19_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_13)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc9_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf20_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf21_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_15)->Clicked, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf22_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_16)->Clicked, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc9_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf23_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf24_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->changes)->SelectionChanged, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_14)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc10_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf22_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf23_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_15)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf24_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_16)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc11_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf25_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc11_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf26_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf27_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commits)->SelectionChanged, __vwsn_event_handler_);
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf26_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->changes)->SelectionChanged, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf27_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf28_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf29_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->files)->SelectionChanged, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->commits)->SelectionChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf30_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf31_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf32_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->status)->TextChanged, __vwsn_event_handler_);
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf31_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->files)->SelectionChanged, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf34_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf32_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf34_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->status)->TextChanged, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf36_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf37_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->RevisionChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf36_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf38_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->WindowOpened, __vwsn_event_handler_);
 		}
 		::vl::__vwsn::This(this->__vwsn_precompile_22)->BuildLayout();

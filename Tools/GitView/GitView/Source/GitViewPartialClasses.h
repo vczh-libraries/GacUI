@@ -49,13 +49,15 @@ namespace vl_workflow_global
 	struct __vwsnf30_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 	struct __vwsnf31_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 	struct __vwsnf32_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
-	struct __vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__;
+	struct __vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 	struct __vwsnf34_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
-	struct __vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
+	struct __vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__;
 	struct __vwsnf36_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
+	struct __vwsnf37_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
+	struct __vwsnf38_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 	struct __vwsnf3_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_;
-	struct __vwsnf4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
-	struct __vwsnf5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
+	struct __vwsnf4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_;
+	struct __vwsnf5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_;
 	struct __vwsnf6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 	struct __vwsnf7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 	struct __vwsnf8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
@@ -66,11 +68,13 @@ namespace vl_workflow_global
 	class __vwsnc13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc1_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc2_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc3_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
@@ -92,9 +96,13 @@ namespace gitview
 		friend class ::vl_workflow_global::__vwsnc1_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc2_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc3_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf1_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf2_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf3_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DiffLineTemplateConstructor>;
 #endif
@@ -104,6 +112,8 @@ namespace gitview
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::TuiBorderElement> __vwsn_precompile_4;
 		void __vwsn_gitview_DiffLineTemplate_Initialize(::gitview::DiffLineTemplate* __vwsn_this_);
 	public:
 		DiffLineTemplateConstructor();
@@ -115,9 +125,13 @@ namespace gitview
 		friend class ::vl_workflow_global::__vwsnc1_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc2_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc3_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf1_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf2_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf3_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DiffLineTemplate>;
 #endif
@@ -139,6 +153,8 @@ namespace gitview
 		::vl::Event<void()> TextChanged;
 		virtual ::vl::presentation::Color GetBackground() = 0;
 		::vl::Event<void()> BackgroundChanged;
+		virtual bool GetIsSeparator() = 0;
+		::vl::Event<void()> IsSeparatorChanged;
 	};
 
 	class IEntry : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IEntry>
@@ -197,8 +213,8 @@ namespace gitview
 		friend class ::vl_workflow_global::__vwsnc13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
@@ -226,12 +242,12 @@ namespace gitview
 		friend struct ::vl_workflow_global::__vwsnf30_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf31_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf32_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf34_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__;
 		friend struct ::vl_workflow_global::__vwsnf36_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf37_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf38_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
@@ -304,8 +320,8 @@ namespace gitview
 		friend class ::vl_workflow_global::__vwsnc13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
@@ -333,12 +349,12 @@ namespace gitview
 		friend struct ::vl_workflow_global::__vwsnf30_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf31_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf32_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf34_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__;
 		friend struct ::vl_workflow_global::__vwsnf36_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf37_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf38_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_;
@@ -392,7 +408,7 @@ Closures
 
 		__vwsnf11_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiListItemTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -410,7 +426,7 @@ Closures
 
 		__vwsnf13_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		::vl::presentation::templates::GuiListItemTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -419,7 +435,7 @@ Closures
 
 		__vwsnf14_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf15_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -437,7 +453,7 @@ Closures
 
 		__vwsnf16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -446,7 +462,7 @@ Closures
 
 		__vwsnf17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf18_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -455,7 +471,7 @@ Closures
 
 		__vwsnf18_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
 	struct __vwsnf19_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -500,7 +516,7 @@ Closures
 
 		__vwsnf22_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf23_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -509,7 +525,7 @@ Closures
 
 		__vwsnf23_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
 	struct __vwsnf24_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -536,7 +552,7 @@ Closures
 
 		__vwsnf26_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
 	struct __vwsnf27_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -545,7 +561,7 @@ Closures
 
 		__vwsnf27_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf28_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -590,7 +606,7 @@ Closures
 
 		__vwsnf31_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
 	struct __vwsnf32_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -599,16 +615,16 @@ Closures
 
 		__vwsnf32_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__
+	struct __vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
 	{
 		::gitview::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__(::gitview::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf33_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()() const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf34_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -617,14 +633,14 @@ Closures
 
 		__vwsnf34_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
+	struct __vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__
 	{
 		::gitview::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf35_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()() const;
 	};
@@ -634,6 +650,24 @@ Closures
 		::gitview::MainWindowConstructor* __vwsnthis_0;
 
 		__vwsnf36_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf37_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
+	{
+		::gitview::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf37_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf38_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
+	{
+		::gitview::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf38_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
@@ -647,22 +681,22 @@ Closures
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
+	struct __vwsnf4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_
 	{
-		::gitview::MainWindowConstructor* __vwsnthis_0;
+		::gitview::DiffLineTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_(::gitview::DiffLineTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
+	struct __vwsnf5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_
 	{
-		::gitview::MainWindowConstructor* __vwsnthis_0;
+		::gitview::DiffLineTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize_(::gitview::DiffLineTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::Ptr<::vl::reflection::description::IValueEnumerable> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -680,7 +714,7 @@ Closures
 
 		__vwsnf7_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiListItemTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::Ptr<::vl::reflection::description::IValueEnumerable> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_
@@ -698,7 +732,7 @@ Closures
 
 		__vwsnf9_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(::gitview::MainWindowConstructor* __vwsnctorthis_0);
 
-		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		::vl::presentation::templates::GuiListItemTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	class __vwsnc10_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
@@ -809,6 +843,42 @@ Closures
 		bool Close() override;
 	};
 
+	class __vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::gitview::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc16_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(::gitview::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::Ptr<::gitview::IGitViewModel> __vwsn_bind_cache_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::gitview::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc17_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(::gitview::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::Ptr<::gitview::IGitViewModel> __vwsn_bind_cache_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
 	class __vwsnc1_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
@@ -863,14 +933,14 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::gitview::MainWindowConstructor* __vwsnthis_0;
+		::gitview::DiffLineTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(::gitview::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnc4_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription(::gitview::DiffLineTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::Ptr<::gitview::IGitViewModel> __vwsn_bind_cache_0;
+		::vl::Ptr<::gitview::IDiffLine> __vwsn_bind_cache_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
@@ -881,14 +951,14 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::gitview::MainWindowConstructor* __vwsnthis_0;
+		::gitview::DiffLineTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc5_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription(::gitview::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnc5_GitView_gitview_DiffLineTemplateConstructor___vwsn_gitview_DiffLineTemplate_Initialize__vl_reflection_description_IValueSubscription(::gitview::DiffLineTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::Ptr<::gitview::IGitViewModel> __vwsn_bind_cache_0;
+		::vl::Ptr<::gitview::IDiffLine> __vwsn_bind_cache_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;

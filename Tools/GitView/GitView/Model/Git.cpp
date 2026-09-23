@@ -159,7 +159,9 @@ namespace gitview
 			CHECK_ERROR(hunk->removed.Count() == hunk->oldCount && hunk->added.Count() == hunk->newCount, L"Incomplete Git hunk.");
 			if (hunk->newStart < cursor || hunk->newStart + hunk->newCount > content.Count())
 				throw Exception(WString::Unmanaged(L"File changed while reading its diff. REFRESH and select it again."));
-			for (vint j = (cursor > hunk->newStart - 3 ? cursor : hunk->newStart - 3); j < hunk->newStart; j++) append(j, content[j], 0);
+			auto start = cursor > hunk->newStart - 3 ? cursor : hunk->newStart - 3;
+			if (i > 0 && start > cursor) lines.Add({ .separator = true });
+			for (vint j = start; j < hunk->newStart; j++) append(j, content[j], 0);
 			for (auto [line, j] : indexed(hunk->removed)) append(hunk->oldStart + j, line, -1);
 			for (auto [line, j] : indexed(hunk->added))
 			{
@@ -244,9 +246,9 @@ GitRepository
 		if (exists.exitCode == 1 && branch == CurrentBranch()) return; // Unborn branch.
 		if (exists.exitCode != 0) throw Exception(WString::Unmanaged(L"Cannot resolve branch: ") + branch);
 		List<WString> records;
-		SplitRecords(Read({ WString::Unmanaged(L"log"), WString::Unmanaged(L"-z"), WString::Unmanaged(L"--format=%H%x00%s  (%an)%x00%cI"), TrimLineEnding(exists.output), WString::Unmanaged(L"--") }), 0, records);
-		if (records.Count() % 3) throw Exception(WString::Unmanaged(L"Malformed Git history."));
-		for (vint i = 0; i < records.Count(); i += 3) commits.Add({ records[i], records[i + 1], records[i + 2] });
+		SplitRecords(Read({ WString::Unmanaged(L"log"), WString::Unmanaged(L"-z"), WString::Unmanaged(L"--format=%H%x00%s%x00%an%x00%cI"), TrimLineEnding(exists.output), WString::Unmanaged(L"--") }), 0, records);
+		if (records.Count() % 4) throw Exception(WString::Unmanaged(L"Malformed Git history."));
+		for (vint i = 0; i < records.Count(); i += 4) commits.Add({ records[i], records[i + 1], records[i + 2], records[i + 3] });
 	}
 
 	void GitRepository::CommitFiles(const WString& commit, List<GitFile>& files) const

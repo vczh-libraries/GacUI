@@ -51,6 +51,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBackground);
 				}
+				bool GetIsSeparator() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetIsSeparator);
+				}
 				::vl::WString GetText() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetText);

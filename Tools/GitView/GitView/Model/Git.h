@@ -32,6 +32,7 @@ namespace gitview
 	{
 		vl::WString						hash;
 		vl::WString						text;
+		vl::WString						author;
 		vl::WString						time;
 	};
 
@@ -39,6 +40,7 @@ namespace gitview
 	{
 		vl::WString						text;
 		vl::vint						change = 0;
+		bool							separator = false;
 	};
 
 	extern void							SplitRecords(const vl::WString& text, wchar_t separator, vl::collections::List<vl::WString>& records);

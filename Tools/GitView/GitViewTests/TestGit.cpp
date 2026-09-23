@@ -110,13 +110,45 @@ TEST_FILE
 	{
 		List<DiffLine> lines;
 		ParseDiff(L"@@ -2 +2 @@\n-old2\n+2\n@@ -6 +6 @@\n-old6\n+6\n@@ -18 +18 @@\n-old18\n+18\n", L"1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n", lines);
-		TEST_ASSERT(lines.Count() == 19);
+		TEST_ASSERT(lines.Count() == 20);
 		TEST_ASSERT(lines[0].text == L"   1 1");
 		TEST_ASSERT(lines[5].text == L"   5 5" && lines[5].change == 0);
 		TEST_ASSERT(lines[6].text == L"   6 old6" && lines[6].change == -1);
 		TEST_ASSERT(lines[10].text == L"   9 9");
-		TEST_ASSERT(lines[11].text == L"  15 15");
-		TEST_ASSERT(lines[18].text == L"  21 21");
+		TEST_ASSERT(lines[11].separator && lines[11].text.Length() == 0 && lines[11].change == 0);
+		TEST_ASSERT(lines[12].text == L"  15 15");
+		TEST_ASSERT(lines[19].text == L"  21 21");
+		for (auto [line, i] : indexed(lines)) TEST_ASSERT(line.separator == (i == 11));
+		DiffLineModel separator(lines[11]);
+		TEST_ASSERT(separator.GetIsSeparator() && separator.GetBackground() == vl::presentation::Color(0, 0, 0));
+	});
+
+	TEST_CASE(L"Touching diff contexts stay joined across replacements, insertions and deletions")
+	{
+		const wchar_t* patches[] =
+		{
+			L"@@ -2 +2 @@\n-old2\n+2\n@@ -9 +9 @@\n-old9\n+9\n",
+			L"@@ -1,0 +2,2 @@\n+2\n+3\n@@ -8 +10 @@\n-old10\n+10\n",
+			L"@@ -2,2 +1,0 @@\n-old2\n-old3\n@@ -10 +8 @@\n-old10\n+8\n",
+		};
+		for (auto patch : patches)
+		{
+			List<DiffLine> lines;
+			ParseDiff(WString::Unmanaged(patch), L"1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n", lines);
+			TEST_ASSERT(lines.Count() == 14);
+			for (auto&& line : lines) TEST_ASSERT(!line.separator);
+		}
+	});
+
+	TEST_CASE(L"Even one omitted source line separates diff groups")
+	{
+		List<DiffLine> lines;
+		ParseDiff(L"@@ -2 +2 @@\n-old2\n+2\n@@ -10 +10 @@\n-old10\n+10\n", L"1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n", lines);
+		TEST_ASSERT(lines.Count() == 15);
+		TEST_ASSERT(lines[5].text == L"   5 5");
+		TEST_ASSERT(lines[6].separator);
+		TEST_ASSERT(lines[7].text == L"   7 7");
+		for (auto [line, i] : indexed(lines)) TEST_ASSERT(line.separator == (i == 6));
 	});
 
 	TEST_CASE(L"Diff rendering handles empty files, no final newline, CRLF and large line numbers")
@@ -185,7 +217,7 @@ TEST_FILE
 		TEST_ASSERT(repo.Pull(L"main", true).exitCode != 0);
 		repo.History(L"main", history);
 		TEST_ASSERT(history.Count() == 1);
-		TEST_ASSERT(history[0].text == L"Test commit  (GitView Test)" && history[0].time.Length() > 0);
+		TEST_ASSERT(history[0].text == L"Test commit" && history[0].author == L"GitView Test" && history[0].time.Length() > 0);
 		List<GitFile> rootFiles;
 		repo.CommitFiles(history[0].hash, rootFiles);
 		TEST_ASSERT(rootFiles.Count() == 1 && rootFiles[0].path == L"tracked.txt");
@@ -200,12 +232,15 @@ TEST_FILE
 		auto group = UnboxValue<Ptr<IEntry>>(model.GetChanges()->GetChildren()->Get(0));
 		model.SelectChange(UnboxValue<Ptr<IEntry>>(group->GetChildren()->Get(0)));
 		TEST_ASSERT(model.GetChangeDiff()->GetCount() > 0);
-		model.SelectCommit(UnboxValue<Ptr<IEntry>>(model.GetCommits()->Get(0)));
+		auto commit = UnboxValue<Ptr<IEntry>>(model.GetCommits()->Get(0));
+		TEST_ASSERT(commit->GetText() == L"Test commit");
+		model.SelectCommit(commit);
 		TEST_ASSERT(model.GetFiles()->GetCount() == 1);
-		TEST_ASSERT(Contains(model.GetStatus(), history[0].hash) && Contains(model.GetStatus(), history[0].time));
+		auto details = history[0].hash + L" (GitView Test) " + history[0].time;
+		TEST_ASSERT(model.GetStatus() == details);
 		model.SelectFile(UnboxValue<Ptr<IEntry>>(model.GetFiles()->Get(0)));
 		TEST_ASSERT(model.GetHistoryDiff()->GetCount() > 0);
-		TEST_ASSERT(Contains(model.GetStatus(), history[0].hash) && Contains(model.GetStatus(), history[0].time) && Contains(model.GetStatus(), L"tracked.txt"));
+		TEST_ASSERT(model.GetStatus() == details + L"\r\nA tracked.txt");
 		model.SetBranchIndex(1);
 		TEST_ASSERT(!model.GetCanPull() && repo.CurrentBranch() == L"main");
 		TEST_ASSERT(model.GetFiles()->GetCount() == 0 && model.GetHistoryDiff()->GetCount() == 0);

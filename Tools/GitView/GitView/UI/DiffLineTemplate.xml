@@ -1,9 +1,12 @@
 <Instance ref.CodeBehind="false" ref.Class="gitview::DiffLineTemplate">
   <ref.Parameter Name="ViewModel" Class="gitview::IDiffLine"/>
-  <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+  <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="y:1">
     <SolidBackground Color-bind="ViewModel.Background"/>
-    <Bounds AlignmentToParent="left:0 top:0 right:-1 bottom:0" MinSizeLimitation="LimitToElement">
+    <Bounds Visible-bind="not ViewModel.IsSeparator" AlignmentToParent="left:0 top:0 right:-1 bottom:0" MinSizeLimitation="LimitToElement">
       <SolidLabel Text-bind="ViewModel.Text" Font-bind="self.Font" Color="#FFFFFF"/>
+    </Bounds>
+    <Bounds Visible-bind="ViewModel.IsSeparator" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+      <TuiBorder Color="#808080"/>
     </Bounds>
   </TextListItemTemplate>
 </Instance>

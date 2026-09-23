@@ -31,6 +31,7 @@ Entry / DiffLineModel
 
 	DiffLineModel::DiffLineModel(const DiffLine& value) : line(value) {}
 	WString DiffLineModel::GetText() { return line.text; }
+	bool DiffLineModel::GetIsSeparator() { return line.separator; }
 	Color DiffLineModel::GetBackground()
 	{
 		return line.change > 0 ? Color(0, 64, 0) : line.change < 0 ? Color(96, 0, 0) : Color(0, 0, 0);
@@ -86,7 +87,7 @@ GitViewModel
 				entry->file.kind = FileKind::Commit;
 				entry->text = record.text;
 				entry->commit = record.hash;
-				entry->details = record.hash + WString::Unmanaged(L"  ") + record.time;
+				entry->details = record.hash + WString::Unmanaged(L" (") + record.author + WString::Unmanaged(L") ") + record.time;
 				commits->Add(BoxValue(Ptr<IEntry>(entry)));
 			}
 		}

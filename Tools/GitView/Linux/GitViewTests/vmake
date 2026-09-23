@@ -1,0 +1,17 @@
+<#
+CPP_TARGET=./Bin/GitViewTests
+CPP_VCXPROJS=(
+    "../../Gaclib/Gaclib.vcxproj"
+    "../../GitView/GitView.vcxproj"
+    "../../GitViewTests/GitViewTests.vcxproj"
+    )
+CPP_REMOVES=(
+    "../../../../Import/Vlpp.Windows.cpp"
+    "../../../../Import/VlppOS.Windows.cpp"
+    "../../../../Release/GacUI.Windows.cpp"
+    "../../GitView/Model/Command.Windows.cpp"
+    )
+CPP_COMPILE_OPTIONS='-DVCZH_DEBUG_NO_REFLECTION -I ../../../../Import -I ../../../../Release'
+TARGETS=("${CPP_TARGET}")
+#>
+<#@ include "${VCPROOT}/vl/vmake-cpp" #>

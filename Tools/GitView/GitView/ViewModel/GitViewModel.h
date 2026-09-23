@@ -27,6 +27,7 @@ namespace gitview
 										DiffLineModel(const DiffLine& value);
 		vl::WString						GetText() override;
 		vl::presentation::Color			GetBackground() override;
+		bool							GetIsSeparator() override;
 	};
 
 	class GitViewModel : public vl::Object, public virtual IGitViewModel
