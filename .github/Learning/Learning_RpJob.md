@@ -2,6 +2,8 @@
 
 ## Shared
 
+- GacJS document text can be inside spans, so a helper restricted to childless `div` elements can miss correctly rendered editor text. Locate the Search and document containers from fresh geometry and assert each container's exact text, including bracket input and retained markers.
+
 - Audit shortcut checks separately before and after renderer replacement. A repeated mouse payload or retained editor marker does not prove that replacement-window shortcut activation was repeated; require fresh canonical labels and the exact Ctrl+Q dialog on the replacement renderer.
 
 - A hosted dialog can expose its exact text before its button bounds settle. Compare the target button bounds across consecutive fresh reads before clicking. In five native RPT Document repetitions, the initial OK rectangle moved upward by 14 pixels; one click at the stable rectangle dismissed every dialog. A stale first rectangle caused the earlier apparent missed clicks.

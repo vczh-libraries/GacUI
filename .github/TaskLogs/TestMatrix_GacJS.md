@@ -1,49 +1,52 @@
-# Test Matrix Card 2026-09-21 12:50:00 -07:00
+# Test Matrix Card 2026-09-22 22:38:15 -07:00
 
 ## Test Matrix
 
 | Test Item | 1st |
 | --- | --- |
-| [Windows][`/RPT`][`/Http`] | 13:19:14 |
-| [Windows][`/RPT`][`/MiniHttp`] | 14:06:44 |
-| [Windows][`/FCT`][`/Http`] | 13:29:00 |
-| [Windows][`/FCT`][`/MiniHttp`] | 13:57:59 |
-| [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over network] | 14:15:27 (fixed) |
-| [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] | 14:17:05 |
-| [Windows][`/RVMT`][`/Http`][GacJS browser host `?rvmhost`] | 14:17:35 |
-| [Windows][`/RVMT`][`/Http`][GacJS Node `cli.js` over network] | 14:18:15 |
-| [Windows][`/RVMT`][`/Http`][GacJS Node SEA over stdio `/Cli:<path>`] | 14:18:46 |
-| [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over network] | 14:19:34 |
-| [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] | 14:20:11 |
-| [Windows][`/RVMT`][`/MiniHttp`][GacJS browser host `?rvmhost`] | 14:20:45 |
-| [Windows][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over network] | 14:21:23 |
-| [Windows][`/RVMT`][`/MiniHttp`][GacJS Node SEA over stdio `/Cli:<path>`] | 14:22:16 |
+| [Windows][`/RPT`][`/Http`] | 22:50:42 |
+| [Windows][`/RPT`][`/MiniHttp`] | 22:57:41 |
+| [Windows][`/FCT`][`/Http`] | 22:58:16 |
+| [Windows][`/FCT`][`/MiniHttp`] | 23:00:38 |
+| [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over network] | 22:54:44 |
+| [Windows][`/RVMT`][`/Http`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] | 22:54:59 |
+| [Windows][`/RVMT`][`/Http`][GacJS browser host `?rvmhost`] | 22:55:12 |
+| [Windows][`/RVMT`][`/Http`][GacJS Node `cli.js` over network] | 22:55:30 |
+| [Windows][`/RVMT`][`/Http`][GacJS Node SEA over stdio `/Cli:<path>`] | 22:55:44 |
+| [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over network] | 22:55:56 |
+| [Windows][`/RVMT`][`/MiniHttp`][Native `RemotingTest_RvmHost` over stdio `/Cli:<path>`] | 22:56:15 |
+| [Windows][`/RVMT`][`/MiniHttp`][GacJS browser host `?rvmhost`] | 22:56:35 |
+| [Windows][`/RVMT`][`/MiniHttp`][GacJS Node `cli.js` over network] | 22:56:53 |
+| [Windows][`/RVMT`][`/MiniHttp`][GacJS Node SEA over stdio `/Cli:<path>`] | 22:57:11 |
 
 ## Issues Found and Fix
 
-### `/FCT` `/Http` shortcut assertion
+## Verification scope
 
-The initial checked-in browser suite failed to find `Ctrl+Q` immediately after selecting Window Manager. Five focused repetitions and the clean browser retry passed without a source change, so the assertion was not reproduced.
+Requested: GacJS on Windows and local CppTest only. All other native targets are excluded; their result cells remain blank.
 
-### Windows automation `/Http` blocked-loss shutdown
+## Build and test progress
 
-The blocked-loss failure reproduced twice: after a pending Controls read, the remoting renderer entered its fatal error path, but Core did not exit. CDB showed `HttpServerApi::Stop` waiting for HTTP callbacks while the Controls worker waited synchronously for UI work after the fatal event loop ended. The fix makes the Windows automation GET respond asynchronously with shared shutdown cancellation. A fresh Debug x64 rebuild passed with zero warnings and errors, and two exact post-fix blocked-loss reruns delivered one error and one page error before Core exited 3 near the five-second deadline.
+- GacUI Debug x64 build: zero warnings/errors. GacJS import, codegen and build passed.
+- Nine non-entry GacJS package test runs and the two entry query-session tests passed.
+- IIS-served index.html, index.js and global.css match the fresh build.
+- Regenerated snapshot diff is stable across another codegen pass (SHA-256 1728e53358dff665be669c4c7474123b8d675af66fba0a17f4d1841dd436172c); all nine changed imported snapshot files match GacUI originals after newline normalization.
+- Checked-in browser suite passed: 10 files / 55 tests. CppTest_Rvm compatibility cases were explicitly excluded.
 
-## Verification progress
+## Supplemental UI checkpoints
 
-- Fresh GacUI Debug x64 solution build passed with zero warnings and errors. GacJS import, codegen, and build passed; IIS assets at port 8896 match the fresh output.
-- Codegen idempotence passed: 5,424 generated files kept the same SHA-256 aggregate, and all 204 changed or new imported snapshots match the GacUI source snapshots after newline normalization.
-- Workflow RPC conformance retry passed all 9 tests. A clean website-entry retry passed 11 live browser files / 56 tests plus 2 portable query-session tests; the initial browser assertions did not reproduce.
-- UnitTest passed 93/93 files and 1,798/1,798 cases; the final Execute.log has no post-summary leak dump.
-- All four supplemental FCT/RPT UI rows completed their available browser SOP operations. Final combined `yarn test` passed: all 10 packages, 11 live browser files, and 58 tests.
+- RPT /Http: exact initial/click marker, three populated DataGrid rows and clear, Document dialog, all three browser shortcut dialogs before/after two renderer handoffs, 200 mouse/modifier events, matching label styles, normal File/Close exit 0. Fresh fatal phase delivered one exact Core error package and one matching page error, displayed the fatal mask and exited 3.
 
-## Unavailable physical-input coverage
+- RPT /MiniHttp: complete normal SOP, all three browser shortcut dialogs before/after two handoffs, 200 mouse/modifier events, DataGrid add/clear, Document modal and normal exit 0. Fresh fatal run produced one exact Core error, one matching page error, fatal mask and exit 3.
 
-The Windows desktop-control API returned access denied for cursor/focus access. Headless browser keyboard and protocol-payload checks do not establish real Windows global-hot-key dispatch, so physical global-hot-key coverage remains unverified for applicable rows.
+- FCT /Http and /MiniHttp: both lists added exactly 0–9 and cleared; exact Search/rich-editor markers persisted through tabs and renderer takeover; Hello[Ab]{Cd} and outgoing bracket key codes 219/221 passed; all three browser shortcut dialogs and 200 mouse/modifier events passed per transport; Force Exit ended Core with exit 0.
+- All ten RVM rows passed normal Translate, renderer takeover and subsequent Translate, second-host rejection for the six network/browser rows, and normal exit 0. The four stdio rows additionally posted exact !Exit and verified child reaping. All 20 host-loss runs delivered exactly one !Error and one matching page error with RemotingTest_RvmHost disconnected., then exited 3. Observed completion ranged from 89 to 5102 ms.
 
-## Supplemental checkpoints
+## Evidence and coverage notes
 
-- RPT `/Http` passed the normal feature path, three-row DataGrid/clear, Document modal, both local shortcut dialogs, two state-preserving renderer takeovers, and File/Close with Core exit 0. A fresh fatal run showed one exact Core `!Error`, one matching page error, the expected error mask, and exit 3.
-- FCT `/MiniHttp` passed Lists add/clear, exact editor markers, bracket codes 219/221 and text restoration, local shortcut dialogs, and five-pattern mouse payloads before and after renderer replacement. Active Control markers survived replacement; visible Force Exit ended Core with exit 0.
-- RPT `/MiniHttp` passed the DataGrid/Document path, five-pattern mouse payloads, two state-preserving renderer takeovers, local shortcut dialogs after visible activation, and File/Close with Core exit 0. After the second handoff, keyboard-only Ctrl+Q showed no dialog until a harmless visible click; after activation both local shortcut dialogs passed, Controls had no subwindows, and no modifiers remained held. A separate fatal run showed one exact Core `!Error`, one matching page error and the expected error mask, then exited 3.
-- All 10 supplemental RVM rows passed for native, native CLI, browser host, Node, and SEA hosts on `/Http` and `/MiniHttp`. Normal/replacement cases exited 0; CLI/SEA exact-`!Exit` cases reaped their child; idle-loss and blocked-loss each produced one Core error, one matching page error, and exit 3. Browser-host blocked loss held both the `Hello, ReadyX!` Translate response and replacement poll before host stop. Phase evidence is in the helper JSONL log.
+- Detailed local logs: %TEMP%/GacUI-rpWindows-20260922-browser.log, -unit-js.log, -ui.jsonl and -rvm-supplement.jsonl.
+- Chromium keyboard/CDP input verified browser shortcut and mouse delivery. GacJS maps the global shortcut to IOGlobalShortcutKey while its page is active; these checks do not establish OS-wide browser hotkey registration. The actual Windows global-hot-key path was verified in local CppTest.
+- The temporary walkthrough initially read confirmation bounds before modal layout settled and ignored paragraph span text when locating editor markers. Fresh settled geometry and exact editor-container text resolved these procedure errors. No application source fix was needed.
+
+- Stale-input audit: all four RPT/FCT transport rows held an old renderer button-down POST across takeover, then released it after the new renderer showed Right button up!. The detached renderer settled on its success mask and the new state remained unchanged. Fresh FCT replacement renderers also displayed exact Hello[Ab]{Cd} with key codes 219/221 on both transports.
+- Final cleanup found no owned Core, RVM host, CppTest or SEA process and no listener on protocol port 8888.
