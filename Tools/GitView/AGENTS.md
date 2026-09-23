@@ -40,6 +40,8 @@ UI below is for demonstration only, you should use GacUI with TUI instead of act
 |    all untracked files    |                                                      |
 |                           | <-- here is a draggable splitter                     |
 +---------------------------+------------------------------------------------------+
+| (readonly text box to display extra information for selected items)              |
++----------------------------------------------------------------------------------+
 ```
 
 ### Main Window (HISTORY)
