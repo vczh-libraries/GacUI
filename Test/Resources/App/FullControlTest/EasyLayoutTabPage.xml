@@ -85,7 +85,7 @@
                 <ez:Splitter/>
                 <ez:Column CellSpan="2"><Label Text-bind="editor.Text"/></ez:Column>
               </ez:Row>
-              <ez:Row CellSpan="2" CellOption="composeType:Absolute absolute:24">
+              <ez:Row CellSpan="2">
                 <ez:Column><Label Text="Two rows"/></ez:Column>
               </ez:Row>
               <ez:Row CellOption="composeType:Percentage percentage:1"/>

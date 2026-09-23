@@ -716,6 +716,13 @@ public static class GacUIShowcaseTests
         string retainedText = "Kept table text";
         Pattern<ValuePattern>(editor, ValuePattern.Pattern).SetValue(retainedText);
         Wait(() => FindNamed(page, retainedText, ControlType.Text) != null, "table payload binding updated");
+        Test("table outer row splitter / original window size");
+        var rowA = bounds("Row A");
+        Drag(rowA.Left + rowA.Width / 2, rowA.Bottom + 2 * scale, 0, 10 * scale);
+        Wait(() => Math.Abs(bounds("Row A").Height - 50 * scale) <= scale, "outer row splitter drags down at original size");
+        rowA = bounds("Row A");
+        Drag(rowA.Left + rowA.Width / 2, rowA.Bottom + 2 * scale, 0, -10 * scale);
+        Wait(() => Math.Abs(bounds("Row A").Height - 40 * scale) <= scale, "outer row splitter reverses at original size");
         var initial = root.Current.BoundingRectangle;
         var transform = Pattern<TransformPattern>(root, TransformPattern.Pattern);
         transform.Resize(initial.Width + 180, initial.Height + 160);
@@ -728,10 +735,16 @@ public static class GacUIShowcaseTests
         Drag(shared.Right + 2 * scale, shared.Top + shared.Height / 2, 20 * scale, 0);
         Wait(() => Math.Abs(bounds("Shared 120").Width - 140 * scale) <= scale, "repeated shared column boundary drags once");
         equal(bounds("Column A").Width, unaffected.Width, "row grid drag leaves transposed table unchanged");
-        var rowA = bounds("Row A");
-        // The later fixed spanning row bounds the native splitter's downward range.
-        Drag(rowA.Left + rowA.Width / 2, rowA.Bottom + 2 * scale, 0, -10 * scale);
-        Wait(() => Math.Abs(bounds("Row A").Height - 30 * scale) <= scale, "outer row splitter changes adjacent absolute row");
+        rowA = bounds("Row A");
+        Drag(rowA.Left + rowA.Width / 2, rowA.Bottom + 2 * scale, 0, 10 * scale);
+        Wait(() => Math.Abs(bounds("Row A").Height - 50 * scale) <= scale, "outer row splitter drags down at enlarged size");
+        rowA = bounds("Row A");
+        Drag(rowA.Left + rowA.Width / 2, rowA.Bottom + 2 * scale, 0, -20 * scale);
+        Wait(() => Math.Abs(bounds("Row A").Height - 30 * scale) <= scale, "outer row splitter drags up past its initial position");
+        rowA = bounds("Row A");
+        Drag(rowA.Left + rowA.Width / 2, rowA.Bottom + 2 * scale, 0, 20 * scale);
+        Wait(() => Math.Abs(bounds("Row A").Height - 50 * scale) <= scale, "outer row splitter reverses downward again");
+        equal(bounds("Column A").Width, unaffected.Width, "outer row drag leaves transposed table unchanged");
         var columnA = bounds("Column A");
         Drag(columnA.Right + 2 * scale, columnA.Top + columnA.Height / 2, 15 * scale, 0);
         Wait(() => Math.Abs(bounds("Column A").Width - 155 * scale) <= scale, "transposed outer column splitter changes absolute width");
@@ -742,6 +755,7 @@ public static class GacUIShowcaseTests
         transform.Resize(initial.Width + 220, initial.Height + 200);
         Wait(() => root.Current.BoundingRectangle.Width >= initial.Width + 220, "second resize applied");
         equal(bounds("Shared 120").Width, 140 * scale, "resize retains first grid adjustment");
+        equal(bounds("Row A").Height, 50 * scale, "resize retains outer row adjustment");
         equal(bounds("Shared 40").Height, 52 * scale, "resize retains transposed adjustment");
         for (int iteration = 0; iteration < 2; iteration++) {
             Test("table rebuild / " + (iteration == 0 ? "mouse" : "Invoke"));

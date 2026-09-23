@@ -22030,9 +22030,6 @@ namespace demo
             {
                 (<precompile>28.CellSpan = 2 of (::system::Int64));
             }
-            {
-                (<precompile>28.CellOption = {composeType : ::presentation::compositions::GuiCellOption::ComposeType::Absolute; absolute : 24;} of (::presentation::compositions::GuiCellOption));
-            }
             (<precompile>29 = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
             {
                 (<precompile>30 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));

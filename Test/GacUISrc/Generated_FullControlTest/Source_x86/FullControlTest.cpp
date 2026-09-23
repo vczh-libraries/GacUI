@@ -22377,9 +22377,6 @@ Class (::demo::EazyLayoutTablePageConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_28.Obj())->SetCellSpan(static_cast<::vl::vint32_t>(2));
 		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_28.Obj())->SetCellOption([&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = static_cast<::vl::vint32_t>(24); return __vwsn_temp__; }());
-		}
 		(this->__vwsn_precompile_29 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyColumnLayout()));
 		{
 			(this->__vwsn_precompile_30 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));

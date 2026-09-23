@@ -69,6 +69,12 @@ In the same file `EazyLayoutTabPage.xml` I would like you to create another tab 
 
 ## REVIEW COMMENTS
 
+# UPDATES
+
+## UPDATE
+
+a small bug to fix: in the EazyLayoutTablePage splitters are working fine except the horizontal one in the upper table, it only drags up but can't drag down.
+
 # TEST [CONFIRMED]
 
 - Compare a426672d5 with 83fc7100b. Record XML authoring observations separately from runtime evidence.
@@ -95,9 +101,16 @@ In the same file `EazyLayoutTabPage.xml` I would like you to create another tab 
 - Baseline x64 UnitTest completed 93/93 files and 1,803/1,803 cases, with no appended CRT leak report. The x64 build including the two new cases then succeeded with 0 warnings/errors. A fresh x64 CppTest Window-only diagnostic (without layout rebuilding) passed 110 assertions including Aurora replacement, normal shutdown and endpoint release; the Win32 subscribed-refresh timeout does not reproduce in that x64 check.
 - Baseline GacUI_Compiler completed both architecture passes with exit 0 and no `*.UI.errors.txt`; the authored correction/new page are being regenerated in a separate final pass.
 
+## Continuation: upper table horizontal splitter
+
+- At the original window size, drag Row A's lower boundary down 10 pixels and back up. After enlarging, require heights 40->50->30->50; verify the lower table remains independent and another resize retains height 50.
+- Rebuild by mouse and UIA Invoke and require the configured height 40, unchanged shared-track/span geometry, retained text and working binding. Repeat the existing palette checks in both hosted and native UIA Layout scenarios.
+- The unchanged binary fails the first downward-drag assertion. The fixed generated showcase must pass it, along with the required generation, builds, metadata checks and UnitTest run.
+
 # PROPOSALS
 
 - No.1 Correct the authored track option and restore table demonstrations in an independent page [CONFIRMED]
+- No.2 Allow the upper table splitter to reach its flexible rows [CONFIRMED]
 
 ## No.1 Correct the authored track option and restore table demonstrations in an independent page [CONFIRMED]
 
@@ -135,3 +148,30 @@ The authored Absolute option defect reproduced as a 20-pixel column and is corre
 - Final default `Test/UIA_CppTest_Metaonly.ps1 -AsPort 8890` ran sequentially after the final hosted wrapper and passed **4,925 assertions** (structure=1,560, property=542, text=38), normal Window.Close, process exit 0 and endpoint release. Its Debug x64 build passed with 0 warnings/errors. The native Windows message-box proxy required unavailable SendInput; the existing harness verified and dismissed the owned native button with BM_CLICK. Physical message-box Invoke delivery is therefore unverified, alongside desktop focus and mixed-monitor DPI. All GacUI layout mouse/Invoke, geometry, state, palette and tab checks passed.
 - Final review retains the synchronous XML handlers and existing layout/loader implementation. The confirmed production change is the authored 120-pixel option and the independent table showcase; test synchronization follows the existing UIA retirement contract. Generated files were produced only by repository tools. The full UnitTest log ends at 93/93 files and 1,805/1,805 cases with no appended leak report.
 - Final staged review contains 79 files, including generated resources and snapshots. The standard whitespace check reports only the new generated OwnerRebuild[x64/x86].txt files' final blank line; both end in the same two CRLF sequences as existing generated Bindings snapshots. Preserve the generator's format. The staged whitespace check passes with only blank-at-EOF checking disabled; authored files have no whitespace errors. Both temporary showcase user files were restored to absence, and no showcase process remained.
+
+## No.2 Allow the upper table splitter to reach its flexible rows [CONFIRMED]
+
+The continuation corrects No.1's acceptance of the upper row's one-way drag. The other verified changes in No.1 remain applicable. A fresh Debug x64 automation run reproduces Row A staying at height 40 after a downward 10-pixel drag, while an upward 10-pixel drag reaches height 30; the process closes normally with no runtime dialog.
+
+`GuiTableSplitterCompositionBase::OnMouseMoveHelper` stops its available-space scan at the next Absolute track. After Row A, the upper table declares a MinSize row followed by the Absolute-24 spanning row, then the Percentage row. Consequently, the downward scan never reaches flexible space and returns with a maximum offset of zero. This comes from the sample's track choices, not EazyLayout lowering.
+
+Remove the spanning row's unnecessary Absolute option, using its default MinSize. Its two-row span still covers the same region, while the following Percentage row supplies adjustable space. The existing Absolute-40 row and shared Absolute-120 column retain the table's fixed-track demonstrations. Keep the native splitter algorithm and other table unchanged.
+
+### CODE CHANGE
+
+- Remove the Absolute-24 option from the upper table's `CellSpan="2"` row in EasyLayoutTabPage.xml.
+- Replace the UIA assertion that accepts only upward dragging with downward/upward/reverse drags. Test downward movement at the original window size as well as the enlarged size, retention after resize, and the existing reset/state checks after rebuilding.
+- Regenerate both resource architectures, complete the prescribed Win32/x64 builds and metadata checks, run UnitTest, and run both UIA wrappers with `-Scenario Layout` against rebuilt Debug x64 binaries. Success requires Row A to move 40->50->30->50, retain 50 after resize, and reset to 40 on rebuild; shared-track geometry, span bounds, lower-table independence, retained text and palette checks must still pass.
+
+### CONFIRMED
+
+Removing the intervening Absolute option restores access to the existing flexible row without changing the initial visible geometry or native splitter behavior. Both hosted and native windows pass downward, upward and reverse dragging, resizing, rebuilding and palette checks. Keep this correction together with No.1's existing sample and test improvements; they address successive parts of the same request.
+
+- The strengthened C# assertions compile. Invoking EasyLayoutTables against the unchanged Debug x64 binary fails specifically with `Timed out: outer row splitter drags down at original size`, proving the regression check distinguishes the bug. The owned process closes normally after the expected failure; no runtime dialog is present.
+- Debug x64 UnitTest completed 93/93 files and 1,805/1,805 cases, including both EasyLayout files, with no appended CRT leak report. UnitTest does not consume the changed FullControlTest resource or its generated code. The generated x86 FullControlTest C++ diff removes only the spanning row's Absolute option assignment.
+- GacUI_Compiler completed both architectures with exit 0 and no `*.UI.errors.txt` (including ignored paths). Both generated C++ variants remove exactly the Absolute-24 assignment. Post-generation Debug Win32 and x64 builds passed with 0 warnings/errors; Metadata_Generate on both architectures and Metadata_Test x64 exited 0.
+- Rebuilt x64 automation confirms Row A heights 40->50->30->50, while the lower shared row remains 40. The settled rebuild restores Row A to 40, the original shared sizes and all four splitter bounds, with five-pixel gaps. An immediate read after the queued rebuild initially observed the old cached height; a fresh settled read confirms the reset. The UIA regression already uses the checked rebuild idle barrier. The process exits normally with no runtime dialog.
+- Reviewed the seven regenerated ScrollResetOnNavigation snapshot files from the full unit run: captured UI state is unchanged; frame IDs shift by one and intermediate rendering commands differ. Preserve these tool-generated outputs with all changes as required.
+- `Test/UIA_CppTest.ps1 -AsPort 8888 -Scenario Layout` passed 1,548 assertions, including the new bidirectional drags at both window sizes, resize retention, both rebuild paths, retained text, span geometry and palette refresh. Normal Window.Close and endpoint release passed; the wrapper's Debug x64 build had 0 warnings/errors.
+- Sequential `Test/UIA_CppTest_Metaonly.ps1 -AsPort 8890 -Scenario Layout` also passed 1,548 assertions, normal Window.Close and endpoint release. Its Debug x64 build had 0 warnings/errors. No runtime dialog appeared in either final run. Both temporary project user files were restored to absence, and no showcase process remains.
+- Final review and whitespace checks pass. The incoming remote commit f4c495ab5 changes only ToDo/1.4.1.3.md; rebasing over that documentation update does not require repeating code verification.
