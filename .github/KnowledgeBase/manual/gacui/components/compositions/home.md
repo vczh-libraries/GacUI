@@ -6,6 +6,7 @@ There are a lot of predefined compositions as follows, each defines a kind of co
 - GuiGraphicsComposition
   - GuiWindowComposition
   - \<Bounds\>
+    - [<ez:Layout>](../../.././gacui/components/compositions/eazylayout.md)
     - \<Stack\>
       - \<RepeatStack\>
     - \<Flow\>
@@ -130,6 +131,12 @@ Just **DON'T DO THIS**.
 **IT IS DANGEROUS** to bind one positining properties to another. For example, you may want to keep a composition takes exactly the left half of its parent composition. But if you bind **AlignmentToParent** of this composition to its size, it could results in keeping growing its parent composition.
 
 When the parent composition grows (e.g. dragging the window), the child composition also grows because it wants to keep the gap exactly to **AlignmentToParent**. After that **AlignmentToParent** also grows because the child composition grows, and it makes the parent composition to grow again because the gap increases. This process never stops, the window will keep growing when it is resizing, until forever.
+
+### \<ez:Layout/\>
+
+Use [<ez:Layout/>](../../.././gacui/components/compositions/eazylayout.md) to express docking, proportional sizes, or rows and columns instead of binding calculated positions. Nest layout descriptions to combine these arrangements; ordinary resizing is handled automatically.
+
+Bindings on **Padding**, **Border**, **Direction**, and **CellSpan** can store changes to the arrangement. Call **BuildLayout()** on the owning layout to apply later changes while keeping controls and their state. **Percentage** and **CellOption** must be constants in XML.
 
 ## Other Properties
 

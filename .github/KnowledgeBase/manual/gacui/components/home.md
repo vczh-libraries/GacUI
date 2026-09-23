@@ -22,10 +22,11 @@
 
 ## Compositions
 
-[Composition](../.././gacui/kb/compositions.md) offer layout algorithms based on constraints.
+[Composition](../.././gacui/kb/compositions.md) offer layout algorithms based on constraints. [<ez:Layout>](../.././gacui/components/compositions/eazylayout.md) combines docking, proportional sizing, and grids using nested layout descriptions.
 
 [Here](../.././gacui/components/compositions/home.md) contains detailed introduction for:
 - \<Bounds\>
+- \<ez:Layout\>
 - \<Stack\>, \<RepeatStack\>, \<StackItem\>
 - \<Flow\>, \<RepeatFlow\>, \<FlowItem\>
 - \<Table\>, \<Cell\>, \<RowSplitter\>, \<ColumnSplitter\>
