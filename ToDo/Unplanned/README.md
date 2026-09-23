@@ -85,3 +85,10 @@ Unplanned features with detailed are stored in the same folder, here lists all i
   - Codegen c++ from multiple workflow assembly.
 
 ## New C++/Doc Compiler based on VlppParser2
+
+## Copilot Unprioritized
+
+- Prompt files that rely on Powershell scripts:
+  - `investigate.prompt.md`: `copilotRemember.ps1`.
+  - `refine.prompt.md`: `copilotRemember.ps1`.
+  - `Job.copilotInit.prompt.md`: `copilotInit.ps1`, `copilotInitAll.ps1`.
