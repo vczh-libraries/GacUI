@@ -1,0 +1,92 @@
+<Instance ref.CodeBehind="false" ref.Class="gitview::MainWindow">
+  <ref.Parameter Name="ViewModel" Class="gitview::IGitViewModel"/>
+  <ref.Members><![CDATA[
+    prop Revision : int = 0 {}
+  ]]></ref.Members>
+  <Window ref.Name="self" ControlThemeName="SystemFrameWindow" Text="GitTui" ClientSize="x:120 y:40" Revision-bind="ViewModel.Revision">
+    <att.BoundsComposition-set MinSizeLimitation="NoLimit"/>
+    <ev.RevisionChanged-eval><![CDATA[{
+      changes.ClearSelection(); commits.ClearSelection(); files.ClearSelection();
+      var root = changes.NodeRootProvider.RootNode;
+      for (i in range [0, root.ChildCount)) { root.GetChild(i).Expanding = true; }
+    }]]></ev.RevisionChanged-eval>
+    <ev.WindowOpened-eval>ViewModel.Refresh();</ev.WindowOpened-eval>
+    <ez:Layout Padding="1" Border="false">
+      <ez:Top>
+        <ez:Left><Label Text-bind="&quot;REPO: &quot; &amp; ViewModel.RepositoryName"/></ez:Left>
+        <ez:Left><Label Text="BRANCH:"/></ez:Left>
+        <ez:Left>
+          <ComboBox ref.Name="branches" SelectedIndex-bind="ViewModel.BranchIndex">
+            <att.BoundsComposition-set PreferredMinSize="x:24 y:1"/>
+            <ev.SelectedIndexChanged-eval>ViewModel.BranchIndex = branches.SelectedIndex;</ev.SelectedIndexChanged-eval>
+            <att.ListControl><BindableTextList env.ItemType="string" env.ItemName="branch" ItemSource-bind="ViewModel.Branches"><att.TextProperty>branch</att.TextProperty></BindableTextList></att.ListControl>
+          </ComboBox>
+        </ez:Left>
+        <ez:Left>
+          <ToolstripMenuBar>
+            <MenuBarButton Text="ACTIONS" Alt="A">
+              <att.SubMenu-set>
+                <MenuItemButton Text="REFRESH" Alt="R"><ev.Clicked-eval>ViewModel.Refresh();</ev.Clicked-eval></MenuItemButton>
+                <MenuItemButton Text="FETCH ORIGIN" Enabled-bind="ViewModel.CanPull"><ev.Clicked-eval>ViewModel.Pull(false);</ev.Clicked-eval></MenuItemButton>
+                <MenuItemButton Text="FETCH ORIGIN and REBASE" Enabled-bind="ViewModel.CanPull"><ev.Clicked-eval>ViewModel.Pull(true);</ev.Clicked-eval></MenuItemButton>
+                <MenuItemButton Text="EXIT" Alt="X"><ev.Clicked-eval>self.Close();</ev.Clicked-eval></MenuItemButton>
+              </att.SubMenu-set>
+            </MenuBarButton>
+          </ToolstripMenuBar>
+        </ez:Left>
+        <ez:Fill><Bounds/></ez:Fill>
+      </ez:Top>
+      <ez:Fill>
+        <Tab>
+          <att.Pages>
+            <TabPage Text="CHANGES">
+              <ez:Layout Padding="1" Border="false">
+                <ez:Column CellOption="composeType:Absolute absolute:30"><ez:Row CellOption="composeType:Percentage percentage:1">
+                  <BindableTreeView ref.Name="changes" env.ItemType="gitview::IEntry^" ItemSource-bind="ViewModel.Changes">
+                    <att.TextProperty>Text</att.TextProperty><att.ChildrenProperty>Children</att.ChildrenProperty>
+                    <ev.SelectionChanged-eval>ViewModel.SelectChange(changes.SelectedItem as gitview::IEntry^);</ev.SelectionChanged-eval>
+                  </BindableTreeView>
+                </ez:Row></ez:Column>
+                <ez:Splitter/>
+                <ez:Column CellOption="composeType:Percentage percentage:1"><ez:Row>
+                  <BindableTextList env.ItemType="gitview::IDiffLine^" ItemSource-bind="ViewModel.ChangeDiff" ItemTemplate="gitview::DiffLineTemplate"><att.TextProperty>Text</att.TextProperty></BindableTextList>
+                </ez:Row></ez:Column>
+              </ez:Layout>
+            </TabPage>
+            <TabPage Text="HISTORY">
+              <ez:Layout Padding="1" Border="false">
+                <ez:Column CellOption="composeType:Absolute absolute:32"><ez:Row CellOption="composeType:Percentage percentage:1">
+                  <BindableTextList ref.Name="commits" env.ItemType="gitview::IEntry^" ItemSource-bind="ViewModel.Commits">
+                    <att.TextProperty>Text</att.TextProperty>
+                    <ev.SelectionChanged-eval>ViewModel.SelectCommit(commits.SelectedItem as gitview::IEntry^);</ev.SelectionChanged-eval>
+                  </BindableTextList>
+                </ez:Row></ez:Column>
+                <ez:Splitter/>
+                <ez:Column CellOption="composeType:Absolute absolute:26"><ez:Row>
+                  <BindableTextList ref.Name="files" env.ItemType="gitview::IEntry^" ItemSource-bind="ViewModel.Files">
+                    <att.TextProperty>Text</att.TextProperty>
+                    <ev.SelectionChanged-eval>ViewModel.SelectFile(files.SelectedItem as gitview::IEntry^);</ev.SelectionChanged-eval>
+                  </BindableTextList>
+                </ez:Row></ez:Column>
+                <ez:Splitter/>
+                <ez:Column CellOption="composeType:Percentage percentage:1"><ez:Row>
+                  <BindableTextList env.ItemType="gitview::IDiffLine^" ItemSource-bind="ViewModel.HistoryDiff" ItemTemplate="gitview::DiffLineTemplate"><att.TextProperty>Text</att.TextProperty></BindableTextList>
+                </ez:Row></ez:Column>
+              </ez:Layout>
+            </TabPage>
+          </att.Pages>
+        </Tab>
+      </ez:Fill>
+      <ez:Bottom>
+        <MultilineTextBox ref.Name="status" Text-bind="ViewModel.Status" EditMode="Selectable">
+          <att.BoundsComposition-set PreferredMinSize="x:0 y:4"/>
+          <ev.TextChanged-eval><![CDATA[GuiApplication::GetApplication().InvokeInMainThread(self, func() : void
+          {
+            status.SetCaret({row:0 column:0}, {row:0 column:0});
+            status.ViewPosition = {x:0 y:0};
+          });]]></ev.TextChanged-eval>
+        </MultilineTextBox>
+      </ez:Bottom>
+    </ez:Layout>
+  </Window>
+</Instance>

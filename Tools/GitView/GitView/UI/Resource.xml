@@ -1,0 +1,15 @@
+<Resource>
+  <Folder name="GacGenConfig">
+    <Xml name="Metadata"><ResourceMetadata Name="GitView" Version="1.0"/></Xml>
+    <Folder name="Cpp">
+      <Text name="Name">GitView</Text>
+      <Text name="SourceFolder">../Source</Text>
+      <Text name="NormalInclude">GacUI.h</Text>
+      <Text name="ReflectionInclude">GacUIReflection.h</Text>
+      <Text name="CppCompressed">GitViewResource.cpp</Text>
+    </Folder>
+  </Folder>
+  <Script name="ViewModel" content="File">ViewModel.xml</Script>
+  <Instance name="DiffLineTemplate" content="File">DiffLineTemplate.xml</Instance>
+  <Instance name="MainWindow" content="File">MainWindow.xml</Instance>
+</Resource>

@@ -1,0 +1,37 @@
+<Workflow><![CDATA[
+module gitview;
+using system::*;
+using presentation::*;
+namespace gitview
+{
+  interface IEntry
+  {
+    prop Text : string {const}
+    prop Children : IEntry^[] {const}
+  }
+  interface IDiffLine
+  {
+    prop Text : string {const}
+    prop Background : Color {const}
+  }
+  interface IGitViewModel
+  {
+    prop RepositoryName : string {const}
+    prop Branches : string[] {const}
+    prop BranchIndex : int {}
+    prop CanPull : bool {const}
+    prop Changes : IEntry^ {const}
+    prop Commits : IEntry^[] {const}
+    prop Files : IEntry^[] {const}
+    prop ChangeDiff : IDiffLine^[] {const}
+    prop HistoryDiff : IDiffLine^[] {const}
+    prop Status : string {const}
+    prop Revision : int {const}
+    func Refresh() : void;
+    func SelectChange(entry : IEntry^) : void;
+    func SelectCommit(entry : IEntry^) : void;
+    func SelectFile(entry : IEntry^) : void;
+    func Pull(rebaseOnConflict : bool) : void;
+  }
+}
+]]></Workflow>

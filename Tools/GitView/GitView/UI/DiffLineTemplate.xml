@@ -1,0 +1,9 @@
+<Instance ref.CodeBehind="false" ref.Class="gitview::DiffLineTemplate">
+  <ref.Parameter Name="ViewModel" Class="gitview::IDiffLine"/>
+  <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+    <SolidBackground Color-bind="ViewModel.Background"/>
+    <Bounds AlignmentToParent="left:0 top:0 right:-1 bottom:0" MinSizeLimitation="LimitToElement">
+      <SolidLabel Text-bind="ViewModel.Text" Font-bind="self.Font" Color="#FFFFFF"/>
+    </Bounds>
+  </TextListItemTemplate>
+</Instance>

@@ -1,0 +1,31 @@
+<#
+CPP_TARGET=./Bin/GitTui
+CPP_VCXPROJS=(
+    "./Gaclib/Gaclib.vcxproj"
+    "./GitView/GitView.vcxproj"
+    "./GitTui/GitTui.vcxproj"
+    )
+CPP_REMOVES=(
+    "../../Import/Vlpp.Windows.cpp"
+    "../../Import/VlppOS.Windows.cpp"
+    "../../Release/GacUI.Windows.cpp"
+    "GitView/Model/Command.Windows.cpp"
+    )
+CPP_COMPILE_OPTIONS='-DVCZH_DEBUG_NO_REFLECTION -I ../../Import -I ../../Release $(GITVIEW_PLATFORM_CFLAGS)'
+CPP_LINK_OPTIONS='$(GITVIEW_PLATFORM_LIBS)'
+TARGETS=("${CPP_TARGET}")
+#>
+# Use prebuilt native provider libraries from the sibling platform checkout.
+# Select at make execution time so vmake output is identical on both hosts.
+ifeq ($(shell uname -s),Darwin)
+IGAC_ROOT ?= ../../../iGac
+IGAC_BUILD ?= $(IGAC_ROOT)/build
+GITVIEW_PLATFORM_CFLAGS = -I $(IGAC_ROOT)/Mac
+GITVIEW_PLATFORM_LIBS = $(IGAC_BUILD)/MacTuiControlTest/libGacOSXTui.a $(IGAC_BUILD)/MacShared/libGacOSX.a -framework Cocoa -framework Quartz -framework Carbon -framework UniformTypeIdentifiers
+else
+WGAC_ROOT ?= ../../../wGac
+WGAC_BUILD ?= $(WGAC_ROOT)/build
+GITVIEW_PLATFORM_CFLAGS = -I $(WGAC_ROOT)/WGac $(shell pkg-config --cflags wayland-client wayland-cursor xkbcommon cairo pangocairo fontconfig gio-2.0 libdecor-0 x11 xfixes)
+GITVIEW_PLATFORM_LIBS = $(WGAC_BUILD)/WGacTuiControlTest/libWGacTui.a $(WGAC_BUILD)/WGacShared/libWGac.a $(shell pkg-config --libs wayland-client wayland-cursor xkbcommon cairo pangocairo fontconfig gio-2.0 libdecor-0 x11 xfixes) -ldl -lrt
+endif
+<#@ include "${VCPROOT}/vl/vmake-cpp" #>
