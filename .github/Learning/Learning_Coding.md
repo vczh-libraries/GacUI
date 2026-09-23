@@ -28,6 +28,7 @@
 - Prefer EazyLayout for arrangements it can express [2]
 - Omit redundant EazyLayout sample properties and wrappers [2]
 - Keep skin defaults internal and showcase palette selection external [2]
+- Nest EazyLayout descriptor groups under one owning layout [1]
 - Use /AsPort for automation with default 8888 [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
 - Use `EventObject` for renderer-connection waits after channel server start [1]
@@ -511,6 +512,10 @@ Prefer `ez:Layout` for ordinary authored GacUI arrangements because its defaults
 Keep tutorial XML small enough to teach the intended defaults and inference. Omit default properties, Fill directions already determined by their sibling group, and duplicate shared-track `CellOption` declarations. Retain the single nondefault declaration needed for each shared track, structural descriptors and nondefault spans. Verify omission itself rather than preserving redundant declarations to hide a runtime or compiler defect; the resulting visible layout must remain unchanged.
 
 Remove a redundant Bounds around a sole `ez:Layout` when the layout itself can preserve the required properties and minimum-size propagation. `BuildLayout` owns the layout root alignment, so do not blindly copy the wrapper `AlignmentToParent`. The old `Margin` property no longer exists. Use current `Padding`/`Border` behavior only when it preserves both outer insets and inner gaps; retain wrappers for asymmetric insets, anchoring or other behavior that cannot be reproduced.
+
+## Nest EazyLayout descriptor groups under one owning layout
+
+Use nested docking, Fill, Row and Column descriptor groups within one `ez:Layout` to combine arrangements. Nested `ez:Layout` remains supported but is strongly discouraged for this purpose. Each descriptor container owns its arrangement and grid options; an explicit Fill direction affects its sibling group, while groups without an explicit direction retain documented inheritance. Keep one visible padding gap across group boundaries and apply the owning layout's border once. Verify authored XML options and settled geometry before changing the loader or layout implementation; successful compilation does not prove that an Absolute option used the `absolute` field.
 
 ## Create UIA providers and observation only for demand
 

@@ -35,6 +35,7 @@
 - Verify `GacUICompiler` determinism with repeated no-change runs [2]
 - Remote-debugging guides own complete Cartesian test matrices [2]
 - Verify palette refresh through retained state and actual host rendering [2]
+- Use remote-protocol snapshots only for useful rendering [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Verify GacGen RPC outputs with positive and negative resources [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
@@ -82,7 +83,8 @@
 - Regenerate compiler snapshots through UnitTest after XML namespace changes [1]
 - Match native theme regressions to the initialized harness [1]
 - Author Playground UI entirely in XML and Workflow [1]
-- Keep layout rejection and compiler-only tests outside remote frames [1]
+- Verify layout splitters in both directions across resizing and rebuilding [1]
+- Reacquire UIA providers after an owning layout rebuild [1]
 - Keep FullControlTest UIA checks synchronized with showcase changes [1]
 
 # Refinements
@@ -530,9 +532,19 @@ Use the automation service to inspect control and composition bounds when diagno
 
 Playground exists to try UI authored in XML. Put its controls, layout, document content and UI interaction handlers in XML/Workflow resources, including UIA regression fixtures. C++ selects a resource candidate and loads or opens its reflected window; do not assemble the fixture UI in C++. Narrow native interop hooks called by Workflow remain allowed. Selecting one of several resource candidates by changing `GuiMain` is an intended use of this application.
 
-## Keep layout rejection and compiler-only tests outside remote frames
+## Use remote-protocol snapshots only for useful rendering
 
-Remote-protocol GacUI frame tests verify instantiated UI and its visible layout. Put direct EazyLayout `BuildLayout` rejection cases in `Test/GacUISrc/UnitTest/TestCompositions_EazyLayoutFailures.cpp`, with no window or frame loop. Keep compiler-only binding, constant-expression and grammar rejection tests in the existing `TestResource.cpp` compiler harness, preserving diagnostics and source positions. Positive XML construction and rendered-frame checks remain in `TestControls_EasyLayout.cpp`; direct layout geometry stays in composition tests.
+Remote-protocol startup helpers such as `GacUIUnitTest_StartFast_WithResourceAsText` exist to record useful rendering results. Every case must save a meaningful frame; adding a frame alone does not justify the recorder when rendering adds no coverage. Use ordinary tests for compiler rejection, descriptor values, geometry, bindings, events and TUI buffer assertions, including positive XML construction that does not need rendering snapshots. Preserve assertions using direct object construction or appropriate native-service/resource setup. Keep direct EazyLayout rejection in `TestCompositions_EazyLayoutFailures.cpp` and compiler-only rejection in `TestResource.cpp`.
+
+When converting a case, remove its obsolete snapshot index, frames, protocol recordings and compiler artifacts. Audit both startup wrappers and generated indexes after a full run: retained indexes must reference existing useful frames, and removed groups must not be recreated. Keep this boundary documented in `Project.md`.
+
+## Verify layout splitters in both directions across resizing and rebuilding
+
+For EazyLayout showcase splitters, verify downward/upward or left/right dragging and reversals at the original and enlarged window sizes. A successful drag in only one direction is insufficient. Check that resizing retains the adjustment, rebuilding restores descriptor sizes and payload state, and independent grids remain unchanged. Before changing native splitter behavior, inspect authored track options: an intervening Absolute track can block access to flexible space. The regression must fail against the unchanged resource and pass after regeneration.
+
+## Reacquire UIA providers after an owning layout rebuild
+
+In `Test/UIA_CppTest_Shared.cs`, wait for the queued rebuild using a checked `WindowPattern.WaitForInputIdle` barrier, then reacquire the current page and descendant providers before inspecting them. Reattaching retained controls retires their previous UIA attachments and can change runtime IDs. Do not suppress unavailable-provider errors or weaken geometry/state assertions to conceal the race. Exercise both mouse and UIA Invoke paths in hosted and native wrappers.
 
 ## Keep FullControlTest UIA checks synchronized with showcase changes
 
