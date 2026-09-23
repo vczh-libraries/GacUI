@@ -12,6 +12,7 @@ namespace gitview
 		GitFile							file;
 		vl::WString						text;
 		vl::WString						commit;
+		vl::WString						details;
 		vl::Ptr<vl::reflection::description::IValueList> children;
 
 										Entry();
@@ -40,6 +41,7 @@ namespace gitview
 		vl::Ptr<vl::reflection::description::IValueList> historyDiff;
 		vl::WString						currentBranch;
 		vl::WString						selectedCommit;
+		vl::WString						selectedCommitDetails;
 		vl::WString						status;
 		vl::vint						branchIndex = -1;
 		vl::vint						revision = 0;

@@ -246,7 +246,7 @@ namespace gitview
 		::vl::presentation::controls::GuiBindableTreeView* changes;
 		::vl::presentation::controls::GuiBindableTextList* commits;
 		::vl::presentation::controls::GuiBindableTextList* files;
-		::vl::presentation::controls::GuiMultilineTextBox* status;
+		::vl::presentation::controls::GuiDocumentViewer* status;
 		::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout> __vwsn_precompile_1;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout> __vwsn_precompile_2;

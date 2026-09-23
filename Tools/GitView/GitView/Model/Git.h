@@ -32,6 +32,7 @@ namespace gitview
 	{
 		vl::WString						hash;
 		vl::WString						text;
+		vl::WString						time;
 	};
 
 	struct DiffLine
@@ -42,7 +43,7 @@ namespace gitview
 
 	extern void							SplitRecords(const vl::WString& text, wchar_t separator, vl::collections::List<vl::WString>& records);
 	extern void							ParseStatus(const vl::WString& text, vl::collections::List<GitFile>& files);
-	extern void							ParseDiff(const vl::WString& text, vl::collections::List<DiffLine>& lines);
+	extern void							ParseDiff(const vl::WString& patch, const vl::WString& newText, vl::collections::List<DiffLine>& lines);
 
 	class GitRepository
 	{
@@ -60,7 +61,7 @@ namespace gitview
 		void							Changes(vl::collections::List<GitFile>& files) const;
 		void							History(const vl::WString& branch, vl::collections::List<GitCommit>& commits) const;
 		void							CommitFiles(const vl::WString& commit, vl::collections::List<GitFile>& files) const;
-		vl::WString						Diff(const GitFile& file, const vl::WString& commit = {}) const;
+		vl::collections::List<DiffLine>	Diff(const GitFile& file, const vl::WString& commit = {}) const;
 		CommandResult					Pull(const vl::WString& branch, bool rebaseOnConflict) const;
 	};
 }

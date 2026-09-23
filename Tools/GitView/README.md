@@ -2,13 +2,13 @@
 
 GitTui browses Git repositories in a terminal using GacUI and TuiSkin. Start it inside a working tree or one of its subfolders. A submodule is treated as its own repository.
 
-- CHANGES groups staged, unstaged and new files. Select a file for an inline diff with three context lines; additions have a dark green background and deletions a dark red background. Git displays binary and submodule changes as summaries.
-- HISTORY lists commits on the selected local branch. Select a commit, then a file. Merge commits compare with their first parent; root commits compare with the empty tree.
+- CHANGES groups staged, unstaged and new files. Select a file for numbered source rows with three context lines; additions have a dark green background and deletions a dark red background. Deleted rows use old line numbers; other rows use new line numbers. Overlapping context is combined, and patch headers are omitted. Binary and submodule changes have brief summaries.
+- HISTORY lists commit subjects and authors on the selected local branch. Select a commit, then a file; the bottom status area retains the commit ID and time. Merge commits compare with their first parent; root commits compare with the empty tree.
 - The branch combo browses history without checking out a branch. CHANGES always describes the current working tree.
 - ACTIONS → REFRESH reloads branches, changes and history and clears selections. There is no background file watcher.
 - ACTIONS → FETCH ORIGIN runs a pull of the checked-out branch from origin. It requires a clean working tree and no unfinished Git operation. The branch must also be selected in the combo. Despite its label, this action can update files and create a merge commit.
 - FETCH ORIGIN and REBASE first tries the same pull. If that attempt creates merge conflicts, it aborts that merge and retries with rebase. Remaining conflicts are reported in the status area and left for resolution in another terminal. Commit or stash work and finish outstanding Git operations externally, then refresh.
-- ACTIONS → EXIT closes the terminal UI. Use Tab, arrows and Enter, or terminal mouse input, to navigate. Drag the column dividers to resize panes. The status area supports scrolling and selecting error text.
+- ACTIONS → EXIT closes the terminal UI. Use Tab, arrows and Enter, or terminal mouse input, to navigate. Drag the column dividers to resize panes. Scrollbars hide when content fits. The readonly status area has three text rows, wraps long lines, and supports selecting and vertically scrolling error text.
 
 Git must be on PATH. Commands run synchronously; network actions wait for Git to finish. Configure remote credentials before launching. Browsing does not change the index, working tree or checked-out branch. Git hooks and credential helpers configured for an explicitly requested pull retain their usual behavior.
 

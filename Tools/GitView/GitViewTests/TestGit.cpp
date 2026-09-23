@@ -93,13 +93,57 @@ TEST_FILE
 		TEST_ASSERT(files[4].kind == FileKind::Unstaged);
 	});
 
-	TEST_CASE(L"Diff headers stay neutral while hunk additions and deletions are colored")
+	TEST_CASE(L"Diff rendering uses numbered source rows and three rows of context")
 	{
 		List<DiffLine> lines;
-		ParseDiff(L"--- a/file\n+++ b/file\n@@ -1 +1 @@\n-old\n+new\n context\n", lines);
-		TEST_ASSERT(lines.Count() == 6);
-		TEST_ASSERT(lines[0].change == 0 && lines[1].change == 0 && lines[2].change == 0);
-		TEST_ASSERT(lines[3].change == -1 && lines[4].change == 1 && lines[5].change == 0);
+		ParseDiff(L"diff --git a/file b/file\nindex 123..456 100644\n--- a/file\n+++ b/file\n@@ -5 +5,2 @@\n--- old source\n++++ new source\n+@@ source text\n", L"1\n2\n3\n4\n+++ new source\n@@ source text\n7\n8\n9\n10\n", lines);
+		TEST_ASSERT(lines.Count() == 9);
+		TEST_ASSERT(lines[0].text == L"   2 2" && lines[0].change == 0);
+		TEST_ASSERT(lines[2].text == L"   4 4" && lines[2].change == 0);
+		TEST_ASSERT(lines[3].text == L"   5 -- old source" && lines[3].change == -1);
+		TEST_ASSERT(lines[4].text == L"   5 +++ new source" && lines[4].change == 1);
+		TEST_ASSERT(lines[5].text == L"   6 @@ source text" && lines[5].change == 1);
+		TEST_ASSERT(lines[8].text == L"   9 9" && lines[8].change == 0);
+	});
+
+	TEST_CASE(L"Nearby diff context is merged and distant unchanged source is omitted")
+	{
+		List<DiffLine> lines;
+		ParseDiff(L"@@ -2 +2 @@\n-old2\n+2\n@@ -6 +6 @@\n-old6\n+6\n@@ -18 +18 @@\n-old18\n+18\n", L"1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n", lines);
+		TEST_ASSERT(lines.Count() == 19);
+		TEST_ASSERT(lines[0].text == L"   1 1");
+		TEST_ASSERT(lines[5].text == L"   5 5" && lines[5].change == 0);
+		TEST_ASSERT(lines[6].text == L"   6 old6" && lines[6].change == -1);
+		TEST_ASSERT(lines[10].text == L"   9 9");
+		TEST_ASSERT(lines[11].text == L"  15 15");
+		TEST_ASSERT(lines[18].text == L"  21 21");
+	});
+
+	TEST_CASE(L"Diff rendering handles empty files, no final newline, CRLF and large line numbers")
+	{
+		List<DiffLine> lines;
+		ParseDiff(L"@@ -0,0 +1 @@\n+new\n\\ No newline at end of file\n", L"new", lines);
+		TEST_ASSERT(lines.Count() == 1 && lines[0].text == L"   1 new" && lines[0].change == 1);
+		lines.Clear();
+		ParseDiff(L"@@ -1 +0,0 @@\n-old\n\\ No newline at end of file\n", L"", lines);
+		TEST_ASSERT(lines.Count() == 1 && lines[0].text == L"   1 old" && lines[0].change == -1);
+		lines.Clear();
+		ParseDiff(L"@@ -1 +1 @@\n-old\r\n+new\r\n", L"new\r\n\r\nafter\r\n", lines);
+		TEST_ASSERT(lines.Count() == 4 && lines[2].text == L"   2 " && lines[3].text == L"   3 after");
+		lines.Clear();
+		stream::MemoryStream source;
+		stream::StreamWriter writer(source);
+		for (vint i = 0; i < 9999; i++) writer.WriteString(L"context\n");
+		source.SeekFromBegin(0);
+		stream::StreamReader reader(source);
+		ParseDiff(L"@@ -10000 +9999,0 @@\n-old\n", reader.ReadToEnd(), lines);
+		TEST_ASSERT(lines.Count() == 4 && lines[3].text == L"10000 old");
+		lines.Clear();
+		ParseDiff(L"Binary files a/file and b/file differ\n", L"", lines);
+		TEST_ASSERT(lines.Count() == 1 && lines[0].text == L"Binary file changed." && lines[0].change == 0);
+		lines.Clear();
+		ParseDiff(L"diff --git a/old b/new\nsimilarity index 100%\nrename from old\nrename to new\n", L"", lines);
+		TEST_ASSERT(lines.Count() == 1 && lines[0].text == L"No textual changes.");
 	});
 
 	TEST_CASE(L"Real repository discovery, unborn history, filenames, diffs and view-model selections")
@@ -124,19 +168,31 @@ TEST_FILE
 		List<GitFile> changes;
 		repo.Changes(changes);
 		TEST_ASSERT(changes.Count() == 3);
-		TEST_ASSERT(Contains(repo.Diff(changes[0]), L"+STAGED"));
-		TEST_ASSERT(Contains(repo.Diff(changes[1]), L"+WORKTREE"));
-		TEST_ASSERT(Contains(repo.Diff(changes[0]), L"@@ -2,7 +2,7 @@"));
+		auto staged = repo.Diff(changes[0]);
+		TEST_ASSERT(staged.Count() == 8);
+		TEST_ASSERT(staged[0].text == L"   2 two" && staged[0].change == 0);
+		TEST_ASSERT(staged[3].text == L"   5 five" && staged[3].change == -1);
+		TEST_ASSERT(staged[4].text == L"   5 STAGED" && staged[4].change == 1);
+		TEST_ASSERT(staged[7].text == L"   8 eight" && staged[7].change == 0);
+		auto working = repo.Diff(changes[1]);
+		TEST_ASSERT(working.Count() == 8);
+		TEST_ASSERT(working[3].text == L"   5 STAGED" && working[3].change == -1);
+		TEST_ASSERT(working[4].text == L"   5 WORKTREE" && working[4].change == 1);
 		TEST_ASSERT(changes[2].path == unusual);
-		TEST_ASSERT(Contains(repo.Diff(changes[2]), L"+new file"));
+		auto untracked = repo.Diff(changes[2]);
+		TEST_ASSERT(untracked.Count() == 1 && untracked[0].text == L"   1 new file" && untracked[0].change == 1);
 		TEST_ASSERT(repo.Pull(L"other", false).exitCode != 0);
 		TEST_ASSERT(repo.Pull(L"main", true).exitCode != 0);
 		repo.History(L"main", history);
 		TEST_ASSERT(history.Count() == 1);
+		TEST_ASSERT(history[0].text == L"Test commit  (GitView Test)" && history[0].time.Length() > 0);
 		List<GitFile> rootFiles;
 		repo.CommitFiles(history[0].hash, rootFiles);
 		TEST_ASSERT(rootFiles.Count() == 1 && rootFiles[0].path == L"tracked.txt");
-		TEST_ASSERT(Contains(repo.Diff(rootFiles[0], history[0].hash), L"+one"));
+		auto historical = repo.Diff(rootFiles[0], history[0].hash);
+		TEST_ASSERT(historical.Count() == 10);
+		TEST_ASSERT(historical[0].text == L"   1 one" && historical[0].change == 1);
+		TEST_ASSERT(historical[4].text == L"   5 five" && historical[9].text == L"  10 ten");
 		GitViewModel model(fixture.root);
 		model.Refresh();
 		TEST_ASSERT(model.GetBranches()->GetCount() == 2 && model.GetCanPull());
@@ -146,8 +202,10 @@ TEST_FILE
 		TEST_ASSERT(model.GetChangeDiff()->GetCount() > 0);
 		model.SelectCommit(UnboxValue<Ptr<IEntry>>(model.GetCommits()->Get(0)));
 		TEST_ASSERT(model.GetFiles()->GetCount() == 1);
+		TEST_ASSERT(Contains(model.GetStatus(), history[0].hash) && Contains(model.GetStatus(), history[0].time));
 		model.SelectFile(UnboxValue<Ptr<IEntry>>(model.GetFiles()->Get(0)));
 		TEST_ASSERT(model.GetHistoryDiff()->GetCount() > 0);
+		TEST_ASSERT(Contains(model.GetStatus(), history[0].hash) && Contains(model.GetStatus(), history[0].time) && Contains(model.GetStatus(), L"tracked.txt"));
 		model.SetBranchIndex(1);
 		TEST_ASSERT(!model.GetCanPull() && repo.CurrentBranch() == L"main");
 		TEST_ASSERT(model.GetFiles()->GetCount() == 0 && model.GetHistoryDiff()->GetCount() == 0);
@@ -157,7 +215,8 @@ TEST_FILE
 		fixture.Git({ L"mv", L"tracked.txt", L"renamed.txt" });
 		changes.Clear(); repo.Changes(changes);
 		TEST_ASSERT(changes.Count() == 1 && changes[0].oldPath == L"tracked.txt");
-		TEST_ASSERT(Contains(repo.Diff(changes[0]), L"rename to renamed.txt"));
+		auto rename = repo.Diff(changes[0]);
+		TEST_ASSERT(rename.Count() == 1 && rename[0].text == L"No textual changes.");
 		fixture.Commit();
 		history.Clear(); repo.History(L"main", history);
 		rootFiles.Clear(); repo.CommitFiles(history[0].hash, rootFiles);
@@ -166,6 +225,41 @@ TEST_FILE
 		TEST_ASSERT(repo.CurrentBranch().Length() == 0);
 		history.Clear(); repo.History(L"(detached HEAD)", history);
 		TEST_ASSERT(history.Count() == 3);
+		fixture.Delete();
+	});
+
+	TEST_CASE(L"Real deleted, binary and UTF-8 BOM files render without patch metadata")
+	{
+		Fixture fixture;
+		fixture.Write(L"text.txt", L"old\n"); fixture.Commit();
+		GitRepository repo(fixture.root);
+		TEST_ASSERT(File(fixture.root / L"text.txt").Delete());
+		List<GitFile> files;
+		repo.Changes(files);
+		auto removed = repo.Diff(files[0]);
+		TEST_ASSERT(removed.Count() == 1 && removed[0].text == L"   1 old" && removed[0].change == -1);
+		fixture.Git({ L"add", L"--all" });
+		files.Clear(); repo.Changes(files);
+		removed = repo.Diff(files[0]);
+		TEST_ASSERT(removed.Count() == 1 && removed[0].text == L"   1 old" && removed[0].change == -1);
+		fixture.Commit();
+		List<GitCommit> history;
+		repo.History(L"main", history);
+		files.Clear(); repo.CommitFiles(history[0].hash, files);
+		removed = repo.Diff(files[0], history[0].hash);
+		TEST_ASSERT(removed.Count() == 1 && removed[0].text == L"   1 old" && removed[0].change == -1);
+		{
+			stream::FileStream file((fixture.root / L"binary.dat").GetFullPath(), stream::FileStream::WriteOnly);
+			uint8_t binary[] = { 0, 1, 2, 3 };
+			TEST_ASSERT(file.Write(binary, sizeof(binary)) == sizeof(binary));
+		}
+		TEST_ASSERT(File(fixture.root / L"bom.txt").WriteAllText(L"new\n", true, stream::BomEncoder::Utf8));
+		files.Clear(); repo.Changes(files);
+		TEST_ASSERT(files.Count() == 2);
+		auto binaryDiff = repo.Diff(files[0]);
+		TEST_ASSERT(binaryDiff.Count() == 1 && binaryDiff[0].text == L"Binary file changed.");
+		auto bom = repo.Diff(files[1]);
+		TEST_ASSERT(bom.Count() == 1 && bom[0].text == L"   1 \xFEFFnew" && bom[0].change == 1);
 		fixture.Delete();
 	});
 
@@ -190,7 +284,8 @@ TEST_FILE
 		List<GitFile> files;
 		repo.CommitFiles(history[0].hash, files);
 		TEST_ASSERT(files.Count() == 1 && files[0].path == L"side.txt");
-		TEST_ASSERT(Contains(repo.Diff(files[0], history[0].hash), L"+side"));
+		auto merged = repo.Diff(files[0], history[0].hash);
+		TEST_ASSERT(merged.Count() == 1 && merged[0].text == L"   1 side" && merged[0].change == 1);
 		parent.Git({ L"worktree", L"add", L"-b", L"linked", L"linked" });
 		GitRepository worktree(parent.root / L"linked");
 		TEST_ASSERT(worktree.GetRoot() == parent.root / L"linked");
@@ -214,6 +309,11 @@ TEST_FILE
 		TEST_ASSERT(repo.Pull(L"main", false).exitCode != 0);
 		TEST_ASSERT(File(local.root / L".git/MERGE_HEAD").Exists());
 		TEST_ASSERT(Contains(repo.Pull(L"main", true).error, L"existing Git operation"));
+		List<GitFile> conflicts;
+		repo.Changes(conflicts);
+		TEST_ASSERT(conflicts.Count() == 1);
+		auto conflict = repo.Diff(conflicts[0]);
+		TEST_ASSERT(conflict.Count() > 0 && conflict[0].text == L"   1 <<<<<<< HEAD" && conflict[0].change == 1);
 		local.Git({ L"merge", L"--abort" });
 		TEST_ASSERT(repo.Pull(L"main", true).exitCode != 0);
 		TEST_ASSERT(Folder(local.root / L".git/rebase-merge").Exists());

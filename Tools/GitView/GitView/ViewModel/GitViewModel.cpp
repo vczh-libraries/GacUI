@@ -72,6 +72,7 @@ GitViewModel
 	void GitViewModel::LoadHistory()
 	{
 		selectedCommit = {};
+		selectedCommitDetails = {};
 		commits = IValueList::Create();
 		files = IValueList::Create();
 		historyDiff = IValueList::Create();
@@ -85,6 +86,7 @@ GitViewModel
 				entry->file.kind = FileKind::Commit;
 				entry->text = record.text;
 				entry->commit = record.hash;
+				entry->details = record.hash + WString::Unmanaged(L"  ") + record.time;
 				commits->Add(BoxValue(Ptr<IEntry>(entry)));
 			}
 		}
@@ -150,10 +152,9 @@ GitViewModel
 		auto result = IValueList::Create();
 		if (entry && entry->file.kind != FileKind::Group)
 		{
-			List<DiffLine> lines;
-			ParseDiff(repository.Diff(entry->file, history ? selectedCommit : WString::Empty), lines);
+			auto lines = repository.Diff(entry->file, history ? selectedCommit : WString::Empty);
 			for (auto&& line : lines) result->Add(BoxValue(Ptr<IDiffLine>(Ptr(new DiffLineModel(line)))));
-			SetStatus(entry->text);
+			SetStatus(history ? selectedCommitDetails + WString::Unmanaged(L"\r\n") + entry->text : entry->text);
 		}
 		if (history) { historyDiff = result; HistoryDiffChanged(); }
 		else { changeDiff = result; ChangeDiffChanged(); }
@@ -172,6 +173,7 @@ GitViewModel
 	{
 		if (refreshing) return;
 		selectedCommit = {};
+		selectedCommitDetails = {};
 		files = IValueList::Create();
 		historyDiff = IValueList::Create();
 		try
@@ -179,10 +181,11 @@ GitViewModel
 			if (entry)
 			{
 				selectedCommit = entry.Cast<Entry>()->commit;
+				selectedCommitDetails = entry.Cast<Entry>()->details;
 				List<GitFile> records;
 				repository.CommitFiles(selectedCommit, records);
 				files = MakeFileEntries(records);
-				SetStatus(WString::Unmanaged(L"Commit ") + selectedCommit + WString::Unmanaged(L" (merge commits compare with their first parent)."));
+				SetStatus(selectedCommitDetails);
 			}
 		}
 		catch (const Exception& error) { SetStatus(error.Message()); }

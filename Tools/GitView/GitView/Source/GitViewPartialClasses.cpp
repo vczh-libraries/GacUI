@@ -1173,7 +1173,7 @@ Closures
 
 	void __vwsnc4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::WString::Unmanaged(L"REPO: ") + ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetRepositoryName());
+		auto __vwsn_bind_activator_result_ = ((::vl::WString::Unmanaged(L"REPO: ") + ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetRepositoryName()) + ::vl::WString::Unmanaged(L" "));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -1650,7 +1650,7 @@ Class (::gitview::MainWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetBorder(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetPadding(static_cast<::vl::vint>(1));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetPadding(static_cast<::vl::vint>(0));
 		}
 		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout()));
 		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout()));
@@ -1682,6 +1682,12 @@ Class (::gitview::MainWindowConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf4_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetVerticalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetHorizontalAlwaysVisible(false);
 		}
 		{
 			(this->branches = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_7)));
@@ -1809,6 +1815,12 @@ Class (::gitview::MainWindowConstructor)
 			::vl::__vwsn::This(this->changes)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf6_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 		}
 		{
+			::vl::__vwsn::This(this->changes)->SetVerticalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->changes)->SetHorizontalAlwaysVisible(false);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_24.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->changes)->GetBoundsComposition()));
 		}
 		{
@@ -1834,6 +1846,12 @@ Class (::gitview::MainWindowConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_28)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf8_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_28)->SetVerticalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_28)->SetHorizontalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_27.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_28)->GetBoundsComposition()));
@@ -1880,6 +1898,12 @@ Class (::gitview::MainWindowConstructor)
 			::vl::__vwsn::This(this->commits)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf9_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 		}
 		{
+			::vl::__vwsn::This(this->commits)->SetVerticalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->commits)->SetHorizontalAlwaysVisible(false);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_32.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->commits)->GetBoundsComposition()));
 		}
 		{
@@ -1903,6 +1927,12 @@ Class (::gitview::MainWindowConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->files)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf10_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
+		}
+		{
+			::vl::__vwsn::This(this->files)->SetVerticalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->files)->SetHorizontalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_35.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->files)->GetBoundsComposition()));
@@ -1932,6 +1962,12 @@ Class (::gitview::MainWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_39)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf12_GitView_gitview_MainWindowConstructor___vwsn_gitview_MainWindow_Initialize_(this)));
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_39)->SetVerticalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_39)->SetHorizontalAlwaysVisible(false);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_38.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_39)->GetBoundsComposition()));
 		}
 		{
@@ -1955,15 +1991,21 @@ Class (::gitview::MainWindowConstructor)
 		}
 		(this->__vwsn_precompile_40 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyBottomLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyBottomLayout()));
 		{
-			(this->status = new ::vl::presentation::controls::GuiMultilineTextBox(::vl::presentation::theme::ThemeName::MultilineTextBox));
+			(this->status = new ::vl::presentation::controls::GuiDocumentViewer(::vl::presentation::theme::ThemeName::DocumentViewer, [&](){ ::vl::presentation::controls::GuiDocumentConfig __vwsn_temp__; __vwsn_temp__.wrapLine = ::vl::Nullable<bool>(true); __vwsn_temp__.paragraphPadding = ::vl::Nullable<bool>(false); return __vwsn_temp__; }()));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"status"), ::vl::__vwsn::Box(this->status));
 		}
 		{
 			::vl::__vwsn::This(this->status)->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::Selectable);
 		}
+		{
+			::vl::__vwsn::This(this->status)->SetVerticalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->status)->SetHorizontalAlwaysVisible(false);
+		}
 		(this->__vwsn_precompile_41 = ::vl::__vwsn::This(this->status)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_41)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(0); __vwsn_temp__.y = static_cast<::vl::vint>(4); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_41)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(0); __vwsn_temp__.y = static_cast<::vl::vint>(5); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_40.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->status)->GetBoundsComposition()));
@@ -2090,7 +2132,7 @@ Class (::gitview::MainWindowConstructor)
 		, changes(static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr))
 		, commits(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
 		, files(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
-		, status(static_cast<::vl::presentation::controls::GuiMultilineTextBox*>(nullptr))
+		, status(static_cast<::vl::presentation::controls::GuiDocumentViewer*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*>(nullptr))
 		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout>())
 		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>())

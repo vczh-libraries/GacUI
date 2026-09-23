@@ -92,21 +92,87 @@ namespace gitview
 		}
 	}
 
-	void ParseDiff(const WString& text, List<DiffLine>& lines)
+	struct DiffHunk : Object
+	{
+		vint				oldStart = 0;
+		vint				oldCount = 0;
+		vint				newStart = 0;
+		vint				newCount = 0;
+		List<WString>		removed;
+		List<WString>		added;
+	};
+
+	void ReadDiffRange(const WString& range, vint& start, vint& count)
+	{
+		List<WString> parts;
+		SplitRecords(range.Sub(1, range.Length() - 1), L',', parts);
+		CHECK_ERROR(parts.Count() == 1 || parts.Count() == 2, L"Malformed Git hunk range.");
+		start = wtoi(parts[0]);
+		count = parts.Count() == 2 ? wtoi(parts[1]) : 1;
+		if (count > 0) start--;
+	}
+
+	void ParseDiff(const WString& patch, const WString& newText, List<DiffLine>& lines)
 	{
 		List<WString> records;
-		SplitRecords(text, L'\n', records);
-		bool hunk = false;
+		SplitRecords(patch, L'\n', records);
+		List<Ptr<DiffHunk>> hunks;
+		bool binary = false;
 		for (auto&& record : records)
 		{
-			auto line = record;
-			if (line.Length() && line[line.Length() - 1] == L'\r') line = line.Left(line.Length() - 1);
-			if (line.Length() >= 5 && line.Left(5) == WString::Unmanaged(L"diff ")) hunk = false;
-			if (line.Length() >= 2 && line.Left(2) == WString::Unmanaged(L"@@")) hunk = true;
-			auto change = hunk && line.Length() ? (line[0] == L'+' ? 1 : line[0] == L'-' ? -1 : 0) : 0;
-			lines.Add({ line, change });
+			auto line = TrimLineEnding(record);
+			if (hunks.Count())
+			{
+				auto hunk = hunks[hunks.Count() - 1];
+				if (hunk->removed.Count() < hunk->oldCount || hunk->added.Count() < hunk->newCount)
+				{
+					if (line.Length() && line[0] == L'\\') continue; // No final newline marker.
+					CHECK_ERROR(line.Length() && (line[0] == L'-' || line[0] == L'+'), L"Expected zero-context Git diff.");
+					(line[0] == L'-' ? hunk->removed : hunk->added).Add(line.Sub(1, line.Length() - 1));
+					continue;
+				}
+			}
+			if (line.Length() >= 3 && line.Left(3) == WString::Unmanaged(L"@@ "))
+			{
+				List<WString> fields;
+				SplitRecords(line, L' ', fields);
+				CHECK_ERROR(fields.Count() >= 4 && fields[3] == WString::Unmanaged(L"@@"), L"Malformed Git hunk header.");
+				auto hunk = Ptr(new DiffHunk);
+				ReadDiffRange(fields[1], hunk->oldStart, hunk->oldCount);
+				ReadDiffRange(fields[2], hunk->newStart, hunk->newCount);
+				hunks.Add(hunk);
+			}
+			else if (line.Length() >= 13 && line.Left(13) == WString::Unmanaged(L"Binary files ")) binary = true;
 		}
-		if (lines.Count() == 0) lines.Add({ WString::Unmanaged(L"No textual differences (the file may have only metadata changes)."), 0 });
+
+		List<WString> content;
+		SplitRecords(newText, L'\n', content);
+		for (auto [line, i] : indexed(content)) content[i] = TrimLineEnding(line);
+		auto append = [&](vint index, const WString& text, vint change)
+		{
+			auto number = itow(index + 1);
+			lines.Add({ WString::Unmanaged(L"    ").Left(number.Length() < 4 ? 4 - number.Length() : 0) + number + WString::Unmanaged(L" ") + text, change });
+		};
+		vint cursor = 0;
+		for (auto [hunk, i] : indexed(hunks))
+		{
+			CHECK_ERROR(hunk->removed.Count() == hunk->oldCount && hunk->added.Count() == hunk->newCount, L"Incomplete Git hunk.");
+			if (hunk->newStart < cursor || hunk->newStart + hunk->newCount > content.Count())
+				throw Exception(WString::Unmanaged(L"File changed while reading its diff. REFRESH and select it again."));
+			for (vint j = (cursor > hunk->newStart - 3 ? cursor : hunk->newStart - 3); j < hunk->newStart; j++) append(j, content[j], 0);
+			for (auto [line, j] : indexed(hunk->removed)) append(hunk->oldStart + j, line, -1);
+			for (auto [line, j] : indexed(hunk->added))
+			{
+				auto index = hunk->newStart + j;
+				if (line != content[index]) throw Exception(WString::Unmanaged(L"File changed while reading its diff. REFRESH and select it again."));
+				append(index, content[index], 1);
+			}
+			cursor = hunk->newStart + hunk->newCount;
+			auto end = content.Count() < cursor + 3 ? content.Count() : cursor + 3;
+			if (i + 1 < hunks.Count() && hunks[i + 1]->newStart < end) end = hunks[i + 1]->newStart;
+			while (cursor < end) { append(cursor, content[cursor], 0); cursor++; }
+		}
+		if (lines.Count() == 0) lines.Add({ binary ? WString::Unmanaged(L"Binary file changed.") : WString::Unmanaged(L"No textual changes."), 0 });
 	}
 
 /***********************************************************************
@@ -178,9 +244,9 @@ GitRepository
 		if (exists.exitCode == 1 && branch == CurrentBranch()) return; // Unborn branch.
 		if (exists.exitCode != 0) throw Exception(WString::Unmanaged(L"Cannot resolve branch: ") + branch);
 		List<WString> records;
-		SplitRecords(Read({ WString::Unmanaged(L"log"), WString::Unmanaged(L"-z"), WString::Unmanaged(L"--date=short"), WString::Unmanaged(L"--format=%H%x00%h  %ad  %s  (%an)"), TrimLineEnding(exists.output), WString::Unmanaged(L"--") }), 0, records);
-		if (records.Count() % 2) throw Exception(WString::Unmanaged(L"Malformed Git history."));
-		for (vint i = 0; i < records.Count(); i += 2) commits.Add({ records[i], records[i + 1] });
+		SplitRecords(Read({ WString::Unmanaged(L"log"), WString::Unmanaged(L"-z"), WString::Unmanaged(L"--format=%H%x00%s  (%an)%x00%cI"), TrimLineEnding(exists.output), WString::Unmanaged(L"--") }), 0, records);
+		if (records.Count() % 3) throw Exception(WString::Unmanaged(L"Malformed Git history."));
+		for (vint i = 0; i < records.Count(); i += 3) commits.Add({ records[i], records[i + 1], records[i + 2] });
 	}
 
 	void GitRepository::CommitFiles(const WString& commit, List<GitFile>& files) const
@@ -204,7 +270,7 @@ GitRepository
 		}
 	}
 
-	WString GitRepository::Diff(const GitFile& file, const WString& commit) const
+	List<DiffLine> GitRepository::Diff(const GitFile& file, const WString& commit) const
 	{
 		List<WString> arguments;
 		if (file.kind == FileKind::History)
@@ -212,8 +278,9 @@ GitRepository
 			arguments = MakeArguments({ WString::Unmanaged(L"show"), WString::Unmanaged(L"--format="), WString::Unmanaged(L"--root"), WString::Unmanaged(L"--first-parent"), WString::Unmanaged(L"--diff-merges=first-parent") });
 		}
 		else arguments.Add(WString::Unmanaged(L"diff"));
-		CopyFrom(arguments, MakeArguments({ WString::Unmanaged(L"--no-ext-diff"), WString::Unmanaged(L"--no-textconv"), WString::Unmanaged(L"--no-color"), WString::Unmanaged(L"--unified=3"), WString::Unmanaged(L"--inter-hunk-context=0"), WString::Unmanaged(L"--submodule=short"), WString::Unmanaged(L"-M") }), true);
+		CopyFrom(arguments, MakeArguments({ WString::Unmanaged(L"--no-ext-diff"), WString::Unmanaged(L"--no-textconv"), WString::Unmanaged(L"--no-color"), WString::Unmanaged(L"--unified=0"), WString::Unmanaged(L"--inter-hunk-context=0"), WString::Unmanaged(L"--submodule=short"), WString::Unmanaged(L"-M") }), true);
 		if (file.kind == FileKind::Staged) arguments.Add(WString::Unmanaged(L"--cached"));
+		if (file.kind == FileKind::Unstaged) arguments.Add(WString::Unmanaged(L"--ours"));
 		if (file.kind == FileKind::Untracked) arguments.Add(WString::Unmanaged(L"--no-index"));
 		if (file.kind == FileKind::History) arguments.Add(commit);
 		arguments.Add(WString::Unmanaged(L"--"));
@@ -229,7 +296,43 @@ GitRepository
 		arguments.Add(file.path);
 		auto result = Run(arguments);
 		if (result.exitCode != 0 && !(file.kind == FileKind::Untracked && result.exitCode == 1)) throw Exception(result.error + result.output);
-		return result.output;
+		List<DiffLine> lines;
+		List<WString> records;
+		SplitRecords(result.output, L'\n', records);
+		bool hasHunk = false;
+		for (auto&& record : records)
+		{
+			if (record.Length() >= 3 && record.Left(3) == WString::Unmanaged(L"@@ ")) { hasHunk = true; break; }
+			if (record.Length() >= 7 && record.Right(7) == WString::Unmanaged(L" 160000"))
+			{
+				lines.Add({ WString::Unmanaged(L"Submodule revision or working tree changed."), 0 });
+				return lines;
+			}
+		}
+		WString newText;
+		if (hasHunk)
+		{
+			auto deleted = file.kind == FileKind::History || file.kind == FileKind::Staged ? file.status[0] == L'D' : file.status.Length() == 2 && file.status[1] == L'D';
+			if (!deleted)
+			{
+				if (file.kind == FileKind::History || file.kind == FileKind::Staged)
+				{
+					auto reference = (file.kind == FileKind::History ? commit : WString::Empty) + WString::Unmanaged(L":") + file.path;
+					newText = Read({ WString::Unmanaged(L"cat-file"), WString::Unmanaged(L"blob"), reference });
+				}
+				else
+				{
+					stream::BomEncoder::Encoding encoding;
+					bool containsBom;
+					if (!File(root / file.path).ReadAllTextWithEncodingTesting(newText, encoding, containsBom))
+						throw Exception(WString::Unmanaged(L"Cannot read file: ") + file.path);
+					// Git includes a UTF-8 BOM in its first source line.
+					if (containsBom && encoding == stream::BomEncoder::Utf8) newText = WString::Unmanaged(L"\xFEFF") + newText;
+				}
+			}
+		}
+		ParseDiff(result.output, newText, lines);
+		return lines;
 	}
 
 	CommandResult GitRepository::Pull(const WString& branch, bool rebaseOnConflict) const
