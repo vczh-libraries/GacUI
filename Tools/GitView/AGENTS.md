@@ -51,6 +51,8 @@ Features are based on `git` CLI commands, prepare a function to run CLI commands
 +----------------------------------------------------------------------------------+
 ```
 
+- Changing branches doesn't do `git checkout`, it only change what history to read.
+
 ### Main Window (HISTORY)
 
 It has 3 columns instead of two for:
@@ -64,8 +66,9 @@ This is a menu bar button with such sub menu:
 - `REFRESH`: This app does not watch file changing, click it to reload files in `CHANGES` and commits in `HISTORY`.
   - Everything become unselected.
   - Immediate loading is performed when a commit or file is selected.
-- `FETCH ORIGIN`: Do `git pull origin <BRANCH>`, report an error when conflict happens.
-- `FETCH ORIGIN and REBASE`: Do `git pull origin <BRANCH>`, rebase when conflict happens, report an error when there are unresolvable conflicts. Users are expected to resolve them with another terminal or tool.
+- `FETCH ORIGIN`: Do `git pull origin <BRANCH>`, report an error when conflict happens, or when the current branch is not the selected branch.
+- `FETCH ORIGIN and REBASE`: Do `git pull origin <BRANCH>`, rebase when conflict happens, report an error when there are unresolvable conflicts, or when the current branch is not the selected branch. Users are expected to resolve them with another terminal or tool.
+- `EXIT`.
 
 ## Localization
 
