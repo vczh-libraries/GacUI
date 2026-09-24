@@ -28,6 +28,8 @@
 - Prefer EazyLayout for arrangements it can express [2]
 - Omit redundant EazyLayout sample properties and wrappers [2]
 - Keep skin defaults internal and showcase palette selection external [2]
+- Render GitView diffs as numbered source rows [2]
+- Keep GitView commit metadata in the status panel [2]
 - Nest EazyLayout descriptor groups under one owning layout [1]
 - Use /AsPort for automation with default 8888 [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
@@ -91,6 +93,9 @@
 - Delegate EazyLayout cell-site rejection to GuiTableComposition [1]
 - Create UIA providers and observation only for demand [1]
 - Cache UiaList presentation values until an explicit query [1]
+- Keep GitView terminal layout compact in character cells [1]
+- Generate portable tool resources through both architectures [1]
+- Keep separate GitView Unix configurations for each executable [1]
 
 # Refinements
 
@@ -524,3 +529,25 @@ Windows UIA implementation under `Source/PlatformProviders/Windows/UIAutomation`
 ## Cache UiaList presentation values until an explicit query
 
 UiaList view models own cached display values and derived presentation state. Scrolling, painting, recycling a row or revisiting a loaded tab must not reread the target or reconstruct expensive presentation collections. Preserve initial loading, explicit Refresh and committed parameterized queries, plus readback after successful edits/actions. Keep drafts and validation in the view model so editor recreation preserves them. Profile the actual repeated work before assuming every getter is making a UIA call.
+
+## Keep GitView terminal layout compact in character cells
+
+In `Tools/GitView/GitView/UI`, omit outer padding and empty rows between terminal controls. Retain the one-cell tracks needed for draggable splitters. Lists, trees, the branch popup and the status viewer should hide scrollbars when content fits. Give the readonly status area three content rows, account separately for its borders, and wrap long text so it needs no horizontal scrollbar. Preserve selection and vertical scrolling, and reset the view to the beginning when status text changes.
+
+## Render GitView diffs as numbered source rows
+
+In `Tools/GitView/GitView/Model/Git.cpp` and the authored diff template, parse Git hunks and combine them with the correct index, working-tree or historical file content. Display source lines without patch headers or marker prefixes, using dark red for deletions and dark green for additions. Include three unchanged lines around each change, merge overlapping or touching context, and preserve real blank lines. Prefix deletions with old line numbers and other rows with new line numbers, padded on the left to at least four characters followed by one space. Summarize binary or metadata-only changes without exposing raw patch syntax.
+
+Use the parser's source positions to distinguish omitted lines from a new hunk whose displayed context is actually consecutive. Insert one unnumbered gray horizontal separator row on the ordinary background only for a real omitted gap. Touching or overlapping ranges remain one group, including when insertions or deletions shift old and new line numbers. Keep the separator's background normal when selected and let its width follow the diff viewport.
+
+## Keep GitView commit metadata in the status panel
+
+Show only the commit subject in GitView's history list. Keep the author as a separate model field and display `HASH (author) DATE` in the bottom status panel. Retain that metadata above the path after selecting a historical file, so detailed metadata does not crowd the list or disappear during diff browsing.
+
+## Generate portable tool resources through both architectures
+
+For portable checked-in C++ from a tool's authored GacUI XML, run GacBuild manually after UI changes on Windows; never call it from vcxproj pre/post-build instructions. With native Unix tools, run GacGen `/P32` and `/P64`, then the existing CppMerge, preserving both staging outputs until merging completes. A single direct `/C64` generation can replace portable pointer-sized types with fixed 64-bit types. Do not hand-edit generated source to repair that mismatch; use the paired generation path.
+
+## Keep separate GitView Unix configurations for each executable
+
+Maintain authored `vmake` files under `Tools/GitView/Linux/GitTui` and `Tools/GitView/Linux/GitViewTests`, with paths relative to their own build directories. Keep the model/view-model tests independent of native renderer libraries. Build and run each target from its directory through the repository workflow, and keep the layout documented in `Tools/GitView/AGENTS.md` and `README.md`.

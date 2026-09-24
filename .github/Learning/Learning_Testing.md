@@ -36,6 +36,7 @@
 - Remote-debugging guides own complete Cartesian test matrices [2]
 - Verify palette refresh through retained state and actual host rendering [2]
 - Use remote-protocol snapshots only for useful rendering [2]
+- Verify GitView diffs against real repository states [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Verify GacGen RPC outputs with positive and negative resources [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
@@ -549,3 +550,9 @@ In `Test/UIA_CppTest_Shared.cs`, wait for the queued rebuild using a checked `Wi
 ## Keep FullControlTest UIA checks synchronized with showcase changes
 
 When FullControlTest changes, update the affected assertions in `Test/UIA_CppTest_Shared.cs` and run both `Test/UIA_CppTest.ps1` and `Test/UIA_CppTest_Metaonly.ps1`. Check meaningful roles, properties, pattern actions and their resulting state, not only generic tab traversal. Inspect with UiaList through its automation endpoint when helpful. Keep the script entry points, prerequisites and hosted/native distinctions under `Project.md` Windows Specific.
+
+## Verify GitView diffs against real repository states
+
+Use disposable repositories to distinguish staged, working-tree and historical contents in GitView tests. Assert exact source rows, line numbers, colors and context boundaries, including blank lines, large line numbers, missing final newlines, patch-like source text, BOMs and binary files. Construct binary fixtures as bytes and inspect them when Git classifies them unexpectedly; a text writer can invalidate a NUL-based fixture. Complement model assertions with terminal input/output checks of compact layout, splitter movement, scrolling, status wrapping and retained commit details.
+
+Cover separated, overlapping and exactly touching context ranges, with insertion/deletion shifts, and require separator rows only for omitted source gaps. Inspect terminal cells for the gray rule, normal background, absent line number and width after resizing. Assert subject-only history rows and exact `HASH (author) DATE` status after file selection. On POSIX, initialize the test process locale from the environment and use an installed UTF-8 locale for Unicode filename fixtures; successful TUI startup does not initialize a separate test executable. Assigned Alt labels do not prove standalone Alt delivery where the POSIX input decoder does not report that key.

@@ -7,8 +7,8 @@
 - Process staged tasks one by one with verification [22]
 - Proactively remove code made redundant by refactoring [21]
 - Port fixes from imports to source repositories [18]
+- Verify and localize portability on every target OS [17]
 - Crash early instead of adding error-tolerance fallbacks [15]
-- Verify and localize portability on every target OS [15]
 - Extract abstractions only for real shared behavior [14]
 - Fix behavior at the owning state instead of patching symptoms [12]
 - Validate expectations against implementation and existing tests [12]
@@ -358,6 +358,8 @@ The same standard applies when severe CPU usage coincides with a debugger or ter
 ## Verify and localize portability on every target OS
 
 Run the relevant tests on every target operating system whose behavior is being claimed, and report only the platforms actually exercised. Use contrasts between passing and failing platforms to narrow investigation toward the failing platform's implementation before changing shared code, while retaining cross-platform regression verification. Instructions may be prepared for an untested operating system only when they are clearly labeled untested; never report that platform as verified.
+
+When asked to prepare Unix `vmake` configuration on Windows without executing it, review the authored configuration and its source paths only. Do not fabricate `makefile` or `vmake.txt` outputs. Likewise, distinguish pseudoconsole input/output verification from physical desktop input and displayed terminal appearance.
 
 Portability applies to test synchronization APIs too. When a timed thread wait exists only on one platform, use a cross-platform completion primitive such as `EventObject` for the bounded deadlock guard, signal it on every expected completion path, and still join the worker afterward. Do not weaken a bounded test into an unbounded join merely to make it compile elsewhere.
 
