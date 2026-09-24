@@ -9,5 +9,4 @@
     <ClCompile Include="Main.cpp"><Filter>Source Files</Filter></ClCompile>
     <Manifest Include="app.manifest"><Filter>Source Files</Filter></Manifest>
   </ItemGroup>
-  <ItemGroup><ClInclude Include="..\..\..\Test\GacUISrc\SharedArguments.h" /></ItemGroup>
 </Project>
