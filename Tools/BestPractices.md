@@ -42,10 +42,12 @@ Settings are expected to be aligned with other projects.
     - `REPO-ROOT/../Tools/Tools/GacBuild.ps1` should be used to generate this folder.
   - `ViewModel`: View model implementation.
 - `<TOOL-NAME>Tests/<TOOL-NAME>Tests.vcxproj`: a unit test project testing against view models based on `Vlpp` unit test framework. It includes test cases that does not require user interaction and complex environment setup.
-- `<GUI-NAME>/<GUI-NAME>.vcxproj`: an interactive app running `<TOOL-NAME>`, based on GacUI with native renderer. Create this project by default.
-- `<TUI-NAME>/<TUI-NAME>.vcxproj`: an interactive app running `<TOOL-NAME>`, based on GacUI with TUI renderer. DO NOT create this project by default.
+- `<GUI-NAME>/<GUI-NAME>.vcxproj`: an interactive app running `<TOOL-NAME>` with native renderer.
+- `<TUI-NAME>/<TUI-NAME>.vcxproj`: an interactive app running `<TOOL-NAME>` with TUI renderer.
 
 `REPO-ROOT/../Tools/Tools/GacBuild.ps1` is recommended for compiling GacUI XML Resource, but DO NOT call this script in any vcxproj pre/post build instructions. When the UI is changed, call this script manually.
+
+Unless explicitly requested, only create the GUI project and skip the TUI project. As currently XML cannot be shared between both of them due to layout differences.
 
 ## MISC
 
