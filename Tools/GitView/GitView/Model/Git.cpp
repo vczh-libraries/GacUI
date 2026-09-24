@@ -339,7 +339,13 @@ GitRepository
 
 	CommandResult GitRepository::Pull(const WString& branch, bool rebaseOnConflict) const
 	{
-		if (!branch.Length() || branch != CurrentBranch()) return { 1, {}, WString::Unmanaged(L"Pull is available only for the checked-out branch. REFRESH after an external checkout.") };
+		if (!branch.Length()) return { 1, {}, WString::Unmanaged(L"Select a branch before pulling.") };
+		auto currentBranch = CurrentBranch();
+		if (!currentBranch.Length()) return { 1, {}, WString::Unmanaged(L"HEAD is detached. Check out a branch in another terminal, then REFRESH. No pull was performed.") };
+		if (branch != currentBranch)
+		{
+			return { 1, {}, WString::Unmanaged(L"Selected branch '") + branch + WString::Unmanaged(L"' does not match the checked-out branch '") + currentBranch + WString::Unmanaged(L"'. Select the checked-out branch or REFRESH. No pull was performed.") };
+		}
 		for (auto name : { WString::Unmanaged(L"MERGE_HEAD"), WString::Unmanaged(L"rebase-merge"), WString::Unmanaged(L"rebase-apply"), WString::Unmanaged(L"CHERRY_PICK_HEAD"), WString::Unmanaged(L"REVERT_HEAD") })
 		{
 			auto path = root / TrimLineEnding(Read({ WString::Unmanaged(L"rev-parse"), WString::Unmanaged(L"--git-path"), name }));

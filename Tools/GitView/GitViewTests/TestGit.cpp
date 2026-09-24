@@ -242,7 +242,7 @@ TEST_FILE
 		TEST_ASSERT(model.GetHistoryDiff()->GetCount() > 0);
 		TEST_ASSERT(model.GetStatus() == details + L"\r\nA tracked.txt");
 		model.SetBranchIndex(1);
-		TEST_ASSERT(!model.GetCanPull() && repo.CurrentBranch() == L"main");
+		TEST_ASSERT(model.GetCanPull() && repo.CurrentBranch() == L"main");
 		TEST_ASSERT(model.GetFiles()->GetCount() == 0 && model.GetHistoryDiff()->GetCount() == 0);
 		model.Refresh();
 		TEST_ASSERT(model.GetChangeDiff()->GetCount() == 0 && model.GetFiles()->GetCount() == 0);
@@ -327,6 +327,61 @@ TEST_FILE
 		TEST_ASSERT(worktree.CurrentBranch() == L"linked");
 		TEST_ASSERT(Contains(worktree.Pull(L"linked", false).error, L"origin"));
 		parent.Delete(); child.Delete();
+	});
+
+	TEST_CASE(L"Pull reports selected and actual branch mismatches for both menu actions")
+	{
+		Fixture remote;
+		remote.Write(L"tracked.txt", L"base\n"); remote.Commit();
+		Fixture local;
+		local.Git({ L"remote", L"add", L"origin", remote.root.GetFullPath() });
+		local.Git({ L"pull", L"origin", L"main" });
+		local.Git({ L"branch", L"other" });
+		remote.Write(L"tracked.txt", L"remote update\n"); remote.Commit();
+		GitRepository repo(local.root);
+		GitViewModel model(local.root);
+		auto head = local.Git({ L"rev-parse", L"HEAD" });
+		auto index = local.Git({ L"write-tree" });
+		auto fetchHead = local.Git({ L"rev-parse", L"FETCH_HEAD" });
+		for (auto rebase : { false, true })
+		{
+			for (vint scenario = 0; scenario < 4; scenario++)
+			{
+				local.Git({ L"checkout", L"main" });
+				model.Refresh();
+				if (scenario == 0) model.SetBranchIndex(1);
+				else if (scenario == 1) local.Git({ L"checkout", L"other" });
+				else local.Git({ L"checkout", L"--detach" });
+				if (scenario == 3) model.Refresh();
+				auto actual = repo.CurrentBranch();
+				TEST_ASSERT(model.GetCanPull());
+				model.Pull(rebase);
+				TEST_ASSERT(Contains(model.GetStatus(), L"Pull failed."));
+				TEST_ASSERT(Contains(model.GetStatus(), L"No pull was performed."));
+				TEST_ASSERT(!Contains(model.GetStatus(), L"Resolve conflicts"));
+				if (scenario < 2)
+				{
+					TEST_ASSERT(Contains(model.GetStatus(), scenario == 0 ? L"Selected branch 'other'" : L"Selected branch 'main'"));
+					TEST_ASSERT(Contains(model.GetStatus(), scenario == 0 ? L"checked-out branch 'main'" : L"checked-out branch 'other'"));
+				}
+				else TEST_ASSERT(Contains(model.GetStatus(), L"HEAD is detached"));
+				TEST_ASSERT(repo.CurrentBranch() == actual);
+				TEST_ASSERT(local.Git({ L"rev-parse", L"HEAD" }) == head);
+				TEST_ASSERT(local.Git({ L"write-tree" }) == index);
+				TEST_ASSERT(local.Git({ L"rev-parse", L"FETCH_HEAD" }) == fetchHead);
+				TEST_ASSERT(local.Git({ L"status", L"--porcelain=v1" }).Length() == 0);
+				WString content;
+				TEST_ASSERT(File(local.root / L"tracked.txt").ReadAllTextByBom(content));
+				TEST_ASSERT(content == L"base\n");
+			}
+		}
+		local.Git({ L"checkout", L"main" });
+		model.Refresh();
+		model.Pull(false);
+		TEST_ASSERT(Contains(model.GetStatus(), L"Pull completed."));
+		TEST_ASSERT(local.Git({ L"rev-parse", L"HEAD" }) == remote.Git({ L"rev-parse", L"HEAD" }));
+		local.Delete();
+		remote.Delete();
 	});
 
 	TEST_CASE(L"Pull uses only local remotes and retains conflicts for external resolution")

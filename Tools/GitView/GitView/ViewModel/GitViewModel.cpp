@@ -55,7 +55,7 @@ GitViewModel
 	WString GitViewModel::GetRepositoryName() { return repository.GetRoot().GetName(); }
 	Ptr<IValueList> GitViewModel::GetBranches() { return branches; }
 	vint GitViewModel::GetBranchIndex() { return branchIndex; }
-	bool GitViewModel::GetCanPull() { return currentBranch.Length() && branchIndex >= 0 && UnboxValue<WString>(branches->Get(branchIndex)) == currentBranch; }
+	bool GitViewModel::GetCanPull() { return branchIndex >= 0 && branchIndex < branches->GetCount(); }
 	Ptr<IEntry> GitViewModel::GetChanges() { return changes; }
 	Ptr<IValueList> GitViewModel::GetCommits() { return commits; }
 	Ptr<IValueList> GitViewModel::GetFiles() { return files; }
@@ -99,7 +99,6 @@ GitViewModel
 		refreshing = true;
 		try
 		{
-			currentBranch = repository.CurrentBranch();
 			List<WString> names;
 			repository.Branches(names);
 			branches = IValueList::Create();
@@ -204,9 +203,13 @@ GitViewModel
 
 	void GitViewModel::Pull(bool rebaseOnConflict)
 	{
-		if (!GetCanPull()) return;
+		if (!GetCanPull())
+		{
+			SetStatus(WString::Unmanaged(L"Pull failed. Select a branch first."));
+			return;
+		}
 		auto result = repository.Pull(UnboxValue<WString>(branches->Get(branchIndex)), rebaseOnConflict);
 		Refresh();
-		SetStatus((result.exitCode == 0 ? WString::Unmanaged(L"Pull completed.\r\n") : WString::Unmanaged(L"Pull failed. Resolve conflicts in another terminal, then REFRESH.\r\n")) + result.output + result.error);
+		SetStatus((result.exitCode == 0 ? WString::Unmanaged(L"Pull completed.\r\n") : WString::Unmanaged(L"Pull failed.\r\n")) + result.output + result.error);
 	}
 }

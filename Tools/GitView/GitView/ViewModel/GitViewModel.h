@@ -40,7 +40,6 @@ namespace gitview
 		vl::Ptr<vl::reflection::description::IValueList> files;
 		vl::Ptr<vl::reflection::description::IValueList> changeDiff;
 		vl::Ptr<vl::reflection::description::IValueList> historyDiff;
-		vl::WString						currentBranch;
 		vl::WString						selectedCommit;
 		vl::WString						selectedCommitDetails;
 		vl::WString						status;
