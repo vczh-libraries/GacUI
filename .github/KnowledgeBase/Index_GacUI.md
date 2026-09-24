@@ -32,6 +32,18 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 
 ### Design Explanation
 
+#### UiaList Windows Inspector
+
+Use UiaListApp to discover Windows application windows, inspect UI Automation nodes and properties, and invoke supported target actions.
+
+[Usage Guide](./KB_GacUI_Design_UiaList.md)
+
+#### GitTui Repository Browser
+
+Use GitTui to browse working-tree diffs and local branch history in a terminal, refresh after external changes, and explicitly pull from origin.
+
+[Usage Guide](./KB_GacUI_Design_GitTui.md)
+
 #### Windows UI Automation
 
 - The Windows GDI and Direct2D providers expose GacUI controls and logical list/tree/grid/calendar items through UIA COM providers.
