@@ -3,8 +3,12 @@
 ## Maintaining Tools
 
 - If the behavior of `REPO-ROOT/Tools/GacGen` changes, update `REPO-ROOT/.github/KnowledgeBase/KB_GacUI_Design_GacGenAndGacBuild.md`.
-- `UiaList` is Windows only, check out `REPO-ROOT/UiaList/AGENTS.md` if and only if you are working on it.
-- `GitTui` is cross platform, check out `REPO-ROOT/GitTui/AGENTS.md` if and only if you are working on it.
+- If the behavior of any tool changes, update:
+  - `REPO-ROOT/Tools/GacGen` and `../Tools/Tools/GacBuild.ps1`: `REPO-ROOT/.github/KnowledgeBase/KB_GacUI_Design_GacGenAndGacBuild.md`.
+  - `REPO-ROOT/Tools/UiaList`:
+    - This tool is Windows only, check out `REPO-ROOT/UiaList/AGENTS.md` if and only if you are working on it.
+  - `REPO-ROOT/Tools/GitTui`:
+    - This tool is cross platform, check out `REPO-ROOT/GitTui/AGENTS.md` if and only if you are working on it.
 - When only changing tools without changing GacUI itself or built-in skins, GacUI test process could be completely skipped.
 - When only changing test apps without changing GacUI itself or built-in skins, GacUI unit test could be completely skipped.
 
