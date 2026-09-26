@@ -1890,7 +1890,6 @@ namespace vl
 			typedef collections::Dictionary<GlobalStringKey, Ptr<description::ITypeInfo>>		TypeOverrideMap;
 			typedef collections::Dictionary<GuiValueRepr*, PropertyResolving>					PropertyResolvingMap;
 			typedef collections::Group<GlobalStringKey, Ptr<GuiAttSetterRepr::EnvVarValue>>		EnvironmentVariableGroup;
-			typedef collections::Dictionary<IGuiInstanceLoader*, Ptr<Object>>					LoaderStateMap;
 
 			struct ResolvingResult : public Object, public Description<ResolvingResult>
 			{
@@ -1905,7 +1904,6 @@ namespace vl
 
 				VariableTypeInfoMap								typeInfos;						// type of references
 				PropertyResolvingMap							propertyResolvings;				// information of property values which are calling constructors
-				LoaderStateMap									loaderStates;					// loader-owned state scoped to this instance context compilation
 			};
 		}
 		extern workflow::analyzer::WfLexicalScopeManager*		Workflow_GetSharedManager(GuiResourceCpuArchitecture targetCpuArchitecture);

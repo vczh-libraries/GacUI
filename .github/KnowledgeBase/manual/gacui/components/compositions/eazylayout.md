@@ -21,6 +21,8 @@ Each layout or description can contain one control or independently positioned c
 
 Nesting **\<ez:Layout/\>** is supported but strongly discouraged for combining arrangements. Use nested description groups within one owning layout instead; different groups can have different arrangements without an extra layout owner.
 
+Declare controls, compositions and layout descriptions as direct children. The named **Composition** and **Layouts** properties are unsupported in resource XML, including attributes, property elements and bindings. Their C++ and Workflow APIs remain available for programmatic changes.
+
 ## Spacing
 
 **Padding** sets the gap between neighboring parts and defaults to 5. Nested description groups do not multiply that gap. **Border** defaults to **true** and adds the same gap around the layout; set it to **false** to remove that outside gap. It does not draw a border.
@@ -31,5 +33,5 @@ XML resources build the layout automatically after assignments, initial bindings
 
 **Padding**, **Border**, **Direction**, **CellSpan**, **Percentage**, and **CellOption** support ordinary well-typed expressions and bindings. **CellOption** uses the same struct expressions as table options, including runtime field expressions and default values for omitted fields. Initial bindings affect the automatic build; later changes take effect only when **BuildLayout()** is called.
 
-Layout grammar, conflicting options and invalid numeric values fail during the automatic initialization build or a later explicit **BuildLayout()**. Ownership checks can fail during assignment. Initial XML content cannot contain multiple payloads, including combinations of unnamed children and **att.Composition**; duplicates fail XML compilation. Later property replacement and binding updates remain supported. Ordinary XML syntax, type and binder restrictions are also checked at compilation.
+Layout grammar, conflicting options and invalid numeric values fail during the automatic initialization build or a later explicit **BuildLayout()**. Ownership checks can fail during assignment. Multiple control/composition payloads in the same default content fail XML compilation. Later programmatic content replacement remains supported, as do bindings on the configuration properties described above. Ordinary XML syntax, type and binder restrictions are also checked at compilation.
 

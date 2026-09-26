@@ -15,12 +15,6 @@ namespace vl::presentation::instance_loaders
 GuiEasyInstanceLoader
 ***********************************************************************/
 
-	class GuiEasyInstanceLoaderState : public Object
-	{
-	public:
-		SortedList<GlobalStringKey>				compositions;
-	};
-
 	template<typename T>
 	class GuiEasyInstanceLoader : public Object, public IGuiInstanceLoader
 	{
@@ -39,39 +33,31 @@ GuiEasyInstanceLoader
 		{
 			if (propertyInfo.propertyName == GlobalStringKey::Empty)
 			{
-				auto info = GuiInstancePropertyInfo::Collection(nullptr);
+				auto info = GuiInstancePropertyInfo::Array(nullptr);
 				info->acceptableTypes.Add(TypeInfoRetriver<Ptr<GuiEasyLayout>>::CreateTypeInfo());
 				info->acceptableTypes.Add(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
 				info->acceptableTypes.Add(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo());
 				return info;
 			}
-			if (propertyInfo.propertyName == GlobalStringKey::Get(L"Composition"))
+			if (propertyInfo.propertyName == GlobalStringKey::Get(L"Composition") || propertyInfo.propertyName == GlobalStringKey::Get(L"Layouts"))
 			{
-				return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo());
+				return GuiInstancePropertyInfo::Unsupported();
 			}
 			return nullptr;
 		}
 
 		Ptr<WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors) override
 		{
-			vint stateIndex = resolvingResult.loaderStates.Keys().IndexOf(this);
-			auto state = stateIndex == -1
-				? Ptr(new GuiEasyInstanceLoaderState)
-				: resolvingResult.loaderStates.Values()[stateIndex].Cast<GuiEasyInstanceLoaderState>();
-			if (stateIndex == -1)
-			{
-				resolvingResult.loaderStates.Add(this, state);
-			}
+			bool hasComposition = false;
 			auto block = Ptr(new WfBlockStatement);
-			for (auto [property, index] : indexed(arguments.Keys()))
-			for (auto argument : arguments.GetByIndex(index))
+			for (auto argument : arguments.Get(GlobalStringKey::Empty))
 			{
 				auto target = Ptr(new WfReferenceExpression);
 				target->name.value = variableName.ToString();
 				auto member = Ptr(new WfMemberExpression);
 				member->parent = target;
 				Ptr<WfExpression> expression;
-				if (property == GlobalStringKey::Empty && argument.typeInfo->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiEasyLayout>()))
+				if (argument.typeInfo->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiEasyLayout>()))
 				{
 					member->name.value = L"Layouts";
 					auto add = Ptr(new WfMemberExpression);
@@ -84,20 +70,20 @@ GuiEasyInstanceLoader
 				}
 				else
 				{
-					if (state->compositions.Contains(variableName))
+					if (hasComposition)
 					{
 						errors.Add(GuiResourceError({ resolvingResult.resource }, argument.valuePosition,
 							L"Easy layout: initial content cannot contain more than one composition/control payload."));
 						return nullptr;
 					}
-					state->compositions.Add(variableName);
+					hasComposition = true;
 					member->name.value = L"Composition";
 
 					auto assign = Ptr(new WfBinaryExpression);
 					assign->op = WfBinaryOperator::Assign;
 					assign->first = member;
 					assign->second = argument.expression;
-					if (property == GlobalStringKey::Empty && argument.typeInfo->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+					if (argument.typeInfo->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 					{
 						auto bounds = Ptr(new WfMemberExpression);
 						bounds->parent = argument.expression;

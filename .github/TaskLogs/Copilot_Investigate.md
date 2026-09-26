@@ -2,176 +2,46 @@
 
 # PROBLEM DESCRIPTION
 
-This task is about refactoring `GuiInstanceLoader_EasyLayout.(h|cpp)`.
+I think by changing the default property for layouts to `SupportArray`, and disable both Composition and Layouts property to make it Unsupported, we can delete:
 
-`GuiEasyCellOptionDeserializer`:
+- `LoaderStateMap`
+- `ResolvingResult::loaderStates`
+- `GuiEasyInstanceLoaderState`
 
-I think the whole class just should not exist. Table's rows and columns already accept `CellOption` as a collection property of `GuiCellOption`, which means this type is already serializable, I believe that could just be reused.
-
-`IsEasyLayoutConstantProperty`:
-
-I think limit `CellOption` and `Percentage` of an easy layout to only use constant does not help, we should just expose it as a trivial property (which already did via reflection). Since only calling `BuildLayout` makes them being used, there is no reason to make it a constant in XML. So this function should be no longer useful.
-
-`VisitEasyLayouts`:
-
-This function should not exist either. `BuildLayout` will check all of these (if not you should do it). There is no need to verify the layout during compiling XML resources.
-
-`Workflow_BuildEasyLayouts`:
-
-`CreateInstance` runs before properties, children, and bindings are initialized, so it is too early to call `BuildLayout` there. Replace the easy-layout-specific final pass with a general initialization mechanism.
-
-Add a new function to `IGuiInstanceLoader`:
-```C++
-virtual Ptr<workflow::WfStatement> InitializeInstance(you decide the argument);
-```
-The default implementation returns null, meaning there is nothing to initialize.
-For each object, start from its most specific instance loader and follow the existing `GetParentLoader` chain all the way through the default loader. Call every loader's `InitializeInstance` in that order, regardless of `CanCreate`, and collect every non-null statement. A null result does not stop traversal. Constructor selection and `CreateInstance` remain unchanged.
-
-Visit the object tree in depth-first postorder: initialize all subobjects before their owner, and run the complete loader chain for each object. Generate this final initialization after all creation, assignments, and bindings are ready, and append the collected statements to the generated constructor helper's initialization block before the root instance's `ref.Ctor` body.
-
-Only the EasyLayout owning-layout loader needs to return a statement in this task; all other loaders use the default no-op implementation. Therefore this new dispatch mechanism should leave unrelated generated code unchanged. Minor differences in the generated `BuildLayout` calls are acceptable.
-
-`GuiInstanceLoader_EasyLayout.h` and `LoadEasyLayouts`:
-
-From here I believe everything is already waste except `GuiEasyInstanceLoader<T>` and `LoadEasyLayouts`, and the `BuildLayout` calls is moved to `GuiEasyInstanceLoader<T>`. Then we could move `LoadEasyLayouts` forward declaration to the list in `GuiInstanceLoader_Plugin.cpp`. Complete the table in the top comment in `GuiInstanceLoader_Plugin.cpp`, and then no one needs `GuiInstanceLoader_EasyLayout.h` anymore so this header file could be deleted. We could clean up `GuiInstanceLoader_EasyLayout.cpp` to make it very small, with one additional mechanism `IGuiInstanceLoader::InitializeInstance` added to the compiler.
-
-Document:
-
-Verify if this task makes any fact in GacUI's knowledge base stale, update them.
-
-Verification:
-
-Since we are doing a refactor with no change to the compiler semantic, you need to only:
-- Run unit test
-- Update release of `GacUI`
-- Call `../Tools/Tools/Build.ps1 -Project UpdateRelease`
-- Rebuild `../Release/Tools`
-- Call `../Release/Tools/Build.ps1` on `GacUI.xml` in `Release/Tutorials`
-You should only see minor change in `Release` that out of the `Import` folder
-
-## DETAILS
-
-### Intended behavior changes
-
-- Preserve the behavior of existing valid resources. The requested removal of constant-only restrictions and compile-time layout validation intentionally changes which resources compile and when invalid layouts fail; these are exceptions to the semantic-preservation statement above.
-- `GuiCellOption` already has reflected fields in `Source/Reflection/TypeDescriptors/GuiReflectionCompositions.cpp`. Reuse the ordinary struct-expression path in `Workflow_ParseTextValue` (`Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowParser.cpp`), as Table does. Remove the EasyLayout deserializer and its constant-expression helpers without introducing a replacement serializer.
-- Let reflection handle `CellOption` and `Percentage` as ordinary properties. Remove both the custom property metadata and the binding prohibition in `GuiInstanceLoader_WorkflowCollectReferences.cpp`. Supported bindings and well-typed runtime expressions become legal; ordinary syntax, type, and binder restrictions still apply. In particular, removing the prohibition does not make every existing negative `-set`, `-ref`, or `-uri` example valid.
-- These properties continue to store configuration. Initial values must be available before the automatic build; later updates require an explicit `BuildLayout`, just like `Padding`, `Border`, `Direction`, and `CellSpan`.
-
-### Generic final initialization
-
-- `WorkflowGenerateCreatingVisitor::Visit(GuiConstructorRepr*)` in `GuiInstanceLoader_WorkflowGenerateCreating.cpp` calls `CreateInstance` before assigning ordinary properties and children. `Workflow_PrecompileInstanceContext` currently generates creation, then bindings, then easy-layout builds. Calling `BuildLayout` inside `CreateInstance` is therefore too early.
-- Add `IGuiInstanceLoader::InitializeInstance` alongside the existing creation methods in `Source/Compiler/GuiInstanceLoader.h/.cpp`. Use the existing method conventions: `GuiResourcePrecompileContext&`, `types::ResolvingResult&`, `const TypeInfo&`, `GlobalStringKey variableName`, `GuiResourceTextPos tagPosition`, and `GuiResourceError::List&`; return `Ptr<workflow::WfStatement>`. No constructor argument map is needed. The base implementation returns null as a successful no-op.
-- Replace the easy-layout-specific final pass with a generic depth-first postorder traversal of resolved reference objects. Visit children in the existing representation order, then their parent. Append non-null statements only after all of `Workflow_GenerateBindings`, including event handlers and localized subscriptions. Record their source positions using the existing code-generation mechanism.
-- Keep these statements in the existing constructor helper's initialization block, before the user-written `ref.Ctor` body. Do not emit them while creation unwinds: creation traverses setters in reverse order and has not installed bindings yet.
-- For each object, start with `GetLoader(typeInfo.typeName)` and repeatedly call `GetParentLoader` until null, invoking `InitializeInstance` on every loader, including the default loader, in most-specific-to-default order. Use the existing manager chain rather than separately walking reflection base types. Do not filter by `CanCreate` or stop after a non-null result. Each hook contributes only its own initialization; it must not invoke parent-loader hooks itself, because the compiler owns traversal.
-- Pass the same resolved object type, variable, and source position through that object's whole loader chain. Preserve the special source/base type selection for the root; do not substitute the generated root class type or each parent loader's registration type. Root final initialization must not depend on having constructor arguments, unlike the existing early `InitializeRootInstance` call.
-- Preserve coverage of nested constructors and existing objects configured through `att.*-set`. The latter use `GetParameter`, not `CreateInstance`, so a queue populated only by creation calls would miss them. Existing targets still run their applicable loader chain even if no loader can construct their declared reference type. Text and serialized value expressions are not independently initialized objects. This task does not broaden which types are legal XML roots.
-
-### Easy loader initialization and cleanup
-
-- `GuiEasyInstanceLoader<T>` currently overrides neither `CanCreate` nor `CreateInstance`; construction falls through to the default loader. The new full-chain initialization reaches it independently, so keep that construction behavior and the existing constructor/root selection unchanged.
-- Add the hook to the owning-layout specialization so it emits one `BuildLayout` call for that object. Descriptor loaders and all unrelated loaders contribute no statement. Null results must not create empty generated statements or blocks; the added dispatch alone should not change unrelated generated initialization.
-- Remove `IsEasyLayoutConstantProperty`, `VisitEasyLayouts`, both easy-layout workflow entry points, and their includes/call sites. Move `LoadEasyLayouts` into the declaration and registration lists in `GuiInstanceLoader_Plugin.cpp`, remove its old invocation from `LoadCompositions`, and update the plugin's summary table.
-- Delete the now-unused header and remove its entries from `Source_GacUI_Compiler.vcxitems` and `.vcxitems.filters`, following `.github/Guidelines/SourceFileManagement.md`. Keep the implementation's required includes explicit.
-
-### Runtime validation and payload ownership
-
-- Audit the removed checks against `GuiEasyLayoutBuilder::Register`, `Prepare`, and `ValidateOption` in `Source/GraphicsComposition/EazyLayout/GuiEasyLayout.cpp`. Runtime checks already cover most descriptor grammar, splitter rules, bounds requirements, ownership, cycles, and numeric validity. Preserve the native table's handling of invalid cell sites and the ignored inner track option when `CellSpan` is not 1.
-- Multiple declarative payloads need an additional runtime initialization check. The old visitor rejects `<ez:Layout><Button/><Button/></ez:Layout>`, but `GuiEasyLayout::SetComposition` replaces and deletes an unbuilt previous payload. By the time `BuildLayout` runs, the duplicate is invisible and references to the first payload may dangle.
-- Distinguish checked insertion of initial XML content from ordinary later property replacement. Reject duplicate initial payload insertion before overwriting the first payload, covering default children, explicit `att.Composition`, and combinations in either processing order. Emit the check as runtime initialization behavior rather than restoring compile-time grammar validation. Preserve intentional later `SetComposition` replacement and binding updates. This ownership check necessarily occurs before `BuildLayout`, as existing payload ownership checks already do.
-
-### Documentation
-
-- Update `.github/Guidelines/GacUIEazyLayout.md` and `.github/KnowledgeBase/manual/gacui/components/compositions/eazylayout.md`: both currently require constant `CellOption` and `Percentage` values. Correct binding support and failure timing while retaining explicit-rebuild and initialization-order guidance.
-- Update other knowledge-base descriptions only where the implementation changes their facts. Keep compiler-specific hook documentation with `IGuiInstanceLoader`; do not expose those details in ordinary layout usage instructions.
-
-## VERIFICATION
-
-These steps apply when implementing the task; this review does not execute the refactor or release pipeline.
-
-1. Update the mixed rejection case in `Test/GacUISrc/UnitTest/TestResource.cpp`. Separate supported bindings/runtime field expressions that now compile, ordinary syntax/type/binder failures that still fail compilation, and layout grammar that compiles but fails during initialization or explicit `BuildLayout`. Do not retain source-positioned compiler-error expectations for removed grammar checks.
-2. Extend the ordinary resource tests in `TestControls_EasyLayout.cpp`. Cover attribute and property-element forms, shorthand and qualified `ComposeType` values, arithmetic/default struct fields, and actual decoded `CellOption` values. Verify initial `CellOption`/`Percentage` bindings affect the first automatic build, then verify later changes leave generated tracks unchanged until explicit rebuilding.
-3. Verify both initialization orders: subobjects before their owners, and each object's loaders from most specific through default. Check that null and non-null results both continue traversal, a loader with `CanCreate == false` still contributes its hook, and the owning-layout loader emits `BuildLayout` only once. Initial bindings/events must be ready and `ref.Ctor` must observe a built layout. Cover existing `att.*-set` targets without requiring constructibility, the root's no-constructor-argument path, and a resolved concrete type different from its loader's registered base. Confirm constructor selection stays unchanged and no-op loader chains leave unrelated generated code unchanged.
-4. Retain existing ordinary geometry/ownership/failure coverage and add only missing runtime cases. Test duplicate unnamed payloads and mixed unnamed/explicit `Composition` payloads for both owners and descriptors, while preserving legitimate later replacement. Existing negative cases are in `TestCompositions_EazyLayoutFailures.cpp`; verify that the chosen test build actually compiles and runs that file. Use ordinary tests for non-rendering behavior, following `Project.md`.
-5. Build Debug x64 through `.github/Scripts/copilotBuild.ps1` from `Test/GacUISrc`, then run `UnitTest` through `copilotExecute.ps1 -Mode UnitTest -Executable UnitTest`. Preserve relevant filters and ensure the resource, EasyLayout control/composition, and failure cases actually execute. Inspect completed `Build.log` and `Execute.log`, including the Debug leak report. If reflection registration changes or `GacUI_Compiler` runs, follow the metadata-generation requirements in `Project.md`.
-6. Run the GacUI release pipeline, then `& C:\Code\VczhLibraries\Tools\Tools\Build.ps1 -Project UpdateRelease`. The latter already builds `../Release/Tools/Executables/Executables.sln` in Release x86 and deploys its executables. For the separately requested rebuild, use the repository build wrapper from that solution directory with `-Configuration Release -Platform Win32` (the wrapper maps the solution platform to x86), then invoke `& C:\Code\VczhLibraries\Release\Tools\CopyExecutables.ps1`. Verify the deployed GacGen and metadata come from the updated release.
-7. The actual tutorial driver is `../Release/Tutorial/GacUI.xml` and the script is `../Release/Tools/GacBuild.ps1`. Refresh caches with `& C:\Code\VczhLibraries\Release\Tools\GacClear.ps1 -FileName C:\Code\VczhLibraries\Release\Tutorial\GacUI.xml`, then run `& C:\Code\VczhLibraries\Release\Tools\GacBuild.ps1 -FileName C:\Code\VczhLibraries\Release\Tutorial\GacUI.xml`. Compiler binaries are not tracked by the resource timestamp cache, so rebuilding GacGen alone can leave tutorials skipped.
-8. Inspect per-resource results for both x32 and x64: `GacBuild.ps1` catches failures and continues, so script completion is insufficient. Check errors and expected outputs, then inspect the sibling Release repository's diff outside `Import`. Existing valid tutorials should retain equivalent initialization/layout behavior with only small explainable generated changes. Do not hand-edit generated outputs or conflate this sibling repository with GacUI's own `Release` directory.
-
-## REVIEW COMMENTS
-
-No unresolved review comments; the implementation decisions and verification corrections are recorded above.
+And therefore make `AssignParameters` simpler as it reads all values at the same time. perform this refactor, and then run the verification in the original request.
 
 # UPDATES
 
-## UPDATE
-
-let’s do the AssignParameters validation instead, follow the original validation, I would expect extra lines added to those generated cpp files in Release repo’s tutorials got removed eventually.
-
 # TEST [CONFIRMED]
 
-First reproduce the rejected well-typed `Percentage-eval="1.0 + 2.0"` expression in the ordinary resource compiler tests. Extend ordinary resource/control tests to distinguish supported expressions, ordinary compiler failures and runtime grammar failures, inspect decoded options and the first build, and verify explicit rebuilding after binding updates. Exercise final initialization ordering with resolved nested/existing objects and the complete loader chain, preserving constructor selection and no-op output. Retain geometry/ownership tests and add duplicate initial payload rejection without disabling later replacement.
+The framework batches SupportArray values for a property and its selected loader in ProcessPropertyOthers. Returning Unsupported for Composition and Layouts stops loader fallback before ordinary assignment, eval/uri/bind and set handling. Verify duplicate mixed default payloads with layout descriptors interspersed, valid ordered sibling descriptors, independent layouts, and source-positioned rejection of both named properties for owners and descriptors. Preserve runtime setters, initialization order, property expressions/bindings and native BuildLayout grammar checks.
 
-The baseline Debug x64 build succeeded with zero warnings/errors. The unfiltered UnitTest run reached the new TestResource regression and failed `errors.Count() == 0`, reporting `Easy layout: Percentage must be constant and does not accept any binding.` No earlier assertion failed. Baseline execution also rewrote existing file-dialog scrolling snapshots and theme-refresh frame values; these are baseline-generated differences to review separately from the refactor.
-
-Build Debug x64 and run UnitTest through the repository wrappers, checking the completed build/test logs and Debug leak report. Then regenerate GacUI release, run UpdateRelease, rebuild/deploy sibling Release tools and clear/recompile all tutorials for both architectures. Inspect each resource result and explain every sibling Release change outside Import. Follow metadata generation if reflection changes.
+Build Debug x64 through .github/Scripts/copilotBuild.ps1 from Test/GacUISrc and run UnitTest through copilotExecute.ps1 -Mode UnitTest -Executable UnitTest. Inspect completed logs and Debug leak output. Run Release-GacUI through the existing Tools pipeline, then Tools/Tools/Build.ps1 -Project UpdateRelease. Rebuild Release/Tools/Executables with the GacUI wrapper in Release Win32 (mapped to x86), deploy with CopyExecutables.ps1, then clear and build Release/Tutorial/GacUI.xml using GacClear.ps1 and GacBuild.ps1. Verify every x32/x64 resource output, deployment and generated-source diff; generated files must not gain runtime duplicate guards. Reflection registration is unchanged, so metadata regeneration is needed only if that changes or GacUI_Compiler is run.
 
 # PROPOSALS
 
-- No.1 General postorder initialization and ordinary reflected layout properties [DENIED]
-- No.2 Compile-time duplicate payload validation in AssignParameters [CONFIRMED]
+- No.1 Batch default XML content and reject named content properties [CONFIRMED]
 
-## No.1 General postorder initialization and ordinary reflected layout properties
+## No.1 Batch default XML content and reject named content properties
 
-Add the default no-op `IGuiInstanceLoader::InitializeInstance` hook and a representation visitor after binding generation. Initialize reference subobjects in representation order before their owner, then invoke every loader in the existing manager chain without testing `CanCreate`. Preserve the root's source/base type selection and record each returned statement's source location. Keep constructor selection and the earlier constructor-argument initialization unchanged.
-
-Reduce the EasyLayout loader to child assignment and owning-layout initialization. Remove the custom deserializer, constant-property restrictions, static grammar visitor and obsolete header. Ordinary reflected struct fields already supply the needed parser. Runtime builder validation remains authoritative. Generate a null-payload guard before declarative Composition assignment (both unnamed and explicit), so a duplicate cannot delete the first payload; normal setters and reactive binding updates retain replacement semantics. This needs no new reflected runtime API.
+Change GuiEasyInstanceLoader<T>::GetPropertyType to Array(nullptr) for the default property, retaining the layout/control/composition acceptable types. Return Unsupported() for Composition and Layouts, including descriptor types handled by the shared loader. All initial XML content then arrives in one call under the empty property key. Count composition/control payloads locally in AssignParameters and preserve the current source-positioned duplicate diagnostic. Remove LoaderStateMap, ResolvingResult::loaderStates and GuiEasyInstanceLoaderState. Leave final initialization, reflected native APIs and BuildLayout validation intact.
 
 ### CODE CHANGE
 
-Added the compiler hook/default implementation and a postorder visitor after bindings. Removed the EasyLayout deserializer, binding prohibition, grammar visitor and header, and moved registration to the plugin. The reduced loader emits checked initial payload assignments and one owning-layout BuildLayout call. Ordinary tests now separate compiler failures from accepted runtime expressions/grammar, exercise the initialization chain and generated payload guards, and check decoded fields and bound tracks before/after rebuilding. Updated the authoring guideline, the layout manual and its composition overview; documented the hook contract beside the interface. Native table placement and explicit-rebuild behavior are unchanged.
+Simplified assignment generation to iterate the default property's batch with a local occupied flag. Updated ordinary compiler rejection tests for duplicate batches and unsupported property forms. Converted existing successful XML examples and runtime-grammar tests from named content properties to default children. Kept compiled ordinary replacement coverage using the default property. Updated the authoring guideline, manual and compiler knowledge base to document the new XML restriction and stateless validation. Generated release artifacts through the original tools after Debug verification.
 
-The runtime audit found that Register/Prepare/ValidateOption already cover descriptor grammar, splitters, bounds requirements, ownership, cycles and numeric checks. No native builder or reflection registration change is needed. Initial payload guards use Workflow's `is not null` type test and independently owned expression nodes. They run for unnamed and explicit Composition assignment before either can replace a previous payload. Ordinary SetComposition and reactive setters retain their existing behavior.
+Implemented the proposal and reviewed the source diff. The Debug x64 wrapper build passed with zero warnings/errors in 1:15. Focused CDB verification passed TestResource.cpp and TestControls_EasyLayout.cpp: 2/2 files and 39/39 cases, including 16 duplicate-payload XML combinations and 40 unsupported-property forms. The latter cover both owners and descriptors, each property alone or alongside a default payload, plain attributes/elements, set elements and eval/bind/uri attributes/elements. Successful cases preserve independent instances, ordered descriptors, ordinary runtime replacement, initialization and supported property bindings. No resource snapshots changed during focused testing.
 
-### DENIED BY USER
+Release-GacUI completed both CodePack passes, the Release Win32 GacGen rebuild and DarkSkin/TuiSkin generation for x32/x64. All four skin results have nonempty assemblies and no Errors.txt; skin sources remain unchanged. The packed release changes only GacUICompiler.cpp and GacUICompiler.h. Reflection registration was not changed and GacUI_Compiler was not run.
 
-The original implementation passed its requested verification, recorded below. The continuation replaces its runtime duplicate-payload guard with an XML compilation error from AssignParameters. The generic initialization hook, reflected properties and runtime BuildLayout validation remain applicable and are retained by No.2; only the duplicate-content validation approach is superseded.
+UpdateRelease rebuilt and deployed all six Release tools successfully. The additional wrapper build of Release/Tools/Executables resolved Release|Win32 to Release|x86 and passed with zero warnings/errors, followed by CopyExecutables.ps1. Deployed GacGen matches its rebuilt executable (SHA256 8ED3C7AA942C12FB8D6F96342FF83FB46388A4A7E758C839CC46BB83E6DE961F), both compiler imports match the GacUI packed files, and deployed Reflection32.bin/Reflection64.bin match GacUI/Test/Resources/Metadata and Tools/Tools. Cleared tutorial caches before starting GacBuild.ps1 at 2026-09-26 22:14:33 UTC.
 
-Focused debugger verification passed both TestControls_EasyLayout.cpp and TestResource.cpp: 2/2 files and 37/37 cases. This includes eight generated duplicate-insertion scenarios (both owner kinds and all unnamed/explicit combinations), retained first payloads and subsequent legitimate replacement; six struct-expression forms including qualified enum values with documented semicolon disambiguation and reflected defaults; initial CellOption/Percentage bindings, later explicit rebuilding, event installation before the automatic build and ref.Ctor observing the built tree. The synthetic resolved-reference test checks postorder, null/non-null hook continuation, nonconstructible existing targets, root source type without constructor arguments, default-loader construction, source positions, no-op output and one owning-layout call.
+The completed unfiltered Debug x64 wrapper run passed 93/93 files and 1813/1813 cases. Execute.log includes TestResource.cpp, TestControls_EasyLayout.cpp, TestCompositions_EasyLayout.cpp and TestCompositions_EazyLayoutFailures.cpp, with no skipped files or appended memory-leak dump. Restored seven unrelated file-dialog scheduling and date-dependent theme snapshots from the same cases identified during the previous investigation. The two changed file-dialog frames have identical content after normalizing object identifiers. No Test/Resources files remain changed.
 
-The completed Debug x64 wrapper build has zero warnings and zero errors. The unfiltered wrapper UnitTest run passed 93/93 files and 1811/1811 cases. Execute.log explicitly includes TestResource.cpp, TestControls_EasyLayout.cpp, TestCompositions_EasyLayout.cpp and TestCompositions_EazyLayoutFailures.cpp, with no skipped files and no appended memory-leak dump. Restored the same nine unrelated file-dialog frame-timing and date-dependent theme snapshots that the baseline run changed.
-
-Ran the existing Release-GacUI pipeline from Tools/Tools/Common.ps1 and ProjectGacUI.ps1. It packed the compiler, rebuilt GacGen in Release Win32, regenerated DarkSkin and TuiSkin for x32 and x64, merged their C++ outputs and packed the final release. Both skins' generated code remained unchanged. GacUI's own Release diff contains only GacUICompiler.cpp, GacUICompiler.h and IncludeOnly/GacUICompiler.h.
-
-Ran Tools/Tools/Build.ps1 -Project UpdateRelease successfully, including its Release x86 rebuild and deployment of all six tools. Then ran GacUI/.github/Scripts/copilotBuild.ps1 -Configuration Release -Platform Win32 from Release/Tools/Executables, verified the completed Build.log reports zero warnings and errors for Release|x86, and invoked Release/Tools/CopyExecutables.ps1. The deployed GacGen matches Executables/Release/GacGen.exe (SHA256 5C64B39EE735A9EB5829D5BC71C7E1294876D21BD62AA4EE032CFE283EE1B314). Both deployed reflection metadata files match GacUI/Test/Resources/Metadata and Tools/Tools, and the sibling compiler imports match GacUI's packed release. Reflection registration was unchanged, so metadata regeneration was not required.
-
-Ran Release/Tools/GacClear.ps1 and GacBuild.ps1 on Release/Tutorial/GacUI.xml. All 52 resources were selected for rebuilding. Verified all 104 architecture results individually: no Errors.txt, nonempty Workflow output, all 520 expected binary outputs freshly generated, 104 configured binary deployment hashes matching their architecture outputs, and all 556 merged C++ source checks present and nonempty.
-
-Reviewed the complete sibling Release diff outside Import. Its only changes are 364 added lines in 17 generated C++ files: exactly 182 two-line guards testing GetComposition() before initial payload insertion. There are no removals or other changes, including no changes to existing BuildLayout calls. Thus valid tutorials retain their previous generated behavior while duplicate initial payloads fail before replacement. Unrelated no-op loader chains produce unchanged code. Both repositories pass git diff --check. The proposal is confirmed and the implementation is retained.
-
-## No.2 Compile-time duplicate payload validation in AssignParameters
-
-Retain the initialization/property refactor from No.1 and the existing native builder checks. Replace generated runtime guards with source-positioned GuiResourceError diagnostics from GuiEasyInstanceLoader<T>::AssignParameters. Keep the default Collection metadata accepting descriptors, controls and compositions. Track composition assignments by instance name across calls, including explicit Composition and one-time expression assignments, so property traversal order and Collection's per-child dispatch do not affect rejection. Keep this loader-owned state in the current ResolvingResult, never in the globally reused loader, so separate instance contexts and compilations remain independent. Reactive bindings and ordinary later setters keep replacement semantics.
-
-Move duplicate-content cases into ordinary resource compiler rejection coverage. Cover owners and descriptors, control/composition combinations, explicit/default combinations in both XML orders and multiple values in a single explicit setter. Retain positive multi-instance and repeated-compilation coverage and test runtime replacement without generated guards. Keep layout grammar and empty-layout behavior at BuildLayout. Run the original Debug unit test and complete release/tools/tutorial pipeline; require all 182 tutorial guards (364 lines in 17 files) to disappear without unrelated generated changes.
-
-### CODE CHANGE
-
-Added a generic per-loader state map to ResolvingResult and a loader-private set of instance names whose Composition has been assigned. AssignParameters records the first composition/control and returns a source-positioned compiler error for another, including batched explicit property values and one-time expression assignment. Removed the Workflow runtime guard AST. Property metadata, binding generation, final initialization and native layout validation remain unchanged.
-
-Added twenty end-to-end duplicate XML rejection scenarios across owning layouts and descriptors, plus valid separate-instance cases. Reworked the generated-assignment test to execute ordinary replacement twice for both owner types and property forms. Updated the authoring guideline, layout manual and GacGen knowledge-base document. Regenerated release artifacts through the original tools after Debug verification.
-
-The first Debug run reached the new duplicate test and correctly rejected two Buttons, but its diagnostic position was missing. A focused CDB run confirmed one error with row/column -2 for the unnamed child setter. Extended ArgumentInfo::valuePosition to carry constructor and binding positions as well as text positions, and used it for this diagnostic. This fixes the compiler metadata at its producer instead of guessing a location in the EasyLayout loader. Rebuilt and ran the focused resource/control checks before repeating the full suite.
-
-After this correction, the Debug x64 wrapper build passed with zero warnings and errors. Focused CDB verification passed TestControls_EasyLayout.cpp and TestResource.cpp: 2/2 files and 38/38 cases, including all twenty source-positioned duplicate diagnostics and valid separate-instance compilation.
-
-The completed unfiltered Debug x64 wrapper run passed 93/93 files and 1812/1812 cases, with no skipped files or appended memory-leak dump. Execute.log includes both EasyLayout composition/failure files, TestControls_EasyLayout.cpp and TestResource.cpp. Restored the same nine unrelated file-dialog scheduling and date-dependent theme snapshots identified during No.1.
-
-Release-GacUI completed both CodePack passes, the GacGen rebuild and both skins' x32/x64 generation without errors or skin source changes. UpdateRelease rebuilt/deployed all six tools successfully. The separately requested Release|Win32 wrapper build resolved to Release|x86 and passed with zero warnings/errors, followed by CopyExecutables.ps1. Deployed GacGen matches the rebuilt executable (SHA256 9B257D250A31ABABEAF480A1E44A54ECE318A32DA574A468E76C07BA20F0E072); both metadata files match GacUI/Test/Resources/Metadata and Tools/Tools, and both compiler imports match the packed GacUI release. No reflection registration changed and GacUI_Compiler was not executed, so metadata regeneration was unnecessary.
+GacBuild.ps1 completed successfully for all 52 tutorial resources and both architectures. Independently checked all 104 architecture output directories: no Errors.txt, fresh nonempty Workflow.txt and 520 fresh nonempty binary artifacts, 556 generated-source/merged-destination checks, and 104 configured deployment copies with matching SHA256 hashes. Unchanged merged C++ files retain their timestamps because CppMerge does not rewrite identical content.
 
 ### CONFIRMED
 
-Cleared the tutorial caches with GacClear.ps1 and regenerated Release/Tutorial/GacUI.xml with GacBuild.ps1. All 52 resources were rebuilt for x32 and x64. Verified all 104 architecture results: no Errors.txt, nonempty Workflow output, all 520 expected binary outputs freshly generated, all 104 configured deployment hashes matching, and all 556 merged C++ source checks present and nonempty.
+SupportArray supplies all default child values to one AssignParameters call, including mixed controls, compositions and layout descriptors. Unsupported for both named content properties prevents alternative XML setters or binders from bypassing that batch. The local flag preserves the original source-positioned duplicate-payload compilation error, so LoaderStateMap, ResolvingResult::loaderStates and GuiEasyInstanceLoaderState are no longer needed and have been removed. The expanded rejection tests and full suite confirm this behavior while preserving supported bindings, runtime replacement, initialization and native BuildLayout checks.
 
-The complete sibling Release diff outside Import contains exactly 364 deleted lines in 17 generated C++ files, removing all 182 runtime duplicate-payload guards with no additions or other changes. The entire Tutorial tree matches the parent of 826bc50c, before those guards were introduced. Both repositories pass git diff --check, and no unrelated unit-test snapshots remain changed. Duplicate XML payloads now fail compilation in AssignParameters, while normal setters, bindings, final initialization and native BuildLayout validation retain their existing behavior. The proposal is confirmed and the implementation is retained.
+The sibling Release tutorial diff contains exactly 17 generated C++ files. Automated comparison confirms all other statements are identical and each parent's Layouts.Add arguments remain in the same order. The only changes move 245 Layouts.Add statements into their batched assignments and remove 490 redundant brace lines. No runtime validation guards are added. Packed compiler sources and imported copies contain the same refactor. Both repositories pass git diff --check. The proposal is confirmed and the implementation is retained.

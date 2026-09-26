@@ -19,7 +19,7 @@ namespace tui_provider_tests
 namespace easy_layout_xml_tests
 {
 	template<typename T>
-	void TestPayloadReplacement(T owner, bool explicitProperty)
+	void TestPayloadReplacement(T owner)
 	{
 		using namespace workflow;
 		using namespace workflow::analyzer;
@@ -55,7 +55,7 @@ namespace easy_layout_xml_tests
 			argument.expression = value;
 			argument.typeInfo = TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo();
 			IGuiInstanceLoader::ArgumentMap arguments;
-			arguments.Add(explicitProperty ? GlobalStringKey::Get(L"Composition") : GlobalStringKey::Empty, argument);
+			arguments.Add(GlobalStringKey::Empty, argument);
 			block->statements.Add(loader->AssignParameters(context, result, typeInfo, GlobalStringKey::Get(L"owner"), arguments, {}, errors));
 		}
 		auto manager = Workflow_GetSharedManager(
@@ -154,15 +154,12 @@ TEST_FILE
 	{
 		tui_provider_tests::RunGuiTest([]()
 		{
-			for (bool explicitProperty : { false,true })
-			{
-				auto owner = new GuiEasyLayoutComposition;
-				TestPayloadReplacement(owner, explicitProperty);
-				owner->BuildLayout();
-				SafeDeleteComposition(owner);
-				auto descriptor = Ptr(new GuiEasyTopLayout);
-				TestPayloadReplacement(descriptor, explicitProperty);
-			}
+			auto owner = new GuiEasyLayoutComposition;
+			TestPayloadReplacement(owner);
+			owner->BuildLayout();
+			SafeDeleteComposition(owner);
+			auto descriptor = Ptr(new GuiEasyTopLayout);
+			TestPayloadReplacement(descriptor);
 		});
 	});
 
@@ -414,7 +411,7 @@ TEST_FILE
 				+ L"<ez:Column ref.Name=\"column\"" + attribute(L"CellOption", L"composeType:Percentage percentage:2") + attribute(L"CellSpan", L"1") + L">"
 				+ field(L"CellOption", L"composeType:Percentage percentage:2") + field(L"CellSpan", L"1") + L"<Bounds/></ez:Column></ez:Row></ez:Layout>"
 				L"<ez:Layout><ez:Column><ez:Row><Bounds/></ez:Row></ez:Column></ez:Layout>"
-				L"<ez:Layout Padding=\"0\"><att.Layouts><ez:Fill/><ez:Splitter ref.Name=\"splitter\"/><ez:Fill/></att.Layouts></ez:Layout>";
+				L"<ez:Layout Padding=\"0\"><ez:Fill/><ez:Splitter ref.Name=\"splitter\"/><ez:Fill/></ez:Layout>";
 			auto resource = easy_layout_xml_tests::Resource(content);
 			if (customNamespace)
 			{

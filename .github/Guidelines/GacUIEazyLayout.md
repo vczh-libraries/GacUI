@@ -39,6 +39,8 @@ The title and button use their minimum heights. The text box takes the remaining
 
 A layout or descriptor can be empty, contain a list of layout descriptors, or contain one control or independently positioned composition. `ez:Splitter` is always empty. Descriptors and a control/composition cannot be mixed at the same level, and a descriptor cannot contain two controls directly. Multiple controls require child descriptors or a single container.
 
+Declare this content as direct children. The named `Composition` and `Layouts` properties are unsupported in resource XML, including their attribute, property-element and binding forms. Their C++ and Workflow APIs remain available for programmatic changes.
+
 An outer `Row` or `Column` has the additional grid rules below.
 
 Nested `<ez:Layout/>` is supported, but strongly discouraged for composing layout groups. Use one owning `<ez:Layout/>` and nest descriptor groups instead: docking, fills, and grids can be combined at different levels within the grammar below. Each group has its own arrangement and grid options, so changing one group's direction or tracks does not change unrelated groups. Direction inheritance still applies where no explicit direction is given. Descriptor nesting also keeps padding consistent and applies the owning layout's border only once.
@@ -216,4 +218,4 @@ Dragging a splitter updates the generated table immediately without changing des
 
 The layout owns supplied content even before the first build. Destroying it safely deletes that content once, whether it is still pending or already attached to the built composition tree.
 
-Layout grammar, conflicting options and unsupported numeric values are checked by `BuildLayout`, including the automatic XML initialization build. Ownership checks can fail earlier during assignment. Duplicate initial XML payloads, including a mixture of unnamed content and `att.Composition`, fail XML compilation. Later ordinary property replacement and binding updates remain supported. XML syntax, type and binder errors also fail compilation. Native cell-site rejection follows the separate rule above.
+Layout grammar, conflicting options and unsupported numeric values are checked by `BuildLayout`, including the automatic XML initialization build. Ownership checks can fail earlier during assignment. Multiple control/composition payloads in the same default content fail XML compilation. Later programmatic content replacement remains supported, as do bindings on the configuration properties described above. XML syntax, type and binder errors also fail compilation. Native cell-site rejection follows the separate rule above.

@@ -348,12 +348,10 @@ TEST_FILE
 				L"<Bounds/><Bounds/>",
 				L"<Button/><Bounds/>",
 				L"<Bounds/><Button/>",
-				L"<Bounds/><att.Composition><Bounds/></att.Composition>",
-				L"<att.Composition><Bounds/></att.Composition><Bounds/>",
-				L"<Button/><att.Composition><Bounds/></att.Composition>",
-				L"<att.Composition><Bounds/></att.Composition><Button/>",
-				L"<att.Composition><Bounds/><Bounds/></att.Composition>",
-				L"<Bounds ref.Name=\"payload\"/><att.Composition-eval>payload</att.Composition-eval>",
+				L"<ez:Top/><Button/><ez:Bottom/><Bounds/>",
+				L"<Bounds/><ez:Top/><Button/><ez:Bottom/>",
+				L"<Button/><ez:Top/><Button/>",
+				L"<Bounds/><ez:Top/><Bounds/>",
 				})
 			{
 				auto content = L"<" + WString(tag) + L">" + children + L"</" + tag + L">";
@@ -371,14 +369,50 @@ TEST_FILE
 			}
 		});
 
+		TEST_CASE(L"Compiler rejects named content properties for easy layout owners and descriptors")
+		{
+			for (auto tag : { L"ez:Layout",L"ez:Top" })
+			for (auto property : { L"Composition",L"Layouts" })
+			{
+				auto name = WString(property);
+				auto child = name == L"Composition" ? L"<Bounds/>" : L"<ez:Fill/>";
+				collections::List<WString> contents;
+				contents.Add(L"><att." + name + L">" + child + L"</att." + name + L">");
+				contents.Add(L"><Bounds/><att." + name + L">" + child + L"</att." + name + L">");
+				contents.Add(L"><att." + name + L"-set/>");
+				contents.Add(L" " + name + L"=\"null\">");
+				for (auto binder : { L"eval",L"bind",L"uri" })
+				{
+					contents.Add(L"><att." + name + L"-" + binder + L">null</att." + name + L"-" + binder + L">");
+					contents.Add(L" " + name + L"-" + binder + L"=\"null\">");
+				}
+				for (auto properties : contents)
+				{
+					auto content = L"<" + WString(tag) + properties + L"</" + tag + L">";
+					if (WString(tag) != L"ez:Layout") content = L"<ez:Layout>" + content + L"</ez:Layout>";
+					GuiResourceError::List errors;
+					auto parser = GetParserManager()->GetParser<glr::xml::XmlDocument>(L"XML");
+					auto xml = parser->Parse({}, easy_layout_xml_tests::Resource(content), errors);
+					TEST_ASSERT(xml && errors.Count() == 0);
+					auto resource = GuiResource::LoadFromXml(xml, L"TestControls_EasyLayout.xml", L".", errors);
+					TEST_ASSERT(resource && errors.Count() == 0);
+					PrecompileResource(resource, GuiResourceCpuArchitecture::Unspecified, nullptr, errors);
+					TEST_ASSERT(errors.Count() == 1);
+					TEST_ASSERT(INVLOC.FindFirst(errors[0].message, L"Property \"" + name + L"\"", Locale::Normalization::None).key != -1);
+					TEST_ASSERT(INVLOC.FindFirst(errors[0].message, L" is not supported.", Locale::Normalization::None).key != -1);
+					TEST_ASSERT(errors[0].position.row >= 0 && errors[0].position.column >= 0);
+				}
+			}
+		});
+
 		TEST_CASE(L"Compiler accepts runtime struct fields and defers easy layout grammar to initialization")
 		{
 			collections::List<WString> cases;
 			cases.Add(L"<ez:Layout><ez:Row CellOption=\"composeType:Absolute absolute:self.ClientSize.x\"><ez:Column/></ez:Row></ez:Layout>");
 			cases.Add(L"<ez:Layout><ez:Row><ez:Column><att.CellOption>composeType:Percentage percentage:(cast double self.ClientSize.x)</att.CellOption></ez:Column></ez:Row></ez:Layout>");
 			cases.Add(L"<ez:Layout><ez:Top/><Button/></ez:Layout>");
-			cases.Add(L"<ez:Layout><att.Composition><Bounds/></att.Composition></ez:Layout><ez:Layout><Button/></ez:Layout>");
-			cases.Add(L"<ez:Layout><ez:Top><Bounds/></ez:Top><ez:Bottom><att.Composition><Bounds/></att.Composition></ez:Bottom></ez:Layout>");
+			cases.Add(L"<ez:Layout><Bounds/></ez:Layout><ez:Layout><Button/></ez:Layout>");
+			cases.Add(L"<ez:Layout><ez:Top><Bounds/></ez:Top><ez:Bottom><Bounds/></ez:Bottom></ez:Layout>");
 			cases.Add(L"<ez:Layout><ez:Top/><ez:Left/></ez:Layout>");
 			cases.Add(L"<ez:Layout><ez:Fill/><ez:Row><ez:Column/></ez:Row></ez:Layout>");
 			cases.Add(L"<ez:Layout><ez:Row><Button/></ez:Row></ez:Layout>");
@@ -389,11 +423,9 @@ TEST_FILE
 			cases.Add(L"<ez:Layout><ez:Splitter/><ez:Fill/></ez:Layout>");
 			cases.Add(L"<ez:Layout><ez:Fill/><ez:Splitter/><ez:Splitter/><ez:Fill/></ez:Layout>");
 			cases.Add(L"<ez:Layout><ez:Fill/><ez:Splitter><Bounds/></ez:Splitter><ez:Fill/></ez:Layout>");
-			cases.Add(L"<ez:Layout><ez:Fill/><ez:Splitter><att.Composition><Bounds/></att.Composition></ez:Splitter><ez:Fill/></ez:Layout>");
-			cases.Add(L"<ez:Layout><ez:Fill/><ez:Splitter><att.Layouts><ez:Fill/></att.Layouts></ez:Splitter><ez:Fill/></ez:Layout>");
-			cases.Add(L"<ez:Layout><att.Layouts><ez:Splitter/><ez:Fill/></att.Layouts></ez:Layout>");
+			cases.Add(L"<ez:Layout><ez:Fill/><ez:Splitter><ez:Fill/></ez:Splitter><ez:Fill/></ez:Layout>");
 			cases.Add(L"<ez:Layout><ez:Row><ez:Splitter/><ez:Column/></ez:Row></ez:Layout>");
-			cases.Add(L"<ez:Layout><ez:Column><att.Layouts><ez:Row/><ez:Splitter/><ez:Splitter/><ez:Row/></att.Layouts></ez:Column></ez:Layout>");
+			cases.Add(L"<ez:Layout><ez:Column><ez:Row/><ez:Splitter/><ez:Splitter/><ez:Row/></ez:Column></ez:Layout>");
 			for (auto content : cases)
 			{
 				GuiResourceError::List errors;
