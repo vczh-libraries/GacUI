@@ -19,7 +19,7 @@ namespace tui_provider_tests
 namespace easy_layout_xml_tests
 {
 	template<typename T>
-	void TestInitialPayloads(T owner, vint forms)
+	void TestPayloadReplacement(T owner, bool explicitProperty)
 	{
 		using namespace workflow;
 		using namespace workflow::analyzer;
@@ -38,7 +38,7 @@ namespace easy_layout_xml_tests
 		function->functionKind = WfFunctionKind::Normal;
 		function->anonymity = WfFunctionAnonymity::Named;
 		function->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
-		for (auto name : { L"owner",L"first",L"second" })
+		for (auto name : { L"owner",L"payload" })
 		{
 			auto argument = Ptr(new WfFunctionArgument);
 			argument->name.value = name;
@@ -48,15 +48,14 @@ namespace easy_layout_xml_tests
 		auto block = Ptr(new WfBlockStatement);
 		function->statement = block;
 		module->declarations.Add(function);
-		for (vint index = 0; index < 2; index++)
 		{
 			auto value = Ptr(new WfReferenceExpression);
-			value->name.value = index ? L"second" : L"first";
+			value->name.value = L"payload";
 			IGuiInstanceLoader::ArgumentInfo argument;
 			argument.expression = value;
 			argument.typeInfo = TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo();
 			IGuiInstanceLoader::ArgumentMap arguments;
-			arguments.Add((forms & (vint(1) << index)) ? GlobalStringKey::Get(L"Composition") : GlobalStringKey::Empty, argument);
+			arguments.Add(explicitProperty ? GlobalStringKey::Get(L"Composition") : GlobalStringKey::Empty, argument);
 			block->statements.Add(loader->AssignParameters(context, result, typeInfo, GlobalStringKey::Get(L"owner"), arguments, {}, errors));
 		}
 		auto manager = Workflow_GetSharedManager(
@@ -74,17 +73,16 @@ namespace easy_layout_xml_tests
 		manager->Clear(false, true);
 		auto global = Ptr(new WfRuntimeGlobalContext(assembly));
 		LoadFunction<void()>(global, L"<initialize>")();
-		auto insert = LoadFunction<void(T, GuiGraphicsComposition*, GuiGraphicsComposition*)>(global, L"Insert");
+		auto insert = LoadFunction<void(T, GuiGraphicsComposition*)>(global, L"Insert");
 		auto first = new GuiBoundsComposition;
 		auto second = new GuiBoundsComposition;
-		TEST_EXCEPTION(insert(owner, first, second), WfRuntimeException, [](const WfRuntimeException& error)
-		{
-			TEST_ASSERT(INVLOC.FindFirst(error.Message(), L"initial content cannot contain more than one", Locale::Normalization::None).key != -1);
-		});
+		insert(owner, first);
 		TEST_ASSERT(owner->GetComposition() == first && !first->GetParent() && !second->GetParent());
-		// Replacing an unbuilt payload through the ordinary setter remains valid.
-		owner->SetComposition(second);
+		// Generated assignments contain no runtime guard and retain normal setter semantics.
+		insert(owner, second);
 		TEST_ASSERT(owner->GetComposition() == second);
+		owner->SetComposition(nullptr);
+		TEST_ASSERT(owner->GetComposition() == nullptr);
 	}
 
 	WString Resource(const WString& content)
@@ -152,18 +150,18 @@ using namespace easy_layout_xml_tests;
 
 TEST_FILE
 {
-	TEST_CASE(L"Initial payload insertion rejects duplicates before replacing owners or descriptors")
+	TEST_CASE(L"Compiled payload assignments retain ordinary replacement for owners and descriptors")
 	{
 		tui_provider_tests::RunGuiTest([]()
 		{
-			for (vint forms = 0; forms < 4; forms++)
+			for (bool explicitProperty : { false,true })
 			{
 				auto owner = new GuiEasyLayoutComposition;
-				TestInitialPayloads(owner, forms);
+				TestPayloadReplacement(owner, explicitProperty);
 				owner->BuildLayout();
 				SafeDeleteComposition(owner);
 				auto descriptor = Ptr(new GuiEasyTopLayout);
-				TestInitialPayloads(descriptor, forms);
+				TestPayloadReplacement(descriptor, explicitProperty);
 			}
 		});
 	});

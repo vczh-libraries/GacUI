@@ -118,6 +118,7 @@ Workflow_InstallBindProperty
 				argumentInfo.typeInfo = propInfo->acceptableTypes[0];
 				argumentInfo.expression = evalExpr;
 				argumentInfo.attPosition = attPosition;
+				argumentInfo.valuePosition = attPosition;
 				arguments.Add(prop.propertyName, argumentInfo);
 			}
 
@@ -288,6 +289,7 @@ Workflow_InstallEvalProperty
 				argumentInfo.typeInfo = propInfo->acceptableTypes[0];
 				argumentInfo.expression = evalExpression;
 				argumentInfo.attPosition = attPosition;
+				argumentInfo.valuePosition = attPosition;
 				arguments.Add(prop.propertyName, argumentInfo);
 			}
 

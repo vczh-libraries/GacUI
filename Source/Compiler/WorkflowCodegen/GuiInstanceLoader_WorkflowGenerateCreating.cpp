@@ -75,6 +75,7 @@ WorkflowGenerateCreatingVisitor
 				IGuiInstanceLoader::ArgumentInfo argumentInfo;
 				argumentInfo.typeInfo = typeInfo;
 				argumentInfo.attPosition = attPosition;
+				argumentInfo.valuePosition = serializable ? textValuePosition : repr->tagPosition;
 
 				if (serializable)
 				{
@@ -90,7 +91,6 @@ WorkflowGenerateCreatingVisitor
 					{
 						argumentInfo.expression = Workflow_ParseTextValue(precompileContext, typeInfo->GetTypeDescriptor(), { resolvingResult.resource }, textValue, textValuePosition, errors);
 					}
-					argumentInfo.valuePosition = textValuePosition;
 				}
 				else
 				{

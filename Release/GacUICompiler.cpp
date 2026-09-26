@@ -16661,6 +16661,7 @@ WorkflowGenerateCreatingVisitor
 				IGuiInstanceLoader::ArgumentInfo argumentInfo;
 				argumentInfo.typeInfo = typeInfo;
 				argumentInfo.attPosition = attPosition;
+				argumentInfo.valuePosition = serializable ? textValuePosition : repr->tagPosition;
 
 				if (serializable)
 				{
@@ -16676,7 +16677,6 @@ WorkflowGenerateCreatingVisitor
 					{
 						argumentInfo.expression = Workflow_ParseTextValue(precompileContext, typeInfo->GetTypeDescriptor(), { resolvingResult.resource }, textValue, textValuePosition, errors);
 					}
-					argumentInfo.valuePosition = textValuePosition;
 				}
 				else
 				{
@@ -17271,6 +17271,7 @@ Workflow_InstallBindProperty
 				argumentInfo.typeInfo = propInfo->acceptableTypes[0];
 				argumentInfo.expression = evalExpr;
 				argumentInfo.attPosition = attPosition;
+				argumentInfo.valuePosition = attPosition;
 				arguments.Add(prop.propertyName, argumentInfo);
 			}
 
@@ -17441,6 +17442,7 @@ Workflow_InstallEvalProperty
 				argumentInfo.typeInfo = propInfo->acceptableTypes[0];
 				argumentInfo.expression = evalExpression;
 				argumentInfo.attPosition = attPosition;
+				argumentInfo.valuePosition = attPosition;
 				arguments.Add(prop.propertyName, argumentInfo);
 			}
 
@@ -17629,6 +17631,7 @@ Workflow_InstallEvalEvent
 		}
 	}
 }
+
 
 /***********************************************************************
 .\WORKFLOWCODEGEN\GUIINSTANCELOADER_WORKFLOWMODULE.CPP
@@ -18196,6 +18199,12 @@ namespace vl::presentation::instance_loaders
 GuiEasyInstanceLoader
 ***********************************************************************/
 
+	class GuiEasyInstanceLoaderState : public Object
+	{
+	public:
+		SortedList<GlobalStringKey>				compositions;
+	};
+
 	template<typename T>
 	class GuiEasyInstanceLoader : public Object, public IGuiInstanceLoader
 	{
@@ -18229,6 +18238,14 @@ GuiEasyInstanceLoader
 
 		Ptr<WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors) override
 		{
+			vint stateIndex = resolvingResult.loaderStates.Keys().IndexOf(this);
+			auto state = stateIndex == -1
+				? Ptr(new GuiEasyInstanceLoaderState)
+				: resolvingResult.loaderStates.Values()[stateIndex].Cast<GuiEasyInstanceLoaderState>();
+			if (stateIndex == -1)
+			{
+				resolvingResult.loaderStates.Add(this, state);
+			}
 			auto block = Ptr(new WfBlockStatement);
 			for (auto [property, index] : indexed(arguments.Keys()))
 			for (auto argument : arguments.GetByIndex(index))
@@ -18251,18 +18268,14 @@ GuiEasyInstanceLoader
 				}
 				else
 				{
+					if (state->compositions.Contains(variableName))
+					{
+						errors.Add(GuiResourceError({ resolvingResult.resource }, argument.valuePosition,
+							L"Easy layout: initial content cannot contain more than one composition/control payload."));
+						return nullptr;
+					}
+					state->compositions.Add(variableName);
 					member->name.value = L"Composition";
-					auto occupied = Ptr(new WfTypeTestingExpression);
-					occupied->test = WfTypeTesting::IsNotNull;
-					occupied->expression = workflow::analyzer::CopyExpression(member, true);
-					auto message = Ptr(new WfStringExpression);
-					message->value.value = L"Easy layout: initial content cannot contain more than one composition/control payload.";
-					auto raise = Ptr(new WfRaiseExceptionStatement);
-					raise->expression = message;
-					auto check = Ptr(new WfIfStatement);
-					check->expression = occupied;
-					check->trueBranch = raise;
-					block->statements.Add(check);
 
 					auto assign = Ptr(new WfBinaryExpression);
 					assign->op = WfBinaryOperator::Assign;

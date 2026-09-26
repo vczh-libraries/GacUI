@@ -18,6 +18,8 @@ The source of truth for the executable is [GacUI-Repo/Tools/GacGen/GacGen/Main.c
 
 `GacBuild.ps1`, `GacGen.ps1`, `GacCommon.ps1`, `StartProcess.ps1`, `GacGen.exe`, and `CppMerge.exe` are expected to be together because the scripts resolve helpers through `$PSScriptRoot`. `GacBuild.ps1` and `GacClear.ps1` are Windows PowerShell orchestration; the `GacGen` executable itself is also built on Linux for direct use.
 
+EasyLayout duplicate initial composition/control content is rejected during XML compilation by `GuiEasyInstanceLoader<T>::AssignParameters` in `Source/Compiler/InstanceLoaders/GuiInstanceLoader_EasyLayout.cpp`. The check spans unnamed children and explicit `Composition` assignments using per-loader state in the current `types::ResolvingResult`; separate instances and compilation contexts remain independent. Generated C++ contains ordinary assignments without runtime duplicate guards. `BuildLayout` still validates the resulting descriptor tree, including composition/sublayout mixing, during initialization or explicit rebuilding.
+
 ## GacGen Runtime Inputs
 
 ### Reflection metadata beside the executable

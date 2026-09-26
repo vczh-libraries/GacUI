@@ -128,7 +128,7 @@ Instance Loader
 				Ptr<workflow::WfExpression>			expression;
 				Ptr<description::ITypeInfo>			typeInfo;
 				GuiResourceTextPos					attPosition;
-				GuiResourceTextPos					valuePosition;				// only apply to text value
+				GuiResourceTextPos					valuePosition;				// text value, constructor tag or binding position
 			};
 
 			typedef collections::Group<GlobalStringKey, ArgumentInfo>	ArgumentMap;
