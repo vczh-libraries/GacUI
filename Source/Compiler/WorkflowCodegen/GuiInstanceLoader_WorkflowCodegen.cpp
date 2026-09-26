@@ -1,7 +1,6 @@
 #include "GuiInstanceLoader_WorkflowCodegen.h"
 #include "../../Reflection/GuiInstanceCompiledWorkflow.h"
 #include "../GuiInstanceLocalizedStrings.h"
-#include "../InstanceLoaders/GuiInstanceLoader_EasyLayout.h"
 
 namespace vl
 {
@@ -80,10 +79,9 @@ Workflow_PrecompileInstanceContext
 			auto module = Workflow_CreateModuleWithUsings(resolvingResult.context, moduleName);
 			{
 				auto block = Workflow_InstallCtorClass(resolvingResult, module);
-				Workflow_ValidateEasyLayouts(resolvingResult, errors);
 				Workflow_GenerateCreating(precompileContext, resolvingResult, block, errors);
 				Workflow_GenerateBindings(precompileContext, resolvingResult, block, errors);
-				Workflow_BuildEasyLayouts(resolvingResult, block);
+				Workflow_GenerateInitialization(precompileContext, resolvingResult, block, errors);
 			}
 			return module;
 		}

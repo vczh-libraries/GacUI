@@ -206,14 +206,14 @@ Keep a wrapper for asymmetric insets, one-sided anchoring, or unanchored scroll 
 
 Fill weights and percentage cell options used to size tracks must be finite and positive. Absolute track sizes and padding must be nonnegative. An inner descriptor's `CellOption` is ignored when its span is not 1. Within each generated row or column axis, the smallest percentage weight must be at least `0.001` times the largest; more extreme ratios are rejected.
 
-`CellOption` and `Percentage` must be constants in XML. No binding form is allowed, including `-bind`, `-eval`, `-ref`, or `-uri`, in either attributes or property elements. Numeric constant expressions are allowed in `CellOption` fields, but runtime expressions are not.
+`CellOption` and `Percentage` are ordinary reflected properties and support well-typed expressions and bindings, including `-eval` and `-bind`, in attributes or property elements. `CellOption` uses the same struct-expression syntax as native table options; its fields can contain arithmetic or runtime expressions, and omitted fields keep their defaults. Ordinary syntax, type and binder restrictions still apply.
 
-Bindings on `Padding`, `Border`, `Direction`, and `CellSpan` are allowed. These properties store configuration. Changing them does not immediately rebuild or change the generated layout.
+Like `Padding`, `Border`, `Direction`, and `CellSpan`, these properties store configuration. Changing them does not immediately rebuild or change the generated layout.
 
-XML initialization calls `BuildLayout` after the descriptor tree, content, assignments, and initial binding values are ready. In C++, call it explicitly. Call it again to apply later property or structural changes. Rebuilding preserves reused controls and their state, bindings, and handlers, while replacing generated containers as needed. Normal parent resizing and content minimum-size changes work without rebuilding.
+XML initialization calls `BuildLayout` after the descriptor tree, content, assignments, initial binding values and event handlers are ready. Nested layouts build before their owners, and the root instance's `ref.Ctor` observes the built layouts. In C++, call it explicitly. Call it again to apply later property or structural changes. Rebuilding preserves reused controls and their state, bindings, and handlers, while replacing generated containers as needed. Normal parent resizing and content minimum-size changes work without rebuilding.
 
 Dragging a splitter updates the generated table immediately without changing descriptor values. Window resizing retains the adjusted track sizes. An explicit `BuildLayout` restores the sizes specified by the descriptors.
 
 The layout owns supplied content even before the first build. Destroying it safely deletes that content once, whether it is still pending or already attached to the built composition tree.
 
-Invalid layout grammar, conflicting options, unsupported values, and invalid ownership fail at compilation where detectable, or at `BuildLayout`. They are programming errors. Native cell-site rejection follows the separate rule above.
+Layout grammar, conflicting options and unsupported numeric values are checked by `BuildLayout`, including the automatic XML initialization build. Ownership checks can fail earlier during assignment. Duplicate initial XML payloads, including a mixture of unnamed content and `att.Composition`, fail before replacing the first payload; later ordinary property replacement and binding updates remain supported. XML syntax, type and binder errors still fail compilation. Native cell-site rejection follows the separate rule above.

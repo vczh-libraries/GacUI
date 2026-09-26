@@ -493,5 +493,71 @@ WorkflowGenerateCreatingVisitor
 			WorkflowGenerateCreatingVisitor visitor(precompileContext, resolvingResult, statements, errors);
 			resolvingResult.context->instance->Accept(&visitor);
 		}
+
+/***********************************************************************
+WorkflowGenerateInitializationVisitor
+***********************************************************************/
+
+		class WorkflowGenerateInitializationVisitor : public Object, public GuiValueRepr::IVisitor
+		{
+		public:
+			GuiResourcePrecompileContext&		precompileContext;
+			types::ResolvingResult&				resolvingResult;
+			Ptr<WfBlockStatement>				statements;
+			GuiResourceError::List&				errors;
+
+			WorkflowGenerateInitializationVisitor(GuiResourcePrecompileContext& _precompileContext, types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, GuiResourceError::List& _errors)
+				: precompileContext(_precompileContext)
+				, resolvingResult(_resolvingResult)
+				, statements(_statements)
+				, errors(_errors)
+			{
+			}
+
+			void Visit(GuiTextRepr* repr) override
+			{
+			}
+
+			void Visit(GuiAttSetterRepr* repr) override
+			{
+				if (!resolvingResult.typeInfos.Keys().Contains(repr->instanceName)) return;
+				auto typeInfo = resolvingResult.typeInfos[repr->instanceName];
+				if (!typeInfo.typeInfo || (typeInfo.typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) == TypeDescriptorFlags::Undefined) return;
+
+				for (auto setter : repr->setters.Values())
+				{
+					for (auto value : setter->values)
+					{
+						value->Accept(this);
+					}
+				}
+
+				auto manager = GetInstanceLoaderManager();
+				if (repr == resolvingResult.context->instance.Obj())
+				{
+					auto source = FindInstanceLoadingSource(resolvingResult.context, resolvingResult.context->instance.Obj());
+					typeInfo = { source.typeName,manager->GetTypeInfoForType(source.typeName) };
+				}
+				for (auto loader = manager->GetLoader(typeInfo.typeName); loader; loader = manager->GetParentLoader(loader))
+				{
+					if (auto statement = loader->InitializeInstance(precompileContext, resolvingResult, typeInfo, repr->instanceName, repr->tagPosition, errors))
+					{
+						Workflow_RecordScriptPosition(precompileContext, repr->tagPosition, statement);
+						statements->statements.Add(statement);
+					}
+				}
+			}
+
+			void Visit(GuiConstructorRepr* repr) override
+			{
+				Visit(static_cast<GuiAttSetterRepr*>(repr));
+			}
+		};
+
+		void Workflow_GenerateInitialization(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, Ptr<WfBlockStatement> statements, GuiResourceError::List& errors)
+		{
+			WorkflowGenerateInitializationVisitor visitor(precompileContext, resolvingResult, statements, errors);
+			resolvingResult.context->instance->Accept(&visitor);
+		}
 	}
 }

@@ -119,6 +119,11 @@ IGuiInstanceLoader
 			CHECK_FAIL(L"IGuiInstanceLoader::CreateInstance(GuiResourcePrecompileContext&, types::ResolvingResult&, const TypeInfo&, GlobalStringKey, ArgumentMap&, GuiResourceTextPos, GuiResourceError::List&)#This function is not implemented.");
 		}
 
+		Ptr<workflow::WfStatement> IGuiInstanceLoader::InitializeInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)
+		{
+			return nullptr;
+		}
+
 		Ptr<workflow::WfStatement> IGuiInstanceLoader::AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
 		{
 			CHECK_FAIL(L"IGuiInstanceLoader::AssignParameters(GuiResourcePrecompileContext&, types::ResolvingResult&, const TypeInfo&, GlobalStringKey, ArgumentMap&, GuiResourceTextPos, GuiResourceError::List&)#This function is not implemented.");

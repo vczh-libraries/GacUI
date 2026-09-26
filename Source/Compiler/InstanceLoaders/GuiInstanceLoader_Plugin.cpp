@@ -16,6 +16,12 @@ GuiInstanceLoader_Compositions.cpp
 		Rows, Columns: array(GuiCellOption)
 	GuiCellComposition
 		Site: SiteValue
+GuiInstanceLoader_EasyLayout.cpp
+	GuiEasyLayoutComposition, GuiEasyLayout
+		default: Ptr<GuiEasyLayout>, GuiControl*, GuiGraphicsComposition*
+		Composition: GuiGraphicsComposition* (checked initial payload assignment)
+	GuiEasyLayoutComposition
+		initialize: BuildLayout after subobjects and bindings
 GuiInstanceLoader_Document.cpp
 	GuiDocumentItem
 		default: GuiControl*, GuiGraphicsComposition*
@@ -277,6 +283,7 @@ GuiPredefinedInstanceLoadersPlugin
 			extern void LoadListControls(IGuiInstanceLoaderManager* manager);
 			extern void LoadDocumentControls(IGuiInstanceLoaderManager* manager);
 			extern void LoadCompositions(IGuiInstanceLoaderManager* manager);
+			extern void LoadEasyLayouts(IGuiInstanceLoaderManager* manager);
 			extern void LoadTemplates(IGuiInstanceLoaderManager* manager);
 
 			class GuiPredefinedInstanceLoadersPlugin : public Object, public IGuiPlugin
@@ -386,6 +393,7 @@ GuiPredefinedInstanceLoadersPlugin
 						LoadListControls(manager);
 						LoadDocumentControls(manager);
 						LoadCompositions(manager);
+						LoadEasyLayouts(manager);
 						LoadTemplates(manager);
 					}
 #undef ADD_TEMPLATE_CONTROL

@@ -27,7 +27,9 @@ Nesting **\<ez:Layout/\>** is supported but strongly discouraged for combining a
 
 ## Updating the Layout
 
-XML resources build the layout automatically, and normal resizing needs no extra work. Call **BuildLayout()** after changing layout descriptions or their properties. Rebuilding keeps existing controls, their state, bindings, and event handlers.
+XML resources build the layout automatically after assignments, initial bindings and event handlers are ready. Nested layouts build before their owners, and **ref.Ctor** observes the built layouts. Normal resizing needs no extra work. Call **BuildLayout()** after changing layout descriptions or their properties. Rebuilding keeps existing controls, their state, bindings, and event handlers.
 
-**Padding**, **Border**, **Direction**, and **CellSpan** support bindings; later changes take effect when **BuildLayout()** is called. **Percentage** and **CellOption** must be constants in XML.
+**Padding**, **Border**, **Direction**, **CellSpan**, **Percentage**, and **CellOption** support ordinary well-typed expressions and bindings. **CellOption** uses the same struct expressions as table options, including runtime field expressions and default values for omitted fields. Initial bindings affect the automatic build; later changes take effect only when **BuildLayout()** is called.
+
+Layout grammar, conflicting options and invalid numeric values fail during the automatic initialization build or a later explicit **BuildLayout()**. Ownership checks can fail during assignment. Initial XML content cannot contain multiple payloads, including combinations of unnamed children and **att.Composition**; this is checked before replacing the first payload. Later property replacement and binding updates remain supported. Ordinary XML syntax, type and binder restrictions are still checked at compilation.
 

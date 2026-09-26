@@ -67,7 +67,4 @@
   <ItemGroup>
     <Xml Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Syntax\Parser.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_EasyLayout.h" />
-  </ItemGroup>
 </Project>

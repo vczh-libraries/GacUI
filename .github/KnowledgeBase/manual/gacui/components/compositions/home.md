@@ -136,7 +136,7 @@ When the parent composition grows (e.g. dragging the window), the child composit
 
 Use [<ez:Layout/>](../../.././gacui/components/compositions/eazylayout.md) to express docking, proportional sizes, or rows and columns instead of binding calculated positions. Nest layout descriptions to combine these arrangements; ordinary resizing is handled automatically.
 
-Bindings on **Padding**, **Border**, **Direction**, and **CellSpan** can store changes to the arrangement. Call **BuildLayout()** on the owning layout to apply later changes while keeping controls and their state. **Percentage** and **CellOption** must be constants in XML.
+Bindings on **Padding**, **Border**, **Direction**, **CellSpan**, **Percentage**, and **CellOption** can store changes to the arrangement. Initial bindings are ready for the automatic layout build. Call **BuildLayout()** on the owning layout to apply later changes while keeping controls and their state.
 
 ## Other Properties
 

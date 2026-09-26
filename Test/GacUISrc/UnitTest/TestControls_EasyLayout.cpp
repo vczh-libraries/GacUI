@@ -1,6 +1,7 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/Resources/GuiParserManager.h"
 #include "../../../Source/Skins/TuiSkin/Config/TuiSkinConfig.h"
+#include "../../../Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
 
 using namespace vl;
 using namespace vl::reflection::description;
@@ -17,6 +18,75 @@ namespace tui_provider_tests
 
 namespace easy_layout_xml_tests
 {
+	template<typename T>
+	void TestInitialPayloads(T owner, vint forms)
+	{
+		using namespace workflow;
+		using namespace workflow::analyzer;
+		using namespace workflow::runtime;
+		GuiResourcePrecompileContext context;
+		GuiResourceError::List errors;
+		types::ResolvingResult result;
+		auto ownerType = TypeInfoRetriver<T>::CreateTypeInfo();
+		IGuiInstanceLoader::TypeInfo typeInfo(GlobalStringKey::Get(ownerType->GetTypeDescriptor()->GetTypeName()), ownerType);
+		auto loader = GetInstanceLoaderManager()->GetLoader(typeInfo.typeName);
+		auto module = Ptr(new WfModule);
+		module->name.value = L"initial_payloads";
+		module->moduleType = WfModuleType::Module;
+		auto function = Ptr(new WfFunctionDeclaration);
+		function->name.value = L"Insert";
+		function->functionKind = WfFunctionKind::Normal;
+		function->anonymity = WfFunctionAnonymity::Named;
+		function->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
+		for (auto name : { L"owner",L"first",L"second" })
+		{
+			auto argument = Ptr(new WfFunctionArgument);
+			argument->name.value = name;
+			argument->type = GetTypeFromTypeInfo((WString(name) == L"owner" ? ownerType : TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo()).Obj());
+			function->arguments.Add(argument);
+		}
+		auto block = Ptr(new WfBlockStatement);
+		function->statement = block;
+		module->declarations.Add(function);
+		for (vint index = 0; index < 2; index++)
+		{
+			auto value = Ptr(new WfReferenceExpression);
+			value->name.value = index ? L"second" : L"first";
+			IGuiInstanceLoader::ArgumentInfo argument;
+			argument.expression = value;
+			argument.typeInfo = TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo();
+			IGuiInstanceLoader::ArgumentMap arguments;
+			arguments.Add((forms & (vint(1) << index)) ? GlobalStringKey::Get(L"Composition") : GlobalStringKey::Empty, argument);
+			block->statements.Add(loader->AssignParameters(context, result, typeInfo, GlobalStringKey::Get(L"owner"), arguments, {}, errors));
+		}
+		auto manager = Workflow_GetSharedManager(
+#ifdef VCZH_64
+			GuiResourceCpuArchitecture::x64
+#else
+			GuiResourceCpuArchitecture::x86
+#endif
+		);
+		manager->Clear(false, true);
+		manager->AddModule(module);
+		manager->Rebuild(true);
+		TEST_ASSERT(errors.Count() == 0 && manager->errors.Count() == 0);
+		auto assembly = workflow::emitter::GenerateAssembly(manager);
+		manager->Clear(false, true);
+		auto global = Ptr(new WfRuntimeGlobalContext(assembly));
+		LoadFunction<void()>(global, L"<initialize>")();
+		auto insert = LoadFunction<void(T, GuiGraphicsComposition*, GuiGraphicsComposition*)>(global, L"Insert");
+		auto first = new GuiBoundsComposition;
+		auto second = new GuiBoundsComposition;
+		TEST_EXCEPTION(insert(owner, first, second), WfRuntimeException, [](const WfRuntimeException& error)
+		{
+			TEST_ASSERT(INVLOC.FindFirst(error.Message(), L"initial content cannot contain more than one", Locale::Normalization::None).key != -1);
+		});
+		TEST_ASSERT(owner->GetComposition() == first && !first->GetParent() && !second->GetParent());
+		// Replacing an unbuilt payload through the ordinary setter remains valid.
+		owner->SetComposition(second);
+		TEST_ASSERT(owner->GetComposition() == second);
+	}
+
 	WString Resource(const WString& content)
 	{
 		return L"<Resource>\n<Instance name=\"Main\">\n<Instance ref.Class=\"easy_test::MainWindow\">\n<Window ref.Name=\"self\" Text=\"Easy layout\" ClientSize=\"x:320 y:240\">\n"
@@ -40,7 +110,6 @@ namespace easy_layout_xml_tests
 				GuiResourceCpuArchitecture::x86,
 #endif
 				nullptr, errors);
-			for (auto&& error : errors) TEST_PRINT(error.message);
 			TEST_ASSERT(errors.Count() == 0);
 			GetResourceManager()->SetResource(resource, errors, GuiResourceUsage::InstanceClass);
 			TEST_ASSERT(errors.Count() == 0);
@@ -83,6 +152,97 @@ using namespace easy_layout_xml_tests;
 
 TEST_FILE
 {
+	TEST_CASE(L"Initial payload insertion rejects duplicates before replacing owners or descriptors")
+	{
+		tui_provider_tests::RunGuiTest([]()
+		{
+			for (vint forms = 0; forms < 4; forms++)
+			{
+				auto owner = new GuiEasyLayoutComposition;
+				TestInitialPayloads(owner, forms);
+				owner->BuildLayout();
+				SafeDeleteComposition(owner);
+				auto descriptor = Ptr(new GuiEasyTopLayout);
+				TestInitialPayloads(descriptor, forms);
+			}
+		});
+	});
+
+	TEST_CASE(L"Ordinary struct expressions decode cell options in attributes and property elements")
+	{
+		for (vint element = 0; element < 2; element++)
+		for (auto text : { L"composeType:Absolute absolute:(10+20)",L"composeType:presentation::compositions::GuiCellOption::ComposeType::Absolute; absolute:30;",L"absolute:30 composeType:Absolute percentage:(1.0+2.0)" })
+		{
+			auto property = element ? L"><att.CellOption>" + WString(text) + L"</att.CellOption>" : L" CellOption=\"" + WString(text) + L"\">";
+			RunResourceTest(Resource(L"<ez:Layout><ez:Row ref.Name=\"row\"" + property + L"<ez:Column ref.Name=\"column\" CellOption=\"percentage:4\"><Bounds/></ez:Column></ez:Row></ez:Layout>"), [=](GuiWindow* window)
+			{
+				auto option = FindObjectByName<GuiEasyRowLayout>(window, L"row")->GetCellOption();
+				TEST_ASSERT(option.composeType == GuiCellOption::Absolute && option.absolute == 30);
+				TEST_ASSERT(option.percentage == (WString(text).Left(8) == L"absolute" ? 3 : 0));
+				auto defaults = FindObjectByName<GuiEasyColumnLayout>(window, L"column")->GetCellOption();
+				TEST_ASSERT(defaults.composeType == GuiCellOption::Absolute && defaults.absolute == 20 && defaults.percentage == 4);
+			});
+		}
+	});
+
+	TEST_CASE(L"Initial cell and fill bindings build once and later values require rebuilding")
+	{
+		const auto text = LR"GacUISrc(
+<Resource>
+  <Instance name="Main">
+    <Instance ref.Class="easy_test::MainWindow">
+      <ref.Ctor><![CDATA[{
+        if (grid.Children.Count != 1 or fills.Children.Count != 1)
+        {
+          raise "Layouts were not built before ref.Ctor";
+        }
+        if (self.Text != "Signal")
+        {
+          raise "Composition event handlers were not ready before BuildLayout";
+        }
+        self.Text = "Built";
+      }]]></ref.Ctor>
+      <Window ref.Name="self" Text="Initial">
+        <ev.ChildCompositionUpdated-eval><![CDATA[{ self.Text = "Signal"; }]]></ev.ChildCompositionUpdated-eval>
+        <CheckBox ref.Name="toggle" Selected="false"/>
+        <ez:Layout ref.Name="grid">
+          <ez:Row ref.Name="row" CellOption-bind="{composeType:Absolute absolute:(toggle.Selected ? 40 : 20)}">
+            <ez:Column><Bounds/></ez:Column>
+          </ez:Row>
+        </ez:Layout>
+        <ez:Layout ref.Name="fills">
+          <ez:Fill ref.Name="fill"><att.Percentage-bind>toggle.Selected ? 3.0 : 2.0</att.Percentage-bind><Bounds/></ez:Fill>
+          <ez:Fill Percentage-eval="1.0 + 0.0"><Bounds/></ez:Fill>
+        </ez:Layout>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+		RunResourceTest(text, [](GuiWindow* window)
+		{
+			TEST_ASSERT(window->GetText() == L"Built");
+			auto grid = FindObjectByName<GuiEasyLayoutComposition>(window, L"grid");
+			auto fills = FindObjectByName<GuiEasyLayoutComposition>(window, L"fills");
+			auto row = FindObjectByName<GuiEasyRowLayout>(window, L"row");
+			auto fill = FindObjectByName<GuiEasyFillLayout>(window, L"fill");
+			auto gridTable = dynamic_cast<GuiTableComposition*>(grid->Children()[0]->Children()[0]);
+			auto fillTable = dynamic_cast<GuiTableComposition*>(fills->Children()[0]->Children()[0]);
+			TEST_ASSERT(gridTable->GetRowOption(0).absolute == 20);
+			TEST_ASSERT(fillTable->GetColumnOption(0).percentage / fillTable->GetColumnOption(1).percentage == 2);
+			FindObjectByName<GuiSelectableButton>(window, L"toggle")->SetSelected(true);
+			TEST_ASSERT(row->GetCellOption().absolute == 40 && fill->GetPercentage() == 3);
+			TEST_ASSERT(gridTable->GetRowOption(0).absolute == 20);
+			TEST_ASSERT(fillTable->GetColumnOption(0).percentage / fillTable->GetColumnOption(1).percentage == 2);
+			grid->BuildLayout();
+			fills->BuildLayout();
+			gridTable = dynamic_cast<GuiTableComposition*>(grid->Children()[0]->Children()[0]);
+			fillTable = dynamic_cast<GuiTableComposition*>(fills->Children()[0]->Children()[0]);
+			TEST_ASSERT(gridTable->GetRowOption(0).absolute == 40);
+			TEST_ASSERT(fillTable->GetColumnOption(0).percentage / fillTable->GetColumnOption(1).percentage == 3);
+		});
+	});
+
 	TEST_CASE(L"An owning layout rebuilds from its button and retains nested payload state")
 	{
 		const auto content = LR"GacUISrc(

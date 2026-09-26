@@ -165,6 +165,5 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_EasyLayout.cpp"><Filter>Compiler\InstanceLoaders</Filter></ClCompile>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_EasyLayout.h"><Filter>Compiler\InstanceLoaders</Filter></ClInclude>
   </ItemGroup>
 </Project>

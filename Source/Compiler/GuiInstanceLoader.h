@@ -145,6 +145,15 @@ Instance Loader
 			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors);
 			virtual Ptr<workflow::WfStatement>				InitializeRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors);
 			virtual Ptr<workflow::WfStatement>				CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors);
+			/// <summary>
+			/// Generate final initialization after all creation, assignments, bindings, events and localized subscriptions, before ref.Ctor.
+			/// The compiler visits reference objects in depth-first postorder, including existing att.*-set targets, and calls every loader
+			/// from GetLoader(typeInfo.typeName) through GetParentLoader to the default loader, regardless of CanCreate.
+			/// Each hook contributes only its own statement; null is a successful no-op and does not stop the chain.
+			/// All hooks receive the same resolved object type (the source/base type for the root), variable and source position.
+			/// Unlike InitializeRootInstance, root final initialization also runs without constructor arguments.
+			/// </summary>
+			virtual Ptr<workflow::WfStatement>				InitializeInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, GuiResourceTextPos tagPosition, GuiResourceError::List& errors);
 			virtual Ptr<workflow::WfStatement>				AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
 			virtual Ptr<workflow::WfExpression>				GetParameter(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
 		};
