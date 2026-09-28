@@ -75,6 +75,8 @@ Nullable<WString> Console::TryRead();
 - **Wide string result**: Produces `WString` so it composes with console output APIs
 - **Console::Read compatibility**: `Console::Read` calls `TryRead` and returns `WString::Empty` when `TryRead` returns null
 
+Under `VCZH_WASM`, `Source/Console.Wasm.cpp` calls the worker's synchronous `globalThis.vlConsoleRead` callback. Install it before initializing the module. Return `undefined` for no input, or a JavaScript string for a present line; `""` is a present empty line. The bridge converts UTF-16 to `WString`, preserving Unicode and embedded zero code units, and reports callback exceptions or unsupported return types as C++ `Error` values. The unit-test HTML in Tools installs a callback that always returns `undefined`.
+
 ## Usage Patterns
 
 ### Simple Text Output

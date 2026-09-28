@@ -61,7 +61,11 @@ Only the "debug x64" configuration is supported on Linux. If you are instructed 
 ### WebAssembly Specific
 
 Building only happens in a folder that has a `vmake` and `vbuild` file, and the `vbuild` file should have text `WASM=YES` in it.
-Use `vbuild -bw` (incremental build) or `vbuild -fbw` (full build) to build wasm out of the test project:
-- If `vbuild` is not in the path, it is also in `REPO-ROOT/.github/Ubuntu/vl/cmd`.
-- Full build is required if the previous target platform is not the current one (native or wasm app).
-There will be a `app.html` generated, run this web page and the test project will start.
+Use `REPO-ROOT/.github/Ubuntu/build.sh` with `-bw` (incremental) or `-fbw` (full) to build wasm out of the test project:
+Full build is required if the previous target platform is not the current one (native or wasm app).
+
+For unit test projects running with web assembly:
+- There will be a `./Bin/app.html` generated, run this web page and the test project will start.
+- Run `./Bin/app.sh` with Node.js installed and open the printed URL.
+- The launcher supplies the COOP/COEP headers required for pthreads.
+- The page is running async, all retained tests must pass with exactly one `wasm_main returns 0.` line.
