@@ -2,15 +2,15 @@
 
 # Orders
 
-- Verify generated artifacts with downstream consumer checks [25]
-- Keep design documentation aligned with code after refactoring [23]
+- Verify generated artifacts with downstream consumer checks [27]
+- Keep design documentation aligned with code after refactoring [25]
+- Proactively remove code made redundant by refactoring [23]
 - Process staged tasks one by one with verification [22]
-- Proactively remove code made redundant by refactoring [21]
 - Port fixes from imports to source repositories [18]
 - Verify and localize portability on every target OS [17]
 - Crash early instead of adding error-tolerance fallbacks [15]
-- Extract abstractions only for real shared behavior [14]
-- Fix behavior at the owning state instead of patching symptoms [12]
+- Extract abstractions only for real shared behavior [15]
+- Fix behavior at the owning state instead of patching symptoms [13]
 - Validate expectations against implementation and existing tests [12]
 - Make `Stop()` drain asynchronous work before returning [8]
 - Do not assume async callback owners are heap allocated [5]
@@ -54,6 +54,7 @@
 - Preserve ordered HTTP messages at upload and completion boundaries [1]
 - Preserve an existing `Ptr` counter across asynchronous ownership handoffs [1]
 - Reuse established MSBuild project configurations [1]
+- Revalidate mutable external state immediately before mutation [1]
 
 # Refinements
 
@@ -275,6 +276,8 @@ For a released VlppOS namespace change, validate Workflow through the ChatBot SO
 
 When relocating manually maintained configuration beside generated types, validate both development architectures and the normal and IncludeOnly release consumers. Generate prerequisite types before packing and verify that each canonical configuration implementation appears exactly once; a successful development build can otherwise conceal stale release dependencies.
 
+For compiler refactors intended to preserve valid resource behavior, rebuild the deployed release tools, invalidate resource caches that do not track compiler binaries, and inspect each downstream architecture's outputs. A driver that catches errors and continues cannot be validated by its exit alone. Explain the complete generated diff, including unchanged consumers, and avoid inserting runtime checks for constraints that the authoring compiler can validate directly.
+
 ## `vl::regex` separator regex: `L"[\\/\\\\]+"`
 
 In `vl::regex::Regex`, both `/` and `\\` are escaping characters, and incorrect escaping inside `[]` can throw errors like `Illegal character set definition.`
@@ -321,6 +324,8 @@ For application refactors, remove helper wrappers that only duplicate an already
 
 When a shared event-information type can own a newly common field, move the field there and delete modifier-only wrapper types and parallel overload plumbing that no longer represent a distinct concept.
 
+Before adding persistent validation state, check whether the existing input contract can provide the complete set of values in one batch. If it can, validate with local state and remove the state map, wrapper type and alternate authoring paths that existed only to support incremental arrival. Preserve ordinary runtime mutation when the restriction belongs specifically to authoring.
+
 ## Keep design documentation aligned with code after refactoring
 
 When a refactoring changes architecture or behavior, update the corresponding design documents in the same task rather than deferring it. After a structural change, re-read the related documents and reconcile anything that became misaligned (for example, descriptions of a transport path that no longer exists). Treat documentation drift left by a previous refactoring as part of the current cleanup.
@@ -348,6 +353,8 @@ When a layered transport needs a stricter response policy than its general parse
 When HTTP long-poll delivery needs a bounded acknowledgement, put the deadline on the transport's acknowledgement transition instead of adding a timeout to a transport-independent RPC response wait. A locally successful response submission does not prove peer receipt. Arm the deadline only after delivering a nonempty server message, use the client's replacement poll as the implicit acknowledgement, cancel the deadline when that poll arrives, and report expiry through the transport's local-error path. Keep idle long polls unbounded when the protocol intentionally has no heartbeat.
 
 When a native window-style update changes keyboard focus or responder ownership as a side effect, preserve and restore the previous owner at the style-changing boundary. Restore focus only when the affected view already owned it; do not activate an inactive window or steal focus from another responder. Standalone startup may hide the problem by activating the window afterward, while an already-visible remote renderer receives no later activation to repair the lost state.
+
+When a compiler diagnostic lacks a source location, repair the argument or syntax metadata where the position should be produced. Do not make a downstream loader guess a location that the common compilation pipeline already knows.
 
 ## Treat environment correlation as evidence, not a cause
 
@@ -408,3 +415,7 @@ When a callback or adapter must retain an object beyond the caller's synchronize
 ## Reuse established MSBuild project configurations
 
 When adding a solution or project, start from a comparable existing `.vcxproj` configuration and adapt its dependencies and source inventory. Reuse established architecture, runtime, compiler and linker settings instead of reconstructing the build configuration from scratch.
+
+## Revalidate mutable external state immediately before mutation
+
+A UI selection or cached snapshot is not authoritative for external state that can change independently. Re-read the actual state at the operation boundary and reject a mismatch before any mutation. Report the selected and actual state, including special states such as detached HEAD, rather than silently ignoring the command or claiming a merge conflict. Keep a matching-state positive control and verify rejected operations leave all relevant external state unchanged.

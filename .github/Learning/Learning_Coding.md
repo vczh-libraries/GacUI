@@ -30,6 +30,7 @@
 - Keep skin defaults internal and showcase palette selection external [2]
 - Render GitView diffs as numbered source rows [2]
 - Keep GitView commit metadata in the status panel [2]
+- Apply EazyLayout configuration only through BuildLayout [2]
 - Nest EazyLayout descriptor groups under one owning layout [1]
 - Use /AsPort for automation with default 8888 [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
@@ -89,13 +90,15 @@
 - Preserve realized list rows during temporary render-target detachment [1]
 - UiaList presents side-effect-free getters as readouts [1]
 - Keep visible UI gaps compact and uniform [1]
-- Apply EazyLayout configuration only through BuildLayout [1]
 - Delegate EazyLayout cell-site rejection to GuiTableComposition [1]
 - Create UIA providers and observation only for demand [1]
 - Cache UiaList presentation values until an explicit query [1]
 - Keep GitView terminal layout compact in character cells [1]
 - Generate portable tool resources through both architectures [1]
 - Keep separate GitView Unix configurations for each executable [1]
+- GitView pull commands validate the live branch and report mismatches [1]
+- Initialize resolved XML objects after bindings through the complete loader chain [1]
+- Validate EazyLayout initial payloads during XML compilation [1]
 
 # Refinements
 
@@ -504,6 +507,8 @@ For UiaList provider groups and action rows, prefer compact, consistent visible 
 
 `GuiEasyLayoutComposition::BuildLayout`, declared in `Source/GraphicsComposition/EazyLayout/GuiEasyLayout.h`, is the boundary that applies descriptor configuration. Setters and permitted bindings only store values; changing `Padding`, `Border`, `Direction` or `CellSpan` does not rebuild or immediately change generated geometry. Each explicit build applies current values and structure while preserving reused payload controls, bindings, handlers and state. Normal parent resizing continues to lay out the already-built tree.
 
+`CellOption` and `Percentage` also use ordinary reflected values and supported expressions/bindings. Reuse the existing `GuiCellOption` struct-expression path instead of a separate EasyLayout deserializer. Initial bindings must be ready for the automatic build; later updates still require explicit `BuildLayout`. Keep layout grammar validation at the runtime builder, while rejecting duplicate initial XML payloads during compilation.
+
 ## Delegate EazyLayout cell-site rejection to GuiTableComposition
 
 When lowering EazyLayout row and column spans, pass their ranges to `GuiCellComposition::SetSite` and `GuiTableComposition` in `Source/GraphicsComposition/GuiGraphicsTableComposition.cpp`. Do not add another overlap/range validator or convert native site rejection into an EazyLayout exception: invalid cells remain unsited and invisible. Use fresh generated cells on rebuild so rejected placement cannot preserve a previous valid site. EazyLayout still validates its own descriptor grammar and shared-track option rules.
@@ -551,3 +556,15 @@ For portable checked-in C++ from a tool's authored GacUI XML, run GacBuild manua
 ## Keep separate GitView Unix configurations for each executable
 
 Maintain authored `vmake` files under `Tools/GitView/Linux/GitTui` and `Tools/GitView/Linux/GitViewTests`, with paths relative to their own build directories. Keep the model/view-model tests independent of native renderer libraries. Build and run each target from its directory through the repository workflow, and keep the layout documented in `Tools/GitView/AGENTS.md` and `README.md`.
+
+## GitView pull commands validate the live branch and report mismatches
+
+Both pull menu modes must reach `GitRepository::Pull` for a valid selected branch so it can compare that selection with the actual checkout immediately before mutation. `GitViewModel::GetCanPull` should not silently disable a mismatched selection based on cached branch state. Name both branches in a mismatch error and identify detached HEAD explicitly; use a neutral failure prefix and retain the normal post-command refresh.
+
+## Initialize resolved XML objects after bindings through the complete loader chain
+
+`IGuiInstanceLoader::InitializeInstance` contributes final initialization after all creation, property assignment and binding/event setup, before the root `ref.Ctor` body. Visit resolved reference objects in depth-first postorder, including existing `att.*-set` targets, and invoke every loader from most specific through the default loader regardless of `CanCreate` or null results. The compiler owns traversal; hooks must not invoke their parents. Preserve the resolved concrete/root source type and source position, and emit nothing for no-op hooks. EasyLayout's owning loader contributes one `BuildLayout`; constructor selection remains separate.
+
+## Validate EazyLayout initial payloads during XML compilation
+
+Use `SupportArray` / `Array(nullptr)` for the EasyLayout loader's default XML property so `AssignParameters` receives descriptors, controls and compositions together. Return `Unsupported` for named `Composition` and `Layouts` properties on both owners and descriptors, preventing setters and binders from bypassing the batch. Count payloads with a local occupied flag and retain source-positioned duplicate diagnostics; do not reintroduce `LoaderStateMap`, `ResolvingResult::loaderStates` or a loader-private state type. Preserve descriptor order, ordinary runtime setters, final initialization and native `BuildLayout` grammar validation; no runtime duplicate guards belong in generated tutorials.

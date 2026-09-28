@@ -20,6 +20,8 @@
 - Verify native shortcut delivery through the focused renderer or terminal [3]
 - Compare TUI control regressions with the GUI showcase [3]
 - Prefer automation geometry before screenshots for layout verification [3]
+- Verify GitView diffs against real repository states [3]
+- Use remote-protocol snapshots only for useful rendering [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -35,8 +37,7 @@
 - Verify `GacUICompiler` determinism with repeated no-change runs [2]
 - Remote-debugging guides own complete Cartesian test matrices [2]
 - Verify palette refresh through retained state and actual host rendering [2]
-- Use remote-protocol snapshots only for useful rendering [2]
-- Verify GitView diffs against real repository states [2]
+- Verify compiler releases through every tutorial architecture output [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Verify GacGen RPC outputs with positive and negative resources [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
@@ -87,6 +88,7 @@
 - Verify layout splitters in both directions across resizing and rebuilding [1]
 - Reacquire UIA providers after an owning layout rebuild [1]
 - Keep FullControlTest UIA checks synchronized with showcase changes [1]
+- Cover every XML assignment route when batching loader validation [1]
 
 # Refinements
 
@@ -556,3 +558,13 @@ When FullControlTest changes, update the affected assertions in `Test/UIA_CppTes
 Use disposable repositories to distinguish staged, working-tree and historical contents in GitView tests. Assert exact source rows, line numbers, colors and context boundaries, including blank lines, large line numbers, missing final newlines, patch-like source text, BOMs and binary files. Construct binary fixtures as bytes and inspect them when Git classifies them unexpectedly; a text writer can invalidate a NUL-based fixture. Complement model assertions with terminal input/output checks of compact layout, splitter movement, scrolling, status wrapping and retained commit details.
 
 Cover separated, overlapping and exactly touching context ranges, with insertion/deletion shifts, and require separator rows only for omitted source gaps. Inspect terminal cells for the gray rule, normal background, absent line number and width after resizing. Assert subject-only history rows and exact `HASH (author) DATE` status after file selection. On POSIX, initialize the test process locale from the environment and use an installed UTF-8 locale for Unicode filename fixtures; successful TUI startup does not initialize a separate test executable. Assigned Alt labels do not prove standalone Alt delivery where the POSIX input decoder does not report that key.
+
+For both pull modes, use disposable repositories to cover a different selected branch, an external checkout after refresh, and detached HEAD before and after refresh. Require visible diagnostics and unchanged branch, HEAD, index, working tree and FETCH_HEAD on rejection. Keep the actions available for a valid selection and verify a matching-branch pull succeeds.
+
+## Verify compiler releases through every tutorial architecture output
+
+After the GacUI release pipeline and UpdateRelease, rebuild/deploy the requested sibling Release tools and clear tutorial caches before running GacBuild. The resource cache does not track compiler binaries, and GacBuild can catch an individual failure and continue. Check every x32/x64 result for errors, fresh nonempty binary/Workflow outputs and matching deployment copies; compare generated C++ semantically and explain every change outside Import. CppMerge may preserve timestamps when output is identical. Keep compiler rejection and initialization/geometry assertions in ordinary unit tests, and separate unrelated scheduling or date-dependent snapshot drift.
+
+## Cover every XML assignment route when batching loader validation
+
+For EasyLayout's batched default property, mix controls, compositions and descriptors in duplicate-rejection cases. Cover named `Composition` and `Layouts` rejection for owners and descriptors through attribute, element, set, eval, bind and uri forms, both alone and alongside default payloads. Require source positions, preserve valid independent instances and descriptor order, and verify ordinary runtime replacement separately. Inspect generated tutorial diffs for unchanged behavior and the absence of runtime duplicate guards.
