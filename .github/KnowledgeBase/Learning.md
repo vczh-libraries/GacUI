@@ -2,14 +2,14 @@
 
 # Orders
 
-- Verify generated artifacts with downstream consumer checks [27]
+- Verify generated artifacts with downstream consumer checks [29]
 - Keep design documentation aligned with code after refactoring [25]
-- Proactively remove code made redundant by refactoring [23]
-- Process staged tasks one by one with verification [22]
-- Port fixes from imports to source repositories [18]
-- Verify and localize portability on every target OS [17]
-- Crash early instead of adding error-tolerance fallbacks [15]
-- Extract abstractions only for real shared behavior [15]
+- Proactively remove code made redundant by refactoring [24]
+- Process staged tasks one by one with verification [23]
+- Port fixes from imports to source repositories [21]
+- Verify and localize portability on every target OS [18]
+- Crash early instead of adding error-tolerance fallbacks [16]
+- Extract abstractions only for real shared behavior [16]
 - Fix behavior at the owning state instead of patching symptoms [13]
 - Validate expectations against implementation and existing tests [12]
 - Make `Stop()` drain asynchronous work before returning [8]
@@ -54,6 +54,8 @@
 - Preserve ordered HTTP messages at upload and completion boundaries [1]
 - Preserve an existing `Ptr` counter across asynchronous ownership handoffs [1]
 - Reuse established MSBuild project configurations [1]
+- Use explicit positive compiler and platform guards [1]
+- Keep encoding and exception adapters at the C++/JavaScript boundary [1]
 - Revalidate mutable external state immediately before mutation [1]
 
 # Refinements
@@ -125,6 +127,8 @@ Likewise, do not pass one-shot callbacks merely to hide mutually exclusive concr
 For environment or lifecycle invalidation, prefer forwarding one application-level notification through the existing ownership tree over registering every affected object as a global listener. This keeps notifications scoped to objects that are actually installed or active.
 
 Keep application-specific choices in the application that owns them. When several entry points share one showcase, expose its selection event and attach one shared handler at each entry point instead of adding a callback plugin, selector API or availability state to a reusable skin. A dependency arrangement should make required behavior available in each consumer without teaching the lower layer the showcase policy.
+
+When macOS or WebAssembly can reuse most of a Linux implementation, keep the shared implementation in the existing `*.Linux.*` file with explicit positive platform guards and small conditional differences. Delete duplicate platform files and their project/filter registrations; retain separate files for genuinely different implementations such as a browser console bridge.
 
 ## Make `Stop()` drain asynchronous work before returning
 
@@ -276,6 +280,8 @@ For a released VlppOS namespace change, validate Workflow through the ChatBot SO
 
 When relocating manually maintained configuration beside generated types, validate both development architectures and the normal and IncludeOnly release consumers. Generate prerequisite types before packing and verify that each canonical configuration implementation appears exactly once; a successful development build can otherwise conceal stale release dependencies.
 
+When a new platform backend is packed into an existing release pair, compile and run a separate consumer of that generated pair. A passing source-project build cannot prove that release guards expose supported APIs exactly once or that deliberately unavailable services still fail as specified.
+
 For compiler refactors intended to preserve valid resource behavior, rebuild the deployed release tools, invalidate resource caches that do not track compiler binaries, and inspect each downstream architecture's outputs. A driver that catches errors and continues cannot be validated by its exit alone. Explain the complete generated diff, including unchanged consumers, and avoid inserting runtime checks for constraints that the authoring compiler can validate directly.
 
 ## `vl::regex` separator regex: `L"[\\/\\\\]+"`
@@ -324,6 +330,8 @@ For application refactors, remove helper wrappers that only duplicate an already
 
 When a shared event-information type can own a newly common field, move the field there and delete modifier-only wrapper types and parallel overload plumbing that no longer represent a distinct concept.
 
+When a documented build invariant guarantees that `CPP_TARGET` and its package outputs are files under `Bin`, removing `Bin` already cleans them. Remove redundant file-by-file cleanup instead of preserving commands for target layouts the build no longer supports.
+
 Before adding persistent validation state, check whether the existing input contract can provide the complete set of values in one batch. If it can, validate with local state and remove the state map, wrapper type and alternate authoring paths that existed only to support incremental arrival. Preserve ordinary runtime mutation when the restriction belongs specifically to authoring.
 
 ## Keep design documentation aligned with code after refactoring
@@ -370,6 +378,8 @@ When asked to prepare Unix `vmake` configuration on Windows without executing it
 
 Portability applies to test synchronization APIs too. When a timed thread wait exists only on one platform, use a cross-platform completion primitive such as `EventObject` for the bounded deadlock guard, signal it on every expected completion path, and still join the worker afterward. Do not weaken a bounded test into an unbounded join merely to make it compile elsewhere.
 
+Browser automation can change the environment being tested. Verify effective security preferences and worker-local settings instead of assuming automation defaults or page-context overrides match a normal browser. For example, restore Firefox's normal strict file-origin policy when reproducing local-module failures, and probe the worker's actual timezone before claiming timezone coverage. Serve Wasm module packages over HTTP for their supported run and distinguish that result from opening the HTML through `file://`.
+
 ## Use reentrant POSIX date-time conversions
 
 On POSIX platforms, never retain pointers returned by `localtime()` or `gmtime()` across calls or threads because both may share process-wide `tm` storage. Use caller-owned stack values populated by `localtime_r()` and `gmtime_r()` instead, with separate values for simultaneous local and UTC conversions.
@@ -415,6 +425,16 @@ When a callback or adapter must retain an object beyond the caller's synchronize
 ## Reuse established MSBuild project configurations
 
 When adding a solution or project, start from a comparable existing `.vcxproj` configuration and adapt its dependencies and source inventory. Reuse established architecture, runtime, compiler and linker settings instead of reconstructing the build configuration from scratch.
+
+## Use explicit positive compiler and platform guards
+
+Compiler/platform selection must enumerate supported branches with `#if` and `#elif`; do not assume that everything outside MSVC is native GCC/Clang. Select Emscripten explicitly as `VCZH_WASM`, independently of `VCZH_MSVC` and `VCZH_GCC`, while `VCZH_APPLE` refines the native GCC branch. Correct encountered platform-selection `#ifdef` / `#else` shortcuts, including unrelated ones, without changing ordinary header guards or unrelated feature switches. Unsupported compilers should fail instead of silently entering a fallback.
+
+## Keep encoding and exception adapters at the C++/JavaScript boundary
+
+Preserve Emscripten's SDK-compatible 32-bit `wchar_t` and use `WString` throughout C++; do not force `-fshort-wchar`. Convert to temporary `U16String` only at the JavaScript boundary, and convert received strings back immediately. Use `U8String` only when UTF-16 cannot be bound easily and document that limitation. Honor explicit code-unit lengths and copy temporary buffers before the C++ call returns.
+
+Prefer `EMSCRIPTEN_BINDINGS` for C++ exports and small `EM_JS` calls to named JavaScript helpers for imports. Keep application logic in normal C++ or JavaScript/TypeScript functions; direct JavaScript built-ins are appropriate for general operations. Separate the normal C++ function from its exception-catching `wasm_` export, and translate failures to return values in both directions so exceptions do not cross the boundary.
 
 ## Revalidate mutable external state immediately before mutation
 
