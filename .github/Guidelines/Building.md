@@ -57,3 +57,11 @@ Call `REPO-ROOT/.github/Ubuntu/build.sh -f` for full rebuild.
 `build.sh` will also run other script files in that folder; you may need to run `chmod +x` if any script file is blocked.
 
 Only the "debug x64" configuration is supported on Linux. If you are instructed to build and run other configuration, ignore it.
+
+### WebAssembly Specific
+
+Building only happens in a folder that has a `vmake` and `vbuild` file, and the `vbuild` file should have text `WASM=YES` in it.
+Use `vbuild -bw` (incremental build) or `vbuild -fbw` (full build) to build wasm out of the test project:
+- If `vbuild` is not in the path, it is also in `REPO-ROOT/.github/Ubuntu/vl/cmd`.
+- Full build is required if the previous target platform is not the current one (native or wasm app).
+There will be a `app.html` generated, run this web page and the test project will start.
