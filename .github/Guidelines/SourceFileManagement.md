@@ -40,16 +40,22 @@
 ## Cross Platform Naming Convention
 
 - Windows specific source file in `Source` folder should be named after `*.Windows.(h|cpp)`.
-- When a source file could be shared between Linux and macOS, use `*.Linux.(h|cpp)`.
-- Otherwise macOS specific file should use `*.macOS.(h|cpp)`.
+- When macOS or WebAssembly can mostly reuse the Linux implementation, keep it in `*.Linux.(h|cpp)` and use macro guards for the few platform differences.
+- Use `*.macOS.(h|cpp)` or `*.Wasm.(h|cpp)` only when that platform needs an implementation that cannot substantially share the Linux code. WebAssembly is compiled with `em++`.
 
 Platform guard macros should be used even when in platform specific source files:
-- `#ifdef VCZH_MSVC` for Windows.
-- `#ifdef VCZH_GCC` for Linux and macOS shared source.
-- `#if defined VCZH_MSVC && !defined VCZH_APPLE` for Linuc only.
-- `#if defined VCZH_MSVC && defined VCZH_APPLE` for macOS only.
+- `#if defined VCZH_MSVC` for Windows.
+- `#if defined VCZH_GCC` for native Linux and macOS shared source.
+- `#if defined VCZH_GCC || defined VCZH_WASM` for Linux source also shared with WebAssembly.
+- `#if defined VCZH_GCC && !defined VCZH_APPLE` for Linux only.
+- `#if defined VCZH_GCC && defined VCZH_APPLE` for macOS only.
+- `#if defined VCZH_WASM` for WebAssembly.
 
-Be awared that during releasing a repo, Linux and macOS source files will be CodePack-ed into a single source file, which is the reason for the above rule.
+Use `#if` / `#elif` for compiler/platform selection, never `#ifdef` / `#else`. `VCZH_WASM`, `VCZH_MSVC` and `VCZH_GCC` are separate choices; `VCZH_APPLE` only modifies native GCC. Put platform-only includes inside these guards too. Header inclusion guards and unrelated feature switches are unaffected.
+
+Register platform source files in the owning project and filter files together. Keep the generated source inventory independent of the compiler, and make inactive implementations compile harmlessly. Platform files may be merged by CodePack, so their guards remain necessary.
+
+Under `VCZH_WASM`, use the SDK's 32-bit `wchar_t` and `VCZH_WCHAR_UTF32`, without `-fshort-wchar`. C++ keeps `WString`; JavaScript wrappers prefer `U16String` interchange, with `U8String` permitted only for a documented binding limitation. Follow [Working with Web Assembly](./Coding.md#working-with-web-assembly) for conversion, lifetime, exception and entry-point rules.
 
 ## Working on Linux/macOS
 
@@ -66,6 +72,8 @@ In `vmake`, these variables are available for configuration, most of them are op
 - `CPP_VCXPROJS`: Use MSBuild project files, they are typically `*.vcxitems` or `*.vcxproj`.
 - `CPP_REMOVES`: Files to exclude, from the file list generated from `CPP_VCXPROJS`.
 - `CPP_ADDS`: Files to add.
-- `CPP_COMPILE_OPTIONS`: Extra compiler options for `clang++` or `g++`.
+- `CPP_COMPILE_OPTIONS`: Extra compiler options for `clang++`, `g++` or `em++`.
 - `FOLDERS`: Folders that contain generated files. These folders will be completely removed during a full build.
-- `CPP_TARGET`: The compiled binary.
+- `CPP_TARGET`: The compiled binary. `vmake` emits this variable before the shared makefile include. For Wasm, the target contains a copy of `app.wasm`; its directory also contains `app.mjs` and `app.html`.
+
+`vbuild -b` selects `CPP_COMPILER=CLANG`, `--build-gcc` selects `GCC`, and `-bw` / `--build-wasm` selects `EMPP`. Use `-f`, `--full-build-gcc`, or `-fbw` / `--full-build-wasm` for full builds. The repository-local `build.sh` forwards these modes; coverage is exclusive to Clang. Compiler/options changes invalidate incompatible products in ignored `Obj` state, while unchanged builds remain incremental. Regenerate `makefile` and `vmake.txt`; do not edit them.

@@ -193,9 +193,10 @@ object, causing missing of a complete picture.
 
 ## Keep C++ Code Cross Platform
 
-- All source files must aim for cross platform unless the file name has `.Windows` or `.Linux.`.
-  - `.macOS.` will be used only when the macOS version can't share the Linux implementation.
-  - It is acceptable to add macro guard to fix `.Linux.` for macOS, when the macOS version has only very few differences to the Linux version.
+- All source files must aim for cross platform unless the file name has `.Windows.`, `.Linux.`, `.macOS.` or `.Wasm.`.
+  - When macOS or WebAssembly can mostly reuse the Linux implementation, keep the shared code in `*.Linux.*` and guard the few platform differences inside that file.
+  - Use `#if defined VCZH_GCC || defined VCZH_WASM` for Linux files shared by native Linux/macOS and WebAssembly. Use explicit `#if` / `#elif` conditions for the platform differences.
+  - Use separate `*.macOS.*` or `*.Wasm.*` files only when the implementation cannot substantially share the Linux code.
 - Use FilePath to normalize file path, for file path operations and delimiter access.
 - If platform specific API could be used, avoid hard-coding a table.
 - If not all OS provides enough platform specific API for a requirement:
@@ -242,3 +243,26 @@ object, causing missing of a complete picture.
 ## Workflow Script Generation in C++
 
 - When generating Workflow script, avoid building text, you should always build the AST. The AST type for a complete Workflow script module is `WfModule`.
+
+
+## Working with Web Assembly
+
+- WebAssembly compiled with `em++` should reuse `*.Linux.*` when the implementation is mostly shared, with macro guards for small differences. Use `*.Wasm.*` for implementations that need separate platform code.
+- `VCZH_WASM` detects `__EMSCRIPTEN__`, before testing native compiler macros. Exactly one of `VCZH_MSVC`, `VCZH_GCC` and `VCZH_WASM` is selected. `VCZH_GCC` covers native `clang++` and `g++`; `VCZH_APPLE` only refines that branch.
+- Use `#if` and `#elif` with explicit compiler/platform conditions. Do not use `#ifdef` or `#else` for platform selection, and do not assume non-MSVC means GCC. Fix violations when encountered, including unrelated code. Header guards and unrelated feature switches keep their existing meaning. Unsupported compilers should fail, without a fallback implementation.
+- Put platform-only includes and definitions inside positive platform guards. Inactive platform files must compile harmlessly in the shared source inventory.
+- Keep the SDK's default 32-bit `wchar_t` under `VCZH_WASM`, select `VCZH_WCHAR_UTF32`, and assert `sizeof(wchar_t) == sizeof(char32_t)`. Do not use `-fshort-wchar`; SDK libc/libc++ and Embind must use the same ABI.
+- Keep `WString` in C++ APIs and internal text processing. Convert to `U16String` with `wtou16` immediately before JavaScript interchange, and convert received text back with `u16tow`.
+  - Only use `U8String` with `wtou8` / `u8tow` when UTF-16 cannot be bound easily at that boundary. Document the concrete binding limitation.
+  - Keep binding adapters and temporary encoded buffers inside the wrapper. For example, Embind's `std::u16string` adapter belongs here, not in the C++ API.
+  - Distinguish UTF-32 code units, UTF-16 code units and UTF-8 bytes. Honor explicit lengths; copy/decode borrowed buffers synchronously before the C++ call returns. Do not retain pointers or heap views beyond their lifetime.
+- Prefer `EMSCRIPTEN_BINDINGS` to expose C++ functions to JavaScript, and `EM_JS` to call JavaScript from C++.
+  - Keep `EM_JS` bodies as calls to named JavaScript helpers, e.g. `return globalThis["NAME"](arguments);`.
+  - General JavaScript built-ins may be used directly. Application logic belongs in named C++ or JavaScript/TypeScript functions, whichever is simpler.
+  - Install callbacks on the worker's `globalThis` before module initialization. A worker cannot use the page's globals or update its DOM; send owned data to the page in order.
+- No exception may cross the C++/JavaScript boundary. Return errors instead. Catch JavaScript failures inside helpers before returning to C++; keep C++ exception catching enabled with `-fexceptions` during compilation and linking.
+- Give every exported function two versions: `FUNCTION-NAME` for C++ callers, where exceptions are allowed, and `wasm_FUNCTION-NAME` for `EMSCRIPTEN_BINDINGS`, where all C++ exceptions are caught and translated into return values.
+- An application's entry is `WasmMain`, exposed only as `wasm_main` through `EMSCRIPTEN_BINDINGS(CppApplication)`. Do not also auto-run native `main`.
+  - Unit tests pass the program name and `/D` through the public argc/argv overload of `UnitTest::RunAndDisposeTests` in `Source/UnitTest/UnitTest.h`, and finalize normally after success.
+  - Catch framework assertion/configuration errors and Vlpp errors/exceptions as well as standard and unknown exceptions. Print diagnostics through the console bridge; do not re-enter test logging after `/D` unwinds its context. Return nonzero and stop at the first failure. Another run uses a fresh worker/module.
+- The unit-test HTML initializes `app.mjs` in a dedicated Web Worker and calls `wasm_main` once. An async page function does not move synchronous Wasm execution off the UI thread. Render ordered console messages as text, and append one black italic `wasm_main returns <return-value>.` line after output. Module-load failures and runtime traps are terminal failures without a normal return value.
