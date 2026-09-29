@@ -334,7 +334,7 @@ RequestRendererRenderElement: {"id": 30, "bounds": {"x1": 451, "y1": 49, "x2": 4
 RequestRendererRenderElement: {"id": 31, "bounds": {"x1": 451, "y1": 273, "x2": 460, "y2": 278}, "areaClippedByParent": {"x1": 446, "y1": 266, "x2": 466, "y2": 286}}
 RequestRendererRenderElement: {"id": 32, "bounds": {"x1": 450, "y1": 62, "x2": 462, "y2": 82}, "areaClippedByParent": {"x1": 446, "y1": 62, "x2": 466, "y2": 82}}
 RequestRendererBeginBoundary: {"id": 14, "hitTestResult": null, "cursor": "IBeam", "bounds": {"x1": 14, "y1": 42, "x2": 446, "y2": 286}, "areaClippedBySelf": {"x1": 14, "y1": 42, "x2": 446, "y2": 286}}
-RequestRendererRenderElement: {"id": 40, "bounds": {"x1": 16, "y1": 44, "x2": 71, "y2": 60}, "areaClippedByParent": {"x1": 16, "y1": 44, "x2": 71, "y2": 60}}
+RequestRendererRenderElement: {"id": 40, "bounds": {"x1": 16, "y1": 44, "x2": 59, "y2": 60}, "areaClippedByParent": {"x1": 16, "y1": 44, "x2": 59, "y2": 60}}
 RequestRendererEndBoundary
 RequestRendererEndBoundary
 ========================================
@@ -393,6 +393,6 @@ RequestRendererRenderElement: {"id": 30, "bounds": {"x1": 451, "y1": 49, "x2": 4
 RequestRendererRenderElement: {"id": 31, "bounds": {"x1": 451, "y1": 273, "x2": 460, "y2": 278}, "areaClippedByParent": {"x1": 446, "y1": 266, "x2": 466, "y2": 286}}
 RequestRendererRenderElement: {"id": 32, "bounds": {"x1": 450, "y1": 62, "x2": 462, "y2": 82}, "areaClippedByParent": {"x1": 446, "y1": 62, "x2": 466, "y2": 82}}
 RequestRendererBeginBoundary: {"id": 14, "hitTestResult": null, "cursor": "IBeam", "bounds": {"x1": 14, "y1": 42, "x2": 446, "y2": 286}, "areaClippedBySelf": {"x1": 14, "y1": 42, "x2": 446, "y2": 286}}
-RequestRendererRenderElement: {"id": 40, "bounds": {"x1": 16, "y1": 44, "x2": 71, "y2": 60}, "areaClippedByParent": {"x1": 16, "y1": 44, "x2": 71, "y2": 60}}
+RequestRendererRenderElement: {"id": 40, "bounds": {"x1": 16, "y1": 44, "x2": 59, "y2": 60}, "areaClippedByParent": {"x1": 16, "y1": 44, "x2": 59, "y2": 60}}
 RequestRendererEndBoundary
 RequestRendererEndBoundary

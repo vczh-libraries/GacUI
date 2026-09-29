@@ -91,7 +91,7 @@
 ========================================
 6
 ========================================
-{"id": 160, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 40, "bounds": {"x1": 16, "y1": 44, "x2": 71, "y2": 60}, "validArea": {"x1": 16, "y1": 44, "x2": 71, "y2": 60}}, "children": null}
+{"id": 160, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 40, "bounds": {"x1": 16, "y1": 44, "x2": 59, "y2": 60}, "validArea": {"x1": 16, "y1": 44, "x2": 59, "y2": 60}}, "children": null}
 ========================================
 7
 ========================================
