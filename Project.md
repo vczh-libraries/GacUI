@@ -309,4 +309,4 @@ The following unit test projects could be built to web assembly and run with a b
 
 The browser build selects the generated 32-bit skins and compiler baselines and uses `-Oz` to reduce module size. Its `vbuild` preloads test inputs into OPFS and creates an empty `Resources/UnitTestSnapshots` output folder; existing host snapshots are not input fixtures. Debug information, exceptions and assertions remain enabled.
 
-The terminal provider and TestTuiProvider.cpp are native-only and excluded from WebAssembly.
+The terminal provider, TestTuiProvider.cpp and its dependent TestControls_EasyLayout.cpp are native-only and excluded from WebAssembly.

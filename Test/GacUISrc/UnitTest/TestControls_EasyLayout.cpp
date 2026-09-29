@@ -1,4 +1,6 @@
 #include "../../../Source/GacUI.h"
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 #include "../../../Source/Resources/GuiParserManager.h"
 #include "../../../Source/Skins/TuiSkin/Config/TuiSkinConfig.h"
 #include "../../../Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
@@ -585,3 +587,5 @@ TEST_FILE
 		});
 	});
 }
+
+#endif
