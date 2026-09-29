@@ -4,6 +4,8 @@
 #include "../../GraphicsElement/GuiGraphicsResourceManager.h"
 #include "TuiApplication.h"
 
+#if defined VCZH_MSVC || defined VCZH_GCC
+
 namespace vl::presentation::elements
 {
 	class TuiGraphicsRenderTarget;
@@ -100,5 +102,7 @@ namespace vl::presentation::elements
 	extern WString						TuiEllipsizeText(const WString& text, vint width, vint tabInterval = 4);
 	extern console::TuiTextStyle			TuiGetTextStyle(IGuiGraphicsParagraph::TextStyle style);
 }
+
+#endif
 
 #endif

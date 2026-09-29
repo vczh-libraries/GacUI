@@ -15527,6 +15527,7 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
+#if defined VCZH_MSVC || defined VCZH_GCC
 #include <algorithm>
 
 using namespace vl;
@@ -15539,13 +15540,6 @@ namespace vl
 	{
 		namespace tui_internal
 		{
-#if defined VCZH_WASM
-			Ptr<unittest::ITuiBackend> CreateTuiBackend()
-			{
-				CHECK_FAIL(L"vl::console::tui_internal::CreateTuiBackend()#A TUI backend must be injected in WebAssembly.");
-			}
-#endif
-
 			struct ListenerEntry
 			{
 				ITuiCallback*				listener = nullptr;
@@ -16409,16 +16403,21 @@ TUI
 			if (charWidth == 2 && x + 1 >= clip.x2) return;
 			RepairWide(buffer, width, height, x, y);
 			if (charWidth == 2) RepairWide(buffer, width, height, x + 1, y);
-			TuiPixel pixel;
-			pixel.character = { .c = code, .style = options.style };
-			pixel.foregroundColor = options.foregroundColor;
-			pixel.backgroundColor = options.backgroundColor;
-			buffer[y * width + x] = pixel;
+			buffer[y * width + x] = TuiPixel
+			{
+				.glyph = TuiPixelGlyph::Char,
+				.character = { .c = code, .style = options.style },
+				.foregroundColor = options.foregroundColor,
+				.backgroundColor = options.backgroundColor,
+			};
 			if (charWidth == 2)
 			{
-				pixel.glyph = TuiPixelGlyph::WideCharContinuation;
-				pixel.character = {};
-				buffer[y * width + x + 1] = pixel;
+				buffer[y * width + x + 1] = TuiPixel
+				{
+					.glyph = TuiPixelGlyph::WideCharContinuation,
+					.foregroundColor = options.foregroundColor,
+					.backgroundColor = options.backgroundColor,
+				};
 			}
 		}
 
@@ -16539,6 +16538,8 @@ ScopedTuiBackend
 		}
 	}
 }
+
+#endif
 
 
 /***********************************************************************

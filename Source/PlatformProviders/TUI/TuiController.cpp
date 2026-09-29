@@ -1,4 +1,6 @@
 #include "TuiController.h"
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 #include "TuiGraphics.h"
 #include "../Hosted/GuiHostedController.h"
 #include "../Hosted/GuiHostedGraphics.h"
@@ -294,3 +296,5 @@ namespace vl::presentation
 	}
 
 }
+
+#endif

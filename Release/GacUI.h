@@ -25852,6 +25852,8 @@ namespace vl::presentation
 #define VCZH_PRESENTATION_ELEMENTS_TUITEXTLAYOUT
 
 
+#if defined VCZH_MSVC || defined VCZH_GCC
+
 namespace vl::presentation::elements
 {
 	class TuiGraphicsRenderTarget;
@@ -25951,6 +25953,8 @@ namespace vl::presentation::elements
 
 #endif
 
+#endif
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\TUI\TUIGRAPHICS.H
@@ -25958,6 +25962,8 @@ namespace vl::presentation::elements
 #ifndef VCZH_PRESENTATION_ELEMENTS_TUIGRAPHICS
 #define VCZH_PRESENTATION_ELEMENTS_TUIGRAPHICS
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::presentation::elements
 {
@@ -26004,6 +26010,8 @@ namespace vl::presentation::elements
 
 #endif
 
+#endif
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\TUI\TUIWINDOW.H
@@ -26011,6 +26019,8 @@ namespace vl::presentation::elements
 #ifndef VCZH_PRESENTATION_TUIWINDOW
 #define VCZH_PRESENTATION_TUIWINDOW
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::presentation
 {
@@ -26110,6 +26120,8 @@ namespace vl::presentation
 
 #endif
 
+#endif
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\TUI\TUICONTROLLER.H
@@ -26117,6 +26129,8 @@ namespace vl::presentation
 #ifndef VCZH_PRESENTATION_TUICONTROLLER
 #define VCZH_PRESENTATION_TUICONTROLLER
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::presentation
 {
@@ -26182,6 +26196,8 @@ namespace vl::presentation
 		void							MouseHorizontalWheel(const WindowMouseInfo& info) override;
 	};
 }
+
+#endif
 
 #endif
 

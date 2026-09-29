@@ -1,4 +1,6 @@
 #include "TuiTextLayout.h"
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 #include "TuiGraphics.h"
 #include <algorithm>
 
@@ -556,3 +558,5 @@ TuiGraphicsLayoutProvider
 		return Ptr(new TuiGraphicsParagraph(text, this, static_cast<TuiGraphicsRenderTarget*>(renderTarget), callback));
 	}
 }
+
+#endif

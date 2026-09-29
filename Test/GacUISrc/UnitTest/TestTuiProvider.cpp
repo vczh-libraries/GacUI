@@ -1,4 +1,6 @@
 #include "../../../Source/GacUI.h"
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 #include "../../../Source/PlatformProviders/TUI/TuiController.h"
 #include "../../../Source/PlatformProviders/TUI/TuiGraphics.h"
 #include "../../../Source/PlatformProviders/Hosted/GuiHostedController.h"
@@ -1638,3 +1640,5 @@ TEST_FILE
 		});
 	});
 }
+
+#endif

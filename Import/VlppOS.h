@@ -7874,15 +7874,15 @@ namespace vl::inter_process::stdio_redirection
 
 
 /***********************************************************************
-.\TUI\TUITYPES.H
+.\WINDOWTYPES.H
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#ifndef VCZH_TUI_TYPES
-#define VCZH_TUI_TYPES
+#ifndef VCZH_WINDOW_TYPES
+#define VCZH_WINDOW_TYPES
 
 
 namespace vl
@@ -8268,6 +8268,24 @@ ITEM(OEM_NEC_EQUAL,       0x92)		/* '=' key on numpad */						\
 
 
 /***********************************************************************
+.\TUI\TUITYPES.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_TUI_TYPES
+#define VCZH_TUI_TYPES
+
+
+#if defined VCZH_MSVC || defined VCZH_GCC
+#endif
+
+#endif
+
+
+/***********************************************************************
 .\TUI\TUI.H
 ***********************************************************************/
 /***********************************************************************
@@ -8279,6 +8297,7 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_TUI
 
 
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl
 {
@@ -8376,8 +8395,6 @@ namespace vl
 			};
 			TuiColor						foregroundColor = { 255, 255, 255 };
 			TuiColor						backgroundColor = { 0, 0, 0 };
-
-			TuiPixel() :character{} {}
 
 			char32_t						GetChar32() const;
 			wchar_t							GetWChar() const;
@@ -8547,6 +8564,8 @@ namespace vl
 
 #endif
 
+#endif
+
 
 /***********************************************************************
 .\TUI\TUI.INTERNAL.H
@@ -8560,6 +8579,7 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_TUI_INTERNAL
 
 
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl
 {
@@ -8576,6 +8596,8 @@ namespace vl
 		}
 	}
 }
+
+#endif
 
 #endif
 

@@ -5765,9 +5765,6 @@ Licensed under https://github.com/vczh-libraries/License
 #include <string>
 #include <sys/ioctl.h>
 #include <termios.h>
-#endif
-
-#if defined VCZH_GCC || defined VCZH_WASM
 #include <wchar.h>
 
 using namespace vl;
@@ -5782,21 +5779,16 @@ namespace vl
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::console::TUI::MeasureChar(char32_t)#"
 			if (!tui_internal::IsScalar(code)) return 0;
-#if defined VCZH_GCC
 			static auto locale = newlocale(LC_CTYPE_MASK, "", nullptr);
 			CHECK_ERROR(locale != (locale_t)0, ERROR_MESSAGE_PREFIX L"Failed to create the environment locale.");
 			auto previousLocale = uselocale(locale);
 			CHECK_ERROR(previousLocale != (locale_t)0, ERROR_MESSAGE_PREFIX L"Failed to select the environment locale.");
 			auto width = wcwidth((wchar_t)code);
 			CHECK_ERROR(uselocale(previousLocale) != (locale_t)0, ERROR_MESSAGE_PREFIX L"Failed to restore the thread locale.");
-#elif defined VCZH_WASM
-			auto width = wcwidth((wchar_t)code);
-#endif
 #undef ERROR_MESSAGE_PREFIX
 			return width < 0 ? 0 : width;
 		}
 
-#if defined VCZH_GCC
 		namespace tui_internal
 		{
 			int resizePipe[2] = { -1, -1 };
@@ -6111,7 +6103,6 @@ namespace vl
 				return Ptr(new PosixTuiBackend);
 			}
 		}
-#endif
 	}
 }
 

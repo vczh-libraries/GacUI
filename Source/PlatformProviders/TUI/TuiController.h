@@ -6,6 +6,8 @@
 #include "../../Utilities/SharedServices/GuiSharedCallbackService.h"
 #include "../../Utilities/SharedServices/GuiSharedAsyncService.h"
 
+#if defined VCZH_MSVC || defined VCZH_GCC
+
 namespace vl::presentation
 {
 	class TuiControllerBase
@@ -70,5 +72,7 @@ namespace vl::presentation
 		void							MouseHorizontalWheel(const WindowMouseInfo& info) override;
 	};
 }
+
+#endif
 
 #endif

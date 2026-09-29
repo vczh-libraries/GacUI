@@ -1,4 +1,6 @@
 #include "TuiGraphics.h"
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 #include "../../GraphicsElement/GuiGraphicsDocumentRenderer.h"
 #include <algorithm>
 
@@ -143,3 +145,5 @@ namespace vl::presentation::elements
 		GuiDocumentElementRenderer::Register();
 	}
 }
+
+#endif

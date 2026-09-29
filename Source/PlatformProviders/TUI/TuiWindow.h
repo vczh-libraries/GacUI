@@ -3,6 +3,8 @@
 
 #include "../../NativeWindow/GuiNativeWindow.h"
 
+#if defined VCZH_MSVC || defined VCZH_GCC
+
 namespace vl::presentation
 {
 	class TuiControllerBase;
@@ -98,5 +100,7 @@ namespace vl::presentation
 		void										RedrawContent() override;
 	};
 }
+
+#endif
 
 #endif

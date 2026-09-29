@@ -1,5 +1,7 @@
 #include "TuiGraphics.h"
 
+#if defined VCZH_MSVC || defined VCZH_GCC
+
 namespace vl::presentation::elements
 {
 	using namespace console;
@@ -200,3 +202,5 @@ TuiGraphicsResourceManager
 		renderTarget = nullptr;
 	}
 }
+
+#endif

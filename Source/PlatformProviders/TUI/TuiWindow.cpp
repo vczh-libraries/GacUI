@@ -1,4 +1,6 @@
 #include "TuiWindow.h"
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 #include "TuiController.h"
 
 namespace vl::presentation
@@ -388,3 +390,5 @@ namespace vl::presentation
 	}
 
 }
+
+#endif

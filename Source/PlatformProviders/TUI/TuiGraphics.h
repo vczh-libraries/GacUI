@@ -4,6 +4,8 @@
 #include "../../GraphicsElement/TuiGraphicsElement.h"
 #include "TuiTextLayout.h"
 
+#if defined VCZH_MSVC || defined VCZH_GCC
+
 namespace vl::presentation::elements
 {
 	class TuiGraphicsRenderTarget : public GuiGraphicsRenderTarget
@@ -46,5 +48,7 @@ namespace vl::presentation::elements
 	extern console::TuiColor					TuiBlend(Color color, console::TuiColor background);
 	extern void									RegisterTuiRenderers();
 }
+
+#endif
 
 #endif
