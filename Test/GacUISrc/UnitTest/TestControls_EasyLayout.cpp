@@ -1,5 +1,14 @@
 #include "../../../Source/GacUI.h"
 
+namespace easy_layout_xml_tests
+{
+	vl::WString Resource(const vl::WString& content)
+	{
+		return L"<Resource>\n<Instance name=\"Main\">\n<Instance ref.Class=\"easy_test::MainWindow\">\n<Window ref.Name=\"self\" Text=\"Easy layout\" ClientSize=\"x:320 y:240\">\n"
+			+ content + L"\n</Window>\n</Instance>\n</Instance>\n</Resource>";
+	}
+}
+
 #if defined VCZH_MSVC || defined VCZH_GCC
 #include "../../../Source/Resources/GuiParserManager.h"
 #include "../../../Source/Skins/TuiSkin/Config/TuiSkinConfig.h"
@@ -85,12 +94,6 @@ namespace easy_layout_xml_tests
 		TEST_ASSERT(owner->GetComposition() == second);
 		owner->SetComposition(nullptr);
 		TEST_ASSERT(owner->GetComposition() == nullptr);
-	}
-
-	WString Resource(const WString& content)
-	{
-		return L"<Resource>\n<Instance name=\"Main\">\n<Instance ref.Class=\"easy_test::MainWindow\">\n<Window ref.Name=\"self\" Text=\"Easy layout\" ClientSize=\"x:320 y:240\">\n"
-			+ content + L"\n</Window>\n</Instance>\n</Instance>\n</Resource>";
 	}
 
 	void RunResourceTest(const WString& resourceText, const Func<void(GuiWindow*)>& test)
