@@ -14,6 +14,9 @@ endif
 .PHONY: all clean pre-build
 .DEFAULT_GOAL := all
 
+CPP_TARGET=./Bin/GitTui
+CPP_OBJECTS=./Obj/Vlpp.o ./Obj/Vlpp.Linux.o ./Obj/VlppOS.o ./Obj/VlppOS.Linux.o ./Obj/VlppRegex.o ./Obj/VlppReflection.o ./Obj/VlppGlrParser.o ./Obj/VlppWorkflowLibrary.o ./Obj/GacUI.o ./Obj/TuiSkin.o ./Obj/GitViewPartialClasses.o ./Obj/GitViewReflection.o ./Obj/GitViewResource.o ./Obj/Git.o ./Obj/Command.Linux.o ./Obj/GitViewModel.o ./Obj/Main.o
+
 CPP_COMPILE_OPTIONS=-DVCZH_DEBUG_NO_REFLECTION -I ../../../../Import -I ../../../../Release $(GITVIEW_PLATFORM_CFLAGS)
 CPP_LINK_OPTIONS = $(GITVIEW_PLATFORM_LIBS)
 include $(VCPROOT)/vl/makefile-cpp
@@ -30,7 +33,9 @@ clean:
 
 all:pre-build ./Bin/GitTui
 
-./Bin/GitTui:./Obj/Vlpp.o ./Obj/Vlpp.Linux.o ./Obj/VlppOS.o ./Obj/VlppOS.Linux.o ./Obj/VlppRegex.o ./Obj/VlppReflection.o ./Obj/VlppGlrParser.o ./Obj/VlppWorkflowLibrary.o ./Obj/GacUI.o ./Obj/TuiSkin.o ./Obj/GitViewPartialClasses.o ./Obj/GitViewReflection.o ./Obj/GitViewResource.o ./Obj/Git.o ./Obj/Command.Linux.o ./Obj/GitViewModel.o ./Obj/Main.o
+$(CPP_TARGET) $(CPP_OBJECTS): | pre-build
+
+$(CPP_TARGET):$(CPP_OBJECTS)
 	$(CPP_LINK)
 
 ./Obj/Vlpp.o: ../../../../Import/Vlpp.cpp
