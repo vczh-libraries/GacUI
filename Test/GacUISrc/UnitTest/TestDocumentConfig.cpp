@@ -273,8 +273,10 @@ TEST_FILE
 
 		// Execute test cases with individual TEST_CASE for each scenario
 		auto xs = FromArray(inputXmls);
-		for (auto [inputXml, index] : indexed(xs))
+		for (auto item : indexed(xs))
 		{
+			auto& inputXml = item.get<0>();
+			auto index = item.get<1>();
 			TEST_CASE(L"Case " + itow(index + 1))
 			{
 				auto expectedXml = expectedXmls[index];
@@ -503,8 +505,10 @@ TEST_FILE
 		};
 
 		auto xs = FromArray(testCases);
-		for (auto [testCase, index] : indexed(xs))
+		for (auto item : indexed(xs))
 		{
+			auto& testCase = item.get<0>();
+			auto index = item.get<1>();
 			TEST_CASE(L"Case " + itow(index + 1))
 			{
 				auto model = LoadDoc(testCase.inputXml);
@@ -714,8 +718,7 @@ TEST_FILE
 			}
 		};
 
-		auto xs = FromArray(testCases);
-		for (auto [testCase, index] : indexed(xs))
+		for (const auto& testCase : testCases)
 		{
 			TEST_CASE(WString::Unmanaged(testCase.name))
 			{
@@ -878,8 +881,7 @@ TEST_FILE
 			}
 		};
 
-		auto xs = FromArray(testCases);
-		for (auto [testCase, index] : indexed(xs))
+		for (const auto& testCase : testCases)
 		{
 			TEST_CASE(WString::Unmanaged(testCase.name))
 			{
@@ -1898,8 +1900,7 @@ TEST_FILE
 			}
 		};
 
-		auto xs = FromArray(testCases);
-		for (auto [testCase, index] : indexed(xs))
+		for (const auto& testCase : testCases)
 		{
 			TEST_CASE(WString::Unmanaged(testCase.description))
 			{

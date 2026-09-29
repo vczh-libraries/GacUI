@@ -12,13 +12,12 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+
+#if defined VCZH_GCC
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
 
-#ifndef VCZH_GCC
-static_assert(false, "Do not build this file for Windows applications.");
-#endif
 
 namespace vl
 {
@@ -283,6 +282,8 @@ Global FileSystem Implementation
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\LOCALE.LINUX.CPP
@@ -293,9 +294,8 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-#ifndef VCZH_GCC
-static_assert(false, "Do not build this file for Windows applications.");
-#endif
+#if defined VCZH_GCC || defined VCZH_WASM
+
 
 namespace vl
 {
@@ -306,6 +306,8 @@ namespace vl
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\THREADING.LINUX.CPP
@@ -315,18 +317,19 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+
+#if defined VCZH_GCC || defined VCZH_WASM
 #include <pthread.h>
 #include <fcntl.h>
 #include <semaphore.h>
 #include <errno.h>
 #include <time.h>
-#if defined VCZH_APPLE
+#if defined VCZH_GCC && defined VCZH_APPLE
 #include <CoreFoundation/CoreFoundation.h>
+#elif defined VCZH_WASM
+#include <emscripten/threading.h>
 #endif
 
-#ifndef VCZH_GCC
-static_assert(false, "Do not build this file for Windows applications.");
-#endif
 
 namespace vl
 {
@@ -345,6 +348,10 @@ Thread
 			pthread_t					id;
 			EventObject					ev;
 			bool						deleteAfterStopped = false;
+#if defined VCZH_WASM
+			CriticalSection				lockJoin;
+			bool						joined = false;
+#endif
 		};
 
 		class ProceduredThread : public Thread
@@ -428,7 +435,18 @@ Thread
 			Stop();
 			if (threadState!=Thread::NotStarted)
 			{
+#if defined VCZH_GCC
 				pthread_detach(internalData->id);
+#elif defined VCZH_WASM
+				if (internalData->deleteAfterStopped)
+				{
+					pthread_detach(internalData->id);
+				}
+				else
+				{
+					Wait();
+				}
+#endif
 			}
 			delete internalData;
 		}
@@ -467,6 +485,7 @@ Thread
 
 	void Thread::Sleep(vint ms)
 	{
+#if defined VCZH_GCC
 		if (ms >= 1000)
 		{
 			sleep(ms / 1000);
@@ -475,11 +494,18 @@ Thread
 		{
 			usleep((ms % 1000) * 1000);
 		}
+#elif defined VCZH_WASM
+		emscripten_thread_sleep(ms);
+#endif
 	}
 	
 	vint Thread::GetCPUCount()
 	{
+#if defined VCZH_GCC
 		return (vint)sysconf(_SC_NPROCESSORS_ONLN);
+#elif defined VCZH_WASM
+		return emscripten_num_logical_cores();
+#endif
 	}
 
 	vint Thread::GetCurrentThreadId()
@@ -503,7 +529,16 @@ Thread
 
 	bool Thread::Wait()
 	{
+#if defined VCZH_GCC
 		return internalData->ev.Wait();
+#elif defined VCZH_WASM
+		if (threadState == NotStarted || internalData->deleteAfterStopped) return false;
+		CriticalSection::Scope scope(internalData->lockJoin);
+		if (internalData->joined) return true;
+		if (pthread_join(internalData->id, nullptr) != 0) return false;
+		internalData->joined = true;
+		return true;
+#endif
 	}
 
 	bool Thread::Stop()
@@ -579,7 +614,7 @@ Semaphore
 			sem_t*			semNamed = nullptr;
 		};
 
-#if defined VCZH_APPLE
+#if defined VCZH_GCC && defined VCZH_APPLE
 		void FailOnUnnamedSemaphore()
 		{
 			CHECK_FAIL(L"vl::Semaphore::~Semaphore()#Unnamed semaphores are not supported on macOS.");
@@ -602,9 +637,9 @@ Semaphore
 			}
 			else
 			{
-#if defined VCZH_APPLE
+#if defined VCZH_GCC && defined VCZH_APPLE
 				threading_internal::FailOnUnnamedSemaphore();
-#else
+#elif (defined VCZH_GCC && !defined VCZH_APPLE) || defined VCZH_WASM
 				sem_destroy(&internalData->semUnnamed);
 #endif
 			}
@@ -618,7 +653,7 @@ Semaphore
 		if (initialCount > maxCount) return false;
 
 		internalData = new SemaphoreData;
-#if defined VCZH_APPLE
+#if defined VCZH_GCC && defined VCZH_APPLE
 
 		AString auuid;
 		if(name.Length() == 0)
@@ -642,7 +677,7 @@ Semaphore
 			return false;
 		}
         
-#else
+#elif (defined VCZH_GCC && !defined VCZH_APPLE) || defined VCZH_WASM
 		if (name == L"")
 		{
 			if(sem_init(&internalData->semUnnamed, 0, (int)initialCount) == -1)
@@ -865,9 +900,9 @@ EventObject
 		{
 			auto signalVersion = internalData->signalVersion;
 			timespec now;
-#if defined VCZH_APPLE
+#if defined VCZH_GCC && defined VCZH_APPLE
 			constexpr auto waitClock = CLOCK_REALTIME;
-#else
+#elif (defined VCZH_GCC && !defined VCZH_APPLE) || defined VCZH_WASM
 			constexpr auto waitClock = CLOCK_MONOTONIC;
 #endif
 			if (ms <= 0 || clock_gettime(waitClock, &now) != 0)
@@ -993,7 +1028,13 @@ ThreadPoolLite
 					threadPoolData->taskFinishEvent.CreateManualUnsignal(false);
 					threadPoolData->taskEnd = &threadPoolData->taskBegin;
 
-					for (vint i = 0; i < Thread::GetCPUCount() * 4; i++)
+#if defined VCZH_GCC
+					auto threadCount = Thread::GetCPUCount() * 4;
+#elif defined VCZH_WASM
+					// Browser workers come from a finite, preloaded pthread pool.
+					auto threadCount = 4;
+#endif
+					for (vint i = 0; i < threadCount; i++)
 					{
 						threadPoolData->taskThreads.Add(Thread::CreateAndStart(&ThreadPoolProc, nullptr, false));
 					}
@@ -1218,9 +1259,9 @@ ConditionVariable
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::ConditionVariable::ConditionVariable()#"
 		internalData = new ConditionVariableData;
-#if defined VCZH_APPLE
+#if defined VCZH_GCC && defined VCZH_APPLE
 		auto initResult = pthread_cond_init(&internalData->cond, nullptr);
-#else
+#elif (defined VCZH_GCC && !defined VCZH_APPLE) || defined VCZH_WASM
 		pthread_condattr_t attributes;
 		auto attributeResult = pthread_condattr_init(&attributes);
 		if (attributeResult != 0)
@@ -1258,9 +1299,9 @@ ConditionVariable
 		if (ms < 0) return false;
 
 		timespec timeout;
-#if defined VCZH_APPLE
+#if defined VCZH_GCC && defined VCZH_APPLE
 		constexpr auto waitClock = CLOCK_REALTIME;
-#else
+#elif (defined VCZH_GCC && !defined VCZH_APPLE) || defined VCZH_WASM
 		constexpr auto waitClock = CLOCK_MONOTONIC;
 #endif
 		if (clock_gettime(waitClock, &timeout) != 0)
@@ -1329,6 +1370,8 @@ ThreadLocalStorage
 #undef KEY
 }
 
+#endif
+
 
 /***********************************************************************
 .\ENCODING\CHARFORMAT\CHARFORMAT.LINUX.CPP
@@ -1338,11 +1381,10 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+
+#if defined VCZH_GCC || defined VCZH_WASM
 #include <string.h>
 
-#ifndef VCZH_GCC
-static_assert(false, "Do not build this file for Windows applications.");
-#endif
 
 namespace vl
 {
@@ -1425,6 +1467,8 @@ TestEncoding
 		}
 	}
 }
+
+#endif
 
 
 /***********************************************************************
@@ -5713,7 +5757,7 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-#ifdef VCZH_GCC
+#if defined VCZH_GCC
 
 #include <csignal>
 #include <locale.h>
@@ -5721,6 +5765,9 @@ Licensed under https://github.com/vczh-libraries/License
 #include <string>
 #include <sys/ioctl.h>
 #include <termios.h>
+#endif
+
+#if defined VCZH_GCC || defined VCZH_WASM
 #include <wchar.h>
 
 using namespace vl;
@@ -5735,16 +5782,21 @@ namespace vl
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::console::TUI::MeasureChar(char32_t)#"
 			if (!tui_internal::IsScalar(code)) return 0;
+#if defined VCZH_GCC
 			static auto locale = newlocale(LC_CTYPE_MASK, "", nullptr);
 			CHECK_ERROR(locale != (locale_t)0, ERROR_MESSAGE_PREFIX L"Failed to create the environment locale.");
 			auto previousLocale = uselocale(locale);
 			CHECK_ERROR(previousLocale != (locale_t)0, ERROR_MESSAGE_PREFIX L"Failed to select the environment locale.");
 			auto width = wcwidth((wchar_t)code);
 			CHECK_ERROR(uselocale(previousLocale) != (locale_t)0, ERROR_MESSAGE_PREFIX L"Failed to restore the thread locale.");
+#elif defined VCZH_WASM
+			auto width = wcwidth((wchar_t)code);
+#endif
 #undef ERROR_MESSAGE_PREFIX
 			return width < 0 ? 0 : width;
 		}
 
+#if defined VCZH_GCC
 		namespace tui_internal
 		{
 			int resizePipe[2] = { -1, -1 };
@@ -6059,6 +6111,7 @@ namespace vl
 				return Ptr(new PosixTuiBackend);
 			}
 		}
+#endif
 	}
 }
 
@@ -6290,5 +6343,364 @@ namespace vl::inter_process::stdio_redirection
 	}
 }
 
+#endif
+
+
+/***********************************************************************
+.\FILESYSTEM.WASM.CPP
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+
+#if defined VCZH_WASM
+#include <emscripten.h>
+#include <emscripten/val.h>
+
+namespace vl::filesystem
+{
+	using namespace collections;
+	using emscripten::val;
+
+/***********************************************************************
+OPFS JavaScript boundary (requires Asyncify)
+***********************************************************************/
+
+	EM_ASYNC_JS(emscripten::EM_VAL, OpfsGetHandle, (emscripten::EM_VAL path, bool directory, bool create), {
+		try {
+			const parts = Emval.toValue(path).split("/").filter(Boolean);
+			const name = parts.pop();
+			let parent = await navigator.storage.getDirectory();
+			for (const part of parts) parent = await parent.getDirectoryHandle(part);
+			if (name === undefined) return directory ? Emval.toHandle(parent) : 0;
+			const handle = directory
+				? await parent.getDirectoryHandle(name, { create })
+				: await parent.getFileHandle(name, { create });
+			return Emval.toHandle(handle);
+		} catch { return 0; }
+	});
+
+	EM_ASYNC_JS(emscripten::EM_VAL, OpfsReadFile, (emscripten::EM_VAL handle), {
+		try {
+			const file = await Emval.toValue(handle).getFile();
+			return Emval.toHandle(new Uint8Array(await file.arrayBuffer()));
+		} catch { return 0; }
+	});
+
+	EM_JS(bool, OpfsCopyBytes, (emscripten::EM_VAL bytes, void* buffer), {
+		try {
+			HEAPU8.set(Emval.toValue(bytes), buffer);
+			return true;
+		} catch { return false; }
+	});
+
+	EM_ASYNC_JS(bool, OpfsWriteFile, (emscripten::EM_VAL handle, const void* buffer, vint length), {
+		try {
+			// Own the bytes before awaiting; Wasm memory can grow on another thread.
+			const bytes = new Uint8Array(HEAPU8.subarray(buffer, buffer + length));
+			const writer = await Emval.toValue(handle).createWritable();
+			await writer.write(bytes);
+			await writer.close();
+			return true;
+		} catch { return false; }
+	});
+
+	EM_ASYNC_JS(emscripten::EM_VAL, OpfsGetEntries, (emscripten::EM_VAL handle, bool directory), {
+		try {
+			const names = [];
+			for await (const [name, child] of Emval.toValue(handle).entries()) {
+				if ((child.kind === "directory") === !!directory) names.push(name);
+			}
+			return Emval.toHandle(names.sort());
+		} catch { return 0; }
+	});
+
+	EM_ASYNC_JS(bool, OpfsRemoveEntry, (emscripten::EM_VAL parent, emscripten::EM_VAL name), {
+		try {
+			await Emval.toValue(parent).removeEntry(Emval.toValue(name));
+			return true;
+		} catch { return false; }
+	});
+
+	EM_ASYNC_JS(bool, OpfsRenameEntry, (emscripten::EM_VAL source, emscripten::EM_VAL parent, emscripten::EM_VAL oldName, emscripten::EM_VAL destination, emscripten::EM_VAL newName), {
+		try {
+			// Directory move is not portable in OPFS. Copy the tree before deleting it.
+			async function copy(entry, target, name) {
+				if (entry.kind === "file") {
+					const file = await target.getFileHandle(name, { create: true });
+					const writer = await file.createWritable();
+					await writer.write(await entry.getFile());
+					await writer.close();
+				} else {
+					const folder = await target.getDirectoryHandle(name, { create: true });
+					for await (const [childName, child] of entry.entries()) await copy(child, folder, childName);
+				}
+			}
+			await copy(Emval.toValue(source), Emval.toValue(destination), Emval.toValue(newName));
+			await Emval.toValue(parent).removeEntry(Emval.toValue(oldName), { recursive: true });
+			return true;
+		} catch { return false; }
+	});
+
+	val ToOpfsString(const WString& text)
+	{
+		// Embind's UTF-16 adapter belongs only at the JavaScript boundary.
+		auto converted = wtou16(text);
+		return val(std::u16string(converted.Buffer(), converted.Length()));
+	}
+
+	WString FromOpfsString(const val& text)
+	{
+		auto converted = text.as<std::u16string>();
+		return u16tow(U16String::CopyFrom(converted.data(), converted.size()));
+	}
+
+	template<typename T>
+	T CompleteOpfsOperation(T result)
+	{
+		// Resume through a managed callback so returning pthreads become joinable.
+		// EM_ASYNC_JS alone misses this in Emscripten 3.1.6 (upstream issue 17552).
+		if (!emscripten_is_main_runtime_thread()) emscripten_sleep(0);
+		return result;
+	}
+
+	val GetOpfsHandle(const FilePath& path, bool directory, bool create = false)
+	{
+		auto text = ToOpfsString(path.GetFullPath());
+		auto handle = CompleteOpfsOperation(OpfsGetHandle(text.as_handle(), directory, create));
+		return handle ? val::take_ownership(handle) : val::null();
+	}
+
+/***********************************************************************
+OpfsFileStreamImpl
+***********************************************************************/
+
+	class OpfsFileStreamImpl : public Object, public virtual stream::IFileStreamImpl
+	{
+	private:
+		FilePath						filePath;
+		stream::FileStream::AccessRight	accessRight;
+		val								handle = val::null();
+		Ptr<stream::MemoryStream>		memory;
+
+	public:
+		OpfsFileStreamImpl(const WString& fileName, stream::FileStream::AccessRight _accessRight)
+			: filePath(fileName)
+			, accessRight(_accessRight)
+		{
+		}
+
+		~OpfsFileStreamImpl()
+		{
+			Close();
+		}
+
+		bool Open() override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::filesystem::OpfsFileStreamImpl::Open()#"
+			CHECK_ERROR(!memory, ERROR_MESSAGE_PREFIX L"Stream is already open.");
+			handle = GetOpfsHandle(filePath, false, accessRight != stream::FileStream::ReadOnly);
+			if (handle.isNull()) return false;
+			auto opened = Ptr(new stream::MemoryStream);
+			if (accessRight != stream::FileStream::WriteOnly)
+			{
+				auto result = CompleteOpfsOperation(OpfsReadFile(handle.as_handle()));
+				if (!result) return false;
+				auto bytes = val::take_ownership(result);
+				auto size = bytes["length"].as<vint>();
+				if (size > 0)
+				{
+					Array<vuint8_t> buffer(size);
+					CHECK_ERROR(OpfsCopyBytes(bytes.as_handle(), &buffer[0]), ERROR_MESSAGE_PREFIX L"Failed to copy OPFS content.");
+					opened->Write(&buffer[0], size);
+					opened->SeekFromBegin(0);
+				}
+			}
+			memory = opened;
+			return true;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void Close() override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::filesystem::OpfsFileStreamImpl::Close()#"
+			if (memory)
+			{
+				if (accessRight != stream::FileStream::ReadOnly)
+				{
+					CHECK_ERROR(CompleteOpfsOperation(OpfsWriteFile(handle.as_handle(), memory->GetInternalBuffer(), (vint)memory->Size())), ERROR_MESSAGE_PREFIX L"Failed to write OPFS content.");
+				}
+				memory = nullptr;
+				handle = val::null();
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		pos_t Position() const override { return memory ? memory->Position() : -1; }
+		pos_t Size() const override { return memory ? memory->Size() : -1; }
+		void Seek(pos_t size) override { memory->Seek(size); }
+		void SeekFromBegin(pos_t size) override { memory->SeekFromBegin(size); }
+		void SeekFromEnd(pos_t size) override { memory->SeekFromEnd(size); }
+
+		vint Read(void* buffer, vint size) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::filesystem::OpfsFileStreamImpl::Read(void*, vint)#"
+			CHECK_ERROR(accessRight != stream::FileStream::WriteOnly, ERROR_MESSAGE_PREFIX L"Stream is not readable.");
+			return memory->Read(buffer, size);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		vint Write(void* buffer, vint size) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::filesystem::OpfsFileStreamImpl::Write(void*, vint)#"
+			CHECK_ERROR(accessRight != stream::FileStream::ReadOnly, ERROR_MESSAGE_PREFIX L"Stream is not writable.");
+			return memory->Write(buffer, size);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		vint Peek(void* buffer, vint size) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::filesystem::OpfsFileStreamImpl::Peek(void*, vint)#"
+			CHECK_ERROR(accessRight != stream::FileStream::WriteOnly, ERROR_MESSAGE_PREFIX L"Stream is not readable.");
+			return memory->Peek(buffer, size);
+#undef ERROR_MESSAGE_PREFIX
+		}
+	};
+
+/***********************************************************************
+OpfsFileSystemImpl
+***********************************************************************/
+
+	class OpfsFileSystemImpl : public feature_injection::FeatureImpl<IFileSystemImpl>
+	{
+	private:
+		bool DeleteEntry(const FilePath& path, bool directory) const
+		{
+			if (path.IsRoot() || GetOpfsHandle(path, directory).isNull()) return false;
+			auto parent = GetOpfsHandle(path.GetFolder(), true);
+			auto name = ToOpfsString(path.GetName());
+			return !parent.isNull() && CompleteOpfsOperation(OpfsRemoveEntry(parent.as_handle(), name.as_handle()));
+		}
+
+		bool RenameEntry(const FilePath& path, const WString& newName, bool directory) const
+		{
+			if (path.IsRoot()) return false;
+			auto source = GetOpfsHandle(path, directory);
+			if (source.isNull()) return false;
+			auto target = path.GetFolder() / newName;
+			if (target == path) return true;
+			if (target.IsRoot() || target.IsFile() || target.IsFolder()) return false;
+			auto prefix = path.GetFullPath() + L"/";
+			if (directory && target.GetFullPath().Length() >= prefix.Length() && target.GetFullPath().Left(prefix.Length()) == prefix) return false;
+			auto parent = GetOpfsHandle(path.GetFolder(), true);
+			auto destination = GetOpfsHandle(target.GetFolder(), true);
+			if (parent.isNull() || destination.isNull()) return false;
+			auto oldText = ToOpfsString(path.GetName());
+			auto newText = ToOpfsString(target.GetName());
+			return CompleteOpfsOperation(OpfsRenameEntry(source.as_handle(), parent.as_handle(), oldText.as_handle(), destination.as_handle(), newText.as_handle()));
+		}
+
+	public:
+		wchar_t GetPathDelimiter() const override { return L'/'; }
+		const wchar_t* GetCompatibleDelimiters() const override { return L""; }
+
+		WString ConcatPath(const WString& fullPath, const WString& relativePath) const override
+		{
+			if (relativePath.Length() > 0 && relativePath[0] == L'/') return relativePath;
+			return fullPath + (IsRoot(fullPath) ? L"" : L"/") + relativePath;
+		}
+
+		void Initialize(WString& fullPath) const override
+		{
+			List<WString> components;
+			vint begin = 0;
+			for (vint i = 0; i <= fullPath.Length(); i++)
+			{
+				if (i < fullPath.Length() && fullPath[i] == L'\0') throw ArgumentException(L"Illegal path.");
+				if (i < fullPath.Length() && fullPath[i] != L'/') continue;
+				auto part = fullPath.Sub(begin, i - begin);
+				begin = i + 1;
+				if (part == L"..")
+				{
+					if (components.Count() == 0) throw ArgumentException(L"Illegal path.");
+					components.RemoveAt(components.Count() - 1);
+				}
+				else if (part.Length() > 0 && part != L".")
+				{
+					components.Add(part);
+				}
+			}
+			fullPath = L"";
+			for (const auto& part : components) fullPath += L"/" + part;
+			if (fullPath.Length() == 0) fullPath = L"/";
+		}
+
+		bool IsFile(const WString& fullPath) const override { return !GetOpfsHandle(FilePath(fullPath), false).isNull(); }
+		bool IsFolder(const WString& fullPath) const override { return !GetOpfsHandle(FilePath(fullPath), true).isNull(); }
+		bool IsRoot(const WString& fullPath) const override { return fullPath == L"/"; }
+
+		WString GetRelativePathFor(const WString& fromPath, const WString& toPath) const override
+		{
+			List<WString> source, target, result;
+			FilePath::GetPathComponents(IsFolder(fromPath) ? fromPath : FilePath(fromPath).GetFolder().GetFullPath(), source);
+			FilePath::GetPathComponents(toPath, target);
+			vint common = 0;
+			while (common < source.Count() && common < target.Count() && source[common] == target[common]) common++;
+			for (vint i = common; i < source.Count(); i++) result.Add(L"..");
+			for (vint i = common; i < target.Count(); i++) result.Add(target[i]);
+			return FilePath::ComponentsToPath(result);
+		}
+
+		bool FileDelete(const FilePath& path) const override { return DeleteEntry(path, false); }
+		bool FileRename(const FilePath& path, const WString& newName) const override { return RenameEntry(path, newName, false); }
+		bool DeleteFolder(const FilePath& path) const override { return DeleteEntry(path, true); }
+		bool FolderRename(const FilePath& path, const WString& newName) const override { return RenameEntry(path, newName, true); }
+
+		bool CreateFolder(const FilePath& path) const override
+		{
+			if (path.IsRoot() || path.IsFile() || path.IsFolder()) return false;
+			return !GetOpfsHandle(path, true, true).isNull();
+		}
+
+		bool GetFolders(const FilePath& path, List<Folder>& folders) const override
+		{
+			auto handle = GetOpfsHandle(path, true);
+			if (handle.isNull()) return false;
+			auto result = CompleteOpfsOperation(OpfsGetEntries(handle.as_handle(), true));
+			if (!result) return false;
+			auto names = val::take_ownership(result);
+			for (vint i = 0; i < names["length"].as<vint>(); i++) folders.Add(Folder(path / FromOpfsString(names[i])));
+			return true;
+		}
+
+		bool GetFiles(const FilePath& path, List<File>& files) const override
+		{
+			auto handle = GetOpfsHandle(path, true);
+			if (handle.isNull()) return false;
+			auto result = CompleteOpfsOperation(OpfsGetEntries(handle.as_handle(), false));
+			if (!result) return false;
+			auto names = val::take_ownership(result);
+			for (vint i = 0; i < names["length"].as<vint>(); i++) files.Add(File(path / FromOpfsString(names[i])));
+			return true;
+		}
+
+		Ptr<stream::IFileStreamImpl> GetFileStreamImpl(const WString& fileName, stream::FileStream::AccessRight accessRight) const override
+		{
+			return Ptr(new OpfsFileStreamImpl(fileName, accessRight));
+		}
+	};
+
+/***********************************************************************
+Global FileSystem Implementation
+***********************************************************************/
+
+	IFileSystemImpl* GetOSFileSystemImpl()
+	{
+		static OpfsFileSystemImpl osFileSystemImpl;
+		return &osFileSystemImpl;
+	}
+}
 #endif
 

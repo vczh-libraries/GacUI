@@ -175,10 +175,10 @@ TEST_FILE
 				const wchar_t* dialogNames[] = { dialogNameArgs... };
 				for (auto [dialogName, index] : indexed(From(dialogNames)))
 				{
-					protocol->OnNextIdleFrame(index == 0 ? firstFrame : WString::Unmanaged(L"[ENTER]"), [=]()
+					protocol->OnNextIdleFrame(index == 0 ? firstFrame : WString::Unmanaged(L"[ENTER]"), [=, name = dialogName]()
 					{
 						auto window = GetApplication()->GetMainWindow();
-						auto button = FindControlByText<GuiButton>(window, WString::Unmanaged(dialogName));
+						auto button = FindControlByText<GuiButton>(window, WString::Unmanaged(name));
 						auto location = protocol->LocationOf(button);
 						GetApplication()->InvokeInMainThread(window, [=]()
 						{

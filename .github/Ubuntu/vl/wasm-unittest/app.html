@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WebAssembly Unit Tests</title>
+  <link rel="icon" href="data:,">
+  <style>
+    body { margin: 1rem; background: #eee; color: #000; font-family: sans-serif; }
+    #output { white-space: pre-wrap; overflow-wrap: anywhere; font-family: monospace; background: #222; padding: 1rem; }
+    .completion { color: #000; font-style: italic; background: #eee; }
+    .failure { color: #f55; }
+  </style>
+</head>
+<body>
+  <h1>WebAssembly Unit Tests</h1>
+  <p id="status" role="status">Running…</p>
+  <pre id="output"></pre>
+  <script id="worker-source" type="text/plain">
+    function copyUtf16(heap, pointer, length) {
+      const begin = pointer / 2;
+      let text = "";
+      for (let offset = 0; offset < length; offset += 4096) {
+        text += String.fromCharCode(...heap.subarray(begin + offset, begin + Math.min(offset + 4096, length)));
+      }
+      return text;
+    }
+
+    globalThis.vlConsoleWrite = (heap, pointer, length) => {
+      try {
+        postMessage({ kind: "write", text: copyUtf16(heap, pointer, length) });
+        return 1;
+      } catch { return 0; }
+    };
+    globalThis.vlConsoleRead = () => undefined;
+    globalThis.vlConsoleColor = (red, green, blue, light) => {
+      try {
+        postMessage({ kind: "color", red, green, blue, light });
+        return 1;
+      } catch { return 0; }
+    };
+    globalThis.vlConsoleTitle = (heap, pointer, length) => {
+      try {
+        postMessage({ kind: "title", text: copyUtf16(heap, pointer, length) });
+        return 1;
+      } catch { return 0; }
+    };
+    globalThis.vlConsoleFailure = (heap, pointer, length) => {
+      try {
+        postMessage({ kind: "diagnostic", text: copyUtf16(heap, pointer, length) + "\r\n" });
+        return 1;
+      } catch { return 0; }
+    };
+
+    async function prefillOpfs(moduleUrl) {
+      const response = await fetch(new URL("/OPFS", moduleUrl));
+      if (!response.ok) throw new Error(`OPFS manifest: HTTP ${response.status}`);
+      const manifest = await response.json();
+      const root = await navigator.storage.getDirectory();
+      for await (const name of root.keys()) await root.removeEntry(name, { recursive: true });
+      async function folder(parts) {
+        let current = root;
+        for (const name of parts) current = await current.getDirectoryHandle(name, { create: true });
+        return current;
+      }
+      for (const name of manifest.folders) await folder(name.split("/"));
+      for (const name of manifest.files) {
+        const parts = name.split("/");
+        const fileName = parts.pop();
+        const parent = await folder(parts);
+        const response = await fetch(new URL("/OPFS/" + name.split("/").map(encodeURIComponent).join("/"), moduleUrl));
+        if (!response.ok) throw new Error(`OPFS fixture ${name}: HTTP ${response.status}`);
+        const file = await parent.getFileHandle(fileName, { create: true });
+        const writer = await file.createWritable();
+        await writer.write(await response.arrayBuffer());
+        await writer.close();
+      }
+    }
+
+    self.onmessage = async ({ data: moduleUrl }) => {
+      self.onmessage = null;
+      try {
+        await prefillOpfs(moduleUrl);
+        const { default: createModule } = await import(moduleUrl);
+        const module = await createModule({
+          mainScriptUrlOrBlob: moduleUrl,
+          print: text => postMessage({ kind: "write", text: text + "\n" }),
+          printErr: text => postMessage({ kind: "diagnostic", text: text + "\n" })
+        });
+        const result = await module.wasm_main();
+        postMessage({ kind: "complete", result });
+      } catch (error) {
+        postMessage({ kind: "failure", text: String(error) + (error?.stack ? "\n" + error.stack : "") });
+      }
+      self.close();
+    };
+  </script>
+  <script type="module">
+    const output = document.getElementById("output");
+    const status = document.getElementById("status");
+    const pending = [];
+    let scheduled = false;
+    let finished = false;
+    let color = "rgb(192, 192, 192)";
+    let lastCharacter = "\n";
+
+    function flush() {
+      const fragment = document.createDocumentFragment();
+      for (const operation of pending.splice(0, 200)) {
+        if (finished) break;
+        if (operation.kind === "color") {
+          const channel = enabled => enabled ? (operation.light ? 255 : 128) : (operation.light ? 85 : 0);
+          color = `rgb(${channel(operation.red)}, ${channel(operation.green)}, ${channel(operation.blue)})`;
+        } else if (operation.kind === "title") {
+          document.title = operation.text;
+        } else {
+          const span = document.createElement("span");
+          let text = operation.text;
+          if (operation.kind === "complete" || operation.kind === "failure") {
+            finished = true;
+            status.textContent = operation.kind === "complete" && operation.result === 0 ? "Passed" : "Failed";
+            status.dataset.result = operation.kind === "complete" ? String(operation.result) : "error";
+            text = (lastCharacter === "\n" ? "" : "\n") + (operation.kind === "complete"
+              ? `wasm_main returns ${operation.result}.\n`
+              : `Run failed: ${operation.text}\n`);
+            span.className = operation.kind === "complete" ? "completion" : "failure";
+          } else if (operation.kind === "diagnostic") {
+            span.className = "failure";
+          } else {
+            span.style.color = color;
+          }
+          span.appendChild(document.createTextNode(text));
+          fragment.appendChild(span);
+          if (text.length) lastCharacter = text.at(-1);
+        }
+      }
+      output.appendChild(fragment);
+      scheduled = pending.length > 0;
+      if (scheduled) setTimeout(flush, 0);
+    }
+
+    function enqueue(operation) {
+      pending.push(operation);
+      if (!scheduled) {
+        scheduled = true;
+        setTimeout(flush, 0);
+      }
+    }
+
+    const workerUrl = URL.createObjectURL(new Blob([document.getElementById("worker-source").textContent], { type: "text/javascript" }));
+    const worker = new Worker(workerUrl);
+    // Keep the worker reachable while OPFS and module initialization await promises.
+    window.addEventListener("pagehide", () => worker.terminate(), { once: true });
+    worker.onmessage = ({ data }) => enqueue(data);
+    worker.onerror = event => {
+      enqueue({ kind: "failure", text: event.message });
+      worker.terminate();
+    };
+    worker.postMessage(new URL("app.mjs", location.href).href);
+    URL.revokeObjectURL(workerUrl);
+  </script>
+</body>
+</html>

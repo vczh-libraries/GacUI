@@ -1,33 +1,70 @@
 COVERAGE?=NO
-USE_GCC?=NO
-
-# add "--stdlib=libc++" after bug #808086 is fixed
+CPP_COMPILER?=CLANG
 
 CPP_DEPENDENCY_OPTIONS=-MMD -MP -MF $(@:.o=.d) -MT $@
 CPP_PLATFORM_NAME=$(shell uname -s)
 CPP_PLATFORM_COMPILE_OPTIONS=
 CPP_PLATFORM_LINK_OPTIONS=
+
+ifeq ($(CPP_COMPILER),EMPP)
+CPP_CXX=em++
+CPP_PLATFORM_COMPILE_OPTIONS=-fexceptions
+CPP_PLATFORM_LINK_OPTIONS=-fexceptions --bind -sMODULARIZE=1 -sEXPORT_ES6=1 -sENVIRONMENT=worker -sASYNCIFY=1 -sASYNCIFY_STACK_SIZE=65536 --no-entry
+ifneq ($(CPP_WASM_PTHREAD_POOL_SIZE),)
+CPP_PLATFORM_COMPILE_OPTIONS+=-pthread
+CPP_PLATFORM_LINK_OPTIONS+=-pthread -sPTHREAD_POOL_SIZE=$(CPP_WASM_PTHREAD_POOL_SIZE) -sPTHREAD_POOL_SIZE_STRICT=2 -sINITIAL_MEMORY=134217728 -sALLOW_MEMORY_GROWTH=1
+endif
+else
+CPP_PLATFORM_LINK_OPTIONS=-pthread
 ifeq ($(CPP_PLATFORM_NAME),Darwin)
 CPP_PLATFORM_COMPILE_OPTIONS=-fblocks
-CPP_PLATFORM_LINK_OPTIONS=-framework CoreFoundation -framework Network
+CPP_PLATFORM_LINK_OPTIONS+=-framework CoreFoundation -framework Network
 else ifeq ($(CPP_PLATFORM_NAME),Linux)
-CPP_PLATFORM_LINK_OPTIONS=-luring
+CPP_PLATFORM_LINK_OPTIONS+=-luring
 endif
+
+ifeq ($(CPP_COMPILER),GCC)
+CPP_CXX=g++
+else ifeq ($(CPP_COMPILER),CLANG)
+CPP_CXX=clang++
+ifeq ($(COVERAGE),YES)
+CPP_PLATFORM_COMPILE_OPTIONS+=-fprofile-arcs -ftest-coverage
+CPP_PLATFORM_LINK_OPTIONS+=--coverage
+endif
+else
+$(error Unsupported CPP_COMPILER: $(CPP_COMPILER))
+endif
+endif
+
+CPP_COMPILE_FLAGS=-std=c++20 -g $(CPP_COMPILE_OPTIONS) $(CPP_PLATFORM_COMPILE_OPTIONS)
+CPP_LINK_FLAGS=-std=c++20 -g $(CPP_COMPILE_OPTIONS) $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS)
+CPP_COMPILE=$(CPP_CXX) $(CPP_COMPILE_FLAGS) $(CPP_DEPENDENCY_OPTIONS) -o $@ -c $<
+CPP_LINK=mkdir -p "$(dir $(CPP_TARGET))" && $(CPP_CXX) -o "$@" $(filter %.o,$^) $(CPP_LINK_FLAGS)
+
+ifeq ($(CPP_COMPILER),EMPP)
+CPP_WASM_OUTPUTS=$(addprefix $(dir $(CPP_TARGET)),app.mjs app.wasm app.html app.sh app.js index.html)
+ifneq ($(CPP_WASM_PTHREAD_POOL_SIZE),)
+CPP_WASM_OUTPUTS+=$(dir $(CPP_TARGET))app.worker.js
+endif
+$(CPP_TARGET): $(VCPROOT)/vl/wasm.sh $(wildcard $(VCPROOT)/vl/wasm-unittest/*)
+ifneq ($(words $(wildcard $(CPP_WASM_OUTPUTS))),$(words $(CPP_WASM_OUTPUTS)))
+.PHONY: cpp-wasm-missing
+$(CPP_TARGET): cpp-wasm-missing
+endif
+CPP_LINK=mkdir -p "$(dir $(CPP_TARGET))" && rm -f "$@" && $(CPP_CXX) -o "$(dir $(CPP_TARGET))app.mjs" $(filter %.o,$^) $(CPP_LINK_FLAGS) && bash "$(VCPROOT)/vl/wasm.sh" "$(CPP_TARGET)"
+endif
+
+# vbuild runs this in a separate make process before building.
+# State lives beside the ignored objects, never in generated source inventories.
+export CPP_BUILD_CONFIGURATION=$(CPP_COMPILER)|$(CPP_CXX)|$(CPP_COMPILE_FLAGS)|$(CPP_LINK_FLAGS)|$(CPP_TARGET)|$(CPP_OBJECTS)
+.PHONY: cpp-prepare
+cpp-prepare:
+	@mkdir -p ./Obj
+	@printf '%s\n' "$$CPP_BUILD_CONFIGURATION" > ./Obj/.cpp-configuration.new
+	@if ! cmp -s ./Obj/.cpp-configuration.new ./Obj/.cpp-configuration; then \
+		echo "Build configuration changed: $(CPP_COMPILER)"; \
+		rm -f ./Obj/*.o ./Obj/*.d ./Obj/*.gcda ./Obj/*.gcno "$(CPP_TARGET)" && \
+		mv ./Obj/.cpp-configuration.new ./Obj/.cpp-configuration; \
+	else rm ./Obj/.cpp-configuration.new; fi
 
 -include $(wildcard ./Obj/*.d)
-
-ifeq ($(USE_GCC), YES)
-CPP_LINK=g++ -std=c++20 -g -pthread -o $@ $^ $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS)
-else ifeq ($(COVERAGE),NO)
-CPP_LINK=clang++ -std=c++20 -pthread -g $(CPP_COMPILE_OPTIONS) -o $@ $^ $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS)
-else
-CPP_LINK=clang++ -std=c++20 -pthread -g --coverage -o $@ $^ $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS)
-endif
-
-ifeq ($(USE_GCC), YES)
-CPP_COMPILE=g++ -std=c++20 -g $(CPP_COMPILE_OPTIONS) $(CPP_PLATFORM_COMPILE_OPTIONS) $(CPP_DEPENDENCY_OPTIONS) -o $@ -c $<
-else ifeq ($(COVERAGE),NO)
-CPP_COMPILE=clang++ -std=c++20 -g $(CPP_COMPILE_OPTIONS) $(CPP_PLATFORM_COMPILE_OPTIONS) $(CPP_DEPENDENCY_OPTIONS) -o $@ -c $<
-else
-CPP_COMPILE=clang++ -std=c++20 -g -fprofile-arcs -ftest-coverage $(CPP_COMPILE_OPTIONS) $(CPP_PLATFORM_COMPILE_OPTIONS) $(CPP_DEPENDENCY_OPTIONS) -o $@ -c $<
-endif

@@ -28,9 +28,11 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_64
 #endif
 
-#if defined _MSC_VER
+#if defined __EMSCRIPTEN__
+#define VCZH_WASM
+#elif defined _MSC_VER
 #define VCZH_MSVC
-#else
+#elif defined __clang__ || defined __GNUC__
 #define VCZH_GCC
 #if defined(__APPLE__)
 #define VCZH_APPLE
@@ -43,7 +45,7 @@ Licensed under https://github.com/vczh-libraries/License
 
 #if defined VCZH_MSVC
 #define VCZH_WCHAR_UTF16
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 #define VCZH_WCHAR_UTF32
 #endif
 
@@ -51,11 +53,9 @@ Licensed under https://github.com/vczh-libraries/License
 static_assert(sizeof(wchar_t) == sizeof(char16_t), "wchar_t is not UTF-16.");
 #elif defined VCZH_WCHAR_UTF32
 static_assert(sizeof(wchar_t) == sizeof(char32_t), "wchar_t is not UTF-32.");
-#else
-static_assert(false, "wchar_t configuration is not right.");
 #endif
 
-#if defined VCZH_GCC
+#if defined VCZH_GCC || defined VCZH_WASM
 #include <stdint.h>
 #include <stddef.h>
 #include <wchar.h>
@@ -75,14 +75,15 @@ static_assert(false, "wchar_t configuration is not right.");
 #define _I32_MAX    ((vint32_t)0x7FFFFFFF)
 #define _UI32_MAX   ((vuint32_t)0xFFFFFFFF)
 
-#define _I64_MIN    ((vint64_t)0x8000000000000000L)
-#define _I64_MAX    ((vint64_t)0x7FFFFFFFFFFFFFFFL)
-#define _UI64_MAX   ((vuint64_t)0xFFFFFFFFFFFFFFFFL)
+#define _I64_MIN    ((vint64_t)0x8000000000000000ULL)
+#define _I64_MAX    ((vint64_t)0x7FFFFFFFFFFFFFFFLL)
+#define _UI64_MAX   ((vuint64_t)0xFFFFFFFFFFFFFFFFULL)
 #endif
 
 #include <type_traits>
 #include <utility>
 #include <compare>
+#include <concepts>
 #include <new>
 #include <atomic>
 
@@ -110,7 +111,7 @@ x86 and x64 Compatbility
 	typedef signed __int64			vint64_t;
 	/// <summary>8-bytes unsigned integer.</summary>
 	typedef unsigned __int64		vuint64_t;
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	typedef int8_t					vint8_t;
 	typedef uint8_t					vuint8_t;
 	typedef int16_t					vint16_t;
@@ -121,14 +122,14 @@ x86 and x64 Compatbility
 	typedef uint64_t				vuint64_t;
 #endif
 
-#ifdef VCZH_64
+#if defined VCZH_64
 	/// <summary>Signed interface whose size equals to sizeof(void*).</summary>
 	typedef vint64_t				vint;
 	/// <summary>Signed interface whose size equals to sizeof(void*).</summary>
 	typedef vint64_t				vsint;
 	/// <summary>Unsigned interface whose size equals to sizeof(void*).</summary>
 	typedef vuint64_t				vuint;
-#else
+#elif !defined VCZH_64
 	/// <summary>Signed interface whose size equals to sizeof(void*).</summary>
 	typedef vint32_t				vint;
 	/// <summary>Signed interface whose size equals to sizeof(void*).</summary>
@@ -144,7 +145,7 @@ x86 and x64 Compatbility
 #define INCRC(ATOMIC) ((ATOMIC)->fetch_add(1) + 1)
 #define DECRC(ATOMIC) ((ATOMIC)->fetch_sub(1) - 1)
 
-#ifdef VCZH_64
+#if defined VCZH_64
 #define ITOA_S		_i64toa_s
 #define ITOW_S		_i64tow_s
 #define I64TOA_S	_i64toa_s
@@ -153,7 +154,7 @@ x86 and x64 Compatbility
 #define UITOW_S		_ui64tow_s
 #define UI64TOA_S	_ui64toa_s
 #define UI64TOW_S	_ui64tow_s
-#else
+#elif !defined VCZH_64
 #define ITOA_S		_itoa_s
 #define ITOW_S		_itow_s
 #define I64TOA_S	_i64toa_s
@@ -179,11 +180,7 @@ Basic Types
 		const wchar_t*		Description()const;
 	};
 
-#if defined VCZH_MSVC || defined VCZH_GCC || defined _DEBUG
 #define CHECK_ERROR(CONDITION,DESCRIPTION) do{if(!(CONDITION))throw Error(DESCRIPTION);}while(0)
-#elif defined NDEBUG
-#define CHECK_ERROR(CONDITION,DESCRIPTION)
-#endif
 
 #define CHECK_FAIL(DESCRIPTION) do{throw Error(DESCRIPTION);}while(0)
 
@@ -255,6 +252,33 @@ Type Traits
 
 	namespace ordering_decision
 	{
+#if defined __cpp_lib_three_way_comparison
+		template<typename T>
+		concept ThreeWayComparable = std::three_way_comparable<T>;
+
+		template<typename T, typename U>
+		concept ThreeWayComparableWith = std::three_way_comparable_with<T, U>;
+#elif !defined __cpp_lib_three_way_comparison
+		// Older SDKs provide comparison categories but not the comparison concepts.
+		template<typename T>
+		concept PartialOrdering = std::same_as<std::common_comparison_category_t<T, std::partial_ordering>, std::partial_ordering>;
+
+		template<typename T>
+		concept ThreeWayComparable = std::totally_ordered<T> && requires(const std::remove_reference_t<T>& a, const std::remove_reference_t<T>& b)
+		{
+			{ a <=> b } -> PartialOrdering;
+		};
+
+		template<typename T, typename U>
+		concept ThreeWayComparableWith = ThreeWayComparable<T> && ThreeWayComparable<U> && std::totally_ordered_with<T, U>
+			&& ThreeWayComparable<std::common_reference_t<const std::remove_reference_t<T>&, const std::remove_reference_t<U>&>>
+			&& requires(const std::remove_reference_t<T>& a, const std::remove_reference_t<U>& b)
+			{
+				{ a <=> b } -> PartialOrdering;
+				{ b <=> a } -> PartialOrdering;
+			};
+#endif
+
 		template<bool PO, bool WO, bool SO>
 		struct OrderingSelection
 		{
@@ -571,7 +595,7 @@ namespace vl
 
 			template<typename TKey, typename TValue>
 			auto operator<=>(const Pair<TKey, TValue>& p) const
-				requires(std::three_way_comparable_with<const K, const TKey> && std::three_way_comparable_with<const V, const TValue>)
+				requires(ordering_decision::ThreeWayComparableWith<const K, const TKey> && ordering_decision::ThreeWayComparableWith<const V, const TValue>)
 			{
 				using TOrdering = OrderingOf<decltype(key <=> p.key), decltype(value <=> p.value)>;
 				{ auto result = key <=> p.key; if (result != 0) return (TOrdering)result; }
@@ -638,6 +662,7 @@ namespace std
 }
 
 #endif
+
 
 /***********************************************************************
 .\PRIMITIVES\DATETIME.H
@@ -963,7 +988,7 @@ namespace vl
 		/// <param name="a">The first nullable value to compare.</param>
 		/// <param name="b">The second nullable value to compare.</param>
 		auto operator<=>(const Nullable<T>& b) const
-			requires(std::three_way_comparable<T>)
+			requires(ordering_decision::ThreeWayComparable<T>)
 		{
 			using TOrdering = decltype(object <=> b.object);
 			if (initialized && b.initialized) return object <=> b.object;
@@ -1004,6 +1029,7 @@ namespace vl
 #endif
 
 #endif
+
 
 /***********************************************************************
 .\PRIMITIVES\POINTER.H
@@ -6010,7 +6036,7 @@ namespace vl
 
 		template<typename ...UArgs>
 		auto operator<=>(const TCompatible<UArgs...>& t)const
-			requires (true && ... && std::three_way_comparable_with<TArgs, UArgs>)
+			requires (true && ... && ordering_decision::ThreeWayComparableWith<TArgs, UArgs>)
 		{
 			return this->Compare(t);
 		}
@@ -6072,6 +6098,7 @@ namespace std
 }
 
 #endif
+
 
 /***********************************************************************
 .\COLLECTIONS\OPERATIONFOREACH.H
@@ -6391,7 +6418,7 @@ namespace vl
 	struct Overloading : TCallbacks ...
 	{
 		using TCallbacks::operator()...;
-#ifdef VCZH_GCC
+#if defined VCZH_GCC || defined VCZH_WASM
 		Overloading(const Overloading<TCallbacks...>&) = default;
 		Overloading(Overloading<TCallbacks...>&&) = default;
 		Overloading<TCallbacks...>& operator=(const Overloading<TCallbacks...>&) = default;
@@ -7580,7 +7607,7 @@ namespace vl
 	/// <param name="string">The string to convert.</param>
 	extern WString				wupper(const WString& string);
 
-#if defined VCZH_GCC
+#if defined VCZH_GCC || defined VCZH_WASM
 	extern void					_itoa_s(vint32_t value, char* buffer, size_t size, vint radix);
 	extern void					_itow_s(vint32_t value, wchar_t* buffer, size_t size, vint radix);
 	extern void					_i64toa_s(vint64_t value, char* buffer, size_t size, vint radix);
@@ -9284,7 +9311,7 @@ UtfToUtfReaderBase<TFrom, TTo, TConsumer>
 		// in order to keep SourceCluster correct, only char32_t<->char32_t gets the special implementation
 		DEFINE_UTF32_DIRECT_READER(char32_t, char32_t);
 
-#ifdef VCZH_WCHAR_UTF32
+#if defined VCZH_WCHAR_UTF32
 		DEFINE_UTF32_DIRECT_READER(wchar_t, char32_t);
 		DEFINE_UTF32_DIRECT_READER(char32_t, wchar_t);
 #endif

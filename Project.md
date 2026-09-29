@@ -287,9 +287,6 @@ RVM RPC uses the exact logical channels `ViewModelChannel` and `ViewModelReadyCh
 `REPO-ROOT/Test/Linux` stores linux configurations for:
 - `Metadata_Generate`: `Metadata_Generate.vcxproj`.
 - `Metadata_Test`: `Metadata_Test.vcxproj`.
-- `CppTest`: `CppTest.vcxproj`.
-- `CppTest_Metaonly`: `CppTest_Metaonly.vcxproj`.
-- `CppTest_Reflection`: `CppTest_Reflection.vcxproj`.
 - `GacUI_Compiler`: `GacUI_Compiler.vcxproj`.
 - `RemotingTest_Core`: `RemotingTest_Core.vcxproj`.
 - `RemotingTest_RvmHost`: `RemotingTest_RvmHost/vmake`.
@@ -304,3 +301,10 @@ Unlike Windows, building have to be done in each folder separately.
 The Unix unit-test entry point uses the environment locale for wide console output, including Unicode test names. Run it with an installed UTF-8 locale; on macOS, use `LC_ALL=en_US.UTF-8 ./Bin/UnitTest /C` if the inherited locale is unavailable.
 
 `CppTest_Rvm` is Windows-only in this solution. The portable RVM demo is `RemotingTest_Core /RVMT` with `/MiniHttp` for renderers; its host is either manually started with `/MiniHttp` or auto-launched with `/Cli:<path>`. Linux/macOS stdio code is supplied by the imported `VlppOS.Linux.cpp`.
+
+## WebAssembly
+
+The following unit test projects could be built to web assembly and run with a browser:
+- `REPO-ROOT/Test/Linux/UnitTest`
+
+The browser build selects the generated 32-bit skins and compiler baselines and uses `-Oz` to reduce module size. Its `vbuild` preloads test inputs into OPFS and creates an empty `Resources/UnitTestSnapshots` output folder; existing host snapshots are not input fixtures. Debug information, exceptions and assertions remain enabled.

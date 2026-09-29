@@ -220,13 +220,7 @@
 ../../../Source/UnitTestUtilities/GuiUnitTestProtocol_Rendering.cpp
 ../../../Source/UnitTestUtilities/GuiUnitTestProtocol_Shared.cpp
 ../../../Source/UnitTestUtilities/GuiUnitTestUtilities.cpp
-../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkin.cpp
-../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkinReflection.cpp
-../../GacUISrc/Generated_DarkSkin/Source_x64/DarkSkinResource.cpp
 ../../../Source/Skins/DarkSkin/Config/DarkSkinConfig.cpp
-../../GacUISrc/Generated_TuiSkin/Source_x64/TuiSkin.cpp
-../../GacUISrc/Generated_TuiSkin/Source_x64/TuiSkinReflection.cpp
-../../GacUISrc/Generated_TuiSkin/Source_x64/TuiSkinResource.cpp
 ../../../Source/Skins/TuiSkin/Config/TuiSkinConfig.cpp
 ../../GacUISrc/UnitTest/Main.cpp
 ../../GacUISrc/UnitTest/TestTuiProvider.cpp
@@ -335,3 +329,9 @@
 ../../GacUISrc/UnitTest/TestItemProviders_TreeViewItemBindableRootProvider.cpp
 ../../GacUISrc/UnitTest/TestItemProviders_NodeItemProvider.cpp
 ../../GacUISrc/UnitTest/TestItemProviders.cpp
+DarkSkin.Linux.cpp
+DarkSkinResource.Linux.cpp
+DarkSkinReflection.Linux.cpp
+TuiSkin.Linux.cpp
+TuiSkinResource.Linux.cpp
+TuiSkinReflection.Linux.cpp

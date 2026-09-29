@@ -1,0 +1,16 @@
+{
+    "WASM=YES": {
+        "rootFolder": "../..",
+        "includes": [
+            "Resources/CompilerErrorTests/**/*.xml",
+            "Resources/CompilerErrorTests/Baseline/*.txt",
+            "Resources/CompilerErrorTests/Baseline_x86/*.txt",
+            "Resources/HostedWindowManagerTests/*.txt",
+            "Resources/UnitTestResources/**/*.{xml,png,jpeg}",
+            "Resources/App/RemoteViewModelTest/Resource.xml"
+        ],
+        "folders": [
+            "Resources/UnitTestSnapshots"
+        ]
+    }
+}

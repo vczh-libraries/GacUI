@@ -647,11 +647,11 @@ TEST_FILE
 				TEST_ASSERT(bounds.Contains(caret.LeftTop()));
 				target.Fill(Rect(0, 0, 16, 8), Color(0, 0, 0));
 				renderer->Render(bounds);
-				TEST_ASSERT(TUI::GetBuffer()[caret.x1].backgroundColor == TuiColor(255, 255, 255));
+				TEST_ASSERT(TUI::GetBuffer()[caret.x1].backgroundColor == TuiColor({ 255, 255, 255 }));
 				element->BlinkCaret();
 				target.Fill(Rect(0, 0, 16, 8), Color(0, 0, 0));
 				renderer->Render(bounds);
-				TEST_ASSERT(TUI::GetBuffer()[caret.x1].backgroundColor == TuiColor(0, 0, 0));
+				TEST_ASSERT(TUI::GetBuffer()[caret.x1].backgroundColor == TuiColor({ 0, 0, 0 }));
 			}
 			target.StopRendering();
 			target.StopHostedRendering();
@@ -736,24 +736,24 @@ TEST_FILE
 						target->StopHostedRendering();
 						for (vint x = 0; x < 16; x++)
 						{
-							TEST_ASSERT(TUI::GetBuffer()[4 * 16 + x].backgroundColor == TuiColor(135, 206, 250));
+							TEST_ASSERT(TUI::GetBuffer()[4 * 16 + x].backgroundColor == TuiColor({ 135, 206, 250 }));
 						}
 						for (vint r = 0; r < 2; r++)
 						{
 							for (vint x = 0; x < 16; x++)
 							{
 								auto pixel = TUI::GetBuffer()[(r * 2 + 1) * 16 + x];
-								TEST_ASSERT(pixel.backgroundColor == TuiColor(0, 0, 0));
+								TEST_ASSERT(pixel.backgroundColor == TuiColor({ 0, 0, 0 }));
 								if (x < 12)
 								{
 									TEST_ASSERT(pixel.glyph == TuiPixelGlyph::Mergeable);
-									TEST_ASSERT(pixel.foregroundColor == TuiColor(128, 128, 128));
+									TEST_ASSERT(pixel.foregroundColor == TuiColor({ 128, 128, 128 }));
 								}
 							}
 							for (vint c = 0; c < 2; c++)
 							{
-								auto color = selected == r * 2 + c ? TuiColor(135, 206, 250)
-									: rows[r]->GetSelected() || selected == -2 ? TuiColor(0, 0, 128) : TuiColor(0, 0, 0);
+								auto color = selected == r * 2 + c ? TuiColor({ 135, 206, 250 })
+									: rows[r]->GetSelected() || selected == -2 ? TuiColor({ 0, 0, 128 }) : TuiColor({ 0, 0, 0 });
 								TEST_ASSERT(TUI::GetBuffer()[r * 2 * 16 + c * 6 + 2].backgroundColor == color);
 							}
 						}
@@ -807,7 +807,7 @@ TEST_FILE
 					paragraph->SetStyle(position - 1, 1, IGuiGraphicsParagraph::Underline);
 					paragraph->Render(Rect(0, 0, 16, 1));
 					if (x < 16) TEST_ASSERT(TUI::GetBuffer()[x].GetChar32() == U'X');
-					TEST_ASSERT(TUI::GetBuffer()[x - 1].backgroundColor == TuiColor(20, 30, 40));
+					TEST_ASSERT(TUI::GetBuffer()[x - 1].backgroundColor == TuiColor({ 20, 30, 40 }));
 				}
 				{
 					auto paragraph = provider->CreateParagraph(L"a\tX", &target, nullptr);

@@ -12,12 +12,11 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+
+#if defined VCZH_MSVC
 #define _WINSOCKAPI_
 #include <Windows.h>
 
-#ifndef VCZH_MSVC
-static_assert(false, "Do not build this file for non-Windows applications.");
-#endif
 
 namespace vl
 {
@@ -159,6 +158,8 @@ Console
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\PRIMITIVES\DATETIME.WINDOWS.CPP
@@ -168,12 +169,11 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+
+#if defined VCZH_MSVC
 #include <time.h>
 #define _WINSOCKAPI_
 
-#ifndef VCZH_MSVC
-static_assert(false, "Do not build this file for non-Windows applications.");
-#endif
 
 namespace vl
 {
@@ -311,6 +311,8 @@ DateTime
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\STRINGS\CONVERSION.WINDOWS.CPP
@@ -320,11 +322,10 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+
+#if defined VCZH_MSVC
 #define _WINSOCKAPI_
 
-#ifndef VCZH_MSVC
-static_assert(false, "Do not build this file for non-Windows applications.");
-#endif
 
 namespace vl
 {
@@ -343,6 +344,8 @@ String Conversions (buffer walkthrough)
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\UNITTEST\UNITTEST.WINDOWS.CPP
@@ -352,11 +355,10 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+
+#if defined VCZH_MSVC
 #define _WINSOCKAPI_
 
-#ifndef VCZH_MSVC
-static_assert(false, "Do not build this file for non-Windows applications.");
-#endif
 
 namespace vl
 {
@@ -372,4 +374,6 @@ UnitTest
 		}
 	}
 }
+
+#endif
 

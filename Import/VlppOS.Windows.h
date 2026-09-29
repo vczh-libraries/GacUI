@@ -711,7 +711,7 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_TUI_INPUT_WINDOWS
 
 
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif

@@ -12,9 +12,7 @@ using namespace vl;
 using namespace vl::unittest;
 using namespace vl::presentation::unittest;
 
-#if defined VCZH_MSVC
 using namespace vl::filesystem;
-#endif
 
 #if defined VCZH_MSVC
 WString GetExePath()
@@ -47,6 +45,8 @@ namespace compiler_error_tests
 	#endif
 	#elif defined VCZH_GCC
 		return L"../../Resources/CompilerErrorTests";
+	#elif defined VCZH_WASM
+		return L"/Resources/CompilerErrorTests";
 	#endif
 	}
 	
@@ -60,6 +60,8 @@ namespace compiler_error_tests
 	#endif
 	#elif defined VCZH_GCC
 		return L"../../Resources/CompilerErrorTests/Baseline";
+	#elif defined VCZH_WASM
+		return L"/Resources/CompilerErrorTests/Baseline";
 	#endif
 	}
 	
@@ -73,6 +75,8 @@ namespace compiler_error_tests
 	#endif
 	#elif defined VCZH_GCC
 		return L"../../Resources/CompilerErrorTests/Baseline_x64";
+	#elif defined VCZH_WASM
+		return L"/Resources/CompilerErrorTests/Baseline_x86";
 	#endif
 	}
 	
@@ -86,6 +90,8 @@ namespace compiler_error_tests
 	#endif
 	#elif defined VCZH_GCC
 		return L"../../Output/CompilerErrorTests";
+	#elif defined VCZH_WASM
+		return L"/Output/CompilerErrorTests";
 	#endif
 	}
 }
@@ -102,6 +108,8 @@ namespace hosted_window_manager_tests
 	#endif
 	#elif defined VCZH_GCC
 		return L"../../Resources/HostedWindowManagerTests";
+	#elif defined VCZH_WASM
+		return L"/Resources/HostedWindowManagerTests";
 	#endif
 	}
 }
@@ -118,6 +126,8 @@ namespace unittest_framework_tests
 	#endif
 	#elif defined VCZH_GCC
 		return L"../../Resources/UnitTestSnapshots";
+	#elif defined VCZH_WASM
+		return L"/Resources/UnitTestSnapshots";
 	#endif
 	}
 
@@ -131,11 +141,12 @@ namespace unittest_framework_tests
 	#endif
 	#elif defined VCZH_GCC
 		return L"../../Resources/UnitTestResources";
+	#elif defined VCZH_WASM
+		return L"/Resources/UnitTestResources";
 	#endif
 	}
 }
 
-#if defined VCZH_MSVC
 TEST_FILE
 {
 	{
@@ -146,7 +157,6 @@ TEST_FILE
 		}
 	}
 }
-#endif
 
 using namespace vl::presentation;
 using namespace vl::presentation::controls;
@@ -207,5 +217,76 @@ int main(int argc, char* argv[])
 {
 	std::wcout.imbue(std::locale(""));
 	return UnitTestMain(argc, argv);
+}
+#endif
+
+#if defined VCZH_WASM
+#include <emscripten.h>
+#include <emscripten/bind.h>
+
+EM_JS(int, WasmReportFailure, (const char16_t* text, vint length), {
+	return globalThis["vlConsoleFailure"](HEAPU16, text, length);
+});
+
+vint WasmMain()
+{
+	wchar_t name[] = L"UnitTest";
+	wchar_t mode[] = L"/D";
+	wchar_t* arguments[] = { name, mode };
+	return UnitTestMain(2, arguments);
+}
+
+vint wasm_main()
+{
+	try
+	{
+		WString message;
+		try
+		{
+			return WasmMain();
+		}
+		catch (const vl::unittest::UnitTestAssertError& error)
+		{
+			message = error.message;
+		}
+		catch (const vl::unittest::UnitTestConfigError& error)
+		{
+			message = error.message;
+		}
+		catch (const vl::unittest::UnitTestJustCrashError&)
+		{
+			message = L"The unit test framework stopped after a failure.";
+		}
+		catch (const Error& error)
+		{
+			message = error.Description();
+		}
+		catch (const Exception& error)
+		{
+			message = error.Message();
+		}
+		catch (const std::exception& error)
+		{
+			message = atow(error.what());
+		}
+		catch (...)
+		{
+			message = L"Unknown C++ exception.";
+		}
+		auto text = wtou16(message);
+		WasmReportFailure(text.Buffer(), text.Length());
+	}
+	catch (...)
+	{
+		// Diagnostics can allocate too; no C++ exception may cross this boundary.
+		constexpr char16_t text[] = u"Unable to format the C++ failure diagnostic.";
+		WasmReportFailure(text, sizeof(text) / sizeof(*text) - 1);
+	}
+	return 1;
+}
+
+EMSCRIPTEN_BINDINGS(CppApplication)
+{
+	emscripten::function("wasm_main", &wasm_main);
 }
 #endif

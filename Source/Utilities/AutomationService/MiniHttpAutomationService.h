@@ -4,6 +4,8 @@
 #include "../../GacUI.h"
 #include <VlppOS.h>
 
+#if defined VCZH_MSVC || defined VCZH_GCC
+
 namespace vl::presentation::remoting
 {
 	extern void StartMiniHttpAutomationService(
@@ -12,5 +14,7 @@ namespace vl::presentation::remoting
 		);
 	extern void StopMiniHttpAutomationService();
 }
+
+#endif
 
 #endif

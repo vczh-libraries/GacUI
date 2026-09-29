@@ -148,7 +148,7 @@ Locale
 		/// <param name="month">Month, begins from 1 as January.</param>
 		WString						GetLongMonthName(vint month)const;
 		
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 		/// <summary>Convert characters to the full width.</summary>
 		/// <returns>The converted string.</returns>
 		/// <param name="str">The string to convert.</param>
@@ -188,7 +188,7 @@ Locale
 		/// <param name="str">The string to convert.</param>
 		WString						ToLinguisticUpper(const WString& str)const;
 
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 		/// <summary>Convert characters to Simplified Chinese.</summary>
 		/// <returns>The converted string.</returns>
 		/// <param name="str">The string to convert.</param>
@@ -213,7 +213,7 @@ Locale
 			None=0,
 			/// <summary>Ignore case using the file system rule.</summary>
 			IgnoreCase=1,
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 			/// <summary>Ignore case using the linguistic rule. This value is only available in Windows.</summary>
 			IgnoreCaseLinguistic=2,
 			/// <summary>Ignore the difference between between hiragana and katakana characters. This value is only available in Windows.</summary>
@@ -455,7 +455,7 @@ Kernel Mode Objects
 		/// <param name="abandoned">Returns true if the waiting is canceled by an abandoned object. An abandoned object is caused by it's owner thread existing without releasing it.</param>
 		/// <remarks>This function is only available in Windows.</remarks>
 		static vint									WaitAnyForTime(WaitableObject** objects, vint count, vint ms, bool* abandoned);
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 		virtual bool								Wait() = 0;
 #endif
 	};
@@ -511,7 +511,7 @@ Kernel Mode Objects
 		/// <summary>Start the thread.</summary>
 		/// <returns>Returns true if this operation succeeded.</returns>
 		bool										Start();
-#if defined VCZH_GCC
+#if defined VCZH_GCC || defined VCZH_WASM
 		bool										Wait();
 #endif
 		/// <summary>Stop the thread.</summary>
@@ -520,7 +520,7 @@ Kernel Mode Objects
 		/// <summary>Get the state of the thread.</summary>
 		/// <returns>The state of the thread.</returns>
 		ThreadState									GetState();
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 		void										SetCPU(vint index);
 #endif
 	};
@@ -551,7 +551,7 @@ Kernel Mode Objects
 		/// </summary>
 		/// <returns>Returns true if this operation succeeded.</returns>
 		bool										Release();
-#ifdef VCZH_GCC
+#if defined VCZH_GCC || defined VCZH_WASM
 		bool										Wait();
 #endif
 	};
@@ -584,7 +584,7 @@ Kernel Mode Objects
 		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="count">The amout to release.</param>
 		vint										Release(vint count);
-#ifdef VCZH_GCC
+#if defined VCZH_GCC || defined VCZH_WASM
 		bool										Wait();
 #endif
 	};
@@ -620,7 +620,7 @@ Kernel Mode Objects
 		/// <summary>Unsignal the event.</summary>
 		/// <returns>Returns true if this operation succeeded.</returns>
 		bool										Unsignal();
-#ifdef VCZH_GCC
+#if defined VCZH_GCC || defined VCZH_WASM
 		bool										Wait();
 		/// <summary>Wait for this event to signal for a period of time.</summary>
 		/// <returns>Returns true if the event is signaled. Returns false if this operation failed, including time out.</returns>
@@ -659,7 +659,7 @@ Thread Pool
 			Queue(Func<void()>(proc));
 		}
 
-#ifdef VCZH_GCC
+#if defined VCZH_GCC || defined VCZH_WASM
 		static bool									Stop(bool discardPendingTasks);
 #endif
 	};
@@ -797,7 +797,7 @@ Kernel Mode Objects in Process
 		/// <param name="cs">The critical section.</param>
 		/// <param name="ms">Time in milliseconds.</param>
 		bool										SleepWithForTime(CriticalSection& cs, vint ms);
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 		/// <summary>Bind a conditional variable with a owned reader lock and release it. When the function returns, the condition variable is activated, and the current thread owned the reader lock again.</summary>
 		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="lock">The reader lock.</param>
@@ -1369,7 +1369,7 @@ IChannelServer
 		/// <param name="availableChannels">The available channels.</param>
 		/// <param name="localClient">The local client. It is null for network clients.</param>
 		/// <returns>Returns "Reject" to disconnect the client immediatelly.</returns>
-		virtual WaitForClientResult			OnClientConnected(vint clientId, const IChannelClient<TPackage>::ChannelNameList& availableChannels, Ptr<IChannelClient<TPackage>> localClient) = 0;
+		virtual WaitForClientResult			OnClientConnected(vint clientId, const typename IChannelClient<TPackage>::ChannelNameList& availableChannels, Ptr<IChannelClient<TPackage>> localClient) = 0;
 
 		/// <summary>
 		/// Start the server.
@@ -1770,6 +1770,8 @@ Interfaces:
 #ifndef VCZH_INTERPROCESS_ASYNCSOCKET
 #define VCZH_INTERPROCESS_ASYNCSOCKET
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 #include <concepts>
 #include <type_traits>
 #include <utility>
@@ -2350,6 +2352,8 @@ NetworkProtocolClient
 		}
 	};
 }
+
+#endif
 
 #endif
 
@@ -5713,6 +5717,7 @@ namespace vl
 		class FilePath : public Object
 		{
 			friend class LinuxFileSystemImpl;
+			friend class OpfsFileSystemImpl;
 			friend class WindowsFileSystemImpl;
 		protected:
 			WString						fullPath;
@@ -6944,6 +6949,8 @@ Interfaces:
 #define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUEST
 
 
+#if defined VCZH_MSVC || defined VCZH_GCC
+
 namespace vl::inter_process::async_tcp_socket
 {
 	constexpr vint HttpIncompleteMessageTimeout = 30 * 1000;
@@ -7102,6 +7109,8 @@ namespace vl::inter_process::async_tcp_socket
 
 #endif
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\NETWORKPROTOCOLHTTP.H
@@ -7120,6 +7129,8 @@ Interfaces:
 #ifndef VCZH_INTERPROCESS_NETWORKPROTOCOLHTTP
 #define VCZH_INTERPROCESS_NETWORKPROTOCOLHTTP
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::inter_process
 {
@@ -7251,6 +7262,8 @@ namespace vl::inter_process
 
 #endif
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPREQUEST.H
@@ -7266,6 +7279,8 @@ Async Socket HTTP/1.1 Connection
 #ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUESTIMPL
 #define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUESTIMPL
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::inter_process::async_tcp_socket
 {
@@ -7370,6 +7385,8 @@ namespace vl::inter_process::async_tcp_socket
 
 #endif
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPREQUESTCLIENT.H
@@ -7386,6 +7403,8 @@ Interfaces:
 #ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUESTCLIENT
 #define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUESTCLIENT
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::inter_process::async_tcp_socket
 {
@@ -7409,6 +7428,8 @@ namespace vl::inter_process::async_tcp_socket
 
 #endif
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPREQUESTSERVER.H
@@ -7425,6 +7446,8 @@ Interfaces:
 #ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUESTSERVER
 #define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPREQUESTSERVER
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::inter_process::async_tcp_socket
 {
@@ -7457,6 +7480,8 @@ namespace vl::inter_process::async_tcp_socket
 
 #endif
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPSERVERAPI.H
@@ -7473,6 +7498,8 @@ Interfaces:
 #ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPSERVERAPI
 #define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPSERVERAPI
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::inter_process::async_tcp_socket
 {
@@ -7563,6 +7590,8 @@ namespace vl::inter_process::async_tcp_socket
 
 #endif
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPSERVER.H
@@ -7579,6 +7608,8 @@ Interfaces:
 #ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPSERVER
 #define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPSERVER
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::inter_process::async_tcp_socket
 {
@@ -7612,6 +7643,8 @@ namespace vl::inter_process::async_tcp_socket
 
 #endif
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPCLIENTAPI.H
@@ -7628,6 +7661,8 @@ Interfaces:
 #ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPCLIENTAPI
 #define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPCLIENTAPI
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::inter_process::async_tcp_socket
 {
@@ -7678,6 +7713,8 @@ namespace vl::inter_process::async_tcp_socket
 
 #endif
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPCLIENT.H
@@ -7694,6 +7731,8 @@ Interfaces:
 #ifndef VCZH_INTERPROCESS_ASYNCSOCKET_HTTPCLIENT
 #define VCZH_INTERPROCESS_ASYNCSOCKET_HTTPCLIENT
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::inter_process::async_tcp_socket
 {
@@ -7731,6 +7770,8 @@ namespace vl::inter_process::async_tcp_socket
 
 #endif
 
+#endif
+
 
 
 /***********************************************************************
@@ -7739,6 +7780,8 @@ namespace vl::inter_process::async_tcp_socket
 #ifndef VCZH_INTERPROCESS_STDIOREDIRECTION
 #define VCZH_INTERPROCESS_STDIOREDIRECTION
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::inter_process::stdio_redirection
 {
@@ -7824,6 +7867,8 @@ namespace vl::inter_process::stdio_redirection
 		void									ConnectNewClient(const WString& command);
 	};
 }
+
+#endif
 
 #endif
 
@@ -8234,6 +8279,7 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_TUI
 
 
+
 namespace vl
 {
 	namespace console
@@ -8330,6 +8376,8 @@ namespace vl
 			};
 			TuiColor						foregroundColor = { 255, 255, 255 };
 			TuiColor						backgroundColor = { 0, 0, 0 };
+
+			TuiPixel() :character{} {}
 
 			char32_t						GetChar32() const;
 			wchar_t							GetWChar() const;
@@ -8512,6 +8560,7 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_TUI_INTERNAL
 
 
+
 namespace vl
 {
 	namespace console
@@ -8542,6 +8591,8 @@ Licensed under https://github.com/vczh-libraries/License
 #ifndef VCZH_TUI_INPUT
 #define VCZH_TUI_INPUT
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl
 {
@@ -8577,6 +8628,8 @@ namespace vl
 		}
 	}
 }
+
+#endif
 
 #endif
 

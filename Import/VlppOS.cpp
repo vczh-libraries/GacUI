@@ -561,6 +561,7 @@ Folder
 	}
 }
 
+
 /***********************************************************************
 .\LOCALE.CPP
 ***********************************************************************/
@@ -578,7 +579,7 @@ namespace vl
 EnUsLocaleImpl
 ***********************************************************************/
 
-#ifdef VCZH_GCC
+#if defined VCZH_GCC || defined VCZH_WASM
 #define _wcsicmp wcscasecmp
 #define _wcsnicmp wcsncasecmp
 #endif
@@ -966,7 +967,7 @@ EnUsLocaleImpl
 		return false;
 	}
 
-#ifdef VCZH_GCC
+#if defined VCZH_GCC || defined VCZH_WASM
 #undef _wcsicmp
 #undef _wcsnicmp
 #endif
@@ -1213,9 +1214,9 @@ SpinLock
 			}
 			while (token != 0)
 			{
-#ifdef VCZH_ARM
+#if defined VCZH_ARM
 				__yield();
-#else
+#elif defined VCZH_MSVC || defined VCZH_GCC
 				_mm_pause();
 #endif
 			}
@@ -4169,6 +4170,7 @@ namespace vl
 OSFileStreamImpl
 ***********************************************************************/
 
+#if defined VCZH_MSVC || defined VCZH_GCC
 		class OSFileStreamImpl : public Object, public virtual IFileStreamImpl
 		{
 		private:
@@ -4369,6 +4371,8 @@ CreateOSFileStreamImpl
 		{
 			return Ptr(new OSFileStreamImpl(fileName, accessRight));
 		}
+
+#endif
 
 /***********************************************************************
 FileStream
@@ -4919,6 +4923,8 @@ RecorderStream
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET.CPP
 ***********************************************************************/
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 #include <chrono>
 #include <cstring>
 #include <limits>
@@ -5762,10 +5768,14 @@ NetworkProtocolConnection
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPCLIENT.CPP
 ***********************************************************************/
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 
 namespace vl::inter_process::async_tcp_socket
@@ -7487,6 +7497,8 @@ SocketHttpClient
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPCLIENTAPI.CPP
@@ -7500,6 +7512,8 @@ Interfaces:
 
 ***********************************************************************/
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::inter_process::async_tcp_socket
 {
@@ -8456,6 +8470,8 @@ SocketHttpClientApi
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPREQUEST.CPP
@@ -8468,6 +8484,8 @@ Async Socket HTTP/1.1 Connection
 
 ***********************************************************************/
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 
 namespace vl::inter_process::async_tcp_socket
@@ -11452,10 +11470,14 @@ HttpRequestConnection
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPREQUESTCLIENT.CPP
 ***********************************************************************/
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::inter_process::async_tcp_socket
 {
@@ -11603,10 +11625,14 @@ HttpRequestClient
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPREQUESTSERVER.CPP
 ***********************************************************************/
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 namespace vl::inter_process::async_tcp_socket
 {
@@ -12116,10 +12142,14 @@ HttpRequestServer
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPSERVER.CPP
 ***********************************************************************/
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 #include <random>
 
@@ -12345,6 +12375,7 @@ namespace vl::inter_process::async_tcp_socket
 										lifecycle;
 
 			static vint CurrentCallbackDepth(Ptr<SocketHttpServerConnectionLifecycle> state);
+			static void ReleaseStoppedConnection(Ptr<SocketHttpServerConnectionLifecycle> state);
 			static bool ClaimPollUnsafe(Ptr<SocketHttpServerConnectionLifecycle> state, PollWork& work);
 			static void StartPollResponse(Ptr<SocketHttpServerConnectionLifecycle> state, PollWork work);
 			static void FinishPollResponse(Ptr<SocketHttpServerConnectionLifecycle> state, Ptr<SocketHttpRequestContext> context, bool succeeded);
@@ -12612,20 +12643,12 @@ namespace vl::inter_process::async_tcp_socket
 		SocketHttpServerConnection::CallbackFrame::~CallbackFrame()
 		{
 			currentCallbackFrame = previous;
-			Ptr<SocketHttpServerLifecycle> server;
-			SocketHttpServerConnection* owner = nullptr;
 			CS_LOCK(state->lockState)
 			{
 				state->activeCallbacks--;
-				if (state->activeCallbacks == 0 && state->stopFinished && state->server)
-				{
-					server = state->server;
-					owner = state->owner;
-				}
 				state->cvState.WakeAllPendings();
 			}
-			Ptr<SocketHttpServerConnection> releasing;
-			if (server && owner) releasing = server->ReleaseStoppedConnection(owner);
+			ReleaseStoppedConnection(state);
 		}
 
 		SocketHttpServerConnection::InboundFrame::InboundFrame(Ptr<SocketHttpServerConnectionLifecycle> _state)
@@ -12648,6 +12671,22 @@ namespace vl::inter_process::async_tcp_socket
 				if (frame->state == state) depth++;
 			}
 			return depth;
+		}
+
+		void SocketHttpServerConnection::ReleaseStoppedConnection(Ptr<SocketHttpServerConnectionLifecycle> state)
+		{
+			Ptr<SocketHttpServerLifecycle> server;
+			SocketHttpServerConnection* owner = nullptr;
+			CS_LOCK(state->lockState)
+			{
+				if (state->stopFinished && state->activeCallbacks == 0 && !state->inFlightPoll && !state->pollRegistrationProcessing)
+				{
+					server = state->server;
+					owner = state->owner;
+				}
+			}
+			Ptr<SocketHttpServerConnection> releasing;
+			if (server && owner) releasing = server->ReleaseStoppedConnection(owner);
 		}
 
 		bool SocketHttpServerConnection::ClaimPollUnsafe(Ptr<SocketHttpServerConnectionLifecycle> state, PollWork& work)
@@ -12740,6 +12779,7 @@ namespace vl::inter_process::async_tcp_socket
 			}
 			if (!completed) return;
 			InvokePollCompleted(state->token, succeeded);
+			ReleaseStoppedConnection(state);
 			if (installed)
 			{
 				bool promoted = false;
@@ -13148,7 +13188,6 @@ namespace vl::inter_process::async_tcp_socket
 				}
 			}
 
-			Ptr<SocketHttpServerLifecycle> releasingServer;
 			CS_LOCK(state->lockState)
 			{
 				state->callback = nullptr;
@@ -13159,12 +13198,9 @@ namespace vl::inter_process::async_tcp_socket
 				if (first)
 				{
 					state->stopFinished = true;
-					if (state->activeCallbacks == 0) releasingServer = state->server;
 				}
 				state->cvState.WakeAllPendings();
 			}
-			Ptr<SocketHttpServerConnection> releasing;
-			if (releasingServer) releasing = releasingServer->ReleaseStoppedConnection(this);
 			if (first && waitForPoll)
 			{
 				CS_LOCK(state->lockState)
@@ -13172,6 +13208,7 @@ namespace vl::inter_process::async_tcp_socket
 					while (state->inFlightPoll) state->cvState.SleepWith(state->lockState);
 				}
 			}
+			ReleaseStoppedConnection(state);
 		}
 
 		void SocketHttpServerConnection::StopFromServer()
@@ -13544,10 +13581,14 @@ namespace vl::inter_process::async_tcp_socket
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET_HTTPSERVERAPI.CPP
 ***********************************************************************/
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 
 namespace vl::inter_process::async_tcp_socket
@@ -15046,10 +15087,14 @@ namespace vl::inter_process::async_tcp_socket
 	WString SocketHttpServerApi::GetUrlPrefix() { return impl->GetUrlPrefix(); }
 }
 
+#endif
+
 
 /***********************************************************************
 .\INTERPROCESS\NETWORKPROTOCOLHTTP.CPP
 ***********************************************************************/
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 
 namespace vl::inter_process
@@ -15470,6 +15515,8 @@ namespace vl::inter_process
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\TUI\TUI.CPP
@@ -15478,6 +15525,7 @@ namespace vl::inter_process
 Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
+
 
 #include <algorithm>
 
@@ -15491,6 +15539,13 @@ namespace vl
 	{
 		namespace tui_internal
 		{
+#if defined VCZH_WASM
+			Ptr<unittest::ITuiBackend> CreateTuiBackend()
+			{
+				CHECK_FAIL(L"vl::console::tui_internal::CreateTuiBackend()#A TUI backend must be injected in WebAssembly.");
+			}
+#endif
+
 			struct ListenerEntry
 			{
 				ITuiCallback*				listener = nullptr;
@@ -16354,21 +16409,16 @@ TUI
 			if (charWidth == 2 && x + 1 >= clip.x2) return;
 			RepairWide(buffer, width, height, x, y);
 			if (charWidth == 2) RepairWide(buffer, width, height, x + 1, y);
-			buffer[y * width + x] = TuiPixel
-			{
-				.glyph = TuiPixelGlyph::Char,
-				.character = { .c = code, .style = options.style },
-				.foregroundColor = options.foregroundColor,
-				.backgroundColor = options.backgroundColor,
-			};
+			TuiPixel pixel;
+			pixel.character = { .c = code, .style = options.style };
+			pixel.foregroundColor = options.foregroundColor;
+			pixel.backgroundColor = options.backgroundColor;
+			buffer[y * width + x] = pixel;
 			if (charWidth == 2)
 			{
-				buffer[y * width + x + 1] = TuiPixel
-				{
-					.glyph = TuiPixelGlyph::WideCharContinuation,
-					.foregroundColor = options.foregroundColor,
-					.backgroundColor = options.backgroundColor,
-				};
+				pixel.glyph = TuiPixelGlyph::WideCharContinuation;
+				pixel.character = {};
+				buffer[y * width + x + 1] = pixel;
 			}
 		}
 
@@ -16494,6 +16544,8 @@ ScopedTuiBackend
 /***********************************************************************
 .\INTERPROCESS\STDIOREDIRECTION\STDIOREDIRECTION.CPP
 ***********************************************************************/
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 #include <cstdlib>
 
 namespace vl::inter_process::stdio_redirection
@@ -17421,6 +17473,8 @@ StdioRedirectionServer
 	}
 }
 
+#endif
+
 
 /***********************************************************************
 .\TUI\TUI.INPUT.CPP
@@ -17430,6 +17484,8 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+
+#if defined VCZH_MSVC || defined VCZH_GCC
 
 using namespace vl;
 using namespace vl::collections;
@@ -17824,4 +17880,6 @@ PosixTuiInputDecoder
 		}
 	}
 }
+
+#endif
 

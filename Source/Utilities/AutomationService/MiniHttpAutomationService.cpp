@@ -1,5 +1,7 @@
 #include "MiniHttpAutomationService.h"
 
+#if defined VCZH_MSVC || defined VCZH_GCC
+
 namespace vl::presentation::remoting
 {
 	using namespace inter_process::async_tcp_socket;
@@ -181,3 +183,5 @@ namespace vl::presentation::remoting
 		miniHttpAutomationService = nullptr;
 	}
 }
+
+#endif

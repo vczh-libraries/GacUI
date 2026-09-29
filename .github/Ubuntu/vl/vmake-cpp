@@ -57,6 +57,12 @@ printf "%s\n" "${CPP_FILE_LIST[@]}" > vmake.txt
 .PHONY: all clean pre-build
 .DEFAULT_GOAL := all
 
+CPP_TARGET=<#= $CPP_TARGET #>
+CPP_OBJECTS=<#= $O_FILES #>
+
+<#if ! [ "$CPP_WASM_PTHREAD_POOL_SIZE" == "" ]; then#>
+CPP_WASM_PTHREAD_POOL_SIZE=<#= $CPP_WASM_PTHREAD_POOL_SIZE #>
+<#fi#>
 <#if ! [ "$CPP_COMPILE_OPTIONS" == "" ]; then#>
 CPP_COMPILE_OPTIONS=<#= $CPP_COMPILE_OPTIONS #>
 <#fi#>
@@ -83,7 +89,9 @@ clean:
 
 all:pre-build <#= ${TARGETS[@]} #>
 
-<#= $CPP_TARGET #>:<#= ${O_FILES} #>
+$(CPP_TARGET) $(CPP_OBJECTS): | pre-build
+
+$(CPP_TARGET):$(CPP_OBJECTS)
 	$(CPP_LINK)
 <#for CPP_FILE_INDEX in "${!CPP_FILE_LIST[@]}"; do#>
 <#CPP_FILE="${CPP_FILE_LIST[$CPP_FILE_INDEX]}"#>

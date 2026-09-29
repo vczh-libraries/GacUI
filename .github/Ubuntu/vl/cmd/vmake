@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eo pipefail
 
 function Help {
     echo "Usage:"
@@ -8,7 +9,9 @@ function Help {
 
 function Make {
     if [ -a vmake ]; then
-        vt4 --preprocess ./vmake | vt4 --evaluate | "${BASH}" > makefile
+        local GENERATED
+        GENERATED=$(vt4 --preprocess ./vmake | vt4 --evaluate | "${BASH}" -e)
+        printf "%s\n" "${GENERATED}" > makefile
     else
         echo "Cannot find ./vmake ."
         exit 1

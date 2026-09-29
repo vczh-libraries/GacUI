@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 function Help {
     echo "Usage:"
@@ -6,7 +7,7 @@ function Help {
     echo "    Clean generated files."
     echo "-b, --build"
     echo "    Incrementally build the current folder."
-    echo "-f, --full-build, -f"
+    echo "-f, --full-build"
     echo "    Rebuild the current folder."
     echo "-c, --build-coverage"
     echo "    Rebuild the current folder with coverage."
@@ -16,6 +17,12 @@ function Help {
     echo "    Incrementally build the current folder using G++."
     echo "--full-build-gcc"
     echo "    Rebuild the current folder using G++."
+    echo "-bw, --build-wasm"
+    echo "    Incrementally build the current folder using em++."
+    echo "    Requires \"WASM=YES\" in ./vbuild."
+    echo "-fbw, --full-build-wasm"
+    echo "    Rebuild the current folder using em++."
+    echo "    Requires \"WASM=YES\" in ./vbuild."
     echo "-g, --generate"
     echo "    Generate coverage data."
     echo "-r, --read"
@@ -23,8 +30,8 @@ function Help {
 }
 
 function Check {
-    if ! [ -a vmake ]; then
-        echo "Cannot find ./vmake ."
+    if ! [ -f vmake ] || ! [ -f makefile ]; then
+        echo "Cannot find ./vmake or ./makefile . Run vmake --make first."
         exit 1
     fi
 }
@@ -34,37 +41,24 @@ function Clean {
     make clean
 }
 
+function CheckWasm {
+    if ! [ -f ./vbuild ] || ! grep -Fq '"WASM=YES"' ./vbuild; then
+        echo "WebAssembly is not enabled for this project. Requires \"WASM=YES\" in ./vbuild." >&2
+        exit 1
+    fi
+}
+
 function Build {
     Check
-    make
+    # Invalidate configuration before make caches any object timestamps.
+    make cpp-prepare "$@"
+    make "$@"
 }
 
 function FullBuild {
     Check
-    make clean
-    make
-}
-
-function BuildCoverage {
-    Check
-    make COVERAGE=YES
-}
-
-function FullBuildCoverage {
-    Check
-    make clean
-    make COVERAGE=YES
-}
-
-function BuildGCC {
-    Check
-    make USE_GCC=YES
-}
-
-function FullBuildGCC {
-    Check
-    make clean
-    make USE_GCC=YES
+    make clean "$@"
+    Build "$@"
 }
 
 function Generate {
@@ -89,27 +83,37 @@ case $1 in
     ;;
 
     -b|--build)
-    Build
+    Build CPP_COMPILER=CLANG COVERAGE=NO
     ;;
 
     -f|--full-build)
-    FullBuild
+    FullBuild CPP_COMPILER=CLANG COVERAGE=NO
     ;;
 
     -c|--build-coverage)
-    BuildCoverage
+    Build CPP_COMPILER=CLANG COVERAGE=YES
     ;;
 
     -fc|--full-build-coverage)
-    FullBuildCoverage
+    FullBuild CPP_COMPILER=CLANG COVERAGE=YES
     ;;
 
     --build-gcc)
-    BuildGCC
+    Build CPP_COMPILER=GCC COVERAGE=NO
     ;;
 
     --full-build-gcc)
-    FullBuildGCC
+    FullBuild CPP_COMPILER=GCC COVERAGE=NO
+    ;;
+
+    -bw|--build-wasm)
+    CheckWasm
+    Build CPP_COMPILER=EMPP COVERAGE=NO
+    ;;
+
+    -fbw|--full-build-wasm)
+    CheckWasm
+    FullBuild CPP_COMPILER=EMPP COVERAGE=NO
     ;;
 
     -g|--generate)
@@ -122,37 +126,6 @@ case $1 in
 
     *)
     echo "Use --help for more information."
+    exit 1
     ;;
 esac
-
-# original makefile-cpp with gcc code coverage
-
-#COVERAGE?=NO
-#
-#ifeq ($(COVERAGE),NO)
-#CPP_LINK=clang++ -std=c++20 -pthread -g $(CPP_COMPILE_OPTIONS) -o $@ $^
-#else
-#CPP_LINK=g++ -std=c++20 -g -fprofile-arcs -pthread $(CPP_LINK_OPTIONS) -o $@ $^
-#endif
-#
-#ifeq ($(COVERAGE),NO)
-#CPP_COMPILE=clang++ -std=c++20 -g $(CPP_COMPILE_OPTIONS) -o $@ -c $<
-#else
-#CPP_COMPILE=g++ -std=c++20 -g -fprofile-arcs -ftest-coverage $(CPP_COMPILE_OPTIONS) -o $@ -c $<
-#endif
-
-#function Generate {
-#    Check
-#    PATTERN='^(.+)?\.o:\s*((.+)?.cpp).*$'
-#    CPP_FILES=`cat makefile \
-#        | grep -E ${PATTERN} \
-#        | sed -r -e 's%'${PATTERN}'%../\2%g'
-#        `
-#    rm -rf ./Coverage/*
-#    gcov -o ./Obj/ ${CPP_FILES} > /dev/null
-#    mv -f *.gcov ./Coverage/
-#    pushd ./Coverage > /dev/null
-#    lcov --directory ../Obj/ --capture --output-file lcov.info
-#    genhtml -o HTML lcov.info > /dev/null
-#    popd > /dev/null
-#}

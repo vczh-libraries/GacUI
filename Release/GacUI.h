@@ -26596,6 +26596,8 @@ extern int SetupOSXHostedCoreGraphicsRenderer();
 #define VCZH_PRESENTATION_REMOTING_MINIHTTPAUTOMATIONSERVICE
 
 
+#if defined VCZH_MSVC || defined VCZH_GCC
+
 namespace vl::presentation::remoting
 {
 	extern void StartMiniHttpAutomationService(
@@ -26604,6 +26606,8 @@ namespace vl::presentation::remoting
 		);
 	extern void StopMiniHttpAutomationService();
 }
+
+#endif
 
 #endif
 
