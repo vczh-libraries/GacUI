@@ -10,7 +10,7 @@ The implementation uses VlppOS TUI as the physical renderer and event pump, with
 
 All three return `int` and accept `const vl::presentation::TuiConfiguration& configuration = {}`. `TuiConfiguration::tabInterval` defaults to 4 and must be positive. The setup functions install the platform services and run the blocking owner-thread TUI lifecycle; application code does not call `TUI::Start` separately. Use a console executable in a real terminal with inherited input/output handles. The Windows implementation lives in `GacUI/Source/PlatformProviders/Windows/TUI/TuiWindowsController.Windows.cpp`; the Unix adapters live alongside their declarations.
 
-The terminal provider, `TestTuiProvider.cpp` and its dependent `TestControls_EasyLayout.cpp` require `VCZH_MSVC` or `VCZH_GCC`; they are excluded from WebAssembly. General window coordinates and input payloads remain available from VlppOS `Source/WindowTypes.h`.
+The terminal provider and test cases in `TestTuiProvider.cpp` and `TestControls_EasyLayout.cpp` require `VCZH_MSVC` or `VCZH_GCC`; they are excluded from WebAssembly. The shared XML fixture helper remains available to resource tests. General window coordinates and input payloads remain available from VlppOS `Source/WindowTypes.h`.
 
 ## Ownership and initialization
 
