@@ -1,8 +1,9 @@
 # GacUI
 
 GPU Accelerated C++ User Interface, with:
-- Cross-platform supports (Windows, Linux, macos, HTML5)
+- Cross-platform supports (Windows, Linux, macOS, browsers with WebAssembly and HTML5)
   - Native Renderers
+  - [GacJS](https://github.com/vczh-libraries/GacJS) primarily runs the GacUI core as WebAssembly in a browser, with HTML5 rendering and optional TypeScript view models; demos are available.
   - TUI Renderers
   - Hosted Mode to render all windows in one native window (optional)
   - Core/Renderer cross-process separation (optional)
@@ -25,10 +26,10 @@ GPU Accelerated C++ User Interface, with:
 
 ## Supported Platforms
 
-- Windows implementation is released in [the Release repo](https://github.com/vczh-libraries/Release)
-- Linux implementation is released in [the wGac repo](https://github.com/vczh-libraries/wGac)
-- macOS implementation is released in [the iGac repo](https://github.com/vczh-libraries/iGac)
-- HTML5 implementation is released in [the GacJS repo](https://github.com/vczh-libraries/GacJS)
+- Windows native and remote rendering implementations are released in [the Release repo](https://github.com/vczh-libraries/Release).
+- Linux native and remote rendering implementations are released in [the wGac repo](https://github.com/vczh-libraries/wGac).
+- macOS native and remote rendering implementations are released in [the iGac repo](https://github.com/vczh-libraries/iGac).
+- Browser support lives in [the GacJS repo](https://github.com/vczh-libraries/GacJS). Its primary purpose is running the GacUI core as WebAssembly, with HTML5 rendering and TypeScript view models connected through the remote protocol and Workflow RPC. WebAssembly demos are available; HTTP is an alternative transport mainly for testing HTML5 rendering without WebAssembly.
 
 ## Screenshots
 
@@ -83,12 +84,12 @@ All other files are for library development only.
 
 This GUI library provides the following features:
 
-- Develop your GUI using pure C++, [Workflow](https://github.com/vczh-libraries/Workflow) script, XML or even JavaScript (under construction).
+- Develop your GUI using pure C++, [Workflow](https://github.com/vczh-libraries/Workflow) script and XML, with optional TypeScript view models through GacJS's WebAssembly demos.
 - Cross-platform abilities.
   - for **Windows**: [Release repo](https://github.com/vczh-libraries/Release)
   - for **Linux**: [wGac repo](https://github.com/vczh-libraries/wGac)
   - for **macOS**: [iGac repo](https://github.com/vczh-libraries/iGac)
-  - for running in **Browser** [GacJS repo](https://github.com/vczh-libraries/GacJS) with remote protocol, WASM support is coming.
+  - for running in a **Browser**: [GacJS repo](https://github.com/vczh-libraries/GacJS), primarily through WebAssembly with HTML5 rendering; remote-protocol demos also support HTTP for renderer testing.
 - Rich control library. Container controls supports MVC and virtual list mode.
 - Control template system. You can write your own.
 - GPU acceleration.
@@ -115,6 +116,14 @@ Applications compose automation directly: construct the concrete service matchin
 GacUI Remote Protocol enables Core and Renderer to run in different process in any programming language. It is current under development, but if you are interested in it, there are demos to try.
 
 All text box related controls are not supported yet, but they are on the way!
+
+#### WebAssembly and HTML5
+
+[GacJS](https://github.com/vczh-libraries/GacJS)'s most important feature is running GacUI in the browser through WebAssembly. The current `WasmFCT`, `WasmRPT`, and `WasmRVMT` demos load the GacUI core's `.wasm` module in a browser worker. The HTML5 renderer and, in `WasmRVMT`, a TypeScript view-model host communicate with that core through exposed functions and callbacks. Rendering still uses GacUI Remote Protocol, and view-model calls still use Workflow RPC.
+
+WebAssembly and HTTP are parallel transport options for the same browser renderer and TypeScript view-model integration. HTTP primarily supports testing HTML5 rendering against a native core without building WebAssembly. The WebAssembly demos do not need a separate HTTP core process; a website server serves the module files. See [the GacJS WebAssembly guide](https://github.com/vczh-libraries/GacJS/blob/master/doc/Projects.md#running-the-wasm-demos-on-linux) for the current Linux build procedure.
+
+![Run GacUI in a Browser](GacUIHtml1.gif)
 
 #### Named Pipe, HTTP, and MiniHTTP
 
@@ -145,12 +154,6 @@ Network Protocol Implementation Details:
 They are for the remote protocol demo only, no security is considered in the source code. If you are going to start your own remote protocol application, I strongly recommended you to use your own network protocol stack. The interface is flexible enough to use any possible way for data transmission, including but not limited to, stdio redirection, DLL interface, or an actual network protocol. VlppOS supplies convenient testing-only implementations, including stdio redirection, but no production-ready default transport is offered.
 
 ![Run GacUI Remotely](GacUIRemote.gif)
-
-#### HTML
-
-By running `Core` with `/Http` or `/MiniHttp`, you can even [run GacUI in a browser](https://github.com/vczh-libraries/GacJS)!
-
-![Run GacUI in a Broswer](GacUIHtml1.gif)
 
 #### Unit Test
 
