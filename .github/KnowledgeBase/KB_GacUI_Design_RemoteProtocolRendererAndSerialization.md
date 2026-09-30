@@ -1,6 +1,21 @@
 #### Remote Protocol Renderer and Serialization
 
-The remote protocol renderer side receives protocol messages from the core side and translates them into native window operations and graphics rendering. The serialization and channel infrastructure provides composable layers that convert between typed protocol calls and Parser2 JSON node packages, enabling GacUI applications to run across process boundaries over any user-provided transport (named pipe, HTTP, WebSocket, etc.).
+The remote protocol renderer side receives protocol messages from the core side and translates them into window operations and graphics rendering. Native renderers use the platform's graphics APIs; GacJS renders HTML5 in the browser, with WebAssembly as its primary feature and intended way to run the GacUI core. The serialization and channel infrastructure converts between typed protocol calls and Parser2 JSON node packages independently of the transport, including exposed Wasm functions, named pipes, HTTP, or a user-provided transport.
+
+## GacJS HTML5 Rendering and WebAssembly
+
+GacJS's purpose is to run GacUI applications in the browser through WebAssembly. Its `@gaclib/renderer` package implements HTML5 rendering with DOM elements. The browser loads the core as `app.mjs` and `app.wasm`; `@gaclib-website/remote-protocol-wasm` connects the renderer to it through exposed functions and callbacks while preserving the remote protocol and its JSON channel messages. HTTP is a parallel transport option, mainly for testing HTML5 rendering against a native core without WebAssembly.
+
+The TypeScript view-model host also supports this Wasm transport. `startRvmHostWithChannel` in `GacJS/Gaclib/website/rvmhost/src/index.ts` hosts the view model through Workflow RPC on a separate channel, while the renderer uses the GacUI remote protocol. GacJS's `/wasm-rvmt/` demo connects both to the same Wasm core; `/wasm-fct/` and `/wasm-rpt/` demonstrate FullControlTest and RemoteProtocolTest.
+
+The current transport and startup composition are owned by these sources:
+
+- `GacUI/Test/RemotingHelpers/RemotingServer/Wasm/WasmNetworkProtocol.cpp` exposes `StartApplication(receiver, connectionCount)` and `SendDataToWasmCore(connectionId, data)` through Embind. Startup installs fixed connections; the receiver callback returns core messages and lifecycle notifications to JavaScript.
+- `GacJS/Gaclib/website/remote-protocol-wasm/src/worker.ts` loads the module and calls those exports. The module worker owns transport state, while blocking GacUI work runs on a C++ pthread. The page exchanges messages with the worker and remains available for HTML5 rendering, input and TypeScript RPC handling.
+- `GacJS/Gaclib/website/remote-protocol-wasm/src/index.ts` adapts the worker to the same `IChannelClient` contract used by the HTTP transport. Existing channel handshakes, the semicolon package envelope, and JSON arrays remain in use; protocol traffic does not use HTTP requests or Base64 framing.
+- `GacJS/Gaclib/website/entry/src/wasm.ts` starts the HTML5 renderer and, for RVMT, the TypeScript view-model host. After normal core shutdown, Reload recreates the page, core, renderer and host. Current Wasm demo connections last for the application lifetime and do not support renderer replacement.
+
+These are working browser demos built from GacUI's `Test/Linux/WasmFCT`, `WasmRPT` and `WasmRVMT`. GacUI's `Project.md` and GacJS's `doc/Projects.md` and `doc/NetworkProtocol.md` document their build, startup and transport details. Loading application assets from a web server is distinct from carrying remote-protocol and view-model traffic through Wasm functions.
 
 ## GuiRemoteRendererSingle
 

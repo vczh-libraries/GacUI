@@ -7,9 +7,15 @@ Implementation lives in `Source/PlatformProviders/Remote/`.
 ## Motivation
 
 In native modes (Windows Direct2D, GDI), GacUI couples directly to OS window management, rendering APIs, and input handling. Remote protocol decouples all of this: the core side becomes platform-independent and only speaks a protocol. This enables:
-- Running GacUI applications in a web browser, terminal, or any custom renderer
+- Running GacUI applications in a web browser through GacJS, whose primary feature is a WebAssembly core connected to HTML5 rendering; other custom renderers can implement the same protocol
 - Unit testing without a real window system
 - Reconnection support — the core side can survive renderer disconnection and restore full visual state when a new renderer connects
+
+### GacJS WebAssembly Core
+
+WebAssembly is GacJS's intended deployment path. GacJS loads the compiled GacUI core in the browser and exchanges protocol messages through exposed Wasm functions and callbacks. Its HTML5 renderer and a TypeScript view-model host can both connect to that core: the renderer uses the remote protocol, while the view model uses Workflow RPC through a separate channel. WebAssembly and HTTP are parallel transport choices below these protocols; HTTP primarily supports testing HTML5 rendering against a native core without WebAssembly.
+
+The current `WasmFCT`, `WasmRPT` and `WasmRVMT` demos initialize the same remote controller stack as a native remote core. GacJS owns a module worker, and blocking core work runs on a C++ pthread so the browser can continue handling rendering, input and RPC replies. These demos create fixed connections at startup and restart by reloading the page after normal shutdown; renderer replacement and reconnection are features of other transports, not of the current Wasm demo lifecycle. See [GacJS rendering and transport](./KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md#gacjs-html5-rendering-and-webassembly).
 
 ## Protocol Design: Messages, Events, and Responses
 

@@ -9,11 +9,20 @@ GacUI is designed to support multiple platforms with different rendering backend
 3. **Linux GTK** - Linux platform support with GTK rendering (declared as `SetupGtkRenderer()` but implementation in separate repository)
 4. **Wayland WGac** - Wayland support with standard and hosted entry points (`elements::wgac::SetupWGacRenderer()` and `elements::wgac::SetupWGacHostedRenderer()`)
 5. **macOS Cocoa** - macOS platform support with Core Graphics rendering (declared as `SetupOSXCoreGraphicsRenderer()` and `SetupOSXHostedCoreGraphicsRenderer()` but implemented in a separate repository)
-6. **Remote Rendering** - Platform-agnostic remote rendering over network protocols for testing and distributed applications
-7. **Code Generation** - Special mode for compile-time code generation through `SetupGacGenNativeController()`
-8. **Terminal Rendering** - Hosted cell-based applications over VlppOS TUI on Windows, Linux and macOS, with separate platform service adapters.
+6. **Remote Rendering** - Platform-agnostic core and renderer separation through the transport-independent remote protocol, supporting native renderers and distributed applications as well as testing
+7. **GacJS Browser Rendering** - HTML5 rendering over the remote protocol, with **WebAssembly as GacJS's primary feature and intended use**: load the GacUI core as a Wasm module and connect both the renderer and a TypeScript view model through exposed functions. HTTP is an alternative transport used mainly to test HTML5 rendering without WebAssembly.
+8. **Code Generation** - Special mode for compile-time code generation through `SetupGacGenNativeController()`
+9. **Terminal Rendering** - Hosted cell-based applications over VlppOS TUI on Windows, Linux and macOS, with separate platform service adapters.
 
 The GTK, WGac, and macOS entry points are declared in this codebase to maintain API consistency, while their implementations are supplied separately. The architecture is designed for extensibility, with clear separation between platform-specific implementations and the core framework.
+
+### GacJS and WebAssembly
+
+Running GacUI in the browser through WebAssembly is the purpose of GacJS. Its HTML5 renderer implements the same remote protocol used by native remote renderers. WebAssembly and HTTP are alternative ways to carry protocol traffic; WebAssembly does not replace either HTML5 rendering or the remote protocol. The browser loads the compiled GacUI core from `app.mjs` and `app.wasm`, then exchanges messages through exposed functions and callbacks instead of sending them to a native core over HTTP. Serving those application files over HTTP is separate from the protocol transport.
+
+Both the HTML5 renderer and a view model implemented in TypeScript can connect to the Wasm core. Rendering uses the GacUI remote protocol; the TypeScript view model uses Workflow RPC on a separate channel over the same Wasm transport. The HTTP option remains useful for testing the HTML5 renderer against a native core without building WebAssembly.
+
+The current demonstration apps are GacUI's `Test/Linux/WasmFCT`, `WasmRPT` and `WasmRVMT`, exposed by GacJS at `/wasm-fct/`, `/wasm-rpt/` and `/wasm-rvmt/`. The RVMT demo runs its TypeScript view model in the page. Each page owns a worker/module lifetime, and a fresh page reload restarts the application after normal shutdown. These demos use the existing remote controller initialization; they do not introduce a separate native graphics provider. See [GacJS rendering and transport](./KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md#gacjs-html5-rendering-and-webassembly) for the implementation boundaries.
 
 ## Entry Point Architecture
 

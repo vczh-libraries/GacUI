@@ -156,8 +156,8 @@ Cross-platform owner-thread terminal takeover with input, resize and timer callb
 - Use `TUI::TryGetConsoleSize` to query the visible terminal before startup.
 - Use `TUI::InstallListener`, `TUI::Start`, `TUI::RunOneCycle`, `TUI::Stop`, `TUI::IsInUse`, `TUI::IsStopRequested` and `TUI::UninstallListener` for lifecycle and owner-thread event processing.
 - Use `TuiStartOptions`, `TuiColorMode` and `TUI::GetColorMode` to request and inspect terminal color emission.
-- Use shared `vl::presentation::VKEY` and input types from `VlppOS/Source/TUI/TUITypes.h` for key identities and independent Alt/OS Super; GacUI consumes these declarations.
-- Use `ITuiCallback` with `vl::presentation::WindowMouseInfo`, `vl::presentation::NativeWindowKeyInfo` and `vl::presentation::NativeWindowCharInfo` from `VlppOS/Source/TUI/TUITypes.h` for startup, shutdown, resize, input and timer callbacks.
+- Use shared `vl::presentation::VKEY` and input types from `VlppOS/Source/WindowTypes.h` for key identities and independent Alt/OS Super; GacUI consumes these declarations.
+- Use `ITuiCallback` with `vl::presentation::WindowMouseInfo`, `vl::presentation::NativeWindowKeyInfo` and `vl::presentation::NativeWindowCharInfo` from `VlppOS/Source/WindowTypes.h` for startup, shutdown, resize, input and timer callbacks.
 - Use `TUI::StartTimer` and `TUI::StopTimer` for deadline-driven callbacks on the TUI owner thread.
 - Use `TUI::GetBuffer`, `TUI::GetBufferWidth`, `TUI::GetBufferHeight` and `TUI::RenderBuffer` for retained cell-buffer rendering.
 - Use `TuiPixel`, `TuiPixelGlyph`, `TuiColor` and `TUI::MeasureChar` to represent and validate terminal cells and scalar widths.

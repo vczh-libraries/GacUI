@@ -152,7 +152,7 @@ All `ITuiCallback` methods have default no-op implementations, so a listener onl
 
 ### Shared Input Declarations
 
-`VlppOS/Source/TUI/TUITypes.h` is the single declaration owner. These types remain in `vl::presentation`, depend only on Vlpp, and are consumed by GacUI and GacJS's generated protocol. GacUI owns reflection and platform key-name tables. Do not duplicate the declarations or add GacUI/reflection dependencies to VlppOS.
+`VlppOS/Source/WindowTypes.h` is the single declaration owner. These types remain in `vl::presentation`, depend only on Vlpp, and are consumed by GacUI and GacJS's generated protocol. GacUI owns reflection and platform key-name tables. Do not duplicate the declarations or add GacUI/reflection dependencies to VlppOS.
 
 | Declaration | Meaning and defaults |
 | --- | --- |
@@ -451,7 +451,7 @@ The public header exposes a test-only boundary in `vl::console::unittest`:
 
 Create or destroy a `ScopedTuiBackend` only while TUI is inactive. The backend must be non-null. While installed, it is also used by `TUI::TryGetConsoleSize`.
 
-This boundary enables deterministic lifecycle, callback, timer, resize, rendering, and failure tests without controlling a real terminal. Production applications should use the platform backend selected by `TUI::Start`.
+This boundary enables deterministic lifecycle, callback, timer, resize, rendering, and failure tests without controlling a real terminal. TUI and its test backend are available only on native Windows, Linux and macOS; they are excluded from WebAssembly. Native production applications use the platform backend selected by `TUI::Start`. Shared window coordinates and input declarations in `Source/WindowTypes.h` are platform-independent; `Source/TUI/TUITypes.h` forwards to them for native compatibility.
 
 
 ### Emission and Colors

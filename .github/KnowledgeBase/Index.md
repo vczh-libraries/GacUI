@@ -127,7 +127,7 @@ Detailed project guidance: [Index_Workflow.md](./Index_Workflow.md)
 Online documentation: https://gaclib.net/doc/current/gacui/home.html
 
 GacUI is a cross-platform GUI library that comes with an XML-based UI definition system and a compiler.
-Use this when you need to create desktop applications with rich user interfaces.
+Use this when you need to create native desktop applications or browser applications with rich user interfaces. GacJS's primary feature is running the GacUI core as WebAssembly in the browser, connecting its HTML5 renderer and TypeScript view models through exposed functions over the remote-protocol and RPC channels. HTTP is an alternative transport mainly for testing HTML5 rendering without WebAssembly.
 It provides a comprehensive testing framework, XML-to-C++ compilation, and integrates with the Workflow script language for event handling and data binding.
 
 Detailed project guidance: [Index_GacUI.md](./Index_GacUI.md)

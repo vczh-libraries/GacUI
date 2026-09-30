@@ -82,7 +82,8 @@ Use GitTui to browse working-tree diffs and local branch history in a terminal, 
   - Wayland/WGac
   - macOS Cocoa
   - terminal rendering on Windows, Linux and macOS
-  - remote rendering for testing
+  - remote rendering with native clients and transport-independent protocol channels
+  - GacJS HTML5 rendering, primarily with a WebAssembly core loaded in the browser; both the renderer and a TypeScript view model connect through exposed Wasm functions. HTTP is an alternative transport mainly for testing HTML5 rendering without WebAssembly
   - hosted mode for embedded applications.
 - Entry-point names are platform-specific: Windows uses `SetupWindows*`, `SetupHostedWindows*`, and `SetupRawWindows*`; macOS and WGac expose standard and hosted variants; terminals use `SetupTuiWindowsRenderer`, `SetupTuiWaylandRenderer` or `SetupTuiCocoaRenderer`; GTK, remote mode, and code generation use their own setup names.
 - Key features include hardware acceleration fallbacks, comprehensive error handling, frame-based unit testing through remote mode, and systematic native-controller service provisioning.
@@ -176,6 +177,7 @@ Use GitTui to browse working-tree diffs and local branch history in a terminal, 
 #### Remote Protocol Core Architecture
 
 - Remote protocol mode separates GacUI into a core side (application logic) and a renderer side (rendering and OS services), communicating through `IGuiRemoteProtocol` over Parser2 JSON channel packages.
+- GacJS primarily runs the core as WebAssembly in the browser, connecting its HTML5 renderer and TypeScript view model through exposed functions. WebAssembly and HTTP are alternative transports; HTTP mainly supports renderer testing without Wasm.
 - Messages flow core → renderer via `IGuiRemoteProtocolMessages`; events and responses flow renderer → core via `IGuiRemoteProtocolEvents`.
 - `GuiRemoteMessages` provides synchronous batched request-response with auto-incrementing IDs and blocking `Submit()`.
 - `GuiRemoteController` implements `INativeController` and all sub-services as virtual stubs: single window only, intentionally null clipboard/dialog/automation services, synchronous key state queries.
@@ -190,6 +192,7 @@ Use GitTui to browse working-tree diffs and local branch history in a terminal, 
 
 #### Remote Protocol Renderer and Serialization
 
+- GacJS's primary feature is WebAssembly: its HTML5 renderer and TypeScript view-model host connect to a Wasm core through exposed functions, reusing the remote protocol and Workflow RPC. HTTP remains an alternative transport for testing HTML5 rendering without WebAssembly.
 - `GuiRemoteRendererSingle` is the renderer-side implementation that bridges `IGuiRemoteProtocol` to a real native window with actual graphics rendering, relying on an existing platform provider (e.g., Windows Direct2D).
 - It implements `IGuiRemoteProtocol` to receive protocol messages and translates them into native element operations, and implements `INativeWindowListener`/`INativeControllerListener` to forward OS events back as protocol events.
 - Rendering pipeline: receives `RequestRendererBeginRendering` with `OrdinaryElementDescVariant` updates, applies them to real graphics elements, updates the DOM through full DOM or DOM diff messages, refreshes completed frames, and returns measurement feedback via `RespondRendererEndRendering`.
