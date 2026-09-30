@@ -5,8 +5,8 @@ function Usage {
     echo "Usage: build.sh [-b|--build|-f|-fb|--full-build|--build-gcc|--full-build-gcc] [-o|--optimize]"
     echo "                [-bw|--build-wasm|-fbw|--full-build-wasm]"
     echo "                [-c|--build-coverage|-fc|--full-build-coverage]"
-    echo "-o/--optimize selects -O2 for native builds only; default is -O0."
-    echo "Wasm builds use -O3."
+    echo "-o/--optimize selects -O2 for native builds; default is -O0."
+    echo "Wasm builds use -O3, including when -o/--optimize is specified."
 }
 
 if [ $# -gt 2 ]; then

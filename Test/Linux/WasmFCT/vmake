@@ -1,0 +1,7 @@
+<#
+CPP_TARGET=./Bin/WasmFCT
+WASM_DEMO=FullControlTest
+WASM_DEMO_DEFINE=GACUI_WASM_FCT
+CPP_ADDS=("../../GacUISrc/Generated_FullControlTest/FullControlTestPalette.cpp")
+#>
+<#@ include "../Wasm/vmake-common" #>

@@ -1,0 +1,29 @@
+<#
+CPP_WASM_PTHREAD_POOL_SIZE=16
+CPP_VCXPROJS=(
+    "../../GacUISrc/Source_Import/Source_Import.vcxitems"
+    "../../GacUISrc/Source_GacUI_Core/Source_GacUI_Core.vcxitems"
+    "../../GacUISrc/Source_GacUI_CoreApplication/Source_GacUI_CoreApplication.vcxitems"
+    "../../GacUISrc/Source_GacUI/Source_GacUI.vcxitems"
+    "../../GacUISrc/Source_GacUI_Utilities/Source_GacUI_Utilities.vcxitems"
+    "../../GacUISrc/Source_GacUI_Utilities_Controls/Source_GacUI_Utilities_Controls.vcxitems"
+    )
+CPP_ADDS+=(
+    "../Wasm/WasmApplication.cpp"
+    "../../RemotingHelpers/RemotingServer/Wasm/WasmNetworkProtocol.cpp"
+    "../../../Source/Skins/DarkSkin/Source/*.cpp"
+    "../../../Source/Skins/DarkSkin/Config/DarkSkinConfig.cpp"
+    )
+WASM_DEMO_FILES=(../../GacUISrc/Generated_${WASM_DEMO}/Source_x86/*.cpp)
+CPP_ADDS+=("${WASM_DEMO_FILES[@]/Source_x86/Source_\$(WASM_DEMO_ARCH)}")
+CPP_REMOVES=(
+    "../../../Import/Vlpp.Windows.cpp"
+    "../../../Import/VlppOS.Windows.cpp"
+    "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.cpp"
+    )
+TARGETS=("${CPP_TARGET}")
+CPP_COMPILE_OPTIONS="-DGACUI_SKIN_DEVELOPMENT -DVCZH_DEBUG_NO_REFLECTION -D${WASM_DEMO_DEFINE} -I ../../../Import -I ../../../Source/Skins/DarkSkin/Source -I ../../GacUISrc/Generated_${WASM_DEMO}/Source_\$(WASM_DEMO_ARCH)"
+#>
+WASM_DEMO_ARCH=$(if $(filter EMPP,$(CPP_COMPILER)),x86,x64)
+
+<#@ include "${VCPROOT}/vl/vmake-cpp" #>

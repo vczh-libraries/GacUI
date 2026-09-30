@@ -1,0 +1,10 @@
+<#
+CPP_TARGET=./Bin/WasmRVMT
+WASM_DEMO=RemoteViewModelTest
+WASM_DEMO_DEFINE=GACUI_WASM_RVMT
+CPP_ADDS=(
+    "../../RemotingHelpers/Rvmt/ViewModelHostServer.cpp"
+    "../../GacUISrc/Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.cpp"
+    )
+#>
+<#@ include "../Wasm/vmake-common" #>

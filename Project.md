@@ -304,6 +304,14 @@ The Unix unit-test entry point uses the environment locale for wide console outp
 
 ## WebAssembly
 
+The Linux-only browser demos `Test/Linux/WasmFCT`, `WasmRPT` and `WasmRVMT` run FullControlTest, RemoteProtocolTest and RemoteViewModelTest. Build each from its directory with `../../../.github/Ubuntu/build.sh -bw -o`. They use `VCZH_DEBUG_NO_REFLECTION`, the merged DarkSkin sources in `Source/Skins/DarkSkin/Source`, the demos' generated x86 sources and `-O3`. Shared composition lives in `Test/Linux/Wasm`; the test-only transport lives in `Test/RemotingHelpers/RemotingServer/Wasm` and is not added to MSBuild projects.
+
+Only each demo's `Bin/app.mjs` and `Bin/app.wasm` are tracked. Their `vbuild` configuration embeds the generated pthread bootstrap in the module. After building GacJS, run its `copy-wasm.sh` explicitly and start the entry website. `/wasm-fct/`, `/wasm-rpt/` and `/wasm-rvmt/` own independent worker/module lifetimes; RVMT hosts its TypeScript view model in the page. Follow [.github/Jobs/job.rpWasm.prompt.md](.github/Jobs/job.rpWasm.prompt.md) for the build and browser verification procedure.
+
+`StartApplication` installs the fixed transport connections during startup; `SendDataToWasmCore` carries their channel traffic. These are the only application Embind exports. After normal Core shutdown, Reload becomes enabled and reloads the page, creating a fresh Core, renderer and view-model host with no retained application state. Reload stays disabled during startup, operation, canceled Exit and fatal errors.
+
+The same three projects also support `../../../.github/Ubuntu/build.sh -f -o` as native CLI compile/link checks. Their `VCZH_GCC` entry point returns 0 without starting GacUI. The full source inventory is linked, using x64 demo sources for native builds and x86 for Wasm, while both use the merged DarkSkin sources. Native full builds clean `Bin`; rebuild with `-bw -o` before copying the Wasm outputs to GacJS.
+
 The following unit test projects could be built to web assembly and run with a browser:
 - `REPO-ROOT/Test/Linux/UnitTest`
 

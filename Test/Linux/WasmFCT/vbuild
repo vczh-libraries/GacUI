@@ -1,0 +1,5 @@
+{
+    "WASM=YES": {
+        "embedPthreadWorker": true
+    }
+}

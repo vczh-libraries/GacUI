@@ -596,23 +596,22 @@ UtfConversion<char16_t>
 		{
 			if (IsInvalid(source)) return -1;
 			vuint32_t c = static_cast<vuint32_t>(source);
-			vuint16_t(&ds)[BufferLength] = reinterpret_cast<vuint16_t(&)[BufferLength]>(dest);
 
 			if (0x000000UL <= c && c <= 0x00D7FFUL)
 			{
-				ds[0] = static_cast<vuint16_t>(c);
+				dest[0] = static_cast<char16_t>(c);
 				return 1;
 			}
 			else if (0x00E000UL <= c && c <= 0x00FFFFUL)
 			{
-				ds[0] = static_cast<vuint16_t>(c);
+				dest[0] = static_cast<char16_t>(c);
 				return 1;
 			}
 			else if (0x010000UL <= c && c <= 0x10FFFFUL)
 			{
 				c -= 0x010000UL;
-				ds[0] = static_cast<vuint16_t>((c >> 10) | 0xD800U);
-				ds[1] = static_cast<vuint16_t>((c & 0x03FFU) | 0xDC00U);
+				dest[0] = static_cast<char16_t>((c >> 10) | 0xD800U);
+				dest[1] = static_cast<char16_t>((c & 0x03FFU) | 0xDC00U);
 				return 2;
 			}
 			else
@@ -623,8 +622,8 @@ UtfConversion<char16_t>
 
 		vint UtfConversion<char16_t>::To32(const char16_t* source, vint sourceLength, char32_t& dest)
 		{
-			const vuint16_t* cs = reinterpret_cast<const vuint16_t* >(source);
-			vuint32_t& d = reinterpret_cast<vuint32_t&>(dest);
+			const char16_t* cs = source;
+			char32_t& d = dest;
 			if (sourceLength <= 0) return -1;
 
 			if ((cs[0] & 0xFC00U) == 0xD800U)

@@ -426,3 +426,25 @@ renderer connected throughout the failure.
 7. Bound every wait and require no requester, Core, host, renderer, listener,
    native prompt, or crash dialog to remain. Normal requester shutdown and
    renderer replacement must not produce this host-loss error.
+
+## WebAssembly Application Reload
+
+The Wasm pages own a complete Core/renderer session and, for RVMT, its TypeScript
+host. Their connections are installed at startup and last for that application.
+Separate renderer takeover and host-disconnection operations above apply to the
+native/HTTP demos, not these pages.
+
+1. Open each of `/wasm-fct/`, `/wasm-rpt/` and `/wasm-rvmt/` and perform its feature
+   operations above. Require Reload to be disabled during startup and operation.
+2. Click Exit on RPT, cancel its confirmation, and require the existing UI to
+   remain interactive with Reload disabled. Confirm a subsequent Exit.
+3. On every page, exercise both Exit and Force Exit. Require Core to finish with
+   return code 0, all owned workers to terminate, and Reload to become enabled.
+   RVMT must keep its host available until Core releases the service.
+4. Click Reload after each kind of shutdown. Require a fresh application, a
+   disabled Reload button, restored default UI state and working input. RPT's
+   clicked-button state and FCT's edited text/palette must reset. RVMT must start
+   with its empty-name greeting and successfully translate new input through a
+   recreated TypeScript host. Repeat the shutdown/reload cycle.
+5. Preserve RPT's exact fatal error behavior; Reload remains disabled on failure.
+   Closing a live Wasm page must terminate its Core and pthreads.

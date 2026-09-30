@@ -1,0 +1,6 @@
+<#
+CPP_TARGET=./Bin/WasmRPT
+WASM_DEMO=RemoteProtocolTest
+WASM_DEMO_DEFINE=GACUI_WASM_RPT
+#>
+<#@ include "../Wasm/vmake-common" #>

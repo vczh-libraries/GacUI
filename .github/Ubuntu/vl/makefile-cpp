@@ -60,7 +60,7 @@ CPP_REQUIRED_OUTPUTS=$(addprefix $(dir $(CPP_TARGET)),app.mjs app.wasm app.debug
 ifneq ($(CPP_WASM_PTHREAD_POOL_SIZE),)
 CPP_REQUIRED_OUTPUTS+=$(dir $(CPP_TARGET))app.worker.js
 endif
-$(CPP_TARGET): $(VCPROOT)/vl/wasm.sh $(wildcard $(VCPROOT)/vl/wasm-unittest/*)
+$(CPP_TARGET): $(VCPROOT)/vl/wasm.sh $(wildcard $(VCPROOT)/vl/wasm-unittest/*) $(wildcard vbuild)
 CPP_LINK=mkdir -p "$(dir $(CPP_TARGET))" && rm -f "$@" && $(CPP_CXX) -o "$(dir $(CPP_TARGET))app.mjs" $(filter %.o,$^) $(CPP_LINK_FLAGS) -gseparate-dwarf="$(dir $(CPP_TARGET))app.debug.wasm" -sSEPARATE_DWARF_URL=app.debug.wasm && bash "$(VCPROOT)/vl/wasm.sh" "$(CPP_TARGET)"
 endif
 

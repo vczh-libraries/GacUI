@@ -36,13 +36,12 @@ Unplanned features with detailed are stored in the same folder, here lists all i
   - Windows
     - GDI (**Normal**, **Hosted**, **Remote**)
     - Direct2d (**Normal**, **Hosted**, **Remote**)
-    - UWP (Remote)
-  - Linux (wGac repo)
-  - macOS (iGac repo)
+    - ~~UWP (Remote)~~
+  - Linux (wGac repo, **Normal**, **Hosted**, **Remote**)
+  - macOS (iGac repo, **Normal**, **Hosted**, **Remote**)
   - HTML5 Dom/CSS (**Remote**)
-    - WebAssembly (Remote)
-  - CLI (Hosted)
-    - Dedicated skin
+    - WebAssembly (**Remote**)
+  - CLI (**Hosted**)
 - Port GacUI to other languages:
   - Applications written in other language can:
     - Implement view model (**Workflow RPC**).
@@ -51,9 +50,8 @@ Unplanned features with detailed are stored in the same folder, here lists all i
     - TypeScript
       - **CLI**
       - **HTTP**
-      - WebAssembly
-    - .NET
-    - Python
+      - **WebAssembly**
+    - Others: User should vibe their own offering my instructions in `Release` repo.
 
 ## GacUI
 
