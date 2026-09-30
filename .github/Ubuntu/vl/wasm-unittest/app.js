@@ -78,6 +78,7 @@ async function main() {
         ["/app.mjs", ["app.mjs", "text/javascript"]],
         ["/app.worker.js", ["app.worker.js", "text/javascript"]],
         ["/app.wasm", ["app.wasm", "application/wasm"]],
+        ["/app.debug.wasm", ["app.debug.wasm", "application/wasm"]],
     ]);
 
     createServer(async (request, response) => {

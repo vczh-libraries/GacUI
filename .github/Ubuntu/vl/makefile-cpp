@@ -1,5 +1,8 @@
 COVERAGE?=NO
 CPP_COMPILER?=CLANG
+CPP_OPTIMIZATION?=$(if $(filter EMPP,$(CPP_COMPILER)),,-O0)
+
+.DELETE_ON_ERROR:
 
 CPP_DEPENDENCY_OPTIONS=-MMD -MP -MF $(@:.o=.d) -MT $@
 CPP_PLATFORM_NAME=$(shell uname -s)
@@ -36,22 +39,34 @@ $(error Unsupported CPP_COMPILER: $(CPP_COMPILER))
 endif
 endif
 
-CPP_COMPILE_FLAGS=-std=c++20 -g $(CPP_COMPILE_OPTIONS) $(CPP_PLATFORM_COMPILE_OPTIONS)
-CPP_LINK_FLAGS=-std=c++20 -g $(CPP_COMPILE_OPTIONS) $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS)
+CPP_COMPILE_FLAGS=-std=c++20 -g $(CPP_COMPILE_OPTIONS) $(CPP_PLATFORM_COMPILE_OPTIONS) $(CPP_OPTIMIZATION)
+CPP_LINK_FLAGS=-std=c++20 -g $(CPP_COMPILE_OPTIONS) $(CPP_LINK_OPTIONS) $(CPP_PLATFORM_LINK_OPTIONS) $(CPP_OPTIMIZATION)
 CPP_COMPILE=$(CPP_CXX) $(CPP_COMPILE_FLAGS) $(CPP_DEPENDENCY_OPTIONS) -o $@ -c $<
-CPP_LINK=mkdir -p "$(dir $(CPP_TARGET))" && $(CPP_CXX) -o "$@" $(filter %.o,$^) $(CPP_LINK_FLAGS)
+
+CPP_REQUIRED_OUTPUTS=$(CPP_TARGET).debug
+ifeq ($(CPP_PLATFORM_NAME),Darwin)
+# Keep the requested .debug name and the conventional name LLDB discovers.
+CPP_REQUIRED_OUTPUTS+=$(CPP_TARGET).dSYM
+CPP_SEPARATE_DEBUG=dsymutil "$@" -o "$@.debug" && ln -sfn "$(notdir $(CPP_TARGET)).debug" "$@.dSYM" && strip -S "$@"
+else
+CPP_SEPARATE_DEBUG=llvm-objcopy --only-keep-debug "$@" "$@.debug" && llvm-objcopy --strip-debug --add-gnu-debuglink="$@.debug" "$@"
+endif
+CPP_LINK=mkdir -p "$(dir $(CPP_TARGET))" && $(CPP_CXX) -o "$@" $(filter %.o,$^) $(CPP_LINK_FLAGS) && $(CPP_SEPARATE_DEBUG)
+
+$(CPP_TARGET): $(VCPROOT)/vl/makefile-cpp
 
 ifeq ($(CPP_COMPILER),EMPP)
-CPP_WASM_OUTPUTS=$(addprefix $(dir $(CPP_TARGET)),app.mjs app.wasm app.html app.sh app.js index.html)
+CPP_REQUIRED_OUTPUTS=$(addprefix $(dir $(CPP_TARGET)),app.mjs app.wasm app.debug.wasm app.html app.sh app.js index.html)
 ifneq ($(CPP_WASM_PTHREAD_POOL_SIZE),)
-CPP_WASM_OUTPUTS+=$(dir $(CPP_TARGET))app.worker.js
+CPP_REQUIRED_OUTPUTS+=$(dir $(CPP_TARGET))app.worker.js
 endif
 $(CPP_TARGET): $(VCPROOT)/vl/wasm.sh $(wildcard $(VCPROOT)/vl/wasm-unittest/*)
-ifneq ($(words $(wildcard $(CPP_WASM_OUTPUTS))),$(words $(CPP_WASM_OUTPUTS)))
-.PHONY: cpp-wasm-missing
-$(CPP_TARGET): cpp-wasm-missing
+CPP_LINK=mkdir -p "$(dir $(CPP_TARGET))" && rm -f "$@" && $(CPP_CXX) -o "$(dir $(CPP_TARGET))app.mjs" $(filter %.o,$^) $(CPP_LINK_FLAGS) -gseparate-dwarf="$(dir $(CPP_TARGET))app.debug.wasm" -sSEPARATE_DWARF_URL=app.debug.wasm && bash "$(VCPROOT)/vl/wasm.sh" "$(CPP_TARGET)"
 endif
-CPP_LINK=mkdir -p "$(dir $(CPP_TARGET))" && rm -f "$@" && $(CPP_CXX) -o "$(dir $(CPP_TARGET))app.mjs" $(filter %.o,$^) $(CPP_LINK_FLAGS) && bash "$(VCPROOT)/vl/wasm.sh" "$(CPP_TARGET)"
+
+ifneq ($(words $(wildcard $(CPP_REQUIRED_OUTPUTS))),$(words $(CPP_REQUIRED_OUTPUTS)))
+.PHONY: cpp-output-missing
+$(CPP_TARGET): cpp-output-missing
 endif
 
 # vbuild runs this in a separate make process before building.

@@ -7,8 +7,11 @@ function Help {
     echo "    Clean generated files."
     echo "-b, --build"
     echo "    Incrementally build the current folder."
-    echo "-f, --full-build"
+    echo "-f, -fb, --full-build"
     echo "    Rebuild the current folder."
+    echo "-o, --optimize"
+    echo "    Use -O2 for a native build (default: -O0)."
+    echo "    May precede or follow the build command; alone means -b -o."
     echo "-c, --build-coverage"
     echo "    Rebuild the current folder with coverage."
     echo "-fc, --full-build-coverage"
@@ -73,7 +76,48 @@ function Read {
     #sensible-browser ./Coverage/HTML/index.html 
 }
 
-case $1 in
+VBUILD_MODE=""
+VBUILD_OPTIMIZE=NO
+for VBUILD_ARG in "$@"; do
+    case "${VBUILD_ARG}" in
+        -o|--optimize)
+        if [ "${VBUILD_OPTIMIZE}" == YES ]; then
+            echo "Optimization was specified more than once." >&2
+            exit 1
+        fi
+        VBUILD_OPTIMIZE=YES
+        ;;
+
+        --help|--clean|-b|--build|-f|-fb|--full-build|-c|--build-coverage|-fc|--full-build-coverage|--build-gcc|--full-build-gcc|-bw|--build-wasm|-fbw|--full-build-wasm|-g|--generate|-r|--read)
+        if [ -n "${VBUILD_MODE}" ]; then
+            echo "Specify only one vbuild command." >&2
+            exit 1
+        fi
+        VBUILD_MODE="${VBUILD_ARG}"
+        ;;
+
+        *)
+        echo "Unknown argument: ${VBUILD_ARG}. Use --help for more information." >&2
+        exit 1
+        ;;
+    esac
+done
+
+VBUILD_MODE="${VBUILD_MODE:--b}"
+VBUILD_OPTIMIZATION=-O0
+if [ "${VBUILD_OPTIMIZE}" == YES ]; then
+    case "${VBUILD_MODE}" in
+        -b|--build|-f|-fb|--full-build|-c|--build-coverage|-fc|--full-build-coverage|--build-gcc|--full-build-gcc)
+        VBUILD_OPTIMIZATION=-O2
+        ;;
+        *)
+        echo "-o/--optimize is supported only for native builds." >&2
+        exit 1
+        ;;
+    esac
+fi
+
+case "${VBUILD_MODE}" in
     --help)
     Help
     ;;
@@ -83,37 +127,37 @@ case $1 in
     ;;
 
     -b|--build)
-    Build CPP_COMPILER=CLANG COVERAGE=NO
+    Build CPP_COMPILER=CLANG COVERAGE=NO CPP_OPTIMIZATION="${VBUILD_OPTIMIZATION}"
     ;;
 
-    -f|--full-build)
-    FullBuild CPP_COMPILER=CLANG COVERAGE=NO
+    -f|-fb|--full-build)
+    FullBuild CPP_COMPILER=CLANG COVERAGE=NO CPP_OPTIMIZATION="${VBUILD_OPTIMIZATION}"
     ;;
 
     -c|--build-coverage)
-    Build CPP_COMPILER=CLANG COVERAGE=YES
+    Build CPP_COMPILER=CLANG COVERAGE=YES CPP_OPTIMIZATION="${VBUILD_OPTIMIZATION}"
     ;;
 
     -fc|--full-build-coverage)
-    FullBuild CPP_COMPILER=CLANG COVERAGE=YES
+    FullBuild CPP_COMPILER=CLANG COVERAGE=YES CPP_OPTIMIZATION="${VBUILD_OPTIMIZATION}"
     ;;
 
     --build-gcc)
-    Build CPP_COMPILER=GCC COVERAGE=NO
+    Build CPP_COMPILER=GCC COVERAGE=NO CPP_OPTIMIZATION="${VBUILD_OPTIMIZATION}"
     ;;
 
     --full-build-gcc)
-    FullBuild CPP_COMPILER=GCC COVERAGE=NO
+    FullBuild CPP_COMPILER=GCC COVERAGE=NO CPP_OPTIMIZATION="${VBUILD_OPTIMIZATION}"
     ;;
 
     -bw|--build-wasm)
     CheckWasm
-    Build CPP_COMPILER=EMPP COVERAGE=NO
+    Build CPP_COMPILER=EMPP COVERAGE=NO CPP_OPTIMIZATION=
     ;;
 
     -fbw|--full-build-wasm)
     CheckWasm
-    FullBuild CPP_COMPILER=EMPP COVERAGE=NO
+    FullBuild CPP_COMPILER=EMPP COVERAGE=NO CPP_OPTIMIZATION=
     ;;
 
     -g|--generate)
