@@ -21,10 +21,10 @@ function Help {
     echo "--full-build-gcc"
     echo "    Rebuild the current folder using G++."
     echo "-bw, --build-wasm"
-    echo "    Incrementally build the current folder using em++."
+    echo "    Incrementally build the current folder using em++ with -O3."
     echo "    Requires \"WASM=YES\" in ./vbuild."
     echo "-fbw, --full-build-wasm"
-    echo "    Rebuild the current folder using em++."
+    echo "    Rebuild the current folder using em++ with -O3."
     echo "    Requires \"WASM=YES\" in ./vbuild."
     echo "-g, --generate"
     echo "    Generate coverage data."
@@ -152,12 +152,12 @@ case "${VBUILD_MODE}" in
 
     -bw|--build-wasm)
     CheckWasm
-    Build CPP_COMPILER=EMPP COVERAGE=NO CPP_OPTIMIZATION=
+    Build CPP_COMPILER=EMPP COVERAGE=NO CPP_OPTIMIZATION=-O3
     ;;
 
     -fbw|--full-build-wasm)
     CheckWasm
-    FullBuild CPP_COMPILER=EMPP COVERAGE=NO CPP_OPTIMIZATION=
+    FullBuild CPP_COMPILER=EMPP COVERAGE=NO CPP_OPTIMIZATION=-O3
     ;;
 
     -g|--generate)

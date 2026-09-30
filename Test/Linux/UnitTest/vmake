@@ -36,6 +36,6 @@ CPP_REMOVES=(
     "../../GacUISrc/Generated_TuiSkin/Source_x64/TuiSkinReflection.cpp"
     )
 TARGETS=("${CPP_TARGET}")
-CPP_COMPILE_OPTIONS="-DGACUI_SKIN_DEVELOPMENT -I ../../../Import -I ../../../Source \$(if \$(filter EMPP,\$(CPP_COMPILER)),-Oz)"
+CPP_COMPILE_OPTIONS="-DGACUI_SKIN_DEVELOPMENT -I ../../../Import -I ../../../Source"
 #>
 <#@ include "${VCPROOT}/vl/vmake-cpp" #>

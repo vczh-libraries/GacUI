@@ -6,6 +6,7 @@ function Usage {
     echo "                [-bw|--build-wasm|-fbw|--full-build-wasm]"
     echo "                [-c|--build-coverage|-fc|--full-build-coverage]"
     echo "-o/--optimize selects -O2 for native builds only; default is -O0."
+    echo "Wasm builds use -O3."
 }
 
 if [ $# -gt 2 ]; then
