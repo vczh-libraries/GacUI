@@ -15,10 +15,10 @@ ExecuteQueryVisitor
 		{
 		public:
 			Ptr<GuiInstanceContext>				context;
-			List<Ptr<GuiConstructorRepr>>&		input;
+			List<Ptr<GuiConstructorRepr>>*		input;
 			List<Ptr<GuiConstructorRepr>>&		output;
 
-			ExecuteQueryVisitor(Ptr<GuiInstanceContext> _context, List<Ptr<GuiConstructorRepr>>& _input, List<Ptr<GuiConstructorRepr>>& _output)
+			ExecuteQueryVisitor(Ptr<GuiInstanceContext> _context, List<Ptr<GuiConstructorRepr>>* _input, List<Ptr<GuiConstructorRepr>>& _output)
 				:context(_context), input(_input), output(_output)
 			{
 			}
@@ -84,10 +84,9 @@ ExecuteQueryVisitor
 
 			void Visit(GuiIqPrimaryQuery* node)override
 			{
-				auto inputExists = &input;
-				if (inputExists)
+				if (input)
 				{
-					for (auto setter : input)
+					for (auto setter : *input)
 					{
 						Traverse(node, setter);
 					}
@@ -98,18 +97,24 @@ ExecuteQueryVisitor
 				}
 			}
 
+			void ExecuteFromInput(Ptr<GuiIqQuery> query, List<Ptr<GuiConstructorRepr>>& result)
+			{
+				ExecuteQueryVisitor visitor(context, input, result);
+				query->Accept(&visitor);
+			}
+
 			void Visit(GuiIqCascadeQuery* node)override
 			{
 				List<Ptr<GuiConstructorRepr>> temp;
-				ExecuteQuery(node->parent, context, input, temp);
+				ExecuteFromInput(node->parent, temp);
 				ExecuteQuery(node->child, context, temp, output);
 			}
 
 			void Visit(GuiIqSetQuery* node)override
 			{
 				List<Ptr<GuiConstructorRepr>> first, second;
-				ExecuteQuery(node->first, context, input, first);
-				ExecuteQuery(node->second, context, input, second);
+				ExecuteFromInput(node->first, first);
+				ExecuteFromInput(node->second, second);
 
 				switch (node->op)
 				{
@@ -136,20 +141,14 @@ ExecuteQuery
 
 		void ExecuteQuery(Ptr<GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& input, collections::List<Ptr<GuiConstructorRepr>>& output)
 		{
-			ExecuteQueryVisitor visitor(context, input, output);
+			ExecuteQueryVisitor visitor(context, &input, output);
 			query->Accept(&visitor);
 		}
 
 		void ExecuteQuery(Ptr<GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& output)
 		{
-#if defined(VCZH_GCC) && defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wnull-dereference"
-#endif
-			ExecuteQuery(query, context, *(List<Ptr<GuiConstructorRepr>>*)0, output);
-#if defined(VCZH_GCC) && defined(__clang__)
-#pragma clang diagnostic pop
-#endif
+			ExecuteQueryVisitor visitor(context, nullptr, output);
+			query->Accept(&visitor);
 		}
 
 /***********************************************************************
