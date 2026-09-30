@@ -2,6 +2,8 @@
 
 A coding agent can assemble the repetitive transport, generated-code, and test setup for a GacUI application that uses the remote protocol. It can also build a code generator and runtime support for implementing a Workflow RPC view model in a language other than C++. Give the agent the maintained repository guides below instead of describing the protocols from memory.
 
+[GacJS](https://github.com/vczh-libraries/GacJS)'s primary feature is running the GacUI core in the browser as WebAssembly. Its working demos connect the HTML5 renderer and a TypeScript view model to that core through exposed functions, using the remote protocol and Workflow RPC channels. HTTP is an alternative transport used mainly to test HTML5 rendering without WebAssembly. See [GacJS Network Protocol](https://github.com/vczh-libraries/GacJS/blob/master/doc/NetworkProtocol.md) for the WebAssembly bridge and the alternative transports.
+
 ## Choose the Relevant Guides
 
 - [GacUI Remoting Test Helpers](https://github.com/vczh-libraries/Release/blob/master/Import-Test/README.md) explains the reusable setup for a remote Core and renderer, and for applications with either a local or foreign view model. Use it for application bring-up, transport selection, process roles, connection order, and shutdown order.

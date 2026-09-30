@@ -12,6 +12,8 @@ The **INetworkProtocol** and **IChannel** interface families and channel bridge 
 
 The GacUI **/MiniHttp** tests create platform-default async TCP sockets and wrap them in **SocketHttpServer** and **SocketHttpClient**. The core can register its remote-protocol prefix and automation prefix on the exact same **IAsyncSocketServer**, while each prefix remains independently stoppable.
 
+[GacJS](https://github.com/vczh-libraries/GacJS)'s primary feature is WebAssembly execution with HTML5 rendering. Its `remote-protocol-wasm` adapter loads the GacUI core's `app.mjs` and `app.wasm` in a browser worker. The exposed `StartApplication` and `SendDataToWasmCore` functions and callbacks carry the existing channel packages between JavaScript and the core. Both the HTML5 renderer and the TypeScript view-model host can use this transport, through the remote protocol and Workflow RPC channels respectively. It is an alternative to the HTTP transport, which is used mainly to test HTML5 rendering without WebAssembly; WebAssembly channel traffic does not pass through an HTTP protocol server. See [GacJS Network Protocol](https://github.com/vczh-libraries/GacJS/blob/master/doc/NetworkProtocol.md) for the bridge contract.
+
 The JSON channel package type is Ptr\<glr::json::JsonNode\>. The remote protocol channel name is GacUIRemoteProtocolChannelName, whose value is GacUIRemoteProtocol. The in-process core client should be assigned GacUIRemoteProtocolCoreClientId. Renderer-side packages are sent to that core client id, and core-side packages are sent to the renderer client id learned from ControllerConnect.
 
 ChannelPackageInfo describes the remote protocol envelope:
