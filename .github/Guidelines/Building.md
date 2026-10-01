@@ -66,7 +66,7 @@ Full build is required if the previous target platform is not the current one (n
 
 For unit test projects running with web assembly:
 - There will be a `./Bin/app.html` generated, run this web page and the test project will start.
-- Run `./Bin/app.sh ./vbuild` with Node.js 22.17 or newer installed and open the printed URL.
+- Run `./Bin/app.sh [port]` with Node.js 22.17 or newer installed and open the printed URL. The port defaults to 8888; the launcher reads `vbuild` from the parent of its own folder.
 - The launcher supplies the COOP/COEP headers required for pthreads.
 - The page is running async, all retained tests must pass with exactly one `wasm_main returns 0.` line.
 
