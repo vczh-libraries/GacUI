@@ -28,42 +28,56 @@
 - Windows
   - Ensure `INativeWindow::(Before|After)Closing()` is not called on non-main-window between the main window is closed and the application exits.
 - GacUI
-  - Implement colorizer on `GuiDocumentViewer`.
   - Enlarging window slower than shrinking.
   - https://github.com/vczh-libraries/Vlpp/issues/9
-  - `<RawElement/>` element.
-    - In remote protodol, a `Raw` element is used to pass some raw data (binary or text) to the renderer.
-    - Make an element base class for different platform-specific raw element implementation (check if exists).
-    - Invent necessary construction to allow extending for future unknown elements.
-    - UnitTest
-    - Direct2D
-    - GDI
-    - GacJS
-    - TUI
-    - Wayland (`GuiWaylandElement` or a better name to expose rendering API?)
-    - Cocoa (`GuiCocoaElement` or a better name to expoer rendering API?)
-  - Add a metadata run to document model.
-    - It has a text field for storing metadata in any application defined format.
-    - It has a ordinary run for storing rendered document.
-    - Metadata runs can be nested and is serializable.
-    - markdown editor demo.
   - Need a way to handle registration failure of global shortcut key, so that an app knows the shortcut key is already taken, or converted to local shortcut key, or not working, instead of just crashing (at least on Windows).
     - Turn global shortcut key in `CppTest_Tui` back to `Ctrl+Shift+Alt+Win+Q` and render failure when anything happens.
     - `GacJS`/`wGac` should render it is treated as a local shortcut key.
-- Remote Protocol
-  - Is it able to pass text diff? Current `IGuiGraphidsParagraph` recreates so some implementation must be changed in the `GuiDocumentElement`.
 - Windows OSProvider
   - L/M/R double click should generates a mouse down message, instead of letting GuiGraphicsHost and other places to do it.
 - Allow different shortcut key per OS.
   - Update shortcut key builder in XML compiler.
 
-### TUI
+### RawElement
 
-- [TUI_Resize.md](./TUI_Resize.md) for OP window management.
-  - Need further investigation and see if the idea actuall works.
+- In remote protodol, a `Raw` element is used to sync text data to the renderer.
+  - Make a raw element base class to add the text data property, changing the text data trigger repainting.
+  - All renderer specific sub class expose native rendering API, just like `GuiDirect2DElement` and `GuiGDIElement`.
+  - Remote renderer should expose a collection, with Installed/Uninstalled/DataChanged events for accessing all raw elements.
+    - Events are generated from the remote renderer, no protocol messages for them.
+    - `GuiRemoteRendererSingle`
+    - `GacJS`
+  - TUI will not support raw element.
+  - No unit test is needed.
+- On `FullControlText` draw a clock, copy from `GacUI_Windows/Direct2DClock` tutorial, but it is driven by the text data.
+- Verify on native renderer
+  - Direct2D
+  - GDI
+  - Wayland (`GuiWaylandElement`)
+  - Cocoa (`GuiCocoaElement`)
+- Verify on remote renderer
+  - Direct2D
+  - GDI
+  - Wayland
+  - Cocoa
+  - GacJS/WASM (just a div)
+- UIA
+  - Exposing a way for extending UIA from a composition.
+    - Update `Running-GacUI.md` to say that: when the user tries to create complex skin or UI, UI Automation is recommended to be run to make sure the UI is exposed in a good shape.
+  - UIA from remote protocol core to renderer.
+
+### GuiDocumentViewer
+
+- Implement colorizer on `GuiDocumentViewer`.
+- Add a metadata run to document model.
+  - It has a text field for storing metadata in any application defined format.
+  - It has a ordinary run for storing rendered document.
+  - Metadata runs can be nested and is serializable.
+  - markdown editor demo.
   
 ### Remote Protocol
 
+- Is it able to pass text diff? Current `IGuiGraphidsParagraph` recreates so some implementation must be changed in the `GuiDocumentElement`.
 - `RemotingTest_Win32_Core /FCT` typing performance issue.
   - Half way improved.
   - Will fast typing cause core with HTTP receiving characters in different order?
