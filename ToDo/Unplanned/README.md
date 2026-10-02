@@ -9,6 +9,7 @@ Unplanned features with detailed are stored in the same folder, here lists all i
 - [Universal Release](./UniversalRelease.md)
 - [TUI_Resize.md](./TUI_Resize.md) for OP window management.
   - Need further investigation and see if the idea actuall works.
+- [RemoteProtocolOptimization.md](./RemoteProtocolOptimization.md)
 
 ## Ideas
 
@@ -31,30 +32,6 @@ Unplanned features with detailed are stored in the same folder, here lists all i
 - Test Automation.
   - Standard test for OS providers, may need a test purpose automation service to do https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
 
-## Porting to New Platforms
-
-- Port GacUI to other platforms:
-  - Unit Test (**Remote**)
-  - Windows
-    - GDI (**Normal**, **Hosted**, **Remote**)
-    - Direct2d (**Normal**, **Hosted**, **Remote**)
-    - ~~UWP (Remote)~~
-  - Linux (wGac repo, **Normal**, **Hosted**, **Remote**)
-  - macOS (iGac repo, **Normal**, **Hosted**, **Remote**)
-  - HTML5 Dom/CSS (**Remote**)
-    - WebAssembly (**Remote**)
-  - CLI (**Hosted**)
-- Port GacUI to other languages:
-  - Applications written in other language can:
-    - Implement view model (**Workflow RPC**).
-    - Render the UI (**GacJS**).
-  - Languages:
-    - TypeScript
-      - **CLI**
-      - **HTTP**
-      - **WebAssembly**
-    - Others: User should vibe their own offering my instructions in `Release` repo.
-
 ## GacUI
 
 - New default control templates with animation, written in XML generated C++ code.
@@ -67,6 +44,12 @@ Unplanned features with detailed are stored in the same folder, here lists all i
 - Use the embedded data codegen / compress / decompress functions from `VlppParser2` to replace one in `GacUI`.
 - Use collection interfaces on function signatures.
   - Only if `Vlpp` decides to add collection interfaces.
+- Is it possible to make `DarkSkin` bright?
+  - `FullControlTest` especially `BaselineDocuments.xml`, `FakeDialogService` UI, hardcoded some colors.
+  - If the theme is no more dark, these things need to be updated dynamically.
+  - Think about a protocol.
+    - Maybe the baseline document needs to be part of color package?
+    - Maybe color package needs to have isolated extra stuff to set in `FakeDialogService` UI?
 
 ## GacUI Resource Compiler
 
@@ -83,6 +66,8 @@ Unplanned features with detailed are stored in the same folder, here lists all i
   - Calculate dependencies by only parsing.
   - Cache workflow assembly per resource in file.
   - Codegen c++ from multiple workflow assembly.
+- Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
+- Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`.
 
 ## New C++/Doc Compiler based on VlppParser2
 

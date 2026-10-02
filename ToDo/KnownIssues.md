@@ -5,7 +5,6 @@
 - Replace `LoadLibrary` with `GetModuleHandle` in `EnableCrossKernelCrashing`.
 - `GuiVirtualRepeatCompositionBase`.
   - Eliminate double `ForceCalculateSizeImmediately()` calls in `TestCompositions_VirtualRepeat.cpp` (TODO) and related files.
-- TODO in `GuiRemoteProtocolAsyncChannelSerializer<TPackage>::ChannelThreadProc`.
 - TODO in `GuiRemoteWindow::OnControllerConnect`.
 - Bindable list control (optional)
   - When a property referenced by `<att.XXXProperty>` is updated, the list item is not refreshed.
