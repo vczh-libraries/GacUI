@@ -23,6 +23,7 @@ There should be a `WebsiteSource/packages/website/scripts/Copy-WASM.sh` doing:
 And verify if `wasm-fct/index.html` is working correctly:
 - Such index.html should be part of `WebsiteSource`, you can copy it from `GacJS` but it needs modifications, and keep this version in `WebsiteSource` separatedly from `GacJS` forever:
   - No need the thirt restart button.
+  - If possible, show a progress bar about `app.wasm` downloading progress.
 commit and push all local changes before continuing.
 
 And the publish to `vczh-libraries.github.io`.
