@@ -4,7 +4,7 @@ The remote protocol renderer side receives protocol messages from the core side 
 
 ## GacJS HTML5 Rendering and WebAssembly
 
-GacJS's purpose is to run GacUI applications in the browser through WebAssembly. Its `@gaclib/renderer` package implements HTML5 rendering with DOM elements. The browser loads the core as `app.mjs` and `app.wasm`; `@gaclib-website/remote-protocol-wasm` connects the renderer to it through exposed functions and callbacks while preserving the remote protocol and its JSON channel messages. HTTP is a parallel transport option, mainly for testing HTML5 rendering against a native core without WebAssembly.
+GacJS's purpose is to run GacUI applications in the browser through WebAssembly. Its `@gaclib/renderer` package implements HTML5 rendering with DOM elements. The browser loads the core as the matching `app.mjs`, `app.wasm` and `app.worker.js` files; `@gaclib-website/remote-protocol-wasm` connects the renderer to it through exposed functions and callbacks while preserving the remote protocol and its JSON channel messages. HTTP is a parallel transport option, mainly for testing HTML5 rendering against a native core without WebAssembly.
 
 The TypeScript view-model host also supports this Wasm transport. `startRvmHostWithChannel` in `GacJS/Gaclib/website/rvmhost/src/index.ts` hosts the view model through Workflow RPC on a separate channel, while the renderer uses the GacUI remote protocol. GacJS's `/wasm-rvmt/` demo connects both to the same Wasm core; `/wasm-fct/` and `/wasm-rpt/` demonstrate FullControlTest and RemoteProtocolTest.
 

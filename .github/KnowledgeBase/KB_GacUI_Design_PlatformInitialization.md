@@ -18,7 +18,7 @@ The GTK, WGac, and macOS entry points are declared in this codebase to maintain 
 
 ### GacJS and WebAssembly
 
-Running GacUI in the browser through WebAssembly is the purpose of GacJS. Its HTML5 renderer implements the same remote protocol used by native remote renderers. WebAssembly and HTTP are alternative ways to carry protocol traffic; WebAssembly does not replace either HTML5 rendering or the remote protocol. The browser loads the compiled GacUI core from `app.mjs` and `app.wasm`, then exchanges messages through exposed functions and callbacks instead of sending them to a native core over HTTP. Serving those application files over HTTP is separate from the protocol transport.
+Running GacUI in the browser through WebAssembly is the purpose of GacJS. Its HTML5 renderer implements the same remote protocol used by native remote renderers. WebAssembly and HTTP are alternative ways to carry protocol traffic; WebAssembly does not replace either HTML5 rendering or the remote protocol. The browser loads the compiled GacUI core from the matching `app.mjs`, `app.wasm` and `app.worker.js` files, then exchanges messages through exposed functions and callbacks instead of sending them to a native core over HTTP. Serving those application files over HTTP is separate from the protocol transport.
 
 Both the HTML5 renderer and a view model implemented in TypeScript can connect to the Wasm core. Rendering uses the GacUI remote protocol; the TypeScript view model uses Workflow RPC on a separate channel over the same Wasm transport. The HTTP option remains useful for testing the HTML5 renderer against a native core without building WebAssembly.
 
