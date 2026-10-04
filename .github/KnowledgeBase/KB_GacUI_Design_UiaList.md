@@ -33,15 +33,15 @@ For GacUI applications' own UI Automation support, see [Windows UI Automation](.
 
 `UiaListCli.exe` is the Windows console frontend of the same UiaList library. It uses the same discovery, MTA UIA session, descriptors, setters, actions, range workspaces and capture worker. It runs the owner dispatcher without opening an inspector window or HTTP listener. Both executables are standalone; no resource files accompany them.
 
-Launch from `GacUI/Tools/UiaList` with the repository wrapper:
+Launch the executable directly from its directory:
 
 ```powershell
-& C:\Code\VczhLibraries\GacUI\.github\Scripts\copilotExecute.ps1 -Mode CLI -Executable UiaListCli -Configuration Debug -Platform x64 -Interactive
+.\UiaListCli.exe
 ```
 
 Use one line per command: `Verb-Target [ID] [JSON arguments object]`. Names and parameter keys are case-sensitive. IDs are opaque, whitespace-free strings. The final object uses JSON escaping; multiline text stays on one command line using `\n`. Omit an empty arguments object or supply `{}`. All named parameters are required unless their schema says otherwise; nullable parameters still require their key. Duplicate or extra keys are errors. Blank lines are ignored. Redirected input/output is UTF-8; interactive console text uses Windows Unicode console handles.
 
-Stdout contains exactly one compact JSON object and newline for each nonblank command. There are no prompts, progress records or banners from the executable. Commands execute sequentially, and the response is flushed before the next command is accepted. Wrapper diagnostic output is separate; when using the PowerShell wrapper as a pipe endpoint, suppress its information stream with `6>$null`.
+Stdout contains exactly one compact JSON object and newline for each nonblank command. There are no prompts, progress records or banners from the executable. Commands execute sequentially, and the response is flushed before the next command is accepted.
 
 ### Response and identity
 
@@ -196,28 +196,53 @@ Refresh-Window WINDOW_ID
 Exit-Application
 ```
 
-This Python example runs the shipped binary and uses returned IDs without relying on their format. Choose a PID belonging to an application you intend to inspect:
+This PowerShell 7 example runs the shipped binary directly and uses returned IDs without relying on their format. Put the directory containing `UiaListCli.exe` on `PATH`, then choose a PID belonging to an application you intend to inspect:
 
-```python
-import json, subprocess
-p = subprocess.Popen([r"C:\Code\VczhLibraries\Release\Tools\UiaListCli.exe"],
-    stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, encoding="utf-8")
-def call(command, target=None, args=None):
-    line = command + (" " + target if target else "")
-    if args is not None:
-        line += " " + json.dumps(args, ensure_ascii=False)
-    p.stdin.write(line + "\n"); p.stdin.flush()
-    reply = json.loads(p.stdout.readline())
-    if not reply["ok"]: raise RuntimeError(reply["error"])
-    return reply["result"]
-processes = call("List-Process")["processes"]
-target_pid = 1234  # replace with the intended PID from this response
-window = next(x for x in processes if x["pid"] == target_pid)["windows"][0]
-tree = call("Print-Window", window["id"])
-details = call("Query-Node", tree["rootIds"][0])
-print(details["properties"])
-call("Exit-Application")
-assert p.wait() == 0
+```powershell
+$startInfo = [System.Diagnostics.ProcessStartInfo]::new()
+$startInfo.FileName = 'UiaListCli.exe'
+$startInfo.UseShellExecute = $false
+$startInfo.CreateNoWindow = $true
+$startInfo.RedirectStandardInput = $true
+$startInfo.RedirectStandardOutput = $true
+$utf8 = [System.Text.UTF8Encoding]::new($false)
+$startInfo.StandardInputEncoding = $utf8
+$startInfo.StandardOutputEncoding = $utf8
+$cli = [System.Diagnostics.Process]::Start($startInfo)
+
+function Invoke-UiaCommand {
+    param([string]$Command, [string]$Target, [hashtable]$Arguments)
+    $line = $Command
+    if ($Target) { $line += " $Target" }
+    if ($PSBoundParameters.ContainsKey('Arguments')) {
+        $line += ' ' + ($Arguments | ConvertTo-Json -Compress -Depth 20)
+    }
+    $cli.StandardInput.WriteLine($line)
+    $cli.StandardInput.Flush()
+    $responseLine = $cli.StandardOutput.ReadLine()
+    if ($null -eq $responseLine) { throw 'UiaListCli exited without a response.' }
+    $reply = $responseLine | ConvertFrom-Json -Depth 100
+    if (!$reply.ok) { throw ($reply.error | ConvertTo-Json -Compress) }
+    return $reply.result
+}
+
+try {
+    $processes = (Invoke-UiaCommand 'List-Process').processes
+    $processes | Select-Object pid, executable, windows
+    $targetPid = 1234 # Replace with the intended PID from this response.
+    $targetProcess = $processes | Where-Object pid -EQ $targetPid | Select-Object -First 1
+    $window = $targetProcess.windows[0]
+    $tree = Invoke-UiaCommand 'Print-Window' $window.id
+    $details = Invoke-UiaCommand 'Query-Node' $tree.rootIds[0]
+    $details.properties
+    Invoke-UiaCommand 'Exit-Application' | Out-Null
+    $cli.WaitForExit()
+    if ($cli.ExitCode -ne 0) { throw "UiaListCli exited with code $($cli.ExitCode)." }
+} finally {
+    $cli.StandardInput.Close() # EOF also requests normal shutdown.
+    $cli.WaitForExit()
+    $cli.Dispose()
+}
 ```
 
 Capture can be unavailable while node/property inspection remains usable. The CLI never restores, activates or moves a window to obtain pixels. Hit testing uses the cached tree/capture generation and one physical-coordinate mapping. UIA itself may normalize values before returning them; the CLI preserves what its client interfaces deliver, not inaccessible provider-internal bytes.
