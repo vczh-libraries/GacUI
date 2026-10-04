@@ -4,8 +4,8 @@
 
 - `Test/RemotingHelpers` stays test-only and outside production Release imports [12]
 - Keep reusable renderer terminal state separate from host policy [7]
+- Deliver fatal remote-channel errors before transport shutdown [7]
 - Stop remoting transports before stack channel wrappers destruct [6]
-- Deliver fatal remote-channel errors before transport shutdown [6]
 - `ViewModelReadyChannel` is the post-route RPC registration barrier [6]
 - Cache renderer packages until main-thread invoker exists [5]
 - Renderer channel dispatch belongs in async renderer layer [4]
@@ -99,6 +99,8 @@
 - GitView pull commands validate the live branch and report mismatches [1]
 - Initialize resolved XML objects after bindings through the complete loader chain [1]
 - Validate EazyLayout initial payloads during XML compilation [1]
+- Use merged DarkSkin sources in Wasm demo inventories [1]
+- Wasm demo startup owns connections and Reload restarts the application [1]
 
 # Refinements
 
@@ -183,6 +185,8 @@ Queue protocol packages and transport-terminal notifications through the same or
 When `RemotingTest_Core` broadcasts a fatal error, deliver the `!Error` package through `IChannelServer::BroadcastError` and give HTTP/named-pipe transports enough shutdown ordering to let clients consume it. Browser and renderer clients should observe the fatal package rather than only seeing the transport close.
 
 When replacing a renderer, detach the old renderer from the core channel before disconnecting it. Send a raw `ControllerConnectionStopped` package to the old renderer when possible, and use transport disconnect only as the fallback.
+
+In `Test/Linux/Wasm/WasmApplication.cpp`, broadcast the original Core error inside `GuiMain` before exception unwinding can make window destruction throw another error. A fatally failed browser session must terminate its worker directly and preserve the original channel error; reserve Core finalization and RPC-service release waits for normal completion.
 
 ## Treat a fatal local channel error as a complete disconnect signal
 
@@ -568,3 +572,11 @@ Both pull menu modes must reach `GitRepository::Pull` for a valid selected branc
 ## Validate EazyLayout initial payloads during XML compilation
 
 Use `SupportArray` / `Array(nullptr)` for the EasyLayout loader's default XML property so `AssignParameters` receives descriptors, controls and compositions together. Return `Unsupported` for named `Composition` and `Layouts` properties on both owners and descriptors, preventing setters and binders from bypassing the batch. Count payloads with a local occupied flag and retain source-positioned duplicate diagnostics; do not reintroduce `LoaderStateMap`, `ResolvingResult::loaderStates` or a loader-private state type. Preserve descriptor order, ordinary runtime setters, final initialization and native `BuildLayout` grammar validation; no runtime duplicate guards belong in generated tutorials.
+
+## Use merged DarkSkin sources in Wasm demo inventories
+
+In `Test/Linux/Wasm/vmake-common`, compile DarkSkin from its merged `Source/Skins/DarkSkin/Source` implementation and resources instead of selecting the generated x86 development copy. Keep architecture selection only for demo sources that have separate generated directories: x86 for WebAssembly and x64 for native verification. Regenerate build inventories through the normal wrapper rather than editing generated makefiles.
+
+## Wasm demo startup owns connections and Reload restarts the application
+
+`StartApplication` in `Test/RemotingHelpers/RemotingServer/Wasm/WasmNetworkProtocol.cpp` installs the fixed connection set during startup; retain only it and `SendDataToWasmCore` as application exports. The Wasm demos restart the entire application instead of replacing its renderer, so remove dynamic connect/disconnect APIs and takeover state. Enable Reload only after normal Core completion, including RPC finalization, and recreate the module, renderer and view-model host with no retained application state. Keep Reload disabled during startup, operation, canceled Exit and fatal failure.

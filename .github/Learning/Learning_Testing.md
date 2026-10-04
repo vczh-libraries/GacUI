@@ -5,9 +5,9 @@
 - Keep test log paths stable during refactors [13]
 - Verify RVM requester/host lifetimes across every transport [12]
 - Remote protocol frames: actions must change UI; organize frames carefully [9]
+- Validate GacJS through browser UI interactions [9]
 - Stress remote core/renderer transport and terminal flows [8]
 - Don’t schedule redundant idle frames [7]
-- Validate GacJS through browser UI interactions [7]
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
@@ -89,6 +89,8 @@
 - Reacquire UIA providers after an owning layout rebuild [1]
 - Keep FullControlTest UIA checks synchronized with showcase changes [1]
 - Cover every XML assignment route when batching loader validation [1]
+- Keep optimized native compile checks for Wasm demos [1]
+- Keep UiaList verification drivers in PowerShell [1]
 
 # Refinements
 
@@ -421,6 +423,10 @@ Run the complete platform-supported matrix with fresh Core/host processes for ea
 
 Playwright WebKit is not the installed Safari application. Actual Safari remains a separate manual check and must not be reported as verified from a WebKit run.
 
+For WasmFCT, WasmRPT and WasmRVMT, verify both Exit and Force Exit followed by Reload. Require application and palette state to reset, a newly created view-model host, and working input after restart; canceled Exit must leave Reload disabled. Observe that worker targets exist during operation and disappear after completion or page closure, using a bounded condition wait rather than a fixed sleep or an unrealistically short polling deadline.
+
+After Wasm packaging changes, rebuild and deploy `WasmFCT`, `WasmRPT` and `WasmRVMT`, then verify their browser entry pages in Chromium and Firefox. Check the distinct application-host and adjacent pthread worker requests, successful worker module imports, input/rendering, Unicode RPC, normal shutdown, Force Exit and fresh Reload state. Verify actual worker disappearance with an authoritative browser observation; a cached `Page.workers` list after page closure may retain stale entries. Match Unicode injection to the renderer's keyboard-event path and report browser-harness or platform gaps without adding product workarounds merely to satisfy the harness. Also exercise a pthread-enabled library suite through the shared generated `app.sh`/`app.html` launcher.
+
 ## Browser E2E tests must handle localized dialogs and host fixtures
 
 Browser-driven GacJS tests should not assert English-only native dialog text when the same flow can run on zh-CN or en-US machines. Use locale-tolerant matching for expected dialog captions and make sure file/image dialog fixtures exist before launching the test.
@@ -568,3 +574,13 @@ After the GacUI release pipeline and UpdateRelease, rebuild/deploy the requested
 ## Cover every XML assignment route when batching loader validation
 
 For EasyLayout's batched default property, mix controls, compositions and descriptors in duplicate-rejection cases. Cover named `Composition` and `Layouts` rejection for owners and descriptors through attribute, element, set, eval, bind and uri forms, both alone and alongside default payloads. Require source positions, preserve valid independent instances and descriptor order, and verify ordinary runtime replacement separately. Inspect generated tutorial diffs for unchanged behavior and the absence of runtime duplicate guards.
+
+## Keep optimized native compile checks for Wasm demos
+
+Build each of `Test/Linux/WasmFCT`, `WasmRPT` and `WasmRVMT` with the corrected native command `build.sh -f -o`, retaining `VCZH_DEBUG_NO_REFLECTION` and linking the complete library, merged skin and demo inventory. The `VCZH_GCC` entry in `Test/Linux/Wasm/WasmApplication.cpp` returns zero without starting GacUI; require a silent successful CLI exit. Rebuild with `build.sh -bw -o` afterward because the native full build cleans the Wasm outputs.
+
+## Keep UiaList verification drivers in PowerShell
+
+Maintain `Tools/UiaList/Verification` drivers in PowerShell, sharing wrapper launch, UTF-8 JSON framing, response deadlines, transcript handling and typed assertions in `CliCommon.ps1`. Preserve each driver's independent fixture expectations, exact call counts and coverage when converting languages. When only these scripts change, verify every replacement entry point against the existing binaries; no C++ rebuild or unrelated suite is needed for that script-only update. Keep the verification README focused on current commands and prerequisites without dated headings or prose.
+
+Select one `pwsh` executable when discovery returns several, preserve null at stdout EOF instead of coercing it to an empty line, and open live fixture logs with shared read/write access. Include malformed encoding, pipelined responses, preview/reference lifetime, both hosted and native showcases, and direct serializer cases in the retained driver coverage.
