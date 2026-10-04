@@ -249,6 +249,10 @@ namespace uialist::native
 			CheckUia(current.element->get_CachedName(&name), L"CachedName");
 			if (name) node.name = WString::CopyFrom(name, SysStringLen(name));
 			SysFreeString(name);
+			BSTR automationId = nullptr;
+			CheckUia(current.element->get_CachedAutomationId(&automationId), L"CachedAutomationId");
+			if (automationId) node.automationId = WString::CopyFrom(automationId, SysStringLen(automationId));
+			SysFreeString(automationId);
 			referenceNames.Set(node.key, node.name);
 			CONTROLTYPEID role = 0;
 			CheckUia(current.element->get_CachedControlType(&role), L"CachedControlType");

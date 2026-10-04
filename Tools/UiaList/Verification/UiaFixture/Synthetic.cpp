@@ -1,4 +1,4 @@
-#include "Synthetic.h"
+﻿#include "Synthetic.h"
 #include <UIAutomation.h>
 #include <OleAcc.h>
 #include <atomic>
@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 #include <cwctype>
+#include <limits>
 
 #pragma comment(lib, "Oleacc.lib")
 
@@ -22,12 +23,13 @@ namespace
 		HANDLE log = INVALID_HANDLE_VALUE;
 		CRITICAL_SECTION lock;
 		bool stress;
+		int externalKey;
 		std::vector<Provider*> nodes;
 		std::wstring text = L"Alpha 日本語\r\n\r\nBeta 中文\r\n";
 		std::atomic<int> invokes = 0, toggle = 0, view = 7, dock = DockPosition_None, visual = WindowVisualState_Normal;
 		std::atomic<int> expanded = ExpandCollapseState_Collapsed, selected = 1, input = 0;
 		std::atomic<double> value = 25, horizontal = 0, vertical = 0, zoom = 100, x = 10, y = 20, width = 100, height = 50, angle = 0;
-		Context(bool large) : stress(large), nodes(large ? 11047 : 45, nullptr)
+		Context(bool large) : stress(large), externalKey(large ? 11047 : 45), nodes(large ? 11048 : 46, nullptr)
 		{
 			InitializeCriticalSection(&lock);
 			wchar_t path[100]; swprintf_s(path, L"UiaFixture-%lu.%s.txt", GetCurrentProcessId(), large ? L"stress" : L"synthetic");
@@ -106,7 +108,7 @@ namespace
 		HRESULT STDMETHODCALLTYPE GetPatternProvider(PATTERNID id, IUnknown** output) override
 		{
 			*output = nullptr;
-			if (key == 2)
+			if (key == 2 || key == context->externalKey)
 			{
 				if (id == UIA_TextPatternId || id == UIA_TextPattern2Id) *output = static_cast<ITextProvider2*>(this);
 				else if (id == UIA_TextEditPatternId) *output = static_cast<ITextEditProvider*>(this);
@@ -139,6 +141,7 @@ namespace
 			{
 			case UIA_NamePropertyId:
 				{
+					if (key == context->externalKey) { output->vt = VT_BSTR; return String(L"External document", &output->bstrVal); }
 					wchar_t name[100]; swprintf_s(name, key >= 47 ? L"Stress node %d — 日本語 中文" : L"Role %d — 日本語 中文", key >= 47 ? key : key - 3);
 					if (key == 45) wcscpy_s(name, L"10,000 siblings");
 					if (key == 46) wcscpy_s(name, L"1,000 levels");
@@ -147,6 +150,7 @@ namespace
 			case UIA_AutomationIdPropertyId: output->vt = VT_BSTR; return String(L"deliberately-duplicated", &output->bstrVal);
 			case UIA_ControlTypePropertyId: output->vt = VT_I4; output->lVal = key == 2 ? UIA_DocumentControlTypeId : key == 44 ? 59999 : key >= 3 && key <= 43 ? 50000 + key - 3 : UIA_CustomControlTypeId; break;
 			case UIA_IsControlElementPropertyId: case UIA_IsContentElementPropertyId: output->vt = VT_BOOL; output->boolVal = key >= 3 ? VARIANT_FALSE : VARIANT_TRUE; break;
+			case UIA_IsOffscreenPropertyId: output->vt = VT_BOOL; output->boolVal = context->stress && key == 11046 ? VARIANT_TRUE : VARIANT_FALSE; break;
 			case UIA_IsKeyboardFocusablePropertyId: case UIA_IsEnabledPropertyId: output->vt = VT_BOOL; output->boolVal = VARIANT_TRUE; break;
 			case UIA_ValueValuePropertyId: output->vt = VT_BSTR; return get_Value(&output->bstrVal);
 			case UIA_RangeValueValuePropertyId: output->vt = VT_R8; output->dblVal = context->value; break;
@@ -155,6 +159,11 @@ namespace
 				if (context->toggle == 1) { output->vt = VT_UNKNOWN; return UiaGetReservedNotSupportedValue(&output->punkVal); }
 				output->vt = VT_BSTR; return String(L"Synthetic combinations; see independent typed call log.", &output->bstrVal);
 			case UIA_ItemStatusPropertyId: output->vt = VT_BSTR; return String(L"", &output->bstrVal);
+			case UIA_LocalizedLandmarkTypePropertyId:
+				{
+					const wchar_t text[] = { L'A', 0, 1, 11, 31, L'\u4e2d', L'Z' };
+					output->vt = VT_BSTR; output->bstrVal = SysAllocStringLen(text, 7); return S_OK;
+				}
 			case UIA_IsRequiredForFormPropertyId: output->vt = VT_BOOL; output->boolVal = VARIANT_FALSE; break;
 			case UIA_LevelPropertyId: output->vt = VT_I4; output->lVal = 0; break;
 			case UIA_ControllerForPropertyId: output->vt = VT_ARRAY | VT_UNKNOWN; output->parray = Objects(nullptr); break;
@@ -164,6 +173,7 @@ namespace
 		}
 		HRESULT STDMETHODCALLTYPE Navigate(NavigateDirection direction, IRawElementProviderFragment** output) override
 		{
+			if (key == context->externalKey) { *output = nullptr; return S_OK; }
 			int targetKey = -1, rootLast = context->stress ? 46 : 44;
 			if (key == 0 && direction == NavigateDirection_FirstChild) targetKey = 1;
 			if (key == 0 && direction == NavigateDirection_LastChild) targetKey = rootLast;
@@ -182,6 +192,7 @@ namespace
 		HRESULT STDMETHODCALLTYPE get_BoundingRectangle(UiaRect* output) override
 		{
 			RECT bounds; GetWindowRect(context->window, &bounds);
+			if (context->stress && key >= 10047 && key <= 11046) { *output = { static_cast<double>(bounds.left + 15), static_cast<double>(bounds.top + 100), 100, 30 }; return S_OK; }
 			*output = { static_cast<double>(bounds.left + 15), static_cast<double>(bounds.top + 40 + key * 10), 400, 30 }; return S_OK;
 		}
 		HRESULT STDMETHODCALLTYPE GetEmbeddedFragmentRoots(SAFEARRAY** output) override { *output = nullptr; return S_OK; }
@@ -197,7 +208,7 @@ namespace
 		HRESULT STDMETHODCALLTYPE SetValue(LPCWSTR value) override { EnterCriticalSection(&context->lock); context->text = value; LeaveCriticalSection(&context->lock); return context->Record(key, L"SetValue(BSTR)", 0, 0, value); }
 		HRESULT STDMETHODCALLTYPE get_Value(BSTR* output) override { EnterCriticalSection(&context->lock); auto hr = String(context->text.c_str(), output); LeaveCriticalSection(&context->lock); return hr; }
 		HRESULT STDMETHODCALLTYPE SetValue(double value) override { if (value < 0 || value > 100) return E_INVALIDARG; context->value = value; return context->Record(key, L"SetValue(R8)", value); }
-		GET(double, Value, context->value); GET(BOOL, IsReadOnly, FALSE); GET(double, Minimum, 0); GET(double, Maximum, 100); GET(double, SmallChange, 1); GET(double, LargeChange, 10);
+		GET(double, Value, context->value); GET(BOOL, IsReadOnly, context->toggle == 1); GET(double, Minimum, 0); GET(double, Maximum, 100); GET(double, SmallChange, 1); GET(double, LargeChange, 10);
 		GET(BOOL, CanSelectMultiple, TRUE); GET(BOOL, IsSelectionRequired, FALSE); GET(int, ItemCount, context->selected);
 		ELEMENT(FirstSelectedItem, 1); ELEMENT(LastSelectedItem, 1); ELEMENT(CurrentSelectedItem, 1);
 		HRESULT STDMETHODCALLTYPE GetSelection(SAFEARRAY** output) override;
@@ -237,14 +248,14 @@ namespace
 		HRESULT STDMETHODCALLTYPE DoDefaultAction() override { return context->Record(key, L"DoDefaultAction"); }
 		HRESULT STDMETHODCALLTYPE GetIAccessible(IAccessible** output) override { return AccessibleObjectFromWindow(context->window, OBJID_CLIENT, IID_IAccessible, reinterpret_cast<void**>(output)); }
 		GET(int, ChildId, 0); GET(DWORD, Role, ROLE_SYSTEM_CLIENT); GET(DWORD, State, 0); STR(Name, L"Legacy fixture"); STR(Description, L"Synthetic"); STR(Help, L"Help"); STR(KeyboardShortcut, L"Alt+F"); STR(DefaultAction, L"Invoke");
-		HRESULT STDMETHODCALLTYPE FindItemByProperty(IRawElementProviderSimple* after, PROPERTYID id, VARIANT value, IRawElementProviderSimple** output) override { context->Record(key, L"FindItemByProperty", id, value.vt); return Return<IRawElementProviderSimple>(after ? nullptr : this, output); }
+		HRESULT STDMETHODCALLTYPE FindItemByProperty(IRawElementProviderSimple* after, PROPERTYID id, VARIANT value, IRawElementProviderSimple** output) override { context->Record(key, L"FindItemByProperty", id, value.vt); auto external = id == UIA_NamePropertyId && value.vt == VT_BSTR && wcscmp(value.bstrVal, L"External document") == 0; return Return<IRawElementProviderSimple>(after ? nullptr : external ? context->nodes[context->externalKey] : this, output); }
 		HRESULT STDMETHODCALLTYPE Realize() override { return context->Record(key, L"Realize"); }
 		HRESULT STDMETHODCALLTYPE StartListening(SynchronizedInputType value) override { context->input = value; return context->Record(key, L"StartListening", value); }
 		HRESULT STDMETHODCALLTYPE Cancel() override { context->input = 0; return context->Record(key, L"Cancel"); }
 		HRESULT STDMETHODCALLTYPE GetUnderlyingObjectModel(IUnknown** output) override { context->Record(key, L"GetUnderlyingObjectModel"); return Return<IUnknown>(static_cast<IRawElementProviderSimple*>(this), output); }
 		GET(int, AnnotationTypeId, AnnotationType_Comment); STR(AnnotationTypeName, L"Comment"); STR(Author, L"Fixture 日本語"); STR(DateTime, L"2026-09-13"); ELEMENT(Target, 2);
 		GET(int, StyleId, StyleId_Normal); STR(StyleName, L"Normal"); GET(int, FillColor, 0x112233); STR(FillPatternStyle, L"Solid"); STR(Shape, L"Rectangle"); GET(int, FillPatternColor, 0x445566); STR(ExtendedProperties, L"fixture=independent;");
-		HRESULT STDMETHODCALLTYPE GetItemByName(LPCWSTR name, IRawElementProviderSimple** output) override { context->Record(key, L"GetItemByName", 0, 0, name); return Return<IRawElementProviderSimple>(wcscmp(name, L"A1") == 0 ? this : nullptr, output); }
+		HRESULT STDMETHODCALLTYPE GetItemByName(LPCWSTR name, IRawElementProviderSimple** output) override { context->Record(key, L"GetItemByName", 0, 0, name); if (wcscmp(name, L"__uia_unavailable__") == 0) return UIA_E_ELEMENTNOTAVAILABLE; if (wcscmp(name, L"__uia_fatal__") == 0) return E_UNEXPECTED; return Return<IRawElementProviderSimple>(wcscmp(name, L"A1") == 0 ? this : nullptr, output); }
 		STR(Formula, L"=1+2"); ARRAY(GetAnnotationObjects); HRESULT STDMETHODCALLTYPE GetAnnotationTypes(SAFEARRAY** output) override { *output = Ints({ AnnotationType_Comment }); return S_OK; }
 		ELEMENT(TextContainer, 2); HRESULT STDMETHODCALLTYPE get_TextRange(ITextRangeProvider** output) override;
 		GET(BOOL, IsGrabbed, FALSE); STR(DropEffect, L"copy"); STR(DropTargetEffect, L"copy"); ARRAY(GetGrabbedItems);
@@ -273,10 +284,12 @@ namespace
 		Provider* document;
 		std::wstring text;
 		int start, end;
+		bool readbackUnavailable = false;
 		TextRange(Provider* owner, int first = 0, int last = -1) : document(owner), start(first)
 		{
 			document->AddRef(); EnterCriticalSection(&document->context->lock);
 			text = document->context->text; LeaveCriticalSection(&document->context->lock);
+			if (document->key == document->context->externalKey) text = std::wstring(L"A\0\x01\x0b\x1f\u4e2dZ", 7);
 			end = last < 0 ? static_cast<int>(text.size()) : last;
 		}
 		~TextRange() { document->Release(); }
@@ -288,7 +301,7 @@ namespace
 			if (iid != IID_IUnknown && iid != __uuidof(ITextRangeProvider) && iid != __uuidof(ITextRangeProvider2)) return E_NOINTERFACE;
 			*output = static_cast<ITextRangeProvider2*>(this); AddRef(); return S_OK;
 		}
-		HRESULT Record(const wchar_t* method, double a = 0, double b = 0) { return document->context->Record(2, method, a, b); }
+		HRESULT Record(const wchar_t* method, double a = 0, double b = 0) { return document->context->Record(document->key, method, a, b); }
 		TextRange* Other(ITextRangeProvider* value) { auto range = dynamic_cast<TextRange*>(value); return range && range->document == document ? range : nullptr; }
 		int Endpoint(TextPatternRangeEndpoint endpoint) { return endpoint == TextPatternRangeEndpoint_Start ? start : end; }
 		void SetEndpoint(TextPatternRangeEndpoint endpoint, int value)
@@ -327,11 +340,20 @@ namespace
 			if (ignoreCase) { for (auto& c : haystack) c = static_cast<wchar_t>(towupper(c)); for (auto& c : needle) c = static_cast<wchar_t>(towupper(c)); }
 			auto index = backward ? haystack.rfind(needle) : haystack.find(needle);
 			if (index != std::wstring::npos) *output = new TextRange(document, start + static_cast<int>(index), start + static_cast<int>(index + needle.size()));
-			return document->context->Record(2, L"Range.FindText", backward, ignoreCase, value);
+			return document->context->Record(document->key, L"Range.FindText", backward, ignoreCase, value);
 		}
 		HRESULT STDMETHODCALLTYPE GetAttributeValue(TEXTATTRIBUTEID id, VARIANT* output) override
 		{
 			VariantInit(output); Record(L"Range.GetAttributeValue", id);
+			if (document->key == document->context->externalKey)
+			{
+				if (id == UIA_FontSizeAttributeId) { output->vt = VT_R8; output->dblVal = std::numeric_limits<double>::quiet_NaN(); return S_OK; }
+				if (id == UIA_IndentationFirstLineAttributeId) { output->vt = VT_R8; output->dblVal = std::numeric_limits<double>::infinity(); return S_OK; }
+				if (id == UIA_IndentationLeadingAttributeId) { output->vt = VT_R8; output->dblVal = -std::numeric_limits<double>::infinity(); return S_OK; }
+				if (id == UIA_CultureAttributeId) { output->vt = VT_I8; output->llVal = -9007199254740993LL; return S_OK; }
+				if (id == UIA_FontWeightAttributeId) { output->vt = VT_UI8; output->ullVal = 18446744073709551615ULL; return S_OK; }
+			}
+
 			switch (id)
 			{
 			case UIA_FontNameAttributeId: case UIA_StyleNameAttributeId: case UIA_LineSpacingAttributeId:
@@ -367,6 +389,7 @@ namespace
 		HRESULT STDMETHODCALLTYPE GetText(int maximum, BSTR* output) override
 		{
 			if (maximum < -1) return E_INVALIDARG;
+			if (readbackUnavailable) { readbackUnavailable = false; *output = nullptr; return UIA_E_ELEMENTNOTAVAILABLE; }
 			auto count = maximum == -1 ? end - start : (std::min)(end - start, maximum);
 			*output = SysAllocStringLen(text.data() + start, count); return Record(L"Range.GetText", maximum, count);
 		}
@@ -376,6 +399,7 @@ namespace
 			current = (std::min)(current, static_cast<ptrdiff_t>(boundaries.size()) - 2);
 			auto next = std::clamp<ptrdiff_t>(current + static_cast<long long>(count), 0, boundaries.size() - 2);
 			*output = static_cast<int>(next - current); if (count) { start = boundaries[next]; end = boundaries[next + 1]; }
+			readbackUnavailable = count == 12345;
 			return Record(L"Range.Move", unit, count);
 		}
 		HRESULT STDMETHODCALLTYPE MoveEndpointByUnit(TextPatternRangeEndpoint endpoint, TextUnit unit, int count, int* output) override
@@ -396,7 +420,7 @@ namespace
 
 	HRESULT Provider::GetSelection(SAFEARRAY** output)
 	{
-		if (key != 2) { *output = Objects(context->selected ? static_cast<IRawElementProviderSimple*>(this) : nullptr); return S_OK; }
+		if (key != 2 && key != context->externalKey) { *output = Objects(context->selected ? static_cast<IRawElementProviderSimple*>(this) : nullptr); return S_OK; }
 		auto range = new TextRange(this, 0, 5); *output = Objects(range); range->Release(); return context->Record(key, L"Text.GetSelection");
 	}
 	HRESULT Provider::GetVisibleRanges(SAFEARRAY** output) { auto range = new TextRange(this); *output = Objects(range); range->Release(); return context->Record(key, L"Text.GetVisibleRanges"); }

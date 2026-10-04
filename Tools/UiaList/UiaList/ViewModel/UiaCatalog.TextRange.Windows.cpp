@@ -52,64 +52,59 @@ namespace uialist::native
 
 	void UiaSession::DiscardRanges() { ranges.Clear(); }
 
-	Ptr<ActionSectionData> UiaSession::DescribeRange(vint rangeKey)
+	Ptr<ActionSectionData> UiaSession::DescribeRange(vint rangeKey, bool readValues)
 	{
 		if (!ranges.Keys().Contains(rangeKey)) return nullptr;
 		// Attribute conversion can retain additional ranges and grow the dictionary.
 		auto record = ranges[rangeKey]; auto range = record.range;
 		conversionDocumentKey = record.documentKey;
 		auto section = Ptr(new ActionSectionData); section->rangeKey = rangeKey; section->documentKey = record.documentKey; section->name = record.name;
-		auto add = [&](ActionCode code, const wchar_t* name, bool mutation, std::initializer_list<Ptr<ArgumentSpec>> args = {}, bool enabled = true) { return AddAction(*section.Obj(), code, name, mutation, args, enabled); };
+		auto add = [&](ActionCode code, std::initializer_list<Ptr<ArgumentSpec>> args = {}, bool enabled = true) { return AddAction(*section.Obj(), code, args, enabled); };
 		auto read = [&](const wchar_t* name, Ptr<ValueData> value) { AddReadout(*section.Obj(), name, value); };
-		auto endpoint = [](const wchar_t* name) { return ChoiceArgument(name, { { TextPatternRangeEndpoint_Start, L"Start" }, { TextPatternRangeEndpoint_End, L"End" } }); };
-		auto unit = []() { return ChoiceArgument(L"unit", { { TextUnit_Character, L"Character" }, { TextUnit_Format, L"Format" }, { TextUnit_Word, L"Word" }, { TextUnit_Line, L"Line" }, { TextUnit_Paragraph, L"Paragraph" }, { TextUnit_Page, L"Page" }, { TextUnit_Document, L"Document" } }); };
-		auto boolean = [](const wchar_t* name) { return ChoiceArgument(name, { { 0, L"false" }, { 1, L"true" } }); };
-		auto operand = []() { return ReferenceArgument(L"range", true); };
-		auto count = []() { return NumberArgument(L"count", INT_MIN, INT_MAX, 1, true); };
-		auto attribute = []() { return CatalogArgument(L"attributeId", AttributeCatalog, AttributeCatalogCount); };
-		BSTR text = nullptr; CheckUia(range->GetText(1025, &text), L"TextRange.GetText(1025)");
-		auto preview = text ? WString::CopyFrom(text, SysStringLen(text)) : WString(); SysFreeString(text);
-		if (preview.Length() == 1025) preview = preview.Left(1024) + L"… (GetText(-1))";
-		read(L"GetText(1025)", StringValue(preview));
-		SAFEARRAY* bounds = nullptr; CheckUia(range->GetBoundingRectangles(&bounds), L"TextRange.GetBoundingRectangles"); read(L"GetBoundingRectangles", ConvertArray(bounds, VT_R8)); SafeArrayDestroy(bounds);
-		for (vint i = 0; i < AttributeCatalogCount; i++)
+		if (readValues)
 		{
-			VARIANT value; VariantInit(&value); auto&& descriptor = AttributeCatalog[i];
-			CheckUia(range->GetAttributeValue(descriptor.id, &value), L"GetAttributeValue(" + itow(descriptor.id) + L")"); read(descriptor.name, Convert(value)); VariantClear(&value);
+			BSTR text = nullptr; CheckUia(range->GetText(1025, &text), L"TextRange.GetText(1025)");
+			auto preview = text ? WString::CopyFrom(text, SysStringLen(text)) : WString(); SysFreeString(text);
+			if (preview.Length() == 1025) preview = preview.Left(1024) + L"â€¦ (GetText(-1))";
+			read(L"GetText(1025)", StringValue(preview));
+			SAFEARRAY* bounds = nullptr; CheckUia(range->GetBoundingRectangles(&bounds), L"TextRange.GetBoundingRectangles"); read(L"GetBoundingRectangles", ConvertArray(bounds, VT_R8)); SafeArrayDestroy(bounds);
+			for (vint i = 0; i < AttributeCatalogCount; i++)
+			{
+				VARIANT value; VariantInit(&value); auto&& descriptor = AttributeCatalog[i];
+				CheckUia(range->GetAttributeValue(descriptor.id, &value), L"GetAttributeValue(" + itow(descriptor.id) + L")"); read(descriptor.name, Convert(value)); VariantClear(&value);
+			}
 		}
-		add(ActionCode::RangeClone, L"Clone", false);
-		add(ActionCode::RangeCompare, L"Compare", false, { operand() });
-		add(ActionCode::RangeCompareEndpoints, L"CompareEndpoints", false, { endpoint(L"srcEndPoint"), operand(), endpoint(L"targetEndPoint") });
-		add(ActionCode::RangeExpand, L"ExpandToEnclosingUnit", false, { unit() });
-		add(ActionCode::RangeMove, L"Move", false, { unit(), count() });
-		add(ActionCode::RangeMoveEndpoint, L"MoveEndpointByUnit", false, { endpoint(L"endpoint"), unit(), count() });
-		add(ActionCode::RangeTransferEndpoint, L"MoveEndpointByRange", false, { endpoint(L"srcEndPoint"), operand(), endpoint(L"targetEndPoint") });
-		add(ActionCode::RangeFindText, L"FindText", false, { TextArgument(L"text", {}, true), boolean(L"backward"), boolean(L"ignoreCase") });
-		auto value = TextArgument(L"value"); value->kind = ArgumentKind::Variant;
-		add(ActionCode::RangeFindAttribute, L"FindAttribute", false, { attribute(), value, boolean(L"backward") });
-		add(ActionCode::RangeAttribute, L"GetAttributeValue", false, { attribute() });
-		add(ActionCode::RangeAllAttributes, L"GetAttributeValue [44]", false);
-		add(ActionCode::RangeText, L"GetText", false, { NumberArgument(L"maxLength", -1, INT_MAX, -1, true) });
-		add(ActionCode::RangeRectangles, L"GetBoundingRectangles", false);
-		add(ActionCode::RangeEnclosing, L"GetEnclosingElement", false);
-		add(ActionCode::RangeChildren, L"GetChildren", false);
+		add(ActionCode::RangeClone);
+		add(ActionCode::RangeCompare);
+		add(ActionCode::RangeCompareEndpoints);
+		add(ActionCode::RangeExpand);
+		add(ActionCode::RangeMove);
+		add(ActionCode::RangeMoveEndpoint);
+		add(ActionCode::RangeTransferEndpoint);
+		add(ActionCode::RangeFindText);
+		add(ActionCode::RangeFindAttribute);
+		add(ActionCode::RangeAttribute);
+		add(ActionCode::RangeAllAttributes);
+		add(ActionCode::RangeText);
+		add(ActionCode::RangeRectangles);
+		add(ActionCode::RangeEnclosing);
+		add(ActionCode::RangeChildren);
 		auto document = elements[record.documentKey];
 		auto textPattern = AcquirePattern<IUIAutomationTextPattern>(document.Obj(), UIA_TextPatternId);
 		if (!textPattern) textPattern = AcquirePattern<IUIAutomationTextPattern>(document.Obj(), UIA_TextPattern2Id);
 		if (!textPattern) textPattern = AcquirePattern<IUIAutomationTextPattern>(document.Obj(), UIA_TextEditPatternId);
 		SupportedTextSelection selection = SupportedTextSelection_None;
 		if (textPattern) CheckUia(textPattern->get_SupportedTextSelection(&selection), L"SupportedTextSelection");
-		add(ActionCode::RangeSelect, L"Select", true, {}, selection != SupportedTextSelection_None);
-		add(ActionCode::RangeAdd, L"AddToSelection", true, {}, selection == SupportedTextSelection_Multiple);
-		add(ActionCode::RangeRemove, L"RemoveFromSelection", true, {}, selection != SupportedTextSelection_None);
-		add(ActionCode::RangeScroll, L"ScrollIntoView", true, { boolean(L"alignToTop") });
-		if (QueryInterface<IUIAutomationTextRange2>(range.Obj())) add(ActionCode::RangeMenu, L"IUIAutomationTextRange2.ShowContextMenu", true);
+		add(ActionCode::RangeSelect, {}, selection != SupportedTextSelection_None);
+		add(ActionCode::RangeAdd, {}, selection == SupportedTextSelection_Multiple);
+		add(ActionCode::RangeRemove, {}, selection != SupportedTextSelection_None);
+		add(ActionCode::RangeScroll);
+		if (QueryInterface<IUIAutomationTextRange2>(range.Obj())) add(ActionCode::RangeMenu);
 		if (QueryInterface<IUIAutomationTextRange3>(range.Obj()))
 		{
-			add(ActionCode::RangeEnclosingCache, L"GetEnclosingElementBuildCache", false);
-			add(ActionCode::RangeChildrenCache, L"GetChildrenBuildCache", false);
-			auto ids = TextArgument(L"attributeIds", L"40000,40001"); ids->kind = ArgumentKind::AttributeList;
-			add(ActionCode::RangeAttributes, L"GetAttributeValues", false, { ids });
+			add(ActionCode::RangeEnclosingCache);
+			add(ActionCode::RangeChildrenCache);
+			add(ActionCode::RangeAttributes);
 		}
 		return section;
 	}
@@ -117,7 +112,7 @@ namespace uialist::native
 	ActionOutcome UiaSession::ExecuteRange(const ActionSpec& action, const List<ActionArgument>& arguments)
 	{
 		ActionOutcome result; result.value = Ptr(new ValueData);
-		auto section = DescribeRange(action.rangeKey);
+		auto section = DescribeRange(action.rangeKey, false);
 		Ptr<ActionSpec> capability;
 		if (section) for (auto&& item : section->commands) if (item->code == action.code) capability = item;
 		if (!capability || !capability->enabled || arguments.Count() != capability->parameters.Count()) { result.available = false; return result; }

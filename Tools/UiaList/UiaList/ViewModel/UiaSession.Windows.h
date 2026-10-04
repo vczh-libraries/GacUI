@@ -136,6 +136,7 @@ namespace uialist::native
 		vl::WString					runtimeId;
 		vl::WString					name;
 		vl::WString					client;
+		vl::WString					automationId;
 		vl::WString					role;
 		CONTROLTYPEID				controlType = 0;
 		vl::WString					providers;
@@ -190,8 +191,8 @@ namespace uialist::native
 		vl::Ptr<ValueData>			ConvertRanges(IUIAutomationTextRangeArray* value, vl::vint document, const vl::WString& name);
 		vl::Ptr<ValueData>			ConvertArray(SAFEARRAY* value, VARTYPE type);
 		vl::collections::List<ReferenceData> GetReferences();
-		vl::Ptr<ActionSectionData>	DescribeActions(vl::vint nodeKey, PATTERNID pattern);
-		vl::Ptr<ActionSectionData>	DescribeRange(vl::vint rangeKey);
+		vl::Ptr<ActionSectionData>	DescribeActions(vl::vint nodeKey, PATTERNID pattern, bool readValues = true);
+		vl::Ptr<ActionSectionData>	DescribeRange(vl::vint rangeKey, bool readValues = true);
 		ActionOutcome				Execute(vl::vint nodeKey, const ActionSpec& action, const vl::collections::List<ActionArgument>& arguments);
 		ActionOutcome				ExecuteRange(const ActionSpec& action, const vl::collections::List<ActionArgument>& arguments);
 		void						DiscardRanges();

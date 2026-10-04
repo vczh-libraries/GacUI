@@ -49,4 +49,10 @@
     <None Include="UI\Strings.xml"><Filter>Resource Files</Filter></None>
     <None Include="UI\PropertyTemplates.xml"><Filter>Resource Files</Filter></None>
   </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Include="ViewModel\CliViewModel.h"><Filter>ViewModel</Filter></ClInclude>
+    <ClCompile Include="ViewModel\CliViewModel.cpp"><Filter>ViewModel</Filter></ClCompile>
+    <ClCompile Include="ViewModel\CliCommands.cpp"><Filter>ViewModel</Filter></ClCompile>
+  </ItemGroup>
 </Project>

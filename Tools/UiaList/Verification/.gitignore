@@ -5,3 +5,4 @@ LegacyProbe-*.txt
 *.png
 *.controls.json
 Deployment/
+__pycache__/

@@ -1,4 +1,4 @@
-# UiaList
+﻿# UiaList
 
 UiaList is a Windows UI Automation inspector built with GacUI and C++20. It lists the process forest, captures a selected window, walks its complete UIA Raw View, and exposes properties, standard patterns, returned elements, and text ranges.
 
@@ -20,7 +20,9 @@ From this solution directory:
 & C:\Code\VczhLibraries\GacUI\.github\Scripts\copilotExecute.ps1 -Mode CLI -Executable UiaListApp -Configuration Debug -Platform x64
 ```
 
-`CLI` is the repository launch wrapper's mode. UiaList itself has no command-line frontend. Its generated, compressed resource is linked into the executable; no XML or resource binary needs to accompany it.
+`UiaListApp` is the graphical frontend. `UiaListCli` is the console frontend of the same shared library. To launch it, use the same wrapper with `-Executable UiaListCli -Interactive`. Both executables embed their resources; no XML or resource binary needs to accompany them.
+
+The CLI accepts `Verb-Target [ID] [JSON arguments object]` lines and flushes one compact JSON response after each command completes. Redirected streams use UTF-8. Start with `Help-Command`, `Help-Provider` and `List-Process`. Read the [complete CLI protocol, schemas and examples](../../.github/KnowledgeBase/KB_GacUI_Design_UiaList.md#uialistcli-json-protocol) before retaining IDs across a refresh or mutation. It runs the owner dispatcher without opening an inspector window or HTTP endpoint.
 
 ## Source ownership
 
@@ -28,7 +30,7 @@ From this solution directory:
 - `UiaList/Source` is generated exclusively by GacBuild. Edit the authored XML and regenerate.
 - `UiaList/ViewModel` implements the view models and native services. UIA objects belong to a dedicated MTA queue; capture uses a separate worker and transfers owned pixels to the UI thread.
 - [UiaCatalog.Windows.cpp](UiaList/ViewModel/UiaCatalog.Windows.cpp) owns the named SDK property, pattern, control-type, text-attribute and metadata inventories, declared in [UiaCatalog.Windows.h](UiaList/ViewModel/UiaCatalog.Windows.h). [UiaCatalog.Actions.Windows.cpp](UiaList/ViewModel/UiaCatalog.Actions.Windows.cpp), [UiaCatalog.Dispatch.Windows.cpp](UiaList/ViewModel/UiaCatalog.Dispatch.Windows.cpp) and [UiaCatalog.TextRange.Windows.cpp](UiaList/ViewModel/UiaCatalog.TextRange.Windows.cpp) describe and dispatch supported operations. [CheckCatalog.ps1](Verification/CheckCatalog.ps1) compares the inventory with the selected SDK; historical counts do not replace that check.
-- `Gaclib` compiles the existing Import/Release dependencies. `UiaListApp` supplies startup, locale, theme, lifetime, and the Debug automation endpoint.
+- `Gaclib` compiles the existing Import/Release dependencies. `UiaListApp` supplies startup, locale, theme, lifetime, and the Debug automation endpoint. `UiaListCli` supplies console framing and input threading; `CliViewModel` in the shared library handles schemas, typed JSON, references and completion.
 - `Verification` contains an independent Win32/UIA fixture and developer scripts. The product does not depend on them.
 
 Debug exposes `http://localhost:<AsPort>/Automation/UiaListApp/Controls` and `/IO`. `/AsPort:<decimal port>` accepts one value in 1..65535 and defaults to 8888. Malformed, empty, duplicate, and out-of-range values fail before startup. Release does not start that endpoint. Run CppTest, CppTest_Metaonly, and UiaListApp together on 8888, 8890, and 8891 respectively. This argument changes only automation; the remoting protocol remains fixed at 8888. See [verification instructions and recorded coverage](Verification/README.md) and the full [acceptance matrix](Verification/README.md#acceptance-matrix), including the pattern-operation inventory, R01-R10 text-range cases and provider-group layout criteria.

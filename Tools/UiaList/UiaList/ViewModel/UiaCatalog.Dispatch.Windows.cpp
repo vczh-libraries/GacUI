@@ -10,7 +10,7 @@ namespace uialist::native
 		if (action.rangeKey) return ExecuteRange(action, arguments);
 		ActionOutcome result;
 		result.value = Ptr(new ValueData);
-		auto current = DescribeActions(nodeKey, action.pattern);
+		auto current = DescribeActions(nodeKey, action.pattern, false);
 		Ptr<ActionSpec> capability;
 		if (current) for (auto&& item : current->commands) if (item->code == action.code) capability = item;
 		if (!capability || !capability->enabled || arguments.Count() != capability->parameters.Count()) { result.available = false; return result; }

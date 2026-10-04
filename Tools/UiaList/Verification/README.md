@@ -1,5 +1,42 @@
 # UiaList verification
 
+## CLI verification (2026-10-04)
+
+The new CLI drivers exercise the executable's parser, dispatcher and independently parsed JSON responses. They never use the showcase HTTP endpoint. Launch fixtures through the repository wrapper, then supply their actual PID; start a fresh fixture for `CliAcceptance.py`, because the lifecycle driver deliberately closes a navigation window. Python must be a real Python installation, not the Windows Store alias.
+
+```powershell
+$python = 'C:\Users\vczh\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
+& $python C:\Code\VczhLibraries\GacUI\Tools\UiaList\Verification\CliSmoke.py --fixture 32616
+& $python C:\Code\VczhLibraries\GacUI\Tools\UiaList\Verification\CliAcceptance.py --fixture 32616
+& $python C:\Code\VczhLibraries\GacUI\Tools\UiaList\Verification\CliFailure.py --fixture 32616
+& $python C:\Code\VczhLibraries\GacUI\Tools\UiaList\Verification\CliLifecycle.py --fixture 32616
+& $python C:\Code\VczhLibraries\GacUI\Tools\UiaList\Verification\CliShowcase.py --pid 29848 --hosted
+# Launch a fresh CppTest_Metaonly through the execution wrapper, then omit --hosted.
+```
+
+`CliSmoke.py` and `CliAcceptance.py` accept `--platform Win32`, `--configuration Release` and `--solution ABSOLUTE_DIRECTORY`. Build the separate `CliValueTests/CliValueTests.sln` through `copilotBuild.ps1`, then run `CliValueTests/Verify.py` for typed values that Windows normalizes before an external UIA client receives them. Every driver records one input/response pair per line in `%TEMP%/UiaListCli-PID.jsonl`; fixture logs are independent UTF-16 call records.
+
+Current evidence:
+
+| Coverage | Observed result |
+| --- | --- |
+| Catalog and projects | 35 patterns, 175 properties, 44 text attributes, 41 roles, one metadata descriptor, 42 localization keys; explicit project/filter inventories pass. |
+| Source and package builds | Both frontends passed Debug/Release × Win32/x64 in both solutions, using repository wrappers. |
+| Framing and identity | 24-command smoke plus EOF; invalid JSON/types/IDs/UTF-8, pipelining, stale ranges, distinct external references and wrong-document operands. Interactive console commands also completed. |
+| Patterns and ranges | Fresh expanded acceptance passed 276 commands, including logged target/typed arguments/exact call counts, setter state readback, enum choices, range units/endpoints, all attributes, external elements, navigation and the complete 11,053-node tree. Separate checks passed Element3 and TextRange2 context menus and retained process ancestry/pruning. |
+| Failures | Expected invocation failure, one committed range edit followed by readback failure, capability changed by another client, and separate fatal-provider/nonzero-exit run passed. Mutations were not retried. |
+| Values | All twelve ValueData kinds, full Unicode/control/NUL strings, precise signed/unsigned integers, array bounds and nonfinite values passed direct JSON checks; external UIA delivered NaN and both infinities correctly. |
+| Preview and lifecycle | BMP decode/dimensions/DPI/generation, deep overlapping descendants outside parent bounds, offscreen exclusion, no target input, minimized/unavailable capture with usable properties, surviving/removed window identities and cleared stale help passed. |
+| Architecture and stability | All four Win32/x64 client/target combinations passed; 25 consecutive Debug CLI smoke/EOF cycles passed. |
+| Real applications | CppTest: 364 commands / 1,512 assertions. CppTest_Metaonly: 369 commands / 1,518 assertions. Covers nested tabs, lists/views/trees/grids, text/ranges, calendars, layout, menus/formatting/dialogs, transform, window lifecycle and palette replacement. Both closed normally. |
+| Shutdown and deployment | Debug CLI loaded/replaced the deep tree, retained a range workspace and exited zero under CDB with no CRT leak report. UpdateRelease and repeated copying passed; 39 source files matched byte-for-byte, old nested paths were absent, project/filter paths resolved, and deployed Release Win32 CLI hashes matched. The isolated shipped CLI smoke and packaged Release GUI UIA/Refresh/Close checks passed without resource files. |
+
+These runs used MSVC 14.51, Windows SDK catalog 10.0.26100 and the local Windows desktop. The existing Release x64 showcase binaries dated 2026-09-26 supplied the real-provider targets. A first GUI getter regression timed out waiting for a published value while the independent fixture recorded exactly one setter; the retry passed. The final shared GUI getter/navigation run passed in 118.2 seconds with one native Invoke and exit zero. The GUI also passed 25 consecutive deep-tree replacements and closed under CDB with the full tree loaded, exit zero and no CRT leak report; details are in the investigation report.
+
+For GUI failure checks, launch a fresh Debug inspector through `copilotExecute.ps1` with `/AsPort:8891` in its debugger arguments, then run `GuiFailure.ps1 -AsPort 8891 -FixtureProcessId PID`. The final run passed the expected getter diagnostic, continued responsiveness, native fatal dialog, exact call counts and nonzero exit. Debug Direct2D raises 0x80000003 while the existing immediate `ExitProcess` fatal policy tears down live graphics objects; CDB confirmed this separately from normal shutdown. The test accepts nonzero termination, not a fixed fatal exit code.
+
+Windows UIA shortened a provider BSTR containing `A,NUL,...` to one character before conversion (CDB observed a two-byte BSTR), normalized a text Tabs SAFEARRAY lower bound to zero, and returned Unsupported for nonstandard I8/UI8 text attributes. Direct serializer tests cover preservation of those values when delivered. Physical desktop input/focus, protected-content capture and multiple-monitor/DPI arrangements are not claimed by these runs. Historical acceptance tables below retain broader requirements; successful unsupported-capability responses are not counted as success-path coverage.
+
 The independent fixture uses Windows controls and implements UIA providers directly. It does not import the inspector's adapters, catalogs, model services, or GacUI. Its native window supplies ordinary button, checkbox, edit, combo, list, and slider behavior. Its synthetic window deliberately combines patterns for adapter coverage; these combinations are not presented as standards-conforming real controls.
 
 The synthetic window exposes the 35 standard patterns across capability/document nodes, 41 raw-only control roles, an unknown numeric role, typed references, and text ranges. **Open large/deep raw tree** creates 10,000 siblings and a separate 1,000-level chain. Mutation/query logs contain stable target keys and typed arguments; strings are recorded as UTF-16 units. Native button notifications provide an independent exactly-once Invoke counter.

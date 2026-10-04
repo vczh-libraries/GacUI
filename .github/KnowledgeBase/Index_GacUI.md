@@ -1,4 +1,4 @@
-# GacUI Knowledge Base
+﻿# GacUI Knowledge Base
 
 Project introduction remains in [Index.md](./Index.md#gacui).
 
@@ -34,7 +34,7 @@ Testing GacUI applications without real OS windows or rendering, using the remot
 
 #### UiaList Windows Inspector
 
-Use UiaListApp to discover Windows application windows, inspect UI Automation nodes and properties, and invoke supported target actions.
+Use UiaListApp or UiaListCli to discover Windows windows, inspect UI Automation trees/properties, run providers and text ranges, and capture/hit-test previews. Includes the CLI JSON-line protocol, complete schemas, reference lifetimes and examples.
 
 [Usage Guide](./KB_GacUI_Design_UiaList.md)
 

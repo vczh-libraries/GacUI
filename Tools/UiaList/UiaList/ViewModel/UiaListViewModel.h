@@ -103,6 +103,8 @@ namespace uialist
 	{
 	public:
 		vl::Ptr<IStringsStrings>			strings;
+		vl::Event<void()>				Published;
+		vl::Func<void(const vl::WString&, const vl::WString&, HRESULT, bool)> failureHandler;
 		vl::WString						localeName;
 		vl::vint						activeTab = 0;
 		bool							initialized = false;
@@ -155,6 +157,7 @@ namespace uialist
 		void							PublishTree(vl::Ptr<native::TreeSnapshot> result);
 		void							PublishSnapshot();
 		void							QueueNative(const vl::WString& operation, vl::Func<void()> task);
+		void							ReportFailure(const vl::WString& operation, const vl::WString& message, HRESULT result, bool fatal);
 		static void						Post(vl::Ptr<UiLifetime> lifetime, vl::Func<void(UiaListViewModel&)> completion);
 	};
 }

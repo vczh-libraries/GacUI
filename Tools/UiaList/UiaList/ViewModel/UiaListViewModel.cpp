@@ -1,4 +1,4 @@
-#include "UiaListViewModel.h"
+﻿#include "UiaListViewModel.h"
 #include "PropertyViewModel.h"
 #include "ActionViewModel.h"
 
@@ -195,8 +195,24 @@ namespace uialist
 	{
 		GetApplication()->InvokeInMainThread(nullptr, [gate, completion]()
 		{
-			if (!gate->closed && gate->owner) completion(*gate->owner);
+			if (!gate->closed && gate->owner)
+			{
+				completion(*gate->owner);
+				if (!gate->closed && gate->owner) gate->owner->Published();
+			}
 		});
+	}
+
+	void UiaListViewModel::ReportFailure(const WString& operation, const WString& message, HRESULT result, bool fatal)
+	{
+		if (failureHandler) failureHandler(operation, message, result, fatal);
+		else if (fatal)
+		{
+			OutputDebugStringW(message.Buffer());
+			MessageBoxW(nullptr, message.Buffer(), L"UiaList", MB_OK | MB_ICONERROR);
+			ExitProcess(1);
+		}
+		else if (treeBusy) ClearSelection();
 	}
 
 	void UiaListViewModel::QueueNative(const WString& operation, Func<void()> task)
@@ -217,9 +233,11 @@ namespace uialist
 				{
 					if (!error.IsExpected()) throw;
 					auto message = context + L"\r\n" + error.Message();
-					Post(gate, [message, epoch](UiaListViewModel& root)
+					auto result = error.result;
+					Post(gate, [message, epoch, context, result](UiaListViewModel& root)
 					{
 						if (root.lifetime->generation != epoch) return;
+						root.ReportFailure(context, message, result, false);
 						if (root.propertyDialog && root.propertyDialog->open)
 						{
 							auto dialog = root.propertyDialog;
@@ -234,12 +252,14 @@ namespace uialist
 			catch (const Exception& error)
 			{
 				auto message = context + L"\r\n" + error.Message();
-				GetApplication()->InvokeInMainThread(nullptr, [message]()
-				{
-					OutputDebugStringW(message.Buffer());
-					MessageBoxW(nullptr, message.Buffer(), L"UiaList", MB_OK | MB_ICONERROR);
-					ExitProcess(1);
-				});
+				auto failure = dynamic_cast<const native::UiaFailure*>(&error);
+				auto result = failure ? failure->result : E_FAIL;
+				Post(gate, [context, message, result](UiaListViewModel& root) { root.ReportFailure(context, message, result, true); });
+			}
+			catch (const Error& error)
+			{
+				auto message = context + L"\r\n" + error.Description();
+				Post(gate, [context, message](UiaListViewModel& root) { root.ReportFailure(context, message, E_FAIL, true); });
 			}
 		});
 	}
@@ -303,11 +323,13 @@ namespace uialist
 						auto child = Ptr(new ProcessNodeViewModel);
 						child->kind = vm::ProcessNodeKind::Window;
 						child->processId = record.processId;
+						child->creationTime = node->creationTime;
 						child->executable = record.executable;
 						child->window = window;
 						child->displayText = SingleLine(window.title.Length() ? window.title : root.strings->Untitled());
 						node->windows.Add(child);
-						if (root.selectedWindow && root.selectedWindow->window.identity == window.identity) survivingSelection = child;
+						if (root.selectedWindow && root.selectedWindow->window.identity == window.identity
+							&& (!root.selectedWindow->creationTime || !child->creationTime || root.selectedWindow->creationTime == child->creationTime)) survivingSelection = child;
 					}
 					processNodes.Add(node);
 				}
@@ -377,11 +399,9 @@ namespace uialist
 		selectedWindow = node;
 		SelectedWindowChanged();
 		HasSelectionChanged();
-		auto target = node->window.identity;
-		auto gate = lifetime;
-		QueueNative(L"Create UIA session", [this, target, gate]()
+		QueueNative(L"Release UIA session", [this]()
 		{
-			if (!gate->closed) worker.session = Ptr(new native::UiaSession(target));
+			worker.session = nullptr;
 		});
 		RefreshWindow();
 		SetActiveTab(1);
@@ -427,10 +447,11 @@ namespace uialist
 		preview->StatusChanged();
 		IsBusyChanged();
 		StatusChanged();
-		QueueNative(L"Read Raw View", [this, gate, generation, closeDialog]()
+		QueueNative(L"Read Raw View", [this, gate, generation, closeDialog, request]()
 		{
 			auto canceled = [gate, generation]() { return gate->closed || gate->generation != generation; };
 			if (canceled()) return;
+			if (!worker.session) worker.session = Ptr(new native::UiaSession(request->target));
 			if (closeDialog) worker.session->DiscardRanges();
 			auto result = worker.session->ReadTree(generation, canceled, [gate, generation](vint count)
 			{
@@ -463,12 +484,12 @@ namespace uialist
 			catch (const Exception& error)
 			{
 				auto message = L"Window capture; HWND=" + native::Hex(reinterpret_cast<UINT_PTR>(request->target.handle)) + L"; PID=" + utow(request->target.processId) + L"; generation=" + itow(request->generation) + L"\r\n" + error.Message();
-				GetApplication()->InvokeInMainThread(nullptr, [message]()
-				{
-					OutputDebugStringW(message.Buffer());
-					MessageBoxW(nullptr, message.Buffer(), L"UiaList", MB_OK | MB_ICONERROR);
-					ExitProcess(1);
-				});
+				Post(gate, [message](UiaListViewModel& root) { root.ReportFailure(L"CaptureWindow", message, E_FAIL, true); });
+			}
+			catch (const Error& error)
+			{
+				auto message = WString(L"Window capture: ") + error.Description();
+				Post(gate, [message](UiaListViewModel& root) { root.ReportFailure(L"CaptureWindow", message, E_FAIL, true); });
 			}
 		});
 	}
