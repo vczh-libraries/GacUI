@@ -1,20 +1,23 @@
 # UiaList verification
 
-## CLI verification (2026-10-04)
+## CLI verification
 
-The new CLI drivers exercise the executable's parser, dispatcher and independently parsed JSON responses. They never use the showcase HTTP endpoint. Launch fixtures through the repository wrapper, then supply their actual PID; start a fresh fixture for `CliAcceptance.py`, because the lifecycle driver deliberately closes a navigation window. Python must be a real Python installation, not the Windows Store alias.
+The PowerShell 7 CLI drivers exercise the executable's parser, dispatcher and independently parsed JSON responses. They never use the showcase HTTP endpoint. Launch fixtures through the repository wrapper, then supply their actual PID; start a fresh fixture for `CliAcceptance.ps1`, because the lifecycle driver deliberately closes a navigation window. `CliCommon.ps1` shares UTF-8 process transport, response assertions and transcript handling.
+
+Run these examples from the GacUI repository root, replacing the process IDs with the actual target processes:
 
 ```powershell
-$python = 'C:\Users\vczh\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
-& $python C:\Code\VczhLibraries\GacUI\Tools\UiaList\Verification\CliSmoke.py --fixture 32616
-& $python C:\Code\VczhLibraries\GacUI\Tools\UiaList\Verification\CliAcceptance.py --fixture 32616
-& $python C:\Code\VczhLibraries\GacUI\Tools\UiaList\Verification\CliFailure.py --fixture 32616
-& $python C:\Code\VczhLibraries\GacUI\Tools\UiaList\Verification\CliLifecycle.py --fixture 32616
-& $python C:\Code\VczhLibraries\GacUI\Tools\UiaList\Verification\CliShowcase.py --pid 29848 --hosted
-# Launch a fresh CppTest_Metaonly through the execution wrapper, then omit --hosted.
+$verification = Join-Path (Get-Location) 'Tools/UiaList/Verification'
+& (Join-Path $verification 'CliSmoke.ps1') -FixtureProcessId 1234
+& (Join-Path $verification 'CliAcceptance.ps1') -FixtureProcessId 1234
+& (Join-Path $verification 'CliFailure.ps1') -FixtureProcessId 1234
+& (Join-Path $verification 'CliLifecycle.ps1') -FixtureProcessId 1234
+& (Join-Path $verification 'CliShowcase.ps1') -ProcessId 5678 -Hosted
+# Launch a fresh CppTest_Metaonly through the execution wrapper, then omit -Hosted.
+& (Join-Path $verification 'CliValueTests/Verify.ps1')
 ```
 
-`CliSmoke.py` and `CliAcceptance.py` accept `--platform Win32`, `--configuration Release` and `--solution ABSOLUTE_DIRECTORY`. Build the separate `CliValueTests/CliValueTests.sln` through `copilotBuild.ps1`, then run `CliValueTests/Verify.py` for typed values that Windows normalizes before an external UIA client receives them. Every driver records one input/response pair per line in `%TEMP%/UiaListCli-PID.jsonl`; fixture logs are independent UTF-16 call records.
+`CliSmoke.ps1` and `CliAcceptance.ps1` accept `-Platform Win32`, `-Configuration Release` and `-Solution DIRECTORY`. Build the separate `CliValueTests/CliValueTests.sln` through `copilotBuild.ps1`, then run `CliValueTests/Verify.ps1` for typed values that Windows normalizes before an external UIA client receives them. CLI sessions record one input/response pair per line in `%TEMP%/UiaListCli-PID.jsonl`, including invalid encoding and pipelined requests; fixture logs are independent UTF-16 call records. The direct value verifier parses its separate executable's JSON output without a CLI session.
 
 Current evidence:
 
@@ -31,7 +34,9 @@ Current evidence:
 | Real applications | CppTest: 364 commands / 1,512 assertions. CppTest_Metaonly: 369 commands / 1,518 assertions. Covers nested tabs, lists/views/trees/grids, text/ranges, calendars, layout, menus/formatting/dialogs, transform, window lifecycle and palette replacement. Both closed normally. |
 | Shutdown and deployment | Debug CLI loaded/replaced the deep tree, retained a range workspace and exited zero under CDB with no CRT leak report. UpdateRelease and repeated copying passed; 39 source files matched byte-for-byte, old nested paths were absent, project/filter paths resolved, and deployed Release Win32 CLI hashes matched. The isolated shipped CLI smoke and packaged Release GUI UIA/Refresh/Close checks passed without resource files. |
 
-These runs used MSVC 14.51, Windows SDK catalog 10.0.26100 and the local Windows desktop. The existing Release x64 showcase binaries dated 2026-09-26 supplied the real-provider targets. A first GUI getter regression timed out waiting for a published value while the independent fixture recorded exactly one setter; the retry passed. The final shared GUI getter/navigation run passed in 118.2 seconds with one native Invoke and exit zero. The GUI also passed 25 consecutive deep-tree replacements and closed under CDB with the full tree loaded, exit zero and no CRT leak report; details are in the investigation report.
+All PowerShell replacements passed against the existing binaries: smoke/EOF, 276-command acceptance, failure paths, 22-command preview/lifecycle, both showcase modes with the command/assertion counts above, and direct ValueData checks. The script conversion did not change C++ or rerun the earlier build matrix and GUI suites.
+
+These runs used MSVC 14.51, Windows SDK catalog 10.0.26100 and the local Windows desktop. The existing Release x64 showcase binaries supplied the real-provider targets. A first GUI getter regression timed out waiting for a published value while the independent fixture recorded exactly one setter; the retry passed. The final shared GUI getter/navigation run passed in 118.2 seconds with one native Invoke and exit zero. The GUI also passed 25 consecutive deep-tree replacements and closed under CDB with the full tree loaded, exit zero and no CRT leak report; details are in the investigation report.
 
 For GUI failure checks, launch a fresh Debug inspector through `copilotExecute.ps1` with `/AsPort:8891` in its debugger arguments, then run `GuiFailure.ps1 -AsPort 8891 -FixtureProcessId PID`. The final run passed the expected getter diagnostic, continued responsiveness, native fatal dialog, exact call counts and nonzero exit. Debug Direct2D raises 0x80000003 while the existing immediate `ExitProcess` fatal policy tears down live graphics objects; CDB confirmed this separately from normal shutdown. The test accepts nonzero termination, not a fixed fatal exit code.
 
@@ -52,7 +57,7 @@ Run the following from any directory, adjusting the checkout prefix as needed:
 & C:\Code\VczhLibraries\GacUI\Tools\UiaList\Verification\Smoke.ps1 -Platform x64 -Cycles 25
 ```
 
-`CheckCatalog.ps1` compares named SDK IDs, synchronized translation keys, and explicit C++ project/filter inventories. `Smoke.ps1` launches the inspector through the repository wrapper, selects the fixture process by PID, single-clicks its window row, uses Nodes' context-menu Inspect, drives both modal levels, verifies exactly one native Invoke notification, refreshes, and checks normal exit. Supply `-FixtureProcessId` when multiple fixtures run; this selects both the process and independent log. All drivers accept `-AsPort`; use 8891 beside showcase ports 8888 and 8890.
+`CheckCatalog.ps1` compares named SDK IDs, synchronized translation keys, and explicit C++ project/filter inventories. `Smoke.ps1` launches the inspector through the repository wrapper, selects the fixture process by PID, single-clicks its window row, uses Nodes' context-menu Inspect, drives both modal levels, verifies exactly one native Invoke notification, refreshes, and checks normal exit. Supply `-FixtureProcessId` when multiple fixtures run; this selects both the process and independent log. GUI automation drivers accept `-AsPort`; use 8891 beside showcase ports 8888 and 8890.
 
 `DeepTree.ps1 -Cycles 25` operates an already-running Debug inspector after the fixture's **Open large/deep raw tree** button has been clicked. It repeats complete traversal and replacement of the deep tree, checking the observed 11,053/51 node counts. `-Cycles 0 -CloseWithDeepTree` loads the large tree and closes the inspector. Confirm the process exit and leak output in CDB; use `sxd eh` to preserve second-chance C++ exception breaks during error investigation.
 
@@ -85,9 +90,9 @@ The [acceptance matrix below](#acceptance-matrix) preserves the inspector requir
 
 Build outputs, volatile call logs, screenshots, deployment copies, and full debugger/automation dumps are ignored. Keep source, reproducible scripts, and concise results in version control.
 
-## Windows provider integration regression (2026-09-18)
+## Windows provider integration regression
 
-`Smoke.ps1` also requires the parameterless `GetClickablePoint` result to appear as a readout without a duplicate button, and verifies that inspecting getters does not increment the independent Invoke counter. The current Debug x64 and Win32 runs passed with exactly one deliberate invocation and normal exit. All drivers accept `-AsPort` for concurrent inspection.
+`Smoke.ps1` also requires the parameterless `GetClickablePoint` result to appear as a readout without a duplicate button, and verifies that inspecting getters does not increment the independent Invoke counter. The current Debug x64 and Win32 runs passed with exactly one deliberate invocation and normal exit. GUI automation drivers accept `-AsPort` for concurrent inspection.
 
 Add `-GetterRegression` to test invalid and committed getter parameters, rapid edits, returned-element inspection, detail replacement while a query is pending, explicit StartListening/Cancel, and opening a returned document range to execute Clone. Each deliberate operation is checked against the independent fixture log. The synthetic document exposes a TextEdit interface whose SupportedTextSelection query can return `UIA_E_ELEMENTNOTAVAILABLE` while the element remains readable; that section displays the operation and HRESULT, and other text sections/range workspaces remain available.
 
@@ -101,7 +106,7 @@ The current local GacUI provider suites are `Test/UIA_CppTest.ps1` and `Test/UIA
 
 The earlier integration runs passed 4,433 hosted and 4,445 ordinary Direct2D assertions, both with normal shutdown and released endpoints. The complete `-GetterRegression` workflow passed on Debug x64 and Win32. Two concurrent three-application inspection/restart cycles passed, as did the Release no-endpoint check. Exact commands, GDI smoke coverage, build/unit/metadata results and verification limits are recorded in [the archived investigation report](../../../.github/Learning/2026-09-18-15-13-48/Copilot_Investigate.md).
 
-## Process browsing and inspector layout regression (2026-09-18)
+## Process browsing and inspector layout regression
 
 The current change passed GacBuild for both architecture paths, all four UiaList build configurations, both GacUISrc Debug architectures, and 1,769/1,769 configured UnitTest cases (90/90 files; no appended leak report). CheckCatalog now reports 42 matching localization keys in each locale; its SDK inventories are unchanged. Every one of the 18 relocated-header project/filter references resolves.
 

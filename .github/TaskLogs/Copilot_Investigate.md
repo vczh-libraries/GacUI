@@ -124,15 +124,22 @@ No unresolved review comments. The missing contracts and verification requiremen
 
 # UPDATES
 
+## UPDATE
+
+It looks like you have implemented many python scripts in Tools/UiaList/Verification, you should use powershell, please rewrite all of them, and make sure they work. Since you are not touching any C++ code so no other verification is needed In Tools/UiaList/Verification/README.md you don't need to mention the date.
+
 # TEST [CONFIRMED]
 
 Baseline: verify that the source and packaged solutions lack UiaListCli. Implement executable-boundary verification against the existing independent UIA fixture, catalog, deep tree and CppTest showcase. Success requires the complete TODO_TASK verification matrix, normal shutdown and clean Debug leak reports.
+
+For the PowerShell conversion, run every replacement entry point against the existing binaries: smoke plus EOF, native acceptance, failure framing/capability/fatal paths, preview/lifecycle, both hosted/native showcase modes, and direct ValueData verification. Preserve existing assertions, independent fixture logs and JSON transcripts. No C++ changes, rebuilds or unrelated verification are required for this update.
 
 # PROPOSALS
 
 Baseline confirmed on 2026-10-03: UiaListCli.vcxproj is absent and the source solution contains only Gaclib, UiaList and UiaListApp. CheckCatalog.ps1 passes with 175 properties, 35 patterns, 44 attributes, 41 roles, one metadata descriptor and 42 matching localization keys. These existing catalogs are the source of operation coverage.
 
 - No.1 Add a JSON command view model over the existing inspector library [CONFIRMED]
+- No.2 Replace Python verification drivers with PowerShell [CONFIRMED]
 
 ## No.1 Add a JSON command view model over the existing inspector library [CONFIRMED]
 
@@ -184,3 +191,29 @@ No claim is made for physical desktop input/foreground focus, protected-content 
 The shared command view model provides the requested JSON console frontend while retaining the existing UIA worker, native catalogs, session ownership and GUI behavior. Independent fixture records confirm typed dispatch and exactly-once mutations; independently parsed responses confirm framing, completion, readback and reference lifetime. Native coverage, both real showcase runs, the eight-configuration build matrix, deployment checks, Parser2 regressions and repeated CLI/GUI lifecycle checks passed. The documented platform and fatal-shutdown limits above bound these results; no unsupported response is substituted for a successful operation.
 
 Source and release project layouts, byte-preserving copying, executable deployment and protocol documentation are complete. The skip-learning synchronization updated the page/index in all eight targets from central Tools content: 0 learning updates, 0 new learnings. Changes are committed and pushed in the nine affected repositories; the final GacUI commit includes this confirmation and the verification drivers.
+
+## No.2 Replace Python verification drivers with PowerShell [CONFIRMED]
+
+Replace all six Python entry points with PowerShell scripts and share process launch, UTF-8 JSON framing, response assertions and transcript handling in one helper. Retain each driver's existing behavior and independent expectations, including raw invalid UTF-8, exact provider call counts, returned references and range lifetime, deep trees, preview geometry, real showcase operations, and precise serializer values. Use existing executables through the repository execution wrapper. Update the verification README to describe PowerShell and remove date references. This supersedes the original choice of Python without changing the C++ implementation.
+
+### CODE CHANGE
+
+Replaced `CliSmoke.py`, `CliAcceptance.py`, `CliFailure.py`, `CliLifecycle.py`, `CliShowcase.py` and `CliValueTests/Verify.py` with their `.ps1` counterparts. `CliCommon.ps1` owns wrapper launch, asynchronous stdout/stderr consumption, per-response deadlines, exact JSON envelopes, typed structural assertions, UTF-8 transcripts and shared access to live fixture logs. The failure driver now records invalid-encoding and pipelined responses in its transcript as well. The preview driver uses a small PowerShell Add-Type Win32 declaration in place of ctypes. The README now documents PowerShell 7 parameters and commands and omits dates in its headings and prose. No C++ or release files changed.
+
+### CONFIRMED
+
+All six replacement entry points passed against the existing binaries. The shared helper is exercised by every entry point. The converted acceptance and showcase drivers retain the original command and assertion counts; no assertion was removed to obtain a passing run.
+
+| PowerShell driver | Passing evidence |
+| --- | --- |
+| `CliSmoke.ps1` | 24 commands plus a separate one-command EOF session; transcripts 25376 and 14884. |
+| `CliAcceptance.ps1` | 276 commands, independent exact provider-call/argument/state checks, all patterns and the complete 11,053-node tree; transcript 668. |
+| `CliFailure.ps1` | Invalid UTF-8/raw NUL, pipelined framing, expected invocation error, committed range change followed by readback failure, externally changed capability and separate fatal/nonzero exit. Primary/secondary/fatal sessions recorded 15/6/3 responses in transcripts 29828/17040/30176. |
+| `CliLifecycle.ps1` | 22 commands covering actual BMP dimensions/DPI/generation and deep/overlapping/outside-parent/offscreen hits, unchanged input logs, minimized capture and surviving/removed identities; transcript 22072. |
+| `CliShowcase.ps1 -Hosted` | CppTest: 364 commands, 1,512 assertions, target and wrapper normal exit; transcript 34380. |
+| `CliShowcase.ps1` | CppTest_Metaonly: 369 commands, 1,518 assertions, target and wrapper normal exit; transcript 29184. |
+| `CliValueTests/Verify.ps1` | All twelve kinds, NUL/control/Unicode strings, precise integers, nonfinite values and array bounds. |
+
+Transcripts are `%TEMP%/UiaListCli-PID.jsonl`. Driver logs are `%TEMP%/UiaListCli-powershell-{smoke,acceptance,failure,lifecycle,showcase-hosted,showcase-native}.txt`; the direct value verifier printed its passing result. Native cases used the existing Debug Win32 fixture (PID 9588) with the Debug x64 CLI; showcase targets were the existing Release x64 binaries. The fixture and both showcase processes closed normally after their runs.
+
+Conversion testing corrected three PowerShell integration details: select one `pwsh` executable when several are installed, retain null at stdout EOF instead of coercing it to an empty string, and open fixture logs with shared read/write access. Final runs passed with those changes. Script syntax and whitespace checks passed. No C++ rebuild, catalog run, GUI regression suite or unrelated verification was performed, as requested. Both confirmed proposals are retained: the console implementation remains, with its verification drivers now in PowerShell.
