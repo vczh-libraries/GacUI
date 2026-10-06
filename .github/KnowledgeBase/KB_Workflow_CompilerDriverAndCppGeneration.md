@@ -95,7 +95,7 @@ Ptr<runtime::WfAssembly> CompileWorkflowModules(
 
 The result is not a single source file. `WfCppOutput::cppFiles` is the complete generated file set, and the caller decides how to store, log, or pass each entry to the C++ build. `WfCppOutput::entryFileName` names the header stem that downstream code should include, but it is not the only generated file.
 
-Generated file groups include:
+The generated filename patterns below are basenames, with output directories chosen by the caller. Generated file groups include:
 
 - the main Workflow translation files: `<defaultFileName>.h` and `<defaultFileName>.cpp`, generated for every successful C++ generation call;
 - internal split headers: `<defaultFileName>N.h`, generated when the compiler separates generated classes into additional non-custom headers;

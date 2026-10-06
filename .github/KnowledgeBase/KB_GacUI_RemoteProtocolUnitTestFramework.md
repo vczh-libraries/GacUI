@@ -2,7 +2,7 @@
 
 The remote protocol unit test framework allows testing GacUI applications without real OS windows or rendering. It reuses the same remote protocol architecture as production remote deployment, replacing the renderer side with a mock implementation (`UnitTestRemoteProtocol`) that captures rendering results as snapshots and feeds simulated user input through the protocol pipeline. The GacUI core side runs identically to production.
 
-Implementation lives in `Source/UnitTestUtilities/`.
+Implementation lives in `<GacUI repo>/Source/UnitTestUtilities/`.
 
 ## Comprehensive Example
 
@@ -236,12 +236,12 @@ The sequence is:
 
 ### Snapshot File Structure
 
-For a test named `Controls/Basic/GuiButton/ClickOnMouseUp`:
-- **Main trace file**: `{snapshotFolder}/Controls/Basic/GuiButton/ClickOnMouseUp.json` — `UnitTest_RenderingTrace` with `createdElements`, `imageCreations`, `imageMetadatas`, and `frames` (each frame only has `frameId` and `frameName`, detail stripped).
-- **Per-frame files**: `{snapshotFolder}/Controls/Basic/GuiButton/ClickOnMouseUp/frame_0.json`, `frame_1.json`, etc. — full `UnitTest_RenderingFrame` with `frameId`, `frameName`, `windowSize`, `elements` (all rendered element descriptions keyed by ID), and `root` (the rendering DOM tree).
-- **Workflow snapshot**: `ClickOnMouseUp[x64].txt` or `[x86].txt` — compiled Workflow script text for generation stability verification.
-- **Commands log**: `ClickOnMouseUp[commands].txt` — rendering command logs per frame (when not using DOM diff).
-- **Diffs log**: `ClickOnMouseUp[diffs].txt` — DOM diff logs per frame.
+For a test named `Controls/Basic/GuiButton/ClickOnMouseUp`, with `snapshotFolder` set to `<GacUI repo>/Test/Resources/UnitTestSnapshots`:
+- **Main trace file**: `<GacUI repo>/Test/Resources/UnitTestSnapshots/Controls/Basic/GuiButton/ClickOnMouseUp.json` — `UnitTest_RenderingTrace` with `createdElements`, `imageCreations`, `imageMetadatas`, and `frames` (each frame only has `frameId` and `frameName`, detail stripped).
+- **Per-frame files**: `<GacUI repo>/Test/Resources/UnitTestSnapshots/Controls/Basic/GuiButton/ClickOnMouseUp/frame_0.json`, `<GacUI repo>/Test/Resources/UnitTestSnapshots/Controls/Basic/GuiButton/ClickOnMouseUp/frame_1.json`, etc. — full `UnitTest_RenderingFrame` with `frameId`, `frameName`, `windowSize`, `elements` (all rendered element descriptions keyed by ID), and `root` (the rendering DOM tree).
+- **Workflow snapshot**: `<GacUI repo>/Test/Resources/UnitTestSnapshots/Controls/Basic/GuiButton/ClickOnMouseUp[x64].txt` or `<GacUI repo>/Test/Resources/UnitTestSnapshots/Controls/Basic/GuiButton/ClickOnMouseUp[x86].txt` — compiled Workflow script text for generation stability verification.
+- **Commands log**: `<GacUI repo>/Test/Resources/UnitTestSnapshots/Controls/Basic/GuiButton/ClickOnMouseUp[commands].txt` — rendering command logs per frame (when not using DOM diff).
+- **Diffs log**: `<GacUI repo>/Test/Resources/UnitTestSnapshots/Controls/Basic/GuiButton/ClickOnMouseUp[diffs].txt` — DOM diff logs per frame.
 
 ### Write Strategy (GacUIUnitTest_LogUI)
 

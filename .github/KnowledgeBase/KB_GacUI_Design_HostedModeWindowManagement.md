@@ -2,15 +2,15 @@ Hosted Mode Window Management
 
 Hosted mode is a GacUI operating mode in which the entire GUI application runs inside a single OS native window. Instead of creating one native window per `GuiWindow`, all sub-windows, dialogs, popups, and menus are rendered as graphics within the sole native window. The hosted mode implements its own window manager to handle z-ordering, hit testing, focus, activation, dragging, resizing, and input dispatching — functions normally provided by the OS.
 
-The implementation lives in `Source/PlatformProviders/Hosted/` with these files:
-- `GuiHostedController.h/.cpp` — the core controller wrapping a native controller
-- `GuiHostedWindow.h/.cpp` — virtual window implementing `INativeWindow`
-- `GuiHostedWindowManager.h` — template-based window management algorithm
-- `GuiHostedGraphics.h/.cpp` — graphics resource manager wrapper
-- `GuiHostedApplication.h/.cpp` — global hosted application accessor
-- `GuiHostedWindowProxy_Main.cpp` — proxy for the main window
-- `GuiHostedWindowProxy_NonMain.cpp` — proxy for non-main windows
-- `GuiHostedWindowProxy_Placeholder.cpp` — proxy for windows before role assignment
+The implementation lives in `<GacUI repo>/Source/PlatformProviders/Hosted/` with these files:
+- `<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedController.h/.cpp` — the core controller wrapping a native controller
+- `<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedWindow.h/.cpp` — virtual window implementing `INativeWindow`
+- `<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedWindowManager.h` — template-based window management algorithm
+- `<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedGraphics.h/.cpp` — graphics resource manager wrapper
+- `<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedApplication.h/.cpp` — global hosted application accessor
+- `<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedWindowProxy_Main.cpp` — proxy for the main window
+- `<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedWindowProxy_NonMain.cpp` — proxy for non-main windows
+- `<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedWindowProxy_Placeholder.cpp` — proxy for windows before role assignment
 
 ## Entry Points and Activation
 
@@ -90,7 +90,7 @@ Services it implements itself:
 
 ## Window Manager Template
 
-### WindowManager<T> (GuiHostedWindowManager.h)
+### WindowManager<T> (`<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedWindowManager.h`)
 
 The core window management algorithm is template class `hosted_window_manager::WindowManager<T>` parameterized by window ID type. It maintains:
 - `registeredWindows` — dictionary of all registered windows
@@ -143,9 +143,9 @@ Two separate lists (`ordinaryWindowsInOrder` and `topMostedWindowsInOrder`) trac
 ### Proxy Pattern
 
 `GuiHostedWindow` delegates behavior to an `IGuiHostedWindowProxy`. There are three proxy types:
-1. **PlaceholderProxy** (`GuiHostedWindowProxy_Placeholder.cpp`) — initial no-op proxy for newly created windows before role assignment
-2. **MainProxy** (`GuiHostedWindowProxy_Main.cpp`, `GuiMainHostedWindowProxy`) — for the main window; delegates title, icon, size, border properties, maximized/minimized/show/hide to the real native window
-3. **NonMainProxy** (`GuiHostedWindowProxy_NonMain.cpp`, `GuiNonMainHostedWindowProxy`) — for all other windows; operates purely through the window manager; disallows maximized/minimized boxes; enforces custom frame mode when system borders are used
+1. **PlaceholderProxy** (`<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedWindowProxy_Placeholder.cpp`) — initial no-op proxy for newly created windows before role assignment
+2. **MainProxy** (`<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedWindowProxy_Main.cpp`, `GuiMainHostedWindowProxy`) — for the main window; delegates title, icon, size, border properties, maximized/minimized/show/hide to the real native window
+3. **NonMainProxy** (`<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedWindowProxy_NonMain.cpp`, `GuiNonMainHostedWindowProxy`) — for all other windows; operates purely through the window manager; disallows maximized/minimized boxes; enforces custom frame mode when system borders are used
 
 `BecomeMainWindow()` and `BecomeNonMainWindow()` switch the proxy. This happens in `SettingHostedWindowsBeforeRunning()` when the main window is known, and in `CreateNativeWindow()` for windows created after the main window.
 

@@ -83,11 +83,11 @@ Workflow compiler analysis is organized around `WfLexicalScopeManager::Rebuild`,
 
 Workflow script attributes (`@category:name`) are translated to reflected struct types following the naming convention `system::workflow_attributes::att_category_name`. The compiler resolves, evaluates, and populates attributes onto type descriptors during `Rebuild`, and the binary serialization format preserves class/interface and struct type/member attributes across assembly load/save cycles. Predefined `@cpp:*` attributes control C++ code generation behavior.
 
-- The naming convention is implemented by `WfLexicalScopeManager::GetWorkflowAttributeTypeName` in `Source/Analyzer/WfAnalyzer.cpp`.
+- The naming convention is implemented by `WfLexicalScopeManager::GetWorkflowAttributeTypeName` in `<Workflow repo>/Source/Analyzer/WfAnalyzer.cpp`.
 - Predefined attributes include `@cpp:File`, `@cpp:UserImpl`, `@cpp:Private`, `@cpp:Protected`, and `@cpp:Friend`.
-- Attribute population is performed by `PopulateAttributesOnTypeDescriptors` in `Source/Analyzer/Rpc/WfAnalyzer_ValidateRPC.cpp`.
-- Binary serialization is handled by `IOAttributeBag` in `Source/Runtime/WfRuntimeAssembly.cpp`.
-- C++ code generation emits `ATTRIBUTE_TYPE` / `ATTRIBUTE_MEMBER` / `ATTRIBUTE_PARAMETER` macros via `WriteAttributeMacro` in `Source/Cpp/WfCpp_WriteReflection.cpp`.
+- Attribute population is performed by `PopulateAttributesOnTypeDescriptors` in `<Workflow repo>/Source/Analyzer/Rpc/WfAnalyzer_ValidateRPC.cpp`.
+- Binary serialization is handled by `IOAttributeBag` in `<Workflow repo>/Source/Runtime/WfRuntimeAssembly.cpp`.
+- C++ code generation emits `ATTRIBUTE_TYPE` / `ATTRIBUTE_MEMBER` / `ATTRIBUTE_PARAMETER` macros via `WriteAttributeMacro` in `<Workflow repo>/Source/Cpp/WfCpp_WriteReflection.cpp`.
 
 [Design Explanation](./KB_Workflow_Design_AttributeSystem.md)
 
@@ -109,6 +109,6 @@ Workflow RPC JSON serialization defines the generated TypeScript schema and Work
 - Known-type schemas serialize primitives, enums, structs, lists, observable lists, and dictionaries according to the static RPC metadata.
 - Unknown-type schemas carry enough type information to reconstruct reflected values for dynamic values and byref collection elements.
 - `system::RpcObjectReference`, `system::RpcException`, and `system::RpcByvalReturnValue<T>` are stable internal transport shapes used by generated JSON RPC infrastructure.
-- Generated `.d.ts` files expose `KnownTypeSchema`, `UnknownTypeSchema`, concrete enum and struct declarations, and captured `JsonValue_*.ts` validation data.
+- Generated `.d.ts` files expose `KnownTypeSchema`, `UnknownTypeSchema`, concrete enum and struct declarations, and captured validation data in `<Workflow repo>/Test/TypeScript/JsonValues32/JsonValue_*.ts` and `<Workflow repo>/Test/TypeScript/JsonValues64/JsonValue_*.ts`.
 
 [Design Explanation](./KB_Workflow_Design_JsonSerializationSchema.md)

@@ -89,7 +89,7 @@ if (GetMyGlobalStorage().IsInitialized())
 **Access patterns:**
 - **Availability checking**: Use `IsInitialized()` to verify storage state
 - **Resource access**: Direct member access through the storage object
-- **Post-finalization**: `IsInitialized()` on a retained storage reference returns `false` after `FinalizeGlobalStorage()`. Calling `GetMyGlobalStorage()` initializes it again (`Source/GlobalStorage.h`).
+- **Post-finalization**: `IsInitialized()` on a retained storage reference returns `false` after `FinalizeGlobalStorage()`. Calling `GetMyGlobalStorage()` initializes it again (`<Vlpp repo>/Source/GlobalStorage.h`).
 - **Thread safety**: No automatic synchronization - add locks if needed
 
 ## Integration with Applications

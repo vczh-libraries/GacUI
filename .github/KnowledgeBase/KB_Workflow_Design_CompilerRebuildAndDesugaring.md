@@ -2,37 +2,37 @@
 
 ## How the Workflow analyzer turns parsed modules and high-level Workflow constructs into ordinary AST for bytecode and C++ generation.
 
-This document describes the maintenance-facing design of the Workflow compiler frontend. It focuses on `WfLexicalScopeManager::Rebuild` in `Source/Analyzer/WfAnalyzer.cpp`, the analysis passes it coordinates, and how high-level syntax such as `bind`, co-provider operators, raw coroutines, and state machines is lowered before the emitters run.
+This document describes the maintenance-facing design of the Workflow compiler frontend. It focuses on `WfLexicalScopeManager::Rebuild` in `<Workflow repo>/Source/Analyzer/WfAnalyzer.cpp`, the analysis passes it coordinates, and how high-level syntax such as `bind`, co-provider operators, raw coroutines, and state machines is lowered before the emitters run.
 
-The central invariant is that special syntax is a frontend concern. Bytecode generation in `Source/Emitter` and C++ generation in `Source/Cpp` consume ordinary Workflow AST, or virtual nodes whose `expanded*` field points to ordinary Workflow AST. Raw high-level nodes should not be treated as backend concepts.
+The central invariant is that special syntax is a frontend concern. Bytecode generation in `<Workflow repo>/Source/Emitter` and C++ generation in `<Workflow repo>/Source/Cpp` consume ordinary Workflow AST, or virtual nodes whose `expanded*` field points to ordinary Workflow AST. Raw high-level nodes should not be treated as backend concepts.
 
 ## Source Map
 
 The compiler frontend is spread across these files:
 
-- `Source/Analyzer/WfAnalyzer.cpp`: owns `WfLexicalScopeManager`, `Clear`, `Rebuild`, and shared manager state.
-- `Source/Analyzer/WfAnalyzer_ContextFreeDesugar.cpp`: performs rewrites that do not need type or scope information.
-- `Source/Analyzer/WfAnalyzer_ValidateStructure_*.cpp`: checks syntax placement and structural legality before name/type analysis.
-- `Source/Analyzer/WfAnalyzer_BuildGlobalNameFromModules.cpp`: creates global names, reflected custom types, and class/type member placeholders.
-- `Source/Analyzer/WfAnalyzer_BuildScope.cpp`: creates lexical scopes, symbols, lambda captures, observe scopes, coroutine scopes, and state-machine scopes.
-- `Source/Analyzer/WfAnalyzer_CompleteScope.cpp`: fills symbol and member type information after all global names and scopes exist.
-- `Source/Analyzer/WfAnalyzer_CheckScopes_*.cpp`: checks duplicate symbols, missing symbol types, and declaration dependency cycles.
-- `Source/Analyzer/WfAnalyzer_ValidateSemantic_*.cpp`: resolves expressions, overloads, captures, interface implementations, and context-sensitive expansion.
-- `Source/Analyzer/WfAnalyzer_ExpandBindExpression.cpp`: lowers `bind`.
-- `Source/Analyzer/WfAnalyzer_ExpandStatement.cpp`: lowers `switch`, `foreach`, co-provider statements, and co-operator statements.
-- `Source/Analyzer/WfAnalyzer_ExpandNewCoroutineExpression.cpp`: lowers `$coroutine{}` to `ICoroutine`.
-- `Source/Analyzer/WfAnalyzer_ExpandStateMachine.cpp`: lowers state-machine declarations and state-machine-only statements.
-- `Source/Emitter/*` and `Source/Cpp/*`: consume expanded AST for bytecode and C++ output.
+- `<Workflow repo>/Source/Analyzer/WfAnalyzer.cpp`: owns `WfLexicalScopeManager`, `Clear`, `Rebuild`, and shared manager state.
+- `<Workflow repo>/Source/Analyzer/WfAnalyzer_ContextFreeDesugar.cpp`: performs rewrites that do not need type or scope information.
+- `<Workflow repo>/Source/Analyzer/WfAnalyzer_ValidateStructure_*.cpp`: checks syntax placement and structural legality before name/type analysis.
+- `<Workflow repo>/Source/Analyzer/WfAnalyzer_BuildGlobalNameFromModules.cpp`: creates global names, reflected custom types, and class/type member placeholders.
+- `<Workflow repo>/Source/Analyzer/WfAnalyzer_BuildScope.cpp`: creates lexical scopes, symbols, lambda captures, observe scopes, coroutine scopes, and state-machine scopes.
+- `<Workflow repo>/Source/Analyzer/WfAnalyzer_CompleteScope.cpp`: fills symbol and member type information after all global names and scopes exist.
+- `<Workflow repo>/Source/Analyzer/WfAnalyzer_CheckScopes_*.cpp`: checks duplicate symbols, missing symbol types, and declaration dependency cycles.
+- `<Workflow repo>/Source/Analyzer/WfAnalyzer_ValidateSemantic_*.cpp`: resolves expressions, overloads, captures, interface implementations, and context-sensitive expansion.
+- `<Workflow repo>/Source/Analyzer/WfAnalyzer_ExpandBindExpression.cpp`: lowers `bind`.
+- `<Workflow repo>/Source/Analyzer/WfAnalyzer_ExpandStatement.cpp`: lowers `switch`, `foreach`, co-provider statements, and co-operator statements.
+- `<Workflow repo>/Source/Analyzer/WfAnalyzer_ExpandNewCoroutineExpression.cpp`: lowers `$coroutine{}` to `ICoroutine`.
+- `<Workflow repo>/Source/Analyzer/WfAnalyzer_ExpandStateMachine.cpp`: lowers state-machine declarations and state-machine-only statements.
+- `<Workflow repo>/Source/Emitter/*` and `<Workflow repo>/Source/Cpp/*`: consume expanded AST for bytecode and C++ output.
 
 Parser syntax and generated AST definitions are in:
 
-- `Source/Parser/Syntax/Syntax/Expressions.txt`.
-- `Source/Parser/Syntax/Syntax/Statements.txt`.
-- `Source/Parser/Syntax/Syntax/Decls.txt`.
-- `Source/Parser/Syntax/Lexer.txt`.
-- `Source/Parser/Generated/WorkflowAst.h`.
+- `<Workflow repo>/Source/Parser/Syntax/Syntax/Expressions.txt`.
+- `<Workflow repo>/Source/Parser/Syntax/Syntax/Statements.txt`.
+- `<Workflow repo>/Source/Parser/Syntax/Syntax/Decls.txt`.
+- `<Workflow repo>/Source/Parser/Syntax/Lexer.txt`.
+- `<Workflow repo>/Source/Parser/Generated/WorkflowAst.h`.
 
-Generated sample outputs under `Test/Generated/Workflow32` and `Test/Generated/Workflow64` are useful for checking the printed shape of expansions. They are generated files and should not be edited directly.
+Generated sample outputs under `<Workflow repo>/Test/Generated/Workflow32` and `<Workflow repo>/Test/Generated/Workflow64` are useful for checking the printed shape of expansions. They are generated files and should not be edited directly.
 
 ## Rebuild Pipeline
 
@@ -128,11 +128,11 @@ The common context-sensitive recheck pattern is:
 7. Re-run `CheckScopes_DuplicatedSymbol` and `CheckScopes_SymbolType`.
 8. Semantically validate the generated subtree.
 
-This pattern is visible in `ValidateSemantic_Expression.cpp`, `ValidateSemantic_Statement.cpp`, and `ValidateSemantic_Declaration.cpp`. It is the main reason generated code can use the same language features as user-written Workflow code: generated AST goes back through the ordinary compiler checks before backend emission.
+This pattern is visible in `<Workflow repo>/Source/Analyzer/WfAnalyzer_ValidateSemantic_Expression.cpp`, `<Workflow repo>/Source/Analyzer/WfAnalyzer_ValidateSemantic_Statement.cpp`, and `<Workflow repo>/Source/Analyzer/WfAnalyzer_ValidateSemantic_Declaration.cpp`. It is the main reason generated code can use the same language features as user-written Workflow code: generated AST goes back through the ordinary compiler checks before backend emission.
 
 The emitters preserve the invariant:
 
-- `WfEmitter_Expression.cpp` and `WfCpp_Expression.cpp` dispatch virtual expressions through `expandedExpression`.
+- `<Workflow repo>/Source/Emitter/WfEmitter_Expression.cpp` and `<Workflow repo>/Source/Cpp/WfCpp_Expression.cpp` dispatch virtual expressions through `expandedExpression`.
 - Statement and declaration emitters similarly use expanded statements and declarations.
 - Raw coroutine and state-machine-only statements reaching backend generation are internal errors.
 
@@ -150,11 +150,11 @@ Before expansion:
 - `BuildScopeForExpressionVisitor::Visit(WfObserveExpression*)` creates a local scope for extended observe and adds the alias symbol.
 - `ValidateSemanticExpressionVisitor::Visit(WfBindExpression*)` validates the bound expression and returns readonly `Ptr<IValueSubscription>`.
 
-The runtime interface is `IValueSubscription` in `Import/VlppReflection.h`. It exposes `ValueChanged`, `Open`, `Update`, and `Close`.
+The runtime interface is `IValueSubscription` in `<Workflow repo>/Import/VlppReflection.h`. It exposes `ValueChanged`, `Open`, `Update`, and `Close`.
 
 ### BindContext
 
-`ExpandBindExpression` in `WfAnalyzer_ExpandBindExpression.cpp` begins by running `CreateBindContextVisitor` over the already-resolved original expression. The visitor builds `BindContext`, which contains:
+`ExpandBindExpression` in `<Workflow repo>/Source/Analyzer/WfAnalyzer_ExpandBindExpression.cpp` begins by running `CreateBindContextVisitor` over the already-resolved original expression. The visitor builds `BindContext`, which contains:
 
 - `observeParents`: observed expression to parent expression that must be cached.
 - `observeEvents`: observed expression to reflected events that must be attached.
@@ -233,7 +233,7 @@ Each generated callback:
 5. reattaches affected handlers;
 6. calls `<bind-activator>()`.
 
-`Test/Generated/Workflow64/Parsing.Codegen.BindLet.txt` demonstrates this printed shape: callbacks detach handlers under old cached child objects, recompute child caches such as `<bind-cache>5`, reattach, and invoke the activator.
+`<Workflow repo>/Test/Generated/Workflow64/Parsing.Codegen.BindLet.txt` demonstrates this printed shape: callbacks detach handlers under old cached child objects, recompute child caches such as `<bind-cache>5`, reattach, and invoke the activator.
 
 ### Variables And Captures
 
@@ -258,7 +258,7 @@ This layering is important for maintenance. Co-provider lowering does not direct
 
 ### Parsed Forms
 
-The compiler does not have a hardcoded `$yield` node. `Source/Parser/Syntax/Lexer.txt` defines `COROUTINE_OPERATOR` as `$` followed by an uppercase name. Operators such as `$Yield`, `$Await`, and `$Join` all use the same internal shape.
+The compiler does not have a hardcoded `$yield` node. `<Workflow repo>/Source/Parser/Syntax/Lexer.txt` defines `COROUTINE_OPERATOR` as `$` followed by an uppercase name. Operators such as `$Yield`, `$Await`, and `$Join` all use the same internal shape.
 
 The parser represents coroutine-related syntax as:
 
@@ -303,7 +303,7 @@ Return statements inside provider bodies are provider-specific. `ValidateSemanti
 
 ### Layer 1: Co-Provider To Raw Coroutine
 
-`ExpandCoProviderStatement` in `WfAnalyzer_ExpandStatement.cpp` rewrites `WfCoProviderStatement` into ordinary AST that calls the provider creator with a generated function. Conceptually, the generated shape is:
+`ExpandCoProviderStatement` in `<Workflow repo>/Source/Analyzer/WfAnalyzer_ExpandStatement.cpp` rewrites `WfCoProviderStatement` into ordinary AST that calls the provider creator with a generated function. Conceptually, the generated shape is:
 
 ```workflow
 Provider::Create-or-CreateAndRun(
@@ -354,7 +354,7 @@ After this first layer, the remaining provider-specific concepts are expressed t
 
 ### Layer 2: Raw Coroutine To Flow Chart
 
-`ExpandNewCoroutineExpression` in `WfAnalyzer_ExpandNewCoroutineExpression.cpp` handles raw `WfNewCoroutineExpression`, regardless of whether it came from user-written `$coroutine{}` or from `ExpandCoProviderStatement`.
+`ExpandNewCoroutineExpression` in `<Workflow repo>/Source/Analyzer/WfAnalyzer_ExpandNewCoroutineExpression.cpp` handles raw `WfNewCoroutineExpression`, regardless of whether it came from user-written `$coroutine{}` or from `ExpandCoProviderStatement`.
 
 The expander builds a flow-chart model:
 
@@ -556,7 +556,7 @@ Both forms first copy invocation arguments into generated state argument fields:
 
 `WfStateInvokeType::Push` calls `<state>CreateCoroutine(TargetStateId)` and emits `WfCoPauseStatement`. This replaces `stateMachineCoroutine` with a child coroutine and pauses the current coroutine. The stack-like behavior is encoded by the generated `previousCoroutine` local plus the `finally` block that restores `stateMachineCoroutine`.
 
-`system::StateMachine::ResumeStateMachine` in `Source/Library/WfLibraryPredefined.cpp` drives this protocol. It detects whether a resume pushed a child coroutine, whether a child finished and restored the parent coroutine, and whether a child failure should be delivered back to the parent as a `CoroutineResult`.
+`system::StateMachine::ResumeStateMachine` in `<Workflow repo>/Source/Library/WfLibraryPredefined.cpp` drives this protocol. It detects whether a resume pushed a child coroutine, whether a child finished and restored the parent coroutine, and whether a child failure should be delivered back to the parent as a `CoroutineResult`.
 
 ### Shared And Different From Coroutine Lowering
 
@@ -593,4 +593,4 @@ For maintenance work:
 - logging and callbacks should not be required for compiler correctness;
 - raw coroutine and state-machine statements should remain frontend-only.
 
-The generated samples under `Test/Generated/Workflow32` and `Test/Generated/Workflow64` are useful for auditing the printed desugared shape. For example, bind samples show generated subscriptions, co-provider samples show generated coroutine state fields, and state-machine samples show generated input methods plus coroutine-backed state loops.
+The generated samples under `<Workflow repo>/Test/Generated/Workflow32` and `<Workflow repo>/Test/Generated/Workflow64` are useful for auditing the printed desugared shape. For example, bind samples show generated subscriptions, co-provider samples show generated coroutine state fields, and state-machine samples show generated input methods plus coroutine-backed state loops.

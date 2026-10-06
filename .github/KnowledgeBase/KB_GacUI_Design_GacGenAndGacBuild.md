@@ -1,34 +1,34 @@
 # GacGen and GacBuild Resource Generation
 
-`GacGen` compiles one GacUI XML resource for one target CPU architecture. The Windows scripts in the sibling `Tools` repository build on that primitive: `GacGen.ps1` compiles both architectures and merges generated C++, while `GacBuild.ps1` discovers a tree of resources, calculates an incremental dependency-aware build, and calls `GacGen.ps1` for every candidate. `GacClear.ps1` invalidates the per-resource caches used by that calculation.
+`GacGen` compiles one GacUI XML resource for one target CPU architecture. The Windows scripts in the sibling `Tools` repository build on that primitive: `<Tools repo>/Tools/GacGen.ps1` compiles both architectures and merges generated C++, while `<Tools repo>/Tools/GacBuild.ps1` discovers a tree of resources, calculates an incremental dependency-aware build, and calls `<Tools repo>/Tools/GacGen.ps1` for every candidate. `<Tools repo>/Tools/GacClear.ps1` invalidates the per-resource caches used by that calculation.
 
-The source of truth for the executable is [GacUI-Repo/Tools/GacGen/GacGen/Main.cpp](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/GacGen/Main.cpp) and [GacUI-Repo/Tools/GacGen/GacGen/GacGen.cpp](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/GacGen/GacGen.cpp). The orchestration source of truth is [Tools-Repo/Tools/GacBuild.ps1](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacBuild.ps1), [Tools-Repo/Tools/GacCommon.ps1](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacCommon.ps1), [Tools-Repo/Tools/GacGen.ps1](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacGen.ps1), and [Tools-Repo/Tools/GacClear.ps1](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacClear.ps1).
+The source of truth for the executable is [`<GacUI repo>/Tools/GacGen/GacGen/Main.cpp`](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/GacGen/Main.cpp) and [`<GacUI repo>/Tools/GacGen/GacGen/GacGen.cpp`](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/GacGen/GacGen.cpp). The orchestration source of truth is [`<Tools repo>/Tools/GacBuild.ps1`](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacBuild.ps1), [`<Tools repo>/Tools/GacCommon.ps1`](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacCommon.ps1), [`<Tools repo>/Tools/GacGen.ps1`](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacGen.ps1), and [`<Tools repo>/Tools/GacClear.ps1`](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacClear.ps1).
 
 ## Choosing an Entry Point
 
 | Entry point | Use it for | Architectures | Dependency mapping |
 | --- | --- | --- | --- |
-| `GacBuild.ps1 -FileName <driver-xml>` | Normal Windows incremental builds of every resource below one directory | x86 and x64 | Discovered, ordered, and supplied automatically |
-| `GacBuild.ps1 -FileName <driver-xml> -Dump` | Inspect discovery, timestamps, names, dependencies, and proposed candidates without compiling | Metadata is dumped with `/D32`; no resource is compiled | Generated but not consumed by a compile |
-| `GacGen.ps1 -FileName <resource-xml> [-MappingFileName <mapping>]` | Build one resource through the same two-platform staging and merge path used by `GacBuild.ps1` | x86 and x64 | Optional mapping is forwarded to both invocations |
+| `<Tools repo>/Tools/GacBuild.ps1 -FileName <driver-xml>` | Normal Windows incremental builds of every resource below one directory | x86 and x64 | Discovered, ordered, and supplied automatically |
+| `<Tools repo>/Tools/GacBuild.ps1 -FileName <driver-xml> -Dump` | Inspect discovery, timestamps, names, dependencies, and proposed candidates without compiling | Metadata is dumped with `/D32`; no resource is compiled | Generated but not consumed by a compile |
+| `<Tools repo>/Tools/GacGen.ps1 -FileName <resource-xml> [-MappingFileName <mapping>]` | Build one resource through the same two-platform staging and merge path used by `<Tools repo>/Tools/GacBuild.ps1` | x86 and x64 | Optional mapping is forwarded to both invocations |
 | `GacGen /C32 <resource-xml>` or `/C64` | Directly publish one architecture, normally for a standalone resource or platform-specific maintenance script | Exactly one | None; a resource declaring dependencies cannot resolve them through this mode |
-| `GacGen /P32 <resource-xml> [mapping]` or `/P64` | Produce the architecture staging tree expected by `GacGen.ps1` or another orchestration tool | Exactly one | Optional |
+| `GacGen /P32 <resource-xml> [mapping]` or `/P64` | Produce the architecture staging tree expected by `<Tools repo>/Tools/GacGen.ps1` or another orchestration tool | Exactly one | Optional |
 | `GacGen /D32 <resource-xml> <output-xml>` or `/D64` | Export input/output timestamp metadata for a build planner | Exactly one metadata environment | Not used |
-| `GacClear.ps1 -FileName <driver-xml>` | Delete all discovered `<resource-xml>.log` caches so the next `GacBuild.ps1` run rebuilds everything | Both caches are deleted | Discovery only |
+| `<Tools repo>/Tools/GacClear.ps1 -FileName <driver-xml>` | Delete all discovered `<application repo>/<resource-xml>.log` caches so the next `<Tools repo>/Tools/GacBuild.ps1` run rebuilds everything | Both caches are deleted | Discovery only |
 
-`GacBuild.ps1`, `GacGen.ps1`, `GacCommon.ps1`, `StartProcess.ps1`, `GacGen.exe`, and `CppMerge.exe` are expected to be together because the scripts resolve helpers through `$PSScriptRoot`. `GacBuild.ps1` and `GacClear.ps1` are Windows PowerShell orchestration; the `GacGen` executable itself is also built on Linux for direct use.
+`<Tools repo>/Tools/GacBuild.ps1`, `<Tools repo>/Tools/GacGen.ps1`, `<Tools repo>/Tools/GacCommon.ps1`, `<Tools repo>/Tools/StartProcess.ps1`, `<Tools repo>/Tools/GacGen.exe`, and `<Tools repo>/Tools/CppMerge.exe` are expected to be together because the scripts resolve helpers through `$PSScriptRoot`. `<Tools repo>/Tools/GacBuild.ps1` and `<Tools repo>/Tools/GacClear.ps1` are Windows PowerShell orchestration; the `GacGen` executable itself is also built on Linux for direct use.
 
-EasyLayout duplicate initial composition/control content is rejected during XML compilation by `GuiEasyInstanceLoader<T>::AssignParameters` in `Source/Compiler/InstanceLoaders/GuiInstanceLoader_EasyLayout.cpp`. The default property uses `SupportArray` with layout, control and composition acceptable types, so the framework passes all direct children in one batch. A local flag detects duplicate payloads without state in `types::ResolvingResult`. The loader returns `Unsupported()` for the named `Composition` and `Layouts` properties, rejecting their XML assignment and binding forms before reflected-property fallback. Their native and Workflow APIs remain unchanged. Generated C++ contains ordinary assignments without runtime duplicate guards. `BuildLayout` still validates the resulting descriptor tree, including composition/sublayout mixing, during initialization or explicit rebuilding.
+EasyLayout duplicate initial composition/control content is rejected during XML compilation by `GuiEasyInstanceLoader<T>::AssignParameters` in `<GacUI repo>/Source/Compiler/InstanceLoaders/GuiInstanceLoader_EasyLayout.cpp`. The default property uses `SupportArray` with layout, control and composition acceptable types, so the framework passes all direct children in one batch. A local flag detects duplicate payloads without state in `types::ResolvingResult`. The loader returns `Unsupported()` for the named `Composition` and `Layouts` properties, rejecting their XML assignment and binding forms before reflected-property fallback. Their native and Workflow APIs remain unchanged. Generated C++ contains ordinary assignments without runtime duplicate guards. `BuildLayout` still validates the resulting descriptor tree, including composition/sublayout mixing, during initialization or explicit rebuilding.
 
 ## GacGen Runtime Inputs
 
 ### Reflection metadata beside the executable
 
-`GacGen` is compiled in meta-only reflection mode and must load type metadata matching the requested target architecture.
+`GacGen` is compiled in meta-only reflection mode and must load type metadata matching the requested target architecture. The names in this subsection are basenames beside the selected executable (for example, `<Tools repo>/Tools/GacGen.exe`), unless an override below selects another directory.
 
 - By default it reads `Reflection32.bin` for `/P32`, `/D32`, or `/C32`, and `Reflection64.bin` for the `64` variants, from the executable directory.
 - An optional `Metadata.txt` beside the executable, or one directory above it when no beside-executable file exists, overrides this. It contains at least three lines: metadata folder, x86 binary name, and x64 binary name. The folder is resolved relative to `Metadata.txt`.
-- The GacUI development copy uses [GacUI-Repo/Tools/GacGen/Metadata.txt](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/Metadata.txt) to select `ReflectionCore32.bin` and `ReflectionCore64.bin`. The released tool normally has `Reflection32.bin` and `Reflection64.bin` beside it and needs no override.
+- The GacUI development copy uses [`<GacUI repo>/Tools/GacGen/Metadata.txt`](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/Metadata.txt) to select the basenames `ReflectionCore32.bin` and `ReflectionCore64.bin` in `<GacUI repo>/Test/Resources/Metadata`. The released tool normally has `Reflection32.bin` and `Reflection64.bin` beside it and needs no override.
 - The target architecture is a compilation input even when the executable itself was built as Win32. In particular, Workflow `vint` and RPC schemas can differ between x86 and x64.
 
 ### Resource XML and `GacGenConfig`
@@ -67,7 +67,7 @@ The input is a normal GacUI XML resource loadable by `GuiResource::LoadFromXml`.
 </Resource>
 ```
 
-All configured output paths are resolved from the directory containing the resource XML.
+All configured output paths are resolved from the directory containing the resource XML. For the example resource `<application repo>/UI/Resource.xml`, generated C++ goes to `<application repo>/UI/Source` and configured binaries go to `<application repo>/Bin`. Configuration keys such as `Cpp/SourceFolder` are resource item names, not filesystem references.
 
 | Configuration item | Required when its folder exists | Meaning |
 | --- | --- | --- |
@@ -79,7 +79,7 @@ All configured output paths are resolved from the directory containing the resou
 | `Cpp/ReflectionInclude` | No | Semicolon-separated includes guarded for reflection-enabled builds. |
 | `Cpp/Name` | No | C++ assembly/base name. It should be a valid C++ identifier and defaults to `GacUIApplication`. |
 | `Cpp/Resource` | No | Uncompressed data-only resource binary, without the compiled Workflow assembly. |
-| `Cpp/Compressed` | No | The configuration schema describes a compressed data-only resource. The current `CompileResource` implementation in [GacUI-Repo/Tools/GacGen/GacGen/Main.cpp](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/GacGen/Main.cpp) routes this path through the assembly-output list, so it actually receives the serialized `Assembly.bin` payload. Do not use this setting as a compressed-resource output until that implementation is corrected. |
+| `Cpp/Compressed` | No | The configuration schema describes a compressed data-only resource. The current `CompileResource` implementation in [`<GacUI repo>/Tools/GacGen/GacGen/Main.cpp`](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/GacGen/Main.cpp) routes this path through the assembly-output list, so it actually receives the serialized `Assembly.bin` payload. Do not use this setting as a compressed-resource output until that implementation is corrected. |
 | `Cpp/CppResource` | No | File name, under `SourceFolder`, for a C++ source that embeds the uncompressed data-only resource and registers its loader plugin. |
 | `Cpp/CppCompressed` | No | Like `CppResource`, but the embedded byte array is compressed. Configure and compile only one of the two embedded-resource files. |
 | `ResX86/Resource`, `ResX64/Resource` | No | Architecture-specific uncompressed resource containing the Workflow instance-class assembly. Load with `GuiResourceUsage::InstanceClass`. |
@@ -90,20 +90,20 @@ RPC declarations such as `@rpc:Interface` and `@rpc:Ctor` require the `Cpp` fold
 
 ### Dependency mapping file
 
-The optional `/P32` or `/P64` mapping is line-oriented text:
+The optional `/P32` or `/P64` mapping is line-oriented text. In these examples, replace `<application repo>` with the application repository's absolute checkout directory before invoking a tool or writing a mapping. In filesystem expressions, `<driver-xml>`, `<resource-xml>` and `<mapped-xml>` stand for XML paths relative to that repository:
 
 ```text
-BaseResource=>C:\absolute\path\BaseResource.xml
-MyResource=>C:\absolute\path\MyResource.xml
+BaseResource=><application repo>/BaseResource.xml
+MyResource=><application repo>/MyResource.xml
 ```
 
 Blank lines are ignored. The first `=>` separates the exact resource name from the XML path; duplicate names or malformed nonempty lines abort that compilation path. GacBuild writes absolute paths and includes every named resource it discovered.
 
-For each declared dependency, GacGen looks up the mapped XML and reads `<mapped-xml>.log/x32/ScriptedResource.bin` or `x64/ScriptedResource.bin`. It reads the embedded resource metadata to discover transitive dependencies, then loads each scripted resource with `GuiResourceUsage::InstanceClass`. Therefore dependencies must already have a successful cache for the same architecture. This is why GacBuild supplies a topological order and why direct `/C32` or `/C64`, which accepts no mapping argument, is suitable only for resources without declared dependencies.
+For each declared dependency, GacGen looks up the mapped XML and reads `<application repo>/<mapped-xml>.log/x32/ScriptedResource.bin` or `<application repo>/<mapped-xml>.log/x64/ScriptedResource.bin`. It reads the embedded resource metadata to discover transitive dependencies, then loads each scripted resource with `GuiResourceUsage::InstanceClass`. Therefore dependencies must already have a successful cache for the same architecture. This is why GacBuild supplies a topological order and why direct `/C32` or `/C64`, which accepts no mapping argument, is suitable only for resources without declared dependencies.
 
 ## GacBuild Driver XML
 
-`GacBuild.ps1 -FileName` expects a separate discovery file, conventionally `GacUI.xml`, whose directory is the recursive search root:
+`<Tools repo>/Tools/GacBuild.ps1 -FileName` expects a separate discovery file, conventionally `GacUI.xml`, whose directory is the recursive search root:
 
 ```xml
 <GacUI>
@@ -114,27 +114,29 @@ For each declared dependency, GacGen looks up the mapped XML and reads `<mapped-
 
 - Every `*.xml` below that directory is parsed. It becomes a candidate resource only when XPath `//Resource/Folder[@name='GacGenConfig']` exists.
 - Each exclusion is a case-sensitive substring test against the full path after replacing `\` with `/`. It is not a wildcard or regular expression. Use `/` in the pattern.
-- Keep the driver XML distinct from a resource XML. The driver owns `<driver-xml>.log`, while a resource owns `<resource-xml>.log`; using the same file for both makes those roles collide.
+- Keep the driver XML distinct from a resource XML. The driver owns `<application repo>/<driver-xml>.log`, while a resource owns `<application repo>/<resource-xml>.log`; using the same file for both makes those roles collide.
 - `-Dump` performs all discovery, `/D32` metadata dumps, candidate calculation, and dependency sorting, then stops before resource compilation.
 
 ## GacBuild Incremental and Dependency Algorithm
 
+In the algorithm and artifact descriptions below, driver-manifest basenames such as `ResourceFiles.txt` refer to files in `<application repo>/<driver-xml>.log`. Per-resource artifact basenames such as `Errors.txt` refer to files in `<application repo>/<resource-xml>.log/<architecture>`, where `<architecture>` is `x32` or `x64`. The directory trees and tables below distinguish these two groups.
+
 Each run performs these steps:
 
-1. Resolve the driver XML to an absolute path, delete and recreate `<driver-xml>.log`, enumerate resources, and write `ResourceFiles.txt`.
-2. Run `GacGen.exe /D32 <resource-xml> <flattened-dump>` for every discovered resource. `/D32` records the resource metadata, all file-backed resource inputs, and the ten standard x86/x64 cache outputs.
+1. Resolve the driver XML to an absolute path, delete and recreate `<application repo>/<driver-xml>.log`, enumerate resources, and write `ResourceFiles.txt`.
+2. Run `<Tools repo>/Tools/GacGen.exe /D32 <resource-xml> <flattened-dump>` for every discovered resource. `/D32` records the resource metadata, all file-backed resource inputs, and the ten standard x86/x64 cache outputs.
 3. Mark a resource directly outdated when any recorded cache output is missing, or when any recorded input has a later UTC modification time than any recorded output.
 4. Split resources into anonymous resources and resources with metadata names. Anonymous resources are independent and sorted by absolute path. Named resources are topologically sorted from their declared dependencies.
 5. Starting with directly outdated named resources, repeatedly add every named transitive dependent. Thus changing a base resource rebuilds all named resources above it even when their own files are unchanged.
-6. Write the candidate, order, and mapping manifests. Iterate all anonymous resources first and all named resources second; call `GacGen.ps1` only when the absolute path occurs in `BuildCandidates.txt`.
-7. `GacGen.ps1` deletes that resource's old log, runs `/P32` and `/P64`, rejects an architecture with `Errors.txt`, uses `CppOutput.txt` from x32 to choose the production source folder, and invokes `CppMerge.exe` for every file staged in `x32/Source` with the same-named file in `x64/Source`. `CppMerge` combines architecture differences and preserves existing `USER_CONTENT` regions in the production file.
-8. If `x32/Deploy.bat` exists, the checked-in wrapper executes it after merging. Both `/P` compilations already write configured binary outputs while producing the cached copies; the batch file is an additional copy recipe from the x32 cache.
+6. Write the candidate, order, and mapping manifests. Iterate all anonymous resources first and all named resources second; call `<Tools repo>/Tools/GacGen.ps1` only when the absolute path occurs in `BuildCandidates.txt`.
+7. `<Tools repo>/Tools/GacGen.ps1` deletes that resource's old log, runs `/P32` and `/P64`, rejects an architecture with `Errors.txt`, uses `CppOutput.txt` from x32 to choose the production source folder, and invokes `<Tools repo>/Tools/CppMerge.exe` for every file staged in `<application repo>/<resource-xml>.log/x32/Source` with the same-named file in `<application repo>/<resource-xml>.log/x64/Source`. `CppMerge` combines architecture differences and preserves existing `USER_CONTENT` regions in the production file.
+8. If `<application repo>/<resource-xml>.log/x32/Deploy.bat` exists, the checked-in wrapper executes it after merging. Both `/P` compilations already write configured binary outputs while producing the cached copies; the batch file is an additional copy recipe from the x32 cache.
 
-The incremental contract deliberately watches only the ten standard `.bin` cache files listed by `/D32`. It does not timestamp-check `Workflow.txt`, generated C++, RPC metadata, `Deploy.bat`, or configured production outputs. Deleting a production C++ or configured binary while leaving a fresh per-resource cache can therefore produce `[SKIPPED]`; run `GacClear.ps1`, delete that resource's `.log` directory, or invoke its build explicitly to regenerate it.
+The incremental contract deliberately watches only the ten standard `.bin` cache files listed by `/D32`. It does not timestamp-check `Workflow.txt`, generated C++, RPC metadata, `Deploy.bat`, or configured production outputs. Deleting a production C++ or configured binary while leaving a fresh per-resource cache can therefore produce `[SKIPPED]`; run `<Tools repo>/Tools/GacClear.ps1`, delete that resource's `.log` directory, or invoke its build explicitly to regenerate it.
 
 Named dependency metadata should form a closed acyclic graph with unique names. GacBuild's topological pass rejects a graph that cannot make progress, and GacGen independently rejects an unresolved mapped dependency while compiling. `ResourceNamedFiles.txt` contains all named resources in build order, not only candidates; `BuildCandidates.txt` is the filter.
 
-`GacBuild.ps1` catches a failed per-resource script invocation, prints the message, and continues iterating. A caller that needs fail-fast automation should inspect the console/result artifacts and verify all expected outputs instead of assuming that reaching the end of the PowerShell script means every resource succeeded.
+`<Tools repo>/Tools/GacBuild.ps1` catches a failed per-resource script invocation, prints the message, and continues iterating. A caller that needs fail-fast automation should inspect the console/result artifacts and verify all expected outputs instead of assuming that reaching the end of the PowerShell script means every resource succeeded.
 
 ## Generated and Cached File Organization
 
@@ -142,10 +144,10 @@ There are two independent `.log` directory shapes.
 
 ### Driver manifest directory
 
-For `GacBuild.ps1 -FileName C:\Tree\GacUI.xml`:
+For `<Tools repo>/Tools/GacBuild.ps1 -FileName <application repo>/GacUI.xml`:
 
 ```text
-C:\Tree\GacUI.xml.log\
+<application repo>/GacUI.xml.log\
   ResourceFiles.txt
   BuildCandidates.txt
   ResourceAnonymousFiles.txt
@@ -156,9 +158,11 @@ C:\Tree\GacUI.xml.log\
   ... one flattened XML metadata dump per discovered resource
 ```
 
-| File | Format and content | Consumer and purpose |
+The following table lists basenames within `<application repo>/<driver-xml>.log`.
+
+| Basename | Format and content | Consumer and purpose |
 | --- | --- | --- |
-| `ResourceFiles.txt` | One path per discovered resource, relative to the driver directory and normally beginning with `\` on Windows | `DumpResourceFiles`, `GacClear.ps1`, and diagnostic tools use it as the discovery inventory. |
+| `ResourceFiles.txt` | One path per discovered resource, relative to the driver directory and normally beginning with `\` on Windows | `DumpResourceFiles`, `<Tools repo>/Tools/GacClear.ps1`, and diagnostic tools use it as the discovery inventory. |
 | `<flattened-resource-path>` | UTF-8 BOM XML. Backslashes in the relative resource path are replaced with `_`; the original extension is retained. The outer `ResourceMetadata` contains the resource's saved `ResourceMetadata`, sorted absolute `Inputs/Input@Path`, and sorted absolute `Outputs/Output@Path`. | GacBuild parses every dump to calculate timestamps, names, dependencies, order, and mappings. A future build planner can consume the same schema. |
 | `BuildCandidates.txt` | One absolute resource XML path per direct stale resource plus every named transitive dependent | The build loop uses PowerShell `-contains` against this file to select `[BUILD]` versus `[SKIPPED]`. |
 | `ResourceAnonymousFiles.txt` | Sorted absolute paths of resources whose metadata name is empty | Defines the first part of iteration order. Anonymous resources cannot declare dependencies. |
@@ -170,24 +174,24 @@ The five named `.txt` manifests are unquoted, one-record-per-line text written b
 The dump's `Outputs` list is always these ten absolute paths, regardless of optional production configuration:
 
 ```text
-<resource-xml>.log\x32\Assembly.bin
-<resource-xml>.log\x32\Compressed.bin
-<resource-xml>.log\x32\Resource.bin
-<resource-xml>.log\x32\ScriptedCompressed.bin
-<resource-xml>.log\x32\ScriptedResource.bin
-<resource-xml>.log\x64\Assembly.bin
-<resource-xml>.log\x64\Compressed.bin
-<resource-xml>.log\x64\Resource.bin
-<resource-xml>.log\x64\ScriptedCompressed.bin
-<resource-xml>.log\x64\ScriptedResource.bin
+<application repo>/<resource-xml>.log\x32\Assembly.bin
+<application repo>/<resource-xml>.log\x32\Compressed.bin
+<application repo>/<resource-xml>.log\x32\Resource.bin
+<application repo>/<resource-xml>.log\x32\ScriptedCompressed.bin
+<application repo>/<resource-xml>.log\x32\ScriptedResource.bin
+<application repo>/<resource-xml>.log\x64\Assembly.bin
+<application repo>/<resource-xml>.log\x64\Compressed.bin
+<application repo>/<resource-xml>.log\x64\Resource.bin
+<application repo>/<resource-xml>.log\x64\ScriptedCompressed.bin
+<application repo>/<resource-xml>.log\x64\ScriptedResource.bin
 ```
 
 ### Per-resource architecture directory
 
-For `C:\Tree\UI\Resource.xml`, `/P32` and `/P64` use:
+For `<application repo>/UI/Resource.xml`, `/P32` and `/P64` use:
 
 ```text
-C:\Tree\UI\Resource.xml.log\
+<application repo>/UI/Resource.xml.log\
   x32\
     Workflow.txt
     Resource.bin
@@ -212,7 +216,9 @@ C:\Tree\UI\Resource.xml.log\
     ... the same architecture-local categories ...
 ```
 
-Each architecture subdirectory is deleted and recreated by a compilation after dependencies have been loaded. The sibling architecture directory is preserved so direct `/C32` and `/C64` RPC runs can rendezvous through their staging contracts. `GacGen.ps1` deletes the entire resource log before starting its `/P32` and `/P64` pair.
+Each architecture subdirectory is deleted and recreated by a compilation after dependencies have been loaded. The sibling architecture directory is preserved so direct `/C32` and `/C64` RPC runs can rendezvous through their staging contracts. `<Tools repo>/Tools/GacGen.ps1` deletes the entire resource log before starting its `/P32` and `/P64` pair.
+
+Bare names in the following table and cleanup description are basenames within `<application repo>/<resource-xml>.log/<architecture>`; generated C++ and RPC files live in its `Source` subdirectory, shown with qualified paths.
 
 | Per-architecture artifact | Format and exact payload | Consumer and purpose |
 | --- | --- | --- |
@@ -222,17 +228,17 @@ Each architecture subdirectory is deleted and recreated by a compilation after d
 | `ScriptedResource.bin` | Uncompressed precompiled resource including the architecture-specific Workflow assembly and leading resource metadata | Runtime scripted-resource cache. Load with `GuiResourceUsage::InstanceClass`. GacGen itself consumes this exact file for named dependencies and reads its metadata to expand the transitive closure. |
 | `ScriptedCompressed.bin` | LZW-compressed scripted resource | Compressed runtime scripted-resource cache; decompress before loading with `GuiResourceUsage::InstanceClass`. |
 | `Assembly.bin` | Serialized Workflow `InstanceClass` assembly only | Used when a program intentionally loads a neutral resource and assembly separately; it is also the source payload for configured `ResX86/Assembly` or `ResX64/Assembly`. |
-| `CppOutput.txt` | MBCS/no-BOM text containing one absolute production `Cpp/SourceFolder` path | Written only by `/P` when `Cpp` exists. `GacGen.ps1` reads the x32 copy to select/create the destination for `CppMerge`; the x64 copy is informational. |
-| `Deploy.bat` | MBCS/no-BOM Windows batch `copy "<cached-file>" "<configured-output>"` lines | Written in `/P` when a cache-output list also has a configured destination. The current `GacGen.ps1` executes the x32 copy after C++ merging. It is a consumable deployment recipe for other tooling; configured binaries were also written by GacGen itself during compilation. |
-| `Errors.txt` | UTF-8 BOM lines from `GuiResourceError::SortAndLog`: a resource-path/file header, optional `Original:` header, then one-based `(row, column): message` lines | Created only for structured load, precompile, Workflow, C++, RPC, or output errors. `GacGen.ps1` prints it and throws. Absence is necessary but not sufficient for success because some early validation failures are console-only. |
-| `Source/` in `/P` | UTF-8 BOM architecture-specific C++ staging files | `GacGen.ps1` enumerates x32 entries and gives each x32/x64 pair to `CppMerge`, which publishes the merged file and preserves supported user regions. |
-| `Source/<CppResource>` or `<CppCompressed>` | UTF-8 BOM generated C++ containing the data-only resource byte array and loader plugin | Staged and merged like the ordinary C++ set. Compile exactly one selected embedded-resource implementation into the application. |
+| `CppOutput.txt` | MBCS/no-BOM text containing one absolute production `Cpp/SourceFolder` path | Written only by `/P` when `Cpp` exists. `<Tools repo>/Tools/GacGen.ps1` reads the x32 copy to select/create the destination for `CppMerge`; the x64 copy is informational. |
+| `Deploy.bat` | MBCS/no-BOM Windows batch `copy "<cached-file>" "<configured-output>"` lines | Written in `/P` when a cache-output list also has a configured destination. The current `<Tools repo>/Tools/GacGen.ps1` executes the x32 copy after C++ merging. It is a consumable deployment recipe for other tooling; configured binaries were also written by GacGen itself during compilation. |
+| `Errors.txt` | UTF-8 BOM lines from `GuiResourceError::SortAndLog`: a resource-path/file header, optional `Original:` header, then one-based `(row, column): message` lines | Created only for structured load, precompile, Workflow, C++, RPC, or output errors. `<Tools repo>/Tools/GacGen.ps1` prints it and throws. Absence is necessary but not sufficient for success because some early validation failures are console-only. |
+| `<application repo>/<resource-xml>.log/<architecture>/Source/` in `/P` | UTF-8 BOM architecture-specific C++ staging files | `<Tools repo>/Tools/GacGen.ps1` enumerates x32 entries and gives each x32/x64 pair to `CppMerge`, which publishes the merged file and preserves supported user regions. |
+| `<application repo>/<resource-xml>.log/<architecture>/Source/<CppResource>` or `<application repo>/<resource-xml>.log/<architecture>/Source/<CppCompressed>` | UTF-8 BOM generated C++ containing the data-only resource byte array and loader plugin | Staged and merged like the ordinary C++ set. Compile exactly one selected embedded-resource implementation into the application. |
 | `WorkflowRpc.txt` | UTF-8 BOM Workflow text with two labeled modules: RPC wrapper and JSON RPC wrapper | Reference/debug form of the generated bridge. It describes the glue later translated into `<Name>Rpc.h/.cpp`. |
 | `RpcMetadata.txt` | UTF-8 BOM normalized Workflow RPC metadata module for the complete contract and dependencies | Together with `RpcMetadata.d.ts`, authoritative input for generators targeting C++, TypeScript, or another language. It supplies interfaces, operations, inheritance, transfer behavior, and IDs. |
 | `RpcMetadata.d.ts` | UTF-8 BOM TypeScript declarations for contract-specific known/unknown JSON value shapes | Complementary to `RpcMetadata.txt`; it does not by itself contain the complete interface/routing contract. x86 and x64 outputs can differ, so a consumer must choose the target ABI directory. |
-| `Source/<Name>Rpc.h` and `.cpp` | UTF-8 BOM, exactly one non-reflection C++ pair including the ordinary `<Name>.h` entry | Statically linked RPC and JSON-RPC wrappers. The generated global entry is `vl_workflow_global::<Name>Rpc::Instance()`. In `/P`, CppMerge publishes the x86/x64 merged pair. |
-| `Source/<Name>Rpc.gacui.rpc.contract` | UTF-8 BOM line format beginning `GacGen RPC C++ platform contract v1`, followed by input/config values, include counts/lists, and the full generated `WorkflowRpc` text | Direct `/C` mode only. It proves the other architecture's staged RPC pair came from the same input/configuration. When contracts match, the second architecture run merges and publishes the pair; stale or incompatible staging is deleted. |
-| `Source/<Name>Rpc.(h|cpp).gacui.tmp` and `.gacui.backup` | Temporary UTF-8 files and preserved previous files used by the transactional two-file RPC writer | Normally exist only during a write. Cleanup removes them on success; they can remain after an unrecoverable write/rollback failure and are evidence for a future diagnostic tool. |
+| `<application repo>/<resource-xml>.log/<architecture>/Source/<Name>Rpc.h/.cpp` | UTF-8 BOM, exactly one non-reflection C++ pair including the ordinary `<Name>.h` entry | Statically linked RPC and JSON-RPC wrappers. The generated global entry is `vl_workflow_global::<Name>Rpc::Instance()`. In `/P`, CppMerge publishes the x86/x64 merged pair. |
+| `<application repo>/<resource-xml>.log/<architecture>/Source/<Name>Rpc.gacui.rpc.contract` | UTF-8 BOM line format beginning `GacGen RPC C++ platform contract v1`, followed by input/config values, include counts/lists, and the full generated `WorkflowRpc` text | Direct `/C` mode only. It proves the other architecture's staged RPC pair came from the same input/configuration. When contracts match, the second architecture run merges and publishes the pair; stale or incompatible staging is deleted. |
+| `<application repo>/<resource-xml>.log/<architecture>/Source/<Name>Rpc.(h|cpp).gacui.tmp` and the corresponding `.gacui.backup` file | Temporary UTF-8 files and preserved previous files used by the transactional two-file RPC writer | Normally exist only during a write. Cleanup removes them on success; they can remain after an unrecoverable write/rollback failure and are evidence for a future diagnostic tool. |
 
 When RPC is removed or compilation fails after the C++ configuration is known, GacGen removes stale `WorkflowRpc.txt`, `RpcMetadata.txt`, `RpcMetadata.d.ts`, the RPC pair, the platform contract, and legacy `<Name>RpcReflection.h/.cpp` or `<Name>RpcIncludes.h` files. Those legacy files are cleanup targets, not outputs of the current generator.
 
@@ -240,7 +246,7 @@ When RPC is removed or compilation fails after the C++ configuration is known, G
 
 ### Ordinary generated C++
 
-With `Cpp/Name` equal to `MyApp`, GacGen forces Workflow multi-file and reflection generation and uses these naming rules:
+With `Cpp/Name` equal to `MyApp`, GacGen forces Workflow multi-file and reflection generation and uses these basename rules. The production directory is selected by `Cpp/SourceFolder`; for the XML example above it is `<application repo>/UI/Source`:
 
 - `MyApp.h` is the aggregate entry header. It includes `MyAppPartialClasses.h`, all `@cpp:File("X")` headers, and any numbered dependency-split headers.
 - `MyAppPartialClasses.h` and `MyAppPartialClasses.cpp` contain declarations and implementations not assigned to a custom file.
@@ -252,9 +258,11 @@ With `Cpp/Name` equal to `MyApp`, GacGen forces Workflow multi-file and reflecti
 
 Generated files contain explicit `USER_CONTENT_BEGIN(...)` / `USER_CONTENT_END()` regions for `@cpp:UserImpl` methods, custom members, and custom global declarations. Both direct generation and the two-platform merge preserve content only in those regions; all other manual changes may be overwritten. Current marker-delimited regions end at `USER_CONTENT_END()` and do not count braces inside the region. Only the legacy `USERIMPL(...)` form relies on line-oriented brace matching and therefore requires its structural opening and closing braces to begin their lines.
 
-In `/P` mode ordinary files live first under `x32/Source` and `x64/Source`, then `CppMerge` writes the combined production set under `Cpp/SourceFolder`. In `/C` mode ordinary files are written directly to `Cpp/SourceFolder` and merged with existing user regions there. Direct-mode RPC files are different: each architecture stages its pair and contract under its log `Source`; the second compatible architecture run publishes the merged pair to `Cpp/SourceFolder`.
+In `/P` mode ordinary files live first under `<application repo>/<resource-xml>.log/x32/Source` and `<application repo>/<resource-xml>.log/x64/Source`, then `CppMerge` writes the combined production set under `Cpp/SourceFolder`. In `/C` mode ordinary files are written directly to `Cpp/SourceFolder` and merged with existing user regions there. Direct-mode RPC files are different: each architecture stages its pair and contract under its log `Source`; the second compatible architecture run publishes the merged pair to `Cpp/SourceFolder`.
 
 ### Resource and assembly loading
+
+The cache basenames below are in `<application repo>/<resource-xml>.log/<architecture>`. Configuration item names identify outputs resolved relative to the resource XML, as described above.
 
 - A `Cpp/Resource` file or `Resource.bin` contains data only. Load it with `GetResourceManager()->LoadResourceOrPending`; compile/link the generated C++ classes.
 - A `ResX86/Resource`, `ResX64/Resource`, or `ScriptedResource.bin` contains the corresponding Workflow assembly. Load it with `GuiResourceUsage::InstanceClass` and enable the reflection/runtime support required by scripted instances.
@@ -264,7 +272,7 @@ In `/P` mode ordinary files live first under `x32/Source` and `x64/Source`, then
 
 ## Clearing, Failure Detection, and Tool Integration
 
-`GacClear.ps1` recreates the driver log, writes a fresh `ResourceFiles.txt`, and recursively deletes `<resource-xml>.log` for every discovered resource. It does not delete production C++, configured resource binaries, or the remaining `<driver-xml>.log/ResourceFiles.txt`. Missing standard caches make every resource directly outdated on the next GacBuild run.
+`<Tools repo>/Tools/GacClear.ps1` recreates the driver log, writes a fresh `ResourceFiles.txt`, and recursively deletes `<application repo>/<resource-xml>.log` for every discovered resource. It does not delete production C++, configured resource binaries, or the remaining `<application repo>/<driver-xml>.log/ResourceFiles.txt`. Missing standard caches make every resource directly outdated on the next GacBuild run.
 
 For automation built directly on GacGen, use all of these success checks:
 

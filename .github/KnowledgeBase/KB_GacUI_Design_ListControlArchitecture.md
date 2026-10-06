@@ -10,7 +10,7 @@
 
 **Purpose**: Provides data to the list control
 
-**Location**: `Source/Controls/ListControlPackage/DataSource_IItemProvider.h`
+**Location**: `<GacUI repo>/Source/Controls/ListControlPackage/DataSource_IItemProvider.h`
 
 **Core Interface Methods**:
 - `Count()`: Returns total number of items
@@ -37,7 +37,7 @@
 
 **Purpose**: Decides how to arrange item controls spatially
 
-**Location**: `Source/Controls/ListControlPackage/GuiListControls.h` as nested interface
+**Location**: `<GacUI repo>/Source/Controls/ListControlPackage/GuiListControls.h` as nested interface
 
 **Core Interface Methods**:
 - `AttachListControl(GuiListControl*)` and `DetachListControl()`: Lifecycle management
@@ -62,7 +62,7 @@
 
 **Purpose**: Defines visual appearance of each item
 
-**Base Template**: `GuiListItemTemplate` in `Source/Controls/Templates/GuiControlTemplates.h`
+**Base Template**: `GuiListItemTemplate` in `<GacUI repo>/Source/Controls/Templates/GuiControlTemplates.h`
 
 **Properties**:
 - `Selected`: Selection state
@@ -140,7 +140,7 @@ All predefined arrangers use `RangedItemArrangerBase` which delegates to `GuiVir
 
 ### Arranger Types
 
-**Location**: `Source/Controls/ListControlPackage/GuiListControlItemArrangers.h`
+**Location**: `<GacUI repo>/Source/Controls/ListControlPackage/GuiListControlItemArrangers.h`
 
 1. **FreeHeightItemArranger**: Uses `GuiRepeatFreeHeightItemComposition`
    - Caches heights of all items individually
@@ -314,7 +314,7 @@ When data changes:
    - Overrides `CreateBulletStyle()` to create radio button
 
 **Template Structure** (`DefaultTextListItemTemplate`):
-- Location: `Source/Controls/ListControlPackage/ItemTemplate_ITextItemView.h`
+- Location: `<GacUI repo>/Source/Controls/ListControlPackage/ItemTemplate_ITextItemView.h`
 - Contains `bulletButton` (optional `GuiSelectableButton`)
 - Contains `textElement` (`GuiSolidLabelElement` for text display)
 - Hooks property changes: `Checked`, `TextColor`, `Font`, `Text`
@@ -363,7 +363,7 @@ When data changes:
    - Contains image, main text, and sub-item texts in columns
    - Uses `GuiTableComposition` with dynamic columns matching column count
 
-**Template Location**: All templates in `Source/Controls/ListControlPackage/ItemTemplate_IListViewItemView.h`
+**Template Location**: All templates in `<GacUI repo>/Source/Controls/ListControlPackage/ItemTemplate_IListViewItemView.h`
 
 **Common Base**: All templates derive from `list::DefaultListViewItemTemplate` which derives from `PredefinedListItemTemplate<GuiListItemTemplate>`
 
@@ -377,7 +377,7 @@ When data changes:
 
 **Template**: `tree::DefaultTreeItemTemplate`
 - Arranger: `list::FixedHeightItemArranger`
-- Location: `Source/Controls/ListControlPackage/ItemTemplate_ITreeViewItemView.h`
+- Location: `<GacUI repo>/Source/Controls/ListControlPackage/ItemTemplate_ITreeViewItemView.h`
 
 **Template Structure**:
 - Contains `expandingButton` (`GuiSelectableButton` for expand/collapse)
@@ -396,7 +396,7 @@ When data changes:
 
 **Template**: `list::DefaultDataGridItemTemplate`
 - Arranger: `list::ListViewColumnItemArranger`
-- Location: `Source/Controls/ListControlPackage/GuiDataGridControls.h`
+- Location: `<GacUI repo>/Source/Controls/ListControlPackage/GuiDataGridControls.h`
 
 **Template Structure**:
 - Derives from `DefaultListViewItemTemplate`
@@ -524,7 +524,7 @@ Called when item template or arranger changes:
 
 ### PredefinedListItemTemplate Pattern
 
-Helper template for item templates in `Source/Controls/ListControlPackage/GuiListControls.h`:
+Helper template for item templates in `<GacUI repo>/Source/Controls/ListControlPackage/GuiListControls.h`:
 
 ```cpp
 template<typename TBase>
@@ -558,7 +558,7 @@ class PredefinedListItemTemplate : public TBase
 
 **Purpose**: Customizes how each cell is displayed in the data grid
 
-**Core Interfaces** (in `Source/Controls/ListControlPackage/GuiDataGridInterfaces.h`):
+**Core Interfaces** (in `<GacUI repo>/Source/Controls/ListControlPackage/GuiDataGridInterfaces.h`):
 
 1. **IDataVisualizerFactory**:
    - `CreateVisualizer(dataGridContext)`: Creates visualizer instances
@@ -570,7 +570,7 @@ class PredefinedListItemTemplate : public TBase
    - `SetSelected(value)`: Highlights selected cell
    - `NotifyDeletedTemplate()`: Cleanup when template is destroyed
 
-**Base Implementations** (in `Source/Controls/ListControlPackage/GuiDataGridExtensions.h`):
+**Base Implementations** (in `<GacUI repo>/Source/Controls/ListControlPackage/GuiDataGridExtensions.h`):
 
 1. **DataVisualizerBase**:
    - Standard implementation of `IDataVisualizer`
@@ -587,7 +587,7 @@ class PredefinedListItemTemplate : public TBase
    - Forwards all property changes from parent to child template using macro-generated event handlers
    - Enables composing visualizers (e.g., border + focus rectangle + content)
 
-**Predefined Visualizer Templates** (in `Source/Controls/ListControlPackage/GuiDataGridExtensions.cpp`):
+**Predefined Visualizer Templates** (in `<GacUI repo>/Source/Controls/ListControlPackage/GuiDataGridExtensions.cpp`):
 
 1. **MainColumnVisualizerTemplate**:
    - First column with image and text
@@ -618,7 +618,7 @@ class PredefinedListItemTemplate : public TBase
    - Color from `ItemSeparatorColor` property
    - Uses `ContainerComposition` pattern for decoration
 
-**Integration with DefaultDataGridItemTemplate** (in `Source/Controls/ListControlPackage/GuiDataGridControls.cpp`):
+**Integration with DefaultDataGridItemTemplate** (in `<GacUI repo>/Source/Controls/ListControlPackage/GuiDataGridControls.cpp`):
 
 - Each row template has `dataVisualizerFactories` array (one per column)
 - `GetDataVisualizerFactory(row, column)`:
@@ -645,7 +645,7 @@ class PredefinedListItemTemplate : public TBase
 
 **Purpose**: Allows in-place editing of cells
 
-**Core Interfaces** (in `Source/Controls/ListControlPackage/GuiDataGridInterfaces.h`):
+**Core Interfaces** (in `<GacUI repo>/Source/Controls/ListControlPackage/GuiDataGridInterfaces.h`):
 
 1. **IDataEditorFactory**:
    - `CreateEditor(dataGridContext)`: Creates editor instances
@@ -657,7 +657,7 @@ class PredefinedListItemTemplate : public TBase
    - `GetCellValueSaved()`: Returns true if user confirmed edit
    - `NotifyDeletedTemplate()`: Cleanup when template is destroyed
 
-**Base Implementation** (in `Source/Controls/ListControlPackage/GuiDataGridExtensions.cpp`):
+**Base Implementation** (in `<GacUI repo>/Source/Controls/ListControlPackage/GuiDataGridExtensions.cpp`):
 
 1. **DataEditorBase**:
    - Standard implementation of `IDataEditor`
@@ -670,7 +670,7 @@ class PredefinedListItemTemplate : public TBase
    - Stores `templateFactory` (function creating template)
    - `CreateEditor`: Creates `DataEditorBase`, creates template from factory, assigns to editor
 
-**Editor State** (in `Source/Controls/ListControlPackage/GuiDataGridControls.h`):
+**Editor State** (in `<GacUI repo>/Source/Controls/ListControlPackage/GuiDataGridControls.h`):
 - `currentEditor`: Currently opened editor (`Ptr<IDataEditor>`)
 - `currentEditorPos`: Position of edited cell (`GridPos`)
 - `currentEditorOpeningEditor`: Flag preventing recursive calls
@@ -745,7 +745,7 @@ Keyboard Events (in `GuiVirtualDataGrid::OnKeyDown`):
 
 **Purpose**: Enables sorting rows by column in `GuiBindableDataGrid`
 
-**Core Interfaces** (in `Source/Controls/ListControlPackage/GuiBindableDataGrid.h`):
+**Core Interfaces** (in `<GacUI repo>/Source/Controls/ListControlPackage/GuiBindableDataGrid.h`):
 
 1. **IDataProcessorCallback**:
    - `GetItemProvider()`: Access to item provider
@@ -755,7 +755,7 @@ Keyboard Events (in `GuiVirtualDataGrid::OnKeyDown`):
    - `SetCallback(callback)`: Receives notification callback
    - `Compare(row1, row2)`: Returns <0, 0, >0 for ordering
 
-**Base Implementation** (in `Source/Controls/ListControlPackage/GuiBindableDataGrid.cpp`):
+**Base Implementation** (in `<GacUI repo>/Source/Controls/ListControlPackage/GuiBindableDataGrid.cpp`):
 
 **DataSorterBase**:
 - Stores `callback` pointer
@@ -784,7 +784,7 @@ Each `DataColumn` has `associatedSorter` property:
   - If this column is currently sorted, re-sorts using new sorter
   - Otherwise just notifies change
 
-**Integration with DataProvider** (in `Source/Controls/ListControlPackage/GuiBindableDataGrid.cpp`):
+**Integration with DataProvider** (in `<GacUI repo>/Source/Controls/ListControlPackage/GuiBindableDataGrid.cpp`):
 
 **State**:
 - `currentSorter`: Active sorter (`Ptr<IDataSorter>`)
@@ -835,7 +835,7 @@ Each `DataColumn` has `associatedSorter` property:
 
 **Purpose**: Enables filtering rows based on criteria in `GuiBindableDataGrid`
 
-**Core Interface** (in `Source/Controls/ListControlPackage/GuiBindableDataGrid.h`):
+**Core Interface** (in `<GacUI repo>/Source/Controls/ListControlPackage/GuiBindableDataGrid.h`):
 
 **IDataFilter**:
 - `SetCallback(callback)`: Receives notification callback
@@ -848,7 +848,7 @@ Each `DataColumn` has `associatedSorter` property:
 - `InvokeOnProcessorChanged()`: Notifies callback when filter changes
 - `SetCallback(value)`: Sets callback pointer
 
-**Predefined Filter Implementations** (in `Source/Controls/ListControlPackage/GuiBindableDataGrid.cpp`):
+**Predefined Filter Implementations** (in `<GacUI repo>/Source/Controls/ListControlPackage/GuiBindableDataGrid.cpp`):
 
 1. **DataMultipleFilter** (base for AND/OR):
    - Stores `filters` list (`List<Ptr<IDataFilter>>`)
@@ -927,7 +927,7 @@ Each `DataColumn` has `associatedFilter` property:
 
 **DataProvider as Central Coordinator**:
 
-In `Source/Controls/ListControlPackage/GuiBindableDataGrid.cpp`:
+In `<GacUI repo>/Source/Controls/ListControlPackage/GuiBindableDataGrid.cpp`:
 
 `DataProvider` implements multiple interfaces and coordinates all systems:
 

@@ -31,24 +31,24 @@ All native implementations bind and connect to numeric IPv4 loopback. The public
 
 | Platform | Native types | Definition | Build dependency |
 | --- | --- | --- | --- |
-| Windows | `windows_socket::AsyncSocketServer`, `windows_socket::AsyncSocketClient` | `Source/InterProcess/AsyncSocket/AsyncSocket.Windows.h` | Winsock; the implementation links `Ws2_32.lib` and manages `WSAStartup` internally |
-| Linux | `linux_socket::AsyncSocketServer`, `linux_socket::AsyncSocketClient` | `Source/InterProcess/AsyncSocket/AsyncSocket.Linux.h` | `liburing` and `-luring` |
-| macOS | `macos_socket::AsyncSocketServer`, `macos_socket::AsyncSocketClient` | `Source/InterProcess/AsyncSocket/AsyncSocket.macOS.h` | Clang Blocks, CoreFoundation and Network.framework |
+| Windows | `windows_socket::AsyncSocketServer`, `windows_socket::AsyncSocketClient` | `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.Windows.h` | Winsock; the implementation links `Ws2_32.lib` and manages `WSAStartup` internally |
+| Linux | `linux_socket::AsyncSocketServer`, `linux_socket::AsyncSocketClient` | `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.Linux.h` | `liburing` and `-luring` |
+| macOS | `macos_socket::AsyncSocketServer`, `macos_socket::AsyncSocketClient` | `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.macOS.h` | Clang Blocks, CoreFoundation and Network.framework |
 
 The repository build scripts already supply these dependencies. A custom build must preserve the same link and compile options.
 
-Platform-neutral code selects the compiled native backend through the common factories declared in `AsyncSocket.h`:
+Platform-neutral code selects the compiled native backend through the common factories declared in `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.h`:
 
 ```C++
 auto socketServer = CreateDefaultAsyncSocketServer(port);
 auto socketClient = CreateDefaultAsyncSocketClient(port);
 ```
 
-The released platform umbrella is `VlppOS.Windows.h` on Windows and `VlppOS.Linux.h` on Linux and macOS. Each compiled platform translation unit defines the same two factories. Higher HTTP layers never select a backend internally: inject the returned server or client at the composition boundary. `SocketHttpClient` takes only one client pointer, uses that exact object for its first physical lane, and obtains the additional independent lanes required by the logical protocol through `IAsyncSocketClient::CreateSameEndpointClient()`.
+The released platform umbrella is `<VlppOS repo>/Release/VlppOS.Windows.h` on Windows and `<VlppOS repo>/Release/VlppOS.Linux.h` on Linux and macOS. Each compiled platform translation unit defines the same two factories. Higher HTTP layers never select a backend internally: inject the returned server or client at the composition boundary. `SocketHttpClient` takes only one client pointer, uses that exact object for its first physical lane, and obtains the additional independent lanes required by the logical protocol through `IAsyncSocketClient::CreateSameEndpointClient()`.
 
 ## Async Socket API
 
-The async socket interfaces are defined in `Source/InterProcess/AsyncSocket/AsyncSocket.h`. `IAsyncSocketServer::GetPort()` and `IAsyncSocketClient::GetPort()` return the immutable loopback port selected during construction, so higher adapters do not accept a duplicate port argument. `IAsyncSocketClient::CreateSameEndpointClient()` returns a distinct fresh `Ready` client with the same transport configuration and port; it is the transport-preserving way for a multi-lane adapter to acquire another physical connection without accepting a separate factory.
+The async socket interfaces are defined in `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.h`. `IAsyncSocketServer::GetPort()` and `IAsyncSocketClient::GetPort()` return the immutable loopback port selected during construction, so higher adapters do not accept a duplicate port argument. `IAsyncSocketClient::CreateSameEndpointClient()` returns a distinct fresh `Ready` client with the same transport configuration and port; it is the transport-preserving way for a multi-lane adapter to acquire another physical connection without accepting a separate factory.
 
 ### Connections and Callbacks
 
@@ -98,7 +98,7 @@ The request layer adapts each `IAsyncSocketConnection` to an `IHttpRequestConnec
 
 ### Message Values
 
-The binary-safe message values are defined in `Source/InterProcess/AsyncSocket/HttpRequest.h`:
+The binary-safe message values are defined in `<VlppOS repo>/Source/InterProcess/AsyncSocket/HttpRequest.h`:
 
 - `HttpRequest` contains `HttpVersion`, method, exact request target, ordered headers and `HttpBody`.
 - `HttpResponse` contains version, status code, reason, ordered headers and `HttpBody`.
@@ -108,7 +108,7 @@ The binary-safe message values are defined in `Source/InterProcess/AsyncSocket/H
 
 ### Canonical Analysis and Conversion Helpers
 
-`HttpRequest.h` also exposes the protocol-neutral helpers used by the parser, serializer and higher layers. `AnalyzeHttpFraming(fields, framing)` is the single canonical analysis of `Content-Length`, `Transfer-Encoding` and `Connection: close` fields. It resets `framing` on entry; the output is authoritative only when the result is `HttpFramingAnalysisResult::Succeeded`.
+`<VlppOS repo>/Source/InterProcess/AsyncSocket/HttpRequest.h` also exposes the protocol-neutral helpers used by the parser, serializer and higher layers. `AnalyzeHttpFraming(fields, framing)` is the single canonical analysis of `Content-Length`, `Transfer-Encoding` and `Connection: close` fields. It resets `framing` on entry; the output is authoritative only when the result is `HttpFramingAnalysisResult::Succeeded`.
 
 `HttpFraming` reports:
 
@@ -186,7 +186,7 @@ The lower request layer does not synthesize `Host`, route a target, decode a que
 
 ## Mini HTTP Server API
 
-`SocketHttpServerApi`, defined in `Source/InterProcess/AsyncSocket/AsyncSocket_HttpServerApi.h`, owns a URL-prefix registration over a caller-injected `IAsyncSocketServer`. Construction parses and stores the prefix and reads the port from the server. `Start` registers it; the first active API receiving a particular server pointer starts that listener, while later APIs receiving the same pointer join it. The API never creates or replaces the socket server.
+`SocketHttpServerApi`, defined in `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpServerApi.h`, owns a URL-prefix registration over a caller-injected `IAsyncSocketServer`. Construction parses and stores the prefix and reads the port from the server. `Start` registers it; the first active API receiving a particular server pointer starts that listener, while later APIs receiving the same pointer join it. The API never creates or replaces the socket server.
 
 ### Prefixes and Dispatch
 
@@ -260,11 +260,11 @@ api.Stop();
 
 Always call `Stop` in the most-derived destructor before destroying fields used by `OnHttpRequestReceived`, response completions or `OnHttpServerStopping`. From outside callbacks, `Stop` unregisters the prefix, cancels its pending contexts and drains callbacks. A callback-reentrant call cannot unwind its current frame, so that frame's visible state must remain alive until it returns. The final active API sharing an injected server also stops that listener.
 
-The portable file-serving example is `Test/UnitTest/MiniHttpServer/Main.cpp`. It demonstrates multiple prefixes on different ports, binary response bodies, content types and explicit start/stop ordering.
+The portable file-serving example is `<VlppOS repo>/Test/UnitTest/MiniHttpServer/Main.cpp`. It demonstrates multiple prefixes on different ports, binary response bodies, content types and explicit start/stop ordering.
 
 ## Mini HTTP Client API
 
-`SocketHttpClientApi`, defined in `Source/InterProcess/AsyncSocket/AsyncSocket_HttpClientApi.h`, owns one `HttpRequestClient` and one physical persistent connection. Inject an `IAsyncSocketClient` and the loopback server name; the client supplies its locked-in port. This keeps socket selection and endpoint ownership outside the HTTP API.
+`SocketHttpClientApi`, defined in `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpClientApi.h`, owns one `HttpRequestClient` and one physical persistent connection. Inject an `IAsyncSocketClient` and the loopback server name; the client supplies its locked-in port. This keeps socket selection and endpoint ownership outside the HTTP API.
 
 ```C++
 auto nativeClient = CreateDefaultAsyncSocketClient(8888);
@@ -316,7 +316,7 @@ client->Stop();
 
 ### Portable Compatibility Values
 
-`SocketHttpClientApi::HttpQuery` uses `windows_http::HttpRequest`, `windows_http::HttpResponse` and `windows_http::HttpError`. Despite the namespace, these value types are declared in the platform-neutral `Source/InterProcess/NetworkProtocolHttp.h`; using them here does not invoke WinHTTP.
+`SocketHttpClientApi::HttpQuery` uses `windows_http::HttpRequest`, `windows_http::HttpResponse` and `windows_http::HttpError`. Despite the namespace, these value types are declared in the platform-neutral `<VlppOS repo>/Source/InterProcess/NetworkProtocolHttp.h`; using them here does not invoke WinHTTP.
 
 These convenient values differ from the lower binary-oriented message types:
 
@@ -342,12 +342,12 @@ A 404, transport, framing, unsupported-coding or response-timeout failure makes 
 
 ## Source and Example Map
 
-- Async socket contracts: [AsyncSocket.h](../../Source/InterProcess/AsyncSocket/AsyncSocket.h)
-- HTTP message contracts: [HttpRequest.h](../../Source/InterProcess/AsyncSocket/HttpRequest.h)
-- HTTP connection implementation surface: [AsyncSocket_HttpRequest.h](../../Source/InterProcess/AsyncSocket/AsyncSocket_HttpRequest.h)
-- HTTP request server wrapper: [AsyncSocket_HttpRequestServer.h](../../Source/InterProcess/AsyncSocket/AsyncSocket_HttpRequestServer.h)
-- HTTP request client wrapper: [AsyncSocket_HttpRequestClient.h](../../Source/InterProcess/AsyncSocket/AsyncSocket_HttpRequestClient.h)
-- Mini HTTP server API: [AsyncSocket_HttpServerApi.h](../../Source/InterProcess/AsyncSocket/AsyncSocket_HttpServerApi.h)
-- Mini HTTP client API: [AsyncSocket_HttpClientApi.h](../../Source/InterProcess/AsyncSocket/AsyncSocket_HttpClientApi.h)
-- Portable HTTP compatibility values: [NetworkProtocolHttp.h](../../Source/InterProcess/NetworkProtocolHttp.h)
-- Portable Mini HTTP example server: [MiniHttpServer Main.cpp](../../Test/UnitTest/MiniHttpServer/Main.cpp)
+- Async socket contracts: `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.h`
+- HTTP message contracts: `<VlppOS repo>/Source/InterProcess/AsyncSocket/HttpRequest.h`
+- HTTP connection implementation surface: `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpRequest.h`
+- HTTP request server wrapper: `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpRequestServer.h`
+- HTTP request client wrapper: `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpRequestClient.h`
+- Mini HTTP server API: `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpServerApi.h`
+- Mini HTTP client API: `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpClientApi.h`
+- Portable HTTP compatibility values: `<VlppOS repo>/Source/InterProcess/NetworkProtocolHttp.h`
+- Portable Mini HTTP example server: `<VlppOS repo>/Test/UnitTest/MiniHttpServer/Main.cpp`

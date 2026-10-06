@@ -1,6 +1,6 @@
 # CppMerge Tool
 
-`CppMerge` combines one x86 Workflow-generated C++ file and the corresponding x64 file into one native-width C++ file. It then uses an existing copy of that output, when present, as the source of user-written implementation regions. The executable is a thin file-system wrapper around `vl::workflow::cppcodegen::MergeCppMultiPlatform` and `vl::workflow::cppcodegen::MergeCppFileContent` from [Workflow-Repo/Source/Cpp/WfMergeCpp.cpp](https://github.com/vczh-libraries/Workflow/blob/master/Source/Cpp/WfMergeCpp.cpp).
+`CppMerge` combines one x86 Workflow-generated C++ file and the corresponding x64 file into one native-width C++ file. It then uses an existing copy of that output, when present, as the source of user-written implementation regions. The executable is a thin file-system wrapper around `vl::workflow::cppcodegen::MergeCppMultiPlatform` and `vl::workflow::cppcodegen::MergeCppFileContent` from [`<Workflow repo>/Source/Cpp/WfMergeCpp.cpp`](https://github.com/vczh-libraries/Workflow/blob/master/Source/Cpp/WfMergeCpp.cpp).
 
 `CppMerge` operates on one file pair per invocation. Directory enumeration, filename-set validation, stale-file cleanup, and deciding where the stable output tree lives are responsibilities of its caller.
 
@@ -12,7 +12,7 @@ The command has no modes, switches, configuration file, or environment-variable 
 CppMerge <x32-file> <x64-file> <output-file>
 ```
 
-On Windows the executable is normally named `CppMerge.exe`; the release build on Linux and macOS is named `CppMerge`. Quote every path that can contain spaces.
+On Windows the executable is available at `<Tools repo>/Tools/CppMerge.exe`; the release build on Linux and macOS is named `CppMerge`. Quote every path that can contain spaces.
 
 - `<x32-file>` is a C++ source or header generated for `vl::workflow::analyzer::WfCpuArchitecture::x86`.
 - `<x64-file>` is the corresponding file generated from the same logical input and generator settings for `vl::workflow::analyzer::WfCpuArchitecture::x64`.
@@ -43,30 +43,26 @@ User-content markers do not make arbitrary differences between the x86 and x64 s
 The tool itself is file-oriented, so it accepts any organization that supplies one corresponding pair at a time. A caller normally uses parallel staging directories and a separate stable output directory:
 
 ```text
-generated/
-  x32/
-    Foo.h
-    Foo.cpp
-  x64/
-    Foo.h
-    Foo.cpp
-source/
-  Foo.h
-  Foo.cpp
+<application repo>/generated/x32/Foo.h
+<application repo>/generated/x32/Foo.cpp
+<application repo>/generated/x64/Foo.h
+<application repo>/generated/x64/Foo.cpp
+<application repo>/source/Foo.h
+<application repo>/source/Foo.cpp
 ```
 
-Invoke the tool once for `Foo.h` and once for `Foo.cpp`. Repeat for every generated basename. Before invoking it in a directory loop, verify that the x86 and x64 directory listings are identical. `CppMerge` does not recurse, enumerate, delete an output whose pair disappeared, or report an output that the caller forgot to process.
+Invoke the tool once for the header pair and once for the source pair. Repeat for every generated basename. Before invoking it in a directory loop, verify that the x86 and x64 directory listings are identical. `CppMerge` does not recurse, enumerate, delete an output whose pair disappeared, or report an output that the caller forgot to process.
 
-For example, one Windows invocation in a `GacGen.ps1`-style layout is:
+For example, one Windows invocation using the layout from `<Tools repo>/Tools/GacGen.ps1` is shown below. Replace `<Tools repo>` and `<application repo>` with the corresponding checkout roots before running it:
 
 ```text
-CppMerge.exe "Resource.xml.log\x32\Source\Foo.cpp" "Resource.xml.log\x64\Source\Foo.cpp" "Source\Foo.cpp"
+& "<Tools repo>/Tools/CppMerge.exe" "<application repo>/Resource.xml.log/x32/Source/Foo.cpp" "<application repo>/Resource.xml.log/x64/Source/Foo.cpp" "<application repo>/Source/Foo.cpp"
 ```
 
-The repository contains two representative organizations:
+The repositories contain two representative organizations; `<resource-file>` below is the resource path relative to the application checkout:
 
-- [Tools-Repo/Tools/GacGen.ps1](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacGen.ps1) enumerates direct children of `<resource-file>.log\x32\Source`, finds the x64 peer at `<resource-file>.log\x64\Source\<same-name>`, reads the stable destination directory from `<resource-file>.log\x32\CppOutput.txt`, and invokes `CppMerge` for that basename. The staging `.log` tree belongs to `GacGen`; it is input to `CppMerge`, not output from `CppMerge`.
-- Workflow compiler tests generate matching sets under `Test/Generated/Cpp32` and `Test/Generated/Cpp64` (and the corresponding `CppRpc32` / `CppRpc64` trees), validate the filename sets, and merge into `Test/SourceCppGen` or `Test/SourceCppGenRpc`. These tests call the underlying merge functions directly.
+- [`<Tools repo>/Tools/GacGen.ps1`](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacGen.ps1) enumerates direct children of `<application repo>/<resource-file>.log/x32/Source`, finds the x64 peer at `<application repo>/<resource-file>.log/x64/Source/<same-name>`, reads the stable destination directory from `<application repo>/<resource-file>.log/x32/CppOutput.txt`, and invokes `CppMerge` for that basename. The staging `.log` tree belongs to `GacGen`; it is input to `CppMerge`, not output from `CppMerge`.
+- Workflow compiler tests generate matching sets under `<Workflow repo>/Test/Generated/Cpp32` and `<Workflow repo>/Test/Generated/Cpp64` (and the corresponding `<Workflow repo>/Test/Generated/CppRpc32` / `<Workflow repo>/Test/Generated/CppRpc64` trees), validate the filename sets, and merge into `<Workflow repo>/Test/SourceCppGen` or `<Workflow repo>/Test/SourceCppGenRpc`. These tests call the underlying merge functions directly.
 
 ## Architecture Merge
 
@@ -81,7 +77,7 @@ The repository contains two representative organizations:
 | `static_cast<::vl::vint32_t>(N)` | `NL` | `static_cast<::vl::vint>(N)` | Normalize the generator's x86 cast versus x64 suffixed-literal form. |
 | `N` | `static_cast<::vl::vint64_t>(NL)` | `static_cast<::vl::vint>(N)` | Normalize the inverse generated cast-versus-literal form. |
 
-The cast normalization is deliberately narrow: `N` is a sequence of decimal digits and the accepted text must have the exact generated spelling used by `WfMergeCpp.cpp`. The merger is not a C++ parser and does not normalize whitespace, line endings, include order, arbitrary typedefs, hexadecimal literals, or general preprocessor differences.
+The cast normalization is deliberately narrow: `N` is a sequence of decimal digits and the accepted text must have the exact generated spelling used by `<Workflow repo>/Source/Cpp/WfMergeCpp.cpp`. The merger is not a C++ parser and does not normalize whitespace, line endings, include order, arbitrary typedefs, hexadecimal literals, or general preprocessor differences.
 
 The result is therefore either:
 
@@ -144,7 +140,7 @@ The file contains architecture-neutral generated C++ and is intended to be check
 
 If the existing output already equals the fully merged result, the executable returns without rewriting it, preserving its timestamp. Otherwise it writes the complete result in UTF-8 with a BOM. It does not use a temporary or transactional file.
 
-`CppMerge` generates no `.log` directory and no log, error, warning, mapping, or deployment file. Any `*.log` tree seen in a `GacGen.ps1` workflow is produced by `GacGen` and merely consumed as the x86/x64 staging input organization.
+`CppMerge` generates no `.log` directory and no log, error, warning, mapping, or deployment file. Any `*.log` tree seen in a `<Tools repo>/Tools/GacGen.ps1` workflow is produced by `GacGen` and merely consumed as the x86/x64 staging input organization.
 
 ## Diagnostics and Automation Caveats
 

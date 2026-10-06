@@ -157,7 +157,7 @@ public:
 
 ### Function and Event Types
 
-`Func<F>` is also a class, although it is a value type. `Event<F>` is non-copyable (`Source/Primitives/Event.h`).
+`Func<F>` is also a class, although it is a value type. `Event<F>` is non-copyable (`<Vlpp repo>/Source/Primitives/Event.h`).
 
 ### Collection Types
 

@@ -1,6 +1,6 @@
 # GitTui: Browse Git in a Terminal
 
-GitTui is the terminal application in `GacUI/Tools/GitView`. It browses working-tree changes and local branch history on Windows, Linux and macOS. Git must be on PATH. Open an interactive terminal in a Git working tree or one of its subfolders, then run `GitTui` by its absolute path. A submodule is treated as its own repository. All application resources are embedded.
+GitTui is the terminal application in `<GacUI repo>/Tools/GitView`. It browses working-tree changes and local branch history on Windows, Linux and macOS. Git must be on PATH. Open an interactive terminal in a Git working tree or one of its subfolders, then run `GitTui` by its absolute path. A submodule is treated as its own repository. All application resources are embedded.
 
 ## Browse Changes and History
 
@@ -26,4 +26,4 @@ Use Tab, arrow keys and Enter, or terminal mouse input. Drag column dividers to 
 
 On Windows, press Alt followed by `B` for branches, `A` for actions, `C` or `H` for the tabs, `F` for files, `M` for commits, `D` for the diff, or `S` for status. Standalone Alt activation is unavailable in the current Linux/macOS terminal backend; use the other navigation methods there. Use an interactive UTF-8 terminal on Linux/macOS.
 
-Build instructions are in `GacUI/Tools/GitView/README.md` and `Release/Tools/README.md`. Linux/macOS builds require the matching platform provider libraries described there. Launch from the repository you want to inspect, even when the executable is stored elsewhere.
+Build instructions are in `<GacUI repo>/Tools/GitView/README.md` and `<Release repo>/Tools/README.md`. Linux/macOS builds require the matching platform provider libraries described there. Launch from the repository you want to inspect, even when the executable is stored elsewhere.

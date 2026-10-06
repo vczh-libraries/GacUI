@@ -25,7 +25,7 @@ When `VCZH_DEBUG_NO_REFLECTION` is not defined, you can access type metadata; dy
 ## Type Hierarchy Requirements
 
 A reflectable class must inherit from `public vl::reflection::Description<the class itself>`.
-Use `AggregatableDescription` to allow a class being inherited in a Workflow script class, and call `FinalizeAggregation()` in that class's destructor (`Source/Reflection/DescriptableObject.h`).
+Use `AggregatableDescription` to allow a class being inherited in a Workflow script class, and call `FinalizeAggregation()` in that class's destructor (`<VlppReflection repo>/Source/Reflection/DescriptableObject.h`).
 Sub types of reflectable classes or interfaces do not automatically become reflectable, they must use `Description<T>` or `AggregatableDescription<T>`.
 
 A reflectable interface must inherit from `public vl::reflection::Description<the class itself>`.

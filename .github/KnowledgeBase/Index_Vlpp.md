@@ -163,6 +163,6 @@ Testing infrastructure with hierarchical test organization and assertion capabil
 
 #### Implementing Injectable Features
 
-`FeatureInjection<TImpl>` in `Source/FeatureInjection.h` manages replaceable implementation chains, including the DateTime implementation.
+`FeatureInjection<TImpl>` in `<Vlpp repo>/Source/FeatureInjection.h` manages replaceable implementation chains, including the DateTime implementation.
 
 [Design Explanation](./KB_Vlpp_Design_ImplementingInjectableFeature.md)

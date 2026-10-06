@@ -4,7 +4,7 @@ Unified stream interface for file, memory, and data transformation operations wi
 
 ## IStream Interface
 
-All stream implements `IStream` interface. Unfortunately there is another `IStream` in `Windows.h`, so it is not recommended to do `using namespace vl::stream;`, using `stream::` is recommended instead.
+All stream implements `IStream` interface. Unfortunately there is another `IStream` provided by the Windows SDK, so it is not recommended to do `using namespace vl::stream;`, using `stream::` is recommended instead.
 
 Streams are recommended to be used as value types, but they cannot be copied or moved.
 

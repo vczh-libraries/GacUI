@@ -73,9 +73,9 @@ When an RPC method returns an `@rpc:Byval` collection, JSON serialization still 
 
 ## TypeScript Schema for Dispatcher Messages
 
-`Release/Rpc.d.ts` describes the JSON message envelopes for the generic RPC ops boundary represented by `IRpcDispatcher`. It does not know the generated RPC metadata for a sample, so every field that contains a serialized `JsonNode` uses a generic type parameter `T`. A concrete test should read `T` as `KnownTypeSchema | UnknownTypeSchema` from the generated `Serialization_*.d.ts` file for that sample.
+`<Workflow repo>/Release/Rpc.d.ts` describes the JSON message envelopes for the generic RPC ops boundary represented by `IRpcDispatcher`. It does not know the generated RPC metadata for a sample, so every field that contains a serialized `JsonNode` uses a generic type parameter `T`. A concrete test should read `T` as `KnownTypeSchema | UnknownTypeSchema` from the generated `<Workflow repo>/Test/Generated/RpcMetadata32/Serialization_*.d.ts` or `<Workflow repo>/Test/Generated/RpcMetadata64/Serialization_*.d.ts` file for that sample.
 
-The declarations map directly to the C++ ops interfaces in `Source/Library/Rpc/WfLibraryRpc.h`:
+The declarations map directly to the C++ ops interfaces in `<Workflow repo>/Source/Library/Rpc/WfLibraryRpc.h`:
 
 - `IObjectOps_*` maps to `IRpcObjectOps`.
 - `IObjectEventOps_*` maps to `IRpcObjectEventOps`.
@@ -83,7 +83,7 @@ The declarations map directly to the C++ ops interfaces in `Source/Library/Rpc/W
 
 Request envelopes model how `IRpcDispatcher` chooses an ops object. Calls made through `SendToClient_ObjectOps` include both `sourceClientId` and `targetClientId`. Calls made through `BroadcastFromClient_ObjectEventOps` include only `sourceClientId` because the dispatcher expands the broadcast target list. Response envelopes are always one-to-one from the receiving client back to the requesting client, so they always contain both client ids. `IRpcListOps` and `IRpcListEventOps` are local adapters only: list methods are transported as `IObjectOps_InvokeMethod` with predefined negative method ids, and observable-list `ItemChanged` is transported as `IObjectEventOps_InvokeEvent` with the predefined negative event id.
 
-The stable internal transport structs are declared in `Rpc.d.ts` itself: `system_RpcObjectReference`, `system_RpcException`, and `system_RpcByvalReturnValue<T>`. The predefined JSON serializer owns `system::RpcObjectReference` and `system::RpcException` serialization; per-RPC generated serializers should not emit dedicated struct functions for them. Void-returning ops still have response envelopes, but no `response` field. Value-returning ops put the serialized value in `response`. `IRpcObjectEventOps::InvokeEvent`, including predefined observable-list `ItemChanged` events, returns the JSON form of `null | [number, system_RpcException][]`, matching `system::RpcException[int]` after deserialization. Request routing, response consolidation, and service declaration replay rules are specified in [Workflow JSON Request Routing](./KB_Workflow_JsonRequestRouting.md).
+The stable internal transport structs are declared in `<Workflow repo>/Release/Rpc.d.ts` itself: `system_RpcObjectReference`, `system_RpcException`, and `system_RpcByvalReturnValue<T>`. The predefined JSON serializer owns `system::RpcObjectReference` and `system::RpcException` serialization; per-RPC generated serializers should not emit dedicated struct functions for them. Void-returning ops still have response envelopes, but no `response` field. Value-returning ops put the serialized value in `response`. `IRpcObjectEventOps::InvokeEvent`, including predefined observable-list `ItemChanged` events, returns the JSON form of `null | [number, system_RpcException][]`, matching `system::RpcException[int]` after deserialization. Request routing, response consolidation, and service declaration replay rules are specified in [Workflow JSON Request Routing](./KB_Workflow_JsonRequestRouting.md).
 
 ## Other Strict Rules
 
@@ -179,4 +179,4 @@ export type KnownTypeSchema =
   ;
 ```
 
-`JsonValue_*.ts` files generated for TypeScript validation contain JSON values captured at the generic RPC ops boundary, so each element is typed as `KnownTypeSchema | UnknownTypeSchema`.
+`<Workflow repo>/Test/TypeScript/JsonValues32/JsonValue_*.ts` and `<Workflow repo>/Test/TypeScript/JsonValues64/JsonValue_*.ts` files generated for TypeScript validation contain JSON values captured at the generic RPC ops boundary, so each element is typed as `KnownTypeSchema | UnknownTypeSchema`.

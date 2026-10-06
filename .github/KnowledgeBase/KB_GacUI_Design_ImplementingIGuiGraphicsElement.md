@@ -38,7 +38,7 @@ A lightweight element (e.g., `GuiSolidLabelElement`) follows this template patte
 - Shape / format or content properties stored as POD or small structs (e.g., `Color`, `FontProperties`, `Alignment`, `WString`).
 - No rendering code appears in the element itself; it only stores state.
 
-Typical additional element examples in `GuiGraphicsElement.h / .cpp` (all using the same pattern):
+Typical additional element examples in `<GacUI repo>/Source/GraphicsElement/GuiGraphicsElement.h / .cpp` (all using the same pattern):
 - `GuiFocusRectangleElement`,
 - `GuiSolidBorderElement`, `Gui3DBorderElement`, `Gui3DSplitterElement` (two-color, directional),
 - `GuiSolidBackgroundElement`, `GuiGradientBackgroundElement`,

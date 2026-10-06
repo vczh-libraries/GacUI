@@ -130,7 +130,7 @@ Implementation injection is particularly valuable for unit testing file system o
 
 ## WebAssembly OPFS backend
 
-`OpfsFileSystemImpl` in `Source/FileSystem.Wasm.cpp` is the default `IFileSystemImpl` under `VCZH_WASM`, selected lazily by the ordinary injection chain. It calls JavaScript OPFS APIs directly through `EM_ASYNC_JS`; applications link with Asyncify and await suspending Embind exports. It does not use an Emscripten filesystem backend or require app-specific JavaScript callbacks.
+`OpfsFileSystemImpl` in `<VlppOS repo>/Source/FileSystem.Wasm.cpp` is the default `IFileSystemImpl` under `VCZH_WASM`, selected lazily by the ordinary injection chain. It calls JavaScript OPFS APIs directly through `EM_ASYNC_JS`; applications link with Asyncify and await suspending Embind exports. It does not use an Emscripten filesystem backend or require app-specific JavaScript callbacks.
 
 Pthread callers complete each asynchronous OPFS operation through an Emscripten-managed callback using `emscripten_sleep(0)`. This keeps returning workers joinable on Emscripten 3.1.6, whose plain promise resumption misses thread-exit handling. The continuation is confined to the OPFS boundary; ordinary thread sleeps retain their blocking semantics.
 

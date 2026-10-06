@@ -1,6 +1,6 @@
 ﻿# UiaList: Windows UI Automation Inspector
 
-UiaListApp is the Windows desktop inspector in `GacUI/Tools/UiaList`. Use it to discover application windows, inspect their UI Automation trees, read properties, and exercise supported actions. Run `UiaListApp.exe`; its resources are embedded, so no resource files need to accompany it.
+UiaListApp is the Windows desktop inspector in `<GacUI repo>/Tools/UiaList`. Use it to discover application windows, inspect their UI Automation trees, read properties, and exercise supported actions. Run `UiaListApp.exe`; its resources are embedded, so no resource files need to accompany it.
 
 ## Inspect a Window
 
@@ -23,7 +23,7 @@ The surrounding UI selects English, Simplified Chinese or Japanese from Windows'
 
 ## Launch and Automation
 
-The executable is Windows-only. Build and launch instructions are in `GacUI/Tools/UiaList/README.md`; the release tool build instructions are in `Release/Tools/README.md`.
+The executable is Windows-only. Build and launch instructions are in `<GacUI repo>/Tools/UiaList/README.md`; the release tool build instructions are in `<Release repo>/Tools/README.md`.
 
 Debug builds expose `http://localhost:8888/Automation/UiaListApp/Controls` and `/IO`. Pass `/AsPort:8891`, for example, when another application uses the default port. One decimal port from 1 through 65535 is accepted. Release builds do not start an HTTP automation endpoint; Windows UI Automation remains available.
 

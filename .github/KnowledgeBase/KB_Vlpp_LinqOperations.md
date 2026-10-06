@@ -30,13 +30,13 @@ From(xs)
 
 The C++ range based for loop also works with any collection objects implementing `IEnumerable<T>`.
 
-Use `indexed(xs)` for `for(auto [x, index] : indexed(xs))`. The range wrapper yields `Tuple<const T&, vint>` values with the element before its index (`Source/Collections/OperationForEach.h`); it is not an `IEnumerable<Pair<vint, T>>`.
+Use `indexed(xs)` for `for(auto [x, index] : indexed(xs))`. The range wrapper yields `Tuple<const T&, vint>` values with the element before its index (`<Vlpp repo>/Source/Collections/OperationForEach.h`); it is not an `IEnumerable<Pair<vint, T>>`.
 
 ## Extra Content
 
 Check out comments before `#ifndef VCZH_COLLECTIONS_OPERATION` for a full list of operators available in the LINQ implementation.
 
-Many LINQ operations in Vlpp defer evaluation until enumeration. `OrderBy()` and `Reverse()` materialize their input, and `Evaluate()` can cache unevaluated input, while aggregations evaluate immediately (`Source/Collections/Operation.h`).
+Many LINQ operations in Vlpp defer evaluation until enumeration. `OrderBy()` and `Reverse()` materialize their input, and `Evaluate()` can cache unevaluated input, while aggregations evaluate immediately (`<Vlpp repo>/Source/Collections/Operation.h`).
 
 Common LINQ operations include:
 - Filtering operations: `Where()`, `Take()`, `Skip()`

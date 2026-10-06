@@ -150,17 +150,17 @@ If `Stop()` is called from the object's own active callback, publish terminal st
 
 ## Port fixes from imports to source repositories
 
-Do not treat files copied into `Import` or generated release files as the source of truth. When a fix affects imported `Vlpp` files, make the upstream change in `Vlpp`, regenerate its release output, and then copy the generated files downstream. When a `.github` instruction or script fix is needed, port it through `Tools/Copilot`.
+Do not treat files copied into `<downstream repo>/Import` or generated release files as the source of truth. When a fix affects imported `Vlpp` files, make the upstream change in `Vlpp`, regenerate its release output, and then copy the generated files downstream. When a `<any repo>/.github` instruction or script fix is needed, port it through `<Tools repo>/Copilot`.
 
-When a downstream repo such as `GacUI` exposes a bug in imported `VlppOS` inter-process code, fix and verify it in `VlppOS`, regenerate `VlppOS\Release`, and then import the generated release files downstream.
+When a downstream repo such as `GacUI` exposes a bug in imported `VlppOS` inter-process code, fix and verify it in `VlppOS`, regenerate `<VlppOS repo>/Release`, and then import the generated release files downstream.
 
-When validating GacUI remoting reveals a transport issue, keep the same source-of-truth rule: fix `VlppOS`, regenerate its release, copy the generated output into `GacUI\Import`, then validate the downstream scenario again.
+When validating GacUI remoting reveals a transport issue, keep the same source-of-truth rule: fix `VlppOS`, regenerate its release, copy the generated output into `<GacUI repo>/Import`, then validate the downstream scenario again.
 
-For dependency release syncs, copy generated files from the upstream `Release` folder into the downstream `Import` folder and exclude `IncludeOnly` unless the task explicitly requires it. Do not hand-edit the downstream import copy.
+For dependency release syncs, copy generated files from the `<upstream repo>/Release` folder into the `<downstream repo>/Import` folder and exclude `<upstream repo>/Release/IncludeOnly` unless the task explicitly requires it. Do not hand-edit the downstream import copy.
 
 When importing multiple dependency releases into GacUI, keep the chain explicit: regenerate and import `VlppOS` and `Workflow` release artifacts, then validate the GacUI remoting scenarios that consume both imported APIs.
 
-Shared Ubuntu build infrastructure must be changed in the canonical `Tools/Ubuntu` source first, committed and pushed there, and then propagated into a repository with `vgo uci REPO`. Do not make a propagated repository-local copy the source of truth.
+Shared Ubuntu build infrastructure must be changed in the canonical `<Tools repo>/Ubuntu` source first, committed and pushed there, and then propagated into a repository with `vgo uci REPO`. Do not make a propagated repository-local copy the source of truth.
 
 If a Workflow task exposes a `VlppReflection` collection-wrapper issue, fix the wrapper behavior in `VlppReflection`, regenerate and verify its release output, then update the Workflow import from that release instead of patching Workflow's imported copy.
 
@@ -274,7 +274,7 @@ When generated RPC JSON values or request/response transcripts are part of the c
 
 For generated build files, compare the selected source list with the owning project metadata and platform add/remove rules, then perform a clean build. This catches stale tracked output and generators that appear to succeed after silently losing a compiler or dependency-scanner failure.
 
-When generated build metadata must be platform-invariant, generate it with native and simulated host selection and compare tracked `makefile` and `vmake.txt` output byte for byte. Then perform clean and no-op incremental builds and inspect host-local dependency files, ensuring stable tracked output does not break platform-specific includes or incremental rebuilds.
+When generated build metadata must be platform-invariant, generate it with native and simulated host selection and compare tracked `<build repo>/<build directory>/makefile` and `<build repo>/<build directory>/vmake.txt` output byte for byte. Then perform clean and no-op incremental builds and inspect host-local dependency files, ensuring stable tracked output does not break platform-specific includes or incremental rebuilds.
 
 For a generated reader that reverses a generated writer, reuse real serialized outputs at every existing logged or golden site, parse them through the public input parser, perform an exact writer-reader-writer round trip, and require byte-for-byte equality. Add focused valid and malformed inputs for every generated field category and validation branch so a successful generator run cannot hide an incomplete reader.
 
@@ -342,7 +342,7 @@ For application refactors, remove helper wrappers that only duplicate an already
 
 When a shared event-information type can own a newly common field, move the field there and delete modifier-only wrapper types and parallel overload plumbing that no longer represent a distinct concept.
 
-When a documented build invariant guarantees that `CPP_TARGET` and its package outputs are files under `Bin`, removing `Bin` already cleans them. Remove redundant file-by-file cleanup instead of preserving commands for target layouts the build no longer supports.
+When a documented build invariant guarantees that `CPP_TARGET` and its package outputs are files under `<build repo>/<build directory>/Bin`, removing `<build repo>/<build directory>/Bin` already cleans them. Remove redundant file-by-file cleanup instead of preserving commands for target layouts the build no longer supports.
 
 Before adding persistent validation state, check whether the existing input contract can provide the complete set of values in one batch. If it can, validate with local state and remove the state map, wrapper type and alternate authoring paths that existed only to support incremental arrival. Preserve ordinary runtime mutation when the restriction belongs specifically to authoring.
 
@@ -388,7 +388,7 @@ The same standard applies when severe CPU usage coincides with a debugger or ter
 
 Run the relevant tests on every target operating system whose behavior is being claimed, and report only the platforms actually exercised. Use contrasts between passing and failing platforms to narrow investigation toward the failing platform's implementation before changing shared code, while retaining cross-platform regression verification. Instructions may be prepared for an untested operating system only when they are clearly labeled untested; never report that platform as verified.
 
-When asked to prepare Unix `vmake` configuration on Windows without executing it, review the authored configuration and its source paths only. Do not fabricate `makefile` or `vmake.txt` outputs. Likewise, distinguish pseudoconsole input/output verification from physical desktop input and displayed terminal appearance.
+When asked to prepare Unix `<build repo>/<build directory>/vmake` configuration on Windows without executing it, review the authored configuration and its source paths only. Do not fabricate `<build repo>/<build directory>/makefile` or `<build repo>/<build directory>/vmake.txt` outputs. Likewise, distinguish pseudoconsole input/output verification from physical desktop input and displayed terminal appearance.
 
 Portability applies to test synchronization APIs too. When a timed thread wait exists only on one platform, use a cross-platform completion primitive such as `EventObject` for the bounded deadlock guard, signal it on every expected completion path, and still join the worker afterward. Do not weaken a bounded test into an unbounded join merely to make it compile elsewhere.
 
@@ -404,9 +404,9 @@ On POSIX platforms, never retain pointers returned by `localtime()` or `gmtime()
 
 ## Keep generated makefiles platform-invariant
 
-Tracked `makefile` and `vmake.txt` output should remain identical across Linux and macOS. Keep every platform-guarded translation unit in the stable source list; the inactive translation unit should compile harmlessly through its preprocessor guards. Put monorepo-wide platform policy in the canonical shared `makefile-cpp` and select it at make execution time—for example, Darwin compile/framework options and Linux `-luring`—with libraries placed after object prerequisites.
+Tracked `<build repo>/<build directory>/makefile` and `<build repo>/<build directory>/vmake.txt` output should remain identical across Linux and macOS. Keep every platform-guarded translation unit in the stable source list; the inactive translation unit should compile harmlessly through its preprocessor guards. Put monorepo-wide platform policy in the canonical shared `<Tools repo>/Ubuntu/vl/makefile-cpp` and select it at make execution time—for example, Darwin compile/framework options and Linux `-luring`—with libraries placed after object prerequisites.
 
-Do not embed host-preprocessed `clang++ -MM` dependency output in tracked makefiles. Continue running the dependency probe as fail-fast validation, discard its host-specific output, and emit stable source-only object rules. Generate ignored `Obj/*.d` files during actual compilation with `-MMD -MP` and include them for correct host-local incremental dependency tracking. Do not make object files depend on the shared `makefile-cpp`: its environment-dependent settings, such as `VCPROOT`, can vary without requiring a rebuild, and `build.sh -f` is the explicit full-rebuild mechanism.
+Do not embed host-preprocessed `clang++ -MM` dependency output in tracked makefiles. Continue running the dependency probe as fail-fast validation, discard its host-specific output, and emit stable source-only object rules. Generate ignored `<build repo>/<build directory>/Obj/*.d` files during actual compilation with `-MMD -MP` and include them for correct host-local incremental dependency tracking. Do not make object files depend on the shared `<Tools repo>/Ubuntu/vl/makefile-cpp`: its environment-dependent settings, such as `VCPROOT`, can vary without requiring a rebuild, and `<Tools repo>/Ubuntu/build.sh -f` is the explicit full-rebuild mechanism.
 
 ## Group non-template C++ implementations by class in `.cpp` files
 
@@ -438,7 +438,7 @@ Assign a stable sequence to each submitted request and buffer completed response
 
 ## Preserve an existing `Ptr` counter across asynchronous ownership handoffs
 
-When a callback or adapter must retain an object beyond the caller's synchronized scope, carry the producer's existing owning `Ptr<T>` through every layer. Never construct another `Ptr<T>` from a raw callback argument or from `.Obj()`; with the default `ReferenceCounterOperator` in `Vlpp/Source/Primitives/Pointer.h`, that creates an independent reference counter and can double-delete the same object. Use `.Obj()` only for a temporary operation that explicitly requires a raw pointer.
+When a callback or adapter must retain an object beyond the caller's synchronized scope, carry the producer's existing owning `Ptr<T>` through every layer. Never construct another `Ptr<T>` from a raw callback argument or from `.Obj()`; with the default `ReferenceCounterOperator` in `<Vlpp repo>/Source/Primitives/Pointer.h`, that creates an independent reference counter and can double-delete the same object. Use `.Obj()` only for a temporary operation that explicitly requires a raw pointer.
 
 ## Reuse established MSBuild project configurations
 
@@ -474,7 +474,7 @@ Map only the input files and explicitly needed empty directories used by the ret
 
 ## Preserve compiler-generated modules during packaging
 
-When a toolchain already supports loading adjacent runtime files, deploy those files instead of rewriting its generated module or replacing its export with an embedding wrapper. For Emscripten pthread builds, preserve `app.mjs` byte-for-byte and package the matching `app.worker.js` and `app.wasm` beside it, allowing the original factory and worker imports to resolve normally. Verify unchanged generated bytes after packaging and distinguish application-host workers from compiler-generated pthread workers.
+When a toolchain already supports loading adjacent runtime files, deploy those files instead of rewriting its generated module or replacing its export with an embedding wrapper. For Emscripten pthread builds, preserve `<application repo>/<output directory>/app.mjs` byte-for-byte and package the matching `<application repo>/<output directory>/app.worker.js` and `<application repo>/<output directory>/app.wasm` beside it, allowing the original factory and worker imports to resolve normally. Verify unchanged generated bytes after packaging and distinguish application-host workers from compiler-generated pthread workers.
 
 ## Validate complete deployment inputs before writing outputs
 

@@ -15,11 +15,11 @@ The following data types are preferred:
 
 ## Vlpp
 
-Files from Import:
-- Vlpp.h
-- Vlpp.cpp
-- Vlpp.Windows.cpp
-- Vlpp.Linux.cpp
+Files in `<consuming repo>/Import`:
+- `<consuming repo>/Import/Vlpp.h`
+- `<consuming repo>/Import/Vlpp.cpp`
+- `<consuming repo>/Import/Vlpp.Windows.cpp`
+- `<consuming repo>/Import/Vlpp.Linux.cpp`
 
 Online documentation: https://gaclib.net/doc/current/vlpp/home.html
 
@@ -32,13 +32,13 @@ Detailed project guidance: [Index_Vlpp.md](./Index_Vlpp.md)
 
 ## VlppOS
 
-Files from Import:
-- VlppOS.h
-- VlppOS.cpp
-- VlppOS.Windows.h
-- VlppOS.Windows.cpp
-- VlppOS.Linux.h
-- VlppOS.Linux.cpp
+Files in `<consuming repo>/Import`:
+- `<consuming repo>/Import/VlppOS.h`
+- `<consuming repo>/Import/VlppOS.cpp`
+- `<consuming repo>/Import/VlppOS.Windows.h`
+- `<consuming repo>/Import/VlppOS.Windows.cpp`
+- `<consuming repo>/Import/VlppOS.Linux.h`
+- `<consuming repo>/Import/VlppOS.Linux.cpp`
 
 Online documentation: https://gaclib.net/doc/current/vlppos/home.html
 
@@ -51,9 +51,9 @@ Detailed project guidance: [Index_VlppOS.md](./Index_VlppOS.md)
 
 ## VlppRegex
 
-Files from Import:
-- VlppRegex.h
-- VlppRegex.cpp
+Files in `<consuming repo>/Import`:
+- `<consuming repo>/Import/VlppRegex.h`
+- `<consuming repo>/Import/VlppRegex.cpp`
 
 Online documentation: https://gaclib.net/doc/current/vlppregex/home.html
 
@@ -73,9 +73,9 @@ Detailed project guidance: [Index_VlppRegex.md](./Index_VlppRegex.md)
 
 ## VlppReflection
 
-Files from Import:
-- VlppReflection.h
-- VlppReflection.cpp
+Files in `<consuming repo>/Import`:
+- `<consuming repo>/Import/VlppReflection.h`
+- `<consuming repo>/Import/VlppReflection.cpp`
 
 Online documentation: https://gaclib.net/doc/current/vlppreflection/home.html
 
@@ -88,11 +88,11 @@ Detailed project guidance: [Index_VlppReflection.md](./Index_VlppReflection.md)
 
 ## VlppParser2
 
-Files from Import:
-- VlppGlrParser.h
-- VlppGlrParser.cpp
-- VlppGlrParserCompiler.h
-- VlppGlrParserCompiler.cpp
+Files in `<consuming repo>/Import`:
+- `<consuming repo>/Import/VlppGlrParser.h`
+- `<consuming repo>/Import/VlppGlrParser.cpp`
+- `<consuming repo>/Import/VlppGlrParserCompiler.h`
+- `<consuming repo>/Import/VlppGlrParserCompiler.cpp`
 
 Online documentation: https://gaclib.net/doc/current/vlppparser2/home.html
 
@@ -104,13 +104,13 @@ Detailed project guidance: [Index_VlppParser2.md](./Index_VlppParser2.md)
 
 ## Workflow
 
-Files from Import:
-- VlppWorkflowLibrary.h
-- VlppWorkflowLibrary.cpp
-- VlppWorkflowCompiler.h
-- VlppWorkflowCompiler.cpp
-- VlppWorkflowRuntime.h
-- VlppWorkflowRuntime.cpp
+Files in `<consuming repo>/Import`:
+- `<consuming repo>/Import/VlppWorkflowLibrary.h`
+- `<consuming repo>/Import/VlppWorkflowLibrary.cpp`
+- `<consuming repo>/Import/VlppWorkflowCompiler.h`
+- `<consuming repo>/Import/VlppWorkflowCompiler.cpp`
+- `<consuming repo>/Import/VlppWorkflowRuntime.h`
+- `<consuming repo>/Import/VlppWorkflowRuntime.cpp`
 
 Online documentation: https://gaclib.net/doc/current/workflow/home.html
 

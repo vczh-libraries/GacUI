@@ -1,20 +1,20 @@
 # CodePack Inputs, Outputs, and Release Layout
 
-`CodePack` turns a repository's ordinary `.h` and `.cpp` source tree into a small set of dependency-ordered C++ code pairs. The monorepo uses the concatenated pairs as release artifacts and copies owning repositories' generated pairs into downstream `Import` directories. The source tree and `CodegenConfig.xml` remain authoritative; generated `Release` files are not edited by hand.
+`CodePack` turns a repository's ordinary `.h` and `.cpp` source tree into a small set of dependency-ordered C++ code pairs. The monorepo uses the concatenated pairs as release artifacts and copies owning repositories' generated pairs into downstream `<consumer repo>/Import` directories. The source tree and `<owning repo>/Release/CodegenConfig.xml` remain authoritative; generated `<owning repo>/Release` files are not edited by hand.
 
-The command-line entry point is [VlppParser2-Repo/Tools/CodePack/CodePack/Main.cpp](https://github.com/vczh-libraries/VlppParser2/blob/master/Tools/CodePack/CodePack/Main.cpp). It accepts exactly one argument:
+The command-line entry point is [`<VlppParser2 repo>/Tools/CodePack/CodePack/Main.cpp`](https://github.com/vczh-libraries/VlppParser2/blob/master/Tools/CodePack/CodePack/Main.cpp). It accepts exactly one argument:
 
 ```text
 CodePack.exe <config-xml>
 ```
 
-There are no command-line modes or switches. On Windows, the monorepo release scripts normally invoke the last-known-good `Tools/Tools/CodePack.backup.exe`; `CodePack.exe` has the same interface. On Linux and macOS, the locally built binary is `Tools/CodePack/Bin/CodePack`. In every case, pass a repository's `Release/CodegenConfig.xml`.
+There are no command-line modes or switches. On Windows, the monorepo release scripts normally invoke the last-known-good `<Tools repo>/Tools/CodePack.backup.exe`; a freshly built CodePack executable has the same interface. On Linux and macOS, the locally built binary is `<VlppParser2 repo>/Tools/CodePack/Bin/CodePack`. In every case, pass a repository's `<owning repo>/Release/CodegenConfig.xml`.
 
 # Path Model and Configuration
 
 The directory containing the configuration file is the working directory for all configured paths. Every `<folder path="...">` and `<output path="...">` is resolved relative to that directory, not relative to the process's current directory. CodePack normalizes filesystem delimiters for I/O, but converts full paths to backslashes before matching patterns, so the checked-in configurations use backslash path fragments on every platform.
 
-A complete configuration has this shape:
+A complete configuration has this shape. The relative paths below are XML configuration values rooted at `<owning repo>/Release/CodegenConfig.xml`:
 
 ```xml
 <codegen>
@@ -48,7 +48,7 @@ The root name is conventionally `codegen`. The implementation reads the named ch
 | `categories/category@name` | The logical code-pair category assigned to matching files. Repeating the same name in multiple `<category>` elements unions several selections into one category. |
 | `categories/category@pattern` | One or more case-insensitive full-path substrings. Separate alternatives with `;`; empty alternatives are ignored. These are substring tests, not globs or regular expressions. |
 | `categories/category/except@pattern` | A case-insensitive full-path substring that removes a file from this category's positive selection. |
-| `output@path` | The output directory, relative to the configuration file. CodePack also creates an `IncludeOnly` child directory here. |
+| `output@path` | The output directory, relative to the configuration file. CodePack also creates an `<owning repo>/<output folder>/IncludeOnly` child directory here. |
 | `output/codepair@category` | Connects one category to its output basename. Every used category must have exactly one mapping. |
 | `output/codepair@filename` | The basename used in generated includes and filenames. Do not add `.h` or `.cpp`. Periods are ordinary filename characters and do not create subdirectories. |
 | `output/codepair@generate` | Only the exact string `true` enables output. `false` declares an externally supplied dependency category: CodePack analyzes it and rewrites dependencies to its configured basename, but emits no files for it. An enabled category needs at least one categorized `.cpp`; the implementation unconditionally combines its implementation list. Headers are optional. |
@@ -59,7 +59,7 @@ Categories with `generate="false"` are how imported release files participate wi
 
 # Include Scanning and Source Instructions
 
-[VlppParser2-Repo/Tools/CodePack/CodePack/Codepack_GetIncludeFiles.cpp](https://github.com/vczh-libraries/VlppParser2/blob/master/Tools/CodePack/CodePack/Codepack_GetIncludeFiles.cpp) recognizes only standalone include lines in these forms:
+[`<VlppParser2 repo>/Tools/CodePack/CodePack/Codepack_GetIncludeFiles.cpp`](https://github.com/vczh-libraries/VlppParser2/blob/master/Tools/CodePack/CodePack/Codepack_GetIncludeFiles.cpp) recognizes only standalone include lines in these forms:
 
 ```cpp
 #include "relative/path.h"
@@ -78,7 +78,7 @@ CodePack also recognizes standalone source annotations:
 
 Their behavior is:
 
-- `BeginIgnore()` starts a region whose ordinary contents are omitted from the amalgamated text and whose includes are ignored during dependency scanning. `IncludeOnly` wrappers still include the original source files, so those source regions remain active when compiling the wrappers.
+- `BeginIgnore()` starts a region whose ordinary contents are omitted from the amalgamated text and whose includes are ignored during dependency scanning. `<owning repo>/<output folder>/IncludeOnly` wrappers still include the original source files, so those source regions remain active when compiling the wrappers.
 - `EndIgnore()` ends that region.
 - `ConditionOff(MACRO, relative-file)` records a dependency on the categorized relative file. The instruction is commonly placed inside an ignored region that contains the source-tree include. CodePack replaces it in the generated preamble with `#ifndef MACRO`, an include of the target category's `{filename}.h`, and `#endif`.
 - `ConditionOn(MACRO, relative-file)` is also recognized and is meant to produce the corresponding `#ifdef` dependency. There are no current monorepo call sites for it, while `ConditionOff` is exercised extensively. The current implementation performs an additional output-map lookup for `ConditionOn`; verify that path with a focused generator test before introducing the first production use.
@@ -92,7 +92,7 @@ CodePack scans transitive includes and builds two dependency graphs:
 1. A category graph determines which generated headers each code pair must include. A dependency cycle spanning different categories is rejected.
 2. A file graph within each generated header or implementation determines concatenation order. A cycle between files in the same code pair is also rejected.
 
-The existing `IncludeOnly/{filename}.h` or `.cpp` file is read before rewriting. Its source `#include` order is used as a stable ordering preference; newly discovered files fall back to normalized full-path order. Dependency ordering still takes precedence. This makes `IncludeOnly` both an output and the stability seed for the next run.
+The existing `<owning repo>/<output folder>/IncludeOnly/{filename}.h` or `<owning repo>/<output folder>/IncludeOnly/{filename}.cpp` file is read before rewriting. Its source `#include` order is used as a stable ordering preference; newly discovered files fall back to normalized full-path order. Dependency ordering still takes precedence. This makes `<owning repo>/<output folder>/IncludeOnly` both an output and the stability seed for the next run.
 
 For each generated code pair, CodePack then applies these transformations:
 
@@ -104,10 +104,10 @@ For each generated code pair, CodePack then applies these transformations:
 
 # Generated File Organization
 
-For the normal `<codepair generate="true">` category containing both headers and implementations, the output is flat except for one fixed mirror directory:
+For the normal `<codepair generate="true">` category containing both headers and implementations, the output is flat except for one fixed mirror directory. The tree root is `<owning repo>/<output folder>`; the filename formulas below name its children:
 
 ```text
-{output path}/
+<owning repo>/<output folder>/
 |-- {filename}.h
 |-- {filename}.cpp
 `-- IncludeOnly/
@@ -119,18 +119,18 @@ Several enabled categories place several such quartets in the same output direct
 
 | Generated file | Contents | Purpose and consumer |
 | --- | --- | --- |
-| `{filename}.h` | When the category has headers: dependency includes followed by the dependency-ordered contents of every categorized `.h`, with local includes removed and system includes deduplicated. | This is the distributable public amalgamated header. Repository releases, the aggregate `Release` repository, and downstream `Import` snapshots consume it. Include it from client code in place of the original multi-file header tree. It is absent for an implementation-only category. |
-| `{filename}.cpp` | Usually starts with `{filename}.h`, then contains every categorized `.cpp` in dependency order. A category with no headers instead receives its external category dependencies directly. | This is the distributable amalgamated implementation. Compile it once with the matching generated header and the declared dependency pairs. It is copied with the header into downstream `Import` directories. |
+| `{filename}.h` | When the category has headers: dependency includes followed by the dependency-ordered contents of every categorized `.h`, with local includes removed and system includes deduplicated. | This is the distributable public amalgamated header. Repository releases, the aggregate `Release` repository, and downstream `<consumer repo>/Import` snapshots consume it. Include it from client code in place of the original multi-file header tree. It is absent for an implementation-only category. |
+| `{filename}.cpp` | Usually starts with `{filename}.h`, then contains every categorized `.cpp` in dependency order. A category with no headers instead receives its external category dependencies directly. | This is the distributable amalgamated implementation. Compile it once with the matching generated header and the declared dependency pairs. It is copied with the header into downstream `<consumer repo>/Import` directories. |
 | `IncludeOnly/{filename}.h` | When the category has headers: the same generated dependency preamble, followed by relative `#include` directives for the original categorized `.h` files rather than copied header bodies. | This provides the same code-pair boundary while compiling the owning repository's original source files. It is useful for maintenance/source-layout dependency resolution and preserves the source include order for future CodePack runs. It is absent for an implementation-only category and is not copied by the normal cross-repository release/import workflow. |
 | `IncludeOnly/{filename}.cpp` | The same generated implementation preamble, followed by relative `#include` directives for the original categorized `.cpp` files. | This is the source-wrapper counterpart to the amalgamated `.cpp`. Compile it only in workflows that intentionally build the original owning source tree through one translation unit. Do not ship or import it as if it were self-contained release source. |
 
-The ordinary dependency synchronization rule copies generated `.h` and `.cpp` files from the output root and explicitly excludes the `IncludeOnly` directory. A repository-specific workflow can consume an `IncludeOnly` pair deliberately, but it must not silently replace the distributable pair.
+The ordinary dependency synchronization rule copies generated `.h` and `.cpp` files from the output root and explicitly excludes the `<owning repo>/<output folder>/IncludeOnly` directory. A repository-specific workflow can consume an `<owning repo>/<output folder>/IncludeOnly` pair deliberately, but it must not silently replace the distributable pair.
 
-`CodegenConfig.xml` itself is an input and remains beside these artifacts; CodePack does not generate a manifest, dependency file, binary table, or log directory. Console output is the only run record: it prints every scanned file and reports each successfully written amalgamated path. Automation that needs a durable log must capture stdout and stderr externally.
+`<owning repo>/Release/CodegenConfig.xml` itself is an input and remains beside these artifacts; CodePack does not generate a manifest, dependency file, binary table, or log directory. Console output is the only run record: it prints every scanned file and reports each successfully written amalgamated path. Automation that needs a durable log must capture stdout and stderr externally.
 
 # Regeneration and Failure Behavior
 
-CodePack rewrites both implementation forms and, when categorized headers exist, both header forms for every enabled category on each successful pass. It writes UTF-8 generated text and creates the output and `IncludeOnly` directories as needed. It does not remove stale files for deleted or newly disabled categories, or obsolete header files after a category becomes implementation-only, so configuration changes that reduce the artifact set require an explicit source-control review and removal of obsolete generated files.
+CodePack rewrites both implementation forms and, when categorized headers exist, both header forms for every enabled category on each successful pass. It writes UTF-8 generated text and creates the output and `<owning repo>/<output folder>/IncludeOnly` directories as needed. It does not remove stale files for deleted or newly disabled categories, or obsolete header files after a category becomes implementation-only, so configuration changes that reduce the artifact set require an explicit source-control review and removal of obsolete generated files.
 
 Important failure behavior follows directly from the CLI:
 
@@ -140,4 +140,4 @@ Important failure behavior follows directly from the CLI:
 - An unrecognized `CodePack:` source instruction prints an error but does not itself force a nonzero exit, as noted above.
 - File I/O has no recovery transaction. Keep generated artifacts under source control and inspect the complete diff after every run.
 
-The production examples under each repository's `Release/CodegenConfig.xml` demonstrate the intended monorepo layering: imported dependency categories use `generate="false"`, owning source categories use `generate="true"`, platform-specific source receives separate code pairs, and all generated pairs share one `Release` output root.
+The production examples under each repository's `<owning repo>/Release/CodegenConfig.xml` demonstrate the intended monorepo layering: imported dependency categories use `generate="false"`, owning source categories use `generate="true"`, platform-specific source receives separate code pairs, and all generated pairs share one `<owning repo>/Release` output root.

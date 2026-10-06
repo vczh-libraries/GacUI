@@ -12,7 +12,7 @@ The definition and the string to match can use different UTF encodings.
 
 ### MatchHead<U>
 
-`MatchHead` matches a prefix of the string. Pure mode chooses the longest match; rich mode follows the pattern's branch and repetition priorities (`Source/Regex/RegexRich.cpp` and `Source/Regex/RegexPure.cpp`).
+`MatchHead` matches a prefix of the string. Pure mode chooses the longest match; rich mode follows the pattern's branch and repetition priorities (`<VlppRegex repo>/Source/Regex/RegexRich.cpp` and `<VlppRegex repo>/Source/Regex/RegexPure.cpp`).
 
 This method attempts to match the pattern starting from the beginning of the input string. Lazy quantifiers in rich mode can return a shorter match. It will return detailed match information including captured groups if the pattern matches.
 
@@ -69,7 +69,7 @@ One of the key features of VlppRegex is its support for different UTF encodings 
 
 The VlppRegex engine has specific performance characteristics:
 
-- **DFA Compatible vs Incompatible**: Backreferences, lookahead, anchors, and lazy loops require rich mode. Captures require rich mode for detailed matches, but otherwise compatible patterns can still use DFA mode for `Test` and `TestHead` (`Source/Regex/Regex.cpp`).
+- **DFA Compatible vs Incompatible**: Backreferences, lookahead, anchors, and lazy loops require rich mode. Captures require rich mode for detailed matches, but otherwise compatible patterns can still use DFA mode for `Test` and `TestHead` (`<VlppRegex repo>/Source/Regex/Regex.cpp`).
 - **Escaping Optimization**: Using `/` instead of `\` for escaping can improve readability in C++ code
 - **Method Selection**: Choose simpler methods like `Test` or `TestHead` when you only need boolean results
 - **Mode Inspection**: Use `IsPureMatch()` and `IsPureTest()` to check whether DFA mode is used for matching and testing
@@ -87,7 +87,7 @@ While mostly compatible with .NET regex syntax, VlppRegex has important differen
 
 When using regex operations:
 
-- Syntax errors throw `RegexException` during `Regex_<T>` construction (`Source/Regex/AST/RegexParser.cpp`)
+- Syntax errors throw `RegexException` during `Regex_<T>` construction (`<VlppRegex repo>/Source/Regex/AST/RegexParser.cpp`)
 - `MatchHead<U>` and `Match<U>` return `nullptr` when no match is found
 - `TestHead<U>` and `Test<U>` return `false` when no match is found
 - `Search<U>` appends no items when no successful match is found

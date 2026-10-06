@@ -294,7 +294,7 @@ The `continue` statement in `CollectAltActionsFromControl` serves as a crucial d
 
 ### TAB Navigation Tests
 
-`TestApplication_Tab.cpp` contains comprehensive TAB navigation tests:
+`<GacUI repo>/Test/GacUISrc/UnitTest/TestApplication_Tab.cpp` contains comprehensive TAB navigation tests:
 
 - `TabNavigate`: Tests forward TAB through 3 buttons and backward SHIFT+TAB
 - `TabNavigateWithContainer`: Tests TAB through 5 buttons including nested containers (GroupBox)
@@ -304,6 +304,6 @@ The `continue` statement in `CollectAltActionsFromControl` serves as a crucial d
 
 ### ALT Focus Test
 
-`TestControls_CoreApplication_GuiControl.cpp` contains `AltFocus` test:
+`<GacUI repo>/Test/GacUISrc/UnitTest/TestControls_CoreApplication_GuiControl.cpp` contains `AltFocus` test:
 
 - Tests ALT key activation in nested control scenarios

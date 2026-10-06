@@ -1,13 +1,13 @@
 # Workflow JSON Request Routing
 
-This document describes the runtime meaning of the generic JSON dispatcher envelopes declared in `Release/Rpc.d.ts`. It is independent of any particular generated application or transport. Generated interface and serialization rules are covered by [Workflow Interface-Based RPC Definition](./KB_Workflow_InterfaceBasedRpcDefinition.md), [Workflow Generated RPC Wrappers](./KB_Workflow_Design_GeneratedRpcWrappers.md), and [Workflow JSON Serialization Schema](./KB_Workflow_Design_JsonSerializationSchema.md).
+This document describes the runtime meaning of the generic JSON dispatcher envelopes declared in `<Workflow repo>/Release/Rpc.d.ts`. It is independent of any particular generated application or transport. Generated interface and serialization rules are covered by [Workflow Interface-Based RPC Definition](./KB_Workflow_InterfaceBasedRpcDefinition.md), [Workflow Generated RPC Wrappers](./KB_Workflow_Design_GeneratedRpcWrappers.md), and [Workflow JSON Serialization Schema](./KB_Workflow_Design_JsonSerializationSchema.md).
 
 ## Setup
 
-The reusable JSON RPC setup lives in `Source/Library/RpcJson`. User code normally touches only these pieces:
+The reusable JSON RPC setup lives in `<Workflow repo>/Source/Library/RpcJson`. User code normally touches only these pieces:
 
-- Include `WfLibraryRpcJson.h` when building a custom transport adapter around `vl::rpc_controller::IRpcJsonMessageDispatcher`, `vl::rpc_controller::RpcJsonDispatcher`, and `vl::rpc_controller::RpcJsonLifecycle`.
-- Include `WfLibraryRpcJsonDispatcherClient.h` and `WfLibraryRpcJsonDispatcherServer.h` when using the default channel-backed setup in `vl::rpc_controller::channeling`.
+- Include `<Workflow repo>/Source/Library/RpcJson/WfLibraryRpcJson.h` when building a custom transport adapter around `vl::rpc_controller::IRpcJsonMessageDispatcher`, `vl::rpc_controller::RpcJsonDispatcher`, and `vl::rpc_controller::RpcJsonLifecycle`.
+- Include `<Workflow repo>/Source/Library/RpcJson/WfLibraryRpcJsonDispatcherClient.h` and `<Workflow repo>/Source/Library/RpcJson/WfLibraryRpcJsonDispatcherServer.h` when using the default channel-backed setup in `vl::rpc_controller::channeling`.
 - Create one `RpcJsonDispatcher(clientId, messageDispatcher)` and one `RpcJsonLifecycle(clientId, dispatcher)` per RPC endpoint. The `clientId` must be the endpoint id assigned by the transport.
 - Configure the lifecycle from generated RPC code before calling `Initialize()`: set the generated id map, pass the generated JSON serializer, JSON object ops, JSON object event ops, type-id callback, and event-attacher callback to `RpcJsonLifecycle::Register`, and register the generated wrapper factory.
 - Register local services with `IRpcLifecycle::RegisterLocalService(typeId, service)` before lifecycle initialization. Remote services are discovered through service declaration messages and can be requested by type name after initialization.
@@ -16,7 +16,7 @@ The reusable JSON RPC setup lives in `Source/Library/RpcJson`. User code normall
 - Pass required remote service type names to `WaitForServer` or `ConnectLocalServer` so client initialization waits until those services have been declared.
 - Call `FinalizeRpc()` on endpoint dispatchers before shutting down the transport or unloading generated Workflow context.
 
-An application-specific setup function normally receives a generic `RpcJsonDispatcherClient` after the transport assigns a client id, creates the dispatcher/lifecycle pair, wires generated JSON serializer and ops into the lifecycle, registers the generated wrapper factory, and leaves transport behavior to `Source/Library/RpcJson`. Derive a dispatcher subclass only to customize genuine dispatcher behavior such as task scheduling, not merely to reach RPC-object setup.
+An application-specific setup function normally receives a generic `RpcJsonDispatcherClient` after the transport assigns a client id, creates the dispatcher/lifecycle pair, wires generated JSON serializer and ops into the lifecycle, registers the generated wrapper factory, and leaves transport behavior to `<Workflow repo>/Source/Library/RpcJson`. Derive a dispatcher subclass only to customize genuine dispatcher behavior such as task scheduling, not merely to reach RPC-object setup.
 
 ### Setup from Workflow Generated Code
 
@@ -41,7 +41,7 @@ Endpoint startup then happens through the reusable dispatcher client. A network 
 
 `IRpcJsonMessageDispatcher` is the transport boundary. `AllocateRequestId()` provides request ids for JSON envelopes, `OnJsonRequest(message, requestType)` sends a direct, broadcast, or broadcast-and-drop request through the transport, and `InjectException(message)` persistently poisons dispatcher-controlled request execution. Injection is last-write-wins, an empty message is valid, and every later `OnJsonRequest` throws `RpcInjectedException` before sending. A transport-owned response wait must wake when injection occurs and linearize injection against response commitment under the same lock. `IRpcJsonMessageDispatcher::DefaultTranslate` is the receiver-side helper that routes JSON envelopes to local object ops, object event ops, or lifecycle service declaration handling.
 
-`RpcJsonObjectOps` and `RpcJsonObjectEventOps` adapt generated JSON ops to the shared envelopes declared by `Release/Rpc.d.ts`. They build request objects on the caller side, validate matching responses, and translate received requests back to `IRpcObjectOps` or `IRpcObjectEventOps`.
+`RpcJsonObjectOps` and `RpcJsonObjectEventOps` adapt generated JSON ops to the shared envelopes declared by `<Workflow repo>/Release/Rpc.d.ts`. They build request objects on the caller side, validate matching responses, and translate received requests back to `IRpcObjectOps` or `IRpcObjectEventOps`.
 
 `RpcJsonDispatcher` is the `IRpcDispatcher` implementation for JSON transport. It creates per-target object ops, one broadcast object-event ops adapter, and sends local service declarations as broadcast-and-drop messages.
 

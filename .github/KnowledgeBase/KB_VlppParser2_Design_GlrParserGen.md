@@ -2,17 +2,17 @@
 
 `GlrParserGen` compiles typed AST definitions, one lexer definition, and GLR syntax definitions into ordinary C++ source plus embedded compressed lexer and parser tables. Generated code depends on the VlppParser2 runtime but not on the grammar compiler or the original definition files at application runtime.
 
-The production driver is [VlppParser2-Repo/Tools/GlrParserGen/GlrParserGen/Main.cpp](https://github.com/vczh-libraries/VlppParser2/blob/master/Tools/GlrParserGen/GlrParserGen/Main.cpp). It accepts exactly one argument and has no other modes or switches:
+The production driver is [`<VlppParser2 repo>/Tools/GlrParserGen/GlrParserGen/Main.cpp`](https://github.com/vczh-libraries/VlppParser2/blob/master/Tools/GlrParserGen/GlrParserGen/Main.cpp). It accepts exactly one argument and has no other modes or switches:
 
 ```text
 GlrParserGen.exe <config-xml>
 ```
 
-Monorepo scripts pass an absolute `Parser.xml` path. On Linux and macOS, the locally built equivalent is `Tools/GlrParserGen/Bin/GlrParserGen`. All path-bearing XML values are resolved relative to the directory containing `Parser.xml`, independent of the caller's current directory.
+Monorepo scripts resolve `<owning repo>/<syntax folder>/Parser.xml` before invoking the generator. On Linux and macOS, the locally built equivalent is `<VlppParser2 repo>/Tools/GlrParserGen/Bin/GlrParserGen`. All path-bearing XML values are resolved relative to the directory containing `<owning repo>/<syntax folder>/Parser.xml`, independent of the caller's current directory.
 
-# `Parser.xml` Input
+# `<owning repo>/<syntax folder>/Parser.xml` Input
 
-The production XML driver expects one parser, one lexer, one syntax-manager block, and one or more AST groups:
+The production XML driver expects one parser, one lexer, one syntax-manager block, and one or more AST groups. The following example uses configuration values relative to `<Workflow repo>/Source/Parser/Syntax/Parser.xml`:
 
 ```xml
 <Parser name="Workflow">
@@ -50,22 +50,22 @@ Every displayed top-level element is required. At least one `<Ast>` is required,
 | `Includes` | A nonempty semicolon-separated list placed in generated AST and lexer headers. An item beginning with `<` is emitted as an angle-bracket include; every other item is quoted. Angle brackets must be XML-escaped. Empty items and trailing semicolons do not match the driver's format. |
 | `CppNamespace` | The `::`-separated namespace for parser-wide lexer, assembler, and parser declarations. Empty namespace segments are not accepted. |
 | `HeaderGuard` | The base for generated header guards. An empty element selects `#pragma once`; a nonempty value is normally used. |
-| `OutputDir` | The single output directory. It is resolved relative to `Parser.xml` and created recursively when absent. All generated files are direct children; the generator creates no artifact subdirectories. |
+| `OutputDir` | The single output directory. It is resolved relative to `<owning repo>/<syntax folder>/Parser.xml` and created recursively when absent. All generated files are direct children; the generator creates no artifact subdirectories. |
 | `Asts/Ast@name` | The AST-group name. It becomes part of that group's filenames. Multiple groups are supported and share one parser-wide assembler. |
 | `Ast/CppNamespace` | The namespace containing the group's generated enum and class types. |
 | `Ast/ReflectionNamespace` | The namespace used for generated reflection type names. |
 | `Ast/ClassPrefix` | Prepended to every generated AST enum/class type in the group; it does not alter the group's filename formula. |
-| `Ast/File@file` | An AST definition file path relative to `Parser.xml`. Files are compiled together in listed order into one group. Forward type declarations are supported; a symbol used from another AST file must be `@public`. |
+| `Ast/File@file` | An AST definition file path relative to `<owning repo>/<syntax folder>/Parser.xml`. Files are compiled together in listed order into one group. Forward type declarations are supported; a symbol used from another AST file must be `@public`. |
 | `Ast/BlockedUtilities` | Optional per-group suppression. Its only accepted children are `Builder`, `Empty`, `Copy`, `Traverse`, and `Json`. `Json` suppresses the C++ pair and its `.d.ts`. Core AST and assembler files cannot be blocked. |
-| `Lexer@file` | Exactly one line-oriented lexer definition, relative to `Parser.xml`. Token declaration order fixes token priority and numeric IDs. |
+| `Lexer@file` | Exactly one line-oriented lexer definition, relative to `<owning repo>/<syntax folder>/Parser.xml`. Token declaration order fixes token priority and numeric IDs. |
 | `Syntax@name` | The generated parser class and the suffix of the syntax output pair. The XML CLI exposes one syntax manager even though the underlying library can host several. |
-| `Syntax/File@file` | One or more syntax definition files, relative to `Parser.xml`, compiled into that syntax manager. Rules can be forward-referenced; a cross-file rule must be `@public`. Only rules marked `@parser` receive typed C++ entry points. |
+| `Syntax/File@file` | One or more syntax definition files, relative to `<owning repo>/<syntax folder>/Parser.xml`, compiled into that syntax manager. Rules can be forward-referenced; a cross-file rule must be `@public`. Only rules marked `@parser` receive typed C++ entry points. |
 
 The driver reads the first matching named child for scalar blocks. Do not repeat `<Lexer>` or `<Syntax>` and expect multiple independent outputs.
 
 # Definition-File Inputs
 
-The XML coordinates three separate text languages. Their quick references are [AST definitions](./manual/vlppparser2/ast.md), [lexer definitions](./manual/vlppparser2/lexer.md), and [syntax definitions](./manual/vlppparser2/syntax.md); the current compiler behavior and visibility rules are detailed in [VlppParser2-Repo/doc/GrammarCompilation.md](https://github.com/vczh-libraries/VlppParser2/blob/master/doc/GrammarCompilation.md).
+The XML coordinates three separate text languages. Their quick references are [AST definitions](./manual/vlppparser2/ast.md), [lexer definitions](./manual/vlppparser2/lexer.md), and [syntax definitions](./manual/vlppparser2/syntax.md); the current compiler behavior and visibility rules are detailed in [`<VlppParser2 repo>/doc/GrammarCompilation.md`](https://github.com/vczh-libraries/VlppParser2/blob/master/doc/GrammarCompilation.md).
 
 ## AST definitions
 
@@ -102,7 +102,7 @@ Syntax files declare EBNF-like rules over token names, fixed literals, and other
 
 The driver performs these stages in a fixed order:
 
-1. Parse `Parser.xml` with the built-in XML parser and create the shared output manifest.
+1. Parse `<owning repo>/<syntax folder>/Parser.xml` with the built-in XML parser and create the shared output manifest.
 2. Parse every AST file with the generated `vl::glr::parsergen::TypeParser`, compile every AST group, assign filenames, and generate AST/assembler text in memory.
 3. Compile the handwritten lexer-definition format, build the combined regex lexer, and generate lexer text in memory.
 4. Parse every syntax file with `vl::glr::parsergen::RuleParser`, resolve and validate it against the AST and tokens, then build the epsilon NFA.
@@ -110,7 +110,7 @@ The driver performs these stages in a fixed order:
 6. Generate the typed parser and embedded executable data in memory.
 7. Remove blocked utility entries, create `OutputDir`, compare each remaining output with the existing file, and write only changed UTF-8 files.
 
-AST/assembler emission must precede syntax compilation. `vl::glr::parsergen::CppParserGenOutput` in [VlppParser2-Repo/Source/ParserGen_Global/ParserCppGen.h](https://github.com/vczh-libraries/VlppParser2/blob/master/Source/ParserGen_Global/ParserCppGen.h) receives class and field IDs while the assembler header is generated; syntax lowering embeds those exact IDs in AST instructions. The complete contract is described in [VlppParser2-Repo/doc/CodeGeneration.md](https://github.com/vczh-libraries/VlppParser2/blob/master/doc/CodeGeneration.md).
+AST/assembler emission must precede syntax compilation. `vl::glr::parsergen::CppParserGenOutput` in [`<VlppParser2 repo>/Source/ParserGen_Global/ParserCppGen.h`](https://github.com/vczh-libraries/VlppParser2/blob/master/Source/ParserGen_Global/ParserCppGen.h) receives class and field IDs while the assembler header is generated; syntax lowering embeds those exact IDs in AST instructions. The complete contract is described in [`<VlppParser2 repo>/doc/CodeGeneration.md`](https://github.com/vczh-libraries/VlppParser2/blob/master/doc/CodeGeneration.md).
 
 Because filesystem writes happen only in the final stage, a configuration, AST, lexer, syntax, or automaton error does not leave a partially regenerated output set from earlier compilation stages.
 
@@ -122,10 +122,10 @@ Let:
 - `{A}` be one `Ast@name`;
 - `{S}` be `Syntax@name`.
 
-With all utilities enabled for one AST group, `OutputDir` contains 19 files:
+With all utilities enabled for one AST group, `OutputDir` contains 19 files. The tree root is the resolved `<owning repo>/<output folder>` selected by `OutputDir`; the filename formulas below name its children:
 
 ```text
-{OutputDir}/
+<owning repo>/<output folder>/
 |-- {P}{A}.h
 |-- {P}{A}.cpp
 |-- {P}{A}_Builder.h
@@ -198,7 +198,7 @@ The generator creates no `.log` directory or durable log/manifest file. Its only
 Failure reporting is stage-specific:
 
 - Invalid argument count prints the usage line and returns success (`0`), so automation must always pass exactly one path.
-- Malformed `Parser.xml` and AST/syntax definition parse failures return `1` with one-based row and column diagnostics.
+- Malformed `<owning repo>/<syntax folder>/Parser.xml` and AST/syntax definition parse failures return `1` with one-based row and column diagnostics.
 - Missing required XML nodes/attributes, an absent AST definition file, or an unknown `BlockedUtilities` child returns `1` with a targeted message.
 - Semantic errors are tagged with `AstGroup`, `Ast`, `Lexer`, or `Syntax`, source range, error kind, and named arguments, then return `1`.
 - Automaton-compaction and packing errors use the same shared semantic error list and stop before file output.
@@ -210,8 +210,8 @@ The tool does not provide rollback around final file I/O and does not clean stal
 
 The current production XML configurations demonstrate three useful utility profiles:
 
-- [Workflow-Repo/Source/Parser/Syntax/Parser.xml](https://github.com/vczh-libraries/Workflow/blob/master/Source/Parser/Syntax/Parser.xml) uses multiple AST and syntax input files and emits every artifact into `Workflow/Source/Parser/Generated`.
-- [GacUI-Repo/Source/Compiler/InstanceQuery/Syntax/Parser.xml](https://github.com/vczh-libraries/GacUI/blob/master/Source/Compiler/InstanceQuery/Syntax/Parser.xml) blocks all five optional utility families and emits only the core AST, assembler, lexer, and parser pairs.
-- [GacUI-Repo/Source/Compiler/RemoteProtocol/Syntax/Parser.xml](https://github.com/vczh-libraries/GacUI/blob/master/Source/Compiler/RemoteProtocol/Syntax/Parser.xml) keeps JSON/TypeScript output but blocks builder, empty, copy, and traversal visitors.
+- [`<Workflow repo>/Source/Parser/Syntax/Parser.xml`](https://github.com/vczh-libraries/Workflow/blob/master/Source/Parser/Syntax/Parser.xml) uses multiple AST and syntax input files and emits every artifact into `<Workflow repo>/Source/Parser/Generated`.
+- [`<GacUI repo>/Source/Compiler/InstanceQuery/Syntax/Parser.xml`](https://github.com/vczh-libraries/GacUI/blob/master/Source/Compiler/InstanceQuery/Syntax/Parser.xml) blocks all five optional utility families and emits only the core AST, assembler, lexer, and parser pairs.
+- [`<GacUI repo>/Source/Compiler/RemoteProtocol/Syntax/Parser.xml`](https://github.com/vczh-libraries/GacUI/blob/master/Source/Compiler/RemoteProtocol/Syntax/Parser.xml) keeps JSON/TypeScript output but blocks builder, empty, copy, and traversal visitors.
 
-Those generated directories are compiled by their owning projects and later included in CodePack release amalgamations. Change the definition files or generator, rerun only the affected `Parser.xml`, rebuild the owning project, and commit the input and generated output changes together.
+Those generated directories are compiled by their owning projects and later included in CodePack release amalgamations. Change the definition files or generator, rerun only the affected `<owning repo>/<syntax folder>/Parser.xml`, rebuild the owning project, and commit the input and generated output changes together.

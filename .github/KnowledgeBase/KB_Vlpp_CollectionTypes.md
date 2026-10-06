@@ -60,7 +60,7 @@ A `SortedList<T>` works like a `List<T>` but it always keeps all values in order
 
 **Modification:**
 - Use `Add(value)` to insert a value while keeping all values in order
-- Use `Remove(value)` to remove one equivalent value; binary search does not guarantee the first duplicate (`Source/Collections/List.h`)
+- Use `Remove(value)` to remove one equivalent value; binary search does not guarantee the first duplicate (`<Vlpp repo>/Source/Collections/List.h`)
 - Use `RemoveAt(index)` to remove the value of the specified position
 - Use `RemoveRange(index, count)` to remove consecutive values
 - Use `Clear()` to remove all values
@@ -71,7 +71,7 @@ A `SortedList<T>` works like a `List<T>` but it always keeps all values in order
 
 One-to-one key-value mapping with ordered keys.
 
-A `Dictionary<K, V>` is an one-to-one map that keeps all values in the order of keys. It implements `IEnumerable<Pair<const K&, const V&>>` (`Source/Collections/Dictionary.h`).
+A `Dictionary<K, V>` is an one-to-one map that keeps all values in the order of keys. It implements `IEnumerable<Pair<const K&, const V&>>` (`<Vlpp repo>/Source/Collections/Dictionary.h`).
 
 **Access and Query:**
 - Use `Count()` to know the size of the collection
@@ -89,7 +89,7 @@ A `Dictionary<K, V>` is an one-to-one map that keeps all values in the order of 
 
 One-to-many key-value mapping with ordered keys.
 
-A `Group<K, V>` is an one-to-many map that keeps all values in the order of keys. It implements `IEnumerable<Pair<const K&, const V&>>` (`Source/Collections/Dictionary.h`).
+A `Group<K, V>` is an one-to-many map that keeps all values in the order of keys. It implements `IEnumerable<Pair<const K&, const V&>>` (`<Vlpp repo>/Source/Collections/Dictionary.h`).
 
 **Access and Query:**
 - Use `Count()` to know the size of keys
@@ -122,7 +122,7 @@ for (auto number : numbers)
 ```
 
 **Indexed enumeration:**
-Use the `indexed` function from `Source/Collections/OperationForEach.h` to create a range wrapper yielding `Tuple<const T&, vint>` values, with the element before its index:
+Use the `indexed` function from `<Vlpp repo>/Source/Collections/OperationForEach.h` to create a range wrapper yielding `Tuple<const T&, vint>` values, with the element before its index:
 
 ```cpp
 for (auto [value, index] : indexed(collection))
@@ -169,7 +169,7 @@ Collections handle memory management automatically. When storing reference types
 Collections are not thread-safe by default. For concurrent access, use appropriate synchronization primitives from VlppOS.
 
 ### Collection Copying
-Use `CopyFrom(destination, source)` from `Source/Collections/OperationCopyFrom.h` to copy elements into an independent collection. Collection copy constructors and copy assignments are not generally available. Copied `Ptr<T>` elements still share their referenced objects.
+Use `CopyFrom(destination, source)` from `<Vlpp repo>/Source/Collections/OperationCopyFrom.h` to copy elements into an independent collection. Collection copy constructors and copy assignments are not generally available. Copied `Ptr<T>` elements still share their referenced objects.
 
 ### Comparison Operations
-`SortedList` orders its elements, while `Dictionary` and `Group` order their keys. These containers use the types' comparison operators and do not accept custom comparator arguments (`Source/Collections/List.h` and `Source/Collections/Dictionary.h`).
+`SortedList` orders its elements, while `Dictionary` and `Group` order their keys. These containers use the types' comparison operators and do not accept custom comparator arguments (`<Vlpp repo>/Source/Collections/List.h` and `<Vlpp repo>/Source/Collections/Dictionary.h`).

@@ -147,7 +147,7 @@ END_CLASS_MEMBER(MyClass)
 
 ## Compilation Level Support
 
-- Attribute registration macros are available in full reflection builds under `VCZH_DESCRIPTABLEOBJECT_WITH_METADATA` (`Source/Reflection/Reflection/Macros.h`).
+- Attribute registration macros are available in full reflection builds under `VCZH_DESCRIPTABLEOBJECT_WITH_METADATA` (`<VlppReflection repo>/Source/Reflection/Reflection/Macros.h`).
 - They are excluded in both no-reflection and metaonly builds.
 - Metaonly builds can load and query attributes serialized by a full-reflection build.
 

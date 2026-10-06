@@ -70,7 +70,7 @@ auto str = WString::TakeOver(buffer, actualLength);
 ```
 - **Use case**: Take ownership of a dynamically allocated buffer
 - **Memory**: Takes ownership, `delete[]` called automatically
-- **Warning**: Buffer must be allocated with `new[]` and contain a zero terminator at `buffer[length]` (`Source/Strings/String.h`)
+- **Warning**: Buffer must be allocated with `new[]` and contain a zero terminator at `buffer[length]` (`<Vlpp repo>/Source/Strings/String.h`)
 
 ## String to Number Conversion
 
@@ -201,4 +201,4 @@ The string conversion system automatically handles these differences internally.
 - **Case conversions**: Create new string instances rather than modifying in-place
 
 ### Thread Safety
-String values are immutable, but `Buffer() const` can replace a substring object's internal storage to add a zero terminator (`Source/Strings/String.h`). Use separate string copies or synchronize access when multiple threads may call `Buffer()` on the same instance.
+String values are immutable, but `Buffer() const` can replace a substring object's internal storage to add a zero terminator (`<Vlpp repo>/Source/Strings/String.h`). Use separate string copies or synchronize access when multiple threads may call `Buffer()` on the same instance.

@@ -71,12 +71,12 @@ Install the callback before `WaitForServer`, because connection events may be de
 
 ## Using Stdio Redirection for Tests
 
-`Source/InterProcess/StdioRedirection/StdioRedirection.h` exposes the testing-only stdio transport in `vl::inter_process::stdio_redirection`. It implements the same `INetworkProtocol*` contracts as the other concrete transports, but connects a parent process to a child through redirected stdin and stdout instead of a listener endpoint.
+`<VlppOS repo>/Source/InterProcess/StdioRedirection/StdioRedirection.h` exposes the testing-only stdio transport in `vl::inter_process::stdio_redirection`. It implements the same `INetworkProtocol*` contracts as the other concrete transports, but connects a parent process to a child through redirected stdin and stdout instead of a listener endpoint.
 
 - `StdioRedirectionServer` is the parent-side launcher. Call `Start`, then call `ConnectNewClient(command)` once per child process. Each call launches and owns an independent child connection; `Start` itself launches nothing.
 - `StdioRedirectionClient` is the child-side endpoint over its inherited stdin and stdout. `WaitForServer` is a no-op because the redirected streams already form the connection.
 - `StdioRedirectionConnection` owns callback-safe message exchange and shutdown. Messages are strict-Unicode `WString` values encoded as one UTF-8/Base64 line. Exact raw `!Exit` is the shutdown control line; other raw control lines beginning with `!` are ignored.
-- `StdioRedirection.Windows.cpp` owns Windows process and anonymous-pipe handling. `StdioRedirection.Linux.cpp` owns the shared Linux/macOS `fork` and pipe implementation.
+- `<VlppOS repo>/Source/InterProcess/StdioRedirection/StdioRedirection.Windows.cpp` owns Windows process and anonymous-pipe handling. `<VlppOS repo>/Source/InterProcess/StdioRedirection/StdioRedirection.Linux.cpp` owns the shared Linux/macOS `fork` and pipe implementation.
 
 The server sends `!Exit`, closes the child's stdin, drains callbacks and reader work, and reaps every launched process during `Stop`. Because command interpretation and process launching are intentionally convenient for local tests rather than hardened for untrusted input, do not use this transport as production inter-process infrastructure.
 
@@ -211,7 +211,7 @@ The server keeps its underlying transport alive until raw protocol callbacks, ad
 
 ## How Socket HTTP Implements the Protocol
 
-`async_tcp_socket::SocketHttpServer`, defined in `Source/InterProcess/AsyncSocket/AsyncSocket_HttpServer.h`, derives from `async_tcp_socket::SocketHttpServerApi` and implements `INetworkProtocolServer`. `async_tcp_socket::SocketHttpClient`, defined in `Source/InterProcess/AsyncSocket/AsyncSocket_HttpClient.h`, implements both `INetworkProtocolClient` and its single logical `INetworkProtocolConnection`.
+`async_tcp_socket::SocketHttpServer`, defined in `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpServer.h`, derives from `async_tcp_socket::SocketHttpServerApi` and implements `INetworkProtocolServer`. `async_tcp_socket::SocketHttpClient`, defined in `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpClient.h`, implements both `INetworkProtocolClient` and its single logical `INetworkProtocolConnection`.
 
 The transport keeps a logical connection above short-lived or replaceable physical HTTP connections. These routes are relative to the configured `urlPrefix`:
 
@@ -223,7 +223,7 @@ Each normal body is the direct UTF-8 encoding of one `WString`. The media type i
 
 ### Shared Wire-Contract Helpers
 
-`Source/InterProcess/NetworkProtocolHttp.h` exposes the common, platform-neutral pieces of this wire contract in `vl::inter_process`:
+`<VlppOS repo>/Source/InterProcess/NetworkProtocolHttp.h` exposes the common, platform-neutral pieces of this wire contract in `vl::inter_process`:
 
 - `HttpNetworkProtocolContentType` is the canonical media-type value used by all three routes.
 - `CreateHttpNetworkProtocolConnectBody` and `ParseHttpNetworkProtocolConnectBody` construct and split the `requestPath;responsePath` Connect payload. Construction rejects empty paths and semicolons; parsing requires exactly one semicolon with a nonempty value on each side. Parsing does not validate either endpoint path.
@@ -239,9 +239,9 @@ The server maps the token to its logical connection, queues server messages when
 
 ### Windows HTTP Callback Responses
 
-`windows_http::HttpServerApi::Stop`, defined in `Source/InterProcess/Windows/HttpServerApi.Windows.cpp`, drains registered wait callbacks and explicitly cancels and waits for its outstanding receive before closing the request queue. Closing the queue alone can leave the kernel writing cancellation results into an already freed `OVERLAPPED`. A never-started server has no initialized receive to drain; repeated Stop remains supported. The idle-listener lifecycle test in `Test/Source/TestInterProcess.cpp` covers these boundaries without sleeps.
+`windows_http::HttpServerApi::Stop`, defined in `<VlppOS repo>/Source/InterProcess/Windows/HttpServerApi.Windows.cpp`, drains registered wait callbacks and explicitly cancels and waits for its outstanding receive before closing the request queue. Closing the queue alone can leave the kernel writing cancellation results into an already freed `OVERLAPPED`. A never-started server has no initialized receive to drain; repeated Stop remains supported. The idle-listener lifecycle test in `<VlppOS repo>/Test/Source/TestInterProcess.cpp` covers these boundaries without sleeps.
 
-The Windows `windows_http::HttpServerConnection` in `Source/InterProcess/Windows/HttpServer.Windows.cpp` can return the first message generated during an inbound `/Response` callback in that HTTP response. Extra messages are queued for `/Request` delivery. When `SubmitResponse` finishes, it must also send the queue head through any poll already waiting; otherwise the client can wait on an open poll while the server waits for a reply to its unsent message. The normal poll-delivery error and acknowledgement handling applies to this send.
+The Windows `windows_http::HttpServerConnection` in `<VlppOS repo>/Source/InterProcess/Windows/HttpServer.Windows.cpp` can return the first message generated during an inbound `/Response` callback in that HTTP response. Extra messages are queued for `/Request` delivery. When `SubmitResponse` finishes, it must also send the queue head through any poll already waiting; otherwise the client can wait on an open poll while the server waits for a reply to its unsent message. The normal poll-delivery error and acknowledgement handling applies to this send.
 
 ## Starting on Windows, Linux and macOS
 
@@ -291,7 +291,7 @@ The common `CreateDefaultAsyncSocketServer` and `CreateDefaultAsyncSocketClient`
 | `VCZH_GCC && VCZH_APPLE` | `async_tcp_socket::macos_socket::AsyncSocketServer` | `async_tcp_socket::macos_socket::AsyncSocketClient` |
 | `VCZH_GCC && !VCZH_APPLE` | `async_tcp_socket::linux_socket::AsyncSocketServer` | `async_tcp_socket::linux_socket::AsyncSocketClient` |
 
-Use `VlppOS.Windows.h` on Windows; Winsock initialization and `Ws2_32.lib` linkage are internal. Use `VlppOS.Linux.h` on Linux and link `liburing`. Use the same `VlppOS.Linux.h` umbrella on macOS; custom builds must enable Clang Blocks and link CoreFoundation and Network.framework. The repository projects and build scripts already supply these platform settings.
+Use `<VlppOS repo>/Release/VlppOS.Windows.h` on Windows; Winsock initialization and `Ws2_32.lib` linkage are internal. Use `<VlppOS repo>/Release/VlppOS.Linux.h` on Linux and link `liburing`. Use the same `<VlppOS repo>/Release/VlppOS.Linux.h` umbrella on macOS; custom builds must enable Clang Blocks and link CoreFoundation and Network.framework. The repository projects and build scripts already supply these platform settings.
 
 `SocketHttpServer` reads its port from and starts only the injected listener; it never selects or creates another server. `SocketHttpClient` takes only the injected client, reads its port, uses that exact object for the first physical lane, and obtains additional lanes through `client->CreateSameEndpointClient()`. `WaitForServer` blocks while establishing the logical connection and returns after connection or after the client reaches a terminal stopped state, so call it on a thread that may block. Both sides use IPv4 loopback; the explicit client server name is `localhost` (case-insensitive) or `127.0.0.1`.
 

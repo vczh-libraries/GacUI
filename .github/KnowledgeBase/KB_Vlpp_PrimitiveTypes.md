@@ -62,7 +62,7 @@ bool isEqual = (pair1 == pair2); // false
 
 ### Structured Binding with Collections
 
-Use `indexed(xs)` for `for(auto [x, index] : indexed(xs))`. The range wrapper yields `Tuple<const T&, vint>` values with the element before its index (`Source/Collections/OperationForEach.h`).
+Use `indexed(xs)` for `for(auto [x, index] : indexed(xs))`. The range wrapper yields `Tuple<const T&, vint>` values with the element before its index (`<Vlpp repo>/Source/Collections/OperationForEach.h`).
 
 ```cpp
 List<WString> names;
@@ -80,7 +80,7 @@ for(auto [name, index] : indexed(names)) {
 
 `Tuple<...>` is an easy way to organize multiple values without defining a `struct`.
 
-`Tuple(a, b, c...)` could be used to initialize a tuple without specifying data types, make the code more readable. Elements of a non-const tuple can be changed through `get<index>()`, and you can assign it with another tuple (`Source/Primitives/Tuple.h`).
+`Tuple(a, b, c...)` could be used to initialize a tuple without specifying data types, make the code more readable. Elements of a non-const tuple can be changed through `get<index>()`, and you can assign it with another tuple (`<Vlpp repo>/Source/Primitives/Tuple.h`).
 
 `get<0>` method can be used to access the first value. You can use any other index but it has to be a compiled time constant.
 
@@ -113,7 +113,7 @@ auto tuple3 = tuple1; // Copy assignment
 
 ## Variant<T...>
 
-`Variant<T...>` represents any but only one value of different types. A `Variant<T...>` cannot be empty; its default constructor initializes the first alternative when that type is default-constructible (`Source/Primitives/Variant.h`).
+`Variant<T...>` represents any but only one value of different types. A `Variant<T...>` cannot be empty; its default constructor initializes the first alternative when that type is default-constructible (`<Vlpp repo>/Source/Primitives/Variant.h`).
 
 If you really want a nullable variable, add `nullptr_t` to the type list instead of using `Nullable<Variant<...>>`.
 

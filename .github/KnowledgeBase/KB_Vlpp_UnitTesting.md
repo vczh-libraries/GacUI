@@ -160,7 +160,7 @@ The framework maintains comprehensive statistics:
 
 ### Debugger Integration
 
-On Windows, the framework automatically detects whether a debugger is attached (`Source/UnitTest/UnitTest.Windows.cpp`). The Linux/macOS implementation returns false, so use `/D` explicitly when debugging there:
+On Windows, the framework automatically detects whether a debugger is attached (`<Vlpp repo>/Source/UnitTest/UnitTest.Windows.cpp`). The Linux/macOS implementation returns false, so use `/D` explicitly when debugging there:
 - When debugging, failures are not suppressed by default (to break into debugger)
 - When running normally, failures are suppressed to continue execution
 - This behavior can be overridden with command line options

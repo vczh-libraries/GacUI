@@ -22,7 +22,7 @@ Running GacUI in the browser through WebAssembly is the purpose of GacJS. Its HT
 
 Both the HTML5 renderer and a view model implemented in TypeScript can connect to the Wasm core. Rendering uses the GacUI remote protocol; the TypeScript view model uses Workflow RPC on a separate channel over the same Wasm transport. The HTTP option remains useful for testing the HTML5 renderer against a native core without building WebAssembly.
 
-The current demonstration apps are GacUI's `Test/Linux/WasmFCT`, `WasmRPT` and `WasmRVMT`, exposed by GacJS at `/wasm-fct/`, `/wasm-rpt/` and `/wasm-rvmt/`. The RVMT demo runs its TypeScript view model in the page. Each page owns a worker/module lifetime, and a fresh page reload restarts the application after normal shutdown. These demos use the existing remote controller initialization; they do not introduce a separate native graphics provider. See [GacJS rendering and transport](./KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md#gacjs-html5-rendering-and-webassembly) for the implementation boundaries.
+The current demonstration apps are `<GacUI repo>/Test/Linux/WasmFCT`, `<GacUI repo>/Test/Linux/WasmRPT` and `<GacUI repo>/Test/Linux/WasmRVMT`, exposed by GacJS at `/wasm-fct/`, `/wasm-rpt/` and `/wasm-rvmt/`. The RVMT demo runs its TypeScript view model in the page. Each page owns a worker/module lifetime, and a fresh page reload restarts the application after normal shutdown. These demos use the existing remote controller initialization; they do not introduce a separate native graphics provider. See [GacJS rendering and transport](./KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md#gacjs-html5-rendering-and-webassembly) for the implementation boundaries.
 
 ## Entry Point Architecture
 
@@ -48,13 +48,13 @@ Hosted mode runs the entire GacUI application within only one native OS window. 
 
 ### Terminal Mode Entry Points
 
-- `SetupTuiWindowsRenderer(configuration)` - global entry point declared in `GacUI/Source/GacUI.h`.
-- `vl::presentation::wayland::SetupTuiWaylandRenderer(configuration)` - declared in `wGac/WGac/TUI/TuiWGacController.h` and implemented by wGac.
-- `vl::presentation::osx::SetupTuiCocoaRenderer(configuration)` - declared in `iGac/Mac/TUI/TuiCocoaController.h` and implemented by iGac.
+- `SetupTuiWindowsRenderer(configuration)` - global entry point declared in `<GacUI repo>/Source/GacUI.h`.
+- `vl::presentation::wayland::SetupTuiWaylandRenderer(configuration)` - declared in `<wGac repo>/WGac/TUI/TuiWGacController.h` and implemented by wGac.
+- `vl::presentation::osx::SetupTuiCocoaRenderer(configuration)` - declared in `<iGac repo>/Mac/TUI/TuiCocoaController.h` and implemented by iGac.
 
 All three return `int` and accept `const vl::presentation::TuiConfiguration& configuration = {}`; omit the argument for the default tab interval of 4, or provide a positive `tabInterval`. Call one from a console executable's entry point and implement the ordinary `GuiMain()`. The existing hosted controller manages child windows and dialogs within the terminal's cell buffer. The setup function owns `TUI::Start` and the application-thread event pump, so do not start another TUI loop. Use TuiSkin and the supported terminal element set; the adapters do not turn pixel-based GUI resources into terminal resources automatically.
 
-Terminal setup and native-window setup are separate choices. Unix TUI declarations belong to the sibling platform repositories rather than the common `GacUI.h`. See [the terminal provider](./KB_GacUI_Design_TuiPlatformProvider.md) for service ownership, lifecycle, input limits and rendering contracts.
+Terminal setup and native-window setup are separate choices. Unix TUI declarations belong to the sibling platform repositories rather than the common `<GacUI repo>/Source/GacUI.h`. See [the terminal provider](./KB_GacUI_Design_TuiPlatformProvider.md) for service ownership, lifecycle, input limits and rendering contracts.
 
 ### Raw Mode Entry Points
 - `SetupRawWindowsDirect2DRenderer()` - Direct2D rendering without `GuiApplication` or `GuiWindow`
@@ -169,7 +169,7 @@ All graphics element renderers register with the resource manager through static
 - Specialized renderers like `GuiDirect2DElementRenderer` for custom graphics
 - Document elements for rich text rendering
 
-Each renderer follows the factory pattern defined in `GuiGraphicsResourceManager.h`:
+Each renderer follows the factory pattern defined in `<GacUI repo>/Source/GraphicsElement/GuiGraphicsResourceManager.h`:
 ```cpp
 static void Register()
 {

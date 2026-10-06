@@ -6,20 +6,20 @@ The remote protocol renderer side receives protocol messages from the core side 
 
 GacJS's purpose is to run GacUI applications in the browser through WebAssembly. Its `@gaclib/renderer` package implements HTML5 rendering with DOM elements. The browser loads the core as the matching `app.mjs`, `app.wasm` and `app.worker.js` files; `@gaclib-website/remote-protocol-wasm` connects the renderer to it through exposed functions and callbacks while preserving the remote protocol and its JSON channel messages. HTTP is a parallel transport option, mainly for testing HTML5 rendering against a native core without WebAssembly.
 
-The TypeScript view-model host also supports this Wasm transport. `startRvmHostWithChannel` in `GacJS/Gaclib/website/rvmhost/src/index.ts` hosts the view model through Workflow RPC on a separate channel, while the renderer uses the GacUI remote protocol. GacJS's `/wasm-rvmt/` demo connects both to the same Wasm core; `/wasm-fct/` and `/wasm-rpt/` demonstrate FullControlTest and RemoteProtocolTest.
+The TypeScript view-model host also supports this Wasm transport. `startRvmHostWithChannel` in `<GacJS repo>/Gaclib/website/rvmhost/src/index.ts` hosts the view model through Workflow RPC on a separate channel, while the renderer uses the GacUI remote protocol. GacJS's `/wasm-rvmt/` demo connects both to the same Wasm core; `/wasm-fct/` and `/wasm-rpt/` demonstrate FullControlTest and RemoteProtocolTest.
 
 The current transport and startup composition are owned by these sources:
 
-- `GacUI/Test/RemotingHelpers/RemotingServer/Wasm/WasmNetworkProtocol.cpp` exposes `StartApplication(receiver, connectionCount)` and `SendDataToWasmCore(connectionId, data)` through Embind. Startup installs fixed connections; the receiver callback returns core messages and lifecycle notifications to JavaScript.
-- `GacJS/Gaclib/website/remote-protocol-wasm/src/worker.ts` loads the module and calls those exports. The module worker owns transport state, while blocking GacUI work runs on a C++ pthread. The page exchanges messages with the worker and remains available for HTML5 rendering, input and TypeScript RPC handling.
-- `GacJS/Gaclib/website/remote-protocol-wasm/src/index.ts` adapts the worker to the same `IChannelClient` contract used by the HTTP transport. Existing channel handshakes, the semicolon package envelope, and JSON arrays remain in use; protocol traffic does not use HTTP requests or Base64 framing.
-- `GacJS/Gaclib/website/entry/src/wasm.ts` starts the HTML5 renderer and, for RVMT, the TypeScript view-model host. After normal core shutdown, Reload recreates the page, core, renderer and host. Current Wasm demo connections last for the application lifetime and do not support renderer replacement.
+- `<GacUI repo>/Test/RemotingHelpers/RemotingServer/Wasm/WasmNetworkProtocol.cpp` exposes `StartApplication(receiver, connectionCount)` and `SendDataToWasmCore(connectionId, data)` through Embind. Startup installs fixed connections; the receiver callback returns core messages and lifecycle notifications to JavaScript.
+- `<GacJS repo>/Gaclib/website/remote-protocol-wasm/src/worker.ts` loads the module and calls those exports. The module worker owns transport state, while blocking GacUI work runs on a C++ pthread. The page exchanges messages with the worker and remains available for HTML5 rendering, input and TypeScript RPC handling.
+- `<GacJS repo>/Gaclib/website/remote-protocol-wasm/src/index.ts` adapts the worker to the same `IChannelClient` contract used by the HTTP transport. Existing channel handshakes, the semicolon package envelope, and JSON arrays remain in use; protocol traffic does not use HTTP requests or Base64 framing.
+- `<GacJS repo>/Gaclib/website/entry/src/wasmPage.ts` starts the HTML5 renderer and, for RVMT, the TypeScript view-model host. After normal core shutdown, Reload recreates the page, core, renderer and host. Current Wasm demo connections last for the application lifetime and do not support renderer replacement.
 
-These are working browser demos built from GacUI's `Test/Linux/WasmFCT`, `WasmRPT` and `WasmRVMT`. GacUI's `Project.md` and GacJS's `doc/Projects.md` and `doc/NetworkProtocol.md` document their build, startup and transport details. Loading application assets from a web server is distinct from carrying remote-protocol and view-model traffic through Wasm functions.
+These are working browser demos built from `<GacUI repo>/Test/Linux/WasmFCT`, `<GacUI repo>/Test/Linux/WasmRPT` and `<GacUI repo>/Test/Linux/WasmRVMT`. `<GacUI repo>/Project.md`, `<GacJS repo>/doc/Projects.md` and `<GacJS repo>/doc/NetworkProtocol.md` document their build, startup and transport details. Loading application assets from a web server is distinct from carrying remote-protocol and view-model traffic through Wasm functions.
 
 ## GuiRemoteRendererSingle
 
-`GuiRemoteRendererSingle` (in `Source/PlatformProviders/RemoteRenderer/`) is the renderer-side implementation that bridges `IGuiRemoteProtocol` to a real native window with actual graphics rendering. It is not a full `INativeController` — it relies on a real platform provider (e.g., Windows Direct2D via `SetupRawWindowsDirect2DRenderer()`) already running, and registers itself as a listener on a native window.
+`GuiRemoteRendererSingle` (in `<GacUI repo>/Source/PlatformProviders/RemoteRenderer/`) is the renderer-side implementation that bridges `IGuiRemoteProtocol` to a real native window with actual graphics rendering. It is not a full `INativeController` — it relies on a real platform provider (e.g., Windows Direct2D via `SetupRawWindowsDirect2DRenderer()`) already running, and registers itself as a listener on a native window.
 
 ### Class Hierarchy
 
@@ -42,15 +42,15 @@ These are working browser demos built from GacUI's `Test/Linux/WasmFCT`, `WasmRP
 
 ### Source File Organization
 
-- `GuiRemoteRendererSingle.cpp`: Construction, destruction, main window registration, connection lifecycle (`Opened`, `BeforeClosing`, `AfterClosing`, `Closed`), screen/config management, core disconnection, and fatal-error retention.
-- `GuiRemoteRendererSingle_Controller.cpp`: Controller-level requests — `RequestControllerGetFontConfig`, `RequestControllerGetScreenConfig`, `RequestControllerConnectionEstablished`, `RequestControllerConnectionStopped`.
-- `GuiRemoteRendererSingle_MainWindow.cpp`: Window style notifications — `RequestWindowNotifySetBounds`, `RequestWindowNotifySetTitle`, `RequestWindowNotifySetEnabled`, `RequestWindowNotifyShow`, etc.
-- `GuiRemoteRendererSingle_IO.cpp`: IO requests (global shortcuts, mouse capture, key state queries) and native-to-protocol input event conversion. Contains `SendAccumulatedMessages()` for batching high-frequency events.
-- `GuiRemoteRendererSingle_Rendering.cpp`: Core rendering pipeline — element creation/destruction (`RequestRendererCreated`, `RequestRendererDestroyed`), begin/end rendering, DOM rendering (`RenderDom` recursive traversal), fatal-overlay rendering, hit testing, and `GlobalTimer`/`Paint` driven refresh.
-- `GuiRemoteRendererSingle_Rendering_Elements.cpp`: Property updates on ordinary graphics elements (solid border, sink border, splitter, background, gradient, inner shadow, polygon).
-- `GuiRemoteRendererSingle_Rendering_Label.cpp`: Solid label measurement and property updates.
-- `GuiRemoteRendererSingle_Rendering_Image.cpp`: Image creation, metadata, and image frame element updates.
-- `GuiRemoteRendererSingle_Rendering_Document.cpp`: Complex document paragraph element rendering via `GuiRemoteDocumentParagraphElement` inner class.
+- `<GacUI repo>/Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.cpp`: Construction, destruction, main window registration, connection lifecycle (`Opened`, `BeforeClosing`, `AfterClosing`, `Closed`), screen/config management, core disconnection, and fatal-error retention.
+- `<GacUI repo>/Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Controller.cpp`: Controller-level requests — `RequestControllerGetFontConfig`, `RequestControllerGetScreenConfig`, `RequestControllerConnectionEstablished`, `RequestControllerConnectionStopped`.
+- `<GacUI repo>/Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_MainWindow.cpp`: Window style notifications — `RequestWindowNotifySetBounds`, `RequestWindowNotifySetTitle`, `RequestWindowNotifySetEnabled`, `RequestWindowNotifyShow`, etc.
+- `<GacUI repo>/Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_IO.cpp`: IO requests (global shortcuts, mouse capture, key state queries) and native-to-protocol input event conversion. Contains `SendAccumulatedMessages()` for batching high-frequency events.
+- `<GacUI repo>/Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering.cpp`: Core rendering pipeline — element creation/destruction (`RequestRendererCreated`, `RequestRendererDestroyed`), begin/end rendering, DOM rendering (`RenderDom` recursive traversal), fatal-overlay rendering, hit testing, and `GlobalTimer`/`Paint` driven refresh.
+- `<GacUI repo>/Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Elements.cpp`: Property updates on ordinary graphics elements (solid border, sink border, splitter, background, gradient, inner shadow, polygon).
+- `<GacUI repo>/Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Label.cpp`: Solid label measurement and property updates.
+- `<GacUI repo>/Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Image.cpp`: Image creation, metadata, and image frame element updates.
+- `<GacUI repo>/Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Document.cpp`: Complex document paragraph element rendering via `GuiRemoteDocumentParagraphElement` inner class.
 
 ### Rendering Pipeline
 
@@ -128,7 +128,7 @@ Messages (no response expected) use `"Message"`. Requests (response expected) us
 
 ### JSON Serialization of Protocol Types
 
-Protocol types are code-generated from `Protocol/*.txt` files into `GuiRemoteProtocolSchema.h`/`.cpp`. Each struct gets a `JsonHelper<T>` specialization with `ToJson` and `FromJson` methods. The shared infrastructure in `GuiRemoteProtocolSchemaShared.h` provides:
+Protocol types are code-generated from `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/*.txt` files into `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Generated/GuiRemoteProtocolSchema.h/.cpp`. Each struct gets a `JsonHelper<T>` specialization with `ToJson` and `FromJson` methods. The shared infrastructure in `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteProtocolSchemaShared.h` provides:
 - Primitive type serializers: `bool`, `vint`, `float`, `double`, `WString`, `wchar_t`, `VKEY`, `Color`, `Ptr<MemoryStream>` (Base64-encoded).
 - Generic container serializers: `Nullable<T>`, `Ptr<T>`, `List<T>`, `ArrayMap<K,V,F>`, `Dictionary<K,V>`.
 - `Variant` types are serialized with a type discriminator field.
@@ -142,15 +142,15 @@ Protocol types are code-generated from `Protocol/*.txt` files into `GuiRemotePro
 
 ## Demo Project Pair
 
-Two projects in `Test/GacUISrc/` demonstrate a full remote protocol deployment. They are paired: one is the core side (console application) and the other is the renderer side (Windows application).
+Two projects in `<GacUI repo>/Test/GacUISrc/` demonstrate a full remote protocol deployment. They are paired: one is the core side (console application) and the other is the renderer side (Windows application).
 
-Remote-view-model remoting support is organized in `Test/RemotingHelpers/Rvmt/`. `ViewModelShared.h` owns only generic channel aliases, fixed RVM constants, and inline Ready-message helpers; `ViewModelHostClient.*` owns the generic network host client; and `ViewModelHostServer.*` owns the protected generic `RpcServerHelpers` implementation and the application-facing `RemoteViewModelChannelServer<TServerBase>`. Concrete generated-RPC composition lives instead in `Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.*` and is invoked directly by each consuming application. The consolidated `Source_RemotingHelpers.vcxitems` inventory lists only generic helpers under its `Rvmt` filter and is imported only by remoting applications; standalone applications receive reusable automation endpoints through GacUI Core instead.
+Remote-view-model remoting support is organized in `<GacUI repo>/Test/RemotingHelpers/Rvmt/`. `<GacUI repo>/Test/RemotingHelpers/Rvmt/ViewModelShared.h` owns only generic channel aliases, fixed RVM constants, and inline Ready-message helpers; `<GacUI repo>/Test/RemotingHelpers/Rvmt/ViewModelHostClient.*` owns the generic network host client; and `<GacUI repo>/Test/RemotingHelpers/Rvmt/ViewModelHostServer.*` owns the protected generic `RpcServerHelpers` implementation and the application-facing `RemoteViewModelChannelServer<TServerBase>`. Concrete generated-RPC composition lives instead in `<GacUI repo>/Test/GacUISrc/Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.*` and is invoked directly by each consuming application. The consolidated `<GacUI repo>/Test/GacUISrc/Source_RemotingHelpers/Source_RemotingHelpers.vcxitems` inventory lists only generic helpers under its `Rvmt` filter and is imported only by remoting applications; standalone applications receive reusable automation endpoints through GacUI Core instead.
 
 ### RemotingTest_Core (Console Application)
 
-Located at `Test/GacUISrc/RemotingTest_Core/`. Accepts `/Pipe`, `/Http`, or `/MiniHttp` arguments to start a named-pipe, Windows HTTP, or portable MiniHTTP server.
+Located at `<GacUI repo>/Test/GacUISrc/RemotingTest_Core/`. Accepts `/Pipe`, `/Http`, or `/MiniHttp` arguments to start a named-pipe, Windows HTTP, or portable MiniHTTP server.
 
-**Protocol stack setup** (`StartServer<TServerBase>` in `GuiMain.cpp`):
+**Protocol stack setup** (`StartServer<TServerBase>` in `<GacUI repo>/Test/GacUISrc/RemotingTest_Core/GuiMain.cpp`):
 1. `StartNamedPipeServer`, `StartHttpServer`, or `StartMiniHttpServer` constructs the matching `RemotingChannelServer<TServerBase>`. `/RVMT` constructs `RemoteViewModelChannelServer<TServerBase>`, which adds exact RVM-host admission while preserving the base renderer behavior.
 2. The shared run function starts the server, creates a local core client with `GuiRemoteProtocolLocalChannelClient`, and connects it to the server. Local clients are accepted directly because only the owning process can call `ConnectLocalClient`.
 3. It wraps the core client's protocol channel in `GuiRemoteProtocolAsyncJsonChannel` and creates `SwitchableRenderersCoreChannel<TServerBase>`. This `GuiRemoteProtocolCoreChannel` subclass verifies at submission time that its protocol renderer is still the transport server's current renderer. `Submit` evaluates this virtual guard before applying the base channel's default no-renderer behavior, so the switchable channel can report disconnection for both a stale renderer and renderer id `-1` while the default channel still treats `-1` as an idle state. After `BatchWrite`, it checks both renderer identity and the transport guard again: admission can detach a renderer while the batch delivers its responses. A cancelled batch clears both outstanding IDs and buffered responses in `GuiRemoteProtocolFilter`, so a replacement renderer cannot inherit partial results from its predecessor.
@@ -162,9 +162,9 @@ Located at `Test/GacUISrc/RemotingTest_Core/`. Accepts `/Pipe`, `/Http`, or `/Mi
 
 ### RemotingTest_Rendering_Win32 (Windows Application)
 
-Located at `Test/GacUISrc/RemotingTest_Rendering_Win32/`. Accepts `/Pipe`, `/Http`, or `/MiniHttp` arguments to start as a named-pipe, Windows HTTP, or portable MiniHTTP client.
+Located at `<GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32/`. Accepts `/Pipe`, `/Http`, or `/MiniHttp` arguments to start as a named-pipe, Windows HTTP, or portable MiniHTTP client.
 
-**Protocol stack setup** (`StartClient` in `GuiMain.cpp`; this function is not a template):
+**Protocol stack setup** (`StartClient` in `<GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32/GuiMain.cpp`; this function is not a template):
 1. Receives a named-pipe, Windows HTTP, or MiniHTTP `INetworkProtocolClient` and creates the shared `RemoteProtocolRendererClient`, derived from `GuiRemoteProtocolChannelClient`, over it.
 2. Creates `GuiRemoteProtocolAsyncJsonChannelRenderer` over the client's protocol channel.
 3. Creates `GuiRemoteRendererSingle` and `GuiRemoteProtocolRendererChannel(&asyncRendererChannel, &remoteRenderer)`.

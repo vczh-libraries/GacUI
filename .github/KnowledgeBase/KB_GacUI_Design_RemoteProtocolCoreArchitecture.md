@@ -2,7 +2,7 @@ Remote Protocol Core Architecture
 
 Remote protocol mode separates GacUI into two sides: the **core side** runs all application logic and framework code, while the **renderer side** (client) handles actual rendering and OS services. They communicate through `IGuiRemoteProtocol`. The core side is always wrapped in hosted mode — `GuiHostedController` wraps `GuiRemoteController`.
 
-Implementation lives in `Source/PlatformProviders/Remote/`.
+Implementation lives in `<GacUI repo>/Source/PlatformProviders/Remote/`.
 
 ## Motivation
 
@@ -19,7 +19,7 @@ The current `WasmFCT`, `WasmRPT` and `WasmRVMT` demos initialize the same remote
 
 ## Protocol Design: Messages, Events, and Responses
 
-The protocol has a strict directional split defined by three interface layers in `GuiRemoteProtocol.h`:
+The protocol has a strict directional split defined by three interface layers in `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteProtocol.h`:
 
 ### IGuiRemoteProtocolMessages (Core Side → Renderer Side)
 
@@ -33,7 +33,7 @@ Responses are also delivered through `IGuiRemoteProtocolEvents` via `RespondNAME
 
 ### Protocol Definition Files
 
-Protocol messages and events are defined in `Protocol/*.txt` files (e.g., `Protocol_Controller.txt`, `Protocol_Renderer.txt`, `Protocol_IO.txt`) and code-generated into `GuiRemoteProtocolSchema.h`. The generated macros `GACUI_REMOTEPROTOCOL_MESSAGES` and `GACUI_REMOTEPROTOCOL_EVENTS` carry drop annotations (`[@DropRepeat]`, `[@DropConsecutive]`) used by the filter layer for traffic optimization.
+Protocol messages and events are defined in `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/*.txt` files (e.g., `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_Controller.txt`, `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_Renderer.txt`, `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_IO.txt`) and code-generated into `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Generated/GuiRemoteProtocolSchema.h`. The generated macros `GACUI_REMOTEPROTOCOL_MESSAGES` and `GACUI_REMOTEPROTOCOL_EVENTS` carry drop annotations (`[@DropRepeat]`, `[@DropConsecutive]`) used by the filter layer for traffic optimization.
 
 ## Request/Response Synchronization (GuiRemoteMessages)
 
@@ -308,7 +308,7 @@ DOM node IDs encode their type: element IDs use `(elementId << 2) + 0`, hit test
 
 ## Protocol Combinator Layer
 
-The combinator pattern allows composing protocol transformations as a pipeline. `GuiRemoteProtocolCombinator<TEvents>` (in `GuiRemoteProtocol_Shared.h`) wraps an `IGuiRemoteProtocol*` and interposes a `TEvents` event combinator. This creates a chain where messages flow core → combinator → target protocol, and events flow target protocol → event combinator → core.
+The combinator pattern allows composing protocol transformations as a pipeline. `GuiRemoteProtocolCombinator<TEvents>` (in `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteProtocol_Shared.h`) wraps an `IGuiRemoteProtocol*` and interposes a `TEvents` event combinator. This creates a chain where messages flow core → combinator → target protocol, and events flow target protocol → event combinator → core.
 
 `GuiRemoteProtocolCombinator_PassingThrough` (specialization with `void` events plus `GuiRemoteEventCombinator_PassingThrough`) forwards everything unchanged, allowing subclasses to selectively override only the messages they care about. Both the filter layer and DOM diff layer use this pattern.
 

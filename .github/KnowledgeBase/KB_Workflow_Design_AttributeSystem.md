@@ -11,7 +11,7 @@ The compiler translates this syntax into a reflected struct type name using a fi
 @category:name  →  system::workflow_attributes::att_category_name
 ```
 
-This translation is performed by `WfLexicalScopeManager::GetWorkflowAttributeTypeName(category, name)` in `Source/Analyzer/WfAnalyzer.cpp`.
+This translation is performed by `WfLexicalScopeManager::GetWorkflowAttributeTypeName(category, name)` in `<Workflow repo>/Source/Analyzer/WfAnalyzer.cpp`.
 For example:
 - `@cpp:File` → `system::workflow_attributes::att_cpp_File`
 - `@cpp:UserImpl` → `system::workflow_attributes::att_cpp_UserImpl`
@@ -19,15 +19,15 @@ For example:
 
 ## Attribute Resolution
 
-`WfLexicalScopeManager::ResolveWorkflowAttribute(category, name)` in `Source/Analyzer/WfAnalyzer.cpp` resolves an attribute to its `ITypeDescriptor`.
+`WfLexicalScopeManager::ResolveWorkflowAttribute(category, name)` in `<Workflow repo>/Source/Analyzer/WfAnalyzer.cpp` resolves an attribute to its `ITypeDescriptor`.
 It validates:
 - The type must exist and be a struct (`TypeDescriptorFlags::Struct`).
 - The struct must have zero or one property. Zero properties means no argument; one property defines the argument type.
 
 ## Predefined Attributes
 
-The following attributes are predefined in `Source/Library/WfLibraryPredefined.h` under the `vl::__vwsn` namespace.
-They are registered in `Source/Library/WfLibraryReflection.cpp` with `IMPL_TYPE_INFO_RENAME` to map to the `system::workflow_attributes::*` type names.
+The following attributes are predefined in `<Workflow repo>/Source/Library/WfLibraryPredefined.h` under the `vl::__vwsn` namespace.
+They are registered in `<Workflow repo>/Source/Library/WfLibraryReflection.cpp` with `IMPL_TYPE_INFO_RENAME` to map to the `system::workflow_attributes::*` type names.
 
 | Workflow Syntax     | Type Name                                       | Argument         | Purpose                                                  |
 |---------------------|-------------------------------------------------|------------------|----------------------------------------------------------|
@@ -50,7 +50,7 @@ The attribute infrastructure handles this by:
 ## Attribute Population
 
 After semantic validation in `WfLexicalScopeManager::Rebuild`, attributes are extracted from the AST and attached to type descriptors before RPC validation and assembly or C++ generation.
-This happens in `Source/Analyzer/Rpc/WfAnalyzer_ValidateRPC.cpp`:
+This happens in `<Workflow repo>/Source/Analyzer/Rpc/WfAnalyzer_ValidateRPC.cpp`:
 
 - **`EvaluateAttributeLiteralExpression(manager, expr, argumentTd)`**: Evaluates a literal AST expression node into a boxed `Value`. Supports `bool`, `WString`, `vint`, `vuint`, `float`, `double`, `typeof(T)` (for `ITypeDescriptor*` arguments), and enum references.
 - **`PopulateAttributesOnBag(manager, td, memberInfo, atts)`**: Iterates a list of attribute AST nodes, resolves each via `ResolveWorkflowAttribute`, creates an `AttributeInfoImpl`, evaluates the argument value (if any), and registers the attribute on the type descriptor.
@@ -65,7 +65,7 @@ This happens in `Source/Analyzer/Rpc/WfAnalyzer_ValidateRPC.cpp`:
 ## Binary Serialization
 
 The `WfAssembly` binary format includes class/interface and struct type/member attribute data so that deserialized assemblies retain that metadata. Method parameter attributes and enum attributes are currently not serialized by `IOMethodBase` and `IOEnum`, respectively.
-This is implemented in `Source/Runtime/WfRuntimeAssembly.cpp` as the `IOAttributeBag` helper:
+This is implemented in `<Workflow repo>/Source/Runtime/WfRuntimeAssembly.cpp` as the `IOAttributeBag` helper:
 
 - **Writer**: For each attribute on a target (type or member), writes the attribute type name, then for each value writes the value's type name and its serialized form. Non-serializable types (e.g., `ITypeDescriptor*`) are serialized by writing the pointed-to type descriptor's full name.
 - **Reader**: Reads the attribute type name, creates an `AttributeInfoImpl`, then reads each value. For non-serializable types, reads the type name string and resolves it via `GetTypeDescriptor`.
@@ -73,7 +73,7 @@ This is implemented in `Source/Runtime/WfRuntimeAssembly.cpp` as the `IOAttribut
 
 ## C++ Code Generation
 
-When generating C++ reflection registration code, `WriteAttributeMacro` in `Source/Cpp/WfCpp_WriteReflection.cpp` emits the appropriate `ATTRIBUTE_TYPE`, `ATTRIBUTE_MEMBER`, and `ATTRIBUTE_PARAMETER` macros:
+When generating C++ reflection registration code, `WriteAttributeMacro` in `<Workflow repo>/Source/Cpp/WfCpp_WriteReflection.cpp` emits the appropriate `ATTRIBUTE_TYPE`, `ATTRIBUTE_MEMBER`, and `ATTRIBUTE_PARAMETER` macros:
 - `WString` arguments are emitted as string literals.
 - `ITypeDescriptor*` arguments are emitted as `GetTypeDescriptor(L"typeName")` calls.
 - Attributes with no arguments are emitted with just the type name.

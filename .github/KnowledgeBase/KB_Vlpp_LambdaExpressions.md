@@ -30,11 +30,11 @@ When an `Event<F>` is called, all assigned callable objects are executed.
 
 ### Performance Considerations
 
-`Func<F>` uses type erasure and heap-allocates its invoker when wrapping a new callable, regardless of callable size (`Source/Primitives/Function.h`). For performance-critical code, consider using templates to avoid the overhead of function object wrapping.
+`Func<F>` uses type erasure and heap-allocates its invoker when wrapping a new callable, regardless of callable size (`<Vlpp repo>/Source/Primitives/Function.h`). For performance-critical code, consider using templates to avoid the overhead of function object wrapping.
 
 ### Memory Management
 
-`Func<F>` is copyable and shares its invoker between copies; `Event<F>` is non-copyable. Both manage their internal resources automatically (`Source/Primitives/Function.h` and `Source/Primitives/Event.h`). They can safely capture objects by value or by reference, but be careful with reference captures when the referenced objects may be destroyed before the callable object is invoked.
+`Func<F>` is copyable and shares its invoker between copies; `Event<F>` is non-copyable. Both manage their internal resources automatically (`<Vlpp repo>/Source/Primitives/Function.h` and `<Vlpp repo>/Source/Primitives/Event.h`). They can safely capture objects by value or by reference, but be careful with reference captures when the referenced objects may be destroyed before the callable object is invoked.
 
 ### Thread Safety
 

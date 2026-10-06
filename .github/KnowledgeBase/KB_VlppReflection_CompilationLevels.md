@@ -18,7 +18,7 @@ When no special macros are defined, VlppReflection compiles with full reflection
 - Use `vl::reflection::description::GetTypeDescriptor<T>` to get the metadata of a type
 
 ### Metadata-Only Mode
-Defined by `VCZH_DEBUG_METAONLY_REFLECTION`. `VCZH_DESCRIPTABLEOBJECT_WITH_METADATA` is instead defined internally for full reflection (`Source/Reflection/DescriptableObject.h`):
+Defined by `VCZH_DEBUG_METAONLY_REFLECTION`. `VCZH_DESCRIPTABLEOBJECT_WITH_METADATA` is instead defined internally for full reflection (`<VlppReflection repo>/Source/Reflection/DescriptableObject.h`):
 - Metadata of types are loaded from external sources
 - You can get metadata from types, but lose all runtime support
 - Running a Workflow or GacUI XML compiler operates in this level

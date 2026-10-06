@@ -60,16 +60,16 @@ Use GitTui to browse working-tree diffs and local branch history in a terminal, 
 - The native Run boundary fits the main window to the terminal before Show; accepted main Hide/Close requests deliver close callbacks and stop that pump, while cancellation and hosted child dismissal keep it running.
 - Shared terminal classes implement cell geometry, rendering, paragraphs and input while platform adapters retain OS service plumbing.
 - TuiSkin, fake TUI dialogs and the TuiControlTest showcase have independent resources and generated inventories.
-- Use [the shared layout and skin guideline](../Guidelines/GacUILayout.md) when authoring GUI/TUI resources. Theme refresh rebuilds existing default-themed controls after a TuiSkin palette change.
+- Use the shared layout and skin guideline (`<Tools repo>/Copilot/Guidelines/GacUILayout.md`) when authoring GUI/TUI resources. Theme refresh rebuilds existing default-themed controls after a TuiSkin palette change.
 
 [Design Explanation](./KB_GacUI_Design_TuiPlatformProvider.md)
 
 #### GacGen Resource Compilation and GacBuild Orchestration
 
 - `GacGen` compiles one GacUI XML resource for a selected x86 or x64 target, producing Workflow, C++, resource binaries, optional RPC bindings, and architecture-specific cache artifacts.
-- `GacBuild.ps1` discovers resource XML files below a driver XML, calculates timestamp-based incremental candidates, propagates changes through named dependencies, and builds in dependency order.
-- The driver and per-resource `.log` directory schemas are stable interchange points used by `GacBuild.ps1`, `GacGen.ps1`, dependency loading, `CppMerge`, RPC generators, and future tooling.
-- `GacClear.ps1` invalidates only discovered per-resource caches, while generated production C++ and configured binary outputs remain in place.
+- `<Tools repo>/Tools/GacBuild.ps1` discovers resource XML files below a driver XML, calculates timestamp-based incremental candidates, propagates changes through named dependencies, and builds in dependency order.
+- The driver and per-resource `.log` directory schemas are stable interchange points used by `<Tools repo>/Tools/GacBuild.ps1`, `<Tools repo>/Tools/GacGen.ps1`, dependency loading, `CppMerge`, RPC generators, and future tooling.
+- `<Tools repo>/Tools/GacClear.ps1` invalidates only discovered per-resource caches, while generated production C++ and configured binary outputs remain in place.
 
 [Design Explanation](./KB_GacUI_Design_GacGenAndGacBuild.md)
 
@@ -151,14 +151,14 @@ Use GitTui to browse working-tree diffs and local branch history in a terminal, 
 
 - Coordinated changes across control class definition, template system, theme management, reflection registration, and XML compiler integration.
 - A control class inherits from `GuiControl` and `Description<T>`, specifies its template with `GUI_SPECIFY_CONTROL_TEMPLATE_TYPE`, defines the required underscore template hooks used by the macro-generated lifecycle overrides, attaches event handlers to `boundsComposition`, and defines events/properties.
-- Template system with declaration in `GuiControlTemplates.h` using macro expansion, property definition macros, auto-generated implementations including getters/setters/change events.
+- Template system with declaration in `<GacUI repo>/Source/Controls/Templates/GuiControlTemplates.h` using macro expansion, property definition macros, auto-generated implementations including getters/setters/change events.
 - Derived controls use the parent template as a base, define both underscore template hooks even when empty, optionally override feature hooks such as `OnParentLineChanged`, `OnActiveAlt`, or `IsTabAvailable`, and attach to parent events instead of re-implementing handlers.
 - Reflection registration in three steps: type list addition, control class registration with base/constructor/members, automatic template registration.
 - XML loader registration via `ADD_TEMPLATE_CONTROL` or `ADD_VIRTUAL_CONTROL` for themed variants.
 - Theme integration through `GUI_CONTROL_TEMPLATE_TYPES` macro generating `ThemeName` enum values.
 - Minimal working example demonstrates complete lifecycle from class definition through template, theme, reflection, to XML loader registration.
 - File modification checklist covers 10+ files across Controls, Templates, Application, Reflection, and Compiler directories.
-- Header organization requires updates to `IncludeForward.h` and `IncludeAll.h` for proper compilation order.
+- Header organization requires updates to `<GacUI repo>/Source/Controls/IncludeForward.h` and `<GacUI repo>/Source/Controls/IncludeAll.h` for proper compilation order.
 
 [Design Explanation](./KB_GacUI_Design_AddingNewControl.md)
 
@@ -198,7 +198,7 @@ Use GitTui to browse working-tree diffs and local branch history in a terminal, 
 - Rendering pipeline: receives `RequestRendererBeginRendering` with `OrdinaryElementDescVariant` updates, applies them to real graphics elements, updates the DOM through full DOM or DOM diff messages, refreshes completed frames, and returns measurement feedback via `RespondRendererEndRendering`.
 - Event forwarding coalesces high-frequency events (mouse move, wheel, key auto-repeat) and sends discrete events immediately; hit testing is performed locally by traversing the rendering DOM tree.
 - Layered channel architecture for protocol serialization: `IGuiRemoteProtocol` is bridged by `GuiRemoteProtocolCoreChannel`/`GuiRemoteProtocolRendererChannel` over `IJsonChannel` packages, with network clients/servers using `glr::json::JsonNodeListSerializer`.
-- JSON envelope format with `semantic`, `id`, `name`, `arguments` fields; protocol types code-generated from `Protocol/*.txt` with `JsonHelper<T>` specializations.
+- JSON envelope format with `semantic`, `id`, `name`, `arguments` fields; protocol types code-generated from `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/*.txt` with `JsonHelper<T>` specializations.
 - `GuiRemoteProtocolAsyncJsonChannel` and `GuiRemoteProtocolAsyncJsonChannelRenderer` provide async channel separation with queued events/responses, connection-safe request matching, renderer main-thread dispatch, and startup message caching.
 - Demo project pair (`RemotingTest_Core` and `RemotingTest_Rendering_Win32`) demonstrates full protocol stack assembly for both core and renderer sides with named-pipe, Windows HTTP, and portable MiniHTTP transport.
 

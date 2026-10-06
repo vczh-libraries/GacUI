@@ -22,7 +22,7 @@ Create specific date and time instances programmatically.
 - Use `DateTime::FromDateTime(year, month, day, hour, minute, second, milliseconds)` for precise date/time creation
 - Use `DateTime::FromOSInternal(osInternal)` to create from OS-specific internal representation
 
-The `FromDateTime` method allows you to specify all components of a date and time, from year down to milliseconds. Callers must supply valid date/time components; the platform implementations do not provide a portable validation guarantee (`Source/Primitives/DateTime.Windows.cpp` and `Source/Primitives/DateTime.Linux.cpp`).
+The `FromDateTime` method allows you to specify all components of a date and time, from year down to milliseconds. Callers must supply valid date/time components; the platform implementations do not provide a portable validation guarantee (`<Vlpp repo>/Source/Primitives/DateTime.Windows.cpp` and `<Vlpp repo>/Source/Primitives/DateTime.Linux.cpp`).
 
 The `FromOSInternal` method is typically used internally but can be useful when working with OS-specific time representations.
 
@@ -82,7 +82,7 @@ The `DateTime` class abstracts over platform-specific time APIs, providing consi
 DateTime operations maintain millisecond precision and can represent dates across a wide range suitable for most application needs. The exact range depends on the underlying platform implementation.
 
 ### Thread Safety
-`DateTime` has mutable public fields (`Source/Primitives/DateTime.h`); shared instances require synchronization if modified. The implementation injection functionality should typically be used during application startup before multi-threaded usage begins.
+`DateTime` has mutable public fields (`<Vlpp repo>/Source/Primitives/DateTime.h`); shared instances require synchronization if modified. The implementation injection functionality should typically be used during application startup before multi-threaded usage begins.
 
 ### Integration with Other Components
 DateTime integrates with other parts of the framework, particularly the Locale system for culture-specific date formatting and the unit testing framework for time-dependent test scenarios.
