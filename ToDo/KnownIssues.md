@@ -44,6 +44,12 @@
     - To load prepared large document into `GuiDocumentViewer` uses `LoadDocumentAndClearUndoRedo`.
     - Future editing still work with undo.
 - When a window is moved between screens in different DPI, the caret position is not properly updated, causing IME composition window to show at an incorrect position.
+- FakeDialogService
+  - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
+- GDI
+  - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
+- IME re-composing:
+  - When Japanese IME is active, pressing SPACE on a select text gives me another chance to re-compose it. Figure out how it work and implement it.
 
 ## Accessibility
 
@@ -109,11 +115,6 @@
     - Especially during the first connection, it is observed in GacJS that when it is the first renderer and failed during connection ballbacks, Core can't respond to other renderers again.
   - Support failure injection in unit test, making `UnitTestRemoteProtocol::Submit()` returns `true` to its `disconnected` parameter.
 
-## Deprioritized
+### GacJS
 
-- FakeDialogService
-  - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
-- GDI
-  - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
-- IME re-composing:
-  - When Japanese IME is active, pressing SPACE on a select text gives me another chance to re-compose it. Figure out how it work and implement it.
+- Rework `Gaclib/website/entry` unit tests, coupling with FCT does not seem a good idea.

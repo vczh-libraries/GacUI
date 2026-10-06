@@ -10,6 +10,7 @@ Unplanned features with detailed are stored in the same folder, here lists all i
 - [TUI_Resize.md](./TUI_Resize.md) for OP window management.
   - Need further investigation and see if the idea actuall works.
 - [RemoteProtocolOptimization.md](./RemoteProtocolOptimization.md)
+- [UI Automation gap report](./UiaGap.md) and [implementation inventory](../../.github/KnowledgeBase/KB_GacUI_Design_UIAutomation.md)
 
 ## Ideas
 
