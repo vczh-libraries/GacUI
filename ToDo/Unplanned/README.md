@@ -67,8 +67,6 @@ Unplanned features with detailed are stored in the same folder, here lists all i
   - Calculate dependencies by only parsing.
   - Cache workflow assembly per resource in file.
   - Codegen c++ from multiple workflow assembly.
-- Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
-- Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`.
 
 ## New C++/Doc Compiler based on VlppParser2
 
