@@ -480,16 +480,17 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 		Dictionary<WString, FilePath> resourceMappings;
 		if (mappingPath)
 		{
-			FileStream fileStream(mappingPath.Value().GetFullPath(), FileStream::ReadOnly);
-			if (!fileStream.IsAvailable())
+			WString mappingText;
+			BomEncoder::Encoding mappingEncoding;
+			bool mappingContainsBom;
+			if (!File(mappingPath.Value()).ReadAllTextWithEncodingTesting(mappingText, mappingEncoding, mappingContainsBom))
 			{
 				PrintErrorMessage(L"error> Failed to load mapping file: " + mappingPath.Value().GetFullPath());
 				cleanKnownRpcOutputs();
 				return;
 			}
-			BomDecoder decoder;
-			DecoderStream decoderStream(fileStream, decoder);
-			StreamReader reader(decoderStream);
+			// GacBuild's line manifests are UTF-8 without BOM; retain BOM and legacy MBCS support.
+			StringReader reader(mappingText);
 			while (!reader.IsEnd())
 			{
 				auto line = reader.ReadLine();
@@ -798,33 +799,39 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 
 		for (auto filePath : cppResourcePaths)
 		{
+			if (partialMode && filePath != cppResourcePaths[0]) continue;
 			PrintSuccessMessage(L"Generating binary resource file (no script): " + filePath.GetFullPath());
 			WriteBinaryResource(resource, false, false, filePath, {});
 		}
 		for (auto filePath : cppCompressedPaths)
 		{
+			if (partialMode && filePath != cppCompressedPaths[0]) continue;
 			PrintSuccessMessage(L"Generating compressed resource file (no script): " + filePath.GetFullPath());
 			WriteBinaryResource(resource, true, false, filePath, {});
 		}
 		for (auto filePath : resResourcePaths)
 		{
+			if (partialMode && filePath != resResourcePaths[0]) continue;
 			PrintSuccessMessage(L"Generating binary resource files : " + filePath.GetFullPath());
 			WriteBinaryResource(resource, false, true, filePath, {});
 		}
 		for (auto filePath : resCompressedPaths)
 		{
+			if (partialMode && filePath != resCompressedPaths[0]) continue;
 			PrintSuccessMessage(L"Generating compressed resource files : " + filePath.GetFullPath());
 			WriteBinaryResource(resource, true, true, filePath, {});
 		}
 		for (auto filePath : resAssemblyPaths)
 		{
+			if (partialMode && filePath != resAssemblyPaths[0]) continue;
 			PrintSuccessMessage(L"Generating assembly files : " + filePath.GetFullPath());
 			WriteBinaryResource(resource, false, false, {}, filePath);
 		}
 
 		if (partialMode)
 		{
-			List<WString> lines;
+			auto deployment = Ptr(new XmlElement);
+			deployment->name.value = L"Deploy";
 			List<FilePath>* outputPaths[] =
 			{
 				&cppResourcePaths,
@@ -837,15 +844,25 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 			for (vint i = 0; i < sizeof(outputPaths) / sizeof(*outputPaths); i++)
 			{
 				auto& paths = *outputPaths[i];
-				if (paths.Count() == 2)
+				for (vint j = 1; j < paths.Count(); j++)
 				{
-					lines.Add(L"copy \"" + paths[0].GetFullPath() + L"\" \"" + paths[1].GetFullPath() + L"\"");
+					auto entry = Ptr(new XmlElement);
+					entry->name.value = L"File";
+					auto source = Ptr(new XmlAttribute);
+					source->name.value = L"Source";
+					source->value.value = paths[0].GetFullPath();
+					entry->attributes.Add(source);
+					auto destination = Ptr(new XmlAttribute);
+					destination->name.value = L"Destination";
+					destination->value.value = paths[j].GetFullPath();
+					entry->attributes.Add(destination);
+					deployment->subNodes.Add(entry);
 				}
 			}
 
-			if (lines.Count() > 0)
+			if (!File(logFolderPath / L"Deploy.xml").WriteAllText(XmlToString(deployment), true, BomEncoder::Utf8))
 			{
-				File(logFolderPath / L"Deploy.bat").WriteAllLines(lines, false, BomEncoder::Mbcs);
+				PrintErrorMessage(L"error> Failed to write deployment manifest: " + logFolderPath.GetFullPath());
 			}
 		}
 	}

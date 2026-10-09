@@ -1486,7 +1486,7 @@ namespace vl
 	{
 		bool IsMbcsLeadByte(char c)
 		{
-			return IsDBCSLeadByte(c);
+			return IsDBCSLeadByteEx(CP_THREAD_ACP, static_cast<BYTE>(c));
 		}
 
 		void MbcsToWChar(wchar_t* wideBuffer, vint wideChars, vint wideReaded, char* mbcsBuffer, vint mbcsChars)

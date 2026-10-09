@@ -2,9 +2,9 @@
 
 ## Maintaining Tools
 
-- If the behavior of `REPO-ROOT/Tools/GacGen` changes, update `REPO-ROOT/.github/KnowledgeBase/KB_GacUI_Design_GacGenAndGacBuild.md`.
+- Native resource orchestration lives in `<GacUI repo>/Tools/GacBuild`; the single-architecture compiler remains in `<GacUI repo>/Tools/GacGen`. Update their canonical guidance in `<Tools repo>/Copilot/KnowledgeBase/KB_GacUI_Design_GacGenAndGacBuild.md` and propagate it through instruction synchronization.
 - If the behavior of any tool changes, update:
-  - `REPO-ROOT/Tools/GacGen` and `../Tools/Tools/GacBuild.ps1`: `REPO-ROOT/.github/KnowledgeBase/KB_GacUI_Design_GacGenAndGacBuild.md`.
+  - `<GacUI repo>/Tools/GacBuild`, `<GacUI repo>/Tools/GacGen`, and the thin wrappers `<Tools repo>/Tools/GacBuild.ps1` and `<Tools repo>/Tools/GacGen.ps1`: the canonical GacGen/GacBuild guidance above.
   - `REPO-ROOT/Tools/UiaList`:
     - Update `REPO-ROOT/.github/KnowledgeBase/KB_GacUI_Design_UiaList.md` for UiaListApp usage.
     - This tool is Windows only, check out `REPO-ROOT/Tools/UiaList/AGENTS.md` if and only if you are working on it.
@@ -13,6 +13,14 @@
     - This tool is cross platform, check out `REPO-ROOT/Tools/GitView/AGENTS.md` if and only if you are working on it.
 - When only changing tools without changing GacUI itself or built-in skins, GacUI test process could be completely skipped.
 - When only changing test apps without changing GacUI itself or built-in skins, GacUI unit test could be completely skipped.
+
+### Native Resource Tools
+
+- Build `<GacUI repo>/Tools/GacBuild/GacBuild.sln` and `<GacUI repo>/Tools/GacGen/GacGen.sln` with the repository build wrapper. Both provide Debug/Release and Win32/x64 configurations. GacBuild produces `<GacUI repo>/Tools/GacBuild/Bin/GacBuildD.exe` or `GacBuild.exe`; GacGen produces the corresponding executables under `<GacUI repo>/Tools/GacGen/Bin`. Native Unix builds use `<GacUI repo>/Tools/GacBuild/vmake` and `<GacUI repo>/Tools/GacGen/vmake`.
+- GacBuild requires `-mode:GacBuild` or `-mode:GacGen`, explicit absolute `-pathGacGen` and `-pathCppMerge`, and `-FileName`. The former accepts `-Dump`; the latter accepts `-MappingFileName`.
+- GacGen `/P32` and `/P64` stage outputs and write UTF-8 `Deploy.xml` manifests. GacBuild validates both architectures, merges C++, then copies the manifests with x32 last for shared neutral outputs. Direct `/C32` and `/C64` still publish configured outputs.
+- Run `<GacUI repo>/Tools/GacBuild/Verification.ps1 -Baseline` for focused Windows integration coverage. It uses the repository CLI wrapper, keeps fixtures in the ignored tool `Bin` directory, and restores debugger arguments after execution. Optional tool-path parameters select other built configurations.
+- Tools-only changes use this focused verification; native Linux/macOS execution must be recorded separately from Windows tests and static inventory checks.
 
 ## Solution to Work On
 
