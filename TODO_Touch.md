@@ -2,19 +2,18 @@
 
 This is a proposed plan, not an implemented feature. The implementation targets are native Windows and the GacJS browser renderer. Other providers should retain their existing mouse behavior without implementing touch. Platform references were checked on 2026-10-09.
 
-The catalogs below cover application-facing touch, gesture, feedback, and testing facilities relevant to a GUI library. Pen and touchpad facilities are identified separately. Device-driver development is outside this plan.
+The contact-input paths are Windows `WM_POINTER*` on Windows 8 or newer and browser Pointer Events. The catalogs below cover their application-facing touch, gesture, feedback, and testing facilities. Pen and touchpad facilities are identified separately. Device-driver development is outside this plan.
 
 ## 1.1 Choosing an input path
 
 | Windows API | What it provides | Suggested use |
 |---|---|---|
 | Pointer input, `WM_POINTER*` | Separate contacts, contact data, history, and cancellation information. Windows 8 onward. | Primary Windows input path. |
-| Interaction Context | Recognizes gestures from pointer data supplied by the application. Windows 8 onward. | Optional Windows recognizer behind a common interface. |
-| `WM_TOUCH` | Older raw multi-touch input. Windows 7 onward. | Only needed if Windows 7 support is required. |
-| `WM_GESTURE` | Older automatic gesture messages. Windows 7 onward. | Useful platform reference; not the proposed raw-input foundation. |
+| Interaction Context | Recognizes gestures from pointer data supplied by the application. | Optional Windows recognition implementation. |
+| `WM_GESTURE` | Automatic gestures produced by default pointer processing. | Platform behavior reference; raw contacts still use the pointer path. |
 | Direct Manipulation | A larger system for moving/scaling content, inertia, and composition. | Optional integration for native viewports and touchpads. |
 
-These are alternative building blocks. Do not expect independent raw-touch and gesture streams simply by enabling every API. In particular, registering for legacy `WM_TOUCH` stops automatic `WM_GESTURE` delivery. [Pointer input](https://learn.microsoft.com/en-us/windows/win32/inputmsg/messages-and-notifications-portal), [Interaction Context](https://learn.microsoft.com/en-us/windows/win32/input_intcontext/interaction-context-portal), [legacy gesture setup](https://learn.microsoft.com/en-us/windows/win32/wintouch/getting-started-with-multi-touch-gestures).
+`WM_POINTER` is the only Windows contact-input path in this plan. Passing unhandled pointer input to `DefWindowProc` can produce `WM_GESTURE` or compatibility mouse input. Handling the pointer stream consistently lets GacUI provide its own gestures and mouse fallback, or explicitly feed Interaction Context. Recognition is separate from contact acquisition; enabling a recognizer does not promise independent, uninterrupted raw and gesture streams. [Pointer default processing](https://learn.microsoft.com/en-us/windows/win32/inputmsg/wm-pointerdown), [Interaction Context](https://learn.microsoft.com/en-us/windows/win32/input_intcontext/interaction-context-portal).
 
 ## 1.2 All pointer-related message groups
 
@@ -71,7 +70,7 @@ Touch down implicitly captures that pointer to its target HWND. Updates can ther
 
 Passing unhandled pointer input to `DefWindowProc` allows default gestures or mouse promotion. Microsoft warns that consuming some input and default-processing the rest can produce undefined behavior. For selective per-control fallback, the framework should consume its touch stream consistently and generate its own compatibility mouse events. `EnableMouseInPointer` controls the opposite direction and is a process-level choice. [Default pointer processing](https://learn.microsoft.com/en-us/windows/win32/inputmsg/wm-pointerdown), [EnableMouseInPointer](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enablemouseinpointer).
 
-`GetCurrentInputMessageSource` identifies the source category of the current message. `GetMessageExtraInfo` has documented touch/pen signatures for promoted mouse messages. Use source information to prevent duplicate delivery while retaining real mouse input. Merely handling a legacy `WM_TOUCH` message should not be treated as proof that its parallel mouse messages disappeared. [Input source](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getcurrentinputmessagesource), [promoted mouse identification](https://learn.microsoft.com/en-us/windows/win32/tablet/system-events-and-mouse-messages).
+`GetCurrentInputMessageSource` identifies the source category of the current message. `GetMessageExtraInfo` has documented touch/pen signatures for promoted mouse messages. Use source information to prevent duplicate delivery while retaining real mouse input. [Input source](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getcurrentinputmessagesource), [promoted mouse identification](https://learn.microsoft.com/en-us/windows/win32/tablet/system-events-and-mouse-messages).
 
 There is no general desktop receiving-side `CancelPointerInput` or `ReleasePointerCapture` API in this pointer API family. `ReleaseCapture` releases **mouse** capture. `WM_CANCELMODE` cancels modes such as menu/scroll handling, not an arbitrary physical finger. The application can stop its own drag or recognizer and ignore the remaining contact packets. Injection APIs can cancel contacts they inject. [Pointer API catalog](https://learn.microsoft.com/en-us/windows/win32/inputmsg/functions), [ReleaseCapture](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-releasecapture), [WM_CANCELMODE](https://learn.microsoft.com/en-us/windows/win32/winmsg/wm-cancelmode).
 
@@ -90,24 +89,11 @@ There is no general desktop receiving-side `CancelPointerInput` or `ReleasePoint
 | `EvaluateProximityToRect`, `EvaluateProximityToPolygon` | Score nearby targets and suggest an adjusted hit point. |
 | `PackTouchHitTestingProximityEvaluation` | Format the result for `WM_TOUCHHITTESTING`. |
 | `GetWindowFeedbackSetting`, `SetWindowFeedbackSetting` | Query/control OS contact and gesture visual feedback. |
-| `WM_TABLET_QUERYSYSTEMGESTURESTATUS` | Control legacy system behaviors such as press-and-hold right-click and pen flicks. |
+| `WM_TABLET_QUERYSYSTEMGESTURESTATUS` | Control system behaviors such as press-and-hold right-click and pen flicks. |
 
-[System capabilities](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics), [device functions](https://learn.microsoft.com/en-us/windows/win32/input_pointerdevice/functions), [touch hit testing](https://learn.microsoft.com/en-us/windows/win32/input_touchhittest/functions), [feedback settings](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowfeedbacksetting), [legacy system gesture settings](https://learn.microsoft.com/en-us/windows/win32/tablet/wm-tablet-querysystemgesturestatus-message).
+[System capabilities](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics), [device functions](https://learn.microsoft.com/en-us/windows/win32/input_pointerdevice/functions), [touch hit testing](https://learn.microsoft.com/en-us/windows/win32/input_touchhittest/functions), [feedback settings](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowfeedbacksetting), [system gesture settings](https://learn.microsoft.com/en-us/windows/win32/tablet/wm-tablet-querysystemgesturestatus-message).
 
-## 1.6 Legacy raw touch
-
-| API | Simple meaning |
-|---|---|
-| `RegisterTouchWindow`, `UnregisterTouchWindow`, `IsTouchWindow` | Enable, disable, or query raw-touch registration for an HWND. |
-| `WM_TOUCH` | Delivers a handle containing one or more changed-contact records. |
-| `GetTouchInputInfo` | Reads the `TOUCHINPUT` records. |
-| `CloseTouchInputHandle` | Releases a handled message's data. Default processing closes unhandled data. |
-
-`TOUCHINPUT.dwID` identifies the contact. Flags include Down, Move, Up, in-range, primary, no-coalescing, pen, and palm. Masks indicate valid time, extra information, and contact area. Coordinates are in hundredths of a physical screen pixel. Records need not be sorted. There is no `TOUCHEVENTF_CANCEL` equivalent to modern pointer cancellation. [TOUCHINPUT](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-touchinput), [WM_TOUCH](https://learn.microsoft.com/en-us/windows/win32/wintouch/wm-touchdown).
-
-Registration flag `TWF_FINETOUCH` requests noncoalesced input. `TWF_WANTPALM` disables palm rejection and associated buffering; it allows palm input and can reduce delay. It does not turn palm rejection on. [RegisterTouchWindow](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registertouchwindow).
-
-## 1.7 Automatic Windows gestures
+## 1.6 Automatic Windows gestures
 
 `WM_GESTURENOTIFY` lets a window prepare recognition settings. `WM_GESTURE` supplies a recognized gesture. `GetGestureInfo` reads `GESTUREINFO`; `GetGestureExtraArgs` reads any extra arguments; `CloseGestureInfoHandle` releases handled data. [Gesture messages](https://learn.microsoft.com/en-us/windows/win32/wintouch/wm-gesture), [GetGestureExtraArgs](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getgestureextraargs).
 
@@ -124,9 +110,11 @@ There are **five gesture kinds**, plus the two boundary IDs. There are no `GID_T
 
 `GF_BEGIN`, `GF_INERTIA`, and `GF_END` describe progress. Pan inertia can continue after fingers lift. There is no `GF_CANCEL`. Forward generic `GID_BEGIN`/`GID_END` to default processing as documented, and use the documented handle ownership rules. [Gesture overview](https://learn.microsoft.com/en-us/windows/win32/wintouch/windows-touch-gestures-overview).
 
-`SetGestureConfig`/`GetGestureConfig` select gestures, one-finger pan axes, directional confinement, and pan inertia. Settings persist for the HWND and can be changed during `WM_GESTURENOTIFY`. Configure explicitly; rotation is not enabled by default. Default legacy processing can translate pan into scroll messages, zoom into Ctrl+wheel, and press-and-hold into right-click behavior. [Gesture configuration](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setgestureconfig), [default behavior and troubleshooting](https://learn.microsoft.com/en-us/windows/win32/wintouch/troubleshooting-applications).
+`SetGestureConfig`/`GetGestureConfig` select gestures, one-finger pan axes, directional confinement, and pan inertia. Settings persist for the HWND and can be changed during `WM_GESTURENOTIFY`. Configure explicitly; rotation is not enabled by default. Default processing can translate pan into scroll messages, zoom into Ctrl+wheel, and press-and-hold into right-click behavior. [Gesture configuration](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setgestureconfig), [default behavior and troubleshooting](https://learn.microsoft.com/en-us/windows/win32/wintouch/troubleshooting-applications).
 
-## 1.8 Explicit gesture recognizers and motion engines
+Handling a gesture such as pan suppresses that gesture's default action; it does not itself cancel the contacts. Pointer messages have no flag saying that a gesture was recognized or handled. Track that decision from the gesture notification and the control's response. Interaction Context can recognize supplied frames while GacUI retains pointer input; Direct Manipulation can take ownership as described below. [Gesture processing](https://learn.microsoft.com/en-us/windows/win32/wintouch/wm-gesture), [pointer fields](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-pointer_info).
+
+## 1.7 Explicit gesture recognizers and motion engines
 
 **Interaction Context** is suitable for a UI framework that already owns raw input. It recognizes tap/double-tap, secondary tap, hold, cross-slide, and manipulation. Manipulation combines translation, scale, and rotation. Its named Drag interaction concerns mouse/pen dragging; touch panning is a manipulation. [Interaction kinds](https://learn.microsoft.com/en-us/windows/win32/api/interactioncontext/ne-interactioncontext-interaction_id).
 
@@ -153,9 +141,7 @@ Configuration supports axis constraints and translation/rotation/scaling inertia
 
 **Direct Manipulation** offers `IDirectManipulationManager`, viewports, content transforms, event handlers, update management, and compositor integration. A viewport can accept/release contacts with `SetContact`/`ReleaseContact`/`ReleaseAllContacts`, stop motion, and apply configured pan/zoom behavior, including translation/scaling inertia and axis rails. Once it takes a contact, the application's ordinary raw pointer stream can end with capture loss. Its contact methods are specific to Direct Manipulation, not general HWND capture APIs. [Direct Manipulation overview](https://learn.microsoft.com/en-us/windows/win32/directmanipulation/direct-manipulation-portal), [viewport interface](https://learn.microsoft.com/en-us/windows/win32/api/directmanipulation/nn-directmanipulation-idirectmanipulationviewport), [supported configurations](https://learn.microsoft.com/en-us/windows/win32/api/directmanipulation/ne-directmanipulation-directmanipulation_configuration).
 
-For Windows 7, `IManipulationProcessor` accepts down/move/up input and reports transforms; `IInertiaProcessor` continues motion using velocity, deceleration, and boundaries. They are older alternatives. [IManipulationProcessor](https://learn.microsoft.com/en-us/windows/win32/api/manipulations/nn-manipulations-imanipulationprocessor), [IInertiaProcessor](https://learn.microsoft.com/en-us/windows/win32/api/manipulations/nn-manipulations-iinertiaprocessor).
-
-## 1.9 Touchpads and injected input
+## 1.8 Touchpads and injected input
 
 A touchpad is not a touchscreen. Ordinary applications commonly receive wheel messages or system actions, not one raw contact per touchpad finger. Direct Manipulation and InteractionTracker have touchpad integration. [Precision touchpad overview](https://learn.microsoft.com/en-us/windows/win32/input-precisiontouchpad/precision-touchpad-portal).
 
@@ -163,7 +149,7 @@ Microsoft also documents newer, separately gated precision-touchpad facilities: 
 
 For tests, `InitializeTouchInjection`/`InjectTouchInput` simulate one or more contacts. Injected cancellation permits Canceled with Up or Update; this does not establish a universal sequence for physical hardware. Windows 10 version 1809 onward also offers `CreateSyntheticPointerDevice`, `InjectSyntheticPointerInput`, and `DestroySyntheticPointerDevice` for synthetic touch/pen devices. [Touch injection](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-injecttouchinput), [synthetic pointer devices](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createsyntheticpointerdevice).
 
-## 1.10 Typical Windows event sequences
+## 1.9 Typical Windows event sequences
 
 These are relevant lifecycle events, not a complete message queue trace. Boundary, activation, and non-client messages can accompany them. `Update(A/B)` means updates for either or both IDs, not one pointer representing two fingers.
 
@@ -175,8 +161,7 @@ These are relevant lifecycle events, not a complete message queue trace. Boundar
 | Stationary hold | `Down(A) -> optional same-position updates -> Up(A)`. Recognition also needs time; movement is not required. |
 | Native cancellation | A sample carrying `POINTER_FLAG_CANCELED` ends the interaction unsuccessfully. Even a native Up with this flag must not click. |
 | Capture taken away | `Down(A) -> Update(A)... -> WM_POINTERCAPTURECHANGED(A)`. Do not wait for Up. |
-| Legacy raw multi-touch | `WM_TOUCH [Down A] -> WM_TOUCH [Down B, Move A] -> WM_TOUCH [Up A] -> WM_TOUCH [Move B] -> WM_TOUCH [Up B]`. Batching varies. |
-| Legacy pan with inertia | `GID_BEGIN -> GID_PAN/GF_BEGIN -> pan updates -> fingers lift -> pan/GF_INERTIA updates -> pan/GF_END -> GID_END`. Exact packet grouping varies. |
+| Default pointer processing: pan with inertia | `GID_BEGIN -> GID_PAN/GF_BEGIN -> pan updates -> fingers lift -> pan/GF_INERTIA updates -> pan/GF_END -> GID_END`. Exact packet grouping varies. |
 | Interaction Context pinch | Raw contacts feed the context; manipulation begins, reports scale/translation/rotation, then ends or enters configured inertia. |
 | Application cancels its recognizer | Recognizer cancellation/cleanup occurs; native updates and final release can still arrive and must be drained without activation. |
 
@@ -184,7 +169,7 @@ The first finger ending does not end the second finger. It also does not transfe
 
 # 2. Browser touch and gesture capabilities
 
-Use **Pointer Events** as the main browser API. It covers touch, pen, and mouse. Optional high-frequency sampling, Safari gestures, touchpads, and text input should be separate capabilities. [Pointer Events](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events).
+Use **Pointer Events as the only browser contact-input API**. It covers touch, pen, and mouse. Optional high-frequency sampling, Safari gesture recognition, touchpads, and text input are separate capabilities. [Pointer Events](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events).
 
 ## 2.1 All pointer events
 
@@ -257,24 +242,7 @@ Feature-detect these APIs and their secure-context requirements. Ordinary `point
 
 Browser events do not expose the same hardware-frame grouping as Windows frame APIs. A browser adapter can forward one changed contact at a time and let GacUI maintain the complete active-contact set.
 
-## 2.5 Legacy Touch Events
-
-The older API has **four events**:
-
-| Event | Meaning |
-|---|---|
-| `touchstart` | One or more contacts begin. |
-| `touchmove` | One or more contacts change. |
-| `touchend` | One or more contacts finish normally. |
-| `touchcancel` | One or more contacts are canceled. |
-
-Each event contains `touches` (all current contacts), `targetTouches` (current contacts that started on this target), and `changedTouches` (contacts changed by this event). Ended/canceled contacts appear in `changedTouches`, after disappearing from current-contact lists. Process every changed record by `identifier`; array position is not a finger identity. [Touch Events](https://developer.mozilla.org/en-US/docs/Web/API/Touch_events), [TouchEvent](https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent).
-
-A `Touch` also has its original target, positions, contact radii, ellipse angle, and force where available. Its `rotationAngle` describes the contact ellipse, not a two-finger rotation gesture. [Touch data](https://developer.mozilla.org/en-US/docs/Web/API/Touch).
-
-Choose Pointer Events or a legacy Touch Events adapter for a session. Registering both for the same input requires deduplication and is unnecessary for the proposed baseline.
-
-## 2.6 Mouse fallback and activation
+## 2.5 Mouse fallback and activation
 
 Browsers can generate compatibility mouse input from primary touch. Preventing the default of a cancelable primary `pointerdown` suppresses its compatibility mouse stream, but does not suppress mouse boundary events. `click`, `auxclick`, and `contextmenu` are separately dispatched higher-level events; preventing a pointer event does not prevent their dispatch. Handle duplicate activation separately when GacUI performs its own fallback. [Compatibility mouse mapping](https://www.w3.org/TR/pointerevents3/#compatibility-mapping-with-mouse-events).
 
@@ -287,11 +255,9 @@ Browsers can generate compatibility mouse input from primary touch. Preventing t
 
 Do not drop keyboard/accessibility activation when filtering touch duplicates. [click](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event), [dblclick](https://developer.mozilla.org/en-US/docs/Web/API/Element/dblclick_event), [contextmenu](https://developer.mozilla.org/en-US/docs/Web/API/Element/contextmenu_event).
 
-Legacy Touch Events have different suppression rules: preventing `touchstart` or an appropriate early `touchmove` can suppress consequential mouse input and browser actions. Do not apply those rules blindly to Pointer Events. [Touch Events specification](https://www.w3.org/TR/touch-events/).
-
 Preventing a DOM default action must happen synchronously in the browser handler. Passive listeners cannot prevent default actions. A response from a worker or remote GacUI process arrives too late to reliably decide the original DOM event's default action. Establish browser ownership policy locally before forwarding input. [preventDefault and passive listeners](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault).
 
-## 2.7 Browser gestures and default-action policy
+## 2.6 Browser gestures and default-action policy
 
 Browsers internally recognize pan, pinch zoom, and other actions, but there is **no portable general set of pan/pinch/rotate/swipe events for application controls**. Implement those recognizers from contacts when GacUI owns the interaction. For example, distance between two pointers provides pinch scale. [Pointer-based pinch example](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events/Pinch_zoom_gestures).
 
@@ -312,13 +278,13 @@ Directional names refer to scrolling: for example, `pan-up` permits an initial d
 
 If the browser owns a DOM scroll container, observe resulting position through `scroll`, and completion through `scrollend` where supported. These are viewport/content state notifications, not individual contact events. Browser inertia does not supply continued touch points after release. [scroll](https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event), [scrollend](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollend_event).
 
-## 2.8 Touchpads and Safari gestures
+## 2.7 Touchpads and Safari gestures
 
 Trackpads generally produce cursor/wheel input rather than individually exposed fingers. `wheel` supplies `deltaX/Y/Z` and `deltaMode`; units can be pixels, lines, or pages. A wheel event need not cause scrolling. Trackpad pinch can arrive with `ctrlKey == true`, but actual Ctrl+wheel can do the same, so this does not identify a touchscreen pinch. [wheel](https://developer.mozilla.org/en-US/docs/Web/API/Element/wheel_event), [ctrlKey](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/ctrlKey).
 
 Safari/WebKit additionally provides proprietary `gesturestart`, `gesturechange`, and `gestureend`. `GestureEvent.scale` is relative to the initial distance and `rotation` is relative to the initial orientation. This is useful optional integration, not a cross-browser gesture API. Do not process both these gestures and a shared recognizer for the same interaction. [Apple GestureEvent](https://developer.apple.com/documentation/webkitjs/gestureevent), [GestureEvent reference](https://developer.mozilla.org/en-US/docs/Web/API/GestureEvent).
 
-## 2.9 Typical browser event sequences
+## 2.8 Typical browser event sequences
 
 These examples omit variable sample counts and exact mouse/capture interleaving. They are not promises about every browser's complete event order.
 
@@ -331,13 +297,12 @@ These examples omit variable sample counts and exact mouse/capture interleaving.
 | Custom pinch with browser pan/zoom disabled | `down(A) -> down(B) -> moves(A/B)... -> up(A) -> moves(B)... -> up(B)`. GacUI decides how the two-finger gesture changes when one finger remains. |
 | Capture released while finger remains | `down -> gotpointercapture -> releasePointerCapture -> lostpointercapture -> further pointer events with normal routing`. This is not cancellation. |
 | Library cancels its own action | Internal Cancel occurs; native move/up can still arrive. Ignore them for activation while completing bookkeeping. |
-| Legacy multi-touch | `touchstart[A] -> touchstart[B] -> touchend[A] -> touchmove[B] -> touchend[B]`. Read `changedTouches`; B remains current after A ends. |
 | Browser scroll inertia | Pointer contact ends or is canceled; `scroll` can continue as the browser moves content; eventual `scrollend` where supported. |
 | Safari two-finger gesture | First touch begins; adding the second can start `gesturestart`; movement produces `gesturechange`; dropping below two ends the gesture even if one touch remains. This is Safari-specific. |
 
-[Multi-touch handling](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events/Multi-touch_interaction), [pointer cancellation](https://developer.mozilla.org/en-US/docs/Web/API/Element/pointercancel_event), [legacy touch lists](https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent), [Safari gestures](https://developer.apple.com/documentation/webkitjs/gestureevent).
+[Multi-touch handling](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events/Multi-touch_interaction), [pointer cancellation](https://developer.mozilla.org/en-US/docs/Web/API/Element/pointercancel_event), [Safari gestures](https://developer.apple.com/documentation/webkitjs/gestureevent).
 
-## 2.10 Text integration and comparison with Windows
+## 2.9 Text integration and comparison with Windows
 
 Text entry requires more than pointer and key events. Native editable DOM elements expose `beforeinput`, `input`, and `compositionstart`/`compositionupdate`/`compositionend`. `selectionchange`, `Selection`, and `Range` expose DOM selection. These APIs do not automatically describe a selection stored only in GacUI. [beforeinput](https://developer.mozilla.org/en-US/docs/Web/API/Element/beforeinput_event), [composition events](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event), [Selection](https://developer.mozilla.org/en-US/docs/Web/API/Selection).
 
@@ -360,13 +325,13 @@ Optional `EditContext` connects custom editors to text services. The VirtualKeyb
 
 This section proposes API contracts and future work only. No implementation is included in this change.
 
-The recommendation is **raw contacts at the native boundary, shared gesture recognition and mouse fallback above that boundary, and opt-in touch behavior on selected controls**. Windows and browsers should deliver equivalent contact lifetimes even when their native event names differ. Linux/macOS/TUI providers may continue providing mouse input only.
+The recommendation is **struct-based callbacks on existing listeners, raw contacts at the native boundary, and shared gesture recognition and mouse fallback above that boundary**. No new public interface is needed. Windows and browsers should deliver equivalent contact lifetimes even when their native event names differ. Linux/macOS/TUI providers may continue providing mouse input only.
 
 The relevant existing code is:
 
 | Area | Current shape and consequence |
 |---|---|
-| `<GacUI repo>/Source/NativeWindow/GuiNativeWindow.h` and `<GacUI repo>/Source/NativeWindow/GuiNativeWindow.cpp` | `INativeWindowListener` callbacks already have no-op definitions. `INativeWindow` provides mouse capture; `INativeController` exposes existing services. Add optional touch access without a new mandatory controller service. |
+| `<GacUI repo>/Source/NativeWindow/GuiNativeWindow.h` and `<GacUI repo>/Source/NativeWindow/GuiNativeWindow.cpp` | `INativeWindowListener` callbacks already have no-op definitions. Add struct-based notifications there and, for explicit opt-in, one defaulted configuration method on the existing `INativeWindow`. |
 | `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost.h` and `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost.cpp` | One mouse capture composition and one shared set of mouse-button states. Touch needs a separate per-contact table. Mouse `handled` controls routing; it is not a native default-action policy. |
 | `<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedController.h` | One mouse capturing/hovering window. Hosted touch needs contact-to-window routing as well as contact-to-composition routing. |
 | `<GacUI repo>/Source/PlatformProviders/Windows/WinNativeWindow.cpp` | Current mouse message path; add a separate raw-touch path and source deduplication. |
@@ -377,50 +342,75 @@ The relevant existing code is:
 
 The hosted-window coordinate mapping and remote protocol design in the knowledge base should guide the implementation. Preserve native-to-logical conversion at the established boundaries instead of mixing Windows physical pixels, browser CSS pixels, and composition coordinates.
 
-## 3.2 Optional native interface extension
+## 3.2 Existing listeners, structs, and one configuration method
 
-Proposed declarations below describe the shape of the API, not final source syntax or implementations. New type names would be declared with the native input types in `<GacUI repo>/Source/NativeWindow/GuiNativeWindow.h`.
+All incoming touch information can use methods added to `INativeWindowListener`. The following declaration sketch omits existing members and inheritance. The argument structs would be declared with native input types in `<GacUI repo>/Source/NativeWindow/GuiNativeWindow.h`.
 
 ```cpp
-// Add these members to the existing classes; existing members are omitted.
-class INativeWindow
-{
-public:
-    virtual INativeTouchInput* GetTouchInput();
-    // Default: nullptr. A non-null service belongs to the window.
-};
-
 class INativeWindowListener
 {
 public:
+    virtual void TouchInputInfoChanged(const NativeTouchInputInfo& info);
     virtual void TouchInput(const NativeTouchFrame& frame);
-    // Default: no-op.
+
+    // Only needed if provider-side recognition is added later.
+    virtual void GestureInput(const NativeGestureEvent& gesture);
 };
 
-// New interface; existing platform classes need not inherit it.
-class INativeTouchInput : public Interface
+class INativeWindow
 {
 public:
-    virtual NativeTouchCapabilities GetCapabilities() = 0;
-    virtual NativeTouchInputMode GetMode() = 0;
-    virtual bool SetMode(NativeTouchInputMode mode) = 0;
+    virtual bool ConfigureTouchInput(const NativeTouchInputConfig& config);
 };
 ```
 
-Both additions to existing classes are **virtual, non-pure methods**. The getter returns null and the listener does nothing by default. Existing provider source therefore needs no override. New virtual members change the C++ ABI: rebuild all linked providers/consumers; this is source compatibility, not binary compatibility. If project conventions require a pure getter instead, the complete no-feature migration is an override returning null; do not require a dummy touch service.
+The listener methods have default no-op definitions. `ConfigureTouchInput` has a default definition returning false, so unsupported providers retain their current behavior without implementing anything. These are additions to existing interfaces, with **no new touch service, recognizer interface, or listener interface**. All methods are non-pure; adding virtual members preserves provider source compatibility but requires rebuilding consumers for C++ ABI compatibility. If a pure configuration method is required by project conventions, the entire no-feature migration is an override returning false.
+
+The initial implementation needs the two touch callbacks and the configuration method. Keep `GestureInput` optional future work: the shared recognizer raises composition events directly and must not send its results back through native listeners.
+
+| Struct | Information passed by value fields |
+|---|---|
+| `NativeTouchInputConfig` | Request revision, requested mode, and optional sampling preferences such as actual history. A future provider recognizer can add options here without returning another interface. |
+| `NativeTouchInputInfo` | Request revision/result, effective mode, capability values and their validity, and input-connection generation. The same callback reports configuration completion and later capability/availability changes. |
+| `NativeTouchFrame` | Ordered actual contact samples, delivery sequence, and optional platform-frame metadata. |
+| `NativeGestureEvent` | Recognized action, interaction ID, contact/session association, phase, transforms, and inertia state. |
 
 `NativeTouchInputMode` has two values:
 
-- `LegacyMouse`: preserve the current provider behavior. This is the initial mode.
-- `FrameworkTouch`: deliver raw touch contacts and prevent duplicate native touch-to-mouse delivery into GacUI. Actual physical mouse input still uses the existing path.
+- `MouseOnly`: preserve existing input behavior. This is the initial mode.
+- `FrameworkTouch`: deliver contacts acquired from pointer events and suppress/filter duplicate native touch-to-mouse input. Physical mouse input still uses the existing path.
 
-`SetMode` succeeds only when supported and there are no active contacts. Install listeners first, then choose the mode before accepting input. The browser adapter must have its CSS and event policy ready before reporting success. A host enables `FrameworkTouch` only when its entire routing/transport chain supports it. Do not switch per packet or after a gesture has started.
+`ConfigureTouchInput` returning false means the request was not accepted and the effective mode is unchanged. Returning true means **accepted for processing**, not that the renderer is already ready. `TouchInputInfoChanged` subsequently reports the matching revision as Applied or Rejected, the effective configuration, and a reason such as Unsupported or Busy. Queue completion through the existing event loop; do not introduce a new synchronous callback during listener installation.
 
-Capabilities should report support for raw touch, known maximum contacts, actual history, optional contact bounds/pressure/orientation, and any optional native recognizer. Unknown contact capacity is different from zero. Some browser fields have fallback values without a reliable hardware-measurement flag; preserve unknown validity instead of inferring measured pressure from a value such as 0.5.
+Install listeners and finish binding the host before requesting enhanced input. One acquisition owner configures each real window/surface: the graphics host in direct mode, or the hosting/renderer component that owns the underlying input chain. Other listeners observe and do not negotiate conflicting modes. Hosted child windows share that acquisition policy while retaining separate control routing. Uninstalling an observer does not change native mode.
 
-Avoid adding a required service getter to `INativeController`. Its substitutable-service plumbing currently checks for missing services; optional null support must not accidentally flow through that required-service mechanism. A per-window optional getter keeps old controllers usable.
+Configure enhanced input during initialization before accepting user interaction. Reject changes while delivered contacts are active; never split one contact lifetime between modes. An empty application contact set after cancellation does not prove physical fingers have lifted, so a later policy change applies to future native gestures only. The first implementation can limit configuration to initialization and teardown rather than promising live takeover.
 
-## 3.3 Normalized contact contract
+For a remote/browser provider, Applied means that the local handlers, CSS, capture bookkeeping, and duplicate filtering are installed. Order that notification before the first frame for the new configuration, and tag frames with its revision/connection generation. Existing-mode input remains ordered before that boundary. The core must not synthesize touch fallback or assume raw input is active merely because the configuration request was accepted. The owner drains/cancels its input before teardown; destroy the surface or complete a supported transition before detaching the owner.
+
+Capabilities include raw-touch support, known maximum contacts, actual history, and optional contact bounds/pressure/orientation. Unknown capacity is different from zero. Browser fields may have fallback values without a hardware-measurement flag; preserve unknown validity rather than inferring measured pressure from 0.5. Start the host's cache in MouseOnly/unknown state; a rejected request or an unsupported provider must not be mistaken for successful setup.
+
+**Could the additions be strictly listener-only?** Yes, a provider could ask a new listener callback for configuration, or enhanced providers could use a fixed startup policy. However, configuration is a request from the host to the provider, while input notifications flow in the other direction. A listener-query design would need rules for multiple listeners, when to query them again, and what happens when the last interested listener leaves. A fixed enabled policy would suppress old mouse behavior even for consumers that only inherit the new no-op callbacks.
+
+The existing Windows, hosted, and remote `InstallListener` implementations only register listeners. `GuiGraphicsHost::SetNativeWindow` installs its listener before finishing its host binding in `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost.cpp`. Adding an immediate setup callback there would introduce a lifecycle change. One explicit configuration method called after binding is therefore the recommended small exception to listener-only additions. It avoids both new public interfaces and hidden setup rules. No new method is needed on `INativeController` or its service plumbing.
+
+## 3.3 Is input state queried from a window useful?
+
+State associated with a window is useful, but it does not need to be exposed as another native interface. The graphics host already needs contact records, gesture ownership, mouse-fallback decisions, and the latest reported configuration. Store that state in ordinary internal structs updated by callbacks.
+
+| Possible need outside a callback | How to support it without a native service getter |
+|---|---|
+| Decide whether enhanced input is ready | Read the host's cached `NativeTouchInputInfo`, including applied revision. |
+| Show capability information or adapt a UI | Use the last capability notification; retain unknown/unavailable values. |
+| Advance hold, inertia, or selection autoscroll | Existing timers read the host's contact/gesture state. No new native query is necessary. |
+| Route a gesture or cancel an existing drag | Use the common host's interaction records and existing control/composition objects. |
+| Attach diagnostics after initialization | Read a copied host snapshot; do not manufacture Down events or reinterpret already active contacts as new interactions. |
+
+A future read-only method on an existing host/window class could return a snapshot struct if a concrete caller needs it. That would be convenience access to last-known state, not fresher physical input and not an object exposing another interface. Do not add it in the initial native contract: the current requirements are covered by listeners plus cached state.
+
+Callbacks carry immutable data valid for the callback. Consumers that retain data must copy the relevant fields/collections; remote adapters must serialize/copy before returning. Update the owner's cache in input order before notifying control observers, and use existing UI-thread/event-loop ownership. This avoids retaining references to Windows message data or DOM event objects. It also keeps a snapshot query from being mistaken for a way to reverse browser defaults after the event has finished.
+
+## 3.4 Normalized contact contract
 
 | Proposed type/field | Contract |
 |---|---|
@@ -432,9 +422,10 @@ Avoid adding a required service getter to `INativeController`. Its substitutable
 | `.primary` | Platform hint only; never filter raw contacts by this value. |
 | `.contactBounds`, `.pressure`, `.orientation`, `.validFields` | Optional measurements with explicit validity. Normalize pressure to 0..1, but retain whether it is measured/known. |
 | `.modifiers`, `.source` | Relevant modifier state and source classification. Keep touch, real mouse, and optional pen distinct. |
-| `.cancelReason` | Such as platform interruption, ownership loss, target removal, or explicit framework cancellation; allow unknown. |
+| `.cancelReason` | Acquisition-level termination such as platform interruption, unrecoverable delivery ownership loss, connection loss, or native-surface teardown; allow unknown. Logical target/action cancellation belongs to routed interaction state instead. |
+| Optional `.platformFrameId` on each sample | Identifies a hardware input frame only when the backend supplies one. Samples in a transport/history batch may have different frame IDs; this is not a touch-session ID. |
 | `NativeTouchFrame.samples` | An ordered batch of actual changed samples. A one-sample batch is valid. |
-| `.sequence`, optional `.platformFrameId` | Preserve transport ordering. Only claim hardware grouping when the backend actually supplies it. |
+| `.sequence`, `.configurationRevision`, `.inputGeneration` | Order delivery and identify the applied input configuration/connection. |
 
 The adapter reads platform data while it is valid and copies it before asynchronous forwarding. A batch may contain several contacts and/or historical samples; document chronological ordering and do not process the newest sample twice after reading history. Prediction is an optional separate visual channel, not committed contact input.
 
@@ -444,52 +435,81 @@ Maintain separate active records for A and B. `Up(A)` removes A only. No consume
 
 For browser `lostpointercapture`, distinguish normal cleanup after Up/Cancel from unexpected loss while active. Unexpected loss can cause a **framework** cancellation if reliable routing cannot be maintained; it is not proof that the browser canceled the physical contact. Keep terminal bookkeeping idempotent.
 
-## 3.4 Gesture interface and semantics
+## 3.5 Contact IDs, frames, sessions, and gesture groups
 
-Define gesture output independently of Windows `GID_*` and Safari `GestureEvent`. This allows a shared recognizer to run for both platforms, with an optional Windows Interaction Context adapter later.
+**These identities describe different things.** Neither Windows raw pointers nor browser Pointer Events supplies a portable ID for the whole interval from the first delivered Down until the last contact ends. Windows `pointerId` identifies an individual pointer, while `frameId` identifies samples from one device update. Browser `pointerId` also identifies an individual pointer. [Windows pointer/frame definitions](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-pointer_info), [browser pointer identity](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerId).
 
-```cpp
-class INativeGestureListener : public Interface
-{
-public:
-    virtual void Gesture(const NativeGestureEvent& event) = 0;
-};
+| Identity | Scope and lifetime |
+|---|---|
+| Contact lifetime ID | One Down through Up/Cancel. Normalize reused native IDs with a lifetime token; retained records must not confuse a later contact with an earlier one. |
+| Platform frame ID | One hardware sampling update, potentially containing several contacts. Windows exposes it; browser events do not promise equivalent grouping. |
+| Delivery sequence | Orders normalized/transported batches. An application-assigned browser batch number is not evidence of a simultaneous hardware sample. |
+| Touch session ID | A framework ID covering overlapping delivered contacts in one acquisition scope, from its first Down until its active set becomes empty. |
+| Gesture interaction ID | One recognized action owned by a control. It can use a subset of contacts, span multiple sessions for double-tap, or outlive contacts during inertia. |
 
-class INativeGestureRecognizer : public Interface
-{
-public:
-    virtual void Configure(const NativeGestureOptions& options) = 0;
-    virtual void Process(const NativeGestureInputFrame& frame) = 0;
-    virtual void AdvanceTime(vint64_t timestamp) = 0;
-    virtual void Cancel(NativeTouchCancelReason reason) = 0;
-};
+Use an active-ID set in the common acquisition-root coordinator. Its scope is the input connection/generation and real root window or browser surface. In direct native mode this can live with `GuiGraphicsHost`; in hosted mode coordinate it before dispatching contacts to individual hosted windows. Add a session ID when Down arrives to an empty set, retain it while any delivered contact remains, and close it when the final Up/Cancel removes the final ID.
+
+| Delivered event | Active set afterward | Framework session |
+|---|---|---|
+| A Down | A | Create S1. |
+| B Down | A, B | Keep S1. |
+| A Up | B | Keep S1; A ending does not end B. |
+| C Down | B, C | Keep S1 because B was still active. |
+| B Up | C | Keep S1. |
+| C Up | Empty | Close S1. |
+| Next Down | New contact | Create S2. |
+
+Define this from ordered delivered input, not guesses about gaps between hardware samples. Preserve boundaries and history ordering when batching; a transport batch can contain the end of one session and the beginning of another, so a single session field on the whole batch is insufficient. Associate the computed session with each routed sample/event. Only use genuine native-frame metadata for algorithms that require samples taken together.
+
+Proposed `NativeTouchSessionInfo` is a data struct carried by common routed touch arguments: session ID, acquisition scope/generation, active count, session phase, and completion/cancellation state. The coordinator owns the full set; controls do not each reconstruct it from their partial event streams. Hosted routing preserves the root session identity and adds its own target/interaction identity. If protocol layers already carry normalized session IDs, preserve them instead of allocating new IDs at every layer; otherwise assign them once after ordered acquisition.
+
+Two simultaneous fingers can share a raw session while targeting unrelated controls and separate gestures. Joining a pinch is a control/ancestor ownership decision, not a consequence of matching session IDs. Neither the primary flag nor capture ownership is a session identifier. Windows gesture-instance/sequence fields are documented as internally used and are not a raw-session contract. [GESTUREINFO](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-gestureinfo).
+
+On native Cancel or unrecoverable ownership loss, remove the affected contact without waiting for Up. Record that the session was interrupted; remaining delivered contacts still need their terminal bookkeeping even if the control has already canceled its gesture. If GacUI cancels only a logical action, keep the native contact in the acquisition set while draining its subsequent input. Removing a composition or hosted child cancels its routed interaction, not the root acquisition contact; tearing down the acquisition surface ends that native stream. Do not let a logically canceled contact start another action halfway through its lifetime.
+
+An empty delivered-contact set does not prove that every physical finger is off the screen. The browser can take over scrolling and send `pointercancel` while fingers remain down; their later Up events need not reach GacUI. Session completion therefore distinguishes normal release from cancellation. Fingers outside the acquisition surface are outside this grouping contract. [Browser cancellation](https://developer.mozilla.org/en-US/docs/Web/API/Element/pointercancel_event).
+
+Keep contact-session and gesture lifetimes separate:
+
+```text
+Contact session S1: Down -> contact updates -> last Up -> closed
+Scroll gesture G1:  Begin -> drag updates    -> inertia updates -> End
 ```
 
-These are new interfaces, not new obligations on existing providers. `NativeGestureInputFrame` contains the contact samples converted into the gesture owner's logical coordinate space, preserving identities and times; `NativeTouchFrame` at the native boundary keeps its native client-coordinate contract. A common factory creates a recognizer with its listener; the initial implementation should live in shared code. An optional native factory may supply an equivalent implementation when its capabilities match. Choose one recognizer per interaction; do not combine Windows/Safari output with another recognizer processing the same contacts.
+Inertia retains G1 with zero active contacts and a reference to its originating session; it does not keep a fake finger in S1. A later Down starts a new session and must stop or explicitly arbitrate with G1. A pinch may instead end when only one finger remains, before its broader session ends. These distinctions should be explicit in event structs and tests.
+
+## 3.6 Gesture structs, shared recognition, and inertia
+
+Define gesture output independently of Windows `GID_*` and Safari `GestureEvent`. Implement shared recognition as an ordinary internal helper using structs and the existing event/timer machinery. Its configure, process, advance-time, and cancel operations do not require new public interfaces or a factory returning one.
+
+`NativeGestureInputFrame` contains contact samples converted into the gesture owner's logical coordinate space, preserving identities and times; `NativeTouchFrame` at the native boundary keeps its native client-coordinate contract. The helper produces `NativeGestureEvent` data for the common composition event pipeline. A future provider recognizer can report the same data through the optional `INativeWindowListener::GestureInput` callback, with an explicit coordinate conversion at the boundary. Configure native recognition through the existing-window configuration struct only if that integration is added. Choose shared or provider recognition for an interaction; do not apply both outputs to the same contacts.
 
 `NativeGestureEvent` should contain:
 
 - Kind: `Tap`, `DoubleTap`, `Hold`, `SecondaryTap`, or `Manipulation`. A swipe can be a control policy based on manipulation displacement/velocity; Windows cross-slide and press-and-tap can remain optional recognizer features.
 - Phase: `Completed` for discrete actions; `Begin`, `Update`, `End`, or `Cancel` for continuous actions. A Hold begins when its timer threshold is reached and ends/cancels later.
-- Stable interaction ID, participating contact IDs, active contact count, timestamp, and center.
+- Stable gesture interaction ID, associated touch session ID(s), participating contact IDs, active contact count, timestamp, and center. Do not substitute a frame ID for any of these.
 - Incremental and total translation, scale, and rotation for manipulation. Document translation in logical units, scale as a ratio with identity 1, rotation in radians with one consistent direction, and velocity per second.
 - `inertia` flag and optional velocities. A manipulation may continue with zero active contacts, then End after inertia finishes.
 
-Options select tap/hold/manipulation, allowed pan axes, scale/rotation, thresholds, and inertia. Use a consistent logical distance and time basis. The shared host supplies timer ticks for hold and inertia; it must work when the finger is stationary and no Update arrives. `Cancel` stops recognition and inertia, emits cancellation once where an action has begun, and does not claim to cancel the physical OS contact.
+An options struct selects tap/hold/manipulation, allowed pan axes, scale/rotation, thresholds, and inertia. Use a consistent logical distance and time basis. Existing timers supply ticks for hold and inertia; the helper must work when the finger is stationary and no Update arrives. Its cancel operation stops recognition and inertia, emits cancellation once where an action has begun, and does not claim to cancel the physical OS contact.
 
 When a second finger joins, rebase the manipulation without a visible jump. When A leaves and B remains, a control can continue one-finger pan, or end the two-finger gesture and drain B; select that policy explicitly. Never restart mouse fallback from B halfway through this interaction. A contact cancellation cancels the affected gesture group unless a recognizer explicitly supports losing that contact safely.
 
-For initial parity, prefer shared tap/hold/pan/pinch recognition. Native Interaction Context, Direct Manipulation, and Safari gestures are optional later integrations; they have different thresholds, outputs, ownership, and inertia behavior that must be reconciled first.
+Continued scrolling after release is inertia, not further raw contact movement. Windows can calculate it through configured pan gestures, Interaction Context, or Direct Manipulation; Interaction Context requires the caller to supply timer ticks. A browser supplies momentum when it owns an actual DOM/page scroller. Custom GacUI scrolling from raw pointers needs a motion implementation; browser `touch-action: none` does not attach native inertia to a GacUI content offset. [Windows pan inertia](https://learn.microsoft.com/en-us/windows/win32/wintouch/windows-touch-gestures-overview), [Interaction Context timer](https://learn.microsoft.com/en-us/windows/win32/api/interactioncontext/nf-interactioncontext-processinertiainteractioncontext), [browser scrolling](https://trac.webkit.org/wiki/Scrolling).
 
-## 3.5 Routing and per-contact ownership
+For initial parity, prefer shared tap/hold/pan/pinch recognition and one shared inertia helper. Estimate release velocity, advance deceleration using elapsed time, apply viewport bounds, and stop on cancellation or a new owning contact. Lists and text scroll containers reuse this behavior. Native Interaction Context, Direct Manipulation, and Safari gestures are optional later integrations; reconcile their thresholds, ownership, coordinates, and inertia first. Do not invent touch Updates after Up to carry animation.
+
+## 3.7 Routing and per-contact ownership
 
 Use this flow:
 
 ```text
 Windows pointer messages / browser Pointer Events
     -> native adapter: contact data, source filtering, terminal normalization
-    -> optional remote transport and hosted-window mapping
-    -> GuiGraphicsHost: contact table, hit testing, logical touch capture
+    -> optional remote transport
+    -> root-surface contact/session coordinator, then hosted-window mapping
+    -> GuiGraphicsHost: hit testing, logical touch capture
     -> target/ancestor touch policy and shared recognizer
     -> gesture behavior OR existing mouse event path
 ```
@@ -502,7 +522,7 @@ Native delivery capture and logical composition capture are different. Windows p
 
 Raw event `handled` stops further routing only. A separate gesture ownership/fallback decision selects who owns the interaction and whether compatibility mouse input is allowed. Evaluate target and ancestor policies before delivering a compatibility MouseDown. Proposed `GuiTouchEventArgs.preventMouseFallback` latches suppression for the interaction; setting it after MouseDown cannot undo prior callbacks. A host-level `CancelTouchInteraction(interactionId, reason)` operation should provide explicit logical cancellation without pretending to cancel OS contact.
 
-## 3.6 Mouse fallback that most controls can ignore
+## 3.8 Mouse fallback that most controls can ignore
 
 Use one shared fallback engine above the adapters. In `FrameworkTouch` mode, native/browser touch promotion is suppressed or filtered at acquisition; the shared engine alone produces GacUI compatibility mouse events. This permits different controls to choose different behavior without violating native stream rules.
 
@@ -518,7 +538,7 @@ Rules for the shared fallback engine:
 
 1. At most one touch owns the compatibility mouse stream. Use the initial eligible primary contact; do not synthesize a new mouse Down from a non-primary finger already held down.
 2. Deliver all other contacts to the touch system. They are not extra mouse buttons.
-3. Once a contact group chooses a gesture or disables fallback, keep that decision for the rest of the group. Do not re-enable mouse behavior merely because one finger lifts.
+3. Once an interaction's contact group chooses a gesture or disables fallback, keep that decision for the rest of that group. Do not re-enable mouse behavior merely because one finger lifts. Sharing a touch session ID does not force unrelated controls into the same gesture or fallback policy.
 4. Deferred tap success uses the intended logical target and the existing mouse pipeline, with appropriate enter/move, Down, and Up. Validate both item identity and current hit testing; discard the tap if the replay point now reaches another target after layout/virtualization. Revalidate after callbacks, because Down can remove or change the target before Up. Activation happens on release; retain the original Down position for gesture thresholds, and use a documented replay coordinate that still hits the intended target.
 5. Movement beyond the threshold, a claimed multi-finger gesture, Hold activation, Cancel, or target removal discards deferred activation. It must produce neither a click nor a normal release for a Down that was never delivered.
 6. If a second finger arrives during an already committed immediate mouse drag, keep the existing owner's drag and withhold conflicting gestures by default. A cancel-aware target may explicitly yield. Extra contacts never become mouse owners mid-group.
@@ -528,7 +548,7 @@ Rules for the shared fallback engine:
 
 This policy is a framework decision, not a late request to Windows or the browser to promote one particular touch. Browser handlers must already know to suppress default promotion before the remote/core layer arbitrates controls.
 
-## 3.7 Cancellation without an accidental click
+## 3.9 Cancellation without an accidental click
 
 Treat these as distinct operations:
 
@@ -542,13 +562,13 @@ Treat these as distinct operations:
 
 Introduce an internal mouse-cancellation path and a composition `mouseCancel` event for a compatibility press already delivered. It clears the host's synthetic button/capture state and lets common button/drag/text behavior reset transient state. **Do not represent cancellation as an ordinary MouseUp**, because existing controls may activate on Up.
 
-Existing `GuiButton` pressing state lives in `<GacUI repo>/Source/Controls/GuiButtonControls.cpp`; existing text dragging state lives in `<GacUI repo>/Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.cpp`. Clearing host capture alone does not clear those states. Update common behavior in the future implementation so ordinary controls inherit cleanup. A custom control with private pressed/drag state must handle cancellation to support `ImmediateMouse` correctly, since native cancellation is unavoidable. It needs a cancel handler rather than a full gesture implementation. The hook remains source-optional; a control without that support must use deferred activation where appropriate or remain in the legacy input path.
+Existing `GuiButton` pressing state lives in `<GacUI repo>/Source/Controls/GuiButtonControls.cpp`; existing text dragging state lives in `<GacUI repo>/Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.cpp`. Clearing host capture alone does not clear those states. Update common behavior in the future implementation so ordinary controls inherit cleanup. A custom control with private pressed/drag state must handle cancellation to support `ImmediateMouse` correctly, since native cancellation is unavoidable. It needs a cancel handler rather than a full gesture implementation. The hook remains source-optional; a control without that support must use deferred activation where appropriate, or its containing native input surface must stay in `MouseOnly` mode.
 
 An action already fired on MouseDown cannot generally be undone. In particular, some button configurations click on Down, and list selection currently occurs on Down. Therefore cancellation is not a substitute for `DeferredMouse` in regions where scrolling/hold/pinch may win. The design can preserve old mouse behavior or defer side effects, but cannot promise to roll back arbitrary user callbacks.
 
 Window/control removal, disabling a target, input ownership loss, explicit cancellation, or a lost remote input connection must end owned interactions and stop inertia. This is input-state cleanup, not a new remote reconnection/recovery system. If a contact is still physically active after logical cancellation, track it only to drain its eventual terminal input. A new interaction requires a new Down.
 
-## 3.8 Browser and remote implementation requirements
+## 3.10 Browser and remote implementation requirements
 
 The GacJS driver must make default-action decisions locally. For a fully custom GacUI input surface, configure `touch-action: none` on that surface before input, synchronously suppress appropriate pointer compatibility defaults, capture contacts on a stable DOM element, and filter duplicated touch activation. Do not change these choices in response to a worker round trip.
 
@@ -558,15 +578,15 @@ Framework-generated mouse events do not create trusted browser user activation. 
 
 Apply this policy to the GacUI surface, not unrelated surrounding page content. Offer a deliberate alternative mode for browser-owned page scrolling/zooming: in that mode, accept native takeover and cancellation instead of promising uninterrupted GacUI contacts. If custom pinch disables page pinch on the surface, preserve another accessible zoom mechanism.
 
-Extend the remote protocol with touch capability/mode information and ordered contact frames, including source, IDs, times, optional measurements, and Cancel. Hosted and remote adapters must forward the optional service and transform coordinates consistently. A capability must be end-to-end; a Windows renderer with a mouse-only core is still mouse-only.
+Extend the remote protocol with configuration requests, applied/rejected acknowledgements, and ordered contact frames, including source, IDs, times, optional measurements, and Cancel. Hosted and remote adapters must forward the configuration and listener callbacks, preserve input generations and configuration revisions, and transform coordinates consistently. Preserve native frame metadata when available; assign the framework session once before hosted-window routing as described in section 3.5. A capability must be end-to-end; a Windows renderer with a mouse-only core is still mouse-only.
 
 The current protocol is generated from `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_IO.txt`. Do not assume an old peer ignores unknown messages or fields. Use a version-compatible negotiation path, or require matched protocol versions for enhanced mode and keep older pairs in their existing mode. The implementation must decide this before sending any new message.
 
 Coalesce only safe Update data while preserving per-contact order, group membership changes, and Down/Up/Cancel boundaries. Flush required updates before terminal events. Never let an update for B overwrite the only pending update for A. Keep history when a consumer requests it; do not promise every hardware sample in the ordinary UI path.
 
-## 3.9 Proposed implementation order and acceptance cases
+## 3.11 Proposed implementation order and acceptance cases
 
-- [ ] Define optional interfaces, data units/lifetimes, capabilities, reflection, and default implementations. Verify old provider sources still compile without touch overrides.
+- [ ] Add defaulted methods to the existing interfaces and define the configuration/event structs, data units/lifetimes, capabilities, and reflection. Verify old provider sources still compile without touch overrides; do not add new public interfaces.
 - [ ] Implement deterministic common contact routing, gesture timing, cancellation, and mouse fallback using supplied contact frames and a controllable clock.
 - [ ] Add Windows `WM_POINTER` acquisition, native cancellation mapping, coordinate conversion, and duplicate-mouse filtering.
 - [ ] Extend the remote protocol and hosted routing, then add GacJS Pointer Events with local CSS/default-action/capture policy.
@@ -574,6 +594,8 @@ Coalesce only safe Update data while preserving per-contact order, group members
 - [ ] Add optional history/native recognizers only when a consumer needs them; keep pen and precision-touchpad work independently gated.
 
 Future tests should cover: A Down, B Down, A Up, B Update/Up; cancellation with no later Up; canceled native Up; duplicate capture cleanup; stationary hold; movement beyond bounds; two controls receiving different fingers; second-finger arrival during a mouse drag; no mouse promotion of the remaining finger; list scroll without selection/click; tap fallback exactly once; physical mouse movement/press during synthetic drag; touch during a real mouse drag; target deletion/virtualization/layout changes and reentrant Down callbacks; held selection handle with edge autoscroll; remote batching/ordering; and old mouse-only providers. Verify inertia stops on new contact and Cancel. Browser cases also need delayed touch click after Up, touch followed immediately by real mouse input, keyboard/assistive activation while deduplication records remain, and gated actions through the worker path. Use native/browser integration tests as well as shared-core tests; JavaScript `dispatchEvent` alone does not exercise trusted native defaults.
+
+Identity and grouping cases should include reused native pointer IDs; the same session while any delivered contact remains; a new session after the final terminal event; a transport batch spanning two sessions; separate control gestures in one session; pinch ending before the last contact; double-tap spanning two sessions; and inertia outliving all contacts. Configuration cases should include an unsupported provider, rejected/busy requests, an Applied callback ordered before the first frame using that revision, setup completed before enhanced delivery, and multiple observers that cannot independently change the owner's input mode.
 
 When implementation changes reflected types, update `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionBasic.cpp` and `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionEvents.cpp` as needed and run the prescribed metadata/code generation and tests. This planning change does not modify those files.
 
