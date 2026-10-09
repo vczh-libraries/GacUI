@@ -109,6 +109,21 @@ try {
     [void](New-Resource "$fixture/Excluded" Excluded)
     $buildArgs = Build-Arguments GacBuild $driver
 
+    Write-Text $driver '<GacUI><Exclude Pattern=""/></GacUI>'
+    [void](Invoke-Native ($buildArgs + '-Dump'))
+    Assert-That (@(Get-Content -LiteralPath "$driver.log/ResourceFiles.txt").Count -eq 0) 'An empty exclusion pattern must exclude every path.'
+    Write-Text $driver '<GacUI><Exclude/><Exclude Pattern="/Excluded/"/></GacUI>'
+    [void](Invoke-Native ($buildArgs + '-Dump'))
+    Assert-That (@(Get-Content -LiteralPath "$driver.log/ResourceFiles.txt").Count -eq 4) 'An absent Pattern attribute must be ignored.'
+    $ordinalFolder = "$fixture/Excluded/Patterns"
+    $softHyphen = [string][char]0xAD
+    [void](New-Resource "$ordinalFolder/Soft${softHyphen}Hyphen" Ordinal)
+    [void](New-Resource "$ordinalFolder/UpperCase" CaseSensitive)
+    Write-Text "$ordinalFolder/GacUI.xml" '<GacUI><Exclude Pattern="/SoftHyphen/"/><Exclude Pattern="/uppercase/"/></GacUI>'
+    [void](Invoke-Native (Build-Arguments GacBuild "$ordinalFolder/GacUI.xml" @('-Dump')))
+    Assert-That (@(Get-Content -LiteralPath "$ordinalFolder/GacUI.xml.log/ResourceFiles.txt").Count -eq 2) 'Exclusions must use ordinal case-sensitive substring matching.'
+    Write-Text $driver '<GacUI><Exclude Pattern="/Excluded/"/></GacUI>'
+
     if ($Baseline) {
         . "$toolsRepo/Tools/GacCommon.ps1"
         [void][System.IO.Directory]::CreateDirectory("$driver.log")

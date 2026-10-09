@@ -1,4 +1,5 @@
 #include "GacBuild.h"
+#include <cwchar>
 
 namespace gacbuild
 {
@@ -249,7 +250,10 @@ namespace gacbuild
 		List<WString> excludes;
 		List<Ptr<xml::XmlElement>> exclusionElements;
 		FindElements(driver, L"Exclude", exclusionElements);
-		for (auto element : exclusionElements) excludes.Add(Attribute(element, L"Pattern"));
+		for (auto element : exclusionElements)
+		{
+			if (auto pattern = xml::XmlGetAttribute(element, L"Pattern")) excludes.Add(pattern->value.value);
+		}
 		auto root = options.input.GetFolder();
 		auto log = FilePath(options.input.GetFullPath() + L".log");
 		Require(!log.IsFolder() || Folder(log).Delete(true), L"Cannot clear driver log: " + log.GetFullPath());
@@ -273,7 +277,7 @@ namespace gacbuild
 					if (normalized[j] == L'\\') normalized = normalized.Left(j) + L"/" + normalized.Sub(j + 1, normalized.Length() - j - 1);
 				}
 				bool excluded = false;
-				for (auto&& pattern : excludes) if (INVLOC.FindFirst(normalized, pattern, Locale::None).key != -1) { excluded = true; break; }
+				for (auto&& pattern : excludes) if (std::wcsstr(normalized.Buffer(), pattern.Buffer())) { excluded = true; break; }
 				if (excluded) continue;
 				auto document = ReadXml(file.GetFilePath(), parser);
 				List<Ptr<xml::XmlElement>> roots;
