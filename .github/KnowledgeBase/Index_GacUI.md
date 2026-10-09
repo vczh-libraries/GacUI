@@ -67,7 +67,7 @@ Use GitTui to browse working-tree diffs and local branch history in a terminal, 
 #### GacGen Resource Compilation and GacBuild Orchestration
 
 - `GacGen` compiles one GacUI XML resource for a selected x86 or x64 target, producing Workflow, C++, resource binaries, optional RPC bindings, and architecture-specific cache artifacts.
-- `<Tools repo>/Tools/GacBuild.ps1` discovers resource XML files below a driver XML, calculates timestamp-based incremental candidates, propagates changes through named dependencies, and builds in dependency order.
+- Native `GacBuild` discovers resource XML files below a driver XML, calculates timestamp-based incremental candidates, propagates changes through named dependencies, and builds in dependency order. Its `GacGen` mode compiles both architectures, validates and merges C++, then copies UTF-8 deployment manifests using native operations; PowerShell entry points are thin wrappers.
 - The driver and per-resource `.log` directory schemas are stable interchange points used by `<Tools repo>/Tools/GacBuild.ps1`, `<Tools repo>/Tools/GacGen.ps1`, dependency loading, `CppMerge`, RPC generators, and future tooling.
 - `<Tools repo>/Tools/GacClear.ps1` invalidates only discovered per-resource caches, while generated production C++ and configured binary outputs remain in place.
 

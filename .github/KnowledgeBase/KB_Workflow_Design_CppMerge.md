@@ -61,7 +61,7 @@ For example, one Windows invocation using the layout from `<Tools repo>/Tools/Ga
 
 The repositories contain two representative organizations; `<resource-file>` below is the resource path relative to the application checkout:
 
-- [`<Tools repo>/Tools/GacGen.ps1`](https://github.com/vczh-libraries/Tools/blob/master/Tools/GacGen.ps1) enumerates direct children of `<application repo>/<resource-file>.log/x32/Source`, finds the x64 peer at `<application repo>/<resource-file>.log/x64/Source/<same-name>`, reads the stable destination directory from `<application repo>/<resource-file>.log/x32/CppOutput.txt`, and invokes `CppMerge` for that basename. The staging `.log` tree belongs to `GacGen`; it is input to `CppMerge`, not output from `CppMerge`.
+- Native [`<GacUI repo>/Tools/GacBuild/GacBuild/GacBuild.cpp`](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacBuild/GacBuild/GacBuild.cpp), also invoked through the thin `<Tools repo>/Tools/GacGen.ps1` wrapper, validates identical direct-child filename sets in `<application repo>/<resource-file>.log/x32/Source` and `<application repo>/<resource-file>.log/x64/Source`, requires equal destinations in both `CppOutput.txt` files, and invokes CppMerge for each basename. The staging `.log` tree belongs to GacGen; it is input to CppMerge, not output from CppMerge.
 - Workflow compiler tests generate matching sets under `<Workflow repo>/Test/Generated/Cpp32` and `<Workflow repo>/Test/Generated/Cpp64` (and the corresponding `<Workflow repo>/Test/Generated/CppRpc32` / `<Workflow repo>/Test/Generated/CppRpc64` trees), validate the filename sets, and merge into `<Workflow repo>/Test/SourceCppGen` or `<Workflow repo>/Test/SourceCppGenRpc`. These tests call the underlying merge functions directly.
 
 ## Architecture Merge
@@ -161,6 +161,8 @@ The CLI does not explicitly validate file-system operations:
 - it does not verify that the x86 and x64 filenames, extensions, or directory file sets match.
 
 Automation should preflight both input files and the output parent directory, validate paired filename sets before iteration, stop on an abnormal merge process, and verify that every expected output file exists afterward. There is no success report to parse: a normal successful invocation is silent.
+
+Native GacBuild also computes the expected text using `MergeCppMultiPlatform` and `MergeCppFileContent`, then compares the published output with it. This catches unchecked write failures even when a pre-existing output exists. It preserves unchanged-file timestamps, stops before binary deployment on failure, and invalidates one required compiler cache so the next incremental build retries the resource.
 
 ## Executable Versus Library Use
 

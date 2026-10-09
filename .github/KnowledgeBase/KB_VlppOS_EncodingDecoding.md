@@ -37,6 +37,8 @@ Use `MbcsEncoder` and `MbcsDecoder` for ASCII/MBCS conversion.
 
 The actual encoding of `char` depends on the user setting in the running OS.
 
+On Windows, the encoder, decoder and lead-byte detection all use `CP_THREAD_ACP`. The thread locale can select a different code page from the system default; using `IsDBCSLeadByte` (the system code page) while converting with `CP_THREAD_ACP` can split valid multibyte sequences. Keep the same code page at every stage of an MBCS stream.
+
 ## Automatic Encoding Detection
 
 Use `TestEncoding` for automatic encoding detection.
