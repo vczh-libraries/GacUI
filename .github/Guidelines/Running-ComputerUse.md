@@ -388,13 +388,33 @@ Do not panic or wait indefinitely. Once a native window is suspected, switch to 
 
 ## Linux Specific
 
-Wayland GacUI applications always use `FakeDialogService`, in both normal
-and hosted modes. Its message, color, font, and file dialogs are GacUI-owned
-windows exposed through `Controls`; operate them through `IO`. No OS-native
-dialog is involved, so Linux desktop automation is not needed.
+Wayland GacUI applications use `FakeDialogService`, in both normal and hosted
+modes. Its message, color, font, and file dialogs are GacUI-owned windows exposed
+through `Controls`; operate them through `IO`.
 
-The raw native renderer has no `GuiApplication` and displays no dialog. Use
-its `Dom` and renderer-side `IO` endpoints for automation.
+Global shortcut registration is a separate desktop operation. On GNOME 48+
+(including Ubuntu 26.04 / GNOME 50), the GlobalShortcuts portal can open **Add
+Keyboard Shortcuts** even for TUI apps or a raw native renderer. This consent UI
+is owned by `gnome-control-center-global-shortcuts-provider` and does not appear
+in GacUI `Controls` or `Dom`. Inspect its accessible title, shortcut descriptions
+and buttons through AT-SPI, then approve the intended shortcut with **Add**, or
+use **Cancel** for a denial test. Do not change the portal permission store to
+bypass this interaction. If desktop consent is inaccessible, record that limit
+and continue with application automation; a returned registration ID is only a
+pending request and does not establish working global activation.
+
+Match only the currently showing consent window. GNOME 50 may leave its settings
+dialog visible after the application cancels a pending portal request or exits;
+close that stale dialog with **Cancel** during cleanup. It is not evidence of a
+live binding in the replacement renderer.
+
+Use compositor-delivered keys while another application has focus to verify a
+global shortcut, then inspect the resulting GacUI dialog. MiniHTTP key commands
+or terminal-byte replay alone do not exercise the desktop global binding.
+
+The raw native renderer has no `GuiApplication` and displays no GacUI dialog.
+Use its `Dom` and renderer-side `IO` endpoints for application automation; portal
+consent remains desktop-owned. See `<GacUI repo>/.github/Jobs/DebugRemoteProtocolWithNativeRenderer.md`.
 
 ## macOS Specific
 

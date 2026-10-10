@@ -361,6 +361,24 @@ The raw Wayland renderer has no `GuiApplication` in which to display a fatal
 message dialog. A Core-authored fatal error is retained directly in the renderer
 DOM and exposed as `fatalError`; exact `!Exit` remains available for cleanup.
 
+On desktops implementing the GlobalShortcuts portal (GNOME 48+, including
+Ubuntu 26.04 / GNOME 50), wGac registers Core-requested global shortcuts and
+forwards activation back to Core. Launch via `<wGac repo>/test.sh` so the
+renderer has its own installed desktop identity. Complete the desktop's **Add
+Keyboard Shortcuts** consent outside renderer automation. In `/FCT`, focus
+another desktop window and press **Ctrl+Shift+Alt+Super+Q**, then require the
+global-shortcut dialog in Core `Controls` and the updated renderer `Dom`.
+Renderer-side synthetic key IO does not prove a compositor global shortcut.
+Repeat after renderer replacement and takeover, and require old registrations
+to stop activating the Core. Record missing portal support or inaccessible
+desktop consent separately; a registration ID alone does not prove approval.
+Before another activation or renderer replacement, require the preceding
+shortcut dialog to disappear from Core `Controls`. An IO response of `Queued`
+does not establish that its modal close has completed. After using Alt+Tab to
+move focus, dismiss any remaining access-key overlay before testing local
+shortcuts. Clean up stale GNOME consent windows following
+`<GacUI repo>/.github/Guidelines/Running-ComputerUse.md`.
+
 ## macOS Specific
 
 The macOS native renderer is `RemotingTest_Rendering_macOS` in the sibling

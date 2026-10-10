@@ -132,6 +132,11 @@ renderer replacement and intentional close steps.
 4. Press `Ctrl+Shift+Alt+Win+Q` through the real Windows global-hot-key path and
    require a distinct dialog containing exactly
    `You pressed Ctrl+Shift+Alt+Win+Q!`. Close that dialog.
+   On Linux, use `Super` and the GlobalShortcuts portal workflow in
+   `<GacUI repo>/.github/Jobs/DebugRemoteProtocolWithNativeRenderer.md`.
+   Approve desktop consent and trigger the chord while another app has focus;
+   require the same literal message. Synthetic renderer key IO is not a global
+   registration test. Record unavailable portal/consent access explicitly.
 5. Over the visible mouse-result label, press and release Left, Middle, Right,
    XBUTTON1, and XBUTTON2 through the renderer. For each button, require the
    label to change first to exactly `<button> button down!` and then to exactly
@@ -260,6 +265,11 @@ Use a fresh application state.
 4. Press `Ctrl+Shift+Alt+Win+Q` through the real Windows global-hot-key path and
    require a distinct dialog containing exactly
    `You pressed Ctrl+Shift+Alt+Win+Q!`. Close that dialog.
+   On Linux, use `Super` and the GlobalShortcuts portal workflow in
+   `<GacUI repo>/.github/Jobs/DebugRemoteProtocolWithNativeRenderer.md`.
+   Approve desktop consent and trigger the chord while another app has focus;
+   require the same literal message. Synthetic renderer key IO is not a global
+   registration test. Record unavailable portal/consent access explicitly.
 5. Over the visible mouse-result label, press and release Left, Middle, Right,
    XBUTTON1, and XBUTTON2 through the native Windows provider. For each button,
    require the label to change first to exactly `<button> button down!` and then
