@@ -1,0 +1,14 @@
+../../Import/Vlpp.cpp
+../../Import/Vlpp.Linux.cpp
+../../Import/VlppGlrParser.cpp
+../../Import/VlppOS.cpp
+../../Import/VlppOS.Linux.cpp
+../../Import/VlppReflection.cpp
+../../Import/VlppRegex.cpp
+../../Import/VlppWorkflowCompiler.cpp
+../../Import/VlppWorkflowLibrary.cpp
+../../Import/VlppWorkflowRuntime.cpp
+GacBuild/GacBuild.cpp
+GacBuild/Main.cpp
+GacBuild/Native.Windows.cpp
+GacBuild/Native.Linux.cpp
