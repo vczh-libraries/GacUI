@@ -98,6 +98,17 @@ No unresolved review comments. The decisions and verification requirements are r
 
 # UPDATES
 
+## UPDATE
+
+The implementation is overall good, but there are still a few thing to improve:
+
+- In `RunGacBuild` there is a partial ordering algorithm, it first builds all resources without names, and then order resources with names by their dependencies. The later part could be implemented using `PartialOrderingProcessor` and maybe a few log files could be eliminated. Identify log files that aren't needed by `GacGen` or `RunGacGen`, if they don't need to be created after switching to `PartialOrderingProcessor`, you could avoid creating them.
+- You made [Native.Windows.cpp](Tools/GacBuild/GacBuild/Native.Windows.cpp) and [Native.Linux.cpp](Tools/GacBuild/GacBuild/Native.Linux.cpp) which is good, I would like you to move some into `VlppOS` repo:
+  - Add `FilePath::IsAbsolutePath(const WString&)`, but the implementation could be simpler, just make a `FilePath` out of the argument and see if `GetFullPath` returns the same thing.
+  - Move `FileInfo` to `VlppOS` repo, but instead of just size and modified time, you are going to add a full list of attributes, like last accessing time, last modified time, last metadata change time, creation time, etc,. time should be Nullable\<DateTime> and when the underlying implemention is not able to provide a time it becomes empty. It should only have permissions like readonly or executable etc. There might be some differences between Windows and Linux/macOS, as Linux doesn't read NTFS ACL causing every files to be accessible meanwhile Windows is fine reading the permission, that is totally fine. These are all examples, there might be other attributes. `CHECK_ERROR` if the file/folder exists inside `File::GetFileInfo` and `Folder::GetFileInfo`.
+  - Add `File::CopyTo(Folder|File)` non-static function. Besides a `FilePath` parameter, `recursively` parameter controls if `CopyTo` is allowed to create unexisting folders. You can just implement `CopyToFolder` by calling `CopyToFile`. This is not just creating a file, file system offers way to keep metadata unchanged, simply creating a file will break them. Return `false` if fails to copy with any reason.
+- Now in `GacBuild`, `IsAbsolutePath`, `GetFileInfo` and `CopyFileNative` could be deleted, keeping only `ValidateExecutable` and `RunProcess`. No need to add test cases in `VlppOS`, you are directly testing them with `GacBuild` tool. Release `VlppOS` to all downstream repos including `Release`. Update GacBuild sources in `Release` repo as well. Since file structure is not touched totally, you can skip any `Build.ps1` calling, just verify `GacBuild` against skins and `Release` tutorials, see if everything is just working.
+
 # TEST [CONFIRMED]
 
 Task 1: compare native orchestration against the existing PowerShell discovery and generation contracts using isolated resources, real GacGen/CppMerge children, dependency graphs, both architectures, user-content preservation, incremental timestamps and failure/retry cases. Build all four Windows configurations and run the tool-specific verification suite. Task 2: run the requested Tools GacUI and Release pipelines, validate packaging and downstream tutorial outputs, then synchronize instructions without learning. Task 3: syntax-check and inspect the native platform scripts; Linux/macOS execution is unavailable on this Windows host.
@@ -107,6 +118,7 @@ The applicable checks pass: 40 development-tool invocations and 38 packaged-tool
 # PROPOSALS
 
 - No.1 Native orchestration with explicit child paths and staged deployment [CONFIRMED]
+- No.2 Shared filesystem metadata/copy APIs and in-memory dependency ordering
 
 ## No.1 Native orchestration with explicit child paths and staged deployment
 
@@ -159,3 +171,15 @@ Both requested build pipelines complete successfully, with all ten GacUI and fif
 The synchronization-only job copies 2480 files across eight repositories with exact canonical hashes and preserves all 53 protected existing task-log, learning and project files. All eight synchronization commits are pushed. Learning was explicitly skipped: zero learning updates were performed, and new learning material was not assessed.
 
 The wGac/iGac scripts and documentation complete the requested native-platform integration and pass the specified Windows syntax/static verification. Their normal native import/sync/build instructions are preserved. Linux/macOS generator execution, actual platform regeneration, compilation and app behavior have not been verified; static inspection does not establish those runtime results. Every implementation stage was committed and pushed before the next stage began, and the final investigation records the complete outcome without unresolved review findings.
+
+## No.2 Shared filesystem metadata/copy APIs and in-memory dependency ordering
+
+Keep the confirmed implementation and apply the requested refinement. Use `PartialOrderingProcessor` for the named dependency graph, reject missing names, self-dependencies and multi-node components, and propagate outdated inputs in dependency order after anonymous resources. Only `ResourceNamedMapping.txt` is consumed by GacGen; remove `ResourceFiles.txt`, `BuildCandidates.txt`, `ResourceAnonymousFiles.txt` and `ResourceNamedFiles.txt`. Retain `/D32` metadata XML and print the selected/skipped plan for `-Dump` without compiling.
+
+Add `filesystem::FileInfo`, `FilePath::IsAbsolutePath`, checked file/folder metadata access, and `File::CopyToFile/CopyToFolder` through VlppOS's existing injectable filesystem. Expose nullable UTC creation/access/modification/metadata-change times, size, link count, access permissions and common native attribute flags. Preserve available metadata with Windows native copying plus file-time restoration, macOS copyfile, and Linux native file operations with permission/time/extended-attribute copying; report unsupported metadata or failed operations explicitly. OPFS reports only metadata it exposes and cannot promise metadata-preserving copies. Update the existing GacUI mock for interface compatibility without adding VlppOS tests.
+
+Use the new APIs in GacBuild and remove its duplicate filesystem boundary. The requested absolute-path check compares normalized full paths; normalize wrapper tool paths while preserving the native GacGen symlink used for metadata lookup. Regenerate the owning VlppOS release and copy it into every existing downstream import, then update Release's owned GacBuild sources. Refresh canonical API/tool guidance and affected verification assertions. Build the affected tools through repository wrappers, run focused GacBuild verification, regenerate both skins and all Release tutorial resources from cleared caches, and inspect artifacts/deployment metadata. Skip full Build.ps1 pipelines and new VlppOS unit cases as requested. Native Unix and Wasm execution remains unavailable on this Windows host.
+
+### CODE CHANGE
+
+Implementation and verification pending.
