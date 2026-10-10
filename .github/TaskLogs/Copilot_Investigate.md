@@ -118,7 +118,7 @@ The applicable checks pass: 40 development-tool invocations and 38 packaged-tool
 # PROPOSALS
 
 - No.1 Native orchestration with explicit child paths and staged deployment [CONFIRMED]
-- No.2 Shared filesystem metadata/copy APIs and in-memory dependency ordering
+- No.2 Shared filesystem metadata/copy APIs and in-memory dependency ordering [CONFIRMED]
 
 ## No.1 Native orchestration with explicit child paths and staged deployment
 
@@ -182,4 +182,20 @@ Use the new APIs in GacBuild and remove its duplicate filesystem boundary. The r
 
 ### CODE CHANGE
 
-Implementation and verification pending.
+`<VlppOS repo>/Source/FileSystem.h` now exposes the normalized absolute-path check, `FileInfo`, checked file/folder metadata queries and instance copy methods. The existing injectable boundary supplies Windows, POSIX/macOS and OPFS implementations. Windows copying preserves native metadata and restores creation/access/modification/change times; POSIX preserves supported modes, timestamps and extended attributes, with macOS using native copyfile. OPFS exposes available metadata and returns false for unsupported metadata-preserving copies. Recursive creation stops at unavailable roots. The GacUI filesystem mock implements the expanded interface without new VlppOS test cases.
+
+`RunGacBuild` uses `PartialOrderingProcessor`, explicitly rejects self-dependencies and multi-node cycles, and propagates stale dependencies during ordered traversal. Anonymous resources remain first. Four unconsumed planner text files were removed; the name mapping and `/D32` XML dumps remain. Console plans now cover `-Dump`. File metadata and deployment copying use VlppOS, leaving only executable validation and child execution in the GacBuild native files.
+
+PowerShell wrappers normalize adjacent tool paths, and wGac/iGac normalize repository directories without resolving the temporary GacGen metadata symlink. VlppOS was generated with its owning CodePack configuration and copied to all ten existing downstream imports: Document, VlppRegex, VlppReflection, VlppParser, VlppParser2, Workflow, GacUI, wGac, iGac and Release. The older Document import requires the generated platform headers as well. Release's five GacBuild implementation files and both wrappers match their owners. Four canonical KB pages were refreshed and synchronized to the eight existing KB consumers.
+
+Focused verification checks the console plan instead of removed manifests, asserts their absence, compares deployment hashes and preserved creation/modification times, and adds a singleton self-cycle regression. Final tool builds pass in owner Debug x64 and packaged Release Win32 with zero warnings/errors. The focused suite passes 41 native invocations plus its wrapper checks. Shell/PowerShell syntax checks pass. Both skins and all 88 Release tutorial resources regenerate successfully. No full Build.ps1 pipeline was called.
+
+### CONFIRMED
+
+The named-resource graph retains dependency-before-dependent execution and transitive incremental invalidation through `PartialOrderingProcessor`. Anonymous-first ordering, missing dependencies, duplicate names, multi-node cycles and singleton self-dependencies are covered by the focused verification. The baseline comparison preserves discovery, candidate and mapping contracts. The four removed text files are absent, and both real tutorial driver directories contain only the required name-mapping text file alongside metadata XML dumps.
+
+All 90 regenerated resources (two skins plus 88 tutorials) have 180 fresh architecture staging sets without compiler error files. The artifact audit verifies 290 merged C++ files and all 125 final deployed binary hashes, including matching creation and last-modified times. A second packaged `-Dump` run reports all 88 tutorials skipped and zero build candidates. Regeneration produces no changes to tracked generated skins or tutorial outputs.
+
+All ten downstream VlppOS imports match the six owning release files exactly. Release's five GacBuild source files, both wrappers, three deployed copies of the packaged executable and 32 KB copies match their owners. The older Document import includes historical generated whitespace; it is preserved as part of the exact owning release rather than edited by hand. The source and script review found no remaining Windows verification failures. Native Linux/macOS and Wasm execution, full downstream builds and the new folder/recursive-copy API paths were not separately exercised; the requested validation uses GacBuild, and no VlppOS unit cases or full Build.ps1 pipelines were added or run.
+
+Raw build, focused-suite, resource-generation, unchanged-plan and artifact-audit evidence is retained under the ignored `<GacUI repo>/Tools/GacBuild/Bin` directory, using the `Build-SharedFilesystem`, `Verification-SharedFilesystem` and `SharedFilesystem` filename prefixes.

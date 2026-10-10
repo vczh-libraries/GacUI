@@ -231,6 +231,20 @@ namespace gacui_unittest_template
 			return fullPath == L"";
 		}
 
+		vl::filesystem::FileInfo GetFileInfo(const vl::filesystem::FilePath& path) const override
+		{
+			auto item = ResolvePath(path.GetFullPath());
+			CHECK_ERROR(item, L"FileSystemMock::GetFileInfo()#Entry does not exist.");
+			vl::filesystem::FileInfo info;
+			info.isDirectory = !item->isFile;
+			return info;
+		}
+
+		bool FileCopy(const vl::filesystem::FilePath&, const vl::filesystem::FilePath&) const override
+		{
+			return false;
+		}
+
 		bool GetFolders(const vl::filesystem::FilePath& folderPath, collections::List<vl::filesystem::Folder>& folders) const override
 		{
 			folders.Clear();

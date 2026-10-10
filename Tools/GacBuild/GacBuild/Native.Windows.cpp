@@ -5,40 +5,11 @@
 
 namespace gacbuild
 {
-	bool IsAbsolutePath(const WString& path)
-	{
-		return (path.Length() >= 3 && path[1] == L':' && (path[2] == L'\\' || path[2] == L'/'))
-			|| (path.Length() >= 3 && path[0] == L'\\' && path[1] == L'\\');
-	}
-
 	void ValidateExecutable(const WString& path)
 	{
-		Require(IsAbsolutePath(path) && FilePath(path).IsFile(), L"Expected an absolute executable file path: " + path);
+		Require(FilePath::IsAbsolutePath(path) && FilePath(path).IsFile(), L"Expected an absolute executable file path: " + path);
 		DWORD binaryType;
 		Require(GetBinaryTypeW(path.Buffer(), &binaryType) != FALSE, L"Not a Windows executable: " + path);
-	}
-
-	Nullable<FileInfo> GetFileInfo(const FilePath& path)
-	{
-		WIN32_FILE_ATTRIBUTE_DATA data;
-		if (!GetFileAttributesExW(path.GetFullPath().Buffer(), GetFileExInfoStandard, &data))
-		{
-			auto error = GetLastError();
-			Require(error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND, L"Cannot inspect file: " + path.GetFullPath());
-			return {};
-		}
-		if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) return {};
-		return FileInfo{
-			.size = (static_cast<vuint64_t>(data.nFileSizeHigh) << 32) | data.nFileSizeLow,
-			.modified = (static_cast<vuint64_t>(data.ftLastWriteTime.dwHighDateTime) << 32) | data.ftLastWriteTime.dwLowDateTime,
-		};
-	}
-
-	void CopyFileNative(const FilePath& source, const FilePath& destination)
-	{
-		auto succeeded = CopyFileW(source.GetFullPath().Buffer(), destination.GetFullPath().Buffer(), FALSE) != FALSE;
-		auto error = GetLastError();
-		Require(succeeded, L"Cannot copy " + source.GetFullPath() + L" to " + destination.GetFullPath() + L" (Windows error " + itow(error) + L").");
 	}
 
 	void RunProcess(const FilePath& executable, const List<WString>& arguments)

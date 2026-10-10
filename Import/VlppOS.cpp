@@ -69,6 +69,11 @@ FilePath
 			Initialize();
 		}
 
+		bool FilePath::IsAbsolutePath(const WString& path)
+		{
+			return FilePath(path).GetFullPath() == path;
+		}
+
 		FilePath::FilePath(const WString& _filePath)
 			:fullPath(_filePath)
 		{
@@ -372,6 +377,19 @@ File
 			return filePath.IsFile();
 		}
 
+		bool File::CopyToFolder(const FilePath& destination, bool recursively)const
+		{
+			return CopyToFile(destination / filePath.GetName(), recursively);
+		}
+
+		bool File::CopyToFile(const FilePath& destination, bool recursively)const
+		{
+			if (!Exists() || destination == filePath || destination.IsFolder()) return false;
+			auto folder = destination.GetFolder();
+			if (!folder.IsFolder() && (!recursively || !Folder(folder).Create(true))) return false;
+			return GetFileSystemImpl()->FileCopy(filePath, destination);
+		}
+
 /***********************************************************************
 Folder
 ***********************************************************************/
@@ -393,6 +411,7 @@ Folder
 
 		bool Folder::Create(bool recursively)const
 		{
+			if (filePath.IsRoot()) return false;
 			if (recursively)
 			{
 				auto folder = filePath.GetFolder();
@@ -525,6 +544,12 @@ File
 			return GetFileSystemImpl()->FileDelete(filePath);
 		}
 
+		FileInfo File::GetFileInfo() const
+		{
+			CHECK_ERROR(Exists(), L"vl::filesystem::File::GetFileInfo()#File does not exist.");
+			return GetFileSystemImpl()->GetFileInfo(filePath);
+		}
+
 		bool File::Rename(const WString& newName) const
 		{
 			return GetFileSystemImpl()->FileRename(filePath, newName);
@@ -537,6 +562,12 @@ Folder
 		bool Folder::GetFolders(collections::List<Folder>& folders) const
 		{
 			return GetFileSystemImpl()->GetFolders(filePath, folders);
+		}
+
+		FileInfo Folder::GetFileInfo() const
+		{
+			CHECK_ERROR(Exists(), L"vl::filesystem::Folder::GetFileInfo()#Folder does not exist.");
+			return GetFileSystemImpl()->GetFileInfo(filePath);
 		}
 
 		bool Folder::GetFiles(collections::List<File>& files) const

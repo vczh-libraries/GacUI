@@ -2,7 +2,7 @@
 
 `GacGen` compiles one GacUI XML resource for one target CPU architecture. Native `GacBuild` orchestrates it in two modes: `GacGen` compiles both architectures, merges generated C++ and deploys binaries; `GacBuild` discovers a tree of resources and calculates an incremental dependency-aware build, calling the same `RunGacGen` implementation for every candidate. `<Tools repo>/Tools/GacGen.ps1` and `<Tools repo>/Tools/GacBuild.ps1` are thin wrappers preserving their original interfaces. `<Tools repo>/Tools/GacClear.ps1` invalidates the per-resource caches used by that calculation.
 
-The compiler source of truth is [`<GacUI repo>/Tools/GacGen/GacGen/Main.cpp`](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/GacGen/Main.cpp) and [`<GacUI repo>/Tools/GacGen/GacGen/GacGen.cpp`](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/GacGen/GacGen.cpp). Orchestration lives in [`<GacUI repo>/Tools/GacBuild/GacBuild/GacBuild.cpp`](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacBuild/GacBuild/GacBuild.cpp), with native process, copy and timestamp operations in its sibling `Native.Windows.cpp` and `Native.Linux.cpp`. `<Tools repo>/Tools/GacCommon.ps1` remains available to `<Tools repo>/Tools/GacClear.ps1`.
+The compiler source of truth is [`<GacUI repo>/Tools/GacGen/GacGen/Main.cpp`](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/GacGen/Main.cpp) and [`<GacUI repo>/Tools/GacGen/GacGen/GacGen.cpp`](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacGen/GacGen/GacGen.cpp). Orchestration lives in [`<GacUI repo>/Tools/GacBuild/GacBuild/GacBuild.cpp`](https://github.com/vczh-libraries/GacUI/blob/master/Tools/GacBuild/GacBuild/GacBuild.cpp). Its sibling `Native.Windows.cpp` and `Native.Linux.cpp` only validate executables and run child processes. Path checks, metadata and metadata-preserving copies use the [VlppOS filesystem APIs](./KB_VlppOS_FileSystemOperations.md). `<Tools repo>/Tools/GacCommon.ps1` remains available to `<Tools repo>/Tools/GacClear.ps1`.
 
 ## Choosing an Entry Point
 
@@ -17,6 +17,8 @@ The compiler source of truth is [`<GacUI repo>/Tools/GacGen/GacGen/Main.cpp`](ht
 | `<Tools repo>/Tools/GacClear.ps1 -FileName <driver-xml>` | Delete all discovered `<application repo>/<resource-xml>.log` caches so the next `<Tools repo>/Tools/GacBuild.ps1` run rebuilds everything | Both caches are deleted | Discovery only |
 
 The wrappers resolve adjacent `GacBuild.exe`, `GacGen.exe` and `CppMerge.exe` through `$PSScriptRoot`, independent of the caller's working directory. The native orchestrator itself makes no location assumptions. `GacClear.ps1` retains its `GacCommon.ps1` and `StartProcess.ps1` helpers.
+
+Child executable paths must already be normalized absolute strings: `FilePath::IsAbsolutePath` compares them with their normalized full paths. PowerShell wrappers use `System.IO.Path.GetFullPath`; the wGac/iGac scripts normalize repository directories with `cd` and `pwd`. This does not resolve the temporary GacGen symlink, whose location selects the adjacent reflection metadata.
 
 Direct native invocation requires `-mode:GacBuild` or `-mode:GacGen`, `-pathGacGen:<absolute executable>`, `-pathCppMerge:<absolute executable>`, and `-FileName <xml>`. Both child paths must identify existing executable files. Missing, duplicate, empty, relative or invalid child paths are rejected before logs change. `GacBuild` mode accepts `-Dump`; `GacGen` mode accepts `-MappingFileName <mapping>`. Relative XML and mapping paths use the caller's working directory. Quote each path separately. Windows child creation preserves wide arguments; `CppOutput.txt` still limits production C++ paths to characters representable in the active MBCS code page. Native Linux/macOS builds use POSIX child processes and file operations.
 
@@ -123,22 +125,22 @@ For each declared dependency, GacGen looks up the mapped XML and reads `<applica
 
 ## GacBuild Incremental and Dependency Algorithm
 
-In the algorithm and artifact descriptions below, driver-manifest basenames such as `ResourceFiles.txt` refer to files in `<application repo>/<driver-xml>.log`. Per-resource artifact basenames such as `Errors.txt` refer to files in `<application repo>/<resource-xml>.log/<architecture>`, where `<architecture>` is `x32` or `x64`. The directory trees and tables below distinguish these two groups.
+In the algorithm and artifact descriptions below, the driver mapping and metadata dumps live in `<application repo>/<driver-xml>.log`. Per-resource artifacts such as `Errors.txt` live in `<application repo>/<resource-xml>.log/<architecture>`, where `<architecture>` is `x32` or `x64`.
 
 Each run performs these steps:
 
-1. Resolve the driver XML to an absolute path, delete and recreate `<application repo>/<driver-xml>.log`, enumerate resources, and write `ResourceFiles.txt`.
+1. Resolve the driver XML to an absolute path, delete and recreate `<application repo>/<driver-xml>.log`, and enumerate resources in memory.
 2. Run `<Tools repo>/Tools/GacGen.exe /D32 <resource-xml> <flattened-dump>` for every discovered resource. `/D32` records the resource metadata, all file-backed resource inputs, and the ten standard x86/x64 cache outputs.
-3. Mark a resource directly outdated when any recorded cache output is missing, or when any recorded input has a later UTC modification time than any recorded output.
-4. Split resources into anonymous resources and resources with metadata names. Anonymous resources are independent and sorted by absolute path. Named resources are topologically sorted from their declared dependencies.
-5. Starting with directly outdated named resources, repeatedly add every named transitive dependent. Thus changing a base resource rebuilds all named resources above it even when their own files are unchanged.
-6. Write the candidate, order, and mapping manifests. Iterate anonymous resources first and named resources second; call `RunGacGen` directly for each candidate without launching another orchestrator.
+3. Read nullable UTC modification times through `File::GetFileInfo`. Missing input files or input modification times are errors. Mark a resource directly outdated when a cache output or its time is missing, or any recorded input is newer than any output.
+4. Place anonymous resources first, in sorted discovery order. For named resources, validate every dependency and reject self-dependencies, then pass the name/dependency group to `PartialOrderingProcessor`. Reject any component containing more than one resource.
+5. Visit named components in dependency order, marking a resource outdated if any dependency is outdated. Thus a single pass propagates changes through every transitive dependent.
+6. Write only `ResourceNamedMapping.txt`. Print `[BUILD]` or `[SKIPPED]` for every resource in anonymous-then-dependency order, including under `-Dump`. Unless dumping, call `RunGacGen` directly for each candidate without launching another orchestrator.
 7. `RunGacGen` deletes that resource's old log once, runs `/P32` and `/P64`, and rejects failed children, `Errors.txt`, or missing/empty required artifacts. When C++ is configured, both `CppOutput.txt` destinations must agree, both staged filename sets must match, and every input must be nonempty. Create the production directory and invoke CppMerge for every pair, preserving existing destination files and their user content. Verify the published text against CppMerge's owning library algorithms, because the historical CppMerge CLI can silently fail a write.
-8. Validate every source and destination parent in both `Deploy.xml` manifests before merging or copying. After successful compilation and merging, copy both inventories using native file operations, x64 first and x32 last to preserve the final x32 choice for shared neutral outputs. `/P` itself only stages binaries; direct `/C` publication is unchanged.
+8. Validate every source and destination parent in both `Deploy.xml` manifests before merging or copying. After successful compilation and merging, copy both inventories through `File::CopyToFile(destination, false)`, preserving supported native metadata. Copy x64 first and x32 last to preserve the final x32 choice for shared neutral outputs. `/P` itself only stages binaries; direct `/C` publication is unchanged.
 
 The incremental contract deliberately watches only the ten standard `.bin` cache files listed by `/D32`. It does not timestamp-check `Workflow.txt`, generated C++, RPC metadata, `Deploy.xml`, configured production outputs or tool binaries. Deleting a production C++ or configured binary while leaving a fresh per-resource cache can therefore produce `[SKIPPED]`; run `<Tools repo>/Tools/GacClear.ps1`, delete that resource's `.log` directory, or invoke its build explicitly to regenerate it.
 
-Named dependency metadata must form a closed acyclic graph with unique names. GacBuild rejects duplicate names, missing dependencies, and cycles; GacGen independently rejects an unresolved mapped dependency while compiling. `ResourceNamedFiles.txt` contains all named resources in build order, not only candidates; `BuildCandidates.txt` is the filter.
+Named dependency metadata must form a closed acyclic graph with unique names. GacBuild rejects duplicate names, missing dependencies, and cycles; GacGen independently rejects an unresolved mapped dependency while compiling. Independent named resources have no ordering contract beyond the dependency constraints. Discovery, candidate and order lists remain in memory; neither GacGen nor RunGacGen consumes separate text files for them.
 
 Native GacBuild stops at the first error and returns nonzero; both PowerShell wrappers throw on that status. A generation, merge or deployment failure invalidates the resource's x32 `Assembly.bin` cache before reporting failure, so an unchanged ten-file freshness check cannot skip it on the next attempt. Other diagnostics remain available. Successful invocation semantics are preserved; the old script's continue-after-error behavior is intentionally removed.
 
@@ -152,10 +154,6 @@ For `<Tools repo>/Tools/GacBuild.ps1 -FileName <application repo>/GacUI.xml`:
 
 ```text
 <application repo>/GacUI.xml.log\
-  ResourceFiles.txt
-  BuildCandidates.txt
-  ResourceAnonymousFiles.txt
-  ResourceNamedFiles.txt
   ResourceNamedMapping.txt
   _sub_folder_Resource.xml
   _another_Resource.xml
@@ -166,14 +164,10 @@ The following table lists basenames within `<application repo>/<driver-xml>.log`
 
 | Basename | Format and content | Consumer and purpose |
 | --- | --- | --- |
-| `ResourceFiles.txt` | One path per discovered resource, relative to the driver directory and normally beginning with `\` on Windows | `DumpResourceFiles`, `<Tools repo>/Tools/GacClear.ps1`, and diagnostic tools use it as the discovery inventory. |
 | `<flattened-resource-path>` | UTF-8 BOM XML. Native separators in the relative resource path are replaced with `_`; the original extension is retained. The outer `ResourceMetadata` contains the resource's saved `ResourceMetadata`, sorted absolute `Inputs/Input@Path`, and sorted absolute `Outputs/Output@Path`. | GacBuild parses every dump to calculate timestamps, names, dependencies, order, and mappings; colliding flattened names are rejected. |
-| `BuildCandidates.txt` | One absolute resource XML path per direct stale resource plus every named transitive dependent | Records the native build loop's `[BUILD]` selections in anonymous-then-dependency order. |
-| `ResourceAnonymousFiles.txt` | Sorted absolute paths of resources whose metadata name is empty | Defines the first part of iteration order. Anonymous resources cannot declare dependencies. |
-| `ResourceNamedFiles.txt` | Absolute paths of every named resource in dependency-before-dependent order | Defines the second part of iteration order, including named resources that will be skipped. |
 | `ResourceNamedMapping.txt` | Lexically sorted `Name=>absolute-resource-xml-path` lines | Passed to every `/P32` and `/P64` call. GacGen resolves direct and transitive dependency caches through it. |
 
-The five named `.txt` manifests are unquoted UTF-8 without BOM, one record per line. Spaces are part of a path; only `ResourceNamedMapping.txt` assigns separator meaning, to the first `=>`. The flattened dumps are XML rather than line manifests.
+The mapping is unquoted UTF-8 without BOM, one record per line. Spaces are part of a path; the first `=>` separates the name and path. The flattened dumps are XML. Native GacBuild no longer creates `ResourceFiles.txt`, `BuildCandidates.txt`, `ResourceAnonymousFiles.txt` or `ResourceNamedFiles.txt`. The legacy `GacClear.ps1` discovery helper may still create its own `ResourceFiles.txt` before clearing caches; that is separate from the native planner's output contract.
 
 The dump's `Outputs` list is always these ten absolute paths, regardless of optional production configuration:
 

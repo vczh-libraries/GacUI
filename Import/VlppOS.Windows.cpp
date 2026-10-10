@@ -39,6 +39,21 @@ WindowsFileSystemImpl
 
 		class WindowsFileSystemImpl : public feature_injection::FeatureImpl<IFileSystemImpl>
 		{
+		private:
+			static Nullable<DateTime> FileTimeToDateTime(vuint64_t time)
+			{
+				if (time == 0) return {};
+				auto result = DateTime::FromOSInternal(time);
+				// Preserve FILETIME precision for ordering, beyond the calendar's milliseconds.
+				result.osInternal = time;
+				return result;
+			}
+
+			static Nullable<DateTime> FileTimeToDateTime(FILETIME time)
+			{
+				return FileTimeToDateTime((static_cast<vuint64_t>(time.dwHighDateTime) << 32) | time.dwLowDateTime);
+			}
+
 		public:
 			wchar_t GetPathDelimiter() const override
 			{
@@ -148,6 +163,91 @@ WindowsFileSystemImpl
 					(IsFolder(toPath) ? FILE_ATTRIBUTE_DIRECTORY : 0)
 				);
 				return buffer;
+			}
+
+			FileInfo GetFileInfo(const FilePath& path) const override
+			{
+				WIN32_FILE_ATTRIBUTE_DATA data;
+				CHECK_ERROR(GetFileAttributesExW(path.GetFullPath().Buffer(), GetFileExInfoStandard, &data), L"vl::filesystem::WindowsFileSystemImpl::GetFileInfo()#Cannot read metadata.");
+				FileInfo info;
+				info.size = (static_cast<vuint64_t>(data.nFileSizeHigh) << 32) | data.nFileSizeLow;
+				info.creationTime = FileTimeToDateTime(data.ftCreationTime);
+				info.lastAccessTime = FileTimeToDateTime(data.ftLastAccessTime);
+				info.lastModifiedTime = FileTimeToDateTime(data.ftLastWriteTime);
+				info.isReparsePoint = (data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
+				auto handle = CreateFileW(path.GetFullPath().Buffer(), FILE_READ_ATTRIBUTES,
+					FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
+				if (handle != INVALID_HANDLE_VALUE)
+				{
+					FILE_BASIC_INFO basic;
+					if (GetFileInformationByHandleEx(handle, FileBasicInfo, &basic, sizeof(basic)))
+					{
+						info.creationTime = FileTimeToDateTime(basic.CreationTime.QuadPart);
+						info.lastAccessTime = FileTimeToDateTime(basic.LastAccessTime.QuadPart);
+						info.lastModifiedTime = FileTimeToDateTime(basic.LastWriteTime.QuadPart);
+						info.lastChangeTime = FileTimeToDateTime(basic.ChangeTime.QuadPart);
+						data.dwFileAttributes = basic.FileAttributes;
+					}
+					BY_HANDLE_FILE_INFORMATION identity;
+					if (GetFileInformationByHandle(handle, &identity))
+					{
+						info.size = (static_cast<vuint64_t>(identity.nFileSizeHigh) << 32) | identity.nFileSizeLow;
+						info.hardLinkCount = identity.nNumberOfLinks;
+					}
+					CloseHandle(handle);
+				}
+				info.isDirectory = (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+				info.isReadOnly = (data.dwFileAttributes & FILE_ATTRIBUTE_READONLY) != 0;
+				info.isHidden = (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) != 0;
+				info.isSystem = (data.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) != 0;
+				info.isArchive = (data.dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) != 0;
+				info.isCompressed = (data.dwFileAttributes & FILE_ATTRIBUTE_COMPRESSED) != 0;
+				info.isEncrypted = (data.dwFileAttributes & FILE_ATTRIBUTE_ENCRYPTED) != 0;
+				info.isSparse = (data.dwFileAttributes & FILE_ATTRIBUTE_SPARSE_FILE) != 0;
+				info.isTemporary = (data.dwFileAttributes & FILE_ATTRIBUTE_TEMPORARY) != 0;
+				info.isOffline = (data.dwFileAttributes & FILE_ATTRIBUTE_OFFLINE) != 0;
+				info.isNotContentIndexed = (data.dwFileAttributes & FILE_ATTRIBUTE_NOT_CONTENT_INDEXED) != 0;
+				if (info.isReparsePoint)
+				{
+					WIN32_FIND_DATAW found;
+					auto search = FindFirstFileW(path.GetFullPath().Buffer(), &found);
+					if (search != INVALID_HANDLE_VALUE)
+					{
+						info.isSymbolicLink = found.dwReserved0 == IO_REPARSE_TAG_SYMLINK;
+						FindClose(search);
+					}
+				}
+				auto canAccess = [&](DWORD access)
+				{
+					auto probe = CreateFileW(path.GetFullPath().Buffer(), access,
+						FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
+					if (probe == INVALID_HANDLE_VALUE) return false;
+					CloseHandle(probe);
+					return true;
+				};
+				info.canRead = canAccess(FILE_READ_DATA);
+				info.canWrite = (!info.isReadOnly || info.isDirectory) && canAccess(FILE_WRITE_DATA);
+				info.canExecute = canAccess(FILE_EXECUTE);
+				return info;
+			}
+
+			bool FileCopy(const FilePath& source, const FilePath& destination) const override
+			{
+				auto input = CreateFileW(source.GetFullPath().Buffer(), FILE_READ_ATTRIBUTES,
+					FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, 0, nullptr);
+				if (input == INVALID_HANDLE_VALUE) return false;
+				FILE_BASIC_INFO basic;
+				auto queried = GetFileInformationByHandleEx(input, FileBasicInfo, &basic, sizeof(basic));
+				auto closed = CloseHandle(input);
+				if (!queried || !closed || !CopyFileW(source.GetFullPath().Buffer(), destination.GetFullPath().Buffer(), FALSE)) return false;
+				// CopyFile keeps native attributes/streams. Restore all settable timestamps too.
+				auto output = CreateFileW(destination.GetFullPath().Buffer(), FILE_WRITE_ATTRIBUTES,
+					FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, 0, nullptr);
+				if (output == INVALID_HANDLE_VALUE) return false;
+				basic.FileAttributes = 0;
+				auto copied = SetFileInformationByHandle(output, FileBasicInfo, &basic, sizeof(basic));
+				closed = CloseHandle(output);
+				return copied && closed;
 			}
 
 			bool FileDelete(const FilePath& filePath) const override

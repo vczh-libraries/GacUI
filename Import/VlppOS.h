@@ -5713,6 +5713,36 @@ namespace vl
 {
 	namespace filesystem
 	{
+		/// <summary>Metadata of an existing file or folder. Unavailable times are empty; all available times are UTC.</summary>
+		/// <remarks>Access flags describe the current process. Unsupported native attribute flags are false. Symbolic links are followed when target metadata is accessible, except for isSymbolicLink and isReparsePoint.</remarks>
+		struct FileInfo
+		{
+			vuint64_t					size = 0;
+			vuint64_t					hardLinkCount = 0;
+			Nullable<DateTime>			creationTime;
+			Nullable<DateTime>			lastAccessTime;
+			Nullable<DateTime>			lastModifiedTime;
+			Nullable<DateTime>			lastChangeTime;
+			bool						isDirectory = false;
+			bool						isSymbolicLink = false;
+			bool						isReparsePoint = false;
+			bool						canRead = false;
+			bool						canWrite = false;
+			bool						canExecute = false;
+			bool						isReadOnly = false;
+			bool						isHidden = false;
+			bool						isSystem = false;
+			bool						isArchive = false;
+			bool						isCompressed = false;
+			bool						isEncrypted = false;
+			bool						isSparse = false;
+			bool						isTemporary = false;
+			bool						isOffline = false;
+			bool						isNotContentIndexed = false;
+			bool						isImmutable = false;
+			bool						isAppendOnly = false;
+		};
+
 		/// <summary>Absolute file path.</summary>
 		class FilePath : public Object
 		{
@@ -5731,6 +5761,10 @@ namespace vl
 		public:
 			/// <summary>Get the delimiter character used in a file path.</summary>
 			static wchar_t				GetPathDelimiter();
+			/// <summary>Test whether a path is already in normalized absolute form, without resolving symbolic links.</summary>
+			/// <param name="path">The path to compare with its normalized full path.</param>
+			/// <returns>True when normalization does not change the path.</returns>
+			static bool					IsAbsolutePath(const WString& path);
 
 			/// <summary>Create a root path.</summary>
 			/// <remarks><see cref="GetFullPath"/> returns different values for root path on different platforms. Do not rely on the value.</remarks>
@@ -5798,6 +5832,20 @@ namespace vl
 			/// <summary>Get the file path of the file.</summary>
 			/// <returns>The file path.</returns>
 			const FilePath&				GetFilePath()const;
+			/// <summary>Get metadata. Raises an error if the file does not exist or metadata cannot be read.</summary>
+			/// <returns>The file metadata.</returns>
+			FileInfo					GetFileInfo()const;
+			/// <summary>Copy this file into a folder, retaining its name and supported native metadata.</summary>
+			/// <param name="destination">The destination folder.</param>
+			/// <param name="recursively">Allow creating missing destination folders.</param>
+			/// <returns>False if copying or preserving supported metadata fails.</returns>
+			bool						CopyToFolder(const FilePath& destination, bool recursively)const;
+			/// <summary>Copy this file to another path, overwriting an existing file and preserving supported native metadata.</summary>
+			/// <param name="destination">The destination file.</param>
+			/// <param name="recursively">Allow creating missing containing folders.</param>
+			/// <returns>False on any I/O failure, an identical source/destination, or an unsupported copy operation.</returns>
+			/// <remarks>Follows symbolic links. Copies can leave partial output on failure. Metadata preservation depends on the native filesystem; immutable identity/change times cannot always be copied.</remarks>
+			bool						CopyToFile(const FilePath& destination, bool recursively)const;
 
 			/// <summary>Get the content of a text file with encoding testing.</summary>
 			/// <returns>Returns true if this operation succeeded.</returns>
@@ -5869,6 +5917,9 @@ namespace vl
 			/// <summary>Get the file path of the folder.</summary>
 			/// <returns>The file path.</returns>
 			const FilePath&				GetFilePath()const;
+			/// <summary>Get metadata. Raises an error if the folder does not exist or metadata cannot be read.</summary>
+			/// <returns>The folder metadata.</returns>
+			FileInfo					GetFileInfo()const;
 			/// <summary>Get all folders in this folder.</summary>
 			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="folders">All folders.</param>
@@ -5917,6 +5968,8 @@ namespace vl
 			virtual WString GetRelativePathFor(const WString& fromPath, const WString& toPath) const = 0;
 			
 			// File operations
+			virtual FileInfo GetFileInfo(const FilePath& path) const = 0;
+			virtual bool FileCopy(const FilePath& source, const FilePath& destination) const = 0;
 			virtual bool FileDelete(const FilePath& filePath) const = 0;
 			virtual bool FileRename(const FilePath& filePath, const WString& newName) const = 0;
 			

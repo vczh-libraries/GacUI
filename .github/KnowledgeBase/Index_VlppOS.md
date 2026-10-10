@@ -31,6 +31,9 @@ Cross-platform file and directory manipulation with path handling and content ac
 - Use `FilePath` for path representation and manipulation
 - Use `GetPathDelimiter`, `operator/`, `GetName`, `GetFolder`, `GetFullPath`, `GetRelativePathFor` for path operations
 - Use `IsFile`, `IsFolder`, `IsRoot` to determine path object types
+- Use `FilePath::IsAbsolutePath` to test normalized absolute path strings
+- Use `File::GetFileInfo` and `Folder::GetFileInfo` for native attributes, access flags and nullable UTC timestamps
+- Use `File::CopyToFile` and `CopyToFolder` for copies preserving supported metadata, optionally creating missing destination folders
 - Use `File` class for existing files or paths where a file will be written
 - Use `ReadAllTextWithEncodingTesting`, `ReadAllTextByBom`, `ReadAllLinesByBom` for text reading
 - Use `WriteAllText`, `WriteAllLines` for text writing

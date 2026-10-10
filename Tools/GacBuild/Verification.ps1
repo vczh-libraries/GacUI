@@ -50,6 +50,10 @@ function Build-Arguments([string]$Mode, [string]$InputFile, [string[]]$Extra = @
     return @(("-mode:$Mode"), ("-pathGacGen:$GacGenPath"), ("-pathCppMerge:$CppMergePath"), '-FileName', $InputFile) + $Extra
 }
 
+function Get-PlanPaths([string]$Output, [string]$Status = 'BUILD|SKIPPED') {
+    [regex]::Matches($Output, "(?m)^\[(?:$Status)\] (.+)$") | ForEach-Object { $_.Groups[1].Value.TrimEnd("`r") }
+}
+
 function New-Resource([string]$Folder, [string]$Name, [string]$Dependency = '', [switch]$BinaryOnly, [switch]$Rpc, [switch]$Anonymous) {
     $dependencyXml = if ($Dependency) { '<Dependencies><Resource Name="' + $Dependency + '"/></Dependencies>' } else { '' }
     $metadataName = if ($Anonymous) { '' } else { $Name }
@@ -84,6 +88,9 @@ function Assert-Outputs([string]$Resource, [bool]$Cpp = $true) {
         }
         foreach ($pair in @(@('ScriptedResource.bin', "$architecture.bin"), @('ScriptedCompressed.bin', "$architecture.compressed.bin"), @('Assembly.bin', "$architecture.assembly.bin"))) {
             Assert-That ((Get-FileHash -LiteralPath "$Resource.log/$architecture/$($pair[0])").Hash -eq (Get-FileHash -LiteralPath "$folder/Published/$($pair[1])").Hash) 'Deployment differs from cache.'
+            $cached = Get-Item -LiteralPath "$Resource.log/$architecture/$($pair[0])"
+            $published = Get-Item -LiteralPath "$folder/Published/$($pair[1])"
+            Assert-That ($cached.CreationTimeUtc -eq $published.CreationTimeUtc -and $cached.LastWriteTimeUtc -eq $published.LastWriteTimeUtc) 'Copy did not preserve creation/modification times.'
         }
         Assert-That (!(Test-Path -LiteralPath "$Resource.log/$architecture/Deploy.bat")) 'Legacy deployment batch remains.'
     }
@@ -110,18 +117,18 @@ try {
     $buildArgs = Build-Arguments GacBuild $driver
 
     Write-Text $driver '<GacUI><Exclude Pattern=""/></GacUI>'
-    [void](Invoke-Native ($buildArgs + '-Dump'))
-    Assert-That (@(Get-Content -LiteralPath "$driver.log/ResourceFiles.txt").Count -eq 0) 'An empty exclusion pattern must exclude every path.'
+    $plan = Invoke-Native ($buildArgs + '-Dump')
+    Assert-That (@(Get-PlanPaths $plan).Count -eq 0) 'An empty exclusion pattern must exclude every path.'
     Write-Text $driver '<GacUI><Exclude/><Exclude Pattern="/Excluded/"/></GacUI>'
-    [void](Invoke-Native ($buildArgs + '-Dump'))
-    Assert-That (@(Get-Content -LiteralPath "$driver.log/ResourceFiles.txt").Count -eq 4) 'An absent Pattern attribute must be ignored.'
+    $plan = Invoke-Native ($buildArgs + '-Dump')
+    Assert-That (@(Get-PlanPaths $plan).Count -eq 4) 'An absent Pattern attribute must be ignored.'
     $ordinalFolder = "$fixture/Excluded/Patterns"
     $softHyphen = [string][char]0xAD
     [void](New-Resource "$ordinalFolder/Soft${softHyphen}Hyphen" Ordinal)
     [void](New-Resource "$ordinalFolder/UpperCase" CaseSensitive)
     Write-Text "$ordinalFolder/GacUI.xml" '<GacUI><Exclude Pattern="/SoftHyphen/"/><Exclude Pattern="/uppercase/"/></GacUI>'
-    [void](Invoke-Native (Build-Arguments GacBuild "$ordinalFolder/GacUI.xml" @('-Dump')))
-    Assert-That (@(Get-Content -LiteralPath "$ordinalFolder/GacUI.xml.log/ResourceFiles.txt").Count -eq 2) 'Exclusions must use ordinal case-sensitive substring matching.'
+    $plan = Invoke-Native (Build-Arguments GacBuild "$ordinalFolder/GacUI.xml" @('-Dump'))
+    Assert-That (@(Get-PlanPaths $plan).Count -eq 2) 'Exclusions must use ordinal case-sensitive substring matching.'
     Write-Text $driver '<GacUI><Exclude Pattern="/Excluded/"/></GacUI>'
 
     if ($Baseline) {
@@ -129,8 +136,8 @@ try {
         [void][System.IO.Directory]::CreateDirectory("$driver.log")
         EnumerateResourceFiles $driver
         $oldInventory = @(Get-Content -LiteralPath "$driver.log/ResourceFiles.txt" | Sort-Object)
-        [void](Invoke-Native ($buildArgs + '-Dump'))
-        $newInventory = @(Get-Content -LiteralPath "$driver.log/ResourceFiles.txt" | Sort-Object)
+        $plan = Invoke-Native ($buildArgs + '-Dump')
+        $newInventory = @(Get-PlanPaths $plan | ForEach-Object { $_.Substring(([System.IO.Path]::GetFullPath($fixture)).Length) } | Sort-Object)
         Assert-That (($oldInventory -join '|') -eq ($newInventory -join '|')) 'Native discovery differs from the old script.'
         $dumps = @{}
         Get-ChildItem -LiteralPath "$driver.log" -Filter '*.xml' | ForEach-Object {
@@ -140,30 +147,34 @@ try {
         }
         EnumerateBuildCandidates $dumps "$fixture/OldCandidates.txt"
         EnumerateNamedResources $dumps "$fixture/OldNamed.txt" "$fixture/OldMapping.txt"
-        foreach ($pair in @(@('OldCandidates.txt','BuildCandidates.txt'),@('OldNamed.txt','ResourceNamedFiles.txt'),@('OldMapping.txt','ResourceNamedMapping.txt'))) {
-            $old = @(Get-Content -LiteralPath "$fixture/$($pair[0])" | Sort-Object)
-            $new = @(Get-Content -LiteralPath "$driver.log/$($pair[1])" | Sort-Object)
-            Assert-That (($old -join '|') -eq ($new -join '|')) "Planning differs: $($pair[1])"
-        }
+        $oldCandidates = @(Get-Content -LiteralPath "$fixture/OldCandidates.txt" | Sort-Object)
+        $newCandidates = @(Get-PlanPaths $plan 'BUILD' | Sort-Object)
+        Assert-That (($oldCandidates -join '|') -eq ($newCandidates -join '|')) 'Build candidates differ from the legacy planner.'
+        $oldMapping = @(Get-Content -LiteralPath "$fixture/OldMapping.txt" | Sort-Object)
+        $newMapping = @(Get-Content -LiteralPath "$driver.log/ResourceNamedMapping.txt" | Sort-Object)
+        Assert-That (($oldMapping -join '|') -eq ($newMapping -join '|')) 'Dependency mapping differs from the legacy planner.'
     }
-    [void](Invoke-Native ($buildArgs + '-Dump'))
+    $plan = Invoke-Native ($buildArgs + '-Dump')
     Assert-That (!(Test-Path -LiteralPath "$base.log")) '-Dump compiled resources.'
-    Assert-That (@(Get-Content -LiteralPath "$driver.log/BuildCandidates.txt").Count -eq 4) 'Cold build should select four resources.'
-    [void](Invoke-Native $buildArgs)
+    Assert-That (@(Get-PlanPaths $plan 'BUILD').Count -eq 4) 'Cold build should select four resources.'
+    foreach ($obsolete in @('ResourceFiles.txt','BuildCandidates.txt','ResourceAnonymousFiles.txt','ResourceNamedFiles.txt')) {
+        Assert-That (!(Test-Path -LiteralPath "$driver.log/$obsolete")) "Obsolete planning manifest remains: $obsolete"
+    }
+    $plan = Invoke-Native $buildArgs
     foreach ($resource in @($base,$dependent,$leaf,$independent)) { Assert-Outputs $resource }
-    $expectedOrder = @($base,$dependent,$leaf).ForEach({ [System.IO.Path]::GetFullPath($_) }) -join '|'
-    Assert-That (((Get-Content -LiteralPath "$driver.log/ResourceNamedFiles.txt") -join '|') -eq $expectedOrder) 'Dependency order changed.'
+    $expectedOrder = @($independent,$base,$dependent,$leaf).ForEach({ [System.IO.Path]::GetFullPath($_) }) -join '|'
+    Assert-That ((@(Get-PlanPaths $plan) -join '|') -eq $expectedOrder) 'Anonymous resources must precede dependency-ordered named resources.'
     $merged = Get-Content -LiteralPath "$fixture/Base/Source/BasePartialClasses.h" -Raw
     Assert-That ($merged.Contains('::vl::vint') -and $merged.Contains('::vl::vuint') -and !$merged.Contains('::vl::vint32_t') -and !$merged.Contains('::vl::vint64_t')) 'Native-width types were not merged.'
     $output = Invoke-Native $buildArgs
     Assert-That (($output | Select-String -Pattern '\[BUILD\]') -eq $null) 'Unchanged build did not skip.'
-    Assert-That ((Get-Item -LiteralPath "$driver.log/BuildCandidates.txt").Length -eq 0) 'Unexpected unchanged candidates.'
+    Assert-That (@(Get-PlanPaths $output 'SKIPPED').Count -eq 4) 'Unchanged plan did not retain all resources.'
     Remove-Item -LiteralPath "$fixture/Base/Published/x32.bin"
     [void](Invoke-Native $buildArgs)
     Assert-That (!(Test-Path -LiteralPath "$fixture/Base/Published/x32.bin")) 'Production output unexpectedly affected freshness.'
     [System.IO.File]::SetLastWriteTimeUtc($base, [DateTime]::UtcNow.AddSeconds(1))
-    [void](Invoke-Native ($buildArgs + '-Dump'))
-    Assert-That (@(Get-Content -LiteralPath "$driver.log/BuildCandidates.txt").Count -eq 3) 'Transitive dependents were not selected.'
+    $plan = Invoke-Native ($buildArgs + '-Dump')
+    Assert-That (@(Get-PlanPaths $plan 'BUILD').Count -eq 3) 'Transitive dependents were not selected.'
     [System.IO.File]::SetLastWriteTimeUtc($base, [DateTime]::UtcNow.AddSeconds(-10))
     Remove-Item -LiteralPath "$base.log/x32/Assembly.bin"
     [void](Invoke-Native $buildArgs)
@@ -212,6 +223,12 @@ try {
     [void](Invoke-Native ($buildArgs + '-Dump') $false)
     Write-Text $driver '<GacUI><Exclude Pattern="/Excluded/"/><Exclude Pattern="/Missing/"/><Exclude Pattern="/Cycle"/></GacUI>'
 
+    # A singleton strongly connected component is still a cycle when it depends on itself.
+    $selfCycle = New-Resource "$fixture/Excluded/SelfCycle" SelfCycle SelfCycle
+    $selfDriver = "$fixture/Excluded/SelfCycle/GacUI.xml"
+    Write-Text $selfDriver '<GacUI/>'
+    [void](Invoke-Native (Build-Arguments GacBuild $selfDriver @('-Dump')) $false)
+
     # A locked destination makes CppMerge's old unchecked write return success; the orchestrator must detect it.
     $original = [System.IO.File]::ReadAllText($cppFile.FullName)
     Write-Text $cppFile.FullName ($original.Replace('namespace', 'namespace /* deliberately stale */'))
@@ -255,7 +272,7 @@ public class CompilerProxy {
     Assert-That ($LASTEXITCODE -eq 0) 'Cannot build compiler fault fixture.'
     $realGacGen = $GacGenPath
     try {
-        $GacGenPath = "$fixture/CompilerProxy.exe"
+        $GacGenPath = [System.IO.Path]::GetFullPath("$fixture/CompilerProxy.exe")
         foreach ($fault in @('missing','mismatch')) {
             Write-Text "$GacGenPath.txt" "$realGacGen`r`n$fault"
             $publishedStamp = [System.IO.File]::GetLastWriteTimeUtc($published)

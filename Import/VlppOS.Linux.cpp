@@ -17,6 +17,14 @@ Licensed under https://github.com/vczh-libraries/License
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <string.h>
+#if defined VCZH_APPLE
+#include <copyfile.h>
+#else
+#include <sys/xattr.h>
+#endif
 
 
 namespace vl
@@ -37,6 +45,13 @@ LinuxFileSystemImpl
 
 		class LinuxFileSystemImpl : public feature_injection::FeatureImpl<IFileSystemImpl>
 		{
+		private:
+			static Nullable<DateTime> FileTimeToDateTime(time_t seconds, long nanoseconds)
+			{
+				if (seconds < 0) return {};
+				return DateTime::FromOSInternal(static_cast<vuint64_t>(seconds) * 1000 + nanoseconds / 1000000).ToUtcTime();
+			}
+
 		public:
 			// FilePath operations implementation
 			wchar_t GetPathDelimiter() const override
@@ -174,6 +189,116 @@ LinuxFileSystemImpl
 			}
 
 			// File operations implementation
+			FileInfo GetFileInfo(const FilePath& path) const override
+			{
+				auto name = wtoa(path.GetFullPath());
+				struct stat data;
+				CHECK_ERROR(stat(name.Buffer(), &data) == 0, L"vl::filesystem::LinuxFileSystemImpl::GetFileInfo()#Cannot read metadata.");
+				FileInfo info;
+				info.size = static_cast<vuint64_t>(data.st_size);
+				info.hardLinkCount = data.st_nlink;
+				info.isDirectory = S_ISDIR(data.st_mode);
+				struct stat link;
+				if (lstat(name.Buffer(), &link) == 0) info.isSymbolicLink = S_ISLNK(link.st_mode);
+				info.canRead = faccessat(AT_FDCWD, name.Buffer(), R_OK, AT_EACCESS) == 0;
+				info.canWrite = faccessat(AT_FDCWD, name.Buffer(), W_OK, AT_EACCESS) == 0;
+				info.canExecute = faccessat(AT_FDCWD, name.Buffer(), X_OK, AT_EACCESS) == 0;
+				info.isReadOnly = (data.st_mode & (S_IWUSR | S_IWGRP | S_IWOTH)) == 0;
+				auto leaf = path.GetName();
+				info.isHidden = leaf.Length() > 0 && leaf[0] == L'.';
+				info.isSparse = S_ISREG(data.st_mode) && static_cast<vuint64_t>(data.st_blocks) * 512 < info.size;
+#if defined VCZH_APPLE
+				info.creationTime = FileTimeToDateTime(data.st_birthtimespec.tv_sec, data.st_birthtimespec.tv_nsec);
+				info.lastAccessTime = FileTimeToDateTime(data.st_atimespec.tv_sec, data.st_atimespec.tv_nsec);
+				info.lastModifiedTime = FileTimeToDateTime(data.st_mtimespec.tv_sec, data.st_mtimespec.tv_nsec);
+				info.lastChangeTime = FileTimeToDateTime(data.st_ctimespec.tv_sec, data.st_ctimespec.tv_nsec);
+				info.isHidden = info.isHidden || (data.st_flags & UF_HIDDEN) != 0;
+				info.isImmutable = (data.st_flags & (UF_IMMUTABLE | SF_IMMUTABLE)) != 0;
+				info.isAppendOnly = (data.st_flags & (UF_APPEND | SF_APPEND)) != 0;
+#else
+				info.lastAccessTime = FileTimeToDateTime(data.st_atim.tv_sec, data.st_atim.tv_nsec);
+				info.lastModifiedTime = FileTimeToDateTime(data.st_mtim.tv_sec, data.st_mtim.tv_nsec);
+				info.lastChangeTime = FileTimeToDateTime(data.st_ctim.tv_sec, data.st_ctim.tv_nsec);
+#if defined STATX_BTIME
+				struct statx extra;
+				if (statx(AT_FDCWD, name.Buffer(), AT_STATX_SYNC_AS_STAT, STATX_BTIME, &extra) == 0)
+				{
+					if (extra.stx_mask & STATX_BTIME) info.creationTime = FileTimeToDateTime(extra.stx_btime.tv_sec, extra.stx_btime.tv_nsec);
+					auto attributes = extra.stx_attributes & extra.stx_attributes_mask;
+					info.isCompressed = (attributes & STATX_ATTR_COMPRESSED) != 0;
+					info.isEncrypted = (attributes & STATX_ATTR_ENCRYPTED) != 0;
+					info.isImmutable = (attributes & STATX_ATTR_IMMUTABLE) != 0;
+					info.isAppendOnly = (attributes & STATX_ATTR_APPEND) != 0;
+				}
+#endif
+#endif
+				return info;
+			}
+
+			bool FileCopy(const FilePath& source, const FilePath& destination) const override
+			{
+				auto sourceName = wtoa(source.GetFullPath());
+				auto destinationName = wtoa(destination.GetFullPath());
+				auto input = open(sourceName.Buffer(), O_RDONLY);
+				if (input == -1) return false;
+				struct stat original;
+				if (fstat(input, &original) != 0 || !S_ISREG(original.st_mode)) { close(input); return false; }
+				// Do not truncate until hard-link aliases and non-file destinations are rejected.
+				auto output = open(destinationName.Buffer(), O_WRONLY | O_CREAT | O_NONBLOCK, 0600);
+				if (output == -1) { close(input); return false; }
+				auto copy = [&]()
+				{
+					struct stat target;
+					if (fstat(output, &target) != 0 || !S_ISREG(target.st_mode)) return false;
+					if (original.st_dev == target.st_dev && original.st_ino == target.st_ino) return false;
+					if (ftruncate(output, 0) != 0) return false;
+#if defined VCZH_APPLE
+					return fcopyfile(input, output, nullptr, COPYFILE_ALL) == 0;
+#else
+					char buffer[65536];
+					while (true)
+					{
+						auto count = read(input, buffer, sizeof(buffer));
+						if (count == -1 && errno == EINTR) continue;
+						if (count == 0) break;
+						if (count < 0) return false;
+						ssize_t offset = 0;
+						while (offset < count)
+						{
+							auto written = write(output, buffer + offset, count - offset);
+							if (written == -1 && errno == EINTR) continue;
+							if (written <= 0) return false;
+							offset += written;
+						}
+					}
+					if (fchmod(output, original.st_mode & 07777) != 0) return false;
+					auto namesSize = flistxattr(input, nullptr, 0);
+					if (namesSize < 0 && errno != ENOTSUP) return false;
+					if (namesSize > 0)
+					{
+						Array<char> names(namesSize);
+						namesSize = flistxattr(input, &names[0], names.Count());
+						if (namesSize < 0) return false;
+						for (ssize_t offset = 0; offset < namesSize;)
+						{
+							auto name = &names[offset];
+							offset += strlen(name) + 1;
+							auto size = fgetxattr(input, name, nullptr, 0);
+							if (size < 0) return false;
+							Array<char> value(size > 0 ? size : 1);
+							if (fgetxattr(input, name, &value[0], size) != size || fsetxattr(output, name, &value[0], size, 0) != 0) return false;
+						}
+					}
+					const timespec times[] = { original.st_atim, original.st_mtim };
+					return futimens(output, times) == 0;
+#endif
+				};
+				auto copied = copy();
+				if (close(input) != 0) copied = false;
+				if (close(output) != 0) copied = false;
+				return copied;
+			}
+
 			bool FileDelete(const FilePath& filePath) const override
 			{
 				AString path = wtoa(filePath.GetFullPath());
@@ -320,9 +445,7 @@ Licensed under https://github.com/vczh-libraries/License
 
 #if defined VCZH_GCC || defined VCZH_WASM
 #include <pthread.h>
-#include <fcntl.h>
 #include <semaphore.h>
-#include <errno.h>
 #include <time.h>
 #if defined VCZH_GCC && defined VCZH_APPLE
 #include <CoreFoundation/CoreFoundation.h>
@@ -1383,7 +1506,6 @@ Licensed under https://github.com/vczh-libraries/License
 
 
 #if defined VCZH_GCC || defined VCZH_WASM
-#include <string.h>
 
 
 namespace vl
@@ -6373,6 +6495,15 @@ OPFS JavaScript boundary (requires Asyncify)
 		} catch { return 0; }
 	});
 
+	EM_ASYNC_JS(emscripten::EM_VAL, OpfsReadInfo, (emscripten::EM_VAL handle), {
+		try {
+			const entry = Emval.toValue(handle);
+			if (entry.kind === "directory") return Emval.toHandle({ directory: true });
+			const file = await entry.getFile();
+			return Emval.toHandle({ directory: false, size: file.size, modified: file.lastModified });
+		} catch { return 0; }
+	});
+
 	EM_ASYNC_JS(emscripten::EM_VAL, OpfsReadFile, (emscripten::EM_VAL handle), {
 		try {
 			const file = await Emval.toValue(handle).getFile();
@@ -6642,6 +6773,33 @@ OpfsFileSystemImpl
 			for (vint i = common; i < source.Count(); i++) result.Add(L"..");
 			for (vint i = common; i < target.Count(); i++) result.Add(target[i]);
 			return FilePath::ComponentsToPath(result);
+		}
+
+		FileInfo GetFileInfo(const FilePath& path) const override
+		{
+			auto handle = GetOpfsHandle(path, false);
+			if (handle.isNull()) handle = GetOpfsHandle(path, true);
+			CHECK_ERROR(!handle.isNull(), L"vl::filesystem::OpfsFileSystemImpl::GetFileInfo()#Entry does not exist.");
+			auto result = CompleteOpfsOperation(OpfsReadInfo(handle.as_handle()));
+			CHECK_ERROR(result, L"vl::filesystem::OpfsFileSystemImpl::GetFileInfo()#Cannot read metadata.");
+			auto data = val::take_ownership(result);
+			FileInfo info;
+			info.isDirectory = data["directory"].as<bool>();
+			info.canRead = true;
+			info.canWrite = true;
+			if (!info.isDirectory)
+			{
+				info.size = static_cast<vuint64_t>(data["size"].as<double>());
+				auto modified = data["modified"].as<double>();
+				if (modified >= 0) info.lastModifiedTime = DateTime::FromOSInternal(static_cast<vuint64_t>(modified));
+			}
+			return info;
+		}
+
+		bool FileCopy(const FilePath&, const FilePath&) const override
+		{
+			// OPFS cannot set file timestamps, so it cannot preserve copy metadata.
+			return false;
 		}
 
 		bool FileDelete(const FilePath& path) const override { return DeleteEntry(path, false); }

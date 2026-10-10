@@ -110,8 +110,8 @@ namespace gacbuild
 
 	void RequireOutput(const FilePath& path)
 	{
-		auto info = GetFileInfo(path);
-		Require(info && info.Value().size > 0, L"Missing or empty output: " + path.GetFullPath());
+		File file(path);
+		Require(file.Exists() && file.GetFileInfo().size > 0, L"Missing or empty output: " + path.GetFullPath());
 	}
 
 	void RunGacGen(const Options& options, const FilePath& input, Nullable<FilePath> mapping, xml::Parser& parser)
@@ -146,9 +146,9 @@ namespace gacbuild
 				for (auto entry : entries)
 				{
 					auto source = Attribute(entry, L"Source");
-					Require(IsAbsolutePath(source), L"Deployment source must be absolute.");
+					Require(FilePath::IsAbsolutePath(source), L"Deployment source must be absolute.");
 					auto destination = Attribute(entry, L"Destination");
-					Require(IsAbsolutePath(destination), L"Deployment destination must be absolute.");
+					Require(FilePath::IsAbsolutePath(destination), L"Deployment destination must be absolute.");
 					CopyEntry copy{ .source = source, .destination = destination };
 					RequireOutput(copy.source);
 					copies.Add(copy);
@@ -162,7 +162,7 @@ namespace gacbuild
 			if (cpp32.IsFile())
 			{
 				auto output = ReadText(cpp32);
-				Require(IsAbsolutePath(output) && output == ReadText(cpp64), L"C++ destinations must match and be absolute.");
+				Require(FilePath::IsAbsolutePath(output) && output == ReadText(cpp64), L"C++ destinations must match and be absolute.");
 				FilePath destination(output);
 				EnsureFolder(destination);
 				cppDestination = destination;
@@ -210,7 +210,7 @@ namespace gacbuild
 			for (auto&& copy : copies)
 			{
 				Console::WriteLine(L"Copying: " + copy.source.GetFullPath() + L" => " + copy.destination.GetFullPath());
-				CopyFileNative(copy.source, copy.destination);
+				Require(File(copy.source).CopyToFile(copy.destination, false), L"Cannot copy " + copy.source.GetFullPath() + L" to " + copy.destination.GetFullPath());
 			}
 		}
 		catch (...)
@@ -293,7 +293,6 @@ namespace gacbuild
 		}
 		List<WString> relativePaths;
 		for (auto&& path : resourcePaths) relativePaths.Add(path.Sub(root.GetFullPath().Length(), path.Length() - root.GetFullPath().Length()));
-		WriteLines(log / L"ResourceFiles.txt", relativePaths);
 
 		List<Ptr<Resource>> resources;
 		Dictionary<WString, Ptr<Resource>> named;
@@ -332,22 +331,25 @@ namespace gacbuild
 					if (!resource->dependencies.Contains(name)) resource->dependencies.Add(name);
 				}
 			}
-			vuint64_t latestInput = 0;
+			Nullable<DateTime> latestInput;
 			auto inputElements = xml::XmlGetElements(inputs, L"Input");
 			for (auto input : inputElements)
 			{
 				auto path = Attribute(input, L"Path");
-				auto info = GetFileInfo(FilePath(path));
-				Require(info, L"Resource input is unavailable: " + path);
-				if (info.Value().modified > latestInput) latestInput = info.Value().modified;
+				File file(path);
+				Require(file.Exists(), L"Resource input is unavailable: " + path);
+				auto modified = file.GetFileInfo().lastModifiedTime;
+				Require(modified, L"Resource input modification time is unavailable: " + path);
+				if (!latestInput || modified.Value() > latestInput.Value()) latestInput = modified;
 			}
 			auto outputElements = xml::XmlGetElements(outputs, L"Output");
 			vint outputCount = 0;
 			for (auto output : outputElements)
 			{
 				outputCount++;
-				auto info = GetFileInfo(FilePath(Attribute(output, L"Path")));
-				if (!info || info.Value().modified < latestInput) resource->outdated = true;
+				File file(Attribute(output, L"Path"));
+				auto modified = file.Exists() ? file.GetFileInfo().lastModifiedTime : Nullable<DateTime>();
+				if (!modified || (latestInput && modified.Value() < latestInput.Value())) resource->outdated = true;
 			}
 			Require(outputCount == 10, L"Expected ten standard cache outputs.");
 			resources.Add(resource);
@@ -357,46 +359,36 @@ namespace gacbuild
 				named.Add(resource->name, resource);
 			}
 		}
+		Group<WString, WString> dependencies;
 		for (auto resource : resources)
 		{
-			for (auto&& dependency : resource->dependencies) Require(named.Keys().Contains(dependency), L"Resource " + resource->name + L" depends on missing resource " + dependency);
+			for (auto&& dependency : resource->dependencies)
+			{
+				Require(named.Keys().Contains(dependency), L"Resource " + resource->name + L" depends on missing resource " + dependency);
+				Require(dependency != resource->name, L"Resource depends on itself: " + resource->name);
+				dependencies.Add(resource->name, dependency);
+			}
 		}
 		List<Ptr<Resource>> ordered;
-		SortedList<WString> completed;
-		List<WString> anonymousPaths;
-		List<WString> namedPaths;
-		for (auto resource : resources) if (resource->name.Length() == 0) { ordered.Add(resource); anonymousPaths.Add(resource->path.GetFullPath()); }
-		while (completed.Count() < named.Count())
+		for (auto resource : resources) if (resource->name.Length() == 0) ordered.Add(resource);
+		PartialOrderingProcessor ordering;
+		ordering.InitWithGroup(named.Keys(), dependencies);
+		ordering.Sort();
+		for (auto&& component : ordering.components)
 		{
-			auto before = completed.Count();
-			for (vint i = 0; i < named.Count(); i++)
-			{
-				auto resource = named.Values()[i];
-				if (completed.Contains(resource->name)) continue;
-				bool ready = true;
-				for (auto&& dependency : resource->dependencies) if (!completed.Contains(dependency)) ready = false;
-				if (!ready) continue;
-				for (auto&& dependency : resource->dependencies) if (named[dependency]->outdated) resource->outdated = true;
-				completed.Add(resource->name);
-				ordered.Add(resource);
-				namedPaths.Add(resource->path.GetFullPath());
-			}
-			Require(completed.Count() > before, L"Resource dependency graph contains a cycle.");
+			Require(component.nodeCount == 1, L"Resource dependency graph contains a cycle involving: " + named.Keys()[component.firstNode[0]]);
+			auto resource = named.Values()[component.firstNode[0]];
+			for (auto&& dependency : resource->dependencies) if (named[dependency]->outdated) resource->outdated = true;
+			ordered.Add(resource);
 		}
-		List<WString> candidates;
-		for (auto resource : ordered) if (resource->outdated) candidates.Add(resource->path.GetFullPath());
 		List<WString> mappings;
 		for (vint i = 0; i < named.Count(); i++) mappings.Add(named.Keys()[i] + L"=>" + named.Values()[i]->path.GetFullPath());
 		auto mapping = log / L"ResourceNamedMapping.txt";
-		WriteLines(log / L"ResourceAnonymousFiles.txt", anonymousPaths);
-		WriteLines(log / L"ResourceNamedFiles.txt", namedPaths);
-		WriteLines(log / L"BuildCandidates.txt", candidates);
 		WriteLines(mapping, mappings);
-		if (options.dump) return;
 		for (auto resource : ordered)
 		{
 			Console::WriteLine((resource->outdated ? WString(L"[BUILD] ") : WString(L"[SKIPPED] ")) + resource->path.GetFullPath());
-			if (resource->outdated) RunGacGen(options, resource->path, Nullable<FilePath>(mapping), parser);
+			if (resource->outdated && !options.dump) RunGacGen(options, resource->path, Nullable<FilePath>(mapping), parser);
 		}
 	}
 
