@@ -1352,6 +1352,9 @@
     [1350, "SolidBackground"],
     [1351, "SolidBorder"],
     [1352, "SolidLabel"],
+    [1353, "SolidBackground"],
+    [1354, "SolidBorder"],
+    [1355, "SolidLabel"],
     [1356, "SolidBackground"],
     [1357, "SolidBorder"],
     [1358, "SolidLabel"],
@@ -1757,9 +1760,9 @@
     [1758, "SolidBackground"],
     [1759, "SolidBorder"],
     [1760, "SolidLabel"],
-    [1761, "SolidBackground"],
-    [1762, "SolidBorder"],
-    [1763, "SolidLabel"],
+    [1857, "SolidBackground"],
+    [1858, "SolidBorder"],
+    [1859, "SolidLabel"],
     [1860, "SolidBackground"],
     [1861, "SolidBorder"],
     [1862, "SolidLabel"],
@@ -2165,6 +2168,12 @@
     [2262, "SolidBackground"],
     [2263, "SolidBorder"],
     [2264, "SolidLabel"],
+    [2265, "SolidBackground"],
+    [2266, "SolidBorder"],
+    [2267, "SolidLabel"],
+    [2268, "SolidBackground"],
+    [2269, "SolidBorder"],
+    [2270, "SolidLabel"],
     [2271, "SolidBackground"],
     [2272, "SolidBorder"],
     [2273, "SolidLabel"],
@@ -2576,15 +2585,15 @@
     [2679, "SolidBackground"],
     [2680, "SolidBorder"],
     [2681, "SolidLabel"],
-    [2682, "SolidBackground"],
-    [2683, "SolidBorder"],
-    [2684, "SolidLabel"],
     [2685, "SolidBackground"],
     [2686, "SolidBorder"],
     [2687, "SolidLabel"],
     [2688, "SolidBackground"],
     [2689, "SolidBorder"],
     [2690, "SolidLabel"],
+    [2691, "SolidBackground"],
+    [2692, "SolidBorder"],
+    [2693, "SolidLabel"],
     [2694, "SolidBackground"],
     [2695, "SolidBorder"],
     [2696, "SolidLabel"],
@@ -3023,15 +3032,15 @@
     [3129, "SolidBackground"],
     [3130, "SolidBorder"],
     [3131, "SolidLabel"],
-    [3132, "SolidBackground"],
-    [3133, "SolidBorder"],
-    [3134, "SolidLabel"],
     [3135, "SolidBackground"],
     [3136, "SolidBorder"],
     [3137, "SolidLabel"],
     [3138, "SolidBackground"],
     [3139, "SolidBorder"],
     [3140, "SolidLabel"],
+    [3141, "SolidBackground"],
+    [3142, "SolidBorder"],
+    [3143, "SolidLabel"],
     [3144, "SolidBackground"],
     [3145, "SolidBorder"],
     [3146, "SolidLabel"],
@@ -3322,16 +3331,7 @@
     [3431, "SolidLabel"],
     [3432, "SolidBackground"],
     [3433, "SolidBorder"],
-    [3434, "SolidLabel"],
-    [3435, "SolidBackground"],
-    [3436, "SolidBorder"],
-    [3437, "SolidLabel"],
-    [3438, "SolidBackground"],
-    [3439, "SolidBorder"],
-    [3440, "SolidLabel"],
-    [3441, "SolidBackground"],
-    [3442, "SolidBorder"],
-    [3443, "SolidLabel"]
+    [3434, "SolidLabel"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
@@ -3661,7 +3661,7 @@
       "root": null
     },
     {
-      "frameId": 78,
+      "frameId": 79,
       "frameName": "Rotate (RightDown)",
       "windowSize": {
         "bounds": {
@@ -3688,7 +3688,7 @@
       "root": null
     },
     {
-      "frameId": 80,
+      "frameId": 81,
       "frameName": "Select First",
       "windowSize": {
         "bounds": {
@@ -3715,7 +3715,7 @@
       "root": null
     },
     {
-      "frameId": 85,
+      "frameId": 86,
       "frameName": "Select Last",
       "windowSize": {
         "bounds": {
@@ -3742,7 +3742,7 @@
       "root": null
     },
     {
-      "frameId": 92,
+      "frameId": 93,
       "frameName": "Reset",
       "windowSize": {
         "bounds": {
