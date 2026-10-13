@@ -22,25 +22,27 @@ When **Direction** is **Horizontal**, it only reacts to changing to its width. W
 
 ## \<ResponsiveGroup\>::LevelCount
 
-This property represents how many different view it could have. It is the largest **LevelCount** of all managed **GuiResponsiveCompositionBase**.
+This property represents how many different views the group can have. It is the largest of 1, the number of **ViewSizes** entries, and the **LevelCount** of every managed **GuiResponsiveCompositionBase**.
 
-If there is no managed **GuiResponsiveCompositionBase**, **LevelCount** is 1.
+**ViewSizes** contributes permanent levels even without managed children. With an empty array and no managed children, **LevelCount** is 1.
 
 ## \<ResponsiveGroup\>::CurrentLevel
 
 This property represents the current view of a **\<ResponsiveGroup/\>**.
 
-The smallest view is 0, the largest view is **LevelCount** - 1.
+The smallest view is 0, the largest view is **LevelCount** - 1. The group takes the largest current level among its permanent **ViewSizes** contribution and its managed children.
 
 ## \<ResponsiveGroup\>::ViewSizes
 
 **ViewSizes** is an optional integer array of preferred minimum sizes indexed by **CurrentLevel**. Write entries from small to large: entry 0 belongs to level 0. This order is the reverse of the largest-first **Views** collection of **\<ResponsiveView/\>**.
 
-For an array with **N** entries and current level **L**, use **ViewSizes[L]** when **L \< N**. Otherwise use **ViewSizes[N - 1] + (L - N + 1)**. For example, **{64 230}** selects 64, 230 and 231 at levels 0, 1 and 2. Entries beyond the child-derived **LevelCount** are stored but unused; they do not create levels.
+An array with **N** entries contributes **N** permanent levels. Assigning it initializes its own current level to **N - 1**, like a newly configured **\<ResponsiveView/\>**. These levels and their current state remain available when all responsive children are removed. Children can contribute additional levels; children with fewer levels stay at their largest view.
+
+For an array with **N** entries and current level **L**, use **ViewSizes[L]** when **L \< N**. Otherwise use **ViewSizes[N - 1] + (L - N + 1)**. For example, **{64 230}** contributes levels 0 and 1 with sizes 64 and 230. If a child contributes level 2, its preferred size is 231.
 
 **Horizontal** applies the selected value to **PreferredMinSize.x** and preserves its height. **Vertical** applies it to **PreferredMinSize.y** and preserves its width. **Both** applies the same value to both components. The group reapplies the value on assignment, level or direction changes, and minimum-size measurement. Manually setting an affected component of **PreferredMinSize** does not override **ViewSizes**.
 
-The default empty array disables this behavior. Clearing an assigned array stops further overrides and keeps the current stored **PreferredMinSize**; it does not restore the value from before assignment. Normal bounds measurement still applies, so children, elements and margins can require more space than the selected preference. With zero margins, a nonzero level is retained at its effective minimum and lowered below that minimum; growing to the next level's effective minimum admits that level.
+The default empty array leaves levels entirely determined by managed children and disables size overrides. Clearing an assigned array removes its permanent level contribution, stops further overrides and keeps the current stored **PreferredMinSize**; it does not restore the value from before assignment. Normal bounds measurement still applies, so children, elements and margins can require more space than the selected preference. With zero margins, a nonzero level is retained at its effective minimum and lowered below that minimum; growing to the next level's effective minimum admits that level.
 
 Both literal XML forms below are supported without an eval binder. Child content is omitted here. In C++, **SetViewSizes(const collections::Array\<vint\>&)** copies the array; **GetViewSizes()** returns a const reference containing only the configured entries, without extrapolated values. Reflection exposes an assignable typed integer-array property.
 ```XML
@@ -54,7 +56,7 @@ Both literal XML forms below are supported without an eval binder. Child content
 </ResponsiveGroup>
 ```
 
-With virtualized lists, initialize newly realized responsive rows to their group's established level before attaching them. Removing all rows temporarily leaves **LevelCount == 1** and **CurrentLevel == 0**, regardless of the array length. Retain the intended level separately while reloading rows. **ReloadVisibleStyles()** clears rows immediately; replacement rows can appear during the call or during later layout. Suppress nested reloads until replacement rows restore that level. Restoring level zero may change the level count without raising **CurrentLevelChanged**. Keep the arranger's row-height reset when switching between compact and detailed templates.
+With virtualized lists, initialize newly realized responsive rows to their group's established level before attaching them. With **ViewSizes** supplying the row appearances, removing all rows preserves the configured levels and the group's own current level. Replacement rows can use **group.CurrentLevel** directly, without separate application fields or restoration handlers. Keep the movie group's original **CurrentLevelChanged** handler calling **ReloadVisibleStyles()** to reset the arranger's row height when switching between compact and detailed templates. Only configured levels are permanent; levels contributed solely by removed children disappear.
 
 ## Choosing a view
 
