@@ -45,7 +45,7 @@ An outer `Row` or `Column` has the additional grid rules below.
 
 Nested `<ez:Layout/>` is supported, but strongly discouraged for composing layout groups. Use one owning `<ez:Layout/>` and nest descriptor groups instead: docking, fills, and grids can be combined at different levels within the grammar below. Each group has its own arrangement and grid options, so changing one group's direction or tracks does not change unrelated groups. Direction inheritance still applies where no explicit direction is given. Descriptor nesting also keeps padding consistent and applies the owning layout's border only once.
 
-A nested `ez:Layout` counts as one composition, with its own settings. Reserve it for content that needs a separate layout owner or independent padding and border, rather than merely a different arrangement.
+A nested `ez:Layout` counts as one composition, with its own settings. Reserve it for content that needs an unsupported layout, a separate layout owner or independent padding and border, rather than merely a different arrangement. Currently `ez:Layout` does not implement `SharedSizeRoot`, `SharedSizeItem` and `Responsive*`, using them along with `ez:Layout` may need nested `ez:Layout`.
 
 A control contributes its existing `BoundsComposition`. The layout stretches ordinary bounds payloads to their assigned area by setting all four alignment values to zero. A directly nested `ez:Layout` keeps its own border alignment. Existing control names, bindings, events, and child content are preserved.
 
