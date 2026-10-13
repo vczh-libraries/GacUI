@@ -114,6 +114,16 @@ the implementation is overall good but we need a few improvements:
   - You need to figure out if each of my statement is true before execution.
 - I would like you to think about further optimization, it seems `EasyResponsiveState.MovieLevel` exists due to the need to aligning layout across movie items, because it is a list control, and account items do not need them because it is just a scrollable stack. It is interesting to see there is an empty `ResponsiveView` at [EasyLayoutResponsiveWindow.xml](Test/Resources/App/FullControlTest/EasyLayoutResponsiveWindow.xml) L105 in a responsive group storing the account list, do you think this trick works after converting the scroll container to a list control? Because a list control is a scroll container with an equivalent repeat stack to implement virtual list, I think this should be doable? Then we could apply the same trick to both list, so that the complete `EasyResponsiveState` could be deleted. What do you think? Implement this idea if it is doable.
 
+## UPDATE
+
+A few more thing to do:
+
+- The main ez:Layout should have a 5 pixel get to the top and keep 0 on other 3 direction
+- When the easy layout responsive window stretches and shrinks, the movie item will keep the new/bigger height, I guess calling IItemArranger::ReloadVisibleStyles could fix the issue. GuiResponsiveCompositionBase::CurrentLevelChanged could be a good place to do it, find the best responsive composition to attach the event,
+- Check the last commit, execute and delete added commits in [Project.md](Project.md) .
+
+To verify, no need to perform full verification, just verify this easy layout responsive window.
+
 # TEST [CONFIRMED]
 
 Follow the eight verification checks in the problem description. Establish the missing responsive action and existing spelling as the baseline, then verify authored resources, generated consumers, modal lifecycle, palette refresh, four measured layouts, retained selection and virtualization using the shared UIA wrappers and automation Controls/Dom. Record generated C++, Workflow binary and native remote renderer coverage separately.
@@ -122,6 +132,7 @@ Follow the eight verification checks in the problem description. Establish the m
 
 - No.1 XML-owned vertical tab and independent responsive navigation/movie groups [CONFIRMED]
 - No.2 Window-owned selection and state-free virtual responsive lists [CONFIRMED]
+- No.3 Reset movie row measurements when the responsive group changes level [CONFIRMED]
 
 ## No.1 XML-owned vertical tab and independent responsive navigation/movie groups
 
@@ -297,3 +308,29 @@ The requested visual/resource changes are complete: images are linked through th
 | Upstream Workflow | Complete required Win32/x64, generated C++, stdio and TypeScript matrix passed; authored fix and canonical release pushed. |
 
 The recorded coverage limits remain: the Workflow host's tab-header UIA geometry is checked through Controls, Win32 Workflow palette teardown exceeded the harness timing in diagnostic runs, and the scroll provider's valid-horizontal/invalid-vertical ordering and parent-disabled behavior were reviewed in source rather than a dedicated runtime fixture. Physical desktop input, multi-monitor/DPI scenarios, GacJS, Linux and macOS were not exercised. These limits do not replace the successful required x64 wrappers or the focused native-renderer checks. Final source and harness review found no further actionable defects; the working diff passes whitespace checks.
+
+## No.3 Reset movie row measurements when the responsive group changes level
+
+This extends the confirmed No.2 implementation. The fixed-height virtual repeat keeps its maximum measured row height until its size cache is invalidated. `IItemArranger::ReloadVisibleStyles` calls `ResetLayout(true)`, clearing both the realized styles and cached size. Attach the handler to `movieGroup.CurrentLevelChanged`: its `LevelUp`/`LevelDown` implementations finish visiting all responsive children before calculating and raising the group level change. Attaching to an individual row or the width-forwarding view would rebuild rows during that traversal. The width view remains attached during reload, keeping the group's level stable; the existing factory initializes replacement rows from it.
+
+`ez:Layout.BuildLayout` assigns its own border alignment. Name the main layout and set its alignment to `{left:0 top:5 right:0 bottom:0}` in the window constructor after XML initialization, retaining `Border="false"` and the surrounding shared-size root.
+
+The latest commit, `fd25c5f9a`, added three inventory instructions as comments in `<GacUI repo>/Project.md`. Complete the generated tool-source and Unix configuration inventories from their actual resource configurations and `vmake` files, then remove those comments. Preserve the new requirement to commit generated outputs separately from authored changes.
+
+### CODE CHANGE
+
+Add a focused `ResponsiveWindow` UIA scenario that reuses the modal resize, virtualization, selection and close checks without palette or unrelated layout verification. Capture the initial compact movie row height and require it to return after repeated rich/compact transitions. Check the five-pixel top inset and zero remaining insets using Controls geometry. First reproduce the height failure with the existing binary, then regenerate resources and build Debug x64 for the focused hosted and native C++ consumers. The user's narrowed verification scope supersedes the usual full suites, metadata runs and palette coverage for this XML-only change.
+
+The focused old-binary UIA regression reproduced the stale cache at 96 DPI: compact rows start at 26 pixels, rich rows grow to 106 pixels, and the first return to 240-by-320 compact layout retains 106 pixels. The new height assertion fails at appearance #0. No native runtime-error dialog appeared; the wrapper closed its owned process and released the endpoint. The authored fix uses the group event and constructor alignment exactly as proposed. The SOP now explicitly checks the top-only gap and repeated row-height contraction.
+
+Canonical `GacUI_Compiler` generation completed with exit zero for both x86 and x64, including final merges. Only FullControlTest generated outputs changed; there are no untracked resource-error files or whitespace errors. The generated constructor applies the top inset after `BuildLayout`, and both architectures attach the arranger reload to the movie group. The generated diff's larger size is mainly closure renumbering caused by the new event handler.
+
+The full Debug x64 incremental solution build passed in 1:33 with zero warnings/errors. Both fresh focused entry wrappers then rebuilt successfully and passed: hosted `<GacUI repo>/Test/UIA_CppTest.ps1 -Scenario ResponsiveWindow -AsPort 8888` completed 1,529 assertions; native `<GacUI repo>/Test/UIA_CppTest_Metaonly.ps1 -Scenario ResponsiveWindow -AsPort 8890` completed 1,533. In both runs, the measured compact row height was 26 pixels, every rich appearance used 106 pixels, and both subsequent returns to compact restored 26 pixels. Selection, virtualization, short/tall list scrolling and all three modal close paths passed. Each owned app closed normally, released its endpoint and left no runtime-error dialog or surviving process.
+
+### CONFIRMED
+
+No.3 is the final refinement of the retained No.1/No.2 implementation. The failing old-binary regression now passes in both C++ window modes: the arranger's cached 106-pixel rich height is discarded at the completed group transition, so newly realized compact rows measure 26 pixels again. Repeated resizing and scrolling continue to use the existing width view and factories without additional state. All three close paths succeed.
+
+A focused hosted Controls inspection at 440 by 320 measured the surrounding content bounds as `(216,136)-(640,411)` and the main layout/generated bounds and `Table:2*1` as `(216,141)-(640,411)`. This proves an exact five-pixel top gap and zero left/right/bottom gaps. The earlier `Table:2*5` candidate was the window chrome; the final measurement follows the inner content ancestry to the main layout table. The inspection's app also completed normal shutdown.
+
+All three instructions added as comments by `fd25c5f9a` are completed and removed from `<GacUI repo>/Project.md`: the two generated tool source directories are documented, and the Unix inventory lists all nine Test/Linux and four Tools `vmake` configurations. Each listed configuration exists. The new generated-versus-authored commit requirement remains in place. Final review and `git diff --check` found no further issues. Verification was deliberately limited to this responsive window on Windows Debug x64 at 96 DPI, as requested; no full unit suite, metadata test, palette cycle or other platform run was performed for this continuation.

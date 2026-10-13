@@ -470,7 +470,7 @@ public static class GacUIShowcaseTests
         "Penguin Random House", "HarperCollins", "Simon & Schuster", "Hachette Book Group",
         "Macmillan Publishers", "Scholastic", "Bloomsbury", "Oxford University Press"
     };
-    static void ResponsiveLayout()
+    static void ResponsiveLayout(bool includePalette = true)
     {
         Test("Layout / vertical headers and responsive modal action");
         if (isWorkflowBinary) Console.WriteLine("COVERAGE LIMIT: Workflow UIA tab items expose page-content bounds; header geometry uses Controls. C++ consumers require UIA header bounds.");
@@ -529,6 +529,8 @@ public static class GacUIShowcaseTests
             if (close == "OK")
             {
                 var list = Named(dialog, "Movies", ControlType.List);
+                double compactMovieHeight = ResponsiveMovieRowHeight(dialog);
+                Console.WriteLine("COMPACT MOVIE HEIGHT " + compactMovieHeight);
                 CheckRejectedScrollRequests(list);
                 var items = Items(list);
                 Check(items.Count == 24, "real movie list exposes all 24 items");
@@ -542,10 +544,15 @@ public static class GacUIShowcaseTests
                 Pattern<InvokePattern>(Named(accountPopup, "HarperCollins", ControlType.MenuItem), InvokePattern.Pattern).Invoke();
                 Wait(() => menu.Current.ExpandCollapseState == ExpandCollapseState.Collapsed, "account choice closes menu");
                 string selectedAccount = "HarperCollins";
-                foreach (var size in new[] { new[] { 350, 320, 1 }, new[] { 440, 320, 2 }, new[] { 680, 320, 3 }, new[] { 680, 220, 3 }, new[] { 680, 520, 3 }, new[] { 440, 320, 2 }, new[] { 350, 320, 1 }, new[] { 240, 320, 0 } })
+                foreach (var size in new[] { new[] { 350, 320, 1 }, new[] { 440, 320, 2 }, new[] { 680, 320, 3 }, new[] { 680, 220, 3 }, new[] { 680, 520, 3 }, new[] { 440, 320, 2 }, new[] { 350, 320, 1 }, new[] { 240, 320, 0 }, new[] { 350, 320, 1 }, new[] { 240, 320, 0 } })
                 {
                     ResizeResponsive(dialog, size[0], size[1]);
                     CheckResponsiveAppearance(dialog, size[2]);
+                    Wait(() => size[2] == 0
+                        ? Math.Abs(ResponsiveMovieRowHeight(dialog) - compactMovieHeight) < 1
+                        : ResponsiveMovieRowHeight(dialog) > compactMovieHeight,
+                        "movie row height follows responsive appearance #" + size[2]);
+                    Console.WriteLine("MOVIE HEIGHT #" + size[2] + " " + ResponsiveMovieRowHeight(dialog));
                     list = Named(dialog, "Movies", ControlType.List);
                     var selected = Pattern<SelectionPattern>(list, SelectionPattern.Pattern).Current.GetSelection();
                     Check(selected.Length == 1 && selected[0].Current.Name == "Vertigo", "movie selection survives view change");
@@ -603,7 +610,7 @@ public static class GacUIShowcaseTests
             layout = Named(root, "Layout", ControlType.TabItem);
             launch = Named(layout, "Easy Layout (Responsive)", ControlType.Button);
         }
-        ResponsivePalette();
+        if (includePalette) ResponsivePalette();
     }
 
     static void CloseResponsiveTitleBar()
@@ -830,6 +837,12 @@ public static class GacUIShowcaseTests
         double scale = GetDpiForWindow(new IntPtr(root.Current.NativeWindowHandle)) / 96.0;
         Pattern<TransformPattern>(dialog, TransformPattern.Pattern).Resize(outer.Width + (width - client.Width) * scale, outer.Height + (height - client.Height) * scale);
         Wait(() => { var settled = SnapshotBounds(ResponsiveSnapshot()); return settled.Width == width && settled.Height == height; }, "settled responsive client " + width + "x" + height);
+    }
+
+    static double ResponsiveMovieRowHeight(AutomationElement dialog)
+    {
+        var list = Named(dialog, "Movies", ControlType.List);
+        return Named(list, "Jeanne Dielman, 23 quai du Commerce, 1080 Bruxelles", ControlType.ListItem).Current.BoundingRectangle.Height;
     }
 
     static Dictionary<string, object> FindResponsiveList(object tree, HashSet<string> movieNames, bool movies)
@@ -2134,6 +2147,7 @@ public static class GacUIShowcaseTests
             if (scenario == "All" || scenario == "Refresh") RefreshLists();
             if (scenario == "All" || scenario == "Calendar") Calendars();
             if (scenario == "All" || scenario == "Layout" || scenario == "Responsive") ResponsiveLayout();
+            if (scenario == "ResponsiveWindow") ResponsiveLayout(false);
             if (scenario == "ResponsivePalette") ResponsivePalette();
             if (scenario == "All" || scenario == "Layout") { EasyLayout(); EasyLayoutTables(); }
             if (scenario == "All" || scenario == "Walk") WalkTabs(root, 0);

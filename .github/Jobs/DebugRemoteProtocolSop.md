@@ -321,7 +321,10 @@ Use a fresh application state.
    no unexpected window growth and a visible bottom-right OK/Cancel footer
    outside the responsive area. Both footer buttons have equal widths. In
    detailed rows, the 96-by-96 image spans both rows to the left of the title
-   above the director. The main easy layout has no outside padding.
+   above the director. The main easy layout has a five-pixel top gap and zero
+   outside padding on the other three sides. Movie rows return to their initial
+   compact height after shrinking from detailed to title-only content; repeat
+   the grow/shrink cycle to check that the larger row height is not retained.
 3. Select a movie and a different account. Scroll the real movie list and
    resize across all four appearances. Require the same data and selection,
    valid scrolling and correct item hit targets. Scroll to previously unseen

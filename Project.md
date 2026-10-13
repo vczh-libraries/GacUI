@@ -51,7 +51,8 @@ always fix the root cause.
 - `REPO-ROOT/Source/UnitTestUtilities/SnapshotViewer/Source`
 - `REPO-ROOT/Source/Compiler/InstanceQuery/Generated`
 - `REPO-ROOT/Source/Compiler/RemoteProtocol/Generated`
-<!-- complete the list to include ./Tools generated files and delete this comment -->
+- `<GacUI repo>/Tools/GitView/GitView/Source`
+- `<GacUI repo>/Tools/UiaList/UiaList/Source`
 
 Files in `REPO-ROOT/Import` and `REPO-ROOT/Release` (recursively) are also not allowed to modify.
 These files are prepared for foreign dependencies.
@@ -229,6 +230,8 @@ Keep test apps simple without introducing unnecessary "gracefully recovering".
 
 Whenever `Test/Resources/App/FullControlTest` changes, update and run `Test/UIA_CppTest.ps1` and `Test/UIA_CppTest_Metaonly.ps1` so the showcase and its UIA expectations stay synchronized. The entry wrappers share launch/cleanup logic in `Test/UIA_CppTest_Shared.ps1` and assertions in `Test/UIA_CppTest_Shared.cs`. Add targeted role, name, pattern, state and bounds assertions for new behavior; generic tab traversal alone is insufficient. The Easy Layout checks cover its five mixed docking controls, selection/toggling, equal outer heights, resizing, rebuilding and palette refresh.
 
+Both entry wrappers accept `-Scenario ResponsiveWindow` for focused Easy Layout responsive modal checks, including repeated row-height contraction, scrolling, selection and closing. This scenario omits palette cycles and the other layout pages.
+
 Use Windows with the UIAutomationClient/UIAutomationTypes assemblies, an out-of-process MTA client and rebuilt Debug x64 binaries. The wrappers build and launch fresh processes, preserve project user arguments and shut down their owned processes. `Test/UIA_CppTest.ps1 -AsPort 8888` exercises hosted logical windows sharing one HWND; `Test/UIA_CppTest_Metaonly.ps1 -AsPort 8890` exercises ordinary native windows. Inspect owned HWNDs with EnumWindows when MainWindowHandle is unavailable, and check for native runtime-error dialogs after timeouts. Desktop focus and multi-monitor DPI checks require a suitable interactive session; record unavailable coverage explicitly.
 
 `Tools/UiaList` is the native UIA inspector. Read `Tools/UiaList/AGENTS.md` and `Tools/UiaList/Verification/README.md`, build its separate solution with the repository wrapper, and use `Tools/UiaList/Verification/Inspector.ps1` for geometry-based inspection. Its automation endpoint is Debug-only: run with `/AsPort:8891` and use `http://localhost:8891/Automation/UiaListApp/Controls` and `/IO` beside CppTest on 8888 and CppTest_Metaonly on 8890. The verification fixture and `Smoke.ps1 -GetterRegression` check explicit refresh, cached presentation, edits/readback and asynchronous generations. Use UiaList's preview and Nodes view to review showcase changes; preview clicks select cached nodes without sending target input.
@@ -295,17 +298,22 @@ RVM RPC uses the exact logical channels `ViewModelChannel` and `ViewModelReadyCh
 
 ## Linux/macOS Specific
 
-`REPO-ROOT/Test/Linux` stores linux configurations for:
-- `Metadata_Generate`: `Metadata_Generate.vcxproj`.
-- `Metadata_Test`: `Metadata_Test.vcxproj`.
-- `GacUI_Compiler`: `GacUI_Compiler.vcxproj`.
-- `RemotingTest_Core`: `RemotingTest_Core.vcxproj`.
-- `RemotingTest_RvmHost`: `RemotingTest_RvmHost/vmake`.
-- `UnitTest`: `UnitTest.vcxproj`.
-<!-- complete the list -->
+`<GacUI repo>/Test/Linux` stores Linux configurations for:
+- `Metadata_Generate`: `<GacUI repo>/Test/Linux/Metadata_Generate/vmake`.
+- `Metadata_Test`: `<GacUI repo>/Test/Linux/Metadata_Test/vmake`.
+- `GacUI_Compiler`: `<GacUI repo>/Test/Linux/GacUI_Compiler/vmake`.
+- `RemotingTest_Core`: `<GacUI repo>/Test/Linux/RemotingTest_Core/vmake`.
+- `RemotingTest_RvmHost`: `<GacUI repo>/Test/Linux/RemotingTest_RvmHost/vmake`.
+- `UnitTest`: `<GacUI repo>/Test/Linux/UnitTest/vmake`.
+- `WasmFCT`: `<GacUI repo>/Test/Linux/WasmFCT/vmake`.
+- `WasmRPT`: `<GacUI repo>/Test/Linux/WasmRPT/vmake`.
+- `WasmRVMT`: `<GacUI repo>/Test/Linux/WasmRVMT/vmake`.
 
-`REPO-ROOT/Tools` stores linux configurations for:
-<!-- enumerate Tools folder configurations -->
+`<GacUI repo>/Tools` stores Linux configurations for:
+- `GacBuild`: `<GacUI repo>/Tools/GacBuild/vmake`.
+- `GacGen`: `<GacUI repo>/Tools/GacGen/vmake`.
+- `GitTui`: `<GacUI repo>/Tools/GitView/Linux/GitTui/vmake`.
+- `GitViewTests`: `<GacUI repo>/Tools/GitView/Linux/GitViewTests/vmake`.
 
 `Metadata_UpdateProtocol` is not included. If it is needed, create it and remove this line.
 

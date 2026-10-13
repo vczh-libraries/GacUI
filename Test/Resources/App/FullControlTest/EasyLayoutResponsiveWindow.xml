@@ -99,13 +99,14 @@
         }
       ]]></ref.Members>
       <ref.Ctor><![CDATA[{
+        mainLayout.AlignmentToParent = {left:0 top:5 right:0 bottom:0};
         self.InitializeData();
         accountList.SetSelected(0, true);
         self.ClientSize = {x:240 y:320};
       }]]></ref.Ctor>
       <Window ref.Name="self" Text="Easy Layout (Responsive)" ClientSize="x:240 y:320" SizeBox="true" MaximizedBox="false" MinimizedBox="false">
         <SharedSizeRoot AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-          <ez:Layout Border="false">
+          <ez:Layout ref.Name="mainLayout" Border="false">
             <ez:Fill>
               <ResponsiveContainer>
                 <att.ResponsiveTarget>
@@ -115,6 +116,9 @@
                         <ResponsiveContainer AlignmentToParent="left:0 top:0 right:0 bottom:0">
                           <att.ResponsiveTarget>
                             <ResponsiveGroup ref.Name="movieGroup" Direction="Horizontal">
+                              <ev.CurrentLevelChanged-eval><![CDATA[{
+                                movieList.Arranger.ReloadVisibleStyles();
+                              }]]></ev.CurrentLevelChanged-eval>
                               <!-- The list viewport isolates item minima. Forward the two row-width requirements here. -->
                               <ResponsiveView ref.Name="movieWidth" Direction="Horizontal">
                                 <att.Views>
