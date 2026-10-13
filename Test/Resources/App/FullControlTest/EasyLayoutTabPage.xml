@@ -54,9 +54,9 @@
     </Instance>
   </Instance>
 
-  <Instance name="EazyLayoutTablePageResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::EazyLayoutTablePage">
-      <TabPage Text="Eazy Layout (Table)">
+  <Instance name="EasyLayoutTablePageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::EasyLayoutTablePage">
+      <TabPage Text="Easy Layout (Table)">
         <ez:Layout ref.Name="layout">
           <ez:Top>
             <ez:Left>

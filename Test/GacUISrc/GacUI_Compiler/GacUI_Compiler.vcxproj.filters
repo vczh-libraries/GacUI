@@ -213,6 +213,15 @@
     <Xml Include="..\..\Resources\App\FullControlTest\EasyLayoutTabPage.xml">
       <Filter>Resource Files\FullControlTest</Filter>
     </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\EasyLayoutResponsiveTemplates.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\EasyLayoutResponsiveWindow.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\VerticalTabTemplate.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files\TuiControlTest">

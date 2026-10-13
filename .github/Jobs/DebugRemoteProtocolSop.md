@@ -282,7 +282,62 @@ Use a fresh application state.
    Use the replacement renderer's canonical platform name and require no fatal
    error or unexpected disconnect.
 
-### 5. Close the Application
+### 5. Verify the Vertical Layout Tabs and Palette Refresh
+
+1. Activate `Layout`. Require its left-hand headers, from top to bottom, to be
+   `Repeat`, `Responsive`, `Easy Layout`, and `Easy Layout (Table)`. Select each
+   and require its existing content. With the nested tab focused, verify Up/Down
+   selection and the displayed ALT access keys.
+2. Require `Easy Layout (Responsive)` to be a button below the headers, outside
+   the page collection. Its top must be five layout pixels below the last
+   header. The AfterHeaders region fills the remaining rail height; resizing
+   must not spread the headers or move this button to the bottom.
+3. Select `Easy Layout`, type a marker in its editor and change its checkbox
+   and choice selection. Visit `Window Manager`, choose `Default`, `Ember`,
+   `Aurora`, then `Default` again, returning to `Layout` after each choice.
+   Require the selected subpage and control state to survive. Require the rail
+   background, border/accent and selected header to use the current palette
+   immediately, before hovering. Hover another header and check its current
+   palette color. Recheck the five-pixel button gap after each template refresh.
+
+### 6. Verify the Easy Layout Responsive Modal
+
+1. Activate `Easy Layout (Responsive)`. Require exactly one modal window with
+   that title and an actual settled client size of 240 by 320. The showcase
+   owner is disabled while this window is open. The window remains resizable.
+2. Widen the client gradually and require these appearances in order, then
+   shrink it and require the reverse order:
+
+   | Appearance | Account navigation | Movie rows | Reference client size |
+   | --- | --- | --- | --- |
+   | #0 | `Subscribed Accounts` menu | Movie titles only | 240 by 320 |
+   | #1 | `Subscribed Accounts` menu | Image, title and author | 350 by 320 |
+   | #2 | Icon-only options | Image, title and author | 440 by 320 |
+   | #3 | Icon-and-name options | Image, title and author | 680 by 320 |
+
+   These sizes were observed with Windows Direct2D at 96 DPI. Record the actual
+   client dimensions for each run: font and renderer measurements can move the
+   thresholds. At every step require stable layout,
+   no unexpected window growth and a visible bottom-right OK/Cancel footer
+   outside the responsive area. In detailed rows, the image spans both rows
+   to the left of the title above the author.
+3. Select a movie and a different account. Scroll the real movie list and
+   resize across all four appearances. Require the same data and selection,
+   valid scrolling and correct item hit targets. Scroll to previously unseen
+   rows in each appearance: all visible rows must agree on title-only versus
+   detailed content. Account names disappear before movie detail disappears.
+4. At a wide width, reduce height enough to require account scrolling, reach
+   the last account, then increase height. Reference sizes are 680 by 220 and
+   680 by 520. Check the movie and account scroll
+   areas independently and require the footer to remain reachable.
+5. Close with `OK`, reopen and close with `Cancel`, then reopen and close with
+   the title-bar close action. Each fresh opening starts at 240 by 320; each
+   close restores owner input and leaves the showcase running. Repeated
+   openings must not accumulate windows or handlers. Repeat an opening under
+   a changed palette and require legible, current colors in both custom and
+   standard controls.
+
+### 7. Close the Application
 
 1. In GacJS, use the renderer's visible `Force Exit` control. In a native
    renderer, activate the application's top-level `Exit` tab and then activate

@@ -1,9 +1,10 @@
 param(
-    [ValidateSet('CppTest','CppTest_Metaonly','Playground')][string]$Application,
+    [ValidateSet('CppTest','CppTest_Metaonly','GacUI_Host','Playground')][string]$Application,
     [ValidateRange(1,65535)][int]$AsPort,
+    [ValidateSet('Win32','x64')][string]$Platform = 'x64',
     [int]$ClientProcessId = 0,
     [string]$BusyClick = '',
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime')][string]$Scenario = 'All',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime')][string]$Scenario = 'All',
     [switch]$HostedFixture,
     [switch]$GdiFixture,
     [switch]$SkipBuild
@@ -18,10 +19,10 @@ if ($ClientProcessId) {
         catch { [Console]::Error.WriteLine($_.Exception.ToString()); exit 1 }
         exit 0
     }
-    Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, WindowsBase
-    Add-Type -Path (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase
+    Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions
+    Add-Type -Path (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions
     [GacUIShowcaseTests]::BusyCommand = $BusyClick
-    try { [GacUIShowcaseTests]::Run($ClientProcessId, ($Application -eq 'CppTest' -or $HostedFixture), $Scenario, $AsPort) }
+    try { [GacUIShowcaseTests]::Run($ClientProcessId, ($Application -eq 'CppTest' -or $HostedFixture), $Scenario, $AsPort, $Application) }
     catch { [Console]::Error.WriteLine($_.Exception.ToString()); exit 1 }
     exit 0
 }
@@ -46,9 +47,9 @@ function Assert-Target {
     if ([ShowcaseWindows]::Crashed($owned.Id)) { throw "Target PID $($owned.Id) has a blocking native runtime error dialog." }
 }
 if (!$SkipBuild) {
-    Write-Host "TEST $Application / build Debug x64"
+    Write-Host "TEST $Application / build Debug $Platform"
     Push-Location $solution
-    try { & (Join-Path $repository '.github/Scripts/copilotBuild.ps1') -Configuration Debug -Platform x64 }
+    try { & (Join-Path $repository '.github/Scripts/copilotBuild.ps1') -Configuration Debug -Platform $Platform }
     finally { Pop-Location }
     if ($LASTEXITCODE -ne 0) { throw 'Showcase build failed.' }
     $buildLog = Get-Content (Join-Path $repository '.github/Scripts/Build.log') -Raw
@@ -65,7 +66,7 @@ try {
     else { [xml]$settings = '<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" />' }
     # The execution wrapper reads this configuration; preserve all other user settings.
     $group = $settings.CreateElement('PropertyGroup', $settings.DocumentElement.NamespaceURI)
-    $group.SetAttribute('Condition', "'`$(Configuration)|`$(Platform)'=='Debug|x64'")
+    $group.SetAttribute('Condition', "'`$(Configuration)|`$(Platform)'=='Debug|$Platform'")
     foreach ($existing in $settings.DocumentElement.ChildNodes) {
         if ($existing.Condition -eq $group.Condition) {
             foreach ($oldArgument in @($existing.ChildNodes | Where-Object LocalName -EQ 'LocalDebuggerCommandArguments')) { $null = $existing.RemoveChild($oldArgument) }
@@ -81,7 +82,7 @@ try {
     $before = @(Get-Process $Application -ErrorAction SilentlyContinue | ForEach-Object Id)
     Write-Host "TEST $Application / launch /AsPort:$AsPort"
     $wrapper = Join-Path $repository '.github/Scripts/copilotExecute.ps1'
-    $launcher = Start-Process powershell.exe -WindowStyle Hidden -WorkingDirectory $solution -ArgumentList @('-NoProfile','-File',"`"$wrapper`"",'-Mode','CLI','-Executable',$Application,'-Configuration','Debug','-Platform','x64') -PassThru
+    $launcher = Start-Process powershell.exe -WindowStyle Hidden -WorkingDirectory $solution -ArgumentList @('-NoProfile','-File',"`"$wrapper`"",'-Mode','CLI','-Executable',$Application,'-Configuration','Debug','-Platform',$Platform) -PassThru
     # Windows PowerShell needs a retained handle to read ExitCode after exit.
     $launcherHandle = $launcher.Handle
     $deadline = [DateTime]::UtcNow.AddSeconds(30)

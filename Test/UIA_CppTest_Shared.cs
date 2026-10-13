@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Web.Script.Serialization;
 using System.Windows.Automation;
 using System.Windows.Automation.Text;
 
@@ -69,6 +70,7 @@ public static class GacUIShowcaseTests
     [DllImport("user32.dll")] static extern bool GetMonitorInfo(IntPtr monitor, ref MonitorInfo info);
     [StructLayout(LayoutKind.Sequential)] struct NativePoint { public int X, Y; }
     [DllImport("user32.dll")] static extern bool ScreenToClient(IntPtr hwnd, ref NativePoint point);
+    [DllImport("user32.dll")] static extern bool ClientToScreen(IntPtr hwnd, ref NativePoint point);
     [DllImport("user32.dll")] static extern uint GetDpiForWindow(IntPtr hwnd);
     [DllImport("user32.dll", SetLastError=true)] static extern bool PostMessage(IntPtr hwnd, uint message, IntPtr wParam, IntPtr lParam);
     [DllImport("kernel32.dll", CharSet=CharSet.Unicode)] static extern IntPtr OpenEvent(uint access, bool inherit, string name);
@@ -99,12 +101,12 @@ public static class GacUIShowcaseTests
         Pointer("MouseMove", x + dx, y + dy);
         Pointer("LeftUp", x + dx, y + dy);
     }
-    static void Input(string command)
+    static void Input(string command, string endpoint = null)
     {
         using (var client = new System.Net.WebClient())
         {
             client.Headers[System.Net.HttpRequestHeader.ContentType] = "application/json; charset=utf8";
-            var response = Encoding.UTF8.GetString(client.UploadData(inputEndpoint, Encoding.UTF8.GetBytes(command)));
+            var response = Encoding.UTF8.GetString(client.UploadData(endpoint ?? inputEndpoint, Encoding.UTF8.GetBytes(command)));
             Check(response == "Queued", "input accepted: " + response);
         }
     }
@@ -117,6 +119,7 @@ public static class GacUIShowcaseTests
     static int ownedProcess;
     public static string BusyCommand;
     static bool isHosted;
+    static bool isWorkflowBinary;
     // The Windows event IDs exist in UIAutomationTypes but its managed public
     // surface omits these two identifiers. Register them for this client.
     static AutomationEvent NativeEvent(int id, string name)
@@ -160,10 +163,10 @@ public static class GacUIShowcaseTests
     }
     static void Check(bool condition, string message) { if (!condition) throw new Exception(message); assertions++; }
     static void Test(string name) { Console.WriteLine("TEST " + name); }
-    static void Wait(Func<bool> predicate, string message)
+    static void Wait(Func<bool> predicate, string message, int timeout = 10000)
     {
         var timer = Stopwatch.StartNew();
-        while (timer.ElapsedMilliseconds < 10000) { if (predicate()) { assertions++; return; } Thread.Sleep(30); }
+        while (timer.ElapsedMilliseconds < timeout) { if (predicate()) { assertions++; return; } Thread.Sleep(30); }
         throw new Exception("Timed out: " + message);
     }
     static List<AutomationElement> Find(AutomationElement parent, ControlType type, TreeScope scope = TreeScope.Descendants)
@@ -190,6 +193,11 @@ public static class GacUIShowcaseTests
         var page = Named(parent, name, ControlType.TabItem);
         var selection = Pattern<SelectionItemPattern>(page, SelectionItemPattern.Pattern);
         selection.Select(); Wait(() => selection.Current.IsSelected, name + " selection");
+        if (name == "Layout")
+        {
+            ControlsSnapshot(); // Read on the UI thread after the deferred template installation.
+            page = Named(parent, name, ControlType.TabItem);
+        }
         return page;
     }
     static AutomationElement RebuiltLayoutPage(string name)
@@ -458,6 +466,398 @@ public static class GacUIShowcaseTests
             CheckFocus(day, "calendar focus");
         }
     }
+    static void ResponsiveLayout()
+    {
+        Test("Layout / vertical headers and responsive modal action");
+        if (isWorkflowBinary) Console.WriteLine("COVERAGE LIMIT: Workflow UIA tab items expose page-content bounds; header geometry uses Controls. C++ consumers require UIA header bounds.");
+        var layout = Page(root, "Layout");
+        layout = Named(root, "Layout", ControlType.TabItem);
+        var headers = new[] { "Repeat", "Responsive", "Easy Layout", "Easy Layout (Table)" };
+        var previous = System.Windows.Rect.Empty;
+        foreach (var name in headers)
+        {
+            var header = Named(layout, name, ControlType.TabItem);
+            Wait(() => LayoutHeaderBounds(layout, name).Width > 0 && LayoutHeaderBounds(layout, name).Height > 0, "settled Layout header " + name);
+            var bounds = LayoutHeaderBounds(layout, name);
+            Check(bounds.Width > 0 && bounds.Height > 0, "visible Layout header " + name);
+            if (!previous.IsEmpty) Check(bounds.Top >= previous.Bottom && Math.Abs(bounds.Left - previous.Left) <= 2, "vertical header order " + name);
+            previous = bounds;
+            Pattern<SelectionItemPattern>(header, SelectionItemPattern.Pattern).Select();
+            Check(Pattern<SelectionItemPattern>(header, SelectionItemPattern.Pattern).Current.IsSelected, "Layout selection " + name);
+        }
+        var launch = Named(layout, "Easy Layout (Responsive)", ControlType.Button);
+        Absent(launch, SelectionItemPattern.Pattern);
+        double scale = GetDpiForWindow(new IntPtr(root.Current.NativeWindowHandle)) / 96.0;
+        Check(Math.Abs(launch.Current.BoundingRectangle.Top - previous.Bottom - 5 * scale) <= scale, "five-pixel launch gap");
+        Check(FindNamed(layout, "Easy Layout (Responsive)", ControlType.TabItem) == null, "responsive action is outside the page collection");
+        var lastHeader = Named(layout, "Easy Layout (Table)", ControlType.TabItem);
+        var nestedTab = Pattern<SelectionItemPattern>(lastHeader, SelectionItemPattern.Pattern).Current.SelectionContainer;
+        Check(nestedTab.Current.Orientation == OrientationType.Vertical, "vertical tab orientation");
+        Check(lastHeader.Current.AccessKey == "T" && launch.Current.AccessKey == "W", "header and launch ALT keys retained");
+        nestedTab.SetFocus();
+        Press("Up");
+        Wait(() => Pattern<SelectionItemPattern>(Named(layout, "Easy Layout", ControlType.TabItem), SelectionItemPattern.Pattern).Current.IsSelected, "Up follows vertical tab order");
+        Press("Down");
+        Wait(() => Pattern<SelectionItemPattern>(lastHeader, SelectionItemPattern.Pattern).Current.IsSelected, "Down follows vertical tab order");
+        Press("Alt");
+        PressRenderedAlt("CheckBox", "Easy Layout");
+        Wait(() => Pattern<SelectionItemPattern>(Named(layout, "Easy Layout", ControlType.TabItem), SelectionItemPattern.Pattern).Current.IsSelected, "ALT selects a vertical header");
+        Page(layout, "Easy Layout (Table)");
+
+        foreach (var close in new[] { "OK", "Cancel", "Title bar" })
+        {
+            Test("responsive modal / " + close);
+            if (close == "Cancel")
+            {
+                Press("Alt");
+                PressRenderedAlt("Button", "Easy Layout (Responsive)");
+            }
+            else Pattern<InvokePattern>(launch, InvokePattern.Pattern).Invoke();
+            AutomationElement dialog = null;
+            Wait(() => { dialog = ResponsiveDialog(); return dialog != null; }, "one responsive modal opens");
+            Check(Pattern<WindowPattern>(dialog, WindowPattern.Pattern).Current.IsModal, "responsive window is modal");
+            Check(!root.Current.IsEnabled, "owner disabled while modal is open");
+            Wait(() => { var client = SnapshotBounds(ResponsiveSnapshot()); return client.Width == 240 && client.Height == 320; }, "initial 240 by 320 client area");
+            dialog = SettledResponsiveDialog();
+            Check(Pattern<TransformPattern>(dialog, TransformPattern.Pattern).Current.CanResize, "responsive modal can resize");
+            CheckResponsiveAppearance(dialog, 0);
+
+            if (close == "OK")
+            {
+                var list = Named(dialog, "Movies", ControlType.List);
+                var items = Items(list);
+                Check(items.Count == 24, "real movie list exposes all 24 items");
+                Pattern<SelectionItemPattern>(items[1], SelectionItemPattern.Pattern).Select();
+                var menu = Pattern<ExpandCollapsePattern>(Named(dialog, "Subscribed Accounts", ControlType.MenuItem), ExpandCollapsePattern.Pattern);
+                menu.Expand();
+                AutomationElement accountPopup = null;
+                Wait(() => { accountPopup = Popup(ControlType.Menu); return accountPopup != null; }, "account menu opens");
+                Pattern<InvokePattern>(Named(accountPopup, "City Lights", ControlType.MenuItem), InvokePattern.Pattern).Invoke();
+                Wait(() => menu.Current.ExpandCollapseState == ExpandCollapseState.Collapsed, "account choice closes menu");
+                foreach (var size in new[] { new[] { 350, 320, 1 }, new[] { 440, 320, 2 }, new[] { 680, 320, 3 }, new[] { 680, 220, 3 }, new[] { 680, 520, 3 }, new[] { 440, 320, 2 }, new[] { 350, 320, 1 }, new[] { 240, 320, 0 } })
+                {
+                    ResizeResponsive(dialog, size[0], size[1]);
+                    CheckResponsiveAppearance(dialog, size[2]);
+                    list = Named(dialog, "Movies", ControlType.List);
+                    var selected = Pattern<SelectionPattern>(list, SelectionPattern.Pattern).Current.GetSelection();
+                    Check(selected.Length == 1 && selected[0].Current.Name == "Movie 2: A journey home", "movie selection survives view change");
+                    var scroll = Pattern<ScrollPattern>(list, ScrollPattern.Pattern);
+                    scroll.SetScrollPercent(ScrollPattern.NoScroll, 100);
+                    CheckResponsiveAppearance(dialog, size[2]);
+                    Check(scroll.Current.VerticalScrollPercent > 0, "movie list scrolls at every appearance");
+                    scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
+                    if (size[2] >= 2)
+                    {
+                        Check(Pattern<TogglePattern>(Named(dialog, "City Lights", ControlType.CheckBox), TogglePattern.Pattern).Current.ToggleState == ToggleState.On, "account selection survives navigation changes");
+                        if (size[1] == 220)
+                        {
+                            var accounts = dialog.FindFirst(TreeScope.Descendants, new AndCondition(new PropertyCondition(AutomationElement.NameProperty, "Accounts"), new PropertyCondition(AutomationElement.IsScrollPatternAvailableProperty, true)));
+                            Check(accounts != null, "account rail exposes scrolling");
+                            var accountScroll = Pattern<ScrollPattern>(accounts, ScrollPattern.Pattern);
+                            accountScroll.SetScrollPercent(ScrollPattern.NoScroll, 100);
+                            Wait(() => !Named(dialog, "Weekend Movies", ControlType.CheckBox).Current.IsOffscreen, "last account reachable at short height");
+                            Check(accountScroll.Current.VerticalScrollPercent > 0, "short account rail scrolls independently");
+                            accountScroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
+                        }
+                    }
+                }
+            }
+            if (close == "Title bar") CloseResponsiveTitleBar();
+            else Invoke(dialog, close);
+            Wait(() => ResponsiveDialog() == null && root.Current.IsEnabled, "modal closes and owner input returns");
+            layout = Named(root, "Layout", ControlType.TabItem);
+            launch = Named(layout, "Easy Layout (Responsive)", ControlType.Button);
+        }
+        ResponsivePalette();
+    }
+
+    static void CloseResponsiveTitleBar()
+    {
+        var window = ResponsiveSnapshot();
+        var bounds = SnapshotBounds(window);
+        var close = System.Windows.Rect.Empty;
+        foreach (var node in SnapshotNodes(window["composition"]))
+        {
+            object control;
+            if (!node.TryGetValue("control", out control) || (string)control != "Button") continue;
+            var candidate = SnapshotBounds(node);
+            if (candidate.Width > 0 && candidate.Top < bounds.Top + 40 && (close.IsEmpty || candidate.Right > close.Right)) close = candidate;
+        }
+        Check(!close.IsEmpty, "rendered title-bar close button");
+        if (isHosted)
+        {
+            Input("!LeftClick:" + (int)(close.Left + close.Width / 2) + "," + (int)(close.Top + close.Height / 2));
+        }
+        else
+        {
+            // Native caption hit testing is handled by Windows, outside automation IO.
+            var hwnd = new IntPtr(ResponsiveDialog().Current.NativeWindowHandle);
+            Check(hwnd != IntPtr.Zero && PostMessage(hwnd, 0x0112, new IntPtr(0xF060), IntPtr.Zero), "native caption SC_CLOSE accepted");
+        }
+    }
+
+    static System.Windows.Rect LayoutHeaderBounds(AutomationElement layout, string name)
+    {
+        if (!isWorkflowBinary) return Named(layout, name, ControlType.TabItem).Current.BoundingRectangle;
+        var bounds = SnapshotBounds(SnapshotControl(ControlsSnapshot(), "CheckBox", name));
+        var hwnd = new IntPtr(root.Current.NativeWindowHandle);
+        double scale = GetDpiForWindow(hwnd) / 96.0;
+        var origin = new NativePoint();
+        Check(ClientToScreen(hwnd, ref origin), "convert Workflow header bounds to screen");
+        return new System.Windows.Rect(origin.X + bounds.X * scale, origin.Y + bounds.Y * scale, bounds.Width * scale, bounds.Height * scale);
+    }
+
+    static void PressRenderedAlt(string theme, string caption)
+    {
+        string key = null;
+        Wait(() =>
+        {
+            var control = SnapshotControl(ControlsSnapshot(), theme, caption);
+            foreach (var node in SnapshotNodes(control))
+            {
+                object role;
+                if (!node.TryGetValue("control", out role) || (string)role != "ShortcutKey") continue;
+                foreach (var label in SnapshotNodes(node))
+                {
+                    object text;
+                    if (label.TryGetValue("elementText", out text)) { key = ((string)text).Replace("[", "").Replace("]", ""); return key.Length > 0; }
+                }
+            }
+            return false;
+        }, "rendered ALT sequence for " + caption);
+        Console.WriteLine("ALT " + caption + " = " + key);
+        foreach (char letter in key) Press(letter.ToString());
+    }
+
+    static bool SnapshotHas(object tree, string key, string expected)
+    {
+        foreach (var node in SnapshotNodes(tree))
+        {
+            object value;
+            if (node.TryGetValue(key, out value) && (string)value == expected) return true;
+        }
+        return false;
+    }
+
+    static Dictionary<string, object> SnapshotControl(object tree, string theme, string text)
+    {
+        foreach (var node in SnapshotNodes(tree))
+        {
+            object control;
+            if (node.TryGetValue("control", out control) && (string)control == theme && SnapshotHas(node, "elementText", text)) return node;
+        }
+        throw new Exception("Missing rendered " + theme + ": " + text);
+    }
+
+    static void ResponsivePalette()
+    {
+        var hwnd = new IntPtr(root.Current.NativeWindowHandle);
+        var tablePage = Page(Page(root, "Layout"), "Easy Layout (Table)");
+        var editor = Pattern<ValuePattern>(Find(tablePage, ControlType.Edit)[0], ValuePattern.Pattern);
+        string originalText = editor.Current.Value;
+        editor.SetValue("Vertical template retained state");
+        foreach (var colors in new[] {
+            new[] { "Default", "#007ACCFF", "#1C97EAFF", "#3399FFFF" },
+            new[] { "Ember", "#B66332FF", "#D2834AFF", "#C77540FF" },
+            new[] { "Aurora", "#168A7AFF", "#31AA97FF", "#299C89FF" },
+            new[] { "Default", "#007ACCFF", "#1C97EAFF", "#3399FFFF" }
+        })
+        {
+            Test("vertical template palette / " + colors[0]);
+            Input("!MouseMove:0,0");
+            var manager = Page(root, "Window Manager");
+            var radio = Named(manager, colors[0], ControlType.RadioButton);
+            var selection = Pattern<SelectionItemPattern>(radio, SelectionItemPattern.Pattern);
+            bool changed = !selection.Current.IsSelected;
+            selection.Select();
+            if (changed) Wait(() => { try { var name = radio.Current.Name; return false; } catch (ElementNotAvailableException) { return true; } }, "palette replaced");
+            root = AutomationElement.FromHandle(hwnd);
+            var layout = Page(root, "Layout");
+            // A Debug palette refresh rebuilds the complete showcase before laying out its new templates.
+            Wait(() => SnapshotBounds(SnapshotControl(ControlsSnapshot(), "CheckBox", "Repeat")).Width > 0, "palette header layout settles", 60000);
+            var selected = Named(layout, "Easy Layout (Table)", ControlType.TabItem);
+            Check(Pattern<SelectionItemPattern>(selected, SelectionItemPattern.Pattern).Current.IsSelected, "vertical template refresh retains selected page");
+            Check(Pattern<ValuePattern>(Find(selected, ControlType.Edit)[0], ValuePattern.Pattern).Current.Value == "Vertical template retained state", "vertical template refresh retains editor state");
+            var tab = SnapshotControl(ControlsSnapshot(), "RibbonTab", "Easy Layout (Responsive)");
+            Check(SnapshotHas(tab, "element", "Background:#2D2D30FF,Rectangle") && SnapshotHas(tab, "element", "Border:#434346FF,Rectangle"), "vertical template background and border");
+            Wait(() => SnapshotHas(SnapshotControl(ControlsSnapshot(), "CheckBox", "Easy Layout (Table)"), "element", "Background:" + colors[1] + ",Rectangle"), "selected header uses current palette before hover");
+            var lastHoverBounds = System.Windows.Rect.Empty;
+            Wait(() => {
+                var repeat = SnapshotBounds(SnapshotControl(ControlsSnapshot(), "CheckBox", "Repeat"));
+                if (repeat != lastHoverBounds) { Console.WriteLine("HOVER " + colors[0] + " " + repeat); lastHoverBounds = repeat; }
+                if (repeat.Width <= 0 || repeat.Height <= 0) return false;
+                Input("!MouseMove:" + (int)(repeat.Left + repeat.Width / 2) + "," + (int)(repeat.Top + repeat.Height / 2));
+                return SnapshotHas(SnapshotControl(ControlsSnapshot(), "CheckBox", "Repeat"), "element", "Background:" + colors[2] + ",Rectangle");
+            }, "hovered header uses current palette");
+            var launch = Named(layout, "Easy Layout (Responsive)", ControlType.Button);
+            double scale = GetDpiForWindow(hwnd) / 96.0;
+            Check(Math.Abs(launch.Current.BoundingRectangle.Top - LayoutHeaderBounds(layout, "Easy Layout (Table)").Bottom - 5 * scale) <= scale, "launch gap survives palette refresh");
+            Pattern<InvokePattern>(launch, InvokePattern.Pattern).Invoke();
+            AutomationElement dialog = null;
+            Wait(() => { dialog = ResponsiveDialog(); return dialog != null; }, "modal opens under current palette");
+            dialog = SettledResponsiveDialog();
+            CheckResponsiveAppearance(dialog, 0);
+            Check(SnapshotHas(ResponsiveSnapshot(), "element", "Background:#252526FF,Rectangle"), "modal list uses current content background");
+            ResizeResponsive(dialog, 680, 320);
+            CheckResponsiveAppearance(dialog, 3);
+            var account = SnapshotControl(ResponsiveSnapshot(), "CheckBox", "Northwind Studio");
+            Check(SnapshotHas(account, "element", "Background:" + colors[3] + ",Rectangle"), "custom selected account uses current palette");
+            Invoke(dialog, "Cancel");
+            Wait(() => ResponsiveDialog() == null && root.Current.IsEnabled, "palette modal restores owner");
+        }
+        tablePage = Page(Page(root, "Layout"), "Easy Layout (Table)");
+        Pattern<ValuePattern>(Find(tablePage, ControlType.Edit)[0], ValuePattern.Pattern).SetValue(originalText);
+    }
+
+    static AutomationElement ResponsiveDialog()
+    {
+        var windows = isHosted ? Find(root, ControlType.Window) : OwnedWindows();
+        AutomationElement found = null;
+        foreach (var window in windows)
+        {
+            string name;
+            try { name = window.Current.Name; }
+            catch (ElementNotAvailableException) { continue; } // A closing HWND can disappear after enumeration.
+            if (name != "Easy Layout (Responsive)") continue;
+            Check(found == null, "only one responsive modal is active");
+            found = window;
+        }
+        return found;
+    }
+
+    static AutomationElement SettledResponsiveDialog()
+    {
+        AutomationElement dialog = null;
+        Wait(() => {
+            dialog = ResponsiveDialog();
+            if (dialog == null) return false;
+            var ok = FindNamed(dialog, "OK", ControlType.Button);
+            var cancel = FindNamed(dialog, "Cancel", ControlType.Button);
+            return ok != null && cancel != null && !ok.Current.BoundingRectangle.IsEmpty && !cancel.Current.BoundingRectangle.IsEmpty;
+        }, "responsive modal publishes its laid-out UIA controls");
+        return dialog;
+    }
+
+    static IEnumerable<Dictionary<string, object>> SnapshotNodes(object value)
+    {
+        var map = value as Dictionary<string, object>;
+        if (map != null)
+        {
+            yield return map;
+            foreach (var child in map.Values) foreach (var node in SnapshotNodes(child)) yield return node;
+        }
+        else
+        {
+            var array = value as object[];
+            if (array != null) foreach (var child in array) foreach (var node in SnapshotNodes(child)) yield return node;
+        }
+    }
+
+    static Dictionary<string, object> ResponsiveSnapshot()
+    {
+        foreach (var node in SnapshotNodes(ControlsSnapshot()))
+        {
+            object title;
+            if (node.TryGetValue("title", out title) && (string)title == "Easy Layout (Responsive)") return node;
+        }
+        throw new Exception("Responsive window missing from Controls");
+    }
+
+    static Dictionary<string, object> ControlsSnapshot()
+    {
+        using (var client = new System.Net.WebClient())
+        {
+            var json = new JavaScriptSerializer { MaxJsonLength = 16 * 1024 * 1024, RecursionLimit = 512 };
+            return (Dictionary<string, object>)json.DeserializeObject(client.DownloadString(inputEndpoint.Substring(0, inputEndpoint.Length - 3) + "/Controls"));
+        }
+    }
+
+    static System.Windows.Rect SnapshotBounds(Dictionary<string, object> node)
+    {
+        var bounds = (Dictionary<string, object>)node["bounds"];
+        double x = Convert.ToDouble(bounds["x1"]), y = Convert.ToDouble(bounds["y1"]);
+        return new System.Windows.Rect(x, y, Convert.ToDouble(bounds["x2"]) - x, Convert.ToDouble(bounds["y2"]) - y);
+    }
+
+    static void ResizeResponsive(AutomationElement dialog, int width, int height)
+    {
+        var client = SnapshotBounds(ResponsiveSnapshot());
+        var outer = dialog.Current.BoundingRectangle;
+        double scale = GetDpiForWindow(new IntPtr(root.Current.NativeWindowHandle)) / 96.0;
+        Pattern<TransformPattern>(dialog, TransformPattern.Pattern).Resize(outer.Width + (width - client.Width) * scale, outer.Height + (height - client.Height) * scale);
+        Wait(() => { var settled = SnapshotBounds(ResponsiveSnapshot()); return settled.Width == width && settled.Height == height; }, "settled responsive client " + width + "x" + height);
+    }
+
+    static void CheckResponsiveAppearance(AutomationElement dialog, int level)
+    {
+        string observed = "";
+        Wait(() =>
+        {
+            int movies = 0, authors = 0, images = 0, accountNames = 0;
+            bool menu = false;
+            foreach (var node in SnapshotNodes(ResponsiveSnapshot()["composition"]))
+            {
+                object value;
+                if (node.TryGetValue("elementText", out value))
+                {
+                    string text = (string)value;
+                    if (text.StartsWith("Movie ")) movies++;
+                    if (text.StartsWith("by: ")) authors++;
+                    if (text == "Subscribed Accounts") menu = true;
+                    if (text == "Northwind Studio") accountNames++;
+                }
+                if (node.TryGetValue("element", out value) && (string)value == "Image")
+                {
+                    var bounds = SnapshotBounds(node);
+                    if (bounds.Width > 16 && bounds.Height > 16) images++;
+                }
+            }
+            string counts = "menu=" + menu + "; movies=" + movies + "; authors=" + authors + "; images=" + images + "; account names=" + accountNames;
+            if (counts != observed) { Console.WriteLine("RENDER " + counts); observed = counts; }
+            return movies > 0 && menu == (level < 2) && (level == 0 ? authors == 0 && images == 0 : authors == movies && images == movies + (level >= 2 ? 8 : 0)) && accountNames == (level == 3 ? 1 : 0);
+        }, "responsive appearance #" + level);
+        string footerBounds = "";
+        Wait(() => {
+            var ok = Named(dialog, "OK", ControlType.Button).Current.BoundingRectangle;
+            var cancel = Named(dialog, "Cancel", ControlType.Button).Current.BoundingRectangle;
+            var list = Named(dialog, "Movies", ControlType.List).Current.BoundingRectangle;
+            string current = "OK=" + ok + "; Cancel=" + cancel + "; Movies=" + list;
+            bool valid = ok.Width > 0 && cancel.Width > 0 && Math.Abs(ok.Top - cancel.Top) < 2 && ok.Right <= cancel.Left && list.Bottom <= ok.Top;
+            if (!valid && current != footerBounds) Console.WriteLine("FOOTER " + current);
+            footerBounds = current;
+            return valid;
+        }, "visible footer below the movie viewport");
+        if (level > 0)
+        {
+            var titles = new List<System.Windows.Rect>();
+            var authors = new List<System.Windows.Rect>();
+            var icons = new List<System.Windows.Rect>();
+            Dictionary<string, object> listNode = null;
+            foreach (var node in SnapshotNodes(ResponsiveSnapshot()["composition"]))
+            {
+                object control;
+                if (node.TryGetValue("control", out control) && (string)control == "TextList") { listNode = node; break; }
+            }
+            Check(listNode != null, "rendered movie list viewport");
+            foreach (var node in SnapshotNodes(listNode))
+            {
+                object value;
+                if (node.TryGetValue("elementText", out value))
+                {
+                    if (((string)value).StartsWith("Movie ")) titles.Add(SnapshotBounds(node));
+                    if (((string)value).StartsWith("by: ")) authors.Add(SnapshotBounds(node));
+                }
+                if (node.TryGetValue("element", out value) && (string)value == "Image") icons.Add(SnapshotBounds(node));
+            }
+            Check(titles.Count == authors.Count && titles.Count == icons.Count && titles.Count > 0, "one image and author for each rich movie row");
+            for (int i = 0; i < titles.Count; i++)
+            {
+                Check(icons[i].Width == 64 && icons[i].Height == 64 && icons[i].Right < titles[i].Left && titles[i].Left == authors[i].Left && titles[i].Top < authors[i].Top && icons[i].Top <= titles[i].Top && icons[i].Bottom >= authors[i].Bottom, "square image spans title and author rows without overlap: image=" + icons[i] + "; title=" + titles[i] + "; author=" + authors[i]);
+            }
+        }
+        Console.WriteLine("LAYOUT #" + level + " client=" + SnapshotBounds(ResponsiveSnapshot()).Size);
+    }
+
     static void EasyLayout()
     {
         Test("Layout / Easy Layout / mixed docking controls");
@@ -655,8 +1055,8 @@ public static class GacUIShowcaseTests
     }
     static void EasyLayoutTables()
     {
-        Test("Layout / Eazy Layout (Table) / independent shared grids");
-        var page = Page(Page(root, "Layout"), "Eazy Layout (Table)");
+        Test("Layout / Easy Layout (Table) / independent shared grids");
+        var page = Page(Page(root, "Layout"), "Easy Layout (Table)");
         var hwnd = new IntPtr(root.Current.NativeWindowHandle);
         double scale = GetDpiForWindow(hwnd) / 96.0;
         Func<string, System.Windows.Rect> bounds = name => Named(page, name, ControlType.Text).Current.BoundingRectangle;
@@ -760,7 +1160,7 @@ public static class GacUIShowcaseTests
         for (int iteration = 0; iteration < 2; iteration++) {
             Test("table rebuild / " + (iteration == 0 ? "mouse" : "Invoke"));
             if (iteration == 0) Click(Named(page, "Rebuild tables", ControlType.Button)); else Invoke(page, "Rebuild tables");
-            page = RebuiltLayoutPage("Eazy Layout (Table)");
+            page = RebuiltLayoutPage("Easy Layout (Table)");
             Wait(() => {
                 var column = FindNamed(page, "Shared 120", ControlType.Text);
                 var row = FindNamed(page, "Shared 40", ControlType.Text);
@@ -776,7 +1176,7 @@ public static class GacUIShowcaseTests
             }
         }
         Page(Page(root, "Layout"), "Easy Layout");
-        page = Page(Page(root, "Layout"), "Eazy Layout (Table)");
+        page = Page(Page(root, "Layout"), "Easy Layout (Table)");
         geometry();
         foreach (var palette in new[] { "Ember", "Default" }) {
             Test("table palette refresh / " + palette);
@@ -785,7 +1185,7 @@ public static class GacUIShowcaseTests
             Pattern<SelectionItemPattern>(radio, SelectionItemPattern.Pattern).Select();
             Wait(() => { try { var name = radio.Current.Name; return false; } catch (ElementNotAvailableException) { return true; } }, "table palette refresh completed");
             root = AutomationElement.FromHandle(hwnd);
-            page = Page(Page(root, "Layout"), "Eazy Layout (Table)");
+            page = Page(Page(root, "Layout"), "Easy Layout (Table)");
             Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000);
             Check(Pattern<ValuePattern>(Find(page, ControlType.Edit)[0], ValuePattern.Pattern).Current.Value == retainedText, "palette refresh retains table payload");
             geometry();
@@ -1538,14 +1938,15 @@ public static class GacUIShowcaseTests
         Check(failures.Count == 0, "UIA review 3 failures: " + string.Join("; ", failures.ToArray()));
     }
 
-    public static void Run(int processId, bool hosted, string scenario, int port)
+    public static void Run(int processId, bool hosted, string scenario, int port, string application)
     {
         Check(Thread.CurrentThread.GetApartmentState() == ApartmentState.MTA, "client must be MTA");
         IntPtr hwnd = IntPtr.Zero;
         Wait(() => { EnumWindows((h,p) => { uint id; GetWindowThreadProcessId(h,out id); var text=new StringBuilder(256); GetClassName(h,text,256); if (id==processId && text.ToString()=="VczhWindow" && IsWindowVisible(h)) hwnd=h; return true; },IntPtr.Zero); return hwnd!=IntPtr.Zero; }, "owned HWND");
         Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
-        inputEndpoint = "http://localhost:" + port + "/Automation/" + (scenario == "Transitions" || scenario == "Review2" || scenario == "Review3" ? "Playground" : hosted ? "CppTest" : "CppTest_Metaonly") + "/IO";
+        inputEndpoint = "http://localhost:" + port + "/Automation/" + application + "/IO";
         ownedProcess = processId; isHosted = hosted;
+        isWorkflowBinary = application == "GacUI_Host";
         Check(root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI", "owned native GacUI root; HWND=" + hwnd + "; PID=" + root.Current.ProcessId + "; FrameworkId=" + root.Current.FrameworkId + "; Name=" + root.Current.Name);
         Check(root.Current.Name == (scenario == "Transitions" || scenario == "Review2" || scenario == "Review3" ? "UIA Review Fixture" : "Complete Control Showcase"), "application title");
         if (scenario == "Concurrent")
@@ -1575,6 +1976,8 @@ public static class GacUIShowcaseTests
             if (scenario == "All" || scenario == "Text") TextControls();
             if (scenario == "All" || scenario == "Refresh") RefreshLists();
             if (scenario == "All" || scenario == "Calendar") Calendars();
+            if (scenario == "All" || scenario == "Layout" || scenario == "Responsive") ResponsiveLayout();
+            if (scenario == "ResponsivePalette") ResponsivePalette();
             if (scenario == "All" || scenario == "Layout") { EasyLayout(); EasyLayoutTables(); }
             if (scenario == "All" || scenario == "Walk") WalkTabs(root, 0);
             if (scenario == "All" || scenario == "Window") {

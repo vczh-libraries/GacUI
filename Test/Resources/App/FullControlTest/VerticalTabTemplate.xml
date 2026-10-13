@@ -1,0 +1,79 @@
+<Folder>
+  <!-- DarkSkin's tab styles, using its public palette accessor across resources. -->
+  <InstanceStyle name="Style">
+    <Styles>
+      <Style ref.Path="(//Bounds + //Table + //RepeatStack)" MinSizeLimitation="LimitToElementAndChildren"/>
+      <Style ref.Path="//*.generalBackground" Color-eval="darkskin::Theme::GetColorPackage().GeneralBackground"/>
+      <Style ref.Path="//*.generalBorder" Color-eval="darkskin::Theme::GetColorPackage().GeneralBorder"/>
+      <Style ref.Path="//*.tabHeaderBottomLine" Color-bind="self.Highlighted ? darkskin::Theme::GetColorPackage().TabHighlightedSelected : darkskin::Theme::GetColorPackage().GeneralAccent"/>
+    </Styles>
+  </InstanceStyle>
+  <Instance name="VerticalTabTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::VerticalTabTemplate" ref.Styles="res://VerticalTabTemplate/Style">
+      <ref.Members><![CDATA[
+        prop Highlighted : bool = false {}
+
+        func UpdateTabHeader() : void
+        {
+          for (stackItem in header.StackItems)
+          {
+            var item = cast (darkskin::TabHeaderTemplate*) stackItem.Children[0];
+            if (item.CurrentTabPage == self.SelectedTabPage)
+            {
+              stackItem.ExtraMargin = {left:2 top:0 right:0 bottom:0};
+              header.MoveChild(stackItem, header.Children.Count - 1);
+            }
+            else
+            {
+              stackItem.ExtraMargin = {left:0 top:0 right:0 bottom:0};
+            }
+          }
+        }
+      ]]></ref.Members>
+      <RibbonTabTemplate ref.Name="self" ContainerComposition-ref="container" TabOrder="TopToBottom" MinSizeLimitation="LimitToElementAndChildren">
+        <ev.SelectedTabPageChanged-eval><![CDATA[{ self.UpdateTabHeader(); }]]></ev.SelectedTabPageChanged-eval>
+        <att.BeforeHeadersContainer-ref>beforeHeadersContainer</att.BeforeHeadersContainer-ref>
+        <att.AfterHeadersContainer-ref>afterHeadersContainer</att.AfterHeadersContainer-ref>
+        <att.Highlighted-bind>(cast (RibbonTabPage*) self.SelectedTabPage).Highlighted ?? false</att.Highlighted-bind>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBackground ref.Style="generalBackground"/>
+          <att.Rows><_>composeType:Percentage percentage:1</_></att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:Absolute absolute:2</_>
+            <_>composeType:Percentage percentage:1</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <_>composeType:MinSize</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:1</_>
+              </att.Rows>
+              <att.Columns><_>composeType:Percentage percentage:1</_></att.Columns>
+              <Cell ref.Name="beforeHeadersContainer" Site="row:0 column:0"/>
+              <Cell Site="row:1 column:0">
+                <RepeatStack ref.Name="header" Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" ExtraMargin="left:2 top:0 right:0 bottom:0">
+                  <att.ItemTemplate>darkskin::TabHeaderTemplate</att.ItemTemplate>
+                  <att.ItemSource-bind>self.TabPages</att.ItemSource-bind>
+                  <ev.ItemInserted-eval><![CDATA[{
+                    var item = cast (darkskin::TabHeaderTemplate*) header.StackItems[arguments.itemIndex].Children[0];
+                    item.Commands = self.Commands;
+                    self.UpdateTabHeader();
+                  }]]></ev.ItemInserted-eval>
+                  <ev.ItemRemoved-eval><![CDATA[{ self.UpdateTabHeader(); }]]></ev.ItemRemoved-eval>
+                </RepeatStack>
+              </Cell>
+              <Cell ref.Name="afterHeadersContainer" Site="row:2 column:0"/>
+            </Table>
+          </Cell>
+          <Cell Site="row:0 column:1"><SolidBackground ref.Style="tabHeaderBottomLine"/></Cell>
+          <Cell Site="row:0 column:2">
+            <SolidBorder ref.Style="generalBorder"/>
+            <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+          </Cell>
+        </Table>
+      </RibbonTabTemplate>
+    </Instance>
+  </Instance>
+</Folder>

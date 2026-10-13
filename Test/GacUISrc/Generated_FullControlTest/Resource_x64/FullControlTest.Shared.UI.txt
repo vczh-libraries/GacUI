@@ -1,4 +1,4 @@
-﻿================================(1/7)================================
+﻿================================(1/8)================================
 module imageloader;
 using presentation::*;
 using presentation::controls::*;
@@ -298,7 +298,7 @@ func LoadListView(root : GuiInstanceRootObject*, callback : (func (ListViewItem^
     }
 }
 
-================================(2/7)================================
+================================(2/8)================================
 module viewmodel;
 using system::*;
 using presentation::*;
@@ -552,7 +552,7 @@ namespace demo
     }
 }
 
-================================(3/7)================================
+================================(3/8)================================
 module Animation;
 using system::*;
 using presentation::*;
@@ -696,7 +696,7 @@ namespace demo
     }
 }
 
-================================(4/7)================================
+================================(4/8)================================
 module ribbonscript;
 using presentation::*;
 
@@ -735,7 +735,245 @@ namespace demo
     }
 }
 
-================================(5/7)================================
+================================(5/8)================================
+module easy_layout_responsive;
+using presentation::*;
+
+namespace demo
+{
+    class EasyResponsiveState
+    {
+        @cpp:Private
+        var <prop>Account : int = 0;
+
+        func GetAccount() : (int)
+        {
+            return <prop>Account;
+        }
+
+        func SetAccount(<value> : int) : (void)
+        {
+            if ((<prop>Account != <value>))
+            {
+                (<prop>Account = <value>);
+                AccountChanged();
+            }
+        }
+
+        event AccountChanged();
+
+        prop Account : int{GetAccount, SetAccount : AccountChanged}
+
+        @cpp:Private
+        var <prop>MovieLevel : int = 0;
+
+        func GetMovieLevel() : (int)
+        {
+            return <prop>MovieLevel;
+        }
+
+        func SetMovieLevel(<value> : int) : (void)
+        {
+            if ((<prop>MovieLevel != <value>))
+            {
+                (<prop>MovieLevel = <value>);
+                MovieLevelChanged();
+            }
+        }
+
+        event MovieLevelChanged();
+
+        prop MovieLevel : int{GetMovieLevel, SetMovieLevel : MovieLevelChanged}
+
+        new ()
+        {
+        }
+    }
+
+    class EasyResponsiveAccount
+    {
+        @cpp:Private
+        var <prop>State : EasyResponsiveState^ = null;
+
+        func GetState() : (EasyResponsiveState^)
+        {
+            return <prop>State;
+        }
+
+        func SetState(<value> : EasyResponsiveState^) : (void)
+        {
+            if ((<prop>State != <value>))
+            {
+                (<prop>State = <value>);
+                StateChanged();
+            }
+        }
+
+        event StateChanged();
+
+        prop State : EasyResponsiveState^{GetState, SetState : StateChanged}
+
+        @cpp:Private
+        var <prop>Index : int = 0;
+
+        func GetIndex() : (int)
+        {
+            return <prop>Index;
+        }
+
+        func SetIndex(<value> : int) : (void)
+        {
+            if ((<prop>Index != <value>))
+            {
+                (<prop>Index = <value>);
+                IndexChanged();
+            }
+        }
+
+        event IndexChanged();
+
+        prop Index : int{GetIndex, SetIndex : IndexChanged}
+
+        @cpp:Private
+        var <prop>Name : string = "";
+
+        func GetName() : (string)
+        {
+            return <prop>Name;
+        }
+
+        func SetName(<value> : string) : (void)
+        {
+            if ((<prop>Name != <value>))
+            {
+                (<prop>Name = <value>);
+                NameChanged();
+            }
+        }
+
+        event NameChanged();
+
+        prop Name : string{GetName, SetName : NameChanged}
+
+        @cpp:Private
+        var <prop>Image : INativeImage^ = null;
+
+        func GetImage() : (INativeImage^)
+        {
+            return <prop>Image;
+        }
+
+        func SetImage(<value> : INativeImage^) : (void)
+        {
+            if ((<prop>Image != <value>))
+            {
+                (<prop>Image = <value>);
+                ImageChanged();
+            }
+        }
+
+        event ImageChanged();
+
+        prop Image : INativeImage^{GetImage, SetImage : ImageChanged}
+
+        new ()
+        {
+        }
+    }
+
+    class EasyResponsiveMovie
+    {
+        @cpp:Private
+        var <prop>State : EasyResponsiveState^ = null;
+
+        func GetState() : (EasyResponsiveState^)
+        {
+            return <prop>State;
+        }
+
+        func SetState(<value> : EasyResponsiveState^) : (void)
+        {
+            if ((<prop>State != <value>))
+            {
+                (<prop>State = <value>);
+                StateChanged();
+            }
+        }
+
+        event StateChanged();
+
+        prop State : EasyResponsiveState^{GetState, SetState : StateChanged}
+
+        @cpp:Private
+        var <prop>Title : string = "";
+
+        func GetTitle() : (string)
+        {
+            return <prop>Title;
+        }
+
+        func SetTitle(<value> : string) : (void)
+        {
+            if ((<prop>Title != <value>))
+            {
+                (<prop>Title = <value>);
+                TitleChanged();
+            }
+        }
+
+        event TitleChanged();
+
+        prop Title : string{GetTitle, SetTitle : TitleChanged}
+
+        @cpp:Private
+        var <prop>Author : string = "";
+
+        func GetAuthor() : (string)
+        {
+            return <prop>Author;
+        }
+
+        func SetAuthor(<value> : string) : (void)
+        {
+            if ((<prop>Author != <value>))
+            {
+                (<prop>Author = <value>);
+                AuthorChanged();
+            }
+        }
+
+        event AuthorChanged();
+
+        prop Author : string{GetAuthor, SetAuthor : AuthorChanged}
+
+        @cpp:Private
+        var <prop>Image : INativeImage^ = null;
+
+        func GetImage() : (INativeImage^)
+        {
+            return <prop>Image;
+        }
+
+        func SetImage(<value> : INativeImage^) : (void)
+        {
+            if ((<prop>Image != <value>))
+            {
+                (<prop>Image = <value>);
+                ImageChanged();
+            }
+        }
+
+        event ImageChanged();
+
+        prop Image : INativeImage^{GetImage, SetImage : ImageChanged}
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(6/8)================================
 module <localized-strings>demo::StringResource;
 
 namespace demo
@@ -962,7 +1200,7 @@ namespace demo
     }
 }
 
-================================(6/7)================================
+================================(7/8)================================
 module refresh_viewmodel;
 using system::*;
 using presentation::*;
@@ -1147,7 +1385,7 @@ namespace demo
     }
 }
 
-================================(7/7)================================
+================================(8/8)================================
 module fontHelper;
 using presentation::*;
 
