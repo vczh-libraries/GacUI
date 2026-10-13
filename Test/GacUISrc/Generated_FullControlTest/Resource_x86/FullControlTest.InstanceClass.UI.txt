@@ -23343,7 +23343,7 @@ namespace demo
             }
             (<precompile>0 = new (::presentation::compositions::GuiSharedSizeRootComposition*)());
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -23672,6 +23672,13 @@ namespace demo
             }
             {
                 (movieList.ItemSource = self.movies);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    movieList.Arranger.ReloadVisibleStyles();
+                };
+                attach(movieGroup.CurrentLevelChanged, <event-handler>);
             }
             {
                 (accountList.ItemTemplate = self.CreateAccountTemplate);
