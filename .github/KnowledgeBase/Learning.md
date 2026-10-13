@@ -3,13 +3,13 @@
 # Orders
 
 - Verify generated artifacts with downstream consumer checks [32]
+- Proactively remove code made redundant by refactoring [27]
 - Keep design documentation aligned with code after refactoring [26]
-- Proactively remove code made redundant by refactoring [26]
 - Process staged tasks one by one with verification [25]
 - Port fixes from imports to source repositories [23]
 - Verify and localize portability on every target OS [20]
+- Extract abstractions only for real shared behavior [17]
 - Crash early instead of adding error-tolerance fallbacks [16]
-- Extract abstractions only for real shared behavior [16]
 - Fix behavior at the owning state instead of patching symptoms [13]
 - Validate expectations against implementation and existing tests [12]
 - Make `Stop()` drain asynchronous work before returning [8]
@@ -61,6 +61,7 @@
 - Minimize browser fixture manifests and audit consumed inputs [1]
 - Preserve compiler-generated modules during packaging [1]
 - Validate complete deployment inputs before writing outputs [1]
+- Reuse existing library algorithms before writing local equivalents [1]
 
 # Refinements
 
@@ -135,6 +136,8 @@ For environment or lifecycle invalidation, prefer forwarding one application-lev
 Keep application-specific choices in the application that owns them. When several entry points share one showcase, expose its selection event and attach one shared handler at each entry point instead of adding a callback plugin, selector API or availability state to a reusable skin. A dependency arrangement should make required behavior available in each consumer without teaching the lower layer the showcase policy.
 
 When macOS or WebAssembly can reuse most of a Linux implementation, keep the shared implementation in the existing `*.Linux.*` file with explicit positive platform guards and small conditional differences. Delete duplicate platform files and their project/filter registrations; retain separate files for genuinely different implementations such as a browser console bridge.
+
+Move reusable filesystem metadata and metadata-preserving copy operations into the library that owns filesystem abstractions. Keep orchestration-specific process launching in the tool. Represent unavailable platform timestamps explicitly, and reuse normalized path objects instead of maintaining a second path parser.
 
 ## Make `Stop()` drain asynchronous work before returning
 
@@ -348,6 +351,8 @@ Before adding persistent validation state, check whether the existing input cont
 
 When retiring a build option, remove its implementation and active configuration/documentation references together. Before deleting a configuration file that becomes nearly empty, check whether its presence or minimal contents still opt the project into the build mode; remove the obsolete option while preserving that independent purpose.
 
+Audit actual consumers before retaining generated diagnostic files after an algorithm replacement. Remove logs that no longer serve generation, deployment or diagnosis instead of preserving them solely because the previous implementation emitted them.
+
 ## Keep design documentation aligned with code after refactoring
 
 When a refactoring changes architecture or behavior, update the corresponding design documents in the same task rather than deferring it. After a structural change, re-read the related documents and reconcile anything that became misaligned (for example, descriptions of a transport path that no longer exists). Treat documentation drift left by a previous refactoring as part of the current cleanup.
@@ -479,3 +484,7 @@ When a toolchain already supports loading adjacent runtime files, deploy those f
 ## Validate complete deployment inputs before writing outputs
 
 Validate every required source artifact and destination prerequisite across the complete deployment before copying any file. Share one artifact inventory between validation and copying, and reject missing, empty or non-regular source files before altering existing output. Exercise rejection at the last application or artifact as well as the first, require all deployed files to remain unchanged on rejection, and keep a successful control that copies every matching artifact.
+
+## Reuse existing library algorithms before writing local equivalents
+
+Use the established library implementation when its contract matches the problem. For dependency ordering, prefer `collections::PartialOrderingProcessor` to a tool-local graph algorithm. Keep only the input mapping and reporting that the application actually needs.

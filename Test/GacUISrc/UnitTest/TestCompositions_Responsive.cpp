@@ -2,8 +2,115 @@
 using namespace vl::presentation::controls;
 using namespace composition_bounds_tests;
 
+void TestResponsiveGroupViewSizes(vint sizeCount)
+{
+	for (auto direction : { ResponsiveDirection::Horizontal,ResponsiveDirection::Vertical })
+	{
+		auto horizontal = direction == ResponsiveDirection::Horizontal;
+		auto makeSize = [=](vint main, vint cross) { return horizontal ? Size(main, cross) : Size(cross, main); };
+		auto container = new GuiResponsiveContainerComposition;
+		auto group = new GuiResponsiveGroupComposition;
+		auto view = new GuiResponsiveViewComposition;
+		group->SetDirection(direction);
+		view->SetDirection(direction);
+		for (auto minimum : { 100,20,10 })
+		{
+			auto fixed = new GuiResponsiveFixedComposition;
+			fixed->SetPreferredMinSize(makeSize(minimum, 1));
+			view->GetViews().Add(fixed);
+		}
+		group->AddChild(view);
+		group->SetPreferredMinSize(makeSize(7, 13));
+		collections::Array<vint> sizes(sizeCount);
+		for (vint i = 0; i < sizeCount; i++) sizes[i] = (i + 1) * 40;
+		group->SetViewSizes(sizes);
+		container->SetResponsiveTarget(group);
+
+		vint thresholds[] = { sizeCount == 0 ? 10 : 40,sizeCount == 0 ? 20 : 80,sizeCount < 3 ? 100 : 120 };
+		auto respond = [&](vint size, vint level)
+		{
+			container->SetExpectedBounds(Rect({ 0,0 }, makeSize(size, 200)));
+			container->ForceCalculateSizeImmediately();
+			TEST_ASSERT(group->GetLevelCount() == 3);
+			TEST_ASSERT(group->GetCurrentLevel() == level);
+			TEST_ASSERT(view->GetCurrentLevel() == level);
+			auto preferred = sizeCount == 0 ? 7 : level < sizeCount ? (level + 1) * 40 : sizeCount * 40 + level - sizeCount + 1;
+			TEST_ASSERT(group->GetPreferredMinSize() == makeSize(preferred, 13));
+			TEST_ASSERT(group->GetViewSizes().Count() == sizeCount);
+			for (vint i = 0; i < sizeCount; i++) TEST_ASSERT(group->GetViewSizes()[i] == (i + 1) * 40);
+		};
+
+		// Changing the input array must not mutate the group's owned values.
+		if (sizeCount > 0) sizes[0] = 999;
+		for (vint repeat = 0; repeat < 2; repeat++)
+		{
+			respond(200, 2);
+			for (vint level = 2; level >= 0; level--)
+			{
+				respond(thresholds[level], level);
+				respond(thresholds[level] - 1, level == 0 ? 0 : level - 1);
+			}
+			for (vint level = 1; level < 3; level++)
+			{
+				respond(thresholds[level] - 1, level - 1);
+				respond(thresholds[level], level);
+			}
+		}
+
+		// Recreated compact children must adapt even when the viewport does not resize.
+		respond(200, 2);
+		group->RemoveChild(view);
+		container->ForceCalculateSizeImmediately();
+		while (view->LevelDown());
+		group->AddChild(view);
+		respond(200, 2);
+
+		if (sizeCount > 0)
+		{
+			group->SetPreferredMinSize(makeSize(999, 13));
+			respond(200, 2);
+			auto preferred = group->GetPreferredMinSize();
+			group->SetViewSizes(collections::Array<vint>());
+			container->ForceCalculateSizeImmediately();
+			TEST_ASSERT(group->GetPreferredMinSize() == preferred);
+			TEST_ASSERT(group->GetViewSizes().Count() == 0);
+			group->SetDirection(ResponsiveDirection::Both);
+			TEST_ASSERT(group->GetPreferredMinSize() == preferred);
+			sizes[0] = 40;
+			group->SetViewSizes(sizes);
+			vint largest = sizeCount < 3 ? 81 : 120;
+			TEST_ASSERT(group->GetPreferredMinSize() == Size(largest, largest));
+			group->SetDirection(horizontal ? ResponsiveDirection::Vertical : ResponsiveDirection::Horizontal);
+			TEST_ASSERT(group->GetLevelCount() == 1);
+			TEST_ASSERT(group->GetCurrentLevel() == 0);
+			TEST_ASSERT(group->GetPreferredMinSize() == makeSize(largest, 40));
+			group->SetDirection(direction);
+			TEST_ASSERT(group->GetLevelCount() == 3);
+			TEST_ASSERT(group->GetCurrentLevel() == 2);
+			TEST_ASSERT(group->GetPreferredMinSize() == makeSize(largest, 40));
+		}
+		SafeDeleteComposition(container);
+	}
+}
+
 TEST_FILE
 {
+	TEST_CASE(L"Responsive group with no view sizes")
+	{
+		TestResponsiveGroupViewSizes(0);
+	});
+	TEST_CASE(L"Responsive group with fewer view sizes than levels")
+	{
+		TestResponsiveGroupViewSizes(2);
+	});
+	TEST_CASE(L"Responsive group with one view size per level")
+	{
+		TestResponsiveGroupViewSizes(3);
+	});
+	TEST_CASE(L"Responsive group with more view sizes than levels")
+	{
+		TestResponsiveGroupViewSizes(4);
+	});
 	TEST_CATEGORY(L"Test <ResponsiveShared> with common <Bounds> operations")
 	{
 		TestBoundsWithTrivialChildren<GuiResponsiveSharedComposition>(

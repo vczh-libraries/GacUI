@@ -470,6 +470,51 @@ public static class GacUIShowcaseTests
         "Penguin Random House", "HarperCollins", "Simon & Schuster", "Hachette Book Group",
         "Macmillan Publishers", "Scholastic", "Bloomsbury", "Oxford University Press"
     };
+    static void ResponsiveRegressions()
+    {
+        Test("responsive regressions / ribbon document");
+        var ribbon = Page(Page(root, "Control"), "Document Editor (Ribbon)");
+        var search = Find(ribbon, ControlType.Edit)[0];
+        Pattern<ValuePattern>(search, ValuePattern.Pattern).SetValue("responsive resize");
+        var document = Find(ribbon, ControlType.Document)[0];
+        var text = Pattern<TextPattern>(document, TextPattern.Pattern).DocumentRange.GetText(-1);
+        var original = root.Current.BoundingRectangle;
+        var transform = Pattern<TransformPattern>(root, TransformPattern.Pattern);
+        foreach (var width in new[] { 1000, 750, 550, 1000 })
+        {
+            transform.Resize(width, original.Height);
+            Wait(() => document.Current.BoundingRectangle.Width > 0 && !document.Current.IsOffscreen, "ribbon document survives resize");
+            Check(Pattern<ValuePattern>(search, ValuePattern.Pattern).Current.Value == "responsive resize", "ribbon search survives resize");
+            Check(Pattern<TextPattern>(document, TextPattern.Pattern).DocumentRange.GetText(-1) == text, "ribbon text survives resize");
+            Wait(() => {
+                var home = FindNamed(ribbon, "  HOME  ", ControlType.Button);
+                return home != null && home.Current.BoundingRectangle.Width > 0 && !home.Current.IsOffscreen;
+            }, "ribbon header remains visible");
+        }
+        transform.Resize(original.Width, original.Height);
+
+        Test("responsive regressions / view, stack and group levels");
+        var page = Page(Page(root, "Layout"), "Responsive");
+        var names = new[] { "GuiResponsiveViewComposition", "GuiResponsiveStackComposition", "GuiResponsiveGroupComposition" };
+        var highest = new[] { 3, 6, 3 };
+        for (int i = 0; i < names.Length; i++)
+        {
+            var group = Named(page, names[i], ControlType.Group);
+            for (int level = highest[i] - 1; level >= 0; level--)
+            {
+                Invoke(group, "LevelDown();");
+                int expected = level;
+                Wait(() => FindNamed(group, "CurrentLevel: " + expected, ControlType.Text) != null, "responsive level down " + names[i]);
+            }
+            for (int level = 1; level <= highest[i]; level++)
+            {
+                Invoke(group, "LevelUp();");
+                int expected = level;
+                Wait(() => FindNamed(group, "CurrentLevel: " + expected, ControlType.Text) != null, "responsive level up " + names[i]);
+            }
+        }
+    }
+
     static void ResponsiveLayout(bool includePalette = true)
     {
         Test("Layout / vertical headers and responsive modal action");
@@ -486,8 +531,11 @@ public static class GacUIShowcaseTests
             Check(bounds.Width > 0 && bounds.Height > 0, "visible Layout header " + name);
             if (!previous.IsEmpty) Check(bounds.Top >= previous.Bottom && Math.Abs(bounds.Left - previous.Left) <= 2, "vertical header order " + name);
             previous = bounds;
-            Pattern<SelectionItemPattern>(header, SelectionItemPattern.Pattern).Select();
-            Check(Pattern<SelectionItemPattern>(header, SelectionItemPattern.Pattern).Current.IsSelected, "Layout selection " + name);
+            if (includePalette)
+            {
+                Pattern<SelectionItemPattern>(header, SelectionItemPattern.Pattern).Select();
+                Check(Pattern<SelectionItemPattern>(header, SelectionItemPattern.Pattern).Current.IsSelected, "Layout selection " + name);
+            }
         }
         var launch = Named(layout, "Easy Layout (Responsive)", ControlType.Button);
         Absent(launch, SelectionItemPattern.Pattern);
@@ -498,15 +546,19 @@ public static class GacUIShowcaseTests
         var nestedTab = Pattern<SelectionItemPattern>(lastHeader, SelectionItemPattern.Pattern).Current.SelectionContainer;
         Check(nestedTab.Current.Orientation == OrientationType.Vertical, "vertical tab orientation");
         Check(lastHeader.Current.AccessKey == "T" && launch.Current.AccessKey == "W", "header and launch ALT keys retained");
-        nestedTab.SetFocus();
-        Press("Up");
-        Wait(() => Pattern<SelectionItemPattern>(Named(layout, "Easy Layout", ControlType.TabItem), SelectionItemPattern.Pattern).Current.IsSelected, "Up follows vertical tab order");
-        Press("Down");
-        Wait(() => Pattern<SelectionItemPattern>(lastHeader, SelectionItemPattern.Pattern).Current.IsSelected, "Down follows vertical tab order");
-        Press("Alt");
-        PressRenderedAlt("CheckBox", "Easy Layout");
-        Wait(() => Pattern<SelectionItemPattern>(Named(layout, "Easy Layout", ControlType.TabItem), SelectionItemPattern.Pattern).Current.IsSelected, "ALT selects a vertical header");
-        Page(layout, "Easy Layout (Table)");
+        if (includePalette)
+        {
+            nestedTab.SetFocus();
+            Press("Up");
+            Wait(() => Pattern<SelectionItemPattern>(Named(layout, "Easy Layout", ControlType.TabItem), SelectionItemPattern.Pattern).Current.IsSelected, "Up follows vertical tab order");
+            Press("Down");
+            Wait(() => Pattern<SelectionItemPattern>(lastHeader, SelectionItemPattern.Pattern).Current.IsSelected, "Down follows vertical tab order");
+            Press("Alt");
+            PressRenderedAlt("CheckBox", "Easy Layout");
+            Wait(() => Pattern<SelectionItemPattern>(Named(layout, "Easy Layout", ControlType.TabItem), SelectionItemPattern.Pattern).Current.IsSelected, "ALT selects a vertical header");
+            Page(layout, "Easy Layout (Table)");
+        }
+        else Page(layout, "Responsive");
 
         foreach (var close in new[] { "OK", "Cancel", "Title bar" })
         {
@@ -592,6 +644,9 @@ public static class GacUIShowcaseTests
                             Wait(() => { var current = accountSelection.Current.GetSelection(); return current.Length == 1 && current[0].Current.Name == selectedAccount; }, "direct account list selection replaces the menu selection");
                         }
                     }
+                    // Leave the last movie realized for the next resize and row-height transition.
+                    scroll.SetScrollPercent(ScrollPattern.NoScroll, 100);
+                    Wait(() => !Named(list, "Do the Right Thing", ControlType.ListItem).Current.IsOffscreen, "resize starts near the end of the movie list");
                 }
                 menu = Pattern<ExpandCollapsePattern>(Named(dialog, "Subscribed Accounts", ControlType.MenuItem), ExpandCollapsePattern.Pattern);
                 menu.Expand();
@@ -842,7 +897,12 @@ public static class GacUIShowcaseTests
     static double ResponsiveMovieRowHeight(AutomationElement dialog)
     {
         var list = Named(dialog, "Movies", ControlType.List);
-        return Named(list, "Jeanne Dielman, 23 quai du Commerce, 1080 Bruxelles", ControlType.ListItem).Current.BoundingRectangle.Height;
+        double height = 0;
+        foreach (var item in Items(list))
+        {
+            if (!item.Current.IsOffscreen) height = Math.Max(height, item.Current.BoundingRectangle.Height);
+        }
+        return height;
     }
 
     static Dictionary<string, object> FindResponsiveList(object tree, HashSet<string> movieNames, bool movies)
@@ -2147,7 +2207,7 @@ public static class GacUIShowcaseTests
             if (scenario == "All" || scenario == "Refresh") RefreshLists();
             if (scenario == "All" || scenario == "Calendar") Calendars();
             if (scenario == "All" || scenario == "Layout" || scenario == "Responsive") ResponsiveLayout();
-            if (scenario == "ResponsiveWindow") ResponsiveLayout(false);
+            if (scenario == "ResponsiveWindow") { ResponsiveRegressions(); ResponsiveLayout(false); }
             if (scenario == "ResponsivePalette") ResponsivePalette();
             if (scenario == "All" || scenario == "Layout") { EasyLayout(); EasyLayoutTables(); }
             if (scenario == "All" || scenario == "Walk") WalkTabs(root, 0);

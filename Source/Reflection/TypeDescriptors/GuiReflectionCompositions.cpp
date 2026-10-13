@@ -574,6 +574,7 @@ Type Declaration (Class)
 			BEGIN_CLASS_MEMBER(GuiResponsiveGroupComposition)
 				CLASS_MEMBER_BASE(GuiResponsiveCompositionBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiResponsiveGroupComposition*(), NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_FAST(ViewSizes)
 			END_CLASS_MEMBER(GuiResponsiveGroupComposition)
 
 			BEGIN_CLASS_MEMBER(GuiResponsiveContainerComposition)

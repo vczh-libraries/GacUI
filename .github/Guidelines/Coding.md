@@ -244,7 +244,6 @@ object, causing missing of a complete picture.
 
 - When generating Workflow script, avoid building text, you should always build the AST. The AST type for a complete Workflow script module is `WfModule`.
 
-
 ## Working with Web Assembly
 
 - WebAssembly compiled with `em++` should reuse `*.Linux.*` when the implementation is mostly shared, with macro guards for small differences. Use `*.Wasm.*` for implementations that need separate platform code.

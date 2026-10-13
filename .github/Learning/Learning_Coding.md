@@ -15,6 +15,7 @@
 - RVM accepted-host loss poisons the requester dispatcher outside locks [4]
 - Automation `/IO` parses synchronously and queues parsed commands [3]
 - `CppTest_Rvm` is a GUI app and stays console-free [3]
+- Omit redundant EazyLayout sample properties and wrappers [3]
 - `vl::collections::ObservableList<T>` element access and replacement [2]
 - Extract helpers to remove duplicated conversion blocks [2]
 - Place helpers in the primary-responsibility namespace [2]
@@ -26,7 +27,6 @@
 - `/Cli` host transport is independent from Core renderer transport [2]
 - Keep UiaList inspection gestures distinct from tree navigation [2]
 - Prefer EazyLayout for arrangements it can express [2]
-- Omit redundant EazyLayout sample properties and wrappers [2]
 - Keep skin defaults internal and showcase palette selection external [2]
 - Render GitView diffs as numbered source rows [2]
 - Keep GitView commit metadata in the status panel [2]
@@ -101,8 +101,18 @@
 - Validate EazyLayout initial payloads during XML compilation [1]
 - Use merged DarkSkin sources in Wasm demo inventories [1]
 - Wasm demo startup owns connections and Reload restarts the application [1]
+- Keep item templates focused on rendering [1]
+- Initialize virtual responsive rows before attachment [1]
 
 # Refinements
+
+## Keep item templates focused on rendering
+
+Control and item templates render data and visual state; the owning window implements selection and menu actions. Reuse the list's selected index and the item template's existing index instead of adding duplicate global selection or index fields. A local observable selected flag can drive menu decoration without moving application logic into the template. Keep a sample's image inventory in its own image-folder resource, following neighboring samples.
+
+## Initialize virtual responsive rows before attachment
+
+Use the owning responsive group's established level to initialize a newly realized row before attaching it. Keep account and movie lists independently virtualized and scrollable. Avoid duplicate global responsive state when the group already owns that state; retain the intended level only across intervals where virtualization removes every participating child. Reset fixed-height row measurements when the group's appearance changes, after the group's child traversal completes.
 
 ## `TreeViewItemBindableRootProvider::UpdateBindingProperties` is root-scoped
 
@@ -526,6 +536,8 @@ Prefer `ez:Layout` for ordinary authored GacUI arrangements because its defaults
 Keep tutorial XML small enough to teach the intended defaults and inference. Omit default properties, Fill directions already determined by their sibling group, and duplicate shared-track `CellOption` declarations. Retain the single nondefault declaration needed for each shared track, structural descriptors and nondefault spans. Verify omission itself rather than preserving redundant declarations to hide a runtime or compiler defect; the resulting visible layout must remain unchanged.
 
 Remove a redundant Bounds around a sole `ez:Layout` when the layout itself can preserve the required properties and minimum-size propagation. `BuildLayout` owns the layout root alignment, so do not blindly copy the wrapper `AlignmentToParent`. The old `Margin` property no longer exists. Use current `Padding`/`Border` behavior only when it preserves both outer insets and inner gaps; retain wrappers for asymmetric insets, anchoring or other behavior that cannot be reproduced.
+
+When a surrounding `SharedSizeRoot` already owns the outer inset, put the alignment there. Do not name an otherwise unnamed `ez:Layout` or override its generated root alignment after `BuildLayout` solely to recreate that inset.
 
 ## Nest EazyLayout descriptor groups under one owning layout
 

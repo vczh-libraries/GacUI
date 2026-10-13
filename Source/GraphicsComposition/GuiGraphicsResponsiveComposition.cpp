@@ -601,6 +601,17 @@ GuiResponsiveStackComposition
 GuiResponsiveGroupComposition
 ***********************************************************************/
 
+			void GuiResponsiveGroupComposition::UpdateViewSize()
+			{
+				if (viewSizes.Count() == 0) return;
+				vint index = currentLevel < viewSizes.Count() ? currentLevel : viewSizes.Count() - 1;
+				vint size = viewSizes[index] + (currentLevel - index);
+				auto preferred = GetPreferredMinSize();
+				if (((vint)direction & (vint)ResponsiveDirection::Horizontal) != 0) preferred.x = size;
+				if (((vint)direction & (vint)ResponsiveDirection::Vertical) != 0) preferred.y = size;
+				SetPreferredMinSize(preferred);
+			}
+
 			bool GuiResponsiveGroupComposition::CalculateLevelCount()
 			{
 				vint old = levelCount;
@@ -645,6 +656,7 @@ GuiResponsiveGroupComposition
 						.Max();
 				}
 
+				UpdateViewSize();
 				if (old != currentLevel)
 				{
 					CurrentLevelChanged.Execute(GuiEventArgs(this));
@@ -673,6 +685,24 @@ GuiResponsiveGroupComposition
 			vint GuiResponsiveGroupComposition::GetLevelCount()
 			{
 				return levelCount;
+			}
+
+			const Array<vint>& GuiResponsiveGroupComposition::GetViewSizes()
+			{
+				return viewSizes;
+			}
+
+			void GuiResponsiveGroupComposition::SetViewSizes(const Array<vint>& value)
+			{
+				CopyFrom(viewSizes, value);
+				UpdateViewSize();
+				InvokeOnCompositionStateChanged();
+			}
+
+			Size GuiResponsiveGroupComposition::Layout_CalculateMinSize()
+			{
+				UpdateViewSize();
+				return GuiBoundsComposition::Layout_CalculateMinSize();
 			}
 
 			vint GuiResponsiveGroupComposition::GetCurrentLevel()
@@ -789,43 +819,18 @@ GuiResponsiveContainerComposition
 
 				if (responsiveTarget)
 				{
-					bool needAdjust = false;
 					auto containerSize = bounds.GetSize();
-					auto ordering = std::strong_ordering::equivalent;
-
-					if (containerSize != cachedBounds.GetSize())
+					if (responsiveTarget->GetCachedMinSize() != minSizeLowerBound)
 					{
-						ordering = Layout_CompareSize(containerSize, cachedBounds.GetSize());
-						needAdjust = true;
+						minSizeLowerBound = responsiveTarget->GetCachedMinSize();
+						if (minSizeUpperBound.x < minSizeLowerBound.x) minSizeUpperBound.x = minSizeLowerBound.x;
+						if (minSizeUpperBound.y < minSizeLowerBound.y) minSizeUpperBound.y = minSizeLowerBound.y;
 					}
 
-					if (responsiveTarget)
-					{
-						if (responsiveTarget->GetCachedMinSize() != minSizeLowerBound)
-						{
-							minSizeLowerBound = responsiveTarget->GetCachedMinSize();
-							if (minSizeUpperBound.x < minSizeLowerBound.x) minSizeUpperBound.x = minSizeLowerBound.x;
-							if (minSizeUpperBound.y < minSizeLowerBound.y) minSizeUpperBound.y = minSizeLowerBound.y;
-						}
-
-						if (Layout_CompareSize(containerSize, minSizeLowerBound) == std::strong_ordering::less)
-						{
-							ordering = std::strong_ordering::less;
-							needAdjust = true;
-						}
-					}
-
-					if (needAdjust)
-					{
-						if (ordering == std::strong_ordering::less)
-						{
-							Layout_AdjustLevelDown(containerSize);
-						}
-						else if (ordering == std::strong_ordering::greater)
-						{
-							Layout_AdjustLevelUp(containerSize);
-						}
-					}
+					// Virtualized children can add levels after the container bounds settle.
+					// Cached size bounds prevent retrying a larger level that cannot fit.
+					Layout_AdjustLevelDown(containerSize);
+					Layout_AdjustLevelUp(containerSize);
 				}
 
 				return bounds;

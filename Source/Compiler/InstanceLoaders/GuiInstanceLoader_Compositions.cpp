@@ -534,6 +534,106 @@ GuiCellCompositionInstanceLoader
 			};
 
 /***********************************************************************
+GuiResponsiveGroupInstanceLoader
+***********************************************************************/
+
+			class GuiResponsiveGroupInstanceLoader : public Object, public IGuiInstanceLoader
+			{
+			protected:
+				GlobalStringKey					typeName = GlobalStringKey::Get(description::TypeInfo<GuiResponsiveGroupComposition>::content.typeName);
+				GlobalStringKey					_ViewSizes = GlobalStringKey::Get(L"ViewSizes");
+
+			public:
+				GlobalStringKey GetTypeName()override
+				{
+					return typeName;
+				}
+
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					propertyNames.Add(_ViewSizes);
+				}
+
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
+				{
+					if (propertyInfo.propertyName == _ViewSizes)
+					{
+						auto info = GuiInstancePropertyInfo::Array(TypeInfoRetriver<WString>::CreateTypeInfo());
+						info->bindability = GuiInstancePropertyInfo::Bindable;
+						return info;
+					}
+					return IGuiInstanceLoader::GetPropertyType(precompileContext, propertyInfo);
+				}
+
+				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
+				{
+					vint index = arguments.Keys().IndexOf(_ViewSizes);
+					if (index == -1) return nullptr;
+					const auto& values = arguments.GetByIndex(index);
+					auto array = Ptr(new WfConstructorExpression);
+					Ptr<WfExpression> expression = array;
+					for (const auto& value : values)
+					{
+						auto text = value.expression.Cast<WfStringExpression>();
+						if (!text)
+						{
+							// An eval binding already supplies the typed array expression.
+							expression = value.expression;
+							break;
+						}
+
+						auto appendSize = [&](const WString& token)
+						{
+							vint size = 0;
+							if (!TypedValueSerializerProvider<vint>::Deserialize(token, size))
+							{
+								errors.Add(GuiResourceError({ resolvingResult.resource }, value.valuePosition,
+									L"Precompile: ViewSizes requires integers in small-to-large order, written as {64 230} or individual <_> values."));
+								return;
+							}
+							auto integer = Ptr(new WfIntegerExpression);
+							integer->value.value = itow(size);
+							auto argument = Ptr(new WfConstructorArgument);
+							argument->key = integer;
+							array->arguments.Add(argument);
+						};
+
+						const auto& input = text->value.value;
+						if (values.Count() == 1 && input.Length() >= 2 && input[0] == L'{' && input[input.Length() - 1] == L'}')
+						{
+							vint start = 1;
+							for (vint i = 1; i < input.Length(); i++)
+							{
+								auto ch = input[i];
+								if (i == input.Length() - 1 || ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n')
+								{
+									if (i > start) appendSize(input.Sub(start, i - start));
+									start = i + 1;
+								}
+							}
+						}
+						else
+						{
+							appendSize(input);
+						}
+					}
+
+					auto refComposition = Ptr(new WfReferenceExpression);
+					refComposition->name.value = variableName.ToString();
+					auto refProperty = Ptr(new WfMemberExpression);
+					refProperty->parent = refComposition;
+					refProperty->name.value = L"ViewSizes";
+					auto assign = Ptr(new WfBinaryExpression);
+					assign->op = WfBinaryOperator::Assign;
+					assign->first = refProperty;
+					assign->second = expression;
+					auto stat = Ptr(new WfExpressionStatement);
+					stat->expression = assign;
+					return stat;
+				}
+			};
+
+/***********************************************************************
 Initialization
 ***********************************************************************/
 
@@ -543,6 +643,7 @@ Initialization
 				manager->SetLoader(Ptr(new GuiCompositionInstanceLoader));
 				manager->SetLoader(Ptr(new GuiTableCompositionInstanceLoader));
 				manager->SetLoader(Ptr(new GuiCellCompositionInstanceLoader));
+				manager->SetLoader(Ptr(new GuiResponsiveGroupInstanceLoader));
 			}
 		}
 	}

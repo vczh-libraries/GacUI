@@ -229,7 +229,9 @@ Others
 				vint					levelCount = 1;
 				vint					currentLevel = 0;
 				ResponsiveChildList		responsiveChildren;
+				collections::Array<vint>	viewSizes;
 
+				void					UpdateViewSize();
 				bool					CalculateLevelCount();
 				bool					CalculateCurrentLevel();
 				void					OnResponsiveChildInserted(GuiResponsiveCompositionBase* child)override;
@@ -239,6 +241,15 @@ Others
 			public:
 				GuiResponsiveGroupComposition() = default;
 				~GuiResponsiveGroupComposition() = default;
+
+				Size					Layout_CalculateMinSize()override;
+
+				/// <summary>Get the preferred sizes indexed by level, from smallest to largest.</summary>
+				/// <returns>The configured sizes, without extrapolated values.</returns>
+				const collections::Array<vint>&	GetViewSizes();
+				/// <summary>Copy the preferred sizes. Empty sizes disable overriding; missing levels increase the last size by one per level. Direction selects the affected axes.</summary>
+				/// <param name="value">The sizes ordered from smallest to largest.</param>
+				void					SetViewSizes(const collections::Array<vint>& value);
 
 				vint					GetLevelCount()override;
 				vint					GetCurrentLevel()override;

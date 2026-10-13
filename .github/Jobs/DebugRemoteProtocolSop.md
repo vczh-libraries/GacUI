@@ -336,6 +336,11 @@ Use a fresh application state.
    selected account has the green selection arrow. Select another menu entry
    and require the arrow to move and the list selection to agree. Change the
    selection directly in the list and verify the menu again after shrinking.
+   Before another resize, scroll the movie list to its last item. Resize through
+   compact and detailed appearances while near the end, then visit both ends
+   again. Newly realized rows must match the current appearance, scrolling must
+   remain valid, and layout must converge without repeated reloads or oscillation.
+   Exact scroll offsets need not survive a row-height change.
 4. At a wide width, reduce height enough to require account scrolling, reach
    the last account, then increase height. Reference sizes are 680 by 220 and
    680 by 520. Check the movie and account scroll

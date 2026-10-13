@@ -143,6 +143,7 @@ Add adaptive multi-level representations (compact to expanded) without duplicati
 - If shrinking below lower bound: loop `Layout_AdjustLevelDown` (calls target `LevelDown` + remeasure until fits or minimal).
 - If expanding beyond upper bound: loop `Layout_AdjustLevelUp` (speculative raise then rollback if overshoot) using `Layout_CompareSize` to test width/height axes indicated by direction bits.
 - After each level change, invokes `responsiveTarget->Layout_UpdateMinSize()` to refresh bounds used for subsequent comparisons.
+- Reevaluate both shrinking and growth on each bounds-calculation pass, even when the container size is unchanged. Virtualized children can introduce larger levels after the viewport settles, or a sibling can reduce an already-spacious viewport. The cached lower/upper bounds still prevent repeated attempts at a known level that cannot fit.
 
 ### 8.7 Invalidation & Events
 - Any level recalculation culminating at root triggers `InvokeOnCompositionStateChanged` (root determined when `responsiveParent == nullptr`).
@@ -154,6 +155,15 @@ Add adaptive multi-level representations (compact to expanded) without duplicati
 - Maintain internal child collections with insertion/removal hooks (`OnResponsiveChildInserted/Removed`) if aggregating.
 - Propagate recalculation upward via `OnResponsiveChildLevelUpdated` after recomputing own counts.
 - Apply direction filtering semantics uniformly (mask intersection tests).
+
+### 8.9 Group ViewSizes
+- `GuiResponsiveGroupComposition::SetViewSizes(const collections::Array<vint>&)` copies an optional integer array. The const-reference getter returns only the stored entries; callers cannot mutate them through the getter. Reflection exposes an assignable typed integer-array property.
+- Entries follow numeric levels from small to large: index zero is level zero. This is the reverse of the largest-first `GuiResponsiveViewComposition::Views` order. For level `L` and nonempty array length `N`, use `ViewSizes[L]` when `L < N`; otherwise use `ViewSizes[N - 1] + (L - N + 1)`. Extra entries remain stored but do not create levels. Level count and current level remain child-derived, including `(1, 0)` for an empty group.
+- Apply the selected scalar to `PreferredMinSize.x` for Horizontal, `.y` for Vertical, or both for Both. Preserve inactive components. Assignment, level/direction recalculation and minimum-size measurement reapply the override; manually writing an active preferred-size component does not bypass it. An empty array disables further overrides and leaves the current stored preference unchanged.
+- Normal bounds measurement still applies. Child/element minima and margins can require more space than the selected preference. With zero margins, shrinking below the effective minimum lowers a nonzero level; growing to the next effective minimum admits that level.
+- XML accepts `ViewSizes="{64 230}"` or `<att.ViewSizes><_>64</_><_>230</_></att.ViewSizes>` without an eval binder. The group-specific loader compiles literal values into an integer-array assignment. The FullControlTest account/movie groups demonstrate both spellings with `{64 230}` and `{120 334}`.
+- Virtualized rows must enter at their owning group's established level before attachment. If all rows are removed, retain the intended level outside the temporarily empty group. `ReloadVisibleStyles()` clears immediately; replacement rows can appear during a reentrant scroll callback or later layout. Keep reload suppression until replacement rows restore the intended level, including level zero where `CurrentLevelChanged` may not fire. Retain the row-height reset when switching detailed/compact item templates.
+- `GuiVirtualRepeatCompositionBase::Layout_ResetLayout` resets location, the update flag and item-size caches before publishing `ViewLocationChanged`. A scroll listener can synchronously recreate and place rows. Notifying before clearing the cache can arrange a compact row at the previous detailed height, which then feeds its expected bounds back into the next minimum-size measurement.
 
 ## 9. Detailed Constraint Examples
 ### 9.1 Table Example (Column Percentage Change)

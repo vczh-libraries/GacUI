@@ -83,6 +83,7 @@ otherwise it won't work properly.
   - Snapshot Viewer: `REPO-ROOT/.github/KnowledgeBase/manual/unittest/gacui_snapshots.md`
 - Syntax of GacUI XML Resources:
   - Brief Introduction: `REPO-ROOT/.github/Guidelines/GacUIXmlResource.md`
+  - Best practices for creating a GacUI application with MVVM: `REPO-ROOT/.github/Guidelines/GacUIMVVM.md`
   - Prefer EazyLayout first: `REPO-ROOT/.github/Guidelines/GacUIEazyLayout.md`. It automatically covers many layout best practices, but default values need to change for TUI.
   - Best practices for layout, finer composition or skin control: `REPO-ROOT/.github/Guidelines/GacUILayout.md`.
   - Detailed document can be found in `REPO-ROOT/.github/KnowledgeBase/Index.md` under `# Copy of Online Manual` / `## GacUI`, in the `GacUI XML Resource` item and all subitems.

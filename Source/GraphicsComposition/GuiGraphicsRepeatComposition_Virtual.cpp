@@ -49,10 +49,10 @@ GuiVirtualRepeatCompositionBase
 			void GuiVirtualRepeatCompositionBase::Layout_ResetLayout()
 			{
 				viewBounds = Rect({ 0,0 }, { 0,0 });
-				ViewLocationChanged.Execute(GuiEventArgs(this));
 				OnResetViewLocation();
 				itemSourceUpdated = true;
 				Layout_InvalidateItemSizeCache();
+				ViewLocationChanged.Execute(GuiEventArgs(this));
 				AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
 			}
 

@@ -1627,6 +1627,11 @@ class presentation::compositions::GuiResponsiveFixedComposition : presentation::
 }
 
 class presentation::compositions::GuiResponsiveGroupComposition : presentation::compositions::GuiResponsiveCompositionBase {
+    property ViewSizes : system::ReadonlyList<system::Int64>^ { get:GetViewSizes set:SetViewSizes }
+
+    function GetViewSizes() : system::ReadonlyList<system::Int64>^;
+    function SetViewSizes(value : system::ReadonlyList<system::Int64>^) : system::Void;
+
     constructor () : presentation::compositions::GuiResponsiveGroupComposition*;
 }
 
