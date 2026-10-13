@@ -124,6 +124,10 @@ A few more thing to do:
 
 To verify, no need to perform full verification, just verify this easy layout responsive window.
 
+## UPDATE
+
+a better way is to add alignment top:5 others:0 to SharedSizeRoot and undo the ez:layout part including giving it a name. rebuild commit and push, no need to test, just open the window to see it actually layouted correct
+
 # TEST [CONFIRMED]
 
 Follow the eight verification checks in the problem description. Establish the missing responsive action and existing spelling as the baseline, then verify authored resources, generated consumers, modal lifecycle, palette refresh, four measured layouts, retained selection and virtualization using the shared UIA wrappers and automation Controls/Dom. Record generated C++, Workflow binary and native remote renderer coverage separately.
@@ -132,7 +136,8 @@ Follow the eight verification checks in the problem description. Establish the m
 
 - No.1 XML-owned vertical tab and independent responsive navigation/movie groups [CONFIRMED]
 - No.2 Window-owned selection and state-free virtual responsive lists [CONFIRMED]
-- No.3 Reset movie row measurements when the responsive group changes level [CONFIRMED]
+- No.3 Reset movie row measurements when the responsive group changes level [DENIED]
+- No.4 Put the top inset on the existing SharedSizeRoot [CONFIRMED]
 
 ## No.1 XML-owned vertical tab and independent responsive navigation/movie groups
 
@@ -327,10 +332,28 @@ Canonical `GacUI_Compiler` generation completed with exit zero for both x86 and 
 
 The full Debug x64 incremental solution build passed in 1:33 with zero warnings/errors. Both fresh focused entry wrappers then rebuilt successfully and passed: hosted `<GacUI repo>/Test/UIA_CppTest.ps1 -Scenario ResponsiveWindow -AsPort 8888` completed 1,529 assertions; native `<GacUI repo>/Test/UIA_CppTest_Metaonly.ps1 -Scenario ResponsiveWindow -AsPort 8890` completed 1,533. In both runs, the measured compact row height was 26 pixels, every rich appearance used 106 pixels, and both subsequent returns to compact restored 26 pixels. Selection, virtualization, short/tall list scrolling and all three modal close paths passed. Each owned app closed normally, released its endpoint and left no runtime-error dialog or surviving process.
 
-### CONFIRMED
+### DENIED BY USER
 
-No.3 is the final refinement of the retained No.1/No.2 implementation. The failing old-binary regression now passes in both C++ window modes: the arranger's cached 106-pixel rich height is discarded at the completed group transition, so newly realized compact rows measure 26 pixels again. Repeated resizing and scrolling continue to use the existing width view and factories without additional state. All three close paths succeed.
+The user rejected the spacing implementation in No.3: the existing SharedSizeRoot should own the asymmetric inset, eliminating the extra layout name and constructor assignment. The movie-group reload and the recorded verification results remain valid and are retained by No.4.
+
+The preceding No.3 verification established that the failing old-binary regression passes in both C++ window modes: the arranger's cached 106-pixel rich height is discarded at the completed group transition, so newly realized compact rows measure 26 pixels again. Repeated resizing and scrolling continue to use the existing width view and factories without additional state. All three close paths succeeded. These results remain historical evidence for the retained arranger fix; No.4 replaces only the rejected spacing approach.
 
 A focused hosted Controls inspection at 440 by 320 measured the surrounding content bounds as `(216,136)-(640,411)` and the main layout/generated bounds and `Table:2*1` as `(216,141)-(640,411)`. This proves an exact five-pixel top gap and zero left/right/bottom gaps. The earlier `Table:2*5` candidate was the window chrome; the final measurement follows the inner content ancestry to the main layout table. The inspection's app also completed normal shutdown.
 
 All three instructions added as comments by `fd25c5f9a` are completed and removed from `<GacUI repo>/Project.md`: the two generated tool source directories are documented, and the Unix inventory lists all nine Test/Linux and four Tools `vmake` configurations. Each listed configuration exists. The new generated-versus-authored commit requirement remains in place. Final review and `git diff --check` found no further issues. Verification was deliberately limited to this responsive window on Windows Debug x64 at 96 DPI, as requested; no full unit suite, metadata test, palette cycle or other platform run was performed for this continuation.
+
+## No.4 Put the top inset on the existing SharedSizeRoot
+
+The existing shared-size root can supply the asymmetric margin directly, as recommended for wrapper-owned insets in `<GacUI repo>/.github/Guidelines/GacUIEazyLayout.md`. Set its `AlignmentToParent` to `left:0 top:5 right:0 bottom:0`, restore the main layout to unnamed `<ez:Layout Border="false">`, and remove the constructor assignment. This preserves the desired geometry using only declarative composition properties and avoids overriding `BuildLayout` afterward. Retain No.3's movie-group arranger reload.
+
+### CODE CHANGE
+
+Apply the three XML edits, regenerate both architecture outputs through the canonical compiler, and rebuild Debug x64. Follow the user's explicit verification scope: open the responsive window and inspect the rendered content/top gap, then close normally. Do not run automated scenarios or test suites. Commit authored and generated files separately, then push.
+
+### CONFIRMED
+
+No.4 replaces No.3's spacing implementation while retaining its movie-group reload. Both architecture resources regenerated successfully, and the Debug x64 solution build passed in 1:34 with zero warnings/errors. The removed `mainLayout` name is absent from the authored resource and both generated source sets.
+
+One fresh native `CppTest_Metaonly` instance was launched through the repository execution wrapper. Opening the responsive window produced its initial 240-by-320 compact layout with the Subscribed Accounts menu, movie list and OK/Cancel footer visible. The retained Controls snapshot shows the content parent at `(8,37)-(232,312)` and the shared-size root, unnamed easy layout and main `Table:2*1` at `(8,42)-(232,312)`. The gap is exactly five pixels at the top and zero on the other sides; the easy layout fills the already-inset shared-size root.
+
+Cancel closed the modal and the owner then closed normally. The launcher exited zero, no runtime-error dialog or target process remained, and debugger argument overrides were restored. No automated scenario, suite, resize cycle or additional test was run, as explicitly requested. Final diff review and whitespace checks passed. The authored XML/log and generated outputs are committed separately under the existing Project.md rule.
