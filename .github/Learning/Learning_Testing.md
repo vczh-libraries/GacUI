@@ -22,6 +22,7 @@
 - Prefer automation geometry before screenshots for layout verification [3]
 - Verify GitView diffs against real repository states [3]
 - Use remote-protocol snapshots only for useful rendering [3]
+- Keep FullControlTest UIA checks synchronized with showcase changes [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -38,7 +39,6 @@
 - Remote-debugging guides own complete Cartesian test matrices [2]
 - Verify palette refresh through retained state and actual host rendering [2]
 - Verify compiler releases through every tutorial architecture output [2]
-- Keep FullControlTest UIA checks synchronized with showcase changes [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Verify GacGen RPC outputs with positive and negative resources [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
@@ -560,6 +560,8 @@ In `Test/UIA_CppTest_Shared.cs`, wait for the queued rebuild using a checked `Wi
 When FullControlTest changes, update the affected assertions in `Test/UIA_CppTest_Shared.cs` and run both `Test/UIA_CppTest.ps1` and `Test/UIA_CppTest_Metaonly.ps1`. Check meaningful roles, properties, pattern actions and their resulting state, not only generic tab traversal. Inspect with UiaList through its automation endpoint when helpful. Keep the script entry points, prerequisites and hosted/native distinctions under `Project.md` Windows Specific.
 
 Honor an explicitly narrowed manual verification scope. For responsive-layout changes, the ribbon document page, responsive page and Easy Layout responsive window can provide the requested coverage without unrelated pages or palette cycles. Keep meaningful resize boundaries, compact/detailed row-height contraction, end-scrolled resizing, newly realized rows, selection and reopening within that scope. Use `-Scenario ResponsiveWindow` and reuse a successful current build with `-SkipBuild`; record the exact consumers tested. Preserve the requested number of ordinary unit-test cases by extending their existing scenarios when related regressions need coverage.
+
+For permanent ViewSizes levels, extend the same four array-length cases to direct/indirect children and both axes. Remove every child, resize while empty, then reattach rows initialized from the group; include synchronous replacement during CurrentLevelChanged and verify no extra notifications. Add direct compact-to-largest-to-compact UI jumps so an intermediate resize cannot hide a missing transition.
 
 ## Verify GitView diffs against real repository states
 

@@ -10,7 +10,7 @@
 - Verify and localize portability on every target OS [20]
 - Extract abstractions only for real shared behavior [17]
 - Crash early instead of adding error-tolerance fallbacks [16]
-- Fix behavior at the owning state instead of patching symptoms [13]
+- Fix behavior at the owning state instead of patching symptoms [14]
 - Validate expectations against implementation and existing tests [12]
 - Make `Stop()` drain asynchronous work before returning [8]
 - Do not assume async callback owners are heap allocated [5]
@@ -368,6 +368,8 @@ When a defect or user correction exposes misleading authoring guidance, correct 
 ## Fix behavior at the owning state instead of patching symptoms
 
 When a bug is caused by state attached to a temporary or overly broad owner, move the state to the object or region that semantically owns it. Avoid compensating fixes such as forcing override values on every affected descendant, duplicating a template/resource just to mask inherited state, or adding side-channel code that only makes the symptom disappear. If a proposed fix looks like a patch, revisit the ownership boundary and preserve naturally correct inherited/default behavior for unaffected parts.
+
+When replacing a configuration trick with a first-class property, preserve the original structure's behavioral contribution and persistent state, including intervals when dynamic children disappear. New application fields and restoration handlers can reveal a missing responsibility in the replacement abstraction. Put that responsibility in its owning component so the sample simplifies to the property replacement.
 
 When an incremental API receives encoded code units but downstream logic consumes complete logical values, keep partial assembly or decoding state in the stream-processing object. Do not change the public input unit or force every caller to assemble complete values merely to fit an internal helper.
 
