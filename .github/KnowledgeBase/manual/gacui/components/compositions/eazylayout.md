@@ -27,6 +27,10 @@ Declare controls, compositions and layout descriptions as direct children. The n
 
 **Padding** sets the gap between neighboring parts and defaults to 5. Nested description groups do not multiply that gap. **Border** defaults to **true** and adds the same gap around the layout; set it to **false** to remove that outside gap. It does not draw a border.
 
+## Responsive Layout Tutorial
+
+[Responsive3](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Layout/Responsive3) combines docking and grid descriptions with responsive account and movie lists. The window uses **\<ez:Layout/\>** to arrange the lists and dialog buttons; separate responsive views own their layouts and item templates. See [Responsive Design Series](../../.././gacui/components/compositions/responsive.md) for the view transitions and source files.
+
 ## Updating the Layout
 
 XML resources build the layout automatically after assignments, initial bindings and event handlers are ready. Nested layouts build before their owners, and **ref.Ctor** observes the built layouts. Normal resizing needs no extra work. Call **BuildLayout()** after changing layout descriptions or their properties. Rebuilding keeps existing controls, their state, bindings, and event handlers.

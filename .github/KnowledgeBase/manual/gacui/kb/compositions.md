@@ -46,3 +46,5 @@ Responsive Layout:
 - Source code: [Tutorial/GacUI_Layout/Responsive2/UI/Resource.xml](https://github.com/vczh-libraries/Release/blob/master/Tutorial/GacUI_Layout/Responsive2/UI/Resource.xml)
 - ![](https://gaclib.net/doc/gacui/kb_compositions_responsive_2.gif)
 
+[Responsive3](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Layout/Responsive3) combines [Easy Layout](../.././gacui/components/compositions/eazylayout.md) with responsive account and movie lists. Resize the window to switch between detailed and compact rows and move account selection into a menu.
+

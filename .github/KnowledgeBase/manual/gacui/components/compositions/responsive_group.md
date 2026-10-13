@@ -58,6 +58,8 @@ Both literal XML forms below are supported without an eval binder. Child content
 
 With virtualized lists, initialize newly realized responsive rows to their group's established level before attaching them. With **ViewSizes** supplying the row appearances, removing all rows preserves the configured levels and the group's own current level. Replacement rows can use **group.CurrentLevel** directly, without separate application fields or restoration handlers. Keep the movie group's original **CurrentLevelChanged** handler calling **ReloadVisibleStyles()** to reset the arranger's row height when switching between compact and detailed templates. Only configured levels are permanent; levels contributed solely by removed children disappear.
 
+The standalone [Responsive3 tutorial](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Layout/Responsive3) demonstrates both **ViewSizes** forms, row initialization before attachment, and row-height refreshes.
+
 ## Choosing a view
 
 When a **\<ResponsiveGroup/\>** is required to switch to a larger view (increasing **CurrentLevel** by 1), or when a **\<ResponsiveGroup/\>** is required to switch to a smaller view (decreasing **CurrentLevel** by 1), it tells all managed **GuiResponsiveCompositionBase** to synchronize with that new **CurrentLevel**. If any **GuiResponsiveCompositionBase**'s **LevelCount** is not large enough, it stays with its largest view.

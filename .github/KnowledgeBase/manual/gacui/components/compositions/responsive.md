@@ -104,3 +104,11 @@ When the window is getting smaller, **\<ResponsiveGroup/\>** shrinks all buttons
 
 When the window is getting even smaller, **\<ResponsiveGroup/\>** cannot shrinks anymore, so the root **\<ResponsiveView/\>** switches to a second view in **\<ResponsiveFixed/\>** to move all button inside a menu on the top.
 
+## Easy Layout with responsive lists
+
+[Responsive3](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Layout/Responsive3) is a standalone tutorial combining [Easy Layout](../../.././gacui/components/compositions/eazylayout.md) with virtualized account and movie lists. Its main window is in [EasyLayoutResponsiveWindow.xml](https://github.com/vczh-libraries/Release/blob/master/Tutorial/GacUI_Layout/Responsive3/UI/EasyLayoutResponsiveWindow.xml), and its item templates are in [EasyLayoutResponsiveTemplates.xml](https://github.com/vczh-libraries/Release/blob/master/Tutorial/GacUI_Layout/Responsive3/UI/EasyLayoutResponsiveTemplates.xml).
+
+As the window narrows, account rows hide their names, then account selection moves into a menu. Movie rows independently switch between an image with title and author, and a compact title-only view. **\<ResponsiveShared/\>** moves the existing movie list between layouts, preserving its state.
+
+The account and movie groups use [ViewSizes](../../.././gacui/components/compositions/responsive_group.md) to keep their levels available when virtualized rows are absent. Newly created row templates adopt the group's current level before attachment. The movie group's **CurrentLevelChanged** handler calls **ReloadVisibleStyles()** so the list arranger updates row heights after a view change.
+
