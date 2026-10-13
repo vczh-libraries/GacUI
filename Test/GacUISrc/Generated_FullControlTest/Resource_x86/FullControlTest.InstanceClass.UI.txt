@@ -1,4 +1,4 @@
-﻿================================(1/134)================================
+﻿================================(1/132)================================
 module <constructor>demo::DataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -687,7 +687,7 @@ namespace demo
     }
 }
 
-================================(2/134)================================
+================================(2/132)================================
 module <instance>demo::DataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -753,7 +753,7 @@ namespace demo
     }
 }
 
-================================(3/134)================================
+================================(3/132)================================
 module <constructor>demo::ElementTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1478,7 +1478,7 @@ namespace demo
     }
 }
 
-================================(4/134)================================
+================================(4/132)================================
 module <instance>demo::ElementTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1521,7 +1521,7 @@ namespace demo
     }
 }
 
-================================(5/134)================================
+================================(5/132)================================
 module <constructor>demo::ListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2008,7 +2008,7 @@ namespace demo
     }
 }
 
-================================(6/134)================================
+================================(6/132)================================
 module <instance>demo::ListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2067,7 +2067,7 @@ namespace demo
     }
 }
 
-================================(7/134)================================
+================================(7/132)================================
 module <constructor>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4990,7 +4990,7 @@ namespace demo
     }
 }
 
-================================(8/134)================================
+================================(8/132)================================
 module <instance>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5074,7 +5074,7 @@ namespace demo
     }
 }
 
-================================(9/134)================================
+================================(9/132)================================
 module <constructor>demo::RepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5733,7 +5733,7 @@ namespace demo
     }
 }
 
-================================(10/134)================================
+================================(10/132)================================
 module <instance>demo::RepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5776,7 +5776,7 @@ namespace demo
     }
 }
 
-================================(11/134)================================
+================================(11/132)================================
 module <constructor>demo::SubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6998,7 +6998,7 @@ namespace demo
     }
 }
 
-================================(12/134)================================
+================================(12/132)================================
 module <instance>demo::SubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7043,7 +7043,7 @@ namespace demo
     }
 }
 
-================================(13/134)================================
+================================(13/132)================================
 module <constructor>demo::TextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7721,7 +7721,7 @@ namespace demo
     }
 }
 
-================================(14/134)================================
+================================(14/132)================================
 module <instance>demo::TextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7768,7 +7768,7 @@ namespace demo
     }
 }
 
-================================(15/134)================================
+================================(15/132)================================
 module <constructor>demo::TreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8286,7 +8286,7 @@ namespace demo
     }
 }
 
-================================(16/134)================================
+================================(16/132)================================
 module <instance>demo::TreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8337,7 +8337,7 @@ namespace demo
     }
 }
 
-================================(17/134)================================
+================================(17/132)================================
 module <constructor>demo::AnimationTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9083,7 +9083,7 @@ namespace demo
     }
 }
 
-================================(18/134)================================
+================================(18/132)================================
 module <instance>demo::AnimationTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9518,7 +9518,7 @@ namespace demo
     }
 }
 
-================================(19/134)================================
+================================(19/132)================================
 module <animation>demo::ColorAnimation;
 
 namespace demo
@@ -9726,7 +9726,7 @@ namespace demo
     }
 }
 
-================================(20/134)================================
+================================(20/132)================================
 module <constructor>demo::DateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9933,7 +9933,7 @@ namespace demo
     }
 }
 
-================================(21/134)================================
+================================(21/132)================================
 module <instance>demo::DateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9975,7 +9975,7 @@ namespace demo
     }
 }
 
-================================(22/134)================================
+================================(22/132)================================
 module <constructor>demo::DateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10319,7 +10319,7 @@ namespace demo
     }
 }
 
-================================(23/134)================================
+================================(23/132)================================
 module <instance>demo::DateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10422,7 +10422,7 @@ namespace demo
     }
 }
 
-================================(24/134)================================
+================================(24/132)================================
 module <constructor>demo::TextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10629,7 +10629,7 @@ namespace demo
     }
 }
 
-================================(25/134)================================
+================================(25/132)================================
 module <instance>demo::TextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10671,7 +10671,7 @@ namespace demo
     }
 }
 
-================================(26/134)================================
+================================(26/132)================================
 module <constructor>demo::CategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11020,7 +11020,7 @@ namespace demo
     }
 }
 
-================================(27/134)================================
+================================(27/132)================================
 module <instance>demo::CategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11084,7 +11084,7 @@ namespace demo
     }
 }
 
-================================(28/134)================================
+================================(28/132)================================
 module <constructor>demo::CategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11330,7 +11330,7 @@ namespace demo
     }
 }
 
-================================(29/134)================================
+================================(29/132)================================
 module <instance>demo::CategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11374,7 +11374,7 @@ namespace demo
     }
 }
 
-================================(30/134)================================
+================================(30/132)================================
 module <constructor>demo::CategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11512,7 +11512,7 @@ namespace demo
     }
 }
 
-================================(31/134)================================
+================================(31/132)================================
 module <instance>demo::CategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11565,7 +11565,7 @@ namespace demo
     }
 }
 
-================================(32/134)================================
+================================(32/132)================================
 module <constructor>demo::CategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11766,7 +11766,7 @@ namespace demo
     }
 }
 
-================================(33/134)================================
+================================(33/132)================================
 module <instance>demo::CategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11808,7 +11808,7 @@ namespace demo
     }
 }
 
-================================(34/134)================================
+================================(34/132)================================
 module <constructor>demo::GenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11948,7 +11948,7 @@ namespace demo
     }
 }
 
-================================(35/134)================================
+================================(35/132)================================
 module <instance>demo::GenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12012,7 +12012,7 @@ namespace demo
     }
 }
 
-================================(36/134)================================
+================================(36/132)================================
 module <constructor>demo::GenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12258,7 +12258,7 @@ namespace demo
     }
 }
 
-================================(37/134)================================
+================================(37/132)================================
 module <instance>demo::GenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12302,7 +12302,7 @@ namespace demo
     }
 }
 
-================================(38/134)================================
+================================(38/132)================================
 module <constructor>demo::GenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12367,7 +12367,7 @@ namespace demo
     }
 }
 
-================================(39/134)================================
+================================(39/132)================================
 module <instance>demo::GenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12420,7 +12420,7 @@ namespace demo
     }
 }
 
-================================(40/134)================================
+================================(40/132)================================
 module <constructor>demo::GenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12548,7 +12548,7 @@ namespace demo
     }
 }
 
-================================(41/134)================================
+================================(41/132)================================
 module <instance>demo::GenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12590,7 +12590,7 @@ namespace demo
     }
 }
 
-================================(42/134)================================
+================================(42/132)================================
 module <constructor>demo::DatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13461,7 +13461,7 @@ namespace demo
     }
 }
 
-================================(43/134)================================
+================================(43/132)================================
 module <instance>demo::DatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13504,7 +13504,7 @@ namespace demo
     }
 }
 
-================================(44/134)================================
+================================(44/132)================================
 module <constructor>demo::HyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13752,7 +13752,7 @@ namespace demo
     }
 }
 
-================================(45/134)================================
+================================(45/132)================================
 module <instance>demo::HyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13816,7 +13816,7 @@ namespace demo
     }
 }
 
-================================(46/134)================================
+================================(46/132)================================
 module <constructor>demo::DocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17020,7 +17020,7 @@ namespace demo
     }
 }
 
-================================(47/134)================================
+================================(47/132)================================
 module <instance>demo::DocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17279,7 +17279,7 @@ namespace demo
     }
 }
 
-================================(48/134)================================
+================================(48/132)================================
 module <constructor>demo::DocumentEditorRibbon;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19324,7 +19324,7 @@ namespace demo
     }
 }
 
-================================(49/134)================================
+================================(49/132)================================
 module <instance>demo::DocumentEditorRibbon;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19542,7 +19542,7 @@ namespace demo
     }
 }
 
-================================(50/134)================================
+================================(50/132)================================
 module <constructor>demo::StyleItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19909,7 +19909,7 @@ namespace demo
     }
 }
 
-================================(51/134)================================
+================================(51/132)================================
 module <instance>demo::StyleItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20012,7 +20012,7 @@ namespace demo
     }
 }
 
-================================(52/134)================================
+================================(52/132)================================
 module <constructor>demo::DocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21177,7 +21177,7 @@ namespace demo
     }
 }
 
-================================(53/134)================================
+================================(53/132)================================
 module <instance>demo::DocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21219,747 +21219,7 @@ namespace demo
     }
 }
 
-================================(54/134)================================
-module <constructor>demo::EasyResponsiveAccountButtonTemplate;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::elements::*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace demo
-{
-    class EasyResponsiveAccountButtonTemplateConstructor
-    {
-        @cpp:Protected
-        var self : ::demo::EasyResponsiveAccountButtonTemplate* = null of (::demo::EasyResponsiveAccountButtonTemplate*);
-
-        @cpp:Protected
-        var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiResponsiveViewComposition* = null of (::presentation::compositions::GuiResponsiveViewComposition*);
-
-        @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
-
-        @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
-
-        @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::eazy_layout::GuiEasyLeftLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^);
-
-        @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>6 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
-
-        @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
-
-        @cpp:Protected
-        var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>9 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
-
-        @cpp:Protected
-        var <precompile>10 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
-
-        @cpp:Protected
-        var <precompile>11 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
-
-        @cpp:Protected
-        var <precompile>12 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>13 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
-
-        @cpp:Protected
-        func <demo-EasyResponsiveAccountButtonTemplate>Initialize(<this> : ::demo::EasyResponsiveAccountButtonTemplate*) : (::system::Void)
-        {
-            (self = <this>);
-            {
-                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>0 = new (::presentation::elements::GuiSolidBackgroundElement^)());
-            {
-                (self.OwnedElement = <precompile>0);
-            }
-            (<precompile>1 = new (::presentation::compositions::GuiResponsiveViewComposition*)());
-            (<precompile>2 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
-            (<precompile>3 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
-            (<precompile>4 = new (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^)());
-            (<precompile>5 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>5.PreferredMinSize = {x : 32; y : 32;} of (::presentation::Size));
-            }
-            (<precompile>6 = new (::presentation::elements::GuiImageFrameElement^)());
-            {
-                (<precompile>6.Stretch = true);
-            }
-            {
-                (<precompile>5.OwnedElement = <precompile>6);
-            }
-            {
-                (<precompile>4.Composition = <precompile>5);
-            }
-            (<precompile>7 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
-            (<precompile>8 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>8.MinSizeLimitation = LimitToElement of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>9 = new (::presentation::elements::GuiSolidLabelElement^)());
-            {
-                (<precompile>9.VerticalAlignment = Center of (::presentation::Alignment));
-            }
-            {
-                (<precompile>8.OwnedElement = <precompile>9);
-            }
-            {
-                (<precompile>7.Composition = <precompile>8);
-            }
-            {
-                <precompile>3.Layouts.Add(<precompile>4);
-                <precompile>3.Layouts.Add(<precompile>7);
-            }
-            {
-                <precompile>2.AddChild(<precompile>3);
-            }
-            {
-                var <collection> = <precompile>1.Views;
-                <collection>.Add(<precompile>2);
-            }
-            (<precompile>10 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
-            (<precompile>11 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
-            (<precompile>12 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>12.PreferredMinSize = {x : 32; y : 32;} of (::presentation::Size));
-            }
-            (<precompile>13 = new (::presentation::elements::GuiImageFrameElement^)());
-            {
-                (<precompile>13.Stretch = true);
-            }
-            {
-                (<precompile>12.OwnedElement = <precompile>13);
-            }
-            {
-                (<precompile>11.Composition = <precompile>12);
-            }
-            {
-                <precompile>10.AddChild(<precompile>11);
-            }
-            {
-                var <collection> = <precompile>1.Views;
-                <collection>.Add(<precompile>10);
-            }
-            {
-                (<precompile>1.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
-            }
-            {
-                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                self.AddChild(<precompile>1);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::EasyResponsiveAccountButtonTemplate* = null of (::demo::EasyResponsiveAccountButtonTemplate*);
-
-                    var <bind-cache>1 : ::demo::EasyResponsiveAccountButtonTemplate* = null of (::demo::EasyResponsiveAccountButtonTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Selected ? darkskin::Theme::GetColorPackage().ItemBackgroundSelected : (<bind-cache>1.State == ButtonState::Normal) ? darkskin::Theme::GetColorPackage().ContentBackground : darkskin::Theme::GetColorPackage().ButtonBackgroundHovered of (::presentation::Color);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::demo::EasyResponsiveAccountButtonTemplate*)));
-                            (<bind-cache>1 = (self ?? null of (::demo::EasyResponsiveAccountButtonTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.StateChanged, <bind-callback>1_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.SelectedChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            if (<bind-handler>1_0 is not null)
-                            {
-                                detach(<bind-cache>1.StateChanged, <bind-handler>1_0);
-                                (<bind-handler>1_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::EasyResponsiveAccountButtonTemplate*));
-                            (<bind-cache>1 = null of (::demo::EasyResponsiveAccountButtonTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>0.Color;
-                    var <new> = (cast (::presentation::Color) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>0.Color = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::EasyResponsiveAccountButtonTemplate* = null of (::demo::EasyResponsiveAccountButtonTemplate*);
-
-                    var <bind-cache>1 : ::demo::EasyResponsiveAccount^ = null of (::demo::EasyResponsiveAccount^);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = (<bind-cache>1.Image ?? null) of (::presentation::INativeImage^);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        if (<bind-handler>1_0 is not null)
-                        {
-                            detach(<bind-cache>1.ImageChanged, <bind-handler>1_0);
-                            (<bind-handler>1_0 = null);
-                        }
-                        (<bind-cache>1 = (<bind-cache>0.ViewModel ?? null of (::demo::EasyResponsiveAccount^)));
-                        (<bind-handler>1_0 = (attach(<bind-cache>1.ImageChanged, <bind-callback>1_0) ?? null));
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>1_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::demo::EasyResponsiveAccountButtonTemplate*)));
-                            (<bind-cache>1 = (<bind-cache>0.ViewModel ?? null of (::demo::EasyResponsiveAccount^)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.ViewModelChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.ImageChanged, <bind-callback>1_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.ViewModelChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            if (<bind-handler>1_0 is not null)
-                            {
-                                detach(<bind-cache>1.ImageChanged, <bind-handler>1_0);
-                                (<bind-handler>1_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::EasyResponsiveAccountButtonTemplate*));
-                            (<bind-cache>1 = null of (::demo::EasyResponsiveAccount^));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>6.Image;
-                    var <new> = (cast (::presentation::INativeImage^) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>6.Image = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::EasyResponsiveAccountButtonTemplate* = null of (::demo::EasyResponsiveAccountButtonTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Text of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::demo::EasyResponsiveAccountButtonTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.TextChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.TextChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::EasyResponsiveAccountButtonTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>9.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>9.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                (<precompile>9.Color = darkskin::Theme::GetColorPackage().TextNormal);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::EasyResponsiveAccountButtonTemplate* = null of (::demo::EasyResponsiveAccountButtonTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::demo::EasyResponsiveAccountButtonTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::EasyResponsiveAccountButtonTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>9.Font;
-                    var <new> = (cast (::presentation::FontProperties) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>9.Font = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::EasyResponsiveAccountButtonTemplate* = null of (::demo::EasyResponsiveAccountButtonTemplate*);
-
-                    var <bind-cache>1 : ::demo::EasyResponsiveAccount^ = null of (::demo::EasyResponsiveAccount^);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = (<bind-cache>1.Image ?? null) of (::presentation::INativeImage^);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        if (<bind-handler>1_0 is not null)
-                        {
-                            detach(<bind-cache>1.ImageChanged, <bind-handler>1_0);
-                            (<bind-handler>1_0 = null);
-                        }
-                        (<bind-cache>1 = (<bind-cache>0.ViewModel ?? null of (::demo::EasyResponsiveAccount^)));
-                        (<bind-handler>1_0 = (attach(<bind-cache>1.ImageChanged, <bind-callback>1_0) ?? null));
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>1_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::demo::EasyResponsiveAccountButtonTemplate*)));
-                            (<bind-cache>1 = (<bind-cache>0.ViewModel ?? null of (::demo::EasyResponsiveAccount^)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.ViewModelChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.ImageChanged, <bind-callback>1_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.ViewModelChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            if (<bind-handler>1_0 is not null)
-                            {
-                                detach(<bind-cache>1.ImageChanged, <bind-handler>1_0);
-                                (<bind-handler>1_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::EasyResponsiveAccountButtonTemplate*));
-                            (<bind-cache>1 = null of (::demo::EasyResponsiveAccount^));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>13.Image;
-                    var <new> = (cast (::presentation::INativeImage^) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>13.Image = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::EasyResponsiveAccountButtonTemplate* = null of (::demo::EasyResponsiveAccountButtonTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = (cast (EasyResponsiveAccount^) <bind-cache>0.Context) of (::demo::EasyResponsiveAccount^);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::demo::EasyResponsiveAccountButtonTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.ContextChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.ContextChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::EasyResponsiveAccountButtonTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = self.ViewModel;
-                    var <new> = (cast (::demo::EasyResponsiveAccount^) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (self.ViewModel = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            <precompile>3.BuildLayout();
-            <precompile>11.BuildLayout();
-        }
-
-        new ()
-        {
-        }
-    }
-}
-
-================================(55/134)================================
-module <instance>demo::EasyResponsiveAccountButtonTemplate;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::elements::*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace demo
-{
-    @cpp:Friend(typeof(EasyResponsiveAccountButtonTemplateConstructor))
-    class EasyResponsiveAccountButtonTemplate : ::presentation::templates::GuiSelectableButtonTemplate, EasyResponsiveAccountButtonTemplateConstructor
-    {
-        @cpp:Private
-        var <prop>ViewModel : EasyResponsiveAccount^ = null;
-
-        func GetViewModel() : (EasyResponsiveAccount^)
-        {
-            return <prop>ViewModel;
-        }
-
-        func SetViewModel(<value> : EasyResponsiveAccount^) : (void)
-        {
-            if ((<prop>ViewModel != <value>))
-            {
-                (<prop>ViewModel = <value>);
-                ViewModelChanged();
-            }
-        }
-
-        event ViewModelChanged();
-
-        prop ViewModel : EasyResponsiveAccount^{GetViewModel, SetViewModel : ViewModelChanged}
-
-        new* ()
-        {
-            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("demo::EasyResponsiveAccountButtonTemplate");
-            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
-            this.SetResourceResolver(<resolver>);
-            this.<demo-EasyResponsiveAccountButtonTemplate>Initialize(this);
-        }
-
-        delete
-        {
-            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
-        }
-    }
-}
-
-================================(56/134)================================
+================================(54/132)================================
 module <constructor>demo::EasyResponsiveAccountItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21986,45 +21246,225 @@ namespace demo
     class EasyResponsiveAccountItemTemplateConstructor
     {
         @cpp:Protected
+        var self : ::demo::EasyResponsiveAccountItemTemplate* = null of (::demo::EasyResponsiveAccountItemTemplate*);
+
+        @cpp:Protected
         var ViewModel : ::demo::EasyResponsiveAccount^ = null of (::demo::EasyResponsiveAccount^);
 
         @cpp:Protected
-        var <precompile>0 : ::demo::EasyResponsiveAccountItemTemplate* = null of (::demo::EasyResponsiveAccountItemTemplate*);
+        var <precompile>0 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+        var <precompile>1 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>2 : ::presentation::compositions::eazy_layout::GuiEasyLeftLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+
+        @cpp:Protected
+        var <precompile>8 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
+
+        @cpp:Protected
+        var <precompile>9 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+
+        @cpp:Protected
+        var <precompile>10 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>11 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
+
+        @cpp:Protected
+        var responsiveView : ::presentation::compositions::GuiResponsiveViewComposition* = null of (::presentation::compositions::GuiResponsiveViewComposition*);
 
         @cpp:Protected
         func <demo-EasyResponsiveAccountItemTemplate>Initialize(<this> : ::demo::EasyResponsiveAccountItemTemplate*) : (::system::Void)
         {
-            (<precompile>0 = <this>);
+            (self = <this>);
             (ViewModel = <this>.ViewModel);
             {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (responsiveView = new (::presentation::compositions::GuiResponsiveViewComposition*)());
+            <this>.SetNamedObject("responsiveView", responsiveView);
+            (<precompile>0 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
+            (<precompile>1 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            (<precompile>2 = new (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^)());
+            (<precompile>3 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>3.PreferredMinSize = {x : 32; y : 32;} of (::presentation::Size));
+            }
+            (<precompile>4 = new (::presentation::elements::GuiImageFrameElement^)());
+            {
+                (<precompile>4.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>1 = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                (<precompile>4.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>1.AutoSelection = false);
-            }
-            (<precompile>2 = <precompile>1.BoundsComposition);
-            {
-                (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>4.Stretch = false);
             }
             {
-                (<precompile>1.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
+                (<precompile>3.OwnedElement = <precompile>4);
+            }
+            {
+                (<precompile>2.Composition = <precompile>3);
+            }
+            (<precompile>5 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            (<precompile>6 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>6.PreferredMinSize = {x : 160;} of (::presentation::Size));
+            }
+            {
+                (<precompile>6.MinSizeLimitation = LimitToElement of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>7 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>7.VerticalAlignment = Center of (::presentation::Alignment));
+            }
+            {
+                (<precompile>7.Ellipse = true);
+            }
+            {
+                (<precompile>6.OwnedElement = <precompile>7);
+            }
+            {
+                (<precompile>5.Composition = <precompile>6);
+            }
+            {
+                <precompile>1.Layouts.Add(<precompile>2);
+                <precompile>1.Layouts.Add(<precompile>5);
+            }
+            {
+                <precompile>0.AddChild(<precompile>1);
+            }
+            {
+                var <collection> = responsiveView.Views;
+                <collection>.Add(<precompile>0);
+            }
+            (<precompile>8 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
+            (<precompile>9 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            (<precompile>10 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>10.PreferredMinSize = {x : 32; y : 32;} of (::presentation::Size));
+            }
+            (<precompile>11 = new (::presentation::elements::GuiImageFrameElement^)());
+            {
+                (<precompile>11.VerticalAlignment = Center of (::presentation::Alignment));
+            }
+            {
+                (<precompile>11.HorizontalAlignment = Center of (::presentation::Alignment));
+            }
+            {
+                (<precompile>11.Stretch = false);
+            }
+            {
+                (<precompile>10.OwnedElement = <precompile>11);
+            }
+            {
+                (<precompile>9.Composition = <precompile>10);
+            }
+            {
+                <precompile>8.AddChild(<precompile>9);
+            }
+            {
+                var <collection> = responsiveView.Views;
+                <collection>.Add(<precompile>8);
+            }
+            {
+                (responsiveView.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
+            }
+            {
+                (responsiveView.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                self.AddChild(responsiveView);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
                 {
+                    var <bind-cache>0 : ::demo::EasyResponsiveAccount^ = null of (::demo::EasyResponsiveAccount^);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
                     {
-                        return new (::demo::EasyResponsiveAccountButtonTemplate*)();
+                        var <bind-activator-result> = <bind-cache>0.Image of (::presentation::INativeImage^);
+                        ValueChanged(<bind-activator-result>);
                     }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (ViewModel ?? null of (::demo::EasyResponsiveAccount^)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.ImageChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.ImageChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::EasyResponsiveAccount^));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>4.Image;
+                    var <new> = (cast (::presentation::INativeImage^) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>4.Image = <new>);
                 });
-            }
-            {
-                <precompile>0.AddChild(<precompile>1.BoundsComposition);
+                <this>.AddSubscription(<created-subscription>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -22089,33 +21529,22 @@ namespace demo
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>1.Text;
+                    var <old> = <precompile>7.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>1.Text = <new>);
+                    (<precompile>7.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                (<precompile>1.Context = ViewModel);
-            }
-            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
-                    var <bind-cache>0 : ::demo::EasyResponsiveAccount^ = null of (::demo::EasyResponsiveAccount^);
-
-                    var <bind-cache>1 : ::demo::EasyResponsiveState^ = null of (::demo::EasyResponsiveState^);
-
-                    var <bind-cache>2 : ::demo::EasyResponsiveAccount^ = null of (::demo::EasyResponsiveAccount^);
+                    var <bind-cache>0 : ::demo::EasyResponsiveAccountItemTemplate* = null of (::demo::EasyResponsiveAccountItemTemplate*);
 
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -22123,28 +21552,11 @@ namespace demo
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (<bind-cache>1.Account == <bind-cache>2.Index) of (::system::Boolean);
+                        var <bind-activator-result> = <bind-cache>0.TextColor of (::presentation::Color);
                         ValueChanged(<bind-activator-result>);
                     }
 
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        if (<bind-handler>1_0 is not null)
-                        {
-                            detach(<bind-cache>1.AccountChanged, <bind-handler>1_0);
-                            (<bind-handler>1_0 = null);
-                        }
-                        (<bind-cache>1 = (<bind-cache>0.State ?? null of (::demo::EasyResponsiveState^)));
-                        (<bind-handler>1_0 = (attach(<bind-cache>1.AccountChanged, <bind-callback>1_0) ?? null));
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>1_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>2_0() : (::system::Void)
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                     {
                         <bind-activator>();
                     }
@@ -22154,12 +21566,8 @@ namespace demo
                         if ((!<bind-opened>))
                         {
                             (<bind-opened> = true);
-                            (<bind-cache>0 = (ViewModel ?? null of (::demo::EasyResponsiveAccount^)));
-                            (<bind-cache>2 = (ViewModel ?? null of (::demo::EasyResponsiveAccount^)));
-                            (<bind-cache>1 = (<bind-cache>0.State ?? null of (::demo::EasyResponsiveState^)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StateChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.AccountChanged, <bind-callback>1_0) ?? null));
-                            (<bind-handler>2_0 = (attach(<bind-cache>2.IndexChanged, <bind-callback>2_0) ?? null));
+                            (<bind-cache>0 = (self ?? null of (::demo::EasyResponsiveAccountItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.TextColorChanged, <bind-callback>0_0) ?? null));
                             return true;
                         }
                         return false;
@@ -22182,25 +21590,11 @@ namespace demo
                             (<bind-closed> = true);
                             if (<bind-handler>0_0 is not null)
                             {
-                                detach(<bind-cache>0.StateChanged, <bind-handler>0_0);
+                                detach(<bind-cache>0.TextColorChanged, <bind-handler>0_0);
                                 (<bind-handler>0_0 = null);
                             }
-                            if (<bind-handler>1_0 is not null)
-                            {
-                                detach(<bind-cache>1.AccountChanged, <bind-handler>1_0);
-                                (<bind-handler>1_0 = null);
-                            }
-                            if (<bind-handler>2_0 is not null)
-                            {
-                                detach(<bind-cache>2.IndexChanged, <bind-handler>2_0);
-                                (<bind-handler>2_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::EasyResponsiveAccount^));
-                            (<bind-cache>1 = null of (::demo::EasyResponsiveState^));
-                            (<bind-cache>2 = null of (::demo::EasyResponsiveAccount^));
+                            (<bind-cache>0 = null of (::demo::EasyResponsiveAccountItemTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -22208,23 +21602,164 @@ namespace demo
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>1.Selected;
-                    var <new> = (cast (::system::Boolean) <value>);
+                    var <old> = <precompile>7.Color;
+                    var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>1.Selected = <new>);
+                    (<precompile>7.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                var <created-subscription> = new (::system::Subscription^)
                 {
-                    (ViewModel.State.Account = ViewModel.Index);
+                    var <bind-cache>0 : ::demo::EasyResponsiveAccountItemTemplate* = null of (::demo::EasyResponsiveAccountItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::EasyResponsiveAccountItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::EasyResponsiveAccountItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
                 };
-                attach(<precompile>1.Clicked, <event-handler>);
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>7.Font;
+                    var <new> = (cast (::presentation::FontProperties) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>7.Font = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
             }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::EasyResponsiveAccount^ = null of (::demo::EasyResponsiveAccount^);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Image of (::presentation::INativeImage^);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (ViewModel ?? null of (::demo::EasyResponsiveAccount^)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.ImageChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.ImageChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::EasyResponsiveAccount^));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>11.Image;
+                    var <new> = (cast (::presentation::INativeImage^) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>11.Image = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            <precompile>1.BuildLayout();
+            <precompile>9.BuildLayout();
         }
 
         new ()
@@ -22233,7 +21768,7 @@ namespace demo
     }
 }
 
-================================(57/134)================================
+================================(55/132)================================
 module <instance>demo::EasyResponsiveAccountItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22258,7 +21793,7 @@ using presentation::theme::*;
 namespace demo
 {
     @cpp:Friend(typeof(EasyResponsiveAccountItemTemplateConstructor))
-    class EasyResponsiveAccountItemTemplate : ::presentation::templates::GuiControlTemplate, EasyResponsiveAccountItemTemplateConstructor
+    class EasyResponsiveAccountItemTemplate : ::presentation::templates::GuiTextListItemTemplate, EasyResponsiveAccountItemTemplateConstructor
     {
         @cpp:Private
         var <parameter>ViewModel : demo::EasyResponsiveAccount^ = null of (::demo::EasyResponsiveAccount^);
@@ -22286,7 +21821,7 @@ namespace demo
     }
 }
 
-================================(58/134)================================
+================================(56/132)================================
 module <constructor>demo::EasyResponsiveAccountMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22313,34 +21848,35 @@ namespace demo
     class EasyResponsiveAccountMenuTemplateConstructor
     {
         @cpp:Protected
+        var self : ::demo::EasyResponsiveAccountMenuTemplate* = null of (::demo::EasyResponsiveAccountMenuTemplate*);
+
+        @cpp:Protected
         var ViewModel : ::demo::EasyResponsiveAccount^ = null of (::demo::EasyResponsiveAccount^);
 
         @cpp:Protected
-        var <precompile>0 : ::demo::EasyResponsiveAccountMenuTemplate* = null of (::demo::EasyResponsiveAccountMenuTemplate*);
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
-
-        @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var menuButton : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
         func <demo-EasyResponsiveAccountMenuTemplate>Initialize(<this> : ::demo::EasyResponsiveAccountMenuTemplate*) : (::system::Void)
         {
-            (<precompile>0 = <this>);
+            (self = <this>);
             (ViewModel = <this>.ViewModel);
             {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>1 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+                (menuButton = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+                <this>.SetNamedObject("menuButton", menuButton);
             }
-            (<precompile>2 = <precompile>1.BoundsComposition);
+            (<precompile>0 = menuButton.BoundsComposition);
             {
-                (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>0.AddChild(<precompile>1.BoundsComposition);
+                self.AddChild(menuButton.BoundsComposition);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -22405,13 +21941,13 @@ namespace demo
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>1.Text;
+                    var <old> = menuButton.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>1.Text = <new>);
+                    (menuButton.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -22420,15 +21956,7 @@ namespace demo
                 {
                     var <bind-cache>0 : ::demo::EasyResponsiveAccount^ = null of (::demo::EasyResponsiveAccount^);
 
-                    var <bind-cache>1 : ::demo::EasyResponsiveState^ = null of (::demo::EasyResponsiveState^);
-
-                    var <bind-cache>2 : ::demo::EasyResponsiveAccount^ = null of (::demo::EasyResponsiveAccount^);
-
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -22436,28 +21964,11 @@ namespace demo
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (<bind-cache>1.Account == <bind-cache>2.Index) of (::system::Boolean);
+                        var <bind-activator-result> = <bind-cache>0.Selected ? (cast (GuiImageData^) self.ResolveResource("res", "ResponsiveImages/Selection", true)) : null of (::presentation::GuiImageData^);
                         ValueChanged(<bind-activator-result>);
                     }
 
                     func <bind-callback>0_0() : (::system::Void)
-                    {
-                        if (<bind-handler>1_0 is not null)
-                        {
-                            detach(<bind-cache>1.AccountChanged, <bind-handler>1_0);
-                            (<bind-handler>1_0 = null);
-                        }
-                        (<bind-cache>1 = (<bind-cache>0.State ?? null of (::demo::EasyResponsiveState^)));
-                        (<bind-handler>1_0 = (attach(<bind-cache>1.AccountChanged, <bind-callback>1_0) ?? null));
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>1_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>2_0() : (::system::Void)
                     {
                         <bind-activator>();
                     }
@@ -22468,11 +21979,7 @@ namespace demo
                         {
                             (<bind-opened> = true);
                             (<bind-cache>0 = (ViewModel ?? null of (::demo::EasyResponsiveAccount^)));
-                            (<bind-cache>2 = (ViewModel ?? null of (::demo::EasyResponsiveAccount^)));
-                            (<bind-cache>1 = (<bind-cache>0.State ?? null of (::demo::EasyResponsiveState^)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StateChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.AccountChanged, <bind-callback>1_0) ?? null));
-                            (<bind-handler>2_0 = (attach(<bind-cache>2.IndexChanged, <bind-callback>2_0) ?? null));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedChanged, <bind-callback>0_0) ?? null));
                             return true;
                         }
                         return false;
@@ -22495,25 +22002,11 @@ namespace demo
                             (<bind-closed> = true);
                             if (<bind-handler>0_0 is not null)
                             {
-                                detach(<bind-cache>0.StateChanged, <bind-handler>0_0);
+                                detach(<bind-cache>0.SelectedChanged, <bind-handler>0_0);
                                 (<bind-handler>0_0 = null);
                             }
-                            if (<bind-handler>1_0 is not null)
-                            {
-                                detach(<bind-cache>1.AccountChanged, <bind-handler>1_0);
-                                (<bind-handler>1_0 = null);
-                            }
-                            if (<bind-handler>2_0 is not null)
-                            {
-                                detach(<bind-cache>2.IndexChanged, <bind-handler>2_0);
-                                (<bind-handler>2_0 = null);
-                            }
                             (<bind-cache>0 = null of (::demo::EasyResponsiveAccount^));
-                            (<bind-cache>1 = null of (::demo::EasyResponsiveState^));
-                            (<bind-cache>2 = null of (::demo::EasyResponsiveAccount^));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -22521,22 +22014,88 @@ namespace demo
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>1.Selected;
+                    var <old> = menuButton.Image;
+                    var <new> = (cast (::presentation::GuiImageData^) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (menuButton.Image = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::EasyResponsiveAccount^ = null of (::demo::EasyResponsiveAccount^);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Selected of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (ViewModel ?? null of (::demo::EasyResponsiveAccount^)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.SelectedChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::EasyResponsiveAccount^));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = menuButton.Selected;
                     var <new> = (cast (::system::Boolean) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>1.Selected = <new>);
+                    (menuButton.Selected = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    (ViewModel.State.Account = ViewModel.Index);
-                };
-                attach(<precompile>1.Clicked, <event-handler>);
             }
         }
 
@@ -22546,7 +22105,7 @@ namespace demo
     }
 }
 
-================================(59/134)================================
+================================(57/132)================================
 module <instance>demo::EasyResponsiveAccountMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22599,7 +22158,7 @@ namespace demo
     }
 }
 
-================================(60/134)================================
+================================(58/132)================================
 module <constructor>demo::EasyResponsiveMovieTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22683,7 +22242,7 @@ namespace demo
         var <precompile>16 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
 
         @cpp:Protected
-        var movieView : ::presentation::compositions::GuiResponsiveViewComposition* = null of (::presentation::compositions::GuiResponsiveViewComposition*);
+        var responsiveView : ::presentation::compositions::GuiResponsiveViewComposition* = null of (::presentation::compositions::GuiResponsiveViewComposition*);
 
         @cpp:Protected
         func <demo-EasyResponsiveMovieTemplate>Initialize(<this> : ::demo::EasyResponsiveMovieTemplate*) : (::system::Void)
@@ -22693,8 +22252,8 @@ namespace demo
             {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (movieView = new (::presentation::compositions::GuiResponsiveViewComposition*)());
-            <this>.SetNamedObject("movieView", movieView);
+            (responsiveView = new (::presentation::compositions::GuiResponsiveViewComposition*)());
+            <this>.SetNamedObject("responsiveView", responsiveView);
             (<precompile>0 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
             (<precompile>1 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
             (<precompile>2 = new (::presentation::compositions::eazy_layout::GuiEasyColumnLayout^)());
@@ -22704,7 +22263,7 @@ namespace demo
             }
             (<precompile>4 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>4.PreferredMinSize = {x : 64; y : 64;} of (::presentation::Size));
+                (<precompile>4.PreferredMinSize = {x : 96; y : 96;} of (::presentation::Size));
             }
             (<precompile>5 = new (::presentation::elements::GuiImageFrameElement^)());
             {
@@ -22725,7 +22284,7 @@ namespace demo
             }
             (<precompile>7 = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
             {
-                (<precompile>7.CellOption = {composeType : Absolute; absolute : 32;} of (::presentation::compositions::GuiCellOption));
+                (<precompile>7.CellOption = {composeType : Absolute; absolute : 48;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>8 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
@@ -22746,7 +22305,7 @@ namespace demo
             }
             (<precompile>10 = new (::presentation::compositions::eazy_layout::GuiEasyRowLayout^)());
             {
-                (<precompile>10.CellOption = {composeType : Absolute; absolute : 27;} of (::presentation::compositions::GuiCellOption));
+                (<precompile>10.CellOption = {composeType : Absolute; absolute : 43;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>11 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
@@ -22774,7 +22333,7 @@ namespace demo
                 <precompile>0.AddChild(<precompile>1);
             }
             {
-                var <collection> = movieView.Views;
+                var <collection> = responsiveView.Views;
                 <collection>.Add(<precompile>0);
             }
             (<precompile>13 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
@@ -22800,17 +22359,17 @@ namespace demo
                 <precompile>13.AddChild(<precompile>14);
             }
             {
-                var <collection> = movieView.Views;
+                var <collection> = responsiveView.Views;
                 <collection>.Add(<precompile>13);
             }
             {
-                (movieView.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
+                (responsiveView.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
             }
             {
-                (movieView.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (responsiveView.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                self.AddChild(movieView);
+                self.AddChild(responsiveView);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -23552,7 +23111,7 @@ namespace demo
     }
 }
 
-================================(61/134)================================
+================================(59/132)================================
 module <instance>demo::EasyResponsiveMovieTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23596,15 +23155,6 @@ namespace demo
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
             this.<demo-EasyResponsiveMovieTemplate>Initialize(this);
-            <instance-ctor>();
-        }
-
-        func <instance-ctor>() : (::system::Void)
-        {
-            while ((movieView.CurrentLevel > ViewModel.State.MovieLevel))
-            {
-                movieView.LevelDown();
-            }
         }
 
         delete
@@ -23614,7 +23164,7 @@ namespace demo
     }
 }
 
-================================(62/134)================================
+================================(60/132)================================
 module <constructor>demo::EasyLayoutResponsiveWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23644,43 +23194,43 @@ namespace demo
         var self : ::demo::EasyLayoutResponsiveWindow* = null of (::demo::EasyLayoutResponsiveWindow*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+        var <precompile>0 : ::presentation::compositions::GuiSharedSizeRootComposition* = null of (::presentation::compositions::GuiSharedSizeRootComposition*);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+        var <precompile>1 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiResponsiveContainerComposition* = null of (::presentation::compositions::GuiResponsiveContainerComposition*);
+        var <precompile>2 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiResponsiveViewComposition* = null of (::presentation::compositions::GuiResponsiveViewComposition*);
+        var <precompile>3 : ::presentation::compositions::GuiResponsiveContainerComposition* = null of (::presentation::compositions::GuiResponsiveContainerComposition*);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::GuiResponsiveContainerComposition* = null of (::presentation::compositions::GuiResponsiveContainerComposition*);
+        var <precompile>4 : ::presentation::compositions::GuiResponsiveViewComposition* = null of (::presentation::compositions::GuiResponsiveViewComposition*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
+        var <precompile>5 : ::presentation::compositions::GuiResponsiveContainerComposition* = null of (::presentation::compositions::GuiResponsiveContainerComposition*);
 
         @cpp:Protected
         var <precompile>6 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>7 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
 
         @cpp:Protected
-        var <precompile>8 : ::presentation::compositions::GuiResponsiveGroupComposition* = null of (::presentation::compositions::GuiResponsiveGroupComposition*);
+        var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>9 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+        var <precompile>9 : ::presentation::compositions::GuiResponsiveGroupComposition* = null of (::presentation::compositions::GuiResponsiveGroupComposition*);
 
         @cpp:Protected
-        var <precompile>10 : ::presentation::compositions::eazy_layout::GuiEasyLeftLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^);
+        var <precompile>10 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
-        var <precompile>11 : ::presentation::compositions::GuiResponsiveGroupComposition* = null of (::presentation::compositions::GuiResponsiveGroupComposition*);
+        var <precompile>11 : ::presentation::compositions::eazy_layout::GuiEasyLeftLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^);
 
         @cpp:Protected
-        var <precompile>12 : ::presentation::compositions::GuiResponsiveViewComposition* = null of (::presentation::compositions::GuiResponsiveViewComposition*);
+        var <precompile>12 : ::presentation::compositions::GuiResponsiveGroupComposition* = null of (::presentation::compositions::GuiResponsiveGroupComposition*);
 
         @cpp:Protected
         var <precompile>13 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
@@ -23689,64 +23239,67 @@ namespace demo
         var <precompile>14 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
 
         @cpp:Protected
-        var <precompile>15 : ::presentation::controls::GuiScrollContainer* = null of (::presentation::controls::GuiScrollContainer*);
+        var <precompile>15 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>16 : ::presentation::compositions::GuiRepeatStackComposition* = null of (::presentation::compositions::GuiRepeatStackComposition*);
+        var <precompile>16 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
 
         @cpp:Protected
-        var <precompile>17 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>17 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
 
         @cpp:Protected
-        var <precompile>18 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+        var <precompile>18 : ::presentation::compositions::GuiResponsiveSharedComposition* = null of (::presentation::compositions::GuiResponsiveSharedComposition*);
 
         @cpp:Protected
         var <precompile>19 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
 
         @cpp:Protected
-        var <precompile>20 : ::presentation::compositions::GuiResponsiveSharedComposition* = null of (::presentation::compositions::GuiResponsiveSharedComposition*);
+        var <precompile>20 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
-        var <precompile>21 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
+        var <precompile>21 : ::presentation::compositions::eazy_layout::GuiEasyTopLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyTopLayout^);
 
         @cpp:Protected
-        var <precompile>22 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+        var <precompile>22 : ::presentation::controls::GuiToolstripMenuBar* = null of (::presentation::controls::GuiToolstripMenuBar*);
 
         @cpp:Protected
-        var <precompile>23 : ::presentation::compositions::eazy_layout::GuiEasyTopLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyTopLayout^);
+        var <precompile>23 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
-        var <precompile>24 : ::presentation::controls::GuiToolstripMenuBar* = null of (::presentation::controls::GuiToolstripMenuBar*);
+        var <precompile>24 : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
 
         @cpp:Protected
-        var <precompile>25 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+        var <precompile>25 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
 
         @cpp:Protected
-        var <precompile>26 : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
+        var <precompile>26 : ::presentation::compositions::GuiResponsiveSharedComposition* = null of (::presentation::compositions::GuiResponsiveSharedComposition*);
 
         @cpp:Protected
-        var <precompile>27 : ::presentation::compositions::GuiRepeatStackComposition* = null of (::presentation::compositions::GuiRepeatStackComposition*);
+        var <precompile>27 : ::presentation::compositions::eazy_layout::GuiEasyBottomLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^);
 
         @cpp:Protected
-        var <precompile>28 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+        var <precompile>28 : ::presentation::compositions::eazy_layout::GuiEasyRightLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRightLayout^);
 
         @cpp:Protected
-        var <precompile>29 : ::presentation::compositions::GuiResponsiveSharedComposition* = null of (::presentation::compositions::GuiResponsiveSharedComposition*);
+        var <precompile>29 : ::presentation::compositions::GuiSharedSizeItemComposition* = null of (::presentation::compositions::GuiSharedSizeItemComposition*);
 
         @cpp:Protected
-        var <precompile>30 : ::presentation::compositions::eazy_layout::GuiEasyBottomLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^);
+        var <precompile>30 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>31 : ::presentation::compositions::eazy_layout::GuiEasyRightLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRightLayout^);
+        var <precompile>31 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>32 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>32 : ::presentation::compositions::eazy_layout::GuiEasyRightLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRightLayout^);
 
         @cpp:Protected
-        var <precompile>33 : ::presentation::compositions::eazy_layout::GuiEasyRightLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRightLayout^);
+        var <precompile>33 : ::presentation::compositions::GuiSharedSizeItemComposition* = null of (::presentation::compositions::GuiSharedSizeItemComposition*);
 
         @cpp:Protected
         var <precompile>34 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>35 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var movieHost : ::presentation::controls::GuiCustomControl* = null of (::presentation::controls::GuiCustomControl*);
@@ -23759,6 +23312,15 @@ namespace demo
 
         @cpp:Protected
         var movieList : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+
+        @cpp:Protected
+        var accountWidth : ::presentation::compositions::GuiResponsiveViewComposition* = null of (::presentation::compositions::GuiResponsiveViewComposition*);
+
+        @cpp:Protected
+        var accountList : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+
+        @cpp:Protected
+        var accountMenu : ::presentation::compositions::GuiRepeatStackComposition* = null of (::presentation::compositions::GuiRepeatStackComposition*);
 
         @cpp:Protected
         func <demo-EasyLayoutResponsiveWindow>Initialize(<this> : ::demo::EasyLayoutResponsiveWindow*) : (::system::Void)
@@ -23779,30 +23341,41 @@ namespace demo
             {
                 (self.Text = "Easy Layout (Responsive)");
             }
-            (<precompile>0 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
-            (<precompile>1 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
-            (<precompile>2 = new (::presentation::compositions::GuiResponsiveContainerComposition*)());
-            (<precompile>3 = new (::presentation::compositions::GuiResponsiveViewComposition*)());
-            (<precompile>8 = new (::presentation::compositions::GuiResponsiveGroupComposition*)());
+            (<precompile>0 = new (::presentation::compositions::GuiSharedSizeRootComposition*)());
             {
-                (<precompile>8.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
-            (<precompile>9 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
             {
-                (<precompile>9.Border = false);
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>10 = new (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^)());
-            (<precompile>11 = new (::presentation::compositions::GuiResponsiveGroupComposition*)());
+            (<precompile>1 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
             {
-                (<precompile>11.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
+                (<precompile>1.Border = false);
             }
-            (<precompile>12 = new (::presentation::compositions::GuiResponsiveViewComposition*)());
+            (<precompile>2 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            (<precompile>3 = new (::presentation::compositions::GuiResponsiveContainerComposition*)());
+            (<precompile>4 = new (::presentation::compositions::GuiResponsiveViewComposition*)());
+            (<precompile>9 = new (::presentation::compositions::GuiResponsiveGroupComposition*)());
+            {
+                (<precompile>9.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
+            }
+            (<precompile>10 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            {
+                (<precompile>10.Border = false);
+            }
+            (<precompile>11 = new (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^)());
+            (<precompile>12 = new (::presentation::compositions::GuiResponsiveGroupComposition*)());
+            {
+                (<precompile>12.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
+            }
+            (accountWidth = new (::presentation::compositions::GuiResponsiveViewComposition*)());
+            <this>.SetNamedObject("accountWidth", accountWidth);
             (<precompile>13 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
             {
-                (<precompile>13.PreferredMinSize = {x : 180;} of (::presentation::Size));
+                (<precompile>13.PreferredMinSize = {x : 230;} of (::presentation::Size));
             }
             {
-                var <collection> = <precompile>12.Views;
+                var <collection> = accountWidth.Views;
                 <collection>.Add(<precompile>13);
             }
             (<precompile>14 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
@@ -23810,116 +23383,94 @@ namespace demo
                 (<precompile>14.PreferredMinSize = {x : 64;} of (::presentation::Size));
             }
             {
-                var <collection> = <precompile>12.Views;
+                var <collection> = accountWidth.Views;
                 <collection>.Add(<precompile>14);
             }
             {
-                (<precompile>12.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
+                (accountWidth.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
             }
             {
-                <precompile>11.AddChild(<precompile>12);
+                <precompile>12.AddChild(accountWidth);
             }
             {
-                (<precompile>15 = new (::presentation::controls::GuiScrollContainer*)(::presentation::theme::ThemeName::ScrollView));
+                (accountList = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+                <this>.SetNamedObject("accountList", accountList);
             }
             {
-                (<precompile>15.ExtendToFullWidth = true);
+                (accountList.HorizontalAlwaysVisible = false);
             }
             {
-                (<precompile>15.HorizontalAlwaysVisible = false);
+                (accountList.VerticalAlwaysVisible = false);
             }
             {
-                (<precompile>15.VerticalAlwaysVisible = false);
-            }
-            (<precompile>17 = <precompile>15.BoundsComposition);
-            {
-                (<precompile>17.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>15.Text = "Accounts");
-            }
-            (<precompile>16 = new (::presentation::compositions::GuiRepeatStackComposition*)());
-            {
-                (<precompile>16.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
+                (accountList.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
-                    {
-                        if (<viewModel> is (::demo::EasyResponsiveAccount^))
-                        {
-                            return new (::demo::EasyResponsiveAccountItemTemplate*)((cast (::demo::EasyResponsiveAccount^) <viewModel>));
-                        }
-                    }
-                    raise "Cannot find a matched control template to create.";
+                    var item = (cast (demo::EasyResponsiveAccount^) <item>);
+                    return item.Name;
                 });
             }
+            (<precompile>15 = accountList.BoundsComposition);
             {
-                (<precompile>16.Padding = 5 of (::system::Int32));
+                (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>16.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+                (accountList.Text = "Accounts");
             }
             {
-                (<precompile>16.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : (-1);} of (::presentation::Margin));
+                <precompile>12.AddChild(accountList.BoundsComposition);
             }
             {
-                (<precompile>16.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>11.Composition = <precompile>12);
+            }
+            (<precompile>16 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            (<precompile>17 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
+            {
+                (<precompile>17.Direction = Vertical of (::presentation::compositions::ResponsiveDirection));
             }
             {
-                <precompile>15.ContainerComposition.AddChild(<precompile>16);
+                (<precompile>17.PreferredMinSize = {x : 352;} of (::presentation::Size));
+            }
+            (<precompile>18 = new (::presentation::compositions::GuiResponsiveSharedComposition*)());
+            {
+                (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>11.AddChild(<precompile>15.BoundsComposition);
+                <precompile>17.AddChild(<precompile>18);
             }
             {
-                (<precompile>10.Composition = <precompile>11);
+                (<precompile>16.Composition = <precompile>17);
             }
-            (<precompile>18 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            {
+                <precompile>10.Layouts.Add(<precompile>11);
+                <precompile>10.Layouts.Add(<precompile>16);
+            }
+            {
+                <precompile>9.AddChild(<precompile>10);
+            }
+            {
+                var <collection> = <precompile>4.Views;
+                <collection>.Add(<precompile>9);
+            }
             (<precompile>19 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
+            (<precompile>20 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
             {
-                (<precompile>19.Direction = Vertical of (::presentation::compositions::ResponsiveDirection));
+                (<precompile>20.Border = false);
+            }
+            (<precompile>21 = new (::presentation::compositions::eazy_layout::GuiEasyTopLayout^)());
+            {
+                (<precompile>22 = new (::presentation::controls::GuiToolstripMenuBar*)(::presentation::theme::ThemeName::MenuBar));
             }
             {
-                (<precompile>19.PreferredMinSize = {x : 320;} of (::presentation::Size));
-            }
-            (<precompile>20 = new (::presentation::compositions::GuiResponsiveSharedComposition*)());
-            {
-                (<precompile>20.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>23 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuBarButton));
             }
             {
-                <precompile>19.AddChild(<precompile>20);
+                (<precompile>23.Text = "Subscribed Accounts");
             }
+            (<precompile>24 = <precompile>23.EnsureToolstripSubMenu());
+            (accountMenu = new (::presentation::compositions::GuiRepeatStackComposition*)());
+            <this>.SetNamedObject("accountMenu", accountMenu);
             {
-                (<precompile>18.Composition = <precompile>19);
-            }
-            {
-                <precompile>9.Layouts.Add(<precompile>10);
-                <precompile>9.Layouts.Add(<precompile>18);
-            }
-            {
-                <precompile>8.AddChild(<precompile>9);
-            }
-            {
-                var <collection> = <precompile>3.Views;
-                <collection>.Add(<precompile>8);
-            }
-            (<precompile>21 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
-            (<precompile>22 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
-            {
-                (<precompile>22.Border = false);
-            }
-            (<precompile>23 = new (::presentation::compositions::eazy_layout::GuiEasyTopLayout^)());
-            {
-                (<precompile>24 = new (::presentation::controls::GuiToolstripMenuBar*)(::presentation::theme::ThemeName::MenuBar));
-            }
-            {
-                (<precompile>25 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuBarButton));
-            }
-            {
-                (<precompile>25.Text = "Subscribed Accounts");
-            }
-            (<precompile>26 = <precompile>25.EnsureToolstripSubMenu());
-            (<precompile>27 = new (::presentation::compositions::GuiRepeatStackComposition*)());
-            {
-                (<precompile>27.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
+                (accountMenu.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
                 {
                     {
                         if (<viewModel> is (::demo::EasyResponsiveAccount^))
@@ -23931,44 +23482,44 @@ namespace demo
                 });
             }
             {
-                (<precompile>27.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+                (accountMenu.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
-                (<precompile>27.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (accountMenu.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>27.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (accountMenu.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>26.ContainerComposition.AddChild(<precompile>27);
+                <precompile>24.ContainerComposition.AddChild(accountMenu);
             }
             {
-                <precompile>24.ToolstripItems.Add(<precompile>25);
+                <precompile>22.ToolstripItems.Add(<precompile>23);
             }
             {
-                (<precompile>23.Composition = <precompile>24.BoundsComposition);
+                (<precompile>21.Composition = <precompile>22.BoundsComposition);
             }
-            (<precompile>28 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
-            (<precompile>29 = new (::presentation::compositions::GuiResponsiveSharedComposition*)());
+            (<precompile>25 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            (<precompile>26 = new (::presentation::compositions::GuiResponsiveSharedComposition*)());
             {
-                (<precompile>28.Composition = <precompile>29);
-            }
-            {
-                <precompile>22.Layouts.Add(<precompile>23);
-                <precompile>22.Layouts.Add(<precompile>28);
+                (<precompile>25.Composition = <precompile>26);
             }
             {
-                <precompile>21.AddChild(<precompile>22);
+                <precompile>20.Layouts.Add(<precompile>21);
+                <precompile>20.Layouts.Add(<precompile>25);
             }
             {
-                var <collection> = <precompile>3.Views;
-                <collection>.Add(<precompile>21);
+                <precompile>19.AddChild(<precompile>20);
+            }
+            {
+                var <collection> = <precompile>4.Views;
+                <collection>.Add(<precompile>19);
             }
             {
                 (movieHost = new (::presentation::controls::GuiCustomControl*)(::presentation::theme::ThemeName::CustomControl));
                 <this>.SetNamedObject("movieHost", movieHost);
             }
-            (<precompile>4 = new (::presentation::compositions::GuiResponsiveContainerComposition*)());
+            (<precompile>5 = new (::presentation::compositions::GuiResponsiveContainerComposition*)());
             (movieGroup = new (::presentation::compositions::GuiResponsiveGroupComposition*)());
             <this>.SetNamedObject("movieGroup", movieGroup);
             {
@@ -23976,21 +23527,21 @@ namespace demo
             }
             (movieWidth = new (::presentation::compositions::GuiResponsiveViewComposition*)());
             <this>.SetNamedObject("movieWidth", movieWidth);
-            (<precompile>5 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
-            {
-                (<precompile>5.PreferredMinSize = {x : 300;} of (::presentation::Size));
-            }
-            {
-                var <collection> = movieWidth.Views;
-                <collection>.Add(<precompile>5);
-            }
             (<precompile>6 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
             {
-                (<precompile>6.PreferredMinSize = {x : 120;} of (::presentation::Size));
+                (<precompile>6.PreferredMinSize = {x : 334;} of (::presentation::Size));
             }
             {
                 var <collection> = movieWidth.Views;
                 <collection>.Add(<precompile>6);
+            }
+            (<precompile>7 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
+            {
+                (<precompile>7.PreferredMinSize = {x : 120;} of (::presentation::Size));
+            }
+            {
+                var <collection> = movieWidth.Views;
+                <collection>.Add(<precompile>7);
             }
             {
                 (movieWidth.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
@@ -24015,21 +23566,9 @@ namespace demo
                     return item.Title;
                 });
             }
+            (<precompile>8 = movieList.BoundsComposition);
             {
-                (movieList.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
-                {
-                    {
-                        if (<viewModel> is (::demo::EasyResponsiveMovie^))
-                        {
-                            return new (::demo::EasyResponsiveMovieTemplate*)((cast (::demo::EasyResponsiveMovie^) <viewModel>));
-                        }
-                    }
-                    raise "Cannot find a matched control template to create.";
-                });
-            }
-            (<precompile>7 = movieList.BoundsComposition);
-            {
-                (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (movieList.Text = "Movies");
@@ -24038,44 +23577,69 @@ namespace demo
                 movieGroup.AddChild(movieList.BoundsComposition);
             }
             {
-                (<precompile>4.ResponsiveTarget = movieGroup);
+                (<precompile>5.ResponsiveTarget = movieGroup);
             }
             {
-                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                movieHost.ContainerComposition.AddChild(<precompile>4);
+                movieHost.ContainerComposition.AddChild(<precompile>5);
             }
             {
-                var <collection> = <precompile>3.SharedControls;
+                var <collection> = <precompile>4.SharedControls;
                 <collection>.Add(movieHost);
             }
             {
-                (<precompile>3.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
+                (<precompile>4.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
             }
             {
-                (<precompile>2.ResponsiveTarget = <precompile>3);
+                (<precompile>3.ResponsiveTarget = <precompile>4);
             }
             {
-                (<precompile>1.Composition = <precompile>2);
+                (<precompile>2.Composition = <precompile>3);
             }
-            (<precompile>30 = new (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^)());
-            (<precompile>31 = new (::presentation::compositions::eazy_layout::GuiEasyRightLayout^)());
+            (<precompile>27 = new (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^)());
+            (<precompile>28 = new (::presentation::compositions::eazy_layout::GuiEasyRightLayout^)());
+            (<precompile>29 = new (::presentation::compositions::GuiSharedSizeItemComposition*)());
             {
-                (<precompile>32 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            {
-                (<precompile>32.Alt = "O");
+                (<precompile>29.SharedWidth = true);
             }
             {
-                (<precompile>32.Text = "OK");
+                (<precompile>29.Group = "DialogButtons");
             }
             {
-                (<precompile>31.Composition = <precompile>32.BoundsComposition);
+                (<precompile>30 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            (<precompile>33 = new (::presentation::compositions::eazy_layout::GuiEasyRightLayout^)());
+            (<precompile>31 = <precompile>30.BoundsComposition);
+            {
+                (<precompile>31.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>30.Alt = "O");
+            }
+            {
+                (<precompile>30.Text = "OK");
+            }
+            {
+                <precompile>29.AddChild(<precompile>30.BoundsComposition);
+            }
+            {
+                (<precompile>28.Composition = <precompile>29);
+            }
+            (<precompile>32 = new (::presentation::compositions::eazy_layout::GuiEasyRightLayout^)());
+            (<precompile>33 = new (::presentation::compositions::GuiSharedSizeItemComposition*)());
+            {
+                (<precompile>33.SharedWidth = true);
+            }
+            {
+                (<precompile>33.Group = "DialogButtons");
+            }
             {
                 (<precompile>34 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>35 = <precompile>34.BoundsComposition);
+            {
+                (<precompile>35.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>34.Alt = "C");
@@ -24084,47 +23648,83 @@ namespace demo
                 (<precompile>34.Text = "Cancel");
             }
             {
-                (<precompile>33.Composition = <precompile>34.BoundsComposition);
+                <precompile>33.AddChild(<precompile>34.BoundsComposition);
             }
             {
-                <precompile>30.Layouts.Add(<precompile>31);
-                <precompile>30.Layouts.Add(<precompile>33);
+                (<precompile>32.Composition = <precompile>33);
             }
             {
-                <precompile>0.Layouts.Add(<precompile>1);
-                <precompile>0.Layouts.Add(<precompile>30);
+                <precompile>27.Layouts.Add(<precompile>28);
+                <precompile>27.Layouts.Add(<precompile>32);
+            }
+            {
+                <precompile>1.Layouts.Add(<precompile>2);
+                <precompile>1.Layouts.Add(<precompile>27);
+            }
+            {
+                <precompile>0.AddChild(<precompile>1);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
             }
             {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    (self.state.MovieLevel = movieWidth.CurrentLevel);
-                };
-                attach(movieWidth.CurrentLevelChanged, <event-handler>);
+                (movieList.ItemTemplate = self.CreateMovieTemplate);
             }
             {
                 (movieList.ItemSource = self.movies);
             }
             {
-                (<precompile>16.ItemSource = self.accounts);
+                (accountList.ItemTemplate = self.CreateAccountTemplate);
             }
             {
-                (<precompile>20.Shared = movieHost);
+                (accountList.ItemSource = self.accounts);
             }
             {
-                (<precompile>27.ItemSource = self.accounts);
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    {
+                        var <for-begin>i : ::system::Int32 = 0;
+                        var <for-end>i : ::system::Int32 = (self.accounts.Count - 1);
+                        var i = <for-begin>i;
+                        while ((i <= <for-end>i))
+                        {
+                            {
+                                (self.accounts[i].Selected = accountList.GetSelected(i));
+                            }
+                            (i = (i + 1));
+                        }
+                    }
+                };
+                attach(accountList.SelectionChanged, <event-handler>);
             }
             {
-                (<precompile>29.Shared = movieHost);
+                (<precompile>18.Shared = movieHost);
+            }
+            {
+                (accountMenu.ItemSource = self.accounts);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiItemEventArgs*) : (::system::Void)
+                {
+                    var item = (cast (EasyResponsiveAccountMenuTemplate*) accountMenu.StackItems[arguments.itemIndex].Children[0]);
+                    var account = item.ViewModel;
+                    var button = (cast (GuiToolstripButton*) item.GetNamedObject("menuButton"));
+                    attach(button.Clicked, func (sender : GuiGraphicsComposition*, arguments : GuiEventArgs*) : (void)
+                    {
+                        accountList.SetSelected(self.accounts.IndexOf(account), true);
+                    });
+                };
+                attach(accountMenu.ItemInserted, <event-handler>);
+            }
+            {
+                (<precompile>26.Shared = movieHost);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     self.Close();
                 };
-                attach(<precompile>32.Clicked, <event-handler>);
+                attach(<precompile>30.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -24133,9 +23733,9 @@ namespace demo
                 };
                 attach(<precompile>34.Clicked, <event-handler>);
             }
-            <precompile>9.BuildLayout();
-            <precompile>22.BuildLayout();
-            <precompile>0.BuildLayout();
+            <precompile>10.BuildLayout();
+            <precompile>20.BuildLayout();
+            <precompile>1.BuildLayout();
         }
 
         new ()
@@ -24144,7 +23744,7 @@ namespace demo
     }
 }
 
-================================(63/134)================================
+================================(61/132)================================
 module <instance>demo::EasyLayoutResponsiveWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24171,15 +23771,13 @@ namespace demo
     @cpp:Friend(typeof(EasyLayoutResponsiveWindowConstructor))
     class EasyLayoutResponsiveWindow : ::presentation::controls::GuiWindow, EasyLayoutResponsiveWindowConstructor
     {
-        var state : EasyResponsiveState^ = new (EasyResponsiveState^)();
-
         var accounts : observe EasyResponsiveAccount^[] = {};
 
         var movies : observe EasyResponsiveMovie^[] = {};
 
         func InitializeData() : (void)
         {
-            var names : string[] = {"Northwind Studio"; "City Lights"; "Open Horizon"; "Silver Screen"; "Moonlight Films"; "River Pictures"; "Star Cinema"; "Weekend Movies";};
+            var names : string[] = {"Penguin Random House"; "HarperCollins"; "Simon & Schuster"; "Hachette Book Group"; "Macmillan Publishers"; "Scholastic"; "Bloomsbury"; "Oxford University Press";};
             {
                 var <for-begin>i : ::system::Int32 = 0;
                 var <for-end>i : ::system::Int32 = 7;
@@ -24188,8 +23786,6 @@ namespace demo
                 {
                     {
                         var account = new (EasyResponsiveAccount^)();
-                        (account.State = self.state);
-                        (account.Index = i);
                         (account.Name = names[i]);
                         (account.Image = (cast (GuiImageData^) self.ResolveResource("res", ("ResponsiveImages/Account" & (i + 1)), true)).Image);
                         self.accounts.Add(account);
@@ -24197,23 +23793,43 @@ namespace demo
                     (i = (i + 1));
                 }
             }
+            var films : string[][] = {{"Jeanne Dielman, 23 quai du Commerce, 1080 Bruxelles"; "Chantal Akerman";}; {"Vertigo"; "Alfred Hitchcock";}; {"Citizen Kane"; "Orson Welles";}; {"Tokyo Story"; "Yasujirō Ozu";}; {"In the Mood for Love"; "Wong Kar-wai";}; {"2001: A Space Odyssey"; "Stanley Kubrick";}; {"Beau travail"; "Claire Denis";}; {"Mulholland Dr."; "David Lynch";}; {"Man with a Movie Camera"; "Dziga Vertov";}; {"Singin' in the Rain"; "Stanley Donen and Gene Kelly";}; {"Sunrise: A Song of Two Humans"; "F.W. Murnau";}; {"The Godfather"; "Francis Ford Coppola";}; {"La Règle du jeu"; "Jean Renoir";}; {"Cléo from 5 to 7"; "Agnès Varda";}; {"The Searchers"; "John Ford";}; {"Meshes of the Afternoon"; "Maya Deren and Alexander Hammid";}; {"Close-Up"; "Abbas Kiarostami";}; {"Persona"; "Ingmar Bergman";}; {"Apocalypse Now"; "Francis Ford Coppola";}; {"Seven Samurai"; "Akira Kurosawa";}; {"The Passion of Joan of Arc"; "Carl Theodor Dreyer";}; {"Late Spring"; "Yasujirō Ozu";}; {"Playtime"; "Jacques Tati";}; {"Do the Right Thing"; "Spike Lee";};};
             {
-                var <for-begin>i : ::system::Int32 = 1;
-                var <for-end>i : ::system::Int32 = 24;
+                var <for-begin>i : ::system::Int32 = 0;
+                var <for-end>i : ::system::Int32 = (films.Count - 1);
                 var i = <for-begin>i;
                 while ((i <= <for-end>i))
                 {
                     {
                         var movie = new (EasyResponsiveMovie^)();
-                        (movie.State = self.state);
-                        (movie.Title = (("Movie " & i) & ": A journey home"));
-                        (movie.Author = names[((i - 1) % 8)]);
+                        (movie.Title = films[i][0]);
+                        (movie.Author = films[i][1]);
                         (movie.Image = (cast (GuiImageData^) self.ResolveResource("res", "ResponsiveImages/Movie", true)).Image);
                         self.movies.Add(movie);
                     }
                     (i = (i + 1));
                 }
             }
+        }
+
+        func InitializeItemTemplate(item : GuiListItemTemplate*, width : GuiResponsiveViewComposition*) : (GuiListItemTemplate*)
+        {
+            var view = (cast (GuiResponsiveViewComposition*) item.GetNamedObject("responsiveView"));
+            while ((view.CurrentLevel > width.CurrentLevel))
+            {
+                view.LevelDown();
+            }
+            return item;
+        }
+
+        func CreateMovieTemplate(value : object) : (GuiListItemTemplate*)
+        {
+            return self.InitializeItemTemplate(new (EasyResponsiveMovieTemplate*)((cast (EasyResponsiveMovie^) value)), movieWidth);
+        }
+
+        func CreateAccountTemplate(value : object) : (GuiListItemTemplate*)
+        {
+            return self.InitializeItemTemplate(new (EasyResponsiveAccountItemTemplate*)((cast (EasyResponsiveAccount^) value)), accountWidth);
         }
 
         new* ()
@@ -24229,6 +23845,7 @@ namespace demo
         func <instance-ctor>() : (::system::Void)
         {
             self.InitializeData();
+            accountList.SetSelected(0, true);
             (self.ClientSize = {x : 240; y : 320;});
         }
 
@@ -24239,7 +23856,7 @@ namespace demo
     }
 }
 
-================================(64/134)================================
+================================(62/132)================================
 module <constructor>demo::EasyLayoutTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24747,7 +24364,7 @@ namespace demo
     }
 }
 
-================================(65/134)================================
+================================(63/132)================================
 module <instance>demo::EasyLayoutTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24790,7 +24407,7 @@ namespace demo
     }
 }
 
-================================(66/134)================================
+================================(64/132)================================
 module <constructor>demo::EasyLayoutTablePage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25457,7 +25074,7 @@ namespace demo
     }
 }
 
-================================(67/134)================================
+================================(65/132)================================
 module <instance>demo::EasyLayoutTablePage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25500,7 +25117,7 @@ namespace demo
     }
 }
 
-================================(68/134)================================
+================================(66/132)================================
 module <constructor>demo::EmbeddedControlsSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26536,7 +26153,7 @@ namespace demo
     }
 }
 
-================================(69/134)================================
+================================(67/132)================================
 module <instance>demo::EmbeddedControlsSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26579,7 +26196,7 @@ namespace demo
     }
 }
 
-================================(70/134)================================
+================================(68/132)================================
 module <constructor>demo::LocaleSelector;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26760,7 +26377,7 @@ namespace demo
     }
 }
 
-================================(71/134)================================
+================================(69/132)================================
 module <instance>demo::LocaleSelector;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26823,7 +26440,7 @@ namespace demo
     }
 }
 
-================================(72/134)================================
+================================(70/132)================================
 module <constructor>demo::LocalizedColorDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26958,7 +26575,7 @@ namespace demo
     }
 }
 
-================================(73/134)================================
+================================(71/132)================================
 module <instance>demo::LocalizedColorDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27001,7 +26618,7 @@ namespace demo
     }
 }
 
-================================(74/134)================================
+================================(72/132)================================
 module <constructor>demo::LocalizedDialogsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27262,7 +26879,7 @@ namespace demo
     }
 }
 
-================================(75/134)================================
+================================(73/132)================================
 module <instance>demo::LocalizedDialogsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27305,7 +26922,7 @@ namespace demo
     }
 }
 
-================================(76/134)================================
+================================(74/132)================================
 module <constructor>demo::LocalizedFileDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28083,7 +27700,7 @@ namespace demo
     }
 }
 
-================================(77/134)================================
+================================(75/132)================================
 module <instance>demo::LocalizedFileDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28174,7 +27791,7 @@ namespace demo
     }
 }
 
-================================(78/134)================================
+================================(76/132)================================
 module <constructor>demo::LocalizedFontDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28345,7 +27962,7 @@ namespace demo
     }
 }
 
-================================(79/134)================================
+================================(77/132)================================
 module <instance>demo::LocalizedFontDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28388,7 +28005,7 @@ namespace demo
     }
 }
 
-================================(80/134)================================
+================================(78/132)================================
 module <constructor>demo::LocalizedMessageDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28854,7 +28471,7 @@ namespace demo
     }
 }
 
-================================(81/134)================================
+================================(79/132)================================
 module <instance>demo::LocalizedMessageDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28921,7 +28538,7 @@ namespace demo
     }
 }
 
-================================(82/134)================================
+================================(80/132)================================
 module <constructor>demo::LocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30329,7 +29946,7 @@ namespace demo
     }
 }
 
-================================(83/134)================================
+================================(81/132)================================
 module <instance>demo::LocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30399,7 +30016,7 @@ namespace demo
     }
 }
 
-================================(84/134)================================
+================================(82/132)================================
 module <constructor>demo::TestWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30518,7 +30135,7 @@ namespace demo
     }
 }
 
-================================(85/134)================================
+================================(83/132)================================
 module <instance>demo::TestWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30561,7 +30178,7 @@ namespace demo
     }
 }
 
-================================(86/134)================================
+================================(84/132)================================
 module <constructor>demo::RefreshBindableDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31228,7 +30845,7 @@ namespace demo
     }
 }
 
-================================(87/134)================================
+================================(85/132)================================
 module <instance>demo::RefreshBindableDataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31286,7 +30903,7 @@ namespace demo
     }
 }
 
-================================(88/134)================================
+================================(86/132)================================
 module <constructor>demo::RefreshBindableListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31839,7 +31456,7 @@ namespace demo
     }
 }
 
-================================(89/134)================================
+================================(87/132)================================
 module <instance>demo::RefreshBindableListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31897,7 +31514,7 @@ namespace demo
     }
 }
 
-================================(90/134)================================
+================================(88/132)================================
 module <constructor>demo::RefreshBindableTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -32190,7 +31807,7 @@ namespace demo
     }
 }
 
-================================(91/134)================================
+================================(89/132)================================
 module <instance>demo::RefreshBindableTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -32235,7 +31852,7 @@ namespace demo
     }
 }
 
-================================(92/134)================================
+================================(90/132)================================
 module <constructor>demo::RefreshBindableTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -32499,7 +32116,7 @@ namespace demo
     }
 }
 
-================================(93/134)================================
+================================(91/132)================================
 module <instance>demo::RefreshBindableTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -32559,7 +32176,7 @@ namespace demo
     }
 }
 
-================================(94/134)================================
+================================(92/132)================================
 module <constructor>demo::RefreshListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -33143,7 +32760,7 @@ namespace demo
     }
 }
 
-================================(95/134)================================
+================================(93/132)================================
 module <instance>demo::RefreshListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -33186,7 +32803,7 @@ namespace demo
     }
 }
 
-================================(96/134)================================
+================================(94/132)================================
 module <constructor>demo::RefreshTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -33452,7 +33069,7 @@ namespace demo
     }
 }
 
-================================(97/134)================================
+================================(95/132)================================
 module <instance>demo::RefreshTextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -33495,7 +33112,7 @@ namespace demo
     }
 }
 
-================================(98/134)================================
+================================(96/132)================================
 module <constructor>demo::RefreshTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -33727,7 +33344,7 @@ namespace demo
     }
 }
 
-================================(99/134)================================
+================================(97/132)================================
 module <instance>demo::RefreshTreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -33770,7 +33387,7 @@ namespace demo
     }
 }
 
-================================(100/134)================================
+================================(98/132)================================
 module <constructor>demo::EnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -34123,7 +33740,7 @@ namespace demo
     }
 }
 
-================================(101/134)================================
+================================(99/132)================================
 module <instance>demo::EnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -34348,7 +33965,7 @@ namespace demo
     }
 }
 
-================================(102/134)================================
+================================(100/132)================================
 module <constructor>demo::EnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -34447,7 +34064,7 @@ namespace demo
     }
 }
 
-================================(103/134)================================
+================================(101/132)================================
 module <instance>demo::EnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -34529,7 +34146,7 @@ namespace demo
     }
 }
 
-================================(104/134)================================
+================================(102/132)================================
 module <constructor>demo::RepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -34648,7 +34265,7 @@ namespace demo
     }
 }
 
-================================(105/134)================================
+================================(103/132)================================
 module <instance>demo::RepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -34701,7 +34318,7 @@ namespace demo
     }
 }
 
-================================(106/134)================================
+================================(104/132)================================
 module <constructor>demo::SharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -34836,7 +34453,7 @@ namespace demo
     }
 }
 
-================================(107/134)================================
+================================(105/132)================================
 module <instance>demo::SharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -34889,7 +34506,7 @@ namespace demo
     }
 }
 
-================================(108/134)================================
+================================(106/132)================================
 module <constructor>demo::SharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -35161,7 +34778,7 @@ namespace demo
     }
 }
 
-================================(109/134)================================
+================================(107/132)================================
 module <instance>demo::SharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -35214,7 +34831,7 @@ namespace demo
     }
 }
 
-================================(110/134)================================
+================================(108/132)================================
 module <constructor>demo::ResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -35842,7 +35459,7 @@ namespace demo
     }
 }
 
-================================(111/134)================================
+================================(109/132)================================
 module <instance>demo::ResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -35885,7 +35502,7 @@ namespace demo
     }
 }
 
-================================(112/134)================================
+================================(110/132)================================
 module <constructor>demo::ResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -36513,7 +36130,7 @@ namespace demo
     }
 }
 
-================================(113/134)================================
+================================(111/132)================================
 module <instance>demo::ResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -36556,7 +36173,7 @@ namespace demo
     }
 }
 
-================================(114/134)================================
+================================(112/132)================================
 module <constructor>demo::ResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -36750,7 +36367,7 @@ namespace demo
     }
 }
 
-================================(115/134)================================
+================================(113/132)================================
 module <instance>demo::ResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -36793,7 +36410,7 @@ namespace demo
     }
 }
 
-================================(116/134)================================
+================================(114/132)================================
 module <constructor>demo::ResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -37707,7 +37324,7 @@ namespace demo
     }
 }
 
-================================(117/134)================================
+================================(115/132)================================
 module <instance>demo::ResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -37750,7 +37367,7 @@ namespace demo
     }
 }
 
-================================(118/134)================================
+================================(116/132)================================
 module <constructor>demo::DocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -38138,7 +37755,7 @@ namespace demo
     }
 }
 
-================================(119/134)================================
+================================(117/132)================================
 module <instance>demo::DocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -38202,7 +37819,7 @@ namespace demo
     }
 }
 
-================================(120/134)================================
+================================(118/132)================================
 module <constructor>demo::TextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -38481,7 +38098,7 @@ namespace demo
     }
 }
 
-================================(121/134)================================
+================================(119/132)================================
 module <instance>demo::TextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -38545,7 +38162,7 @@ namespace demo
     }
 }
 
-================================(122/134)================================
+================================(120/132)================================
 module <constructor>demo::TextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -38857,7 +38474,7 @@ namespace demo
     }
 }
 
-================================(123/134)================================
+================================(121/132)================================
 module <instance>demo::TextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -38916,7 +38533,7 @@ namespace demo
     }
 }
 
-================================(124/134)================================
+================================(122/132)================================
 module <constructor>demo::VerticalTabTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -39414,7 +39031,7 @@ namespace demo
     }
 }
 
-================================(125/134)================================
+================================(123/132)================================
 module <instance>demo::VerticalTabTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -39501,7 +39118,7 @@ namespace demo
     }
 }
 
-================================(126/134)================================
+================================(124/132)================================
 module <localized-strings-injection>demo::DialogStringsInjection;
 
 namespace demo
@@ -39723,7 +39340,7 @@ namespace demo
     }
 }
 
-================================(127/134)================================
+================================(125/132)================================
 module imageloader;
 using presentation::*;
 using presentation::controls::*;
@@ -40023,7 +39640,7 @@ func LoadListView(root : GuiInstanceRootObject*, callback : (func (ListViewItem^
     }
 }
 
-================================(128/134)================================
+================================(126/132)================================
 module viewmodel;
 using system::*;
 using presentation::*;
@@ -40277,7 +39894,7 @@ namespace demo
     }
 }
 
-================================(129/134)================================
+================================(127/132)================================
 module Animation;
 using system::*;
 using presentation::*;
@@ -40421,7 +40038,7 @@ namespace demo
     }
 }
 
-================================(130/134)================================
+================================(128/132)================================
 module ribbonscript;
 using presentation::*;
 
@@ -40460,104 +40077,34 @@ namespace demo
     }
 }
 
-================================(131/134)================================
+================================(129/132)================================
 module easy_layout_responsive;
 using presentation::*;
 
 namespace demo
 {
-    class EasyResponsiveState
-    {
-        @cpp:Private
-        var <prop>Account : int = 0;
-
-        func GetAccount() : (int)
-        {
-            return <prop>Account;
-        }
-
-        func SetAccount(<value> : int) : (void)
-        {
-            if ((<prop>Account != <value>))
-            {
-                (<prop>Account = <value>);
-                AccountChanged();
-            }
-        }
-
-        event AccountChanged();
-
-        prop Account : int{GetAccount, SetAccount : AccountChanged}
-
-        @cpp:Private
-        var <prop>MovieLevel : int = 0;
-
-        func GetMovieLevel() : (int)
-        {
-            return <prop>MovieLevel;
-        }
-
-        func SetMovieLevel(<value> : int) : (void)
-        {
-            if ((<prop>MovieLevel != <value>))
-            {
-                (<prop>MovieLevel = <value>);
-                MovieLevelChanged();
-            }
-        }
-
-        event MovieLevelChanged();
-
-        prop MovieLevel : int{GetMovieLevel, SetMovieLevel : MovieLevelChanged}
-
-        new ()
-        {
-        }
-    }
-
     class EasyResponsiveAccount
     {
         @cpp:Private
-        var <prop>State : EasyResponsiveState^ = null;
+        var <prop>Selected : bool = false;
 
-        func GetState() : (EasyResponsiveState^)
+        func GetSelected() : (bool)
         {
-            return <prop>State;
+            return <prop>Selected;
         }
 
-        func SetState(<value> : EasyResponsiveState^) : (void)
+        func SetSelected(<value> : bool) : (void)
         {
-            if ((<prop>State != <value>))
+            if ((<prop>Selected != <value>))
             {
-                (<prop>State = <value>);
-                StateChanged();
+                (<prop>Selected = <value>);
+                SelectedChanged();
             }
         }
 
-        event StateChanged();
+        event SelectedChanged();
 
-        prop State : EasyResponsiveState^{GetState, SetState : StateChanged}
-
-        @cpp:Private
-        var <prop>Index : int = 0;
-
-        func GetIndex() : (int)
-        {
-            return <prop>Index;
-        }
-
-        func SetIndex(<value> : int) : (void)
-        {
-            if ((<prop>Index != <value>))
-            {
-                (<prop>Index = <value>);
-                IndexChanged();
-            }
-        }
-
-        event IndexChanged();
-
-        prop Index : int{GetIndex, SetIndex : IndexChanged}
+        prop Selected : bool{GetSelected, SetSelected : SelectedChanged}
 
         @cpp:Private
         var <prop>Name : string = "";
@@ -40608,27 +40155,6 @@ namespace demo
 
     class EasyResponsiveMovie
     {
-        @cpp:Private
-        var <prop>State : EasyResponsiveState^ = null;
-
-        func GetState() : (EasyResponsiveState^)
-        {
-            return <prop>State;
-        }
-
-        func SetState(<value> : EasyResponsiveState^) : (void)
-        {
-            if ((<prop>State != <value>))
-            {
-                (<prop>State = <value>);
-                StateChanged();
-            }
-        }
-
-        event StateChanged();
-
-        prop State : EasyResponsiveState^{GetState, SetState : StateChanged}
-
         @cpp:Private
         var <prop>Title : string = "";
 
@@ -40698,7 +40224,7 @@ namespace demo
     }
 }
 
-================================(132/134)================================
+================================(130/132)================================
 module <localized-strings>demo::StringResource;
 
 namespace demo
@@ -40925,7 +40451,7 @@ namespace demo
     }
 }
 
-================================(133/134)================================
+================================(131/132)================================
 module refresh_viewmodel;
 using system::*;
 using presentation::*;
@@ -41110,7 +40636,7 @@ namespace demo
     }
 }
 
-================================(134/134)================================
+================================(132/132)================================
 module fontHelper;
 using presentation::*;
 

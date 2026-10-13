@@ -98,6 +98,10 @@ namespace vl::presentation::remote_renderer
 				}
 			}
 		}
+		else
+		{
+			element->SetImage(nullptr);
+		}
 #undef ERROR_MESSAGE_PREFIX
 	}
 }

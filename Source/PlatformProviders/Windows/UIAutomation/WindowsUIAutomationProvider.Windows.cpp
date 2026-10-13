@@ -272,14 +272,14 @@ namespace vl::presentation::windows
 		case UIA_Scroll##NAME##PropertyId: \
 			if (Supports(UIA_ScrollPatternId)) { auto scroll = dynamic_cast<GuiScrollView*>(control)->Get##AXIS##Scroll(); result->vt = VT_R8; result->dblVal = (VALUE); } \
 			break;
-		UIA_SCROLL_PROPERTY(HorizontalScrollPercent, Horizontal, scroll->GetMaxPosition() ? 100.0 * scroll->GetPosition() / scroll->GetMaxPosition() : UIA_ScrollPatternNoScroll)
-		UIA_SCROLL_PROPERTY(VerticalScrollPercent, Vertical, scroll->GetMaxPosition() ? 100.0 * scroll->GetPosition() / scroll->GetMaxPosition() : UIA_ScrollPatternNoScroll)
-		UIA_SCROLL_PROPERTY(HorizontalViewSize, Horizontal, scroll->GetTotalSize() ? min(100.0, 100.0 * scroll->GetPageSize() / scroll->GetTotalSize()) : 100.0)
-		UIA_SCROLL_PROPERTY(VerticalViewSize, Vertical, scroll->GetTotalSize() ? min(100.0, 100.0 * scroll->GetPageSize() / scroll->GetTotalSize()) : 100.0)
+		UIA_SCROLL_PROPERTY(HorizontalScrollPercent, Horizontal, UiaScrollable(scroll) ? 100.0 * scroll->GetPosition() / scroll->GetMaxPosition() : UIA_ScrollPatternNoScroll)
+		UIA_SCROLL_PROPERTY(VerticalScrollPercent, Vertical, UiaScrollable(scroll) ? 100.0 * scroll->GetPosition() / scroll->GetMaxPosition() : UIA_ScrollPatternNoScroll)
+		UIA_SCROLL_PROPERTY(HorizontalViewSize, Horizontal, UiaScrollable(scroll) ? min(100.0, 100.0 * scroll->GetPageSize() / scroll->GetTotalSize()) : 100.0)
+		UIA_SCROLL_PROPERTY(VerticalViewSize, Vertical, UiaScrollable(scroll) ? min(100.0, 100.0 * scroll->GetPageSize() / scroll->GetTotalSize()) : 100.0)
 #undef UIA_SCROLL_PROPERTY
 		case UIA_RangeValueIsReadOnlyPropertyId: if (Supports(UIA_RangeValuePatternId)) boolean(Role() == UIA_ProgressBarControlTypeId); break;
-		case UIA_ScrollHorizontallyScrollablePropertyId: if (Supports(UIA_ScrollPatternId)) boolean(dynamic_cast<GuiScrollView*>(control)->GetHorizontalScroll()->GetMaxPosition() > 0); break;
-		case UIA_ScrollVerticallyScrollablePropertyId: if (Supports(UIA_ScrollPatternId)) boolean(dynamic_cast<GuiScrollView*>(control)->GetVerticalScroll()->GetMaxPosition() > 0); break;
+		case UIA_ScrollHorizontallyScrollablePropertyId: if (Supports(UIA_ScrollPatternId)) boolean(UiaScrollable(dynamic_cast<GuiScrollView*>(control)->GetHorizontalScroll())); break;
+		case UIA_ScrollVerticallyScrollablePropertyId: if (Supports(UIA_ScrollPatternId)) boolean(UiaScrollable(dynamic_cast<GuiScrollView*>(control)->GetVerticalScroll())); break;
 		case UIA_MultipleViewCurrentViewPropertyId: if (Supports(UIA_MultipleViewPatternId)) number((LONG)dynamic_cast<GuiVirtualListView*>(control)->GetView()); break;
 		case UIA_SelectionCanSelectMultiplePropertyId:
 			if (Supports(UIA_SelectionPatternId)) { auto list = dynamic_cast<GuiSelectableListControl*>(control); boolean(list && !UiaDataGrid(list) && list->GetMultiSelect()); }

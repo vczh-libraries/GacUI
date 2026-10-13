@@ -311,25 +311,34 @@ Use a fresh application state.
    | Appearance | Account navigation | Movie rows | Reference client size |
    | --- | --- | --- | --- |
    | #0 | `Subscribed Accounts` menu | Movie titles only | 240 by 320 |
-   | #1 | `Subscribed Accounts` menu | Image, title and author | 350 by 320 |
-   | #2 | Icon-only options | Image, title and author | 440 by 320 |
-   | #3 | Icon-and-name options | Image, title and author | 680 by 320 |
+   | #1 | `Subscribed Accounts` menu | Image, title and director | 350 by 320 |
+   | #2 | Icon-only account list | Image, title and director | 440 by 320 |
+   | #3 | Icon-and-name account list | Image, title and director | 680 by 320 |
 
    These sizes were observed with Windows Direct2D at 96 DPI. Record the actual
    client dimensions for each run: font and renderer measurements can move the
    thresholds. At every step require stable layout,
    no unexpected window growth and a visible bottom-right OK/Cancel footer
-   outside the responsive area. In detailed rows, the image spans both rows
-   to the left of the title above the author.
+   outside the responsive area. Both footer buttons have equal widths. In
+   detailed rows, the 96-by-96 image spans both rows to the left of the title
+   above the director. The main easy layout has no outside padding.
 3. Select a movie and a different account. Scroll the real movie list and
    resize across all four appearances. Require the same data and selection,
    valid scrolling and correct item hit targets. Scroll to previously unseen
    rows in each appearance: all visible rows must agree on title-only versus
-   detailed content. Account names disappear before movie detail disappears.
+   detailed content. Repeat with the account list, including new rows at the
+   icon-only appearance. Account names disappear before movie detail disappears.
+   Require 24 real films/directors from the BFI 2022 critics' ranking and eight
+   independent publisher accounts. Open the compact account menu: exactly the
+   selected account has the green selection arrow. Select another menu entry
+   and require the arrow to move and the list selection to agree. Change the
+   selection directly in the list and verify the menu again after shrinking.
 4. At a wide width, reduce height enough to require account scrolling, reach
    the last account, then increase height. Reference sizes are 680 by 220 and
    680 by 520. Check the movie and account scroll
-   areas independently and require the footer to remain reachable.
+   areas independently and require the footer to remain reachable. Account
+   images retain their natural 32-by-32 size and are centered in their image
+   areas even after the vertical scrollbar disappears.
 5. Close with `OK`, reopen and close with `Cancel`, then reopen and close with
    the title-bar close action. Each fresh opening starts at 240 by 320; each
    close restores owner input and leaves the showcase running. Repeated

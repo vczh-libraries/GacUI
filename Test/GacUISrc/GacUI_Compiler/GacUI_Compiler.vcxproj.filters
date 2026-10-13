@@ -25,6 +25,9 @@
     <Filter Include="Resource Files\FullControlTest\ToolbarImages">
       <UniqueIdentifier>{2c355127-a093-4987-961f-e4eb28646fcd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\FullControlTest\ResponsiveImages">
+      <UniqueIdentifier>{808dfcf4-0273-416a-9304-2bdf53cbdd5a}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Resource Files\Dialogs">
       <UniqueIdentifier>{04c2bed1-669a-4109-b5e0-517d87d838b3}</UniqueIdentifier>
     </Filter>
@@ -218,6 +221,9 @@
     </Xml>
     <Xml Include="..\..\Resources\App\FullControlTest\EasyLayoutResponsiveWindow.xml">
       <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\ResponsiveImages\Images.xml">
+      <Filter>Resource Files\FullControlTest\ResponsiveImages</Filter>
     </Xml>
     <Xml Include="..\..\Resources\App\FullControlTest\VerticalTabTemplate.xml">
       <Filter>Resource Files\FullControlTest</Filter>

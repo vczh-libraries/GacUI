@@ -466,6 +466,10 @@ public static class GacUIShowcaseTests
             CheckFocus(day, "calendar focus");
         }
     }
+    static readonly string[] ResponsiveAccountNames = {
+        "Penguin Random House", "HarperCollins", "Simon & Schuster", "Hachette Book Group",
+        "Macmillan Publishers", "Scholastic", "Bloomsbury", "Oxford University Press"
+    };
     static void ResponsiveLayout()
     {
         Test("Layout / vertical headers and responsive modal action");
@@ -525,42 +529,73 @@ public static class GacUIShowcaseTests
             if (close == "OK")
             {
                 var list = Named(dialog, "Movies", ControlType.List);
+                CheckRejectedScrollRequests(list);
                 var items = Items(list);
                 Check(items.Count == 24, "real movie list exposes all 24 items");
+                Check(items[0].Current.Name == "Jeanne Dielman, 23 quai du Commerce, 1080 Bruxelles" && items[1].Current.Name == "Vertigo" && items[23].Current.Name == "Do the Right Thing", "movie sample uses the BFI critics' poll");
                 Pattern<SelectionItemPattern>(items[1], SelectionItemPattern.Pattern).Select();
                 var menu = Pattern<ExpandCollapsePattern>(Named(dialog, "Subscribed Accounts", ControlType.MenuItem), ExpandCollapsePattern.Pattern);
                 menu.Expand();
                 AutomationElement accountPopup = null;
                 Wait(() => { accountPopup = Popup(ControlType.Menu); return accountPopup != null; }, "account menu opens");
-                Pattern<InvokePattern>(Named(accountPopup, "City Lights", ControlType.MenuItem), InvokePattern.Pattern).Invoke();
+                Names(Find(accountPopup, ControlType.MenuItem), ResponsiveAccountNames);
+                Pattern<InvokePattern>(Named(accountPopup, "HarperCollins", ControlType.MenuItem), InvokePattern.Pattern).Invoke();
                 Wait(() => menu.Current.ExpandCollapseState == ExpandCollapseState.Collapsed, "account choice closes menu");
+                string selectedAccount = "HarperCollins";
                 foreach (var size in new[] { new[] { 350, 320, 1 }, new[] { 440, 320, 2 }, new[] { 680, 320, 3 }, new[] { 680, 220, 3 }, new[] { 680, 520, 3 }, new[] { 440, 320, 2 }, new[] { 350, 320, 1 }, new[] { 240, 320, 0 } })
                 {
                     ResizeResponsive(dialog, size[0], size[1]);
                     CheckResponsiveAppearance(dialog, size[2]);
                     list = Named(dialog, "Movies", ControlType.List);
                     var selected = Pattern<SelectionPattern>(list, SelectionPattern.Pattern).Current.GetSelection();
-                    Check(selected.Length == 1 && selected[0].Current.Name == "Movie 2: A journey home", "movie selection survives view change");
+                    Check(selected.Length == 1 && selected[0].Current.Name == "Vertigo", "movie selection survives view change");
                     var scroll = Pattern<ScrollPattern>(list, ScrollPattern.Pattern);
                     scroll.SetScrollPercent(ScrollPattern.NoScroll, 100);
+                    Wait(() => !Named(list, "Do the Right Thing", ControlType.ListItem).Current.IsOffscreen, "last movie is realized after scrolling down");
                     CheckResponsiveAppearance(dialog, size[2]);
                     Check(scroll.Current.VerticalScrollPercent > 0, "movie list scrolls at every appearance");
                     scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
+                    Wait(() => !Named(list, "Jeanne Dielman, 23 quai du Commerce, 1080 Bruxelles", ControlType.ListItem).Current.IsOffscreen, "first movie is realized after scrolling back");
+                    CheckResponsiveAppearance(dialog, size[2]);
                     if (size[2] >= 2)
                     {
-                        Check(Pattern<TogglePattern>(Named(dialog, "City Lights", ControlType.CheckBox), TogglePattern.Pattern).Current.ToggleState == ToggleState.On, "account selection survives navigation changes");
-                        if (size[1] == 220)
+                        var accounts = Named(dialog, "Accounts", ControlType.List);
+                        Names(Items(accounts), ResponsiveAccountNames);
+                        var accountSelection = Pattern<SelectionPattern>(accounts, SelectionPattern.Pattern);
+                        var selectedAccounts = accountSelection.Current.GetSelection();
+                        Check(selectedAccounts.Length == 1 && selectedAccounts[0].Current.Name == selectedAccount, "account selection survives navigation changes");
+                        var accountScroll = Pattern<ScrollPattern>(accounts, ScrollPattern.Pattern);
+                        if (size[1] == 220) Check(accountScroll.Current.VerticallyScrollable, "short account list needs its scrollbar");
+                        if (size[1] == 520) Check(!accountScroll.Current.VerticallyScrollable, "tall account list hides its scrollbar");
+                        if (accountScroll.Current.VerticallyScrollable)
                         {
-                            var accounts = dialog.FindFirst(TreeScope.Descendants, new AndCondition(new PropertyCondition(AutomationElement.NameProperty, "Accounts"), new PropertyCondition(AutomationElement.IsScrollPatternAvailableProperty, true)));
-                            Check(accounts != null, "account rail exposes scrolling");
-                            var accountScroll = Pattern<ScrollPattern>(accounts, ScrollPattern.Pattern);
                             accountScroll.SetScrollPercent(ScrollPattern.NoScroll, 100);
-                            Wait(() => !Named(dialog, "Weekend Movies", ControlType.CheckBox).Current.IsOffscreen, "last account reachable at short height");
-                            Check(accountScroll.Current.VerticalScrollPercent > 0, "short account rail scrolls independently");
+                            Wait(() => !Named(accounts, "Oxford University Press", ControlType.ListItem).Current.IsOffscreen, "last account is realized after scrolling down");
+                            Check(accountScroll.Current.VerticalScrollPercent > 0, "account list scrolls independently");
+                            CheckResponsiveAppearance(dialog, size[2]);
                             accountScroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
+                            Wait(() => !Named(accounts, "Penguin Random House", ControlType.ListItem).Current.IsOffscreen, "first account is realized after scrolling back");
+                            CheckResponsiveAppearance(dialog, size[2]);
+                        }
+                        if (size[1] == 520)
+                        {
+                            CheckRejectedScrollRequests(accounts);
+                            selectedAccount = "Simon & Schuster";
+                            Pattern<SelectionItemPattern>(Named(accounts, selectedAccount, ControlType.ListItem), SelectionItemPattern.Pattern).Select();
+                            Wait(() => { var current = accountSelection.Current.GetSelection(); return current.Length == 1 && current[0].Current.Name == selectedAccount; }, "direct account list selection replaces the menu selection");
                         }
                     }
                 }
+                menu = Pattern<ExpandCollapsePattern>(Named(dialog, "Subscribed Accounts", ControlType.MenuItem), ExpandCollapsePattern.Pattern);
+                menu.Expand();
+                Wait(() => { accountPopup = Popup(ControlType.Menu); return accountPopup != null; }, "account menu reopens after list selection");
+                Names(Find(accountPopup, ControlType.MenuItem), ResponsiveAccountNames);
+                Pattern<InvokePattern>(Named(accountPopup, selectedAccount, ControlType.MenuItem), InvokePattern.Pattern).Invoke();
+                Wait(() => menu.Current.ExpandCollapseState == ExpandCollapseState.Collapsed, "invoking the selected account closes the menu");
+                ResizeResponsive(dialog, 680, 320);
+                CheckResponsiveAppearance(dialog, 3);
+                var finalAccounts = Pattern<SelectionPattern>(Named(dialog, "Accounts", ControlType.List), SelectionPattern.Pattern).Current.GetSelection();
+                Check(finalAccounts.Length == 1 && finalAccounts[0].Current.Name == selectedAccount, "reinvoking the selected account preserves one selection");
             }
             if (close == "Title bar") CloseResponsiveTitleBar();
             else Invoke(dialog, close);
@@ -674,7 +709,11 @@ public static class GacUIShowcaseTests
             root = AutomationElement.FromHandle(hwnd);
             var layout = Page(root, "Layout");
             // A Debug palette refresh rebuilds the complete showcase before laying out its new templates.
-            Wait(() => SnapshotBounds(SnapshotControl(ControlsSnapshot(), "CheckBox", "Repeat")).Width > 0, "palette header layout settles", 60000);
+            Wait(() => {
+                // Leave time for layout between full-tree snapshots on Debug builds.
+                Thread.Sleep(250);
+                return SnapshotBounds(SnapshotControl(ControlsSnapshot(), "CheckBox", "Repeat")).Width > 0;
+            }, "palette header layout settles", 60000);
             var selected = Named(layout, "Easy Layout (Table)", ControlType.TabItem);
             Check(Pattern<SelectionItemPattern>(selected, SelectionItemPattern.Pattern).Current.IsSelected, "vertical template refresh retains selected page");
             Check(Pattern<ValuePattern>(Find(selected, ControlType.Edit)[0], ValuePattern.Pattern).Current.Value == "Vertical template retained state", "vertical template refresh retains editor state");
@@ -700,8 +739,13 @@ public static class GacUIShowcaseTests
             Check(SnapshotHas(ResponsiveSnapshot(), "element", "Background:#252526FF,Rectangle"), "modal list uses current content background");
             ResizeResponsive(dialog, 680, 320);
             CheckResponsiveAppearance(dialog, 3);
-            var account = SnapshotControl(ResponsiveSnapshot(), "CheckBox", "Northwind Studio");
-            Check(SnapshotHas(account, "element", "Background:" + colors[3] + ",Rectangle"), "custom selected account uses current palette");
+            var accounts = Named(dialog, "Accounts", ControlType.List);
+            var selectedAccounts = Pattern<SelectionPattern>(accounts, SelectionPattern.Pattern).Current.GetSelection();
+            Check(selectedAccounts.Length == 1 && selectedAccounts[0].Current.Name == "Penguin Random House", "fresh account list selects its first publisher");
+            var movieNames = new HashSet<string>();
+            foreach (var item in Items(Named(dialog, "Movies", ControlType.List))) movieNames.Add(item.Current.Name);
+            var accountList = FindResponsiveList(ResponsiveSnapshot(), movieNames, false);
+            Check(accountList != null && SnapshotHas(accountList, "element", "Background:" + colors[3] + ",Rectangle"), "selected account row uses current palette");
             Invoke(dialog, "Cancel");
             Wait(() => ResponsiveDialog() == null && root.Current.IsEnabled, "palette modal restores owner");
         }
@@ -788,33 +832,111 @@ public static class GacUIShowcaseTests
         Wait(() => { var settled = SnapshotBounds(ResponsiveSnapshot()); return settled.Width == width && settled.Height == height; }, "settled responsive client " + width + "x" + height);
     }
 
+    static Dictionary<string, object> FindResponsiveList(object tree, HashSet<string> movieNames, bool movies)
+    {
+        // Controls snapshots expose theme roles and rendered labels, not GuiControl.Text.
+        // The movie list always has a title, including in its compact appearance.
+        foreach (var node in SnapshotNodes(tree))
+        {
+            object value;
+            if (!node.TryGetValue("control", out value) || (string)value != "TextList") continue;
+            bool containsMovie = false;
+            foreach (var child in SnapshotNodes(node))
+            {
+                if (child.TryGetValue("elementText", out value) && movieNames.Contains((string)value)) { containsMovie = true; break; }
+            }
+            if (containsMovie == movies) return node;
+        }
+        return null;
+    }
+
+    static ScrollPattern CheckScrollProperties(AutomationElement element)
+    {
+        var scroll = Pattern<ScrollPattern>(element, ScrollPattern.Pattern);
+        var current = scroll.Current;
+        var scrollable = new[] { current.HorizontallyScrollable, current.VerticallyScrollable };
+        var percent = new[] { current.HorizontalScrollPercent, current.VerticalScrollPercent };
+        var viewSize = new[] { current.HorizontalViewSize, current.VerticalViewSize };
+        var scrollableProperties = new[] { ScrollPattern.HorizontallyScrollableProperty, ScrollPattern.VerticallyScrollableProperty };
+        var percentProperties = new[] { ScrollPattern.HorizontalScrollPercentProperty, ScrollPattern.VerticalScrollPercentProperty };
+        var viewSizeProperties = new[] { ScrollPattern.HorizontalViewSizeProperty, ScrollPattern.VerticalViewSizeProperty };
+        for (int axis = 0; axis < 2; axis++)
+        {
+            string name = element.Current.Name + (axis == 0 ? " horizontal" : " vertical");
+            Check((bool)element.GetCurrentPropertyValue(scrollableProperties[axis]) == scrollable[axis], name + " scrollability property matches pattern");
+            Check((double)element.GetCurrentPropertyValue(percentProperties[axis]) == percent[axis], name + " scroll percent property matches pattern");
+            Check((double)element.GetCurrentPropertyValue(viewSizeProperties[axis]) == viewSize[axis], name + " view size property matches pattern");
+            if (!scrollable[axis]) Check(percent[axis] == ScrollPattern.NoScroll && viewSize[axis] == 100, name + " fitting axis reports NoScroll and a full view");
+        }
+        return scroll;
+    }
+
+    static void CheckRejectedScrollRequests(AutomationElement element)
+    {
+        var scroll = CheckScrollProperties(element);
+        double horizontal = scroll.Current.HorizontalScrollPercent, vertical = scroll.Current.VerticalScrollPercent;
+        var requests = new List<Action>();
+        if (!scroll.Current.HorizontallyScrollable)
+        {
+            requests.Add(() => scroll.Scroll(ScrollAmount.SmallIncrement, ScrollAmount.NoAmount));
+            requests.Add(() => scroll.SetScrollPercent(0, ScrollPattern.NoScroll));
+        }
+        if (!scroll.Current.VerticallyScrollable)
+        {
+            requests.Add(() => scroll.Scroll(ScrollAmount.NoAmount, ScrollAmount.SmallIncrement));
+            requests.Add(() => scroll.SetScrollPercent(ScrollPattern.NoScroll, 0));
+        }
+        Check(requests.Count > 0, "scroll rejection fixture has a fitting axis");
+        requests.Add(() => scroll.Scroll(ScrollAmount.SmallIncrement, ScrollAmount.SmallIncrement));
+        requests.Add(() => scroll.SetScrollPercent(100, 100));
+        foreach (var request in requests)
+        {
+            bool rejected = false;
+            try { request(); } catch (InvalidOperationException) { rejected = true; }
+            Check(rejected, "scroll request on a fitting axis is rejected");
+            Check(scroll.Current.HorizontalScrollPercent == horizontal && scroll.Current.VerticalScrollPercent == vertical, "rejected scrolling preserves both axes");
+        }
+        scroll.Scroll(ScrollAmount.NoAmount, ScrollAmount.NoAmount);
+        scroll.SetScrollPercent(ScrollPattern.NoScroll, ScrollPattern.NoScroll);
+        Check(scroll.Current.HorizontalScrollPercent == horizontal && scroll.Current.VerticalScrollPercent == vertical, "no-op scrolling preserves both axes");
+    }
+
     static void CheckResponsiveAppearance(AutomationElement dialog, int level)
     {
+        var movieNames = new HashSet<string>();
+        foreach (var item in Items(Named(dialog, "Movies", ControlType.List))) movieNames.Add(item.Current.Name);
+        var publisherNames = new HashSet<string>(ResponsiveAccountNames);
         string observed = "";
         Wait(() =>
         {
-            int movies = 0, authors = 0, images = 0, accountNames = 0;
-            bool menu = false;
-            foreach (var node in SnapshotNodes(ResponsiveSnapshot()["composition"]))
+            var snapshot = ResponsiveSnapshot();
+            var movieList = FindResponsiveList(snapshot, movieNames, true);
+            var accountList = FindResponsiveList(snapshot, movieNames, false);
+            int movies = 0, authors = 0, images = 0, accountImages = 0, accountNames = 0;
+            bool menu = SnapshotHas(snapshot["composition"], "elementText", "Subscribed Accounts");
+            foreach (var node in SnapshotNodes(movieList))
             {
                 object value;
                 if (node.TryGetValue("elementText", out value))
                 {
                     string text = (string)value;
-                    if (text.StartsWith("Movie ")) movies++;
+                    if (movieNames.Contains(text)) movies++;
                     if (text.StartsWith("by: ")) authors++;
-                    if (text == "Subscribed Accounts") menu = true;
-                    if (text == "Northwind Studio") accountNames++;
                 }
-                if (node.TryGetValue("element", out value) && (string)value == "Image")
-                {
-                    var bounds = SnapshotBounds(node);
-                    if (bounds.Width > 16 && bounds.Height > 16) images++;
-                }
+                if (node.TryGetValue("element", out value) && (string)value == "Image") images++;
             }
-            string counts = "menu=" + menu + "; movies=" + movies + "; authors=" + authors + "; images=" + images + "; account names=" + accountNames;
+            foreach (var node in SnapshotNodes(accountList))
+            {
+                object value;
+                if (node.TryGetValue("elementText", out value) && publisherNames.Contains((string)value)) accountNames++;
+                if (node.TryGetValue("element", out value) && (string)value == "Image") accountImages++;
+            }
+            string counts = "menu=" + menu + "; movies=" + movies + "; authors=" + authors + "; movie images=" + images + "; account images=" + accountImages + "; account names=" + accountNames;
             if (counts != observed) { Console.WriteLine("RENDER " + counts); observed = counts; }
-            return movies > 0 && menu == (level < 2) && (level == 0 ? authors == 0 && images == 0 : authors == movies && images == movies + (level >= 2 ? 8 : 0)) && accountNames == (level == 3 ? 1 : 0);
+            return movies > 0 && menu == (level < 2)
+                && (level == 0 ? authors == 0 && images == 0 : authors == movies && images == movies)
+                && (level < 2 ? accountList == null : accountImages > 0 && accountImages <= ResponsiveAccountNames.Length)
+                && (level == 3 ? accountNames == accountImages : accountNames == 0);
         }, "responsive appearance #" + level);
         string footerBounds = "";
         Wait(() => {
@@ -822,29 +944,26 @@ public static class GacUIShowcaseTests
             var cancel = Named(dialog, "Cancel", ControlType.Button).Current.BoundingRectangle;
             var list = Named(dialog, "Movies", ControlType.List).Current.BoundingRectangle;
             string current = "OK=" + ok + "; Cancel=" + cancel + "; Movies=" + list;
-            bool valid = ok.Width > 0 && cancel.Width > 0 && Math.Abs(ok.Top - cancel.Top) < 2 && ok.Right <= cancel.Left && list.Bottom <= ok.Top;
+            bool valid = ok.Width > 0 && cancel.Width > 0 && Math.Abs(ok.Width - cancel.Width) < 2 && Math.Abs(ok.Top - cancel.Top) < 2 && ok.Right <= cancel.Left && list.Bottom <= ok.Top;
             if (!valid && current != footerBounds) Console.WriteLine("FOOTER " + current);
             footerBounds = current;
             return valid;
-        }, "visible footer below the movie viewport");
+        }, "equal-width footer buttons below the movie viewport");
+        Check(!CheckScrollProperties(Named(dialog, "Movies", ControlType.List)).Current.HorizontallyScrollable, "movie rows fit without horizontal scrolling");
+        if (level >= 2) Check(!CheckScrollProperties(Named(dialog, "Accounts", ControlType.List)).Current.HorizontallyScrollable, "account rows fit without horizontal scrolling");
         if (level > 0)
         {
             var titles = new List<System.Windows.Rect>();
             var authors = new List<System.Windows.Rect>();
             var icons = new List<System.Windows.Rect>();
-            Dictionary<string, object> listNode = null;
-            foreach (var node in SnapshotNodes(ResponsiveSnapshot()["composition"]))
-            {
-                object control;
-                if (node.TryGetValue("control", out control) && (string)control == "TextList") { listNode = node; break; }
-            }
+            var listNode = FindResponsiveList(ResponsiveSnapshot(), movieNames, true);
             Check(listNode != null, "rendered movie list viewport");
             foreach (var node in SnapshotNodes(listNode))
             {
                 object value;
                 if (node.TryGetValue("elementText", out value))
                 {
-                    if (((string)value).StartsWith("Movie ")) titles.Add(SnapshotBounds(node));
+                    if (movieNames.Contains((string)value)) titles.Add(SnapshotBounds(node));
                     if (((string)value).StartsWith("by: ")) authors.Add(SnapshotBounds(node));
                 }
                 if (node.TryGetValue("element", out value) && (string)value == "Image") icons.Add(SnapshotBounds(node));
@@ -852,7 +971,7 @@ public static class GacUIShowcaseTests
             Check(titles.Count == authors.Count && titles.Count == icons.Count && titles.Count > 0, "one image and author for each rich movie row");
             for (int i = 0; i < titles.Count; i++)
             {
-                Check(icons[i].Width == 64 && icons[i].Height == 64 && icons[i].Right < titles[i].Left && titles[i].Left == authors[i].Left && titles[i].Top < authors[i].Top && icons[i].Top <= titles[i].Top && icons[i].Bottom >= authors[i].Bottom, "square image spans title and author rows without overlap: image=" + icons[i] + "; title=" + titles[i] + "; author=" + authors[i]);
+                Check(icons[i].Width == 96 && icons[i].Height == 96 && icons[i].Right < titles[i].Left && titles[i].Left == authors[i].Left && titles[i].Top < authors[i].Top && icons[i].Top <= titles[i].Top && icons[i].Bottom >= authors[i].Bottom, "96-pixel square image spans title and author rows without overlap: image=" + icons[i] + "; title=" + titles[i] + "; author=" + authors[i]);
             }
         }
         Console.WriteLine("LAYOUT #" + level + " client=" + SnapshotBounds(ResponsiveSnapshot()).Size);
@@ -1062,10 +1181,50 @@ public static class GacUIShowcaseTests
         Func<string, System.Windows.Rect> bounds = name => Named(page, name, ControlType.Text).Current.BoundingRectangle;
         Action<double, double, string> equal = (actual, expected, message) => Check(Math.Abs(actual - expected) <= scale, message + ": " + actual + " versus " + expected);
         Action geometry = () => {
-            var a = bounds("Row A"); var b = bounds("Row B");
-            var fixedColumn = bounds("Shared 120");
-            var one = bounds("Column 1x"); var two = bounds("Column 2x");
-            var edit = Find(page, ControlType.Edit)[0].Current.BoundingRectangle;
+            var previous = new Dictionary<string, System.Windows.Rect>();
+            var captured = new Dictionary<string, System.Windows.Rect>();
+            var previousEdit = System.Windows.Rect.Empty;
+            var capturedEdit = System.Windows.Rect.Empty;
+            string capturedText = "";
+            int stableSamples = 0;
+            Wait(() => {
+                Thread.Sleep(250);
+                try {
+                    page = FindNamed(root, "Easy Layout (Table)", ControlType.TabItem);
+                    if (page == null) { stableSamples = 0; return false; }
+                    var anchor = FindNamed(page, "Row A", ControlType.Text);
+                    if (anchor == null) { stableSamples = 0; return false; }
+                    var windowBounds = root.Current.BoundingRectangle;
+                    var anchorBounds = anchor.Current.BoundingRectangle;
+                    var current = new Dictionary<string, System.Windows.Rect>();
+                    foreach (var payload in Find(page, ControlType.Text)) {
+                        var rectangle = payload.Current.BoundingRectangle;
+                        if (payload.Current.IsOffscreen || rectangle.IsEmpty || rectangle.Width <= 0 || rectangle.Height <= 0) { stableSamples = 0; return false; }
+                        current.Add(payload.Current.Name, rectangle);
+                    }
+                    var edits = Find(page, ControlType.Edit);
+                    if (edits.Count != 1) { stableSamples = 0; return false; }
+                    var editBounds = edits[0].Current.BoundingRectangle;
+                    if (edits[0].Current.IsOffscreen || editBounds.IsEmpty || editBounds.Width <= 0 || editBounds.Height <= 0
+                        || root.Current.BoundingRectangle != windowBounds || anchor.Current.BoundingRectangle != anchorBounds) { stableSamples = 0; return false; }
+                    bool stable = current.Count > 0 && current.Count == previous.Count && editBounds == previousEdit;
+                    if (stable) foreach (var item in current) {
+                        System.Windows.Rect old;
+                        if (!previous.TryGetValue(item.Key, out old) || item.Value != old) { stable = false; break; }
+                    }
+                    previous = current; previousEdit = editBounds;
+                    stableSamples = stable ? stableSamples + 1 : 0;
+                    if (stableSamples < 2) return false;
+                    captured = current; capturedEdit = editBounds;
+                    capturedText = ((ValuePattern)edits[0].GetCurrentPattern(ValuePattern.Pattern)).Current.Value;
+                    return true;
+                }
+                catch (ElementNotAvailableException) { stableSamples = 0; previous.Clear(); return false; }
+            }, "table payload geometry settles", 60000);
+            var a = captured["Row A"]; var b = captured["Row B"];
+            var fixedColumn = captured["Shared 120"];
+            var one = captured["Column 1x"]; var two = captured["Column 2x"];
+            var edit = capturedEdit;
             equal(a.Left, b.Left, "minimum column shares left edge");
             equal(a.Right, b.Right, "minimum column shares right edge");
             equal(edit.Left, fixedColumn.Left, "nondefault column overrides default declaration");
@@ -1077,17 +1236,17 @@ public static class GacUIShowcaseTests
             equal(one.Left - edit.Right, 5 * scale, "column splitter occupies one gap");
             equal(two.Left - one.Right, 5 * scale, "percentage column gap");
             equal(b.Top - a.Bottom, 5 * scale, "row splitter occupies one gap");
-            var spanning = bounds(Pattern<ValuePattern>(Find(page, ControlType.Edit)[0], ValuePattern.Pattern).Current.Value);
+            var spanning = captured[capturedText];
             equal(spanning.Left, one.Left, "two-column span begins at shared track");
             equal(spanning.Right, two.Right, "two-column span ends at shared track");
-            var outerSpan = bounds("Two rows"); var shortRow = bounds("Short row");
+            var outerSpan = captured["Two rows"]; var shortRow = captured["Short row"];
             equal(outerSpan.Top - b.Bottom, 5 * scale, "outer span starts at next row");
             equal(shortRow.Top - outerSpan.Bottom, 5 * scale, "outer span covers two existing rows");
             equal(shortRow.Left, a.Left, "ragged row uses the same minimum column");
 
-            var ca = bounds("Column A"); var cb = bounds("Column B");
-            var fixedRow = bounds("Shared 40"); var sameRow = bounds("Same row");
-            var r1 = bounds("Row 1x"); var r2 = bounds("Row 2x");
+            var ca = captured["Column A"]; var cb = captured["Column B"];
+            var fixedRow = captured["Shared 40"]; var sameRow = captured["Same row"];
+            var r1 = captured["Row 1x"]; var r2 = captured["Row 2x"];
             equal(ca.Width, 140 * scale, "independent configured 140-pixel column");
             equal(ca.Top, cb.Top, "transposed minimum row shares top");
             equal(ca.Bottom, cb.Bottom, "transposed minimum row shares bottom");
@@ -1099,15 +1258,14 @@ public static class GacUIShowcaseTests
             equal(r1.Top - fixedRow.Bottom, 5 * scale, "shared row splitter occupies one gap");
             equal(r2.Top - r1.Bottom, 5 * scale, "percentage row gap");
             equal(cb.Left - ca.Right, 5 * scale, "outer column splitter occupies one gap");
-            var innerSpan = bounds("Two shared rows"); var wide = bounds("Two columns");
+            var innerSpan = captured["Two shared rows"]; var wide = captured["Two columns"];
             equal(innerSpan.Top, r1.Top, "transposed inner span begins at shared row");
             equal(innerSpan.Bottom, r2.Bottom, "transposed inner span ends at shared row");
             equal(wide.Left - cb.Right, 5 * scale, "outer column span starts at next column");
             equal(wide.Width, 125 * scale, "outer span covers two 60-pixel columns and one gap");
             equal(a.Left, ca.Left, "nested grid groups add no horizontal inset");
-            foreach (var label in Find(page, ControlType.Text)) {
-                var rectangle = label.Current.BoundingRectangle;
-                Check(!label.Current.IsOffscreen && rectangle.Width > 0 && rectangle.Height > 0, "visible table payload: " + label.Current.Name);
+            foreach (var label in captured) {
+                Check(label.Value.Width > 0 && label.Value.Height > 0, "visible table payload: " + label.Key);
             }
         };
         Wait(() => { var label = FindNamed(page, "Row 2x", ControlType.Text); return label != null && label.Current.BoundingRectangle.Height > 0; }, "table layout settled");
@@ -1186,7 +1344,6 @@ public static class GacUIShowcaseTests
             Wait(() => { try { var name = radio.Current.Name; return false; } catch (ElementNotAvailableException) { return true; } }, "table palette refresh completed");
             root = AutomationElement.FromHandle(hwnd);
             page = Page(Page(root, "Layout"), "Easy Layout (Table)");
-            Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000);
             Check(Pattern<ValuePattern>(Find(page, ControlType.Edit)[0], ValuePattern.Pattern).Current.Value == retainedText, "palette refresh retains table payload");
             geometry();
         }

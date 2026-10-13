@@ -741,98 +741,28 @@ using presentation::*;
 
 namespace demo
 {
-    class EasyResponsiveState
-    {
-        @cpp:Private
-        var <prop>Account : int = 0;
-
-        func GetAccount() : (int)
-        {
-            return <prop>Account;
-        }
-
-        func SetAccount(<value> : int) : (void)
-        {
-            if ((<prop>Account != <value>))
-            {
-                (<prop>Account = <value>);
-                AccountChanged();
-            }
-        }
-
-        event AccountChanged();
-
-        prop Account : int{GetAccount, SetAccount : AccountChanged}
-
-        @cpp:Private
-        var <prop>MovieLevel : int = 0;
-
-        func GetMovieLevel() : (int)
-        {
-            return <prop>MovieLevel;
-        }
-
-        func SetMovieLevel(<value> : int) : (void)
-        {
-            if ((<prop>MovieLevel != <value>))
-            {
-                (<prop>MovieLevel = <value>);
-                MovieLevelChanged();
-            }
-        }
-
-        event MovieLevelChanged();
-
-        prop MovieLevel : int{GetMovieLevel, SetMovieLevel : MovieLevelChanged}
-
-        new ()
-        {
-        }
-    }
-
     class EasyResponsiveAccount
     {
         @cpp:Private
-        var <prop>State : EasyResponsiveState^ = null;
+        var <prop>Selected : bool = false;
 
-        func GetState() : (EasyResponsiveState^)
+        func GetSelected() : (bool)
         {
-            return <prop>State;
+            return <prop>Selected;
         }
 
-        func SetState(<value> : EasyResponsiveState^) : (void)
+        func SetSelected(<value> : bool) : (void)
         {
-            if ((<prop>State != <value>))
+            if ((<prop>Selected != <value>))
             {
-                (<prop>State = <value>);
-                StateChanged();
+                (<prop>Selected = <value>);
+                SelectedChanged();
             }
         }
 
-        event StateChanged();
+        event SelectedChanged();
 
-        prop State : EasyResponsiveState^{GetState, SetState : StateChanged}
-
-        @cpp:Private
-        var <prop>Index : int = 0;
-
-        func GetIndex() : (int)
-        {
-            return <prop>Index;
-        }
-
-        func SetIndex(<value> : int) : (void)
-        {
-            if ((<prop>Index != <value>))
-            {
-                (<prop>Index = <value>);
-                IndexChanged();
-            }
-        }
-
-        event IndexChanged();
-
-        prop Index : int{GetIndex, SetIndex : IndexChanged}
+        prop Selected : bool{GetSelected, SetSelected : SelectedChanged}
 
         @cpp:Private
         var <prop>Name : string = "";
@@ -883,27 +813,6 @@ namespace demo
 
     class EasyResponsiveMovie
     {
-        @cpp:Private
-        var <prop>State : EasyResponsiveState^ = null;
-
-        func GetState() : (EasyResponsiveState^)
-        {
-            return <prop>State;
-        }
-
-        func SetState(<value> : EasyResponsiveState^) : (void)
-        {
-            if ((<prop>State != <value>))
-            {
-                (<prop>State = <value>);
-                StateChanged();
-            }
-        }
-
-        event StateChanged();
-
-        prop State : EasyResponsiveState^{GetState, SetState : StateChanged}
-
         @cpp:Private
         var <prop>Title : string = "";
 

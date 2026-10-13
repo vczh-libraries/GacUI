@@ -5005,7 +5005,12 @@ WfMethodProxy
 			Value WfMethodProxy::Invoke(Ptr<IValueReadonlyList> arguments)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				return methodInfo->Invoke(thisObject, UnboxParameter<Array<Value>>(Value::From(arguments)).Ref());
+				Array<Value> argumentArray(arguments->GetCount());
+				for (vint i = 0; i < argumentArray.Count(); i++)
+				{
+					argumentArray[i] = arguments->Get(i);
+				}
+				return methodInfo->Invoke(thisObject, argumentArray);
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif

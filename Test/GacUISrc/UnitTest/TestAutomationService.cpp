@@ -12,6 +12,9 @@ using namespace remote_graphics_host_tests;
 class AutomationStartupRenderer : public remote_renderer::GuiRemoteRendererSingle
 {
 public:
+	using GuiRemoteRendererSingle::availableElements;
+	using GuiRemoteRendererSingle::availableImages;
+
 	AutomationStartupRenderer()
 		: GuiRemoteRendererSingle(true)
 	{
@@ -217,6 +220,54 @@ TEST_FILE
 
 			service.Stop();
 			renderer.UnregisterWindow();
+			controlHost->Hide();
+		});
+
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
+	TEST_CATEGORY(L"Renderer image updates clear and reuse a cached image")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+
+		protocol.OnNextFrame([&]()
+		{
+			char8_t imageData[] = u8"16x24";
+			auto image = GetCurrentController()->ImageService()->CreateImageFromMemory(imageData, sizeof(imageData) - 1);
+			auto element = Ptr(GuiImageFrameElement::Create());
+			AutomationStartupRenderer renderer;
+			renderer.availableElements.Add(1, element);
+			renderer.availableImages.Add(2, image);
+
+			remoteprotocol::ElementDesc_ImageFrame arguments{};
+			arguments.id = 1;
+			arguments.imageId = 2;
+			arguments.imageFrame = 3;
+			arguments.horizontalAlignment = remoteprotocol::ElementHorizontalAlignment::Center;
+			arguments.verticalAlignment = remoteprotocol::ElementVerticalAlignment::Center;
+			arguments.enabled = true;
+			remoteprotocol::ElementBeginRendering begin;
+			begin.updatedElements = Ptr(new List<remoteprotocol::OrdinaryElementDescVariant>);
+			begin.updatedElements->Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
+			renderer.RequestRendererBeginRendering(begin);
+			TEST_ASSERT(element->GetImage() == image);
+			TEST_ASSERT(element->GetFrameIndex() == 3);
+
+			arguments.imageId.Reset();
+			begin.updatedElements->Set(0, remoteprotocol::OrdinaryElementDescVariant(arguments));
+			renderer.RequestRendererBeginRendering(begin);
+			TEST_ASSERT(element->GetImage() == nullptr);
+			TEST_ASSERT(element->GetFrameIndex() == 0);
+
+			arguments.imageId = 2;
+			arguments.imageFrame = 0;
+			begin.updatedElements->Set(0, remoteprotocol::OrdinaryElementDescVariant(arguments));
+			renderer.RequestRendererBeginRendering(begin);
+			TEST_ASSERT(element->GetImage() == image);
+			TEST_ASSERT(element->GetFrameIndex() == 0);
 			controlHost->Hide();
 		});
 

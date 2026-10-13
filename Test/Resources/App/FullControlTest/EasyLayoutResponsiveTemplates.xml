@@ -1,24 +1,20 @@
 <Folder>
-  <Instance name="EasyResponsiveAccountButtonTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::EasyResponsiveAccountButtonTemplate">
-      <ref.Members><![CDATA[
-        prop ViewModel : EasyResponsiveAccount^ = null {}
-      ]]></ref.Members>
-      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <att.ViewModel-bind>cast (EasyResponsiveAccount^) self.Context</att.ViewModel-bind>
-        <SolidBackground Color-bind="self.Selected ? darkskin::Theme::GetColorPackage().ItemBackgroundSelected : self.State == ButtonState::Normal ? darkskin::Theme::GetColorPackage().ContentBackground : darkskin::Theme::GetColorPackage().ButtonBackgroundHovered"/>
-        <ResponsiveView Direction="Horizontal" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+  <Instance name="EasyResponsiveAccountItemTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::EasyResponsiveAccountItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="demo::EasyResponsiveAccount"/>
+      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <ResponsiveView ref.Name="responsiveView" Direction="Horizontal" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Views>
             <ResponsiveFixed>
               <ez:Layout>
                 <ez:Left>
                   <Bounds PreferredMinSize="x:32 y:32">
-                    <ImageFrame Stretch="true" Image-bind="self.ViewModel.Image ?? null"/>
+                    <ImageFrame Stretch="false" HorizontalAlignment="Center" VerticalAlignment="Center" Image-bind="ViewModel.Image"/>
                   </Bounds>
                 </ez:Left>
                 <ez:Fill>
-                  <Bounds MinSizeLimitation="LimitToElement">
-                    <SolidLabel Text-bind="self.Text" Font-bind="self.Font" VerticalAlignment="Center" Color-eval="darkskin::Theme::GetColorPackage().TextNormal"/>
+                  <Bounds PreferredMinSize="x:160" MinSizeLimitation="LimitToElement">
+                    <SolidLabel Text-bind="ViewModel.Name" Font-bind="self.Font" VerticalAlignment="Center" Color-bind="self.TextColor" Ellipse="true"/>
                   </Bounds>
                 </ez:Fill>
               </ez:Layout>
@@ -26,35 +22,23 @@
             <ResponsiveFixed>
               <ez:Layout>
                 <Bounds PreferredMinSize="x:32 y:32">
-                  <ImageFrame Stretch="true" Image-bind="self.ViewModel.Image ?? null"/>
+                  <ImageFrame Stretch="false" HorizontalAlignment="Center" VerticalAlignment="Center" Image-bind="ViewModel.Image"/>
                 </Bounds>
               </ez:Layout>
             </ResponsiveFixed>
           </att.Views>
         </ResponsiveView>
-      </SelectableButtonTemplate>
-    </Instance>
-  </Instance>
-
-  <Instance name="EasyResponsiveAccountItemTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::EasyResponsiveAccountItemTemplate">
-      <ref.Parameter Name="ViewModel" Class="demo::EasyResponsiveAccount"/>
-      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
-        <CheckBox ControlTemplate="demo::EasyResponsiveAccountButtonTemplate" Context-eval="ViewModel" Text-bind="ViewModel.Name" AutoSelection="false" Selected-bind="ViewModel.State.Account == ViewModel.Index">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          <ev.Clicked-eval><![CDATA[{ ViewModel.State.Account = ViewModel.Index; }]]></ev.Clicked-eval>
-        </CheckBox>
-      </ControlTemplate>
+      </TextListItemTemplate>
     </Instance>
   </Instance>
 
   <Instance name="EasyResponsiveAccountMenuTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::EasyResponsiveAccountMenuTemplate">
       <ref.Parameter Name="ViewModel" Class="demo::EasyResponsiveAccount"/>
-      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
-        <MenuItemButton Text-bind="ViewModel.Name" Selected-bind="ViewModel.State.Account == ViewModel.Index">
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <MenuItemButton ref.Name="menuButton" Text-bind="ViewModel.Name" Selected-bind="ViewModel.Selected">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          <ev.Clicked-eval><![CDATA[{ ViewModel.State.Account = ViewModel.Index; }]]></ev.Clicked-eval>
+          <att.Image-bind>ViewModel.Selected ? cast (GuiImageData^) self.ResolveResource("res", "ResponsiveImages/Selection", true) : null</att.Image-bind>
         </MenuItemButton>
       </ControlTemplate>
     </Instance>
@@ -63,33 +47,26 @@
   <Instance name="EasyResponsiveMovieTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::EasyResponsiveMovieTemplate">
       <ref.Parameter Name="ViewModel" Class="demo::EasyResponsiveMovie"/>
-      <!-- Realized rows join the group's existing level, including after scrolling. -->
-      <ref.Ctor><![CDATA[{
-        while (movieView.CurrentLevel > ViewModel.State.MovieLevel)
-        {
-          movieView.LevelDown();
-        }
-      }]]></ref.Ctor>
       <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <ResponsiveView ref.Name="movieView" Direction="Horizontal" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+        <ResponsiveView ref.Name="responsiveView" Direction="Horizontal" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Views>
             <ResponsiveFixed>
               <ez:Layout>
                 <ez:Column>
                   <ez:Row CellSpan="2">
-                    <Bounds PreferredMinSize="x:64 y:64">
+                    <Bounds PreferredMinSize="x:96 y:96">
                       <ImageFrame Stretch="true" Image-bind="ViewModel.Image"/>
                     </Bounds>
                   </ez:Row>
                 </ez:Column>
                 <ez:Column CellOption="composeType:Percentage percentage:1">
-                  <!-- The two text tracks and their five-pixel gap total 64 pixels. -->
-                  <ez:Row CellOption="composeType:Absolute absolute:32">
+                  <!-- The two text tracks and their five-pixel gap total 96 pixels. -->
+                  <ez:Row CellOption="composeType:Absolute absolute:48">
                     <Bounds PreferredMinSize="x:200" MinSizeLimitation="LimitToElement">
                       <SolidLabel Text-bind="ViewModel.Title" Font-bind="self.Font" Color-bind="self.TextColor" Ellipse="true"/>
                     </Bounds>
                   </ez:Row>
-                  <ez:Row CellOption="composeType:Absolute absolute:27">
+                  <ez:Row CellOption="composeType:Absolute absolute:43">
                     <Bounds MinSizeLimitation="LimitToElement">
                       <SolidLabel Text-bind="'by: ' &amp; ViewModel.Author" Font-bind="self.Font" Color-bind="self.TextColor" Ellipse="true"/>
                     </Bounds>

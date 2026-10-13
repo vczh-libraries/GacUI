@@ -400,6 +400,7 @@ namespace vl::presentation::windows
 			lifetime->Attach(scroll, scroll->PositionChanged, scrollChanged);
 			lifetime->Attach(scroll, scroll->TotalSizeChanged, scrollChanged);
 			lifetime->Attach(scroll, scroll->PageSizeChanged, scrollChanged);
+			lifetime->Attach(scroll, scroll->EnabledChanged, scrollChanged);
 		}
 		if (auto list = dynamic_cast<GuiListControl*>(control))
 		{

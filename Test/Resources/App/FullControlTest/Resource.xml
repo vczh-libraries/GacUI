@@ -362,17 +362,7 @@
   <Folder name="VerticalTabTemplate" content="Link">VerticalTabTemplate.xml</Folder>
   <Folder name="EasyLayoutResponsiveTemplates" content="Link">EasyLayoutResponsiveTemplates.xml</Folder>
   <Folder name="EasyLayoutResponsiveWindow" content="Link">EasyLayoutResponsiveWindow.xml</Folder>
-  <Folder name="ResponsiveImages">
-    <Image name="Account1" content="File">ResponsiveImages/1.png</Image>
-    <Image name="Account2" content="File">ResponsiveImages/2.png</Image>
-    <Image name="Account3" content="File">ResponsiveImages/3.png</Image>
-    <Image name="Account4" content="File">ResponsiveImages/4.png</Image>
-    <Image name="Account5" content="File">ResponsiveImages/5.png</Image>
-    <Image name="Account6" content="File">ResponsiveImages/6.png</Image>
-    <Image name="Account7" content="File">ResponsiveImages/7.png</Image>
-    <Image name="Account8" content="File">ResponsiveImages/8.png</Image>
-    <Image name="Movie" content="File">ResponsiveImages/Video.png</Image>
-  </Folder>
+  <Folder name="ResponsiveImages" content="Link">ResponsiveImages/Images.xml</Folder>
   <Folder name="RepeatComponents" content="Link">RepeatComponents.xml</Folder>
   
   <Folder name="TextBoxComponents" content="Link">TextBoxTabPage.xml</Folder>

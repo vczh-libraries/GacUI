@@ -7,23 +7,15 @@
 
       namespace demo
       {
-        class EasyResponsiveState
-        {
-          prop Account : int = 0 {}
-          prop MovieLevel : int = 0 {}
-        }
-
         class EasyResponsiveAccount
         {
-          prop State : EasyResponsiveState^ = null {}
-          prop Index : int = 0 {}
+          prop Selected : bool = false {}
           prop Name : string = "" {}
           prop Image : INativeImage^ = null {}
         }
 
         class EasyResponsiveMovie
         {
-          prop State : EasyResponsiveState^ = null {}
           prop Title : string = "" {}
           prop Author : string = "" {}
           prop Image : INativeImage^ = null {}
@@ -35,133 +27,199 @@
   <Instance name="EasyLayoutResponsiveWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::EasyLayoutResponsiveWindow">
       <ref.Members><![CDATA[
-        var state : EasyResponsiveState^ = new EasyResponsiveState^();
         var accounts : observe EasyResponsiveAccount^[] = {};
         var movies : observe EasyResponsiveMovie^[] = {};
 
         func InitializeData() : void
         {
-          var names : string[] = {"Northwind Studio"; "City Lights"; "Open Horizon"; "Silver Screen"; "Moonlight Films"; "River Pictures"; "Star Cinema"; "Weekend Movies";};
+          var names : string[] = {"Penguin Random House"; "HarperCollins"; "Simon & Schuster"; "Hachette Book Group"; "Macmillan Publishers"; "Scholastic"; "Bloomsbury"; "Oxford University Press";};
           for (i in range [0, 7])
           {
             var account = new EasyResponsiveAccount^();
-            account.State = self.state;
-            account.Index = i;
             account.Name = names[i];
             account.Image = (cast (GuiImageData^) self.ResolveResource("res", $"ResponsiveImages/Account$(i + 1)", true)).Image;
             self.accounts.Add(account);
           }
-          for (i in range [1, 24])
+          /* The first 24 entries in the BFI Sight and Sound 2022 critics' poll. */
+          var films : string[][] = {
+            {"Jeanne Dielman, 23 quai du Commerce, 1080 Bruxelles"; "Chantal Akerman";};
+            {"Vertigo"; "Alfred Hitchcock";};
+            {"Citizen Kane"; "Orson Welles";};
+            {"Tokyo Story"; "Yasujirō Ozu";};
+            {"In the Mood for Love"; "Wong Kar-wai";};
+            {"2001: A Space Odyssey"; "Stanley Kubrick";};
+            {"Beau travail"; "Claire Denis";};
+            {"Mulholland Dr."; "David Lynch";};
+            {"Man with a Movie Camera"; "Dziga Vertov";};
+            {"Singin' in the Rain"; "Stanley Donen and Gene Kelly";};
+            {"Sunrise: A Song of Two Humans"; "F.W. Murnau";};
+            {"The Godfather"; "Francis Ford Coppola";};
+            {"La Règle du jeu"; "Jean Renoir";};
+            {"Cléo from 5 to 7"; "Agnès Varda";};
+            {"The Searchers"; "John Ford";};
+            {"Meshes of the Afternoon"; "Maya Deren and Alexander Hammid";};
+            {"Close-Up"; "Abbas Kiarostami";};
+            {"Persona"; "Ingmar Bergman";};
+            {"Apocalypse Now"; "Francis Ford Coppola";};
+            {"Seven Samurai"; "Akira Kurosawa";};
+            {"The Passion of Joan of Arc"; "Carl Theodor Dreyer";};
+            {"Late Spring"; "Yasujirō Ozu";};
+            {"Playtime"; "Jacques Tati";};
+            {"Do the Right Thing"; "Spike Lee";};
+          };
+          for (i in range [0, films.Count - 1])
           {
             var movie = new EasyResponsiveMovie^();
-            movie.State = self.state;
-            movie.Title = $"Movie $(i): A journey home";
-            movie.Author = names[(i - 1) % 8];
+            movie.Title = films[i][0];
+            movie.Author = films[i][1];
             movie.Image = (cast (GuiImageData^) self.ResolveResource("res", "ResponsiveImages/Movie", true)).Image;
             self.movies.Add(movie);
           }
         }
+
+        func InitializeItemTemplate(item : GuiListItemTemplate*, width : GuiResponsiveViewComposition*) : GuiListItemTemplate*
+        {
+          /* Initialize before attachment: a virtual row must not raise its group's current level. */
+          var view = cast (GuiResponsiveViewComposition*) item.GetNamedObject("responsiveView");
+          while (view.CurrentLevel > width.CurrentLevel)
+          {
+            view.LevelDown();
+          }
+          return item;
+        }
+
+        func CreateMovieTemplate(value : object) : GuiListItemTemplate*
+        {
+          return self.InitializeItemTemplate(new EasyResponsiveMovieTemplate*(cast (EasyResponsiveMovie^) value), movieWidth);
+        }
+
+        func CreateAccountTemplate(value : object) : GuiListItemTemplate*
+        {
+          return self.InitializeItemTemplate(new EasyResponsiveAccountItemTemplate*(cast (EasyResponsiveAccount^) value), accountWidth);
+        }
       ]]></ref.Members>
       <ref.Ctor><![CDATA[{
         self.InitializeData();
+        accountList.SetSelected(0, true);
         self.ClientSize = {x:240 y:320};
       }]]></ref.Ctor>
       <Window ref.Name="self" Text="Easy Layout (Responsive)" ClientSize="x:240 y:320" SizeBox="true" MaximizedBox="false" MinimizedBox="false">
-        <ez:Layout>
-          <ez:Fill>
-            <ResponsiveContainer>
-              <att.ResponsiveTarget>
-                <ResponsiveView Direction="Horizontal">
-                  <att.SharedControls>
-                    <CustomControl ref.Name="movieHost">
-                      <ResponsiveContainer AlignmentToParent="left:0 top:0 right:0 bottom:0">
-                        <att.ResponsiveTarget>
-                          <ResponsiveGroup ref.Name="movieGroup" Direction="Horizontal">
-                            <!-- The list viewport isolates item minima. Forward the two row-width requirements here. -->
-                            <ResponsiveView ref.Name="movieWidth" Direction="Horizontal">
-                              <ev.CurrentLevelChanged-eval><![CDATA[{ self.state.MovieLevel = movieWidth.CurrentLevel; }]]></ev.CurrentLevelChanged-eval>
-                              <att.Views>
-                                <ResponsiveFixed PreferredMinSize="x:300"/>
-                                <ResponsiveFixed PreferredMinSize="x:120"/>
-                              </att.Views>
-                            </ResponsiveView>
-                            <BindableTextList ref.Name="movieList" Text="Movies" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="demo::EasyResponsiveMovie^">
-                              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                              <att.ItemTemplate>demo::EasyResponsiveMovieTemplate</att.ItemTemplate>
-                              <att.TextProperty>Title</att.TextProperty>
-                              <att.ItemSource-eval>self.movies</att.ItemSource-eval>
-                            </BindableTextList>
-                          </ResponsiveGroup>
-                        </att.ResponsiveTarget>
-                      </ResponsiveContainer>
-                    </CustomControl>
-                  </att.SharedControls>
-                  <att.Views>
-                    <ResponsiveGroup Direction="Horizontal">
-                      <ez:Layout Border="false">
-                        <ez:Left>
-                          <ResponsiveGroup Direction="Horizontal">
-                            <!-- Forward both navigation widths across the scroll viewport. -->
-                            <ResponsiveView Direction="Horizontal">
-                              <att.Views>
-                                <ResponsiveFixed PreferredMinSize="x:180"/>
-                                <ResponsiveFixed PreferredMinSize="x:64"/>
-                              </att.Views>
-                            </ResponsiveView>
-                            <ScrollContainer Text="Accounts" ExtendToFullWidth="true" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                              <RepeatStack Direction="Vertical" Padding="5" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:-1">
+        <SharedSizeRoot AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <ez:Layout Border="false">
+            <ez:Fill>
+              <ResponsiveContainer>
+                <att.ResponsiveTarget>
+                  <ResponsiveView Direction="Horizontal">
+                    <att.SharedControls>
+                      <CustomControl ref.Name="movieHost">
+                        <ResponsiveContainer AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                          <att.ResponsiveTarget>
+                            <ResponsiveGroup ref.Name="movieGroup" Direction="Horizontal">
+                              <!-- The list viewport isolates item minima. Forward the two row-width requirements here. -->
+                              <ResponsiveView ref.Name="movieWidth" Direction="Horizontal">
+                                <att.Views>
+                                  <ResponsiveFixed PreferredMinSize="x:334"/>
+                                  <ResponsiveFixed PreferredMinSize="x:120"/>
+                                </att.Views>
+                              </ResponsiveView>
+                              <BindableTextList ref.Name="movieList" Text="Movies" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="demo::EasyResponsiveMovie^">
+                                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                                <att.ItemTemplate-eval>self.CreateMovieTemplate</att.ItemTemplate-eval>
+                                <att.TextProperty>Title</att.TextProperty>
+                                <att.ItemSource-eval>self.movies</att.ItemSource-eval>
+                              </BindableTextList>
+                            </ResponsiveGroup>
+                          </att.ResponsiveTarget>
+                        </ResponsiveContainer>
+                      </CustomControl>
+                    </att.SharedControls>
+                    <att.Views>
+                      <ResponsiveGroup Direction="Horizontal">
+                        <ez:Layout Border="false">
+                          <ez:Left>
+                            <ResponsiveGroup Direction="Horizontal">
+                              <!-- Forward both navigation widths across the scroll viewport. -->
+                              <ResponsiveView ref.Name="accountWidth" Direction="Horizontal">
+                                <att.Views>
+                                  <ResponsiveFixed PreferredMinSize="x:230"/>
+                                  <ResponsiveFixed PreferredMinSize="x:64"/>
+                                </att.Views>
+                              </ResponsiveView>
+                              <BindableTextList ref.Name="accountList" Text="Accounts" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="demo::EasyResponsiveAccount^">
+                                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                                 <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
-                                <att.ItemTemplate>demo::EasyResponsiveAccountItemTemplate</att.ItemTemplate>
-                              </RepeatStack>
-                            </ScrollContainer>
-                          </ResponsiveGroup>
-                        </ez:Left>
-                        <ez:Fill>
-                          <!-- This boundary keeps movie rows out of the account-option group. -->
-                          <ResponsiveFixed Direction="Vertical" PreferredMinSize="x:320">
-                            <ResponsiveShared Shared-ref="movieHost" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                          </ResponsiveFixed>
-                        </ez:Fill>
-                      </ez:Layout>
-                    </ResponsiveGroup>
-                    <ResponsiveFixed>
-                      <ez:Layout Border="false">
-                        <ez:Top>
-                          <ToolstripMenuBar>
-                            <MenuBarButton Text="Subscribed Accounts">
-                              <att.SubMenu-set>
-                                <RepeatStack Direction="Vertical" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-                                  <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
-                                  <att.ItemTemplate>demo::EasyResponsiveAccountMenuTemplate</att.ItemTemplate>
-                                </RepeatStack>
-                              </att.SubMenu-set>
-                            </MenuBarButton>
-                          </ToolstripMenuBar>
-                        </ez:Top>
-                        <ez:Fill>
-                          <ResponsiveShared Shared-ref="movieHost"/>
-                        </ez:Fill>
-                      </ez:Layout>
-                    </ResponsiveFixed>
-                  </att.Views>
-                </ResponsiveView>
-              </att.ResponsiveTarget>
-            </ResponsiveContainer>
-          </ez:Fill>
-          <ez:Bottom>
-            <ez:Right>
-              <Button Text="OK" Alt="O">
-                <ev.Clicked-eval><![CDATA[{ self.Close(); }]]></ev.Clicked-eval>
-              </Button>
-            </ez:Right>
-            <ez:Right>
-              <Button Text="Cancel" Alt="C">
-                <ev.Clicked-eval><![CDATA[{ self.Close(); }]]></ev.Clicked-eval>
-              </Button>
-            </ez:Right>
-          </ez:Bottom>
-        </ez:Layout>
+                                <att.ItemTemplate-eval>self.CreateAccountTemplate</att.ItemTemplate-eval>
+                                <att.TextProperty>Name</att.TextProperty>
+                                <ev.SelectionChanged-eval><![CDATA[{
+                                  for (i in range [0, self.accounts.Count - 1])
+                                  {
+                                    self.accounts[i].Selected = accountList.GetSelected(i);
+                                  }
+                                }]]></ev.SelectionChanged-eval>
+                              </BindableTextList>
+                            </ResponsiveGroup>
+                          </ez:Left>
+                          <ez:Fill>
+                            <!-- This boundary keeps movie rows out of the account-option group. -->
+                            <ResponsiveFixed Direction="Vertical" PreferredMinSize="x:352">
+                              <ResponsiveShared Shared-ref="movieHost" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                            </ResponsiveFixed>
+                          </ez:Fill>
+                        </ez:Layout>
+                      </ResponsiveGroup>
+                      <ResponsiveFixed>
+                        <ez:Layout Border="false">
+                          <ez:Top>
+                            <ToolstripMenuBar>
+                              <MenuBarButton Text="Subscribed Accounts">
+                                <att.SubMenu-set>
+                                  <RepeatStack ref.Name="accountMenu" Direction="Vertical" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                                    <att.ItemSource-eval>self.accounts</att.ItemSource-eval>
+                                    <att.ItemTemplate>demo::EasyResponsiveAccountMenuTemplate</att.ItemTemplate>
+                                    <ev.ItemInserted-eval><![CDATA[{
+                                      var item = cast (EasyResponsiveAccountMenuTemplate*) accountMenu.StackItems[arguments.itemIndex].Children[0];
+                                      var account = item.ViewModel;
+                                      var button = cast (GuiToolstripButton*) item.GetNamedObject("menuButton");
+                                      attach(button.Clicked, func(sender : GuiGraphicsComposition*, arguments : GuiEventArgs*) : void
+                                      {
+                                        accountList.SetSelected(self.accounts.IndexOf(account), true);
+                                      });
+                                    }]]></ev.ItemInserted-eval>
+                                  </RepeatStack>
+                                </att.SubMenu-set>
+                              </MenuBarButton>
+                            </ToolstripMenuBar>
+                          </ez:Top>
+                          <ez:Fill>
+                            <ResponsiveShared Shared-ref="movieHost"/>
+                          </ez:Fill>
+                        </ez:Layout>
+                      </ResponsiveFixed>
+                    </att.Views>
+                  </ResponsiveView>
+                </att.ResponsiveTarget>
+              </ResponsiveContainer>
+            </ez:Fill>
+            <ez:Bottom>
+              <ez:Right>
+                <SharedSizeItem Group="DialogButtons" SharedWidth="true">
+                  <Button Text="OK" Alt="O">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                    <ev.Clicked-eval><![CDATA[{ self.Close(); }]]></ev.Clicked-eval>
+                  </Button>
+                </SharedSizeItem>
+              </ez:Right>
+              <ez:Right>
+                <SharedSizeItem Group="DialogButtons" SharedWidth="true">
+                  <Button Text="Cancel" Alt="C">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                    <ev.Clicked-eval><![CDATA[{ self.Close(); }]]></ev.Clicked-eval>
+                  </Button>
+                </SharedSizeItem>
+              </ez:Right>
+            </ez:Bottom>
+          </ez:Layout>
+        </SharedSizeRoot>
       </Window>
     </Instance>
   </Instance>

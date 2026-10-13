@@ -209,6 +209,7 @@
     <Xml Include="..\..\Resources\App\FullControlTest\EasyLayoutTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\EasyLayoutResponsiveTemplates.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\EasyLayoutResponsiveWindow.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\ResponsiveImages\Images.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\VerticalTabTemplate.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\ElementTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\EmbeddedControlsSubTabPage.xml" />
