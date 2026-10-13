@@ -1689,12 +1689,18 @@ namespace demo
 
         var movies : observe EasyResponsiveMovie^[] = {};
 
+        var movieLevel : int = 0;
+
+        var accountLevel : int = 0;
+
+        var restoringMovieLevel : bool = false;
+
         func InitializeData() : (void)
         {
             raise "Not Implemented";
         }
 
-        func InitializeItemTemplate(item : GuiListItemTemplate*, width : GuiResponsiveViewComposition*) : (GuiListItemTemplate*)
+        func InitializeItemTemplate(item : GuiListItemTemplate*, level : int) : (GuiListItemTemplate*)
         {
             raise "Not Implemented";
         }
@@ -1705,6 +1711,11 @@ namespace demo
         }
 
         func CreateAccountTemplate(value : object) : (GuiListItemTemplate*)
+        {
+            raise "Not Implemented";
+        }
+
+        func UpdateMovieLevel() : (void)
         {
             raise "Not Implemented";
         }

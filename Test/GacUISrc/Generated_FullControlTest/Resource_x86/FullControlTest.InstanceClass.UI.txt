@@ -23212,94 +23212,79 @@ namespace demo
         var <precompile>5 : ::presentation::compositions::GuiResponsiveContainerComposition* = null of (::presentation::compositions::GuiResponsiveContainerComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
+        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
+        var <precompile>7 : ::presentation::compositions::GuiResponsiveGroupComposition* = null of (::presentation::compositions::GuiResponsiveGroupComposition*);
 
         @cpp:Protected
-        var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>8 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
-        var <precompile>9 : ::presentation::compositions::GuiResponsiveGroupComposition* = null of (::presentation::compositions::GuiResponsiveGroupComposition*);
+        var <precompile>9 : ::presentation::compositions::eazy_layout::GuiEasyLeftLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^);
 
         @cpp:Protected
-        var <precompile>10 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+        var <precompile>10 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>11 : ::presentation::compositions::eazy_layout::GuiEasyLeftLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^);
+        var <precompile>11 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
 
         @cpp:Protected
-        var <precompile>12 : ::presentation::compositions::GuiResponsiveGroupComposition* = null of (::presentation::compositions::GuiResponsiveGroupComposition*);
+        var <precompile>12 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
+        var <precompile>13 : ::presentation::compositions::GuiResponsiveSharedComposition* = null of (::presentation::compositions::GuiResponsiveSharedComposition*);
 
         @cpp:Protected
         var <precompile>14 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
 
         @cpp:Protected
-        var <precompile>15 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>15 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
-        var <precompile>16 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+        var <precompile>16 : ::presentation::compositions::eazy_layout::GuiEasyTopLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyTopLayout^);
 
         @cpp:Protected
-        var <precompile>17 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
+        var <precompile>17 : ::presentation::controls::GuiToolstripMenuBar* = null of (::presentation::controls::GuiToolstripMenuBar*);
 
         @cpp:Protected
-        var <precompile>18 : ::presentation::compositions::GuiResponsiveSharedComposition* = null of (::presentation::compositions::GuiResponsiveSharedComposition*);
+        var <precompile>18 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
-        var <precompile>19 : ::presentation::compositions::GuiResponsiveFixedComposition* = null of (::presentation::compositions::GuiResponsiveFixedComposition*);
+        var <precompile>19 : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
 
         @cpp:Protected
-        var <precompile>20 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+        var <precompile>20 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
 
         @cpp:Protected
-        var <precompile>21 : ::presentation::compositions::eazy_layout::GuiEasyTopLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyTopLayout^);
+        var <precompile>21 : ::presentation::compositions::GuiResponsiveSharedComposition* = null of (::presentation::compositions::GuiResponsiveSharedComposition*);
 
         @cpp:Protected
-        var <precompile>22 : ::presentation::controls::GuiToolstripMenuBar* = null of (::presentation::controls::GuiToolstripMenuBar*);
+        var <precompile>22 : ::presentation::compositions::eazy_layout::GuiEasyBottomLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^);
 
         @cpp:Protected
-        var <precompile>23 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+        var <precompile>23 : ::presentation::compositions::eazy_layout::GuiEasyRightLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRightLayout^);
 
         @cpp:Protected
-        var <precompile>24 : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
+        var <precompile>24 : ::presentation::compositions::GuiSharedSizeItemComposition* = null of (::presentation::compositions::GuiSharedSizeItemComposition*);
 
         @cpp:Protected
-        var <precompile>25 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+        var <precompile>25 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>26 : ::presentation::compositions::GuiResponsiveSharedComposition* = null of (::presentation::compositions::GuiResponsiveSharedComposition*);
+        var <precompile>26 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>27 : ::presentation::compositions::eazy_layout::GuiEasyBottomLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^);
+        var <precompile>27 : ::presentation::compositions::eazy_layout::GuiEasyRightLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRightLayout^);
 
         @cpp:Protected
-        var <precompile>28 : ::presentation::compositions::eazy_layout::GuiEasyRightLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRightLayout^);
+        var <precompile>28 : ::presentation::compositions::GuiSharedSizeItemComposition* = null of (::presentation::compositions::GuiSharedSizeItemComposition*);
 
         @cpp:Protected
-        var <precompile>29 : ::presentation::compositions::GuiSharedSizeItemComposition* = null of (::presentation::compositions::GuiSharedSizeItemComposition*);
+        var <precompile>29 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>30 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var <precompile>31 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>32 : ::presentation::compositions::eazy_layout::GuiEasyRightLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyRightLayout^);
-
-        @cpp:Protected
-        var <precompile>33 : ::presentation::compositions::GuiSharedSizeItemComposition* = null of (::presentation::compositions::GuiSharedSizeItemComposition*);
-
-        @cpp:Protected
-        var <precompile>34 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var <precompile>35 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>30 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var movieHost : ::presentation::controls::GuiCustomControl* = null of (::presentation::controls::GuiCustomControl*);
@@ -23308,13 +23293,10 @@ namespace demo
         var movieGroup : ::presentation::compositions::GuiResponsiveGroupComposition* = null of (::presentation::compositions::GuiResponsiveGroupComposition*);
 
         @cpp:Protected
-        var movieWidth : ::presentation::compositions::GuiResponsiveViewComposition* = null of (::presentation::compositions::GuiResponsiveViewComposition*);
-
-        @cpp:Protected
         var movieList : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
 
         @cpp:Protected
-        var accountWidth : ::presentation::compositions::GuiResponsiveViewComposition* = null of (::presentation::compositions::GuiResponsiveViewComposition*);
+        var accountGroup : ::presentation::compositions::GuiResponsiveGroupComposition* = null of (::presentation::compositions::GuiResponsiveGroupComposition*);
 
         @cpp:Protected
         var accountList : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
@@ -23355,43 +23337,21 @@ namespace demo
             (<precompile>2 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
             (<precompile>3 = new (::presentation::compositions::GuiResponsiveContainerComposition*)());
             (<precompile>4 = new (::presentation::compositions::GuiResponsiveViewComposition*)());
-            (<precompile>9 = new (::presentation::compositions::GuiResponsiveGroupComposition*)());
+            (<precompile>7 = new (::presentation::compositions::GuiResponsiveGroupComposition*)());
             {
-                (<precompile>9.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
+                (<precompile>7.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
             }
-            (<precompile>10 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            (<precompile>8 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
             {
-                (<precompile>10.Border = false);
+                (<precompile>8.Border = false);
             }
-            (<precompile>11 = new (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^)());
-            (<precompile>12 = new (::presentation::compositions::GuiResponsiveGroupComposition*)());
+            (<precompile>9 = new (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^)());
+            (accountGroup = new (::presentation::compositions::GuiResponsiveGroupComposition*)());
+            <this>.SetNamedObject("accountGroup", accountGroup);
             {
-                (<precompile>12.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
+                (accountGroup.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
             }
-            (accountWidth = new (::presentation::compositions::GuiResponsiveViewComposition*)());
-            <this>.SetNamedObject("accountWidth", accountWidth);
-            (<precompile>13 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
-            {
-                (<precompile>13.PreferredMinSize = {x : 230;} of (::presentation::Size));
-            }
-            {
-                var <collection> = accountWidth.Views;
-                <collection>.Add(<precompile>13);
-            }
-            (<precompile>14 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
-            {
-                (<precompile>14.PreferredMinSize = {x : 64;} of (::presentation::Size));
-            }
-            {
-                var <collection> = accountWidth.Views;
-                <collection>.Add(<precompile>14);
-            }
-            {
-                (accountWidth.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
-            }
-            {
-                <precompile>12.AddChild(accountWidth);
-            }
+            (accountGroup.ViewSizes = {64; 230;});
             {
                 (accountList = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("accountList", accountList);
@@ -23409,64 +23369,64 @@ namespace demo
                     return item.Name;
                 });
             }
-            (<precompile>15 = accountList.BoundsComposition);
+            (<precompile>10 = accountList.BoundsComposition);
             {
-                (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (accountList.Text = "Accounts");
             }
             {
-                <precompile>12.AddChild(accountList.BoundsComposition);
+                accountGroup.AddChild(accountList.BoundsComposition);
+            }
+            {
+                (<precompile>9.Composition = accountGroup);
+            }
+            (<precompile>11 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            (<precompile>12 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
+            {
+                (<precompile>12.Direction = Vertical of (::presentation::compositions::ResponsiveDirection));
+            }
+            {
+                (<precompile>12.PreferredMinSize = {x : 352;} of (::presentation::Size));
+            }
+            (<precompile>13 = new (::presentation::compositions::GuiResponsiveSharedComposition*)());
+            {
+                (<precompile>13.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>12.AddChild(<precompile>13);
             }
             {
                 (<precompile>11.Composition = <precompile>12);
             }
-            (<precompile>16 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
-            (<precompile>17 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
             {
-                (<precompile>17.Direction = Vertical of (::presentation::compositions::ResponsiveDirection));
+                <precompile>8.Layouts.Add(<precompile>9);
+                <precompile>8.Layouts.Add(<precompile>11);
             }
             {
-                (<precompile>17.PreferredMinSize = {x : 352;} of (::presentation::Size));
-            }
-            (<precompile>18 = new (::presentation::compositions::GuiResponsiveSharedComposition*)());
-            {
-                (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>17.AddChild(<precompile>18);
-            }
-            {
-                (<precompile>16.Composition = <precompile>17);
-            }
-            {
-                <precompile>10.Layouts.Add(<precompile>11);
-                <precompile>10.Layouts.Add(<precompile>16);
-            }
-            {
-                <precompile>9.AddChild(<precompile>10);
+                <precompile>7.AddChild(<precompile>8);
             }
             {
                 var <collection> = <precompile>4.Views;
-                <collection>.Add(<precompile>9);
+                <collection>.Add(<precompile>7);
             }
-            (<precompile>19 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
-            (<precompile>20 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            (<precompile>14 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
+            (<precompile>15 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
             {
-                (<precompile>20.Border = false);
+                (<precompile>15.Border = false);
             }
-            (<precompile>21 = new (::presentation::compositions::eazy_layout::GuiEasyTopLayout^)());
+            (<precompile>16 = new (::presentation::compositions::eazy_layout::GuiEasyTopLayout^)());
             {
-                (<precompile>22 = new (::presentation::controls::GuiToolstripMenuBar*)(::presentation::theme::ThemeName::MenuBar));
-            }
-            {
-                (<precompile>23 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuBarButton));
+                (<precompile>17 = new (::presentation::controls::GuiToolstripMenuBar*)(::presentation::theme::ThemeName::MenuBar));
             }
             {
-                (<precompile>23.Text = "Subscribed Accounts");
+                (<precompile>18 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuBarButton));
             }
-            (<precompile>24 = <precompile>23.EnsureToolstripSubMenu());
+            {
+                (<precompile>18.Text = "Subscribed Accounts");
+            }
+            (<precompile>19 = <precompile>18.EnsureToolstripSubMenu());
             (accountMenu = new (::presentation::compositions::GuiRepeatStackComposition*)());
             <this>.SetNamedObject("accountMenu", accountMenu);
             {
@@ -23491,29 +23451,29 @@ namespace demo
                 (accountMenu.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>24.ContainerComposition.AddChild(accountMenu);
+                <precompile>19.ContainerComposition.AddChild(accountMenu);
             }
             {
-                <precompile>22.ToolstripItems.Add(<precompile>23);
+                <precompile>17.ToolstripItems.Add(<precompile>18);
             }
             {
-                (<precompile>21.Composition = <precompile>22.BoundsComposition);
+                (<precompile>16.Composition = <precompile>17.BoundsComposition);
             }
-            (<precompile>25 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
-            (<precompile>26 = new (::presentation::compositions::GuiResponsiveSharedComposition*)());
+            (<precompile>20 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            (<precompile>21 = new (::presentation::compositions::GuiResponsiveSharedComposition*)());
             {
-                (<precompile>25.Composition = <precompile>26);
-            }
-            {
-                <precompile>20.Layouts.Add(<precompile>21);
-                <precompile>20.Layouts.Add(<precompile>25);
+                (<precompile>20.Composition = <precompile>21);
             }
             {
-                <precompile>19.AddChild(<precompile>20);
+                <precompile>15.Layouts.Add(<precompile>16);
+                <precompile>15.Layouts.Add(<precompile>20);
+            }
+            {
+                <precompile>14.AddChild(<precompile>15);
             }
             {
                 var <collection> = <precompile>4.Views;
-                <collection>.Add(<precompile>19);
+                <collection>.Add(<precompile>14);
             }
             {
                 (movieHost = new (::presentation::controls::GuiCustomControl*)(::presentation::theme::ThemeName::CustomControl));
@@ -23525,30 +23485,7 @@ namespace demo
             {
                 (movieGroup.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
             }
-            (movieWidth = new (::presentation::compositions::GuiResponsiveViewComposition*)());
-            <this>.SetNamedObject("movieWidth", movieWidth);
-            (<precompile>6 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
-            {
-                (<precompile>6.PreferredMinSize = {x : 334;} of (::presentation::Size));
-            }
-            {
-                var <collection> = movieWidth.Views;
-                <collection>.Add(<precompile>6);
-            }
-            (<precompile>7 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
-            {
-                (<precompile>7.PreferredMinSize = {x : 120;} of (::presentation::Size));
-            }
-            {
-                var <collection> = movieWidth.Views;
-                <collection>.Add(<precompile>7);
-            }
-            {
-                (movieWidth.Direction = Horizontal of (::presentation::compositions::ResponsiveDirection));
-            }
-            {
-                movieGroup.AddChild(movieWidth);
-            }
+            (movieGroup.ViewSizes = {120; 334;});
             {
                 (movieList = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("movieList", movieList);
@@ -23566,9 +23503,9 @@ namespace demo
                     return item.Title;
                 });
             }
-            (<precompile>8 = movieList.BoundsComposition);
+            (<precompile>6 = movieList.BoundsComposition);
             {
-                (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (movieList.Text = "Movies");
@@ -23598,68 +23535,68 @@ namespace demo
             {
                 (<precompile>2.Composition = <precompile>3);
             }
-            (<precompile>27 = new (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^)());
-            (<precompile>28 = new (::presentation::compositions::eazy_layout::GuiEasyRightLayout^)());
-            (<precompile>29 = new (::presentation::compositions::GuiSharedSizeItemComposition*)());
+            (<precompile>22 = new (::presentation::compositions::eazy_layout::GuiEasyBottomLayout^)());
+            (<precompile>23 = new (::presentation::compositions::eazy_layout::GuiEasyRightLayout^)());
+            (<precompile>24 = new (::presentation::compositions::GuiSharedSizeItemComposition*)());
             {
-                (<precompile>29.SharedWidth = true);
+                (<precompile>24.SharedWidth = true);
             }
             {
-                (<precompile>29.Group = "DialogButtons");
+                (<precompile>24.Group = "DialogButtons");
             }
             {
-                (<precompile>30 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                (<precompile>25 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            (<precompile>31 = <precompile>30.BoundsComposition);
+            (<precompile>26 = <precompile>25.BoundsComposition);
             {
-                (<precompile>31.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>30.Alt = "O");
+                (<precompile>26.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>30.Text = "OK");
+                (<precompile>25.Alt = "O");
             }
             {
-                <precompile>29.AddChild(<precompile>30.BoundsComposition);
+                (<precompile>25.Text = "OK");
             }
             {
-                (<precompile>28.Composition = <precompile>29);
-            }
-            (<precompile>32 = new (::presentation::compositions::eazy_layout::GuiEasyRightLayout^)());
-            (<precompile>33 = new (::presentation::compositions::GuiSharedSizeItemComposition*)());
-            {
-                (<precompile>33.SharedWidth = true);
+                <precompile>24.AddChild(<precompile>25.BoundsComposition);
             }
             {
-                (<precompile>33.Group = "DialogButtons");
+                (<precompile>23.Composition = <precompile>24);
+            }
+            (<precompile>27 = new (::presentation::compositions::eazy_layout::GuiEasyRightLayout^)());
+            (<precompile>28 = new (::presentation::compositions::GuiSharedSizeItemComposition*)());
+            {
+                (<precompile>28.SharedWidth = true);
             }
             {
-                (<precompile>34 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            (<precompile>35 = <precompile>34.BoundsComposition);
-            {
-                (<precompile>35.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>28.Group = "DialogButtons");
             }
             {
-                (<precompile>34.Alt = "C");
+                (<precompile>29 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>30 = <precompile>29.BoundsComposition);
+            {
+                (<precompile>30.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>34.Text = "Cancel");
+                (<precompile>29.Alt = "C");
             }
             {
-                <precompile>33.AddChild(<precompile>34.BoundsComposition);
+                (<precompile>29.Text = "Cancel");
             }
             {
-                (<precompile>32.Composition = <precompile>33);
+                <precompile>28.AddChild(<precompile>29.BoundsComposition);
             }
             {
-                <precompile>27.Layouts.Add(<precompile>28);
-                <precompile>27.Layouts.Add(<precompile>32);
+                (<precompile>27.Composition = <precompile>28);
+            }
+            {
+                <precompile>22.Layouts.Add(<precompile>23);
+                <precompile>22.Layouts.Add(<precompile>27);
             }
             {
                 <precompile>1.Layouts.Add(<precompile>2);
-                <precompile>1.Layouts.Add(<precompile>27);
+                <precompile>1.Layouts.Add(<precompile>22);
             }
             {
                 <precompile>0.AddChild(<precompile>1);
@@ -23676,9 +23613,19 @@ namespace demo
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
-                    movieList.Arranger.ReloadVisibleStyles();
+                    self.UpdateMovieLevel();
                 };
                 attach(movieGroup.CurrentLevelChanged, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    if ((self.restoringMovieLevel and (self.movieLevel == 0)))
+                    {
+                        self.UpdateMovieLevel();
+                    }
+                };
+                attach(movieGroup.LevelCountChanged, <event-handler>);
             }
             {
                 (accountList.ItemTemplate = self.CreateAccountTemplate);
@@ -23705,7 +23652,17 @@ namespace demo
                 attach(accountList.SelectionChanged, <event-handler>);
             }
             {
-                (<precompile>18.Shared = movieHost);
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    if ((accountGroup.LevelCount > 1))
+                    {
+                        (self.accountLevel = accountGroup.CurrentLevel);
+                    }
+                };
+                attach(accountGroup.CurrentLevelChanged, <event-handler>);
+            }
+            {
+                (<precompile>13.Shared = movieHost);
             }
             {
                 (accountMenu.ItemSource = self.accounts);
@@ -23724,24 +23681,24 @@ namespace demo
                 attach(accountMenu.ItemInserted, <event-handler>);
             }
             {
-                (<precompile>26.Shared = movieHost);
+                (<precompile>21.Shared = movieHost);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     self.Close();
                 };
-                attach(<precompile>30.Clicked, <event-handler>);
+                attach(<precompile>25.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     self.Close();
                 };
-                attach(<precompile>34.Clicked, <event-handler>);
+                attach(<precompile>29.Clicked, <event-handler>);
             }
-            <precompile>10.BuildLayout();
-            <precompile>20.BuildLayout();
+            <precompile>8.BuildLayout();
+            <precompile>15.BuildLayout();
             <precompile>1.BuildLayout();
         }
 
@@ -23782,6 +23739,12 @@ namespace demo
 
         var movies : observe EasyResponsiveMovie^[] = {};
 
+        var movieLevel : int = 0;
+
+        var accountLevel : int = 0;
+
+        var restoringMovieLevel : bool = false;
+
         func InitializeData() : (void)
         {
             var names : string[] = {"Penguin Random House"; "HarperCollins"; "Simon & Schuster"; "Hachette Book Group"; "Macmillan Publishers"; "Scholastic"; "Bloomsbury"; "Oxford University Press";};
@@ -23819,10 +23782,10 @@ namespace demo
             }
         }
 
-        func InitializeItemTemplate(item : GuiListItemTemplate*, width : GuiResponsiveViewComposition*) : (GuiListItemTemplate*)
+        func InitializeItemTemplate(item : GuiListItemTemplate*, level : int) : (GuiListItemTemplate*)
         {
             var view = (cast (GuiResponsiveViewComposition*) item.GetNamedObject("responsiveView"));
-            while ((view.CurrentLevel > width.CurrentLevel))
+            while ((view.CurrentLevel > level))
             {
                 view.LevelDown();
             }
@@ -23831,12 +23794,37 @@ namespace demo
 
         func CreateMovieTemplate(value : object) : (GuiListItemTemplate*)
         {
-            return self.InitializeItemTemplate(new (EasyResponsiveMovieTemplate*)((cast (EasyResponsiveMovie^) value)), movieWidth);
+            var level = (self.restoringMovieLevel or (movieGroup.LevelCount == 1)) ? self.movieLevel : movieGroup.CurrentLevel;
+            return self.InitializeItemTemplate(new (EasyResponsiveMovieTemplate*)((cast (EasyResponsiveMovie^) value)), level);
         }
 
         func CreateAccountTemplate(value : object) : (GuiListItemTemplate*)
         {
-            return self.InitializeItemTemplate(new (EasyResponsiveAccountItemTemplate*)((cast (EasyResponsiveAccount^) value)), accountWidth);
+            var level = (accountGroup.LevelCount == 1) ? self.accountLevel : accountGroup.CurrentLevel;
+            return self.InitializeItemTemplate(new (EasyResponsiveAccountItemTemplate*)((cast (EasyResponsiveAccount^) value)), level);
+        }
+
+        func UpdateMovieLevel() : (void)
+        {
+            if ((movieGroup.LevelCount == 1))
+            {
+                return;
+            }
+            if (self.restoringMovieLevel)
+            {
+                if ((movieGroup.CurrentLevel == self.movieLevel))
+                {
+                    (self.restoringMovieLevel = false);
+                }
+                return;
+            }
+            if ((movieGroup.CurrentLevel == self.movieLevel))
+            {
+                return;
+            }
+            (self.movieLevel = movieGroup.CurrentLevel);
+            (self.restoringMovieLevel = true);
+            movieList.Arranger.ReloadVisibleStyles();
         }
 
         new* ()
