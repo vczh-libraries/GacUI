@@ -57,7 +57,7 @@ always fix the root cause.
 Files in `REPO-ROOT/Import` and `REPO-ROOT/Release` (recursively) are also not allowed to modify.
 These files are prepared for foreign dependencies.
 
-When files here are modified, they should be included in a dedicated commit, aka manually udpated files and generated files should be included in two different commits.
+When files here are modified, they should be included in a dedicated commit, aka manually udpated files and generated files should be included in two different commits. If there is any unit test snapshot changes, a dedicated third commit should be created for these.
 
 ### Source/Utilities/AutomationService
 
