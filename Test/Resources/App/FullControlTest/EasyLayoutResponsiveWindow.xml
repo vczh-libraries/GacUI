@@ -29,9 +29,6 @@
       <ref.Members><![CDATA[
         var accounts : observe EasyResponsiveAccount^[] = {};
         var movies : observe EasyResponsiveMovie^[] = {};
-        var movieLevel : int = 0;
-        var accountLevel : int = 0;
-        var restoringMovieLevel : bool = false;
 
         func InitializeData() : void
         {
@@ -80,11 +77,11 @@
           }
         }
 
-        func InitializeItemTemplate(item : GuiListItemTemplate*, level : int) : GuiListItemTemplate*
+        func InitializeItemTemplate(item : GuiListItemTemplate*, group : GuiResponsiveGroupComposition*) : GuiListItemTemplate*
         {
           /* Initialize before attachment: a virtual row must not raise its group's current level. */
           var view = cast (GuiResponsiveViewComposition*) item.GetNamedObject("responsiveView");
-          while (view.CurrentLevel > level)
+          while (view.CurrentLevel > group.CurrentLevel)
           {
             view.LevelDown();
           }
@@ -93,29 +90,12 @@
 
         func CreateMovieTemplate(value : object) : GuiListItemTemplate*
         {
-          var level = self.restoringMovieLevel or movieGroup.LevelCount == 1 ? self.movieLevel : movieGroup.CurrentLevel;
-          return self.InitializeItemTemplate(new EasyResponsiveMovieTemplate*(cast (EasyResponsiveMovie^) value), level);
+          return self.InitializeItemTemplate(new EasyResponsiveMovieTemplate*(cast (EasyResponsiveMovie^) value), movieGroup);
         }
 
         func CreateAccountTemplate(value : object) : GuiListItemTemplate*
         {
-          var level = accountGroup.LevelCount == 1 ? self.accountLevel : accountGroup.CurrentLevel;
-          return self.InitializeItemTemplate(new EasyResponsiveAccountItemTemplate*(cast (EasyResponsiveAccount^) value), level);
-        }
-
-        func UpdateMovieLevel() : void
-        {
-          /* Clearing rows temporarily leaves an empty group. Its levels remain child-derived. */
-          if (movieGroup.LevelCount == 1) { return; }
-          if (self.restoringMovieLevel)
-          {
-            if (movieGroup.CurrentLevel == self.movieLevel) { self.restoringMovieLevel = false; }
-            return;
-          }
-          if (movieGroup.CurrentLevel == self.movieLevel) { return; }
-          self.movieLevel = movieGroup.CurrentLevel;
-          self.restoringMovieLevel = true;
-          movieList.Arranger.ReloadVisibleStyles();
+          return self.InitializeItemTemplate(new EasyResponsiveAccountItemTemplate*(cast (EasyResponsiveAccount^) value), accountGroup);
         }
       ]]></ref.Members>
       <ref.Ctor><![CDATA[{
@@ -137,12 +117,8 @@
                             <ResponsiveGroup ref.Name="movieGroup" Direction="Horizontal">
                               <att.ViewSizes><_>120</_><_>334</_></att.ViewSizes>
                               <ev.CurrentLevelChanged-eval><![CDATA[{
-                                self.UpdateMovieLevel();
+                                movieList.Arranger.ReloadVisibleStyles();
                               }]]></ev.CurrentLevelChanged-eval>
-                              <ev.LevelCountChanged-eval><![CDATA[{
-                                /* Compact rows restore CurrentLevel to zero without changing it. */
-                                if (self.restoringMovieLevel and self.movieLevel == 0) { self.UpdateMovieLevel(); }
-                              }]]></ev.LevelCountChanged-eval>
                               <BindableTextList ref.Name="movieList" Text="Movies" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="demo::EasyResponsiveMovie^">
                                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                                 <att.ItemTemplate-eval>self.CreateMovieTemplate</att.ItemTemplate-eval>
@@ -159,9 +135,6 @@
                         <ez:Layout Border="false">
                           <ez:Left>
                             <ResponsiveGroup ref.Name="accountGroup" Direction="Horizontal" ViewSizes="{64 230}">
-                              <ev.CurrentLevelChanged-eval><![CDATA[{
-                                if (accountGroup.LevelCount > 1) { self.accountLevel = accountGroup.CurrentLevel; }
-                              }]]></ev.CurrentLevelChanged-eval>
                               <BindableTextList ref.Name="accountList" Text="Accounts" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemType="demo::EasyResponsiveAccount^">
                                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                                 <att.ItemSource-eval>self.accounts</att.ItemSource-eval>

@@ -228,6 +228,7 @@ Others
 			protected:
 				vint					levelCount = 1;
 				vint					currentLevel = 0;
+				vint					viewSizeLevel = 0;
 				ResponsiveChildList		responsiveChildren;
 				collections::Array<vint>	viewSizes;
 
@@ -247,7 +248,7 @@ Others
 				/// <summary>Get the preferred sizes indexed by level, from smallest to largest.</summary>
 				/// <returns>The configured sizes, without extrapolated values.</returns>
 				const collections::Array<vint>&	GetViewSizes();
-				/// <summary>Copy the preferred sizes. Empty sizes disable overriding; missing levels increase the last size by one per level. Direction selects the affected axes.</summary>
+				/// <summary>Copy the preferred sizes, contributing permanent levels initially at the largest configured level. Empty sizes remove this contribution and disable overriding; child levels beyond the array increase the last size by one per level. Direction selects the affected axes.</summary>
 				/// <param name="value">The sizes ordered from smallest to largest.</param>
 				void					SetViewSizes(const collections::Array<vint>& value);
 

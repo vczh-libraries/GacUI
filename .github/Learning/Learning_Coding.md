@@ -112,7 +112,7 @@ Control and item templates render data and visual state; the owning window imple
 
 ## Initialize virtual responsive rows before attachment
 
-Use the owning responsive group's established level to initialize a newly realized row before attaching it. Keep account and movie lists independently virtualized and scrollable. Avoid duplicate global responsive state when the group already owns that state; retain the intended level only across intervals where virtualization removes every participating child. Reset fixed-height row measurements when the group's appearance changes, after the group's child traversal completes.
+Use the owning responsive group's established level to initialize a newly realized row before attaching it. Keep account and movie lists independently virtualized and scrollable. Nonempty ViewSizes contributes permanent levels and owns its current level inside the group, reproducing the original persistent responsive-view placeholder even while every virtual row is removed. Do not add application fields or restoration handlers to duplicate this state. Reset fixed-height row measurements when the group's appearance changes, after the group's child traversal completes.
 
 ## `TreeViewItemBindableRootProvider::UpdateBindingProperties` is root-scoped
 

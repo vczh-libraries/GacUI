@@ -596,7 +596,8 @@ public static class GacUIShowcaseTests
                 Pattern<InvokePattern>(Named(accountPopup, "HarperCollins", ControlType.MenuItem), InvokePattern.Pattern).Invoke();
                 Wait(() => menu.Current.ExpandCollapseState == ExpandCollapseState.Collapsed, "account choice closes menu");
                 string selectedAccount = "HarperCollins";
-                foreach (var size in new[] { new[] { 350, 320, 1 }, new[] { 440, 320, 2 }, new[] { 680, 320, 3 }, new[] { 680, 220, 3 }, new[] { 680, 520, 3 }, new[] { 440, 320, 2 }, new[] { 350, 320, 1 }, new[] { 240, 320, 0 }, new[] { 350, 320, 1 }, new[] { 240, 320, 0 } })
+                // Direct compact/detailed jumps must settle without an additional resize.
+                foreach (var size in new[] { new[] { 680, 320, 3 }, new[] { 240, 320, 0 }, new[] { 350, 320, 1 }, new[] { 440, 320, 2 }, new[] { 680, 320, 3 }, new[] { 680, 220, 3 }, new[] { 680, 520, 3 }, new[] { 440, 320, 2 }, new[] { 350, 320, 1 }, new[] { 240, 320, 0 }, new[] { 350, 320, 1 }, new[] { 240, 320, 0 } })
                 {
                     ResizeResponsive(dialog, size[0], size[1]);
                     CheckResponsiveAppearance(dialog, size[2]);
