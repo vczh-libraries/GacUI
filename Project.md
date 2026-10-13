@@ -51,9 +51,12 @@ always fix the root cause.
 - `REPO-ROOT/Source/UnitTestUtilities/SnapshotViewer/Source`
 - `REPO-ROOT/Source/Compiler/InstanceQuery/Generated`
 - `REPO-ROOT/Source/Compiler/RemoteProtocol/Generated`
+<!-- complete the list to include ./Tools generated files and delete this comment -->
 
 Files in `REPO-ROOT/Import` and `REPO-ROOT/Release` (recursively) are also not allowed to modify.
 These files are prepared for foreign dependencies.
+
+When files here are modified, they should be included in a dedicated commit, aka manually udpated files and generated files should be included in two different commits.
 
 ### Source/Utilities/AutomationService
 
@@ -299,6 +302,10 @@ RVM RPC uses the exact logical channels `ViewModelChannel` and `ViewModelReadyCh
 - `RemotingTest_Core`: `RemotingTest_Core.vcxproj`.
 - `RemotingTest_RvmHost`: `RemotingTest_RvmHost/vmake`.
 - `UnitTest`: `UnitTest.vcxproj`.
+<!-- complete the list -->
+
+`REPO-ROOT/Tools` stores linux configurations for:
+<!-- enumerate Tools folder configurations -->
 
 `Metadata_UpdateProtocol` is not included. If it is needed, create it and remove this line.
 
@@ -309,6 +316,8 @@ Unlike Windows, building have to be done in each folder separately.
 The Unix unit-test entry point uses the environment locale for wide console output, including Unicode test names. Run it with an installed UTF-8 locale; on macOS, use `LC_ALL=en_US.UTF-8 ./Bin/UnitTest /C` if the inherited locale is unavailable.
 
 `CppTest_Rvm` is Windows-only in this solution. The portable RVM demo is `RemotingTest_Core /RVMT` with `/MiniHttp` for renderers; its host is either manually started with `/MiniHttp` or auto-launched with `/Cli:<path>`. Linux/macOS stdio code is supplied by the imported `VlppOS.Linux.cpp`.
+
+It is expected if `makefile` and `vmake.txt` is changed due to build any project, they should be included in the commit for manually updated files, do not revert them.
 
 ## WebAssembly
 
