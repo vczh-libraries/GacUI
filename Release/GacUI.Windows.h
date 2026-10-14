@@ -2429,6 +2429,7 @@ namespace vl::presentation::windows
 	extern Size UiaSpatialGrid(controls::GuiControl* control);
 	extern bool UiaSpatialColumnMajor(controls::GuiControl* control);
 	extern GridPos UiaGridPosition(WindowsUIAutomationNode* node);
+	extern bool UiaScrollable(controls::GuiScroll* scroll);
 
 	class WindowsUIAutomationDispatcher : public Object
 	{

@@ -25689,10 +25689,10 @@ GuiVirtualRepeatCompositionBase
 			void GuiVirtualRepeatCompositionBase::Layout_ResetLayout()
 			{
 				viewBounds = Rect({ 0,0 }, { 0,0 });
-				ViewLocationChanged.Execute(GuiEventArgs(this));
 				OnResetViewLocation();
 				itemSourceUpdated = true;
 				Layout_InvalidateItemSizeCache();
+				ViewLocationChanged.Execute(GuiEventArgs(this));
 				AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
 			}
 
@@ -27648,6 +27648,17 @@ GuiResponsiveStackComposition
 GuiResponsiveGroupComposition
 ***********************************************************************/
 
+			void GuiResponsiveGroupComposition::UpdateViewSize()
+			{
+				if (viewSizes.Count() == 0) return;
+				vint index = currentLevel < viewSizes.Count() ? currentLevel : viewSizes.Count() - 1;
+				vint size = viewSizes[index] + (currentLevel - index);
+				auto preferred = GetPreferredMinSize();
+				if (((vint)direction & (vint)ResponsiveDirection::Horizontal) != 0) preferred.x = size;
+				if (((vint)direction & (vint)ResponsiveDirection::Vertical) != 0) preferred.y = size;
+				SetPreferredMinSize(preferred);
+			}
+
 			bool GuiResponsiveGroupComposition::CalculateLevelCount()
 			{
 				vint old = levelCount;
@@ -27665,6 +27676,8 @@ GuiResponsiveGroupComposition
 						})
 						.Max();
 				}
+
+				if (levelCount < viewSizes.Count()) levelCount = viewSizes.Count();
 
 				if (old != levelCount)
 				{
@@ -27692,6 +27705,9 @@ GuiResponsiveGroupComposition
 						.Max();
 				}
 
+				if (currentLevel < viewSizeLevel) currentLevel = viewSizeLevel;
+
+				UpdateViewSize();
 				if (old != currentLevel)
 				{
 					CurrentLevelChanged.Execute(GuiEventArgs(this));
@@ -27722,6 +27738,24 @@ GuiResponsiveGroupComposition
 				return levelCount;
 			}
 
+			const Array<vint>& GuiResponsiveGroupComposition::GetViewSizes()
+			{
+				return viewSizes;
+			}
+
+			void GuiResponsiveGroupComposition::SetViewSizes(const Array<vint>& value)
+			{
+				CopyFrom(viewSizes, value);
+				viewSizeLevel = viewSizes.Count() == 0 ? 0 : viewSizes.Count() - 1;
+				OnResponsiveChildLevelUpdated();
+			}
+
+			Size GuiResponsiveGroupComposition::Layout_CalculateMinSize()
+			{
+				UpdateViewSize();
+				return GuiBoundsComposition::Layout_CalculateMinSize();
+			}
+
 			vint GuiResponsiveGroupComposition::GetCurrentLevel()
 			{
 				return currentLevel;
@@ -27731,6 +27765,7 @@ GuiResponsiveGroupComposition
 			{
 				DEFINE_AVAILABLE;
 				vint level = currentLevel;
+				if (viewSizeLevel >= level && viewSizeLevel > 0) viewSizeLevel--;
 				for (auto child : availables)
 				{
 					if (child->GetCurrentLevel() >= level)
@@ -27751,6 +27786,10 @@ GuiResponsiveGroupComposition
 			{
 				DEFINE_AVAILABLE;
 				vint level = currentLevel;
+				if (viewSizes.Count() > 0)
+				{
+					viewSizeLevel = level + 1 < viewSizes.Count() ? level + 1 : viewSizes.Count() - 1;
+				}
 				for (auto child : availables)
 				{
 					while (child->GetCurrentLevel() <= level)
@@ -46618,9 +46657,14 @@ namespace vl::presentation::remote_renderer
 				}
 			}
 		}
+		else
+		{
+			element->SetImage(nullptr);
+		}
 #undef ERROR_MESSAGE_PREFIX
 	}
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTERENDERER\GUIREMOTERENDERERSINGLE_RENDERING_LABEL.CPP
