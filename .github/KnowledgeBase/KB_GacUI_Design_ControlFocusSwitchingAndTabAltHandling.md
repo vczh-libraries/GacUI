@@ -148,7 +148,7 @@ ALT action collection from controls (`IGuiAltActionHost::CollectAltActionsFromCo
 
 #### Activation
 
-Pressing ALT (KEY_MENU) without CTRL, SHIFT, or the OS Super key:
+Pressing ALT (`KEY_MENU`, `KEY_LMENU`, or `KEY_RMENU`) without CTRL, SHIFT, or the OS Super key:
 
 - `GuiAltActionManager::KeyDown` checks if control host implements `IGuiAltActionHost`
 - Calls `EnterAltHost` to enter ALT mode

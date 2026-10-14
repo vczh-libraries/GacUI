@@ -369,7 +369,7 @@ GuiAltActionManager
 					}
 					else
 					{
-						if (info.code == VKEY::KEY_MENU)
+						if (info.code == VKEY::KEY_MENU || info.code == VKEY::KEY_LMENU || info.code == VKEY::KEY_RMENU)
 						{
 							if (auto altHost = controlHost->QueryTypedService<IGuiAltActionHost>())
 							{

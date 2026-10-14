@@ -103,7 +103,8 @@ TEST_FILE
 
 		auto pressKey = [&](VKEY key)
 		{
-			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
+			auto alt = key == VKEY::KEY_MENU || key == VKEY::KEY_LMENU || key == VKEY::KEY_RMENU;
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, false, alt, key));
 			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
 		};
 
@@ -117,33 +118,48 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			pressKey(VKEY::KEY_MENU);
-			AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
-			pressKey(VKEY::KEY_BACK);
-			AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
-			pressKey(VKEY::KEY_ESCAPE);
-			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
-			AssertEventLogs(eventLogs);
+			const VKEY altKeys[] = { VKEY::KEY_MENU, VKEY::KEY_LMENU, VKEY::KEY_RMENU };
+			for (auto altKey : altKeys)
+			{
+				for (vint modifiers = 1; modifiers < 8; modifiers++)
+				{
+					auto ctrl = (modifiers & 1) != 0;
+					auto shift = (modifiers & 2) != 0;
+					auto osSuper = (modifiers & 4) != 0;
+					protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(ctrl, shift, true, osSuper, altKey));
+					protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(ctrl, shift, false, osSuper, altKey));
+					AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+					AssertEventLogs(eventLogs);
+				}
 
-			pressKey(VKEY::KEY_MENU);
-			AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
-			pressKey(VKEY::KEY_A);
-			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
-			AssertEventLogs(eventLogs, L"A");
+				pressKey(altKey);
+				AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
+				pressKey(VKEY::KEY_BACK);
+				AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
+				pressKey(VKEY::KEY_ESCAPE);
+				AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+				AssertEventLogs(eventLogs);
 
-			pressKey(VKEY::KEY_MENU);
-			AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
-			pressKey(VKEY::KEY_B);
-			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
-			AssertEventLogs(eventLogs, L"B");
+				pressKey(altKey);
+				AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
+				pressKey(VKEY::KEY_A);
+				AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+				AssertEventLogs(eventLogs, L"A");
 
-			pressKey(VKEY::KEY_MENU);
-			AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
-			pressKey(VKEY::KEY_D);
-			AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
-			pressKey(VKEY::KEY_C);
-			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
-			AssertEventLogs(eventLogs, L"C");
+				pressKey(altKey);
+				AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
+				pressKey(VKEY::KEY_B);
+				AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+				AssertEventLogs(eventLogs, L"B");
+
+				pressKey(altKey);
+				AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
+				pressKey(VKEY::KEY_D);
+				AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
+				pressKey(VKEY::KEY_C);
+				AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+				AssertEventLogs(eventLogs, L"C");
+			}
 		});
 
 		protocol.OnNextFrame([&]()

@@ -488,7 +488,7 @@ GuiGraphicsHost
 			void GuiGraphicsHost::KeyUp(const NativeWindowKeyInfo& info)
 			{
 				if (altActionManager->KeyUp(info)) { return; }
-				if (!info.ctrl && !info.shift && !info.osSuper && info.code == VKEY::KEY_MENU && hostRecord.nativeWindow)
+				if (!info.ctrl && !info.shift && !info.osSuper && (info.code == VKEY::KEY_MENU || info.code == VKEY::KEY_LMENU || info.code == VKEY::KEY_RMENU) && hostRecord.nativeWindow)
 				{
 					hostRecord.nativeWindow->SupressAlt();
 				}

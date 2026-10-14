@@ -2,6 +2,10 @@
 
 ## Shared
 
+- GacJS normalizes each nonzero browser wheel delta to one notch; a large delta does not jump a virtual list to its end. Traverse with overlapping visible rows and stop on an observed edge item, retaining an explicit safety bound. Fixed wheel counts can end early for taller detailed rows, and offscreen selected rows are legitimately absent from the current control tree. When collecting both Core Controls and browser DOM, require the edge item in both observations before ending the collection: the DOM can advance after the Core snapshot was read.
+
+- After a GacJS checkout gains a workspace package, verify its local dependency link before diagnosing downstream unsafe-type lint errors. The remote-protocol-wasm package compiled successfully but was absent from node_modules; running `yarn install --frozen-lockfile` from `<GacJS repo>/Gaclib` restored the workspace link and resolved the errors without a source change. Keep temporary verification scripts outside package lint roots, or under ignored build output after the build completes.
+
 - GacJS document text can be inside spans, so a helper restricted to childless `div` elements can miss correctly rendered editor text. Locate the Search and document containers from fresh geometry and assert each container's exact text, including bracket input and retained markers.
 
 - Audit shortcut checks separately before and after renderer replacement. A repeated mouse payload or retained editor marker does not prove that replacement-window shortcut activation was repeated; require fresh canonical labels and the exact Ctrl+Q dialog on the replacement renderer.
@@ -30,6 +34,8 @@
 - Audit generated snapshot differences before preserving baselines: resolve element references and compare rendered content, distinguish regenerated identities from layout changes, and inspect current-day date-picker highlights. Keep real changes and new regression snapshots. GacJS snapshot imports normalize CRLF to LF to preserve its established checkout format; a second codegen run must remain clean.
 
 ## Windows
+
+- When a spawned CLI test expects exit code 1, track watchdog expiry separately. Forced Windows termination can report the same exit code with no signal, so matching that code and earlier diagnostics does not prove the CLI exited itself. Fail explicitly on watchdog expiry and wait for the owned child to close after forced cleanup.
 
 - Put file-picker fixtures under a shallow directory with small ancestor listings. A Win32 Debug run under Temp spent a long time synchronously applying 6,126 ancestor folders to the tree; CDB showed active insertion/notification work, and queued Cancel eventually completed. Waiting only for a fixed timeout incorrectly suggested a deadlock. Preserve that workload observation and use a controlled fixture path for functional selection/validation checks.
 
