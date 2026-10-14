@@ -342,6 +342,7 @@ TEST_FILE
 					auto container = parent->GetContainerComposition();
 					auto childFlag = child->GetDisposedFlag();
 					auto datePicker = new GuiDatePicker(theme::ThemeName::DatePicker);
+					datePicker->SetDate(DateTime::FromDateTime(2026, 1, 1));
 					main.GetContainerComposition()->AddChild(datePicker->GetBoundsComposition());
 					datePicker->GetControlTemplateObject();
 					collections::List<Ptr<GuiDisposedFlag>> oldWindows;
