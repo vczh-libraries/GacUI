@@ -443,9 +443,9 @@ TEST_FILE
 			for (auto save : { false,true })
 			{
 				Ptr<FileSystemMock> fsMock;
-				auto initialFileName = save ? WString(L"new.txt") : FilePath(L"/A/a.txt").GetFullPath();
 				GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 				{
+					auto initialFileName = save ? WString(L"new.txt") : FilePath(L"/A/a.txt").GetFullPath();
 					protocol->OnNextIdleFrame(L"Ready", [=]()
 					{
 						auto window = GetApplication()->GetMainWindow();
