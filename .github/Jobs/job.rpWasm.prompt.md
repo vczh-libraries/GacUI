@@ -23,7 +23,9 @@ Deploy `Bin/app.mjs`, `Bin/app.wasm` and `Bin/app.worker.js` for each app; all g
 
 ## Verification
 
-Maintain current results in `.github/TaskLogs/Copilot_Investigate.md` with one row for FCT, RPT and RVMT. Record failures and fixes as they occur. Run `npm run test-wasm` from the running entry package for the browser regression suite.
+Maintain the current test card in `<GacUI repo>/.github/TaskLogs/Copilot_Investigate.md` with one row for FCT, RPT and RVMT. Record progress, actual observations, failures, fixes, evidence and platform limitations there as they occur. SOP and setup documents are reusable instructions and blank samples: do not fill their sample cells or append run-specific results to them. Run `npm run test-wasm` from the running entry package for the browser regression suite.
+
+This job covers only the three browser Wasm apps. TuiControlTest and the terminal provider tests are native-only and are outside this matrix. If native TUI verification is also requested on Linux, follow `<GacUI repo>/.github/Jobs/job.rpXPlat.prompt.md`: copy the applicable `### Test Matrix Card` sample from `<GacUI repo>/.github/Jobs/DebugTuiControlTestSop.md` into `<wGac repo>/TestMatrix_Tui.md` and record all TUI test items, results and terminal comparisons there. Never record them in the SOP or count Wasm browser results as terminal coverage.
 
 - FCT: both lists, search/rich editors, tab-state retention, shortcuts, mouse input, palette refresh and Force Exit.
 - RPT: Home button, DataGrid, document dialog, shortcuts, mouse input, confirmed File-menu close and the exact Core-authored fatal error.

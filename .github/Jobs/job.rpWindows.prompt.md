@@ -4,7 +4,7 @@
 
 - Makesure test apps build and work as expected.
 - `DebugRemoteProtocolWithNativeRenderer.md` and `DebugRemoteProtocolWithGacJS.md` have details of verification.
-- `CppTest_Tui` uses [DebugTuiControlTestSop.md](DebugTuiControlTestSop.md) for its separate Windows Terminal page/function coverage and verification record. It starts no automation endpoint and has no transport or renderer replacement matrix.
+- `CppTest_Tui` uses `<GacUI repo>/.github/Jobs/DebugTuiControlTestSop.md` for its separate Windows Terminal page/function procedures and blank test matrix card sample. It starts no automation endpoint and has no transport or renderer replacement matrix.
 - You must fix any issue you see during verification.
   - DO NOT preventively fix any issue, a fixing must be applied only when an issue is observed during verification.
   - For unstable issues, try to run that specific verification item up to 5 times, it counts an issue when you see more than one failures.
@@ -12,10 +12,13 @@
 ## Maintain a Test Matrix Card
 
 You need to maintain test card in:
-- `<repo-root>/.github/TaskLogs/TestMatrix_NativeRenderer.md` for `DebugRemoteProtocolWithNativeRenderer.md`
-- `<repo-root>/.github/TaskLogs/TestMatrix_GacJS.md` for `DebugRemoteProtocolWithGacJS.md`
+- `<GacUI repo>/.github/TaskLogs/TestMatrix_NativeRenderer.md` for `<GacUI repo>/.github/Jobs/DebugRemoteProtocolWithNativeRenderer.md`
+- `<GacUI repo>/.github/TaskLogs/TestMatrix_GacJS.md` for `<GacUI repo>/.github/Jobs/DebugRemoteProtocolWithGacJS.md`
+- `<GacUI repo>/.github/TaskLogs/TestMatrix_Tui.md` for `<GacUI repo>/.github/Jobs/DebugTuiControlTestSop.md`
 
 If these files already exist, delete them, and recreate them following the `### Test Matrix Card` section in each document.
+Copy the complete applicable TUI sample into its declared card, including each SOP test section, build/sync and unit-test rows. Keep TUI coverage separate from the remote application/transport matrix. Record native input separately from replay, and include exact observations, failures, fixes, evidence and unavailable terminal/desktop checks in that TUI card.
+All run-specific records belong only in the declared test card files. The SOP and setup documents contain reusable procedures and blank samples; do not fill their sample cells or append verification results, terminal comparisons or run histories to them.
 During verification, test matrix cards should be updated in time:
 - When a test item starts, succeeds, fails, fixed, the file need to be updated immediately and saved, but no need to commit immediately, a commit is only required after all test items are done.
 - I will read the file to check the progress of your verification.
@@ -43,7 +46,7 @@ Local test apps (aka remote protocol not involved) should also be verified, incl
 - `CppTest` (normal mode) and `CppTest_Metaonly` (hosted mode):
   - `DebugRemoteProtocolSop.md` already covers `FullControlTest` verifications, follow the instructions there.
 - `CppTest_Tui`
-  - Follow `DebugTuiControlTestSop.md`.
+  - Follow `<GacUI repo>/.github/Jobs/DebugTuiControlTestSop.md` and record every TUI test item in `<GacUI repo>/.github/TaskLogs/TestMatrix_Tui.md`.
 UI Automation related tests are not needed here.
 Succeeded local test apps verification could be considered as a baseline, when issues are seen in remote protocol tests, you are much easier to trace their root cause.
 

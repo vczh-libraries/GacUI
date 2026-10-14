@@ -1,28 +1,30 @@
 # TuiControlTest Terminal SOP
 
-Run `CppTest_Tui` in Windows Terminal after building `Test/GacUISrc/GacUISrc.sln`. The title is `Complete Control Showcase (TUI)`. Begin at 120 columns by 40 rows; repeat layout checks at 80 by 25 and after restoring the larger viewport. One GacUI pixel is one terminal cell.
+This document contains reusable test procedures and blank card samples only. Copy the sample under `### Test Matrix Card` into the result file declared by the invoking job. Record all progress, observations, failures, fixes, limitations and terminal comparisons in that file; never fill the samples or append run-specific data to this SOP.
 
-From `Test/GacUISrc` in Windows Terminal, run `& C:\Code\VczhLibraries\GacUI\.github\Scripts\copilotExecute.ps1 -Mode CLI -Executable CppTest_Tui -Configuration Debug -Platform x64 -Interactive`. Adjust the absolute repository path for another checkout. The interactive flag preserves native console handles. This app has no HTTP automation endpoint, Core process, renderer process, or renderer-replacement procedure. Terminal font and color settings belong to Windows Terminal.
+Run `CppTest_Tui` in Windows Terminal after building `<GacUI repo>/Test/GacUISrc/GacUISrc.sln`. The title is `Complete Control Showcase (TUI)`. Begin at 120 columns by 40 rows; repeat layout checks at 80 by 25 and after restoring the larger viewport. One GacUI pixel is one terminal cell.
 
-When computer use cannot operate Windows Terminal, continue all feasible checks in an interactive CLI or owned Windows pseudoconsole using the same wrapper. Native console-record replay, live cell-buffer capture and pseudoconsole resizing can verify application behavior and layout. Keep these results separate from physical input and displayed font/color/profile checks, and skip only the desktop-dependent observations. Follow `Running-CLI.md` and the Windows notes in `Learning_RpJob.md` for launcher and evidence requirements.
+From `<GacUI repo>/Test/GacUISrc` in Windows Terminal, resolve `<GacUI repo>/.github/Scripts/copilotExecute.ps1` to the checkout's absolute path and invoke it with `&` and arguments `-Mode CLI -Executable CppTest_Tui -Configuration Debug -Platform x64 -Interactive`. The interactive flag preserves native console handles. This app has no HTTP automation endpoint, Core process, renderer process, or renderer-replacement procedure. Terminal font and color settings belong to Windows Terminal.
+
+When computer use cannot operate Windows Terminal, continue all feasible checks in an interactive CLI or owned Windows pseudoconsole using the same wrapper. Native console-record replay, live cell-buffer capture and pseudoconsole resizing can verify application behavior and layout. Keep these results separate from physical input and displayed font/color/profile checks, and skip only the desktop-dependent observations. Follow `<GacUI repo>/.github/Guidelines/Running-CLI.md` and the Windows notes in `<GacUI repo>/.github/Learning/Learning_RpJob.md` for launcher and evidence requirements.
 
 ## Linux and macOS launch
 
-On Linux use sibling `wGac`; on macOS use sibling `iGac`. Refresh the owning upstream releases, then run `./import.sh`, `./syncProj.sh`, and `./build.sh` from that platform repository. Start `./test.sh --app:tui` in a foreground interactive terminal. The target is `Test_TuiControlTest` under `WGacTuiControlTest` or `MacTuiControlTest`. Keep stdin/stdout attached; `--unblock`, `--hosted`, and `--port` do not apply. Complete the same page checks below and maintain `TestMatrix_Tui.md` in the platform repository.
+On Linux use sibling `wGac`; on macOS use sibling `iGac`. Refresh the owning upstream releases, then run `./import.sh`, `./syncProj.sh`, and `./build.sh` from that platform repository. Start `./test.sh --app:tui` in a foreground interactive terminal. The target is `Test_TuiControlTest` under `WGacTuiControlTest` or `MacTuiControlTest`. Keep stdin/stdout attached; `--unblock`, `--hosted`, and `--port` do not apply. Complete the same page checks below and maintain `<wGac repo>/TestMatrix_Tui.md` on Linux or `<iGac repo>/TestMatrix_Tui.md` on macOS, as declared by the cross-platform job.
 
-On both Linux and macOS, always try the legacy terminal first: use the desktop's ordinary legacy terminal on Linux and Apple Terminal.app on macOS. Record its name, version and relevant profile settings. Only after a check fails there, retry that check in Kitty with the same application build, configuration and inputs. Do not replace a legacy-terminal failure with a Kitty pass. If only Kitty works, write the exact failure and successful retry in the terminal comparison record card below and in the platform's `TestMatrix_Tui.md`. If the legacy terminal or Kitty cannot be operated, record that limitation explicitly; do not infer a result.
+On both Linux and macOS, always try the legacy terminal first: use the desktop's ordinary legacy terminal on Linux and Apple Terminal.app on macOS. Record its name, version and relevant profile settings. Only after a check fails there, retry that check in Kitty with the same application build, configuration and inputs. Do not replace a legacy-terminal failure with a Kitty pass. Copy the blank terminal comparison sample below into the platform's declared TUI card and record the exact failure and retry there. If only Kitty works, state that explicitly while preserving the legacy failure. If the legacy terminal or Kitty cannot be operated, record that limitation explicitly; do not infer a result.
 
-Use the host terminal wherever the shared procedures say Windows Terminal, and native paths for file fixtures. The OS modifier label is `Super` on Linux and `Command` on macOS. Validate shortcut labels using those names. The shared showcase currently retains the literal `Win` spelling in its success-message text on all platforms. The Windows-specific console-record and CDB evidence below remains historical Windows evidence.
+Use the host terminal wherever the shared procedures say Windows Terminal, and native paths for file fixtures. The OS modifier label is `Super` on Linux and `Command` on macOS. Validate shortcut labels using those names. The shared showcase currently retains the literal `Win` spelling in its success-message text on all platforms.
 
 POSIX terminals supporting the Kitty keyboard protocol can report Super independently of Alt. The backend requests disambiguated keys and restores the prior keyboard mode on exit; legacy terminal Meta remains Alt. SGR mouse input has no Super bit. Disambiguation mode does not report standalone modifier keys, so the current POSIX adapter cannot show access-key overlays from Alt alone; use mouse/arrow menu navigation and record that limitation. The existing POSIX locale implementation also keeps en-US date/number formatting while translated resource strings follow the selected locale. Record these unavailable paths explicitly. Injected CSI/SGR bytes prove decoding and application behavior, while real terminal-generated input is required to establish host delivery. A passed decoder test does not establish macOS verification.
 
 On Linux, wGac now registers global shortcuts through the desktop GlobalShortcuts portal, available on GNOME 48 and later, including Ubuntu 26.04 / GNOME 50. Launch through `<wGac repo>/test.sh --app:tui` to supply the test application's desktop identity. Complete GNOME's **Add Keyboard Shortcuts** consent outside the TUI, then press **Ctrl+Alt+Super+Shift+F8** while a different desktop window has focus. Return to the TUI and require its global-shortcut message. Test denial/cancellation and closing the app without leaving a registration behind. Registration, portal activation and the TUI message are separate observations; a positive registration ID alone is not a pass. The TUI owner-thread pump dispatches portal events even when the terminal is unfocused. Record unavailable portals or desktop consent access explicitly.
 
-Ubuntu 26.04.1's GNOME Terminal 3.58.0 / VTE 0.84.0 still encodes local Ctrl+Alt+Super+Q as `1b 11`, the same as Ctrl+Alt+Q. Preserve the legacy failure and retry in Kitty when available. A working portal global shortcut does not establish local Super support, SGR mouse Super, or standalone Alt overlays.
+Check whether the legacy terminal distinguishes local Ctrl+Alt+Super+Q from Ctrl+Alt+Q. If it drops Super or sends identical bytes, preserve that failure in the job's TUI card and retry in Kitty when available. A working portal global shortcut does not establish local Super support, SGR mouse Super, or standalone Alt overlays.
 
 On macOS, `Mac/TUI/TuiCocoaController` supplies Cocoa clipboard/image services and Carbon global registration to the shared controller. The plain terminal executable pumps Cocoa events and clipboard changes on the TUI owner thread without opening or activating a Cocoa window. Verify external text using another application or `pbcopy`/`pbpaste`. Carbon registration and actual global chord delivery are separate checks; a locked desktop prevents native activation and displayed appearance verification. Record terminal-generated test keys and raw replay separately from physical input.
 
-Known macOS limitation: local TUI shortcuts involving Alt/Command do not work correctly in the tested legacy Terminal.app profile; use Kitty for these shortcuts. Terminal.app can drop Alt or consume an entire Command chord before the TUI receives input. Carbon-registered global shortcuts still work because they bypass terminal input. Test local and global shortcuts separately, preserve the legacy failure in the record card, and retry local failures in Kitty. Other terminals with compatible extended keyboard-protocol support may also work; do not infer support without testing. Linux uses the portal workflow above instead of Carbon.
+On macOS, check whether the legacy Terminal.app profile delivers local Alt/Command shortcuts. A profile can drop Alt or consume a Command chord before the TUI receives input. Carbon-registered global shortcuts bypass terminal input, so verify their registration and activation independently. Preserve any legacy failure in the job's TUI card and retry it in Kitty. Other terminals with compatible extended keyboard-protocol support may also work; do not infer support without testing. Linux uses the portal workflow above instead of Carbon.
 
 On Linux, the TUI clipboard uses an unmapped X11 selection owner because a separate Wayland client cannot borrow the terminal's focus serial. With `DISPLAY` available, verify text with another desktop app through X11/XWayland. Without an X display, document the process-local clipboard limitation and use the terminal's ordinary paste action for external text. Rich document/image clipboard objects are retained inside the app; external transfer is UTF-8 text. Keep the app running while another client reads its selection.
 
@@ -30,7 +32,7 @@ On Linux, the TUI clipboard uses an unmapped X11 selection owner because a separ
 
 Locate the current visible control after every transition. Perform one action, inspect its immediate result, and then continue. Exercise mouse and keyboard access and inspect focus, selection and checked state separately. Leave each page and return to verify retained state. Use fresh runs wherever a procedure specifies exact initial values. Check CJK and supplementary text at both viewport sizes; a width-two scalar must not leave half a glyph when clipped or overwritten.
 
-Keep these baseline limitations explicit: the four private-format/RTF/HTML callbacks show explanatory dialogs and do not persist documents. ReadOnlyCheckBox, DereferenceLinks, NetworkButton and AddToRecent remain inert fake-file-dialog options. The backend may not expose OS Super or all five mouse buttons. Do not record an unobservable chord or button as passed.
+Keep these baseline limitations explicit: the four private-format/RTF/HTML callbacks show explanatory dialogs and do not persist documents. ReadOnlyCheckBox, DereferenceLinks, NetworkButton and AddToRecent remain inert fake-file-dialog options. The shared fake color-dialog service does not implement a custom-color palette; verify its current-color/accept/cancel behavior without claiming custom-color persistence. The backend may not expose OS Super or all five mouse buttons. Do not record an unobservable chord or button as passed.
 
 ## Startup, platform services and teardown
 
@@ -252,191 +254,109 @@ The `Exit` tab in `Resource.xml`. Preserve the four vertically arranged, exactly
 
 Adapt FCT `Close the Application`. With `Cancel Hide/Close requests` selected, click each original button and require the app to remain responsive, its invocation/query readouts to advance once and its ready count to remain zero. With cancellation cleared, test each button on a fresh run: one WindowClosing and one WindowReadyToClose must precede normal loop exit. Queued operations must reach the same path. Include canceled-then-accepted retry, reentrant close and listener removal in provider regressions. On separate fresh runs, use each Stop button and require normal teardown and restored terminal contents, cursor, colors, input mode, and usable shell input. Repeat after opening/closing hosted dialogs and changing pages. Do not substitute terminal-tab close, force termination, or a remote renderer's Force Exit for normal application stopping.
 
-## Linux/macOS terminal comparison record card
+## Packaged tutorial checks
 
-Append a completed card here for each legacy-terminal failure that prompts a Kitty retry, and retain the corresponding evidence in the platform's `TestMatrix_Tui.md`. If only Kitty works, the card must say so explicitly and preserve the legacy failure details. Identify physical keyboard/mouse input, generated native events, terminal test-key commands and raw byte replay separately; record the input method for each result.
+When packaged tutorial verification is requested, run from `<Release repo>/Tutorial/GacUI_ControlTemplate/TuiSkin` so `<Release repo>/Tutorial/GacUI_ControlTemplate/UIRes/TuiSkin.bin` resolves correctly. Resolve `<Release repo>/.github/Scripts/copilotExecute.ps1` to the checkout's absolute path and invoke it with `&` and arguments `-Mode CLI -Executable TuiSkin -Configuration Debug -Platform x64 -Interactive`.
+
+The wrapper must support `-Interactive` and discover `<Release repo>/Tutorial/GacUI_ControlTemplate/GacUI_ControlTemplate.sln` in a parent directory; its owning templates are in `<Tools repo>/Copilot/Scripts`. Keep console handles inherited and application output unredirected. Repeat the startup, resize, document/dialog and shutdown checks above against the packaged executable and binary resource, recording results in the invoking job's TUI card.
+
+## Test Matrix
+
+Use one independent terminal matrix for the current platform. It does not multiply the remote application/transport matrix. The destination is declared by the invoking job:
+
+- Windows: `<GacUI repo>/.github/TaskLogs/TestMatrix_Tui.md`.
+- Linux: `<wGac repo>/TestMatrix_Tui.md`.
+- macOS: `<iGac repo>/TestMatrix_Tui.md`.
+
+The Wasm job covers browser FCT/RPT/RVMT only. Any separately requested native Linux TUI verification uses the cross-platform job and its TUI card.
+
+### Test Matrix Card
+
+Copy this sample into the declared result file. Keep every applicable test row and start with an empty `1st` column. Keep explicitly excluded rows with blank results and explain exclusions in `## Observations and Limitations`. Build/sync, unit-test and packaged-tutorial rows do not add verification requirements beyond the invoking job; leave them blank and record the reason when they are outside its scope. Every behavior row covers the corresponding section above, with `Rules for every operation` applied throughout.
+
+```markdown
+# Test Matrix Card <DATE-TIME>
+
+## Environment
+
+| Field | Value |
+| --- | --- |
+| Platform / application / commit / build configuration |  |
+| Terminal name / version / profile / viewport sizes |  |
+| Input methods / desktop availability |  |
+
+## Test Matrix
+
+| Test Item | 1st |
+| --- | --- |
+| Build / resource generation / import / sync |  |
+| Unit tests |  |
+| Platform launch and terminal/input capabilities |  |
+| Startup, platform services and teardown |  |
+| Follow-up regression checks |  |
+| List / TextList |  |
+| List / ListView |  |
+| List / TreeView |  |
+| List / BindableDataGrid |  |
+| Refresh List / TextList |  |
+| Refresh List / BindableTextList |  |
+| Refresh List / ListView |  |
+| Refresh List / BindableListView |  |
+| Refresh List / TreeView |  |
+| Refresh List / BindableTreeView |  |
+| Refresh List / BindableDataGrid |  |
+| Layout / Repeat / RepeatStack |  |
+| Layout / Repeat / RepeatFlow |  |
+| Layout / Repeat / SharedSize (RepeatFlow) |  |
+| Layout / Repeat / SharedSize (TextList) |  |
+| Layout / Responsive |  |
+| Control / Document Editor (Toolstrip) |  |
+| Control / TextBox / TextBox |  |
+| Control / TextBox / TextBox (No Tab) |  |
+| Control / TextBox / Document |  |
+| Control / TextBox / Document (No Tab) |  |
+| Control / Embedded Controls |  |
+| Misc / Localization |  |
+| Compact dialog and form layout checks |  |
+| Misc / Dialogs / MessageDialog |  |
+| Misc / Dialogs / ColorDialog |  |
+| Misc / Dialogs / FontDialog |  |
+| Misc / Dialogs / Open/Save FileDialog |  |
+| Misc / DatePicker |  |
+| Window Manager |  |
+| Live palette and clipping regression |  |
+| Exit |  |
+| Packaged tutorial checks (when requested) |  |
+| Linux/macOS legacy-terminal and Kitty comparison (when applicable) |  |
+
+## Observations and Limitations
+
+## Issues Found and Fix
+
+## Terminal Comparisons
+```
+
+- Update the copied card immediately when an item starts, passes, fails or is fixed. Use `<start-time> (running)`, `<start-time>`, `X`, or `<start-time> (fixed)` respectively. Leave unexecuted results blank.
+- A row passes only when all applicable operations have been observed. Record partial coverage, excluded operations and unavailable checks explicitly in `## Observations and Limitations`; a build or deterministic replay does not establish physical input or displayed appearance.
+- Include the page/function, exact observation and evidence location. Distinguish physical keyboard/mouse input, generated native events, terminal test-key commands, raw byte/console-record replay, cell-buffer capture and displayed font/cursor/color observations.
+- Log each failure and its resolution in `## Issues Found and Fix`, identifying the test item and attempt. Preserve the failure when a different terminal succeeds.
+- If the matrix restarts within the same request, add `2nd`, `3rd`, etc. columns only when needed. Preserve earlier attempt results and add separate issue entries for each failed attempt.
+- Put all completed terminal comparisons in `## Terminal Comparisons` of the same result file, using the sample below. Do not complete either sample inside this SOP.
+
+### Linux/macOS terminal comparison sample
+
+Copy a card into the result file for each legacy-terminal failure that prompts a Kitty retry. Identify the input method for each result and keep unavailable verification explicit.
+
+```markdown
+### Terminal comparison <CHECK / ATTEMPT>
 
 | Field | Required evidence |
 | --- | --- |
-| Host / build / configuration | Date, Linux/macOS version, application commit/build, viewport and relevant adapter options. |
-| Legacy terminal attempted first | Terminal name/version, profile, Option/Meta settings and relevant shortcut bindings. |
-| Operation and expected result | Page/control, exact chord or action, modifier press/release order and expected response. |
-| Legacy result | Exact observed behavior, delivered bytes/modifiers if captured, alert or interception, and input method. |
-| Kitty retry after failure | Kitty version/settings, the same operation/build/configuration, input method and exact observed result. |
-| Conclusion | Works in both, fails in both, only Kitty works, or verification unavailable; scope the conclusion to the checks actually performed. |
-| Evidence / cleanup | Capture/log locations, remaining physical-input limits and process/terminal cleanup. |
-
-### Linux terminal comparison, 2026-10-14
-
-| Field | Observed result |
-| --- | --- |
-| Host / build | Ubuntu 26.04.1 / GNOME Wayland; synchronized wGac TuiControlTest, 120x40. Official import, sync and build passed using the documented prerequisites in a disposable Ubuntu container. |
-| Legacy terminal attempted first | GNOME Terminal 3.58.0 / VTE 0.84.0, default profile. Mutter-generated Ctrl+Q delivered `11` and the exact local dialog. Ctrl+Alt+Super+Q delivered `1b 11`, losing Super, and did not open its dialog. |
-| Kitty retry | Kitty 0.45.0 with `--config NONE`, the same binary and viewport. The same generated chord delivered `1b 5b 31 31 33 3b 31 35 75` and exactly `You pressed Ctrl+Alt+Win+Q!`. Keys were pressed in chord order and released in reverse order. |
-| Conclusion | Only Kitty delivered this local Super chord in the tested profiles. These are compositor-generated events, separate from physical hardware input and PTY byte replay. |
-| Global shortcut | The real GNOME portal delivered the TUI F8 chord while another owned terminal had focus, including concurrent native CppTest with its distinct global Q chord. This does not establish local Super or SGR mouse Super support. |
-| Restoration / evidence | Kitty and six fresh GNOME runs exited normally with full child-PTY termios restored. The fresh runs accepted shell input afterward. Current page coverage, portal-denial regression and platform limits are recorded in `<wGac repo>/TestMatrix_Tui.md`. Physical input and displayed font/color fidelity remain unverified. |
-
-### Linux native Super comparison, 2026-09-10
-
-| Field | Evidence |
-| --- | --- |
-| Host / build | Ubuntu 24.04, wGac debug x64 TUI, 120x40; GNOME Wayland desktop with X11 terminal windows. |
-| Legacy terminal first | GNOME Terminal 3.52.0 / VTE 0.76.0; ordinary profile, native XTest keyboard events. Ctrl+Q passes. Ctrl+Alt+Super+Q produces legacy Alt+Ctrl+Q bytes `1b11`, without Super, and no matching dialog. |
-| Kitty retry | Kitty 0.32.2, `linux_display_server=x11`, ordinary keyboard configuration. Same native chord produces `ESC[113;15u` and exactly `You pressed Ctrl+Alt+Win+Q!`. Left/right Super and both modifier release orders pass with Enter dismissal and ordinary Ctrl+Q before/after. The subsequent same-position mouse regression is tracked separately in the matrix. |
-| Conclusion | Only Kitty works for this chord in the tested configuration. Generated native events are distinct from physical hardware input, which was not observed. No raw byte replay or terminal test-key command was used to establish delivery. |
-| Platform limits | wGac global-shortcut registration currently returns an ID without OS registration; global F8 is unavailable. GNOME terminal mouse tests verify Left/Middle/Right and Alt; extended buttons, independent Super and horizontal wheel delivery are not established. |
-| Evidence | `wGac/TestMatrix_Tui.md`, `/tmp/rpxplat-legacy-super-failure.png`, `/tmp/rpxplat-tui.input`, `/tmp/rpxplat-kitty-tui.input`; all six normal exit paths passed, and the temporary terminals, apps and helper servers were closed. |
-
-### Linux terminal comparison, 2026-09-21
-
-| Field | Observed result |
-| --- | --- |
-| Host / build | Ubuntu 24.04 under XWayland; synchronized wGac TuiControlTest. Official import, sync and full build passed. |
-| Legacy terminal attempted first | GNOME Terminal 3.52.0 / VTE 0.76.0, ordinary profile. Native XTest Ctrl+Q opens the expected dialog. Ctrl+Alt+Super+Q emits `1b11`, losing Super, and does not activate the Super shortcut. Ordinary Ctrl+Q still works afterward. |
-| Kitty retry | Kitty 0.32.2, X11 and its ordinary keyboard protocol. Native XTest Ctrl+Alt+Super+Q emits `ESC[113;15u` and opens exactly `You pressed Ctrl+Alt+Win+Q!`. Left/right Super and both modifier release orders pass; Enter dismisses each dialog. |
-| Mouse and keyboard scope | Native SGR input delivers Left/Middle/Right down/up, Alt, movement and both wheel axes. Physical input, Linux global hotkeys, SGR Super and Mouse4/5 remain unavailable or unobserved. POSIX has no KeyUp: use Tab/Enter for buttons and palettes; Space cannot complete button activation. |
-| Separate byte replay | Injected CSI-u Super and SGR three-button sequences pass as decoder/application checks. They do not establish native delivery. All 62 VlppOS TUI unit cases pass separately. |
-| Functional evidence | [wGac terminal matrix](../../../wGac/TestMatrix_Tui.md) records the current page, palette, compact-layout and normal-shutdown results. GNOME exited normally with code 0; its wrapper restored the outer terminal and accepted shell typing before the Kitty retry. |
-
-### macOS locked-desktop terminal comparison, 2026-09-10
-
-| Field | Observed result |
-| --- | --- |
-| Host / build / configuration | macOS 26.5.2 arm64; GacUI base `195b7827b` plus the template-stacking fix, iGac base `a7bd388` plus synchronization/Command-key fixes. Fresh 100x30 and 80x25 startup; functional replay at 120x40 and 80x25. |
-| Legacy terminal attempted first | Apple Terminal.app 2.15, Basic profile, SFMono-Regular 11, no explicit Option-as-Meta setting. The foreground showcase launched and its buffer was readable. |
-| Operation and expected result | Window Manager Ctrl+Q opens `You pressed Ctrl+Q!`; Ctrl+Alt+Command+Q opens `You pressed Ctrl+Alt+Win+Q!`. Physical modifier holds and release order were unavailable. |
-| Legacy result | System Events generated Ctrl+Q did not reach the app. macOS reported `CGSSessionScreenIsLocked=true`; desktop capture was black. No successful native Command delivery was established. Raw SGR replay separately closed the showcase normally with exit 0 and usable shell input. |
-| Kitty retry after failure | Installed Kitty 0.48.2, ordinary keyboard configuration with local socket control. Kitty `send-key` produced both exact local shortcut dialogs, Enter dismissed them, and ordinary Ctrl+Q still worked after extensive dialog/palette tests. Pointer tests used SGR byte replay. |
-| Conclusion | Native/physical comparison is unavailable on this locked desktop. Kitty test-key and byte-replay checks passed; they do not establish physical delivery or prove a native Terminal-versus-Kitty difference. POSIX key-down-only semantics leave Space button release unavailable; Tab/Enter palette activation passed. |
-| Platform limits | Global Carbon activation, final displayed colors/fonts/cursor, ALT access overlays and physical input were not observed. Standard SGR provides Left/Middle/Right and Shift/Alt/Ctrl, without independent Super or Mouse4/5. |
-| Evidence / cleanup | `iGac/TestMatrix_Tui.md`; `/tmp/rpxplat-20260910/tui-*.txt`, `.ansi`, `tui-input.log` and build/test logs. All six separate normal exit paths restored exact stty modes, alternate-screen contents and usable shell input. The showcase processes, temporary terminal windows, website server and test helpers were closed. |
-
-### macOS legacy Alt/Command limitation, 2026-09-09
-
-| Field | Observed result |
-| --- | --- |
-| Host / build / configuration | macOS 26.5.2 arm64; iGac TuiControlTest, 120x40. The unsuccessful modifier-polling experiment has been removed; input uses the terminal's reported modifiers. |
-| Legacy terminal attempted first | Apple Terminal.app 2.15, Basic profile. Its profile has no explicit Option-as-Meta setting. Targeted native Quartz key events are delivered through Terminal's normal input handling. |
-| Operation and expected result | Ctrl+Q should open `You pressed Ctrl+Q!`; Ctrl+Alt+Command+Q should open the shared `You pressed Ctrl+Alt+Win+Q!` dialog. Generated key-down/up events carry the chord's flags; this does not exercise physical modifier holds or release orders. |
-| Legacy result | Raw input: Q=`71`, Ctrl+Q=`11`, Ctrl+Alt+Q=`11`, Ctrl+Alt+Command+Q/A=no bytes. Ctrl+Q succeeds before and after the failed Command chord. Alt is lost in this profile, and the Command chord produces no input event. |
-| Kitty retry after failure | Kitty 0.48.2 with built-in configuration, socket control and the same viewport. The recorded native Ctrl+Q attempt was unavailable: the locked desktop left Kitty without a key window. Kitty `send-key` generation separately passed Ctrl+Q and Ctrl+Alt+Super+Q; Ctrl+Alt+Q did not match Ctrl+Q. Both success dialogs dismissed and later Ctrl+Q still worked. These observations predate removal of the failed polling experiment; they remain scoped terminal-protocol evidence. |
-| Global shortcuts | The user reports that the macOS global shortcut works while local Alt/Command shortcuts fail. Carbon registration bypasses terminal input. This is separate from the generated-key local tests; physical global activation was not established by the locked-desktop automation. |
-| Conclusion | Use Kitty for local Alt/Command shortcuts that fail in the legacy Terminal.app profile. Global shortcuts remain independent and working on macOS. The recorded Kitty pass used generated protocol input; physical/native comparison still requires an unlocked desktop. |
-| Evidence / cleanup | Session-local raw-input logs and terminal captures are `/tmp/tui-terminal-*` and `/tmp/tui-alt-*`. The probes, showcase processes and temporary terminal windows were closed. See [iGac's Known Issues](../../../iGac/readme.md#known-issues) for the retained limitation. |
-
-## Verification record (historical, before follow-up 3)
-
-Record the build, terminal version, viewport, page/function, exact observed result and any unobservable input. A successful build or deterministic buffer test does not establish a visual result.
-
-| Check | Result |
-| --- | --- |
-| Debug Win32/x64 provider, TuiSkin, TUI dialogs, showcase and deterministic tests compile | Final builds passed, 0 warnings / 0 errors. Metadata_Generate passed in both architectures; Metadata_Test passed in x64 |
-| Full showcase generation and launch | Both architecture resources generated successfully. The final unchanged-input repeat preserved all 72 TUI output hashes across Debug x64 and Release Win32 compiler hosts. The final image-free Debug x64 showcase launched in Windows Terminal |
-| Release Win32/x64 build and tests | Both final solution builds passed with 0 warnings / 0 errors. Both metadata-generation/validation stages passed. Win32's pipeline suite passed; the full x64 diagnostic replay passed 90/90 files and 1,737/1,737 cases after a failed pipeline attempt. The investigation records the failed attempts and retries |
-| Existing UnitTestSnapshots unchanged | Passed: all snapshot contents match HEAD and Git status is clean. Seven stale status entries were confirmed by matching blob hashes; a stale empty index lock was removed and the index refreshed. No snapshot content was edited or restored |
-| Final publication and consumer | Release-GacUI completed GacGen, both architecture skins and both CodePack passes. A separate Debug x64 consumer rebuilt from the published GacUI/Windows/TuiSkin sources with 0 warnings / 0 errors, found its expected label in the live TUI buffer, stopped normally and returned 0 with a failing-on-leaks heap check |
-| TextList and buttons | Both lists Add 10 and remove odd positions produced the expected items; check/radio selection and exclusivity worked |
-| ListView | Detail rows render at one cell; scrolling changes only the targeted list; requesting BigIcon reports effective Detail and retains the data. The final image-free build retains Task/005/16x16 and corresponding records in both panes; rotating the bound source clears/restores its rows |
-| TreeView | The final image-free build expands Blue+ to all six text children, including the corrected circumflex. Left and right trees retain independent expansion |
-| Refresh text/list/tree pages | Checkbox readback, title/name switching, subcolumn changes, all five DataColumns states and headers observed; expanded and collapsed tree edits retained their data |
-| Repeat pages | All four populate/remove correctly; flow/shared-size variants also clear/reset and retain items on counter reset. Fresh RepeatStack run confirms Items counts 10, 5 and 0 after mutations |
-| Responsive page | All three groups visible; View cycles through all four levels; Stack and Group level changes update independently |
-| Calendars | DP1, DP2, DC1 and DC2 selected independently; DP1 month/year changed to February 2024 and February 29 selected; dropdowns dismiss and underlying dates remain |
-| Viewport | Resized 120x40 to 80x25, 60x20 and back; top-left clipping and restored content preserve selected dates |
-| Hosted windows | Opened children/grandchild, dragged title, resized corner, overlapped, toggled SizeBox double/thick border and TitleBar, then closed all windows with exposed background restored; local Ctrl+Q dialog accepted |
-| Document editing | Unicode marker including CJK and emoji survives native clipboard copy/paste and undo/redo; clipboard UTF-16 pair checked directly |
-| Toolstrip document operations | All four style commands check their menu states; undo clears the last style. Preview and Selectable reject typing, and Selectable copies the exact Unicode text. Center alignment moves the paragraph. Preview hyperlink activation displays the exact URL. Image insertion produces the path/dimensions placeholder; deleting it and undoing restores it as one object, and insertion undo/redo restores the replaced text/object |
-| ALT menu navigation | Alt exposes access keys; F opens File and S opens its Save as submenu with all three original format commands |
-| BindableDataGrid | All five column editors save values. Birthday filtering gives 3 / 4 / 2 / 5 rows for From / To / both / neither. Birthday sorting orders dates, preserving equal-date rows. Source rotation empties/restores the edited records. All six standard view choices report Detail; DataGrid restores the cell editors. The final category popup displays Black and White without clipping |
-| Four TextBox leaves | Replaced the independent top/viewer/label fields on all four leaves. Tab inserts on the tab-accepting TextBox page and moves focus on No Tab. Forty-line clipboard paste, Ctrl+Home/End, undo and redo preserve content. A fresh first paste now immediately shows lines 19 through 40, including the caret's final line |
-| Spacing ASCII | The upstream width correction renders the circumflex in all forty pasted lines; the VlppOS Release Win32/x64 pipeline passes the printable-ASCII width coverage |
-| Embedded controls | All four rows and wrapped descriptions render; command combo selects RemoteProtocolTest and RIGHT NOW opens the expected dismissible message |
-| TextBox font requests | Larger changes requested size 1 to 6; Smaller returns to 1; rendered row height remains one cell |
-| Localization and initial dialogs | Chinese page contains all twelve values and literal-dollar sentences; localized message default Enter returns SelectOK; color cancel and simple font acceptance work |
-| Message button sets | All seven button sets return the expected first default result; Cancel/TryAgain/Continue also returns SelectTryAgain and SelectContinue for the second and third defaults |
-| Color dialog | Typed RGB 12,34,56; accepted result updates the page to #0C2238 and RGB: 12,34,56. Reopening retains it; changing red to 200 and canceling preserves the previous page result |
-| Full font dialog | All four effects toggle, accept and persist when reopened; canceling a changed checkbox preserves prior settings. Nested color picker accepts a new component. The rebuilt dialog now displays the exact ABCxyz 你好 preview; visible terminal font styling remains unverified |
-| File dialogs | Asynchronous folder enumeration and text filtering show Child, alpha.txt and gamma.txt. Chinese empty-selection prompt dismisses. Single/multiple selection return exact paths. Save newfile returns newfile.txt without creating it. The overwrite prompt keeps its Chinese question and alpha.txt on separate lines. Canceling overwrite and then the picker preserves the prior result |
-| Main Hide/Close operations | All four remain live, including queued calls; completion counter reaches four |
-| Both normal Stop paths | Separate Debug x64 sessions exit code 0 under CDB, without leak dumps; original 120x30 console buffer restored. Queued-stop shell accepted input afterward |
-| Terminal observation limits | Windows Terminal 1.24.11911.0: live console buffers and input were used at 120x30/120x40. PrintWindow returned stale compositor images; final displayed font styles, cursor and RGB fidelity are not established by those captures |
-
-The records above describe performed checks, not a blanket pass of every procedure. Classic ReadConsoleOutputCharacterW exposes supplementary glyph cells as replacement characters in this environment; native clipboard inspection confirms the underlying document text retains the complete surrogate pair.
-
-Inherited fake-service limitation: GuiFakeDialogServiceBase_ColorDialog.cpp does not use customColorOptions or customColors. The TUI dialog retains the same current-color/accept/cancel behavior; a custom-color palette is not implemented by this shared service.
-
-## Follow-up 3 verification (2026-09-09)
-
-This record predates the continuation that corrects non-message actions to right alignment. Its layout results remain historical; fresh continuation results are recorded separately below.
-
-| Check | Fresh result |
-| --- | --- |
-| Generation/build/metadata | Both resource architectures completed without UI errors. Debug Win32/x64 builds have 0 warnings/errors; both Metadata_Generate runs and x64 Metadata_Test pass |
-| Unit coverage | 90/90 files, 1,748/1,748 cases; no leak dump. Existing GUI snapshots unchanged. New provider tests cover first-layout bounds, both close flags, all direct/queued hosted paths, cancellation, notification order, reentrancy, detachment and modal interception |
-| Startup/resize | Rebuilt showcase initially fills 100x30 and 80x25 without manual resize. A separate dialog run shrinks 120x40 to 80x25 and restores 120x40; pages, scrolling and hit positions remain usable |
-| Message dialogs | Seven button sets return expected first defaults in Chinese at 120x40 and English at 80x25. Second/third defaults return TryAgain/Continue. All icon choices preserve CJK text. Message content has no inner border; action groups are naturally centered with one gap. Chinese overwrite question and filename retain separate lines |
-| Color dialogs | RGB label/content alignment observed; CDB measures all three actual trackers as 38x1. Arrow, Home/End and drag changes reach/clamp endpoints. Typed 12,34,56 returns #0C2238, reopening retains it, and later cancel preserves it |
-| Font/file dialogs and forms | English/Chinese font previews, compact effects and Pick a Color are retained. Nested color closes back to full font. File labels are centered; results are adjacent and one blank row precedes actions. At 80x25 the form scrolls to every field/action, and the picker retains useful lists. Existing-path selection, empty-selection and Chinese overwrite prompts work; cancel preserves results |
-| Ordinary close and Stop | Four vetoed direct/queued Hide/Close calls increment invocation/query counts once each, with ready zero. Fresh accepted direct Hide, queued Hide, direct Close, queued Close and both Stop paths all exit 0. Closing after dialog use also exits 0 |
-| Console restoration | Every accepted exit restores shell input/output modes 484/7, attributes 7 and cursor size/visibility 25/true; the restored shell accepts a command and reports exit 0 |
-| Observation limits | Live console buffers, console event replay and CDB were used. OpenInputDesktop fails with error 5; physical input and displayed font/cursor/RGB fidelity remain unverified. These results do not relabel the preceding historical runs |
-
-## Packaged tutorial checks (follow-up 3)
-
-The Release tutorial lives in `../Release/Tutorial/GacUI_ControlTemplate/TuiSkin`. Run its interactive wrapper from that project directory so `../UIRes/TuiSkin.bin` resolves correctly:
-
-```powershell
-& C:\Code\VczhLibraries\Release\.github\Scripts\copilotExecute.ps1 -Mode CLI -Executable TuiSkin -Configuration Debug -Platform x64 -Interactive
+| Host / build / configuration | <Date, Linux/macOS version, application commit/build, viewport and relevant adapter options> |
+| Legacy terminal attempted first | <Terminal name/version, profile, Option/Meta settings and relevant shortcut bindings> |
+| Operation and expected result | <Page/control, exact chord or action, modifier press/release order and expected response> |
+| Legacy result | <Exact observed behavior, delivered bytes/modifiers if captured, alert or interception, and input method> |
+| Kitty retry after failure | <Kitty version/settings, the same operation/build/configuration, input method and exact observed result> |
+| Conclusion | <Works in both, fails in both, only Kitty works, or verification unavailable; scope to the checks performed> |
+| Evidence / cleanup | <Repository-qualified capture/log locations, remaining physical-input limits and process/terminal cleanup> |
 ```
-
-Use the actual checkout's absolute wrapper path. The wrapper must support `-Interactive` and walk parent directories to find `GacUI_ControlTemplate.sln`; the owning templates are in `../Tools/Copilot/Scripts`. Keep console handles inherited and application output unredirected. Repeat the startup, resize, document/dialog and shutdown checks above against the packaged executable and binary resource.
-
-| Check | Packaged result, 2026-09-09 |
-| --- | --- |
-| Aggregate release | Build.ps1 -Project Release completed successfully: 88 resources in both architectures, Workflow generation/rebuild, all six GacUI tutorial solutions in Win32 Debug/Release and the executable inventory |
-| ControlTemplate builds | Debug/Release x64 solution builds passed with zero warnings/errors. Individual Debug x64 builds passed in TuiSkin → BlackSkin → TuiSkin → WindowSkin order; their PE subsystems and CRT entry points retain the expected Console/GUI selection |
-| Repeat packaging | UpdateRelease and tutorial generation completed again for both architectures. All five generated TUI C++ hashes are unchanged; the four skin files match upstream. Project/configuration mappings and separate binary-resource settings survive; no compiler error files |
-| Startup and packaged resources | Debug x64 starts at 100x30; Debug Win32 and Release x64 start at 80x25. Dialog checks resize to 120x40, shrink to 80x25 and restore the larger viewport. Embedded document text loads from TuiSkin.bin |
-| Startup selection | CDB resolves wmain and DefaultTuiSkinPlugin::Load in TuiSkin, with no WinMain/DefaultSkinPlugin::Load. BlackSkin and WindowSkin resolve the GUI entry/plugin, create their expected native windows and exit 0 through WM_CLOSE |
-| Localized dialogs | Chinese three-action message preserves CJK text and returns default SelectCancel; actions are centered with one gap. RGB 12/34/56 accepts as #0C2238 and survives reopen/cancel. English simple/full font previews and nested color picker work. File enumeration and the borderless validation prompt return to their owner |
-| Closing and restoration | Four vetoed Hide/Close requests produce invocation/query counts 4/4 and ready 0. Fresh direct/queued Hide/Close and both Stop paths all exit 0. Direct Close after dialogs exits 0 under CDB without a leak dump. Settled shell modes 484/7, attributes 7 and cursor 25/visible are restored; the shell accepts commands |
-| Final regenerated package | Win32 Release starts at 100x30, loads embedded document text/tables and shows a borderless Chinese message with centered action and one gap. Enter returns SelectOK. A vetoed Close stays live, then the accepted retry returns 0 through the wrapper and restores the usable shell |
-| Observation limits | Console event replay, stable live-buffer inspection and CDB establish these results. Physical input and final displayed font/cursor/RGB fidelity remain unverified |
-
-## Follow-up 3 continuation verification (2026-09-09)
-
-This continuation corrects the preceding non-message action alignment and adds the missing child title border. The preceding records remain historical.
-
-| Check | Continuation result |
-| --- | --- |
-| Generation/build/metadata | Full GacUI_Compiler completed both architectures and merging with exit 0; no UI error files. Debug Win32/x64 builds passed with zero warnings/errors, both metadata generators passed and x64 metadata validation passed |
-| Full unit suite | Finished Debug x64 log reports 90/90 files and 1,748/1,748 cases with no leak dump. Existing GUI snapshots are unchanged |
-| Child captions | Debug x64 PID 12120 at 120x40 preserves the thick border after short/CJK captions; empty captions leave the full border and long captions ellipsize before Close. At 80x25 border dragging and clicking the moved Close target work. Window Manager children retain double/thick borders across SizeBox changes and restore their caption after TitleBar is toggled |
-| Dialog actions | Chinese at 120x40 and English at 80x25: Color, simple/full Font, Open and Save groups align right, including Pick a Color. Exactly one blank row precedes actions; message groups remain centered |
-| Dialog behavior | RGB 12/34/56 accepts as #0C2238 and survives reopen/cancel. Both font previews retain ABCxyz 你好; nested Color returns to full Font. File enumeration, nested empty-selection validation and an exact existing-path result work. Save cancellation returns to its form |
-| Resize/normal close | 120x40 → 80x25 → 120x40 retains usable forms, scrolling and hit targets. Main Close after all dialogs returns 0 through the wrapper and restores usable shell input, modes 484/7, attributes 7 and visible 25-percent cursor |
-| Win32 smoke | A separate Debug Win32 process starts directly at 80x25, preserves the CJK message caption border/centered action and right-aligned Chinese Color actions, then returns 0 through normal Close with the console state restored |
-| Release refresh | Release-GacUI, UpdateRelease and both-architecture tutorial generation completed without compiler errors. Packaged GacUI.cpp, all four skin files and both metadata binaries match upstream. Generated showcase sources/resources remain unchanged; Debug x64 ControlTemplate builds with zero warnings/errors |
-| Packaged smoke | Debug x64 starts at 80x25, then at 120x40 shows the repaired message border and right-aligned Chinese Color/simple Font/full Font/Open/Save groups. Nested Color and Save caption Close return to their owners. Main Close reports exit 0 and restores the usable shell/console state; the owned terminal then closes normally. Release is pushed as a4ccbc2f |
-| Observation limits | Stable console buffers and console-event replay establish these checks. Physical keyboard/mouse and final displayed font/cursor/RGB fidelity remain unverified |
-
-## Follow-up 4 verification (2026-09-09)
-
-Windows Terminal launch was rejected by the computer-use tool's product policy. The checks below use the interactive repository wrapper in a controlled Windows pseudoterminal, native console-event replay, live console buffers and captured VT output. They do not establish physical input delivery or displayed Windows Terminal font/cursor/RGB fidelity.
-
-| Check | Result |
-| --- | --- |
-| Upstream clipping | VlppOS Debug x64 build has zero warnings/errors. Full wrapper run passes 16/16 files and 306/306 cases without a leak dump. Coverage includes every overload, omitted/null clips, original edges, empty clips, invalid arguments and CJK/supplementary wide-pair repair at buffer edges |
-| Initial clipping process | Debug x64 PID 7832 starts at 120x40 and resizes to 80x25. A child and grandchild open; moving the grandchild beyond the right/bottom viewport clips its existing edges without inventing corners. Restoring 120x40 exposes the original frame, resizing its bottom-right corner works, and closing each window repaints the parent. Queued main Close returns normally with exit 0 |
-| Regenerated Win32 selector | PID 2332: 120x40 has equal columns, all six radios and SkyBlue alone initially. TAB/Space cycles Pink through Purple; at 80x25 mouse replay cycles all six and returns to SkyBlue. Each settled capture has exactly one selected radio and the expected emitted accent RGB. Ctrl+Q opens one Chinese fake message and Enter dismisses it. Queued Close exits 0; input/output modes 503/7, attributes 7, visible 25-percent cursor and original 120x40 viewport are restored |
-| Final focused lifecycle replay | Debug x64 CDB passes 2/2 files and 22/22 cases. Deferred checks retain a (5,10) list offset through all palettes, header identity/width/sort/filter and new hover/pressed colors, tree expansion, content/date dropdowns and an open modal window. GUI-theme checks retain document identity, edits, selection, undo/redo, modified flag, nonzero scroll, focus and TAB/Shift+TAB navigation |
-| Final architecture builds | Debug x64 and Win32 wrapper builds after the list lifecycle correction both have zero warnings/errors |
-| x64 palette/input replay | PID 24528: all six presets and return to SkyBlue pass both mouse and keyboard replay at 120x40 and 80x25, with one selected radio and matching accent RGB in emitted VT. Two existing child windows retain caption positions across all 12 per-preset captures at 120x40 and close normally |
-| x64 retained grid and list | A grid cell edited to Palette edit, descending birthday sort and enabled From filter survive refresh and hidden-page revisit. The nested date-filter calendar is text-identical before/after Purple. At 80x25, End scrolls the left detail list to its last rows while the right list stays at the origin; both viewports are text-identical after Purple then SkyBlue. Home/End still recycles rows afterward |
-| x64 retained document and menus | A 45-paragraph edited document remains scrolled to line 30 with Marker on its final visible row after Pink, Emerald and SkyBlue. The entire visible buffer matches. Mouse Undo/Redo, Ctrl+Z/Ctrl+Y and Alt/E1/U then Alt/E1/R each remove/restore exactly one marker character. Menu navigation does not duplicate actions |
-| x64 fake dialogs and clipping | Color opens before and after a confirmed Orange change with identical dialog/underlying document text. Shrinking with Color open clips its original right/bottom frame; dragging the caption brings the whole dialog into 80x25, and caption Close repaints the editor. The final Ctrl+Q opens one fake message; Enter dismisses it |
-| x64 normal restoration | After returning to SkyBlue, queued main Close exits 0. Input/output modes 503/7, attributes 7, visible 25-percent cursor and original 120x40 viewport exactly match the pre-run state |
-| Final document-initialization correction | The first 1,755-case run passed assertions but GUI snapshot review exposed opaque backgrounds in initial plain-text document controls. Keep complete baseline formatting on first template installation and use the preserving font/baseline refresh for later installs. The added initial-transparency assertion and all 22 focused cases pass |
-| Post-correction smoke and leak capture | Debug x64 PID 21476 retains newly typed document text through Pink/SkyBlue and applies one Undo via keyboard menu navigation. Debug Win32 PID 14440 starts at 80x25, switches Purple/SkyBlue and opens/dismisses the shortcut message. Both run under attached architecture-matched CDB through normal shutdown, exit 0, emit no leak dump and restore their original console state (120x40 and 80x25 respectively) |
-| Final complete suite and snapshots | After the initialization correction, the completed Debug x64 wrapper log passes 90/90 files and 1,755/1,755 cases with no leak dump. Existing GUI snapshot content is unchanged: the only differences are frame IDs/intermediate trace timing in ScrollResetOnNavigation. Exact JSON comparison excluding frameId confirms identical saved content; those seven timing-only files were restored, and new theme regression snapshots retained |

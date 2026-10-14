@@ -27,11 +27,12 @@
 ## Maintain a Test Matrix Card
 
 You need to maintain test card in:
-- `<wGac-or-iGac>/TestMatrix_NativeRenderer.md` for `DebugRemoteProtocolWithNativeRenderer.md`
-- `<wGac-or-iGac>/TestMatrix_GacJS.md` for `DebugRemoteProtocolWithGacJS.md`
-- `<wGac-or-iGac>/TestMatrix_Tui.md` for `DebugTuiControlTestSop.md`; keep one row per current SOP section plus build/sync and unit-test results. Record native input separately from terminal-byte replay and explicitly record terminal or platform limitations.
+- `<wGac repo>/TestMatrix_NativeRenderer.md` on Linux or `<iGac repo>/TestMatrix_NativeRenderer.md` on macOS for `<GacUI repo>/.github/Jobs/DebugRemoteProtocolWithNativeRenderer.md`
+- `<wGac repo>/TestMatrix_GacJS.md` on Linux or `<iGac repo>/TestMatrix_GacJS.md` on macOS for `<GacUI repo>/.github/Jobs/DebugRemoteProtocolWithGacJS.md`
+- `<wGac repo>/TestMatrix_Tui.md` on Linux or `<iGac repo>/TestMatrix_Tui.md` on macOS for `<GacUI repo>/.github/Jobs/DebugTuiControlTestSop.md`; keep one row per applicable SOP test section plus build/sync and unit-test results. Record native input separately from terminal-byte replay and explicitly record terminal or platform limitations.
 
 If these files already exist, delete them, and recreate them following the `### Test Matrix Card` section in each document.
+Copy the complete applicable TUI sample into the platform's declared TUI card. All run-specific observations, failures, fixes, evidence, platform limitations and completed legacy-terminal/Kitty comparison cards belong only in that file. The SOP and setup documents contain reusable procedures and blank samples; do not fill their sample cells or append verification results, terminal comparisons or run histories to them.
 During verification, test matrix cards should be updated in time:
 - When a test item starts, succeeds, fails, fixed, the file need to be updated immediately and saved, but no need to commit immediately, a commit is only required after all test items are done.
 - I will read the file to check the progress of your verification.
@@ -137,7 +138,7 @@ Local test apps (aka remote protocol not involved) should also be verified, incl
 - `test.sh --app:fct` with or without `--hosted`:
   - `DebugRemoteProtocolSop.md` already covers `FullControlTest` verifications, follow the instructions there.
 - `test.sh --app:tui`
-  - Follow `DebugTuiControlTestSop.md`.
+  - Follow `<GacUI repo>/.github/Jobs/DebugTuiControlTestSop.md` and record every TUI test item in `<wGac repo>/TestMatrix_Tui.md` on Linux or `<iGac repo>/TestMatrix_Tui.md` on macOS.
 Succeeded local test apps verification could be considered as a baseline, when issues are seen in remote protocol tests, you are much easier to trace their root cause.
 
 ## Finishing
