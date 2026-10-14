@@ -266,6 +266,17 @@ Append a completed card here for each legacy-terminal failure that prompts a Kit
 | Conclusion | Works in both, fails in both, only Kitty works, or verification unavailable; scope the conclusion to the checks actually performed. |
 | Evidence / cleanup | Capture/log locations, remaining physical-input limits and process/terminal cleanup. |
 
+### Linux terminal comparison, 2026-10-14
+
+| Field | Observed result |
+| --- | --- |
+| Host / build | Ubuntu 26.04.1 / GNOME Wayland; synchronized wGac TuiControlTest, 120x40. Official import, sync and build passed using the documented prerequisites in a disposable Ubuntu container. |
+| Legacy terminal attempted first | GNOME Terminal 3.58.0 / VTE 0.84.0, default profile. Mutter-generated Ctrl+Q delivered `11` and the exact local dialog. Ctrl+Alt+Super+Q delivered `1b 11`, losing Super, and did not open its dialog. |
+| Kitty retry | Kitty 0.45.0 with `--config NONE`, the same binary and viewport. The same generated chord delivered `1b 5b 31 31 33 3b 31 35 75` and exactly `You pressed Ctrl+Alt+Win+Q!`. Keys were pressed in chord order and released in reverse order. |
+| Conclusion | Only Kitty delivered this local Super chord in the tested profiles. These are compositor-generated events, separate from physical hardware input and PTY byte replay. |
+| Global shortcut | The real GNOME portal delivered the TUI F8 chord while another owned terminal had focus, including concurrent native CppTest with its distinct global Q chord. This does not establish local Super or SGR mouse Super support. |
+| Restoration / evidence | Kitty and six fresh GNOME runs exited normally with full child-PTY termios restored. The fresh runs accepted shell input afterward. Current page coverage, portal-denial regression and platform limits are recorded in `<wGac repo>/TestMatrix_Tui.md`. Physical input and displayed font/color fidelity remain unverified. |
+
 ### Linux native Super comparison, 2026-09-10
 
 | Field | Evidence |

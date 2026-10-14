@@ -66,6 +66,10 @@
 
 ## Linux (wGac repo specific)
 
+- Terminal captures can contain a partial VT repaint. Require settled semantic state, such as exactly one selected palette radio and the expected accent color, before judging the result. Space clicks before locating the target, then compare fresh coordinates; waiting after locating a newly centered modal can leave a stale hit target.
+- After shrinking a terminal, find the current list interior before replaying wheel input. The old interior can become a border or spacer. Scroll forms until their action is visible, and move an existing dialog by its title into the smaller viewport when its retained position leaves actions clipped.
+- Native automation establishes application input, not desktop focus for compositor shortcuts. Require the intended modal's bounds to change before crediting Alt+F8 resizing. Maximize the native host before testing a hosted or remote modal 680 pixels wide; a narrow physical host legitimately constrains its child.
+
 - Run terminal XTest operations separately from native application/renderer verification. Native automation can activate or map its Wayland window while the terminal test is sending desktop events, redirecting those events. A fresh isolated native run distinguishes this interference from a control defect.
 - For terminal-restoration checks, compare the child PTY's complete termios state before launch and immediately after child exit, before the wrapper restores its outer terminal.
 - For stdio host-loss injection, identify the actual host executable among the requester's descendants. Killing only the intermediate shell can leave the host and its inherited pipe handles alive. Confirm that a Controls read remains pending before injecting loss during a blocked RPC; an earlier read can overtake queued renderer input.
