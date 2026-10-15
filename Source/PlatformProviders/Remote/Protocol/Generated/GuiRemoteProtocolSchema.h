@@ -17,6 +17,7 @@ namespace vl::presentation::remoteprotocol
 	struct WindowShowing;
 	struct IOMouseInfoWithButton;
 	struct GlobalShortcutKey;
+	struct ElementDesc_Raw;
 	struct ElementDesc_SolidBorder;
 	struct ElementDesc_SinkBorder;
 	struct ElementDesc_SinkSplitter;
@@ -81,6 +82,7 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::NativeWindowCharInfo> { static constexpr const wchar_t* Name = L"IOCharInfo"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GlobalShortcutKey> { static constexpr const wchar_t* Name = L"GlobalShortcutKey"; };
 	template<> struct JsonNameHelper<::vl::presentation::elements::ElementShape> { static constexpr const wchar_t* Name = L"ElementShape"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_Raw> { static constexpr const wchar_t* Name = L"ElementDesc_Raw"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder> { static constexpr const wchar_t* Name = L"ElementDesc_SolidBorder"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SinkBorder> { static constexpr const wchar_t* Name = L"ElementDesc_SinkBorder"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter> { static constexpr const wchar_t* Name = L"ElementDesc_SinkSplitter"; };
@@ -181,6 +183,7 @@ namespace vl::presentation::remoteprotocol
 	>;
 
 	using OrdinaryElementDescVariant = ::vl::Variant<
+		::vl::presentation::remoteprotocol::ElementDesc_Raw,
 		::vl::presentation::remoteprotocol::ElementDesc_SolidBorder,
 		::vl::presentation::remoteprotocol::ElementDesc_SinkBorder,
 		::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter,
@@ -193,6 +196,7 @@ namespace vl::presentation::remoteprotocol
 	>;
 
 	using UnitTest_ElementDescVariant = ::vl::Variant<
+		::vl::presentation::remoteprotocol::ElementDesc_Raw,
 		::vl::presentation::remoteprotocol::ElementDesc_SolidBorder,
 		::vl::presentation::remoteprotocol::ElementDesc_SinkBorder,
 		::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter,
@@ -253,6 +257,13 @@ namespace vl::presentation::remoteprotocol
 		bool alt;
 		bool osSuper;
 		::vl::presentation::VKEY code;
+	};
+
+	struct ElementDesc_Raw
+	{
+		::vl::vint id;
+		::vl::WString rawId;
+		::vl::WString data;
 	};
 
 	struct ElementDesc_SolidBorder
@@ -597,6 +608,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowCharInfo>(const ::vl::presentation::NativeWindowCharInfo & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GlobalShortcutKey>(const ::vl::presentation::remoteprotocol::GlobalShortcutKey & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::ElementShape>(const ::vl::presentation::elements::ElementShape & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_Raw>(const ::vl::presentation::remoteprotocol::ElementDesc_Raw & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(const ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_SinkBorder>(const ::vl::presentation::remoteprotocol::ElementDesc_SinkBorder & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter>(const ::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter & value);
@@ -675,6 +687,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowCharInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowCharInfo& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GlobalShortcutKey>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GlobalShortcutKey& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::ElementShape>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::ElementShape& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_Raw>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_Raw& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_SinkBorder>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_SinkBorder& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter& value);

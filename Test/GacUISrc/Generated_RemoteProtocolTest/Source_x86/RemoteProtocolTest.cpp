@@ -817,7 +817,7 @@ namespace rptest
 		}
 		(this->__vwsn_precompile_14 = ::vl::reflection::description::GuiRawElement_Constructor());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetOwnedElement(this->__vwsn_precompile_14);
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_14));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_13));
@@ -902,7 +902,7 @@ namespace rptest
 		, __vwsn_precompile_11(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_12(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_13(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
-		, __vwsn_precompile_14(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>())
+		, __vwsn_precompile_14(::vl::Ptr<::vl::presentation::elements::GuiRawElementBase>())
 		, dialogLocalShortcut(static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr))
 		, dialogLocalSuperShortcut(static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr))
 		, dialogGlobalShortcut(static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr))

@@ -98,6 +98,7 @@ namespace demo
 	public:
 		::vl::Ptr<::vl::reflection::description::IValueList> openedSubWindows;
 		::vl::Event<void(::vl::vint32_t)> PaletteSelected;
+		::vl::Ptr<::vl::presentation::elements::GuiRawElementBase> GetClockElement();
 		void ShowMouseModifiers(bool alt, bool osSuper);
 		::vl::WString MouseButtonName(::vl::presentation::NativeMouseButton button);
 		MainWindow();

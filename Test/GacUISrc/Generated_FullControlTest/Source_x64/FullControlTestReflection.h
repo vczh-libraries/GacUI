@@ -122,6 +122,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::MyDataItem)
 			DECL_TYPE_INFO(::demo::MyGender)
 			DECL_TYPE_INFO(::demo::MyTextItem)
+			DECL_TYPE_INFO(::demo::RawElementTabPage)
+			DECL_TYPE_INFO(::demo::RawElementTabPageConstructor)
 			DECL_TYPE_INFO(::demo::RefreshBindableDataGridTabPage)
 			DECL_TYPE_INFO(::demo::RefreshBindableDataGridTabPageConstructor)
 			DECL_TYPE_INFO(::demo::RefreshBindableListViewTabPage)

@@ -70,7 +70,7 @@ namespace rptest
         var <precompile>13 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>14 : ::presentation::elements::IGuiGraphicsElement^ = null of (::presentation::elements::IGuiGraphicsElement^);
+        var <precompile>14 : ::presentation::elements::GuiRawElementBase^ = null of (::presentation::elements::GuiRawElementBase^);
 
         @cpp:Protected
         var dialogLocalShortcut : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);

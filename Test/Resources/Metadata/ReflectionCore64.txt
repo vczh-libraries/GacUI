@@ -4513,6 +4513,17 @@ class presentation::elements::GuiPolygonElement : presentation::elements::IGuiGr
     constructor () : presentation::elements::GuiPolygonElement^;
 }
 
+class presentation::elements::GuiRawElementBase : presentation::elements::IGuiGraphicsElement {
+    property Data : system::String { get:GetData set:SetData }
+    property Id : system::String { get:GetId set:SetId }
+
+    function GetData() : system::String;
+    function GetId() : system::String;
+    function SetData(value : system::String) : system::Void;
+    function SetId(value : system::String) : system::Void;
+
+}
+
 class presentation::elements::GuiSolidBackgroundElement : presentation::elements::IGuiGraphicsElement {
     property Color : presentation::Color { get:GetColor set:SetColor }
     property Shape : presentation::elements::ElementShape { get:GetShape set:SetShape }
@@ -4582,7 +4593,7 @@ interface presentation::elements::IGuiGraphicsElement : system::Interface {
 
     @InvokeTemplate:::vl::reflection::description::GuiRawElement_Constructor($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::GuiRawElement_Constructor)
-    static function CreateRawElement() : presentation::elements::IGuiGraphicsElement^;
+    static function CreateRawElement() : presentation::elements::GuiRawElementBase^;
     function GetOwnerComposition() : presentation::compositions::GuiGraphicsComposition*;
 
 }

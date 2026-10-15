@@ -35,6 +35,11 @@ Class (::demo::MainWindow)
 
 namespace demo
 {
+	::vl::Ptr<::vl::presentation::elements::GuiRawElementBase> MainWindow::GetClockElement()
+	{
+		return ::vl::__vwsn::This(this->rawClockPage)->GetClockElement();
+	}
+
 	void MainWindow::ShowMouseModifiers(bool alt, bool osSuper)
 	{
 		auto altText = ::vl::WString::Unmanaged(L"0");

@@ -1552,6 +1552,33 @@
     }, {
         "$ast": "StructDecl",
         "attributes": [],
+        "name": "ElementDesc_Raw",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "rawId",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "data",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
         "name": "ElementDesc_SolidBorder",
         "members": [{
             "$ast": "StructMember",
@@ -2782,6 +2809,9 @@
         "name": "OrdinaryElementDescVariant",
         "members": [{
             "$ast": "UnionMember",
+            "name": "ElementDesc_Raw"
+        }, {
+            "$ast": "UnionMember",
             "name": "ElementDesc_SolidBorder"
         }, {
             "$ast": "UnionMember",
@@ -3287,6 +3317,9 @@
         "attributes": [],
         "name": "UnitTest_ElementDescVariant",
         "members": [{
+            "$ast": "UnionMember",
+            "name": "ElementDesc_Raw"
+        }, {
             "$ast": "UnionMember",
             "name": "ElementDesc_SolidBorder"
         }, {

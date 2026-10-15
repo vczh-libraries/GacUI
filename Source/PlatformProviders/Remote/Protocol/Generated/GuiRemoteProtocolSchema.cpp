@@ -487,6 +487,15 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_Raw>(const ::vl::presentation::remoteprotocol::ElementDesc_Raw & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
+		ConvertCustomTypeToJsonField(node, L"rawId", value.rawId);
+		ConvertCustomTypeToJsonField(node, L"data", value.data);
+		return node;
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(const ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
@@ -1422,6 +1431,21 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"shapeType") ConvertJsonToCustomType(field->value, value.shapeType); else
 			if (field->name.value == L"radiusX") ConvertJsonToCustomType(field->value, value.radiusX); else
 			if (field->name.value == L"radiusY") ConvertJsonToCustomType(field->value, value.radiusY); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_Raw>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_Raw& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_Raw>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementDesc_Raw&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
+			if (field->name.value == L"rawId") ConvertJsonToCustomType(field->value, value.rawId); else
+			if (field->name.value == L"data") ConvertJsonToCustomType(field->value, value.data); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
