@@ -3,6 +3,7 @@
 #include <Test.RemotingHelpers.h>
 #include "../WGac/Services/WGacAutomationService.h"
 #include "../WGac/Renderers/WGacRenderer.h"
+#include "../WGacShared/FullControlTestRawElementRemote.h"
 #elif defined __APPLE__ && __has_include(<GacUI.h>)
 #include <GacUI.h>
 #include <Test.RemotingHelpers.h>
@@ -156,7 +157,7 @@ int StartClient(
 		);
 	GuiRemoteProtocolAsyncJsonChannelRenderer asyncRendererChannel(channelClient.GetProtocolChannel());
 	GuiRemoteRendererSingle remoteRenderer(true);
-#if defined VCZH_MSVC
+#if defined VCZH_MSVC || (defined VCZH_GCC && !defined VCZH_APPLE)
 	auto rawClockAttachments = demo::AttachFullControlTestRawElements(remoteRenderer);
 #endif
 	GuiRemoteProtocolRendererChannel rendererChannel(&asyncRendererChannel, &remoteRenderer);
