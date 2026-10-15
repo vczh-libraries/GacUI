@@ -7,19 +7,20 @@
 ### New types in vl::presentation
 
 ```cpp
-enum class PointCancelReason
+enum class PointSequenceEndReason
 {
-	Unknown,
-	PlatformCanceled,
-	CaptureLost,
-	WindowDestroyed,
+	Succeeded,
+	Canceled_Unknown,
+	Canceled_PlatformCanceled,
+	Canceled_CaptureLost,
+	Canceled_WindowDestroyed,
 };
 
 template<typename TPoint, typename TRect>
 struct WindowPointInfo_
 {
 	vuint64_t				sequenceId = 0;
-	vuint64_t				pointId = 0;
+	vint					pointId = 0;
 	vuint64_t				timestamp = 0;
 	vint					activePointCount = 0;
 	TPoint					position;
@@ -42,7 +43,7 @@ struct PointSequenceEndInfo
 	vuint64_t				sequenceId = 0;
 	vuint64_t				timestamp = 0;
 	bool					accepted = false;
-	bool					canceled = false;
+	PointSequenceEndReason	reason = PointSequenceEndReason::Succeeded;
 };
 ```
 
@@ -53,7 +54,6 @@ virtual void				PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bo
 virtual void				PointDown(const NativeWindowPointInfo& info);
 virtual void				PointUpdate(const NativeWindowPointInfo& info);
 virtual void				PointUp(const NativeWindowPointInfo& info);
-virtual void				PointCancel(const NativeWindowPointInfo& info, PointCancelReason reason);
 virtual void				PointEntered(const NativeWindowPointInfo& info);
 virtual void				PointLeaved(const NativeWindowPointInfo& info);
 virtual void				PointSequenceEnded(const PointSequenceEndInfo& info);
@@ -69,10 +69,12 @@ struct GuiPointEventArgs
 	, public WindowPointInfo
 	, public Description<GuiPointEventArgs>
 {
-	Nullable<PointCancelReason>		cancelReason;
+	const collections::List<Nullable<Point_<GuiCoordinate>>>& points;
 
-	GuiPointEventArgs();
-	GuiPointEventArgs(GuiGraphicsComposition* composition);
+	GuiPointEventArgs(const collections::List<Nullable<Point_<GuiCoordinate>>>& points);
+	GuiPointEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point_<GuiCoordinate>>>& points);
+
+	const collections::List<Nullable<Point_<GuiCoordinate>>>& GetPoints() const;
 };
 
 struct GuiPointSequenceStartedEventArgs
@@ -81,8 +83,8 @@ struct GuiPointSequenceStartedEventArgs
 {
 	bool							accept = false;
 
-	GuiPointSequenceStartedEventArgs();
-	GuiPointSequenceStartedEventArgs(GuiGraphicsComposition* composition);
+	GuiPointSequenceStartedEventArgs(const collections::List<Nullable<Point_<GuiCoordinate>>>& points);
+	GuiPointSequenceStartedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point_<GuiCoordinate>>>& points);
 };
 
 struct GuiPointSequenceEndedEventArgs
@@ -90,8 +92,12 @@ struct GuiPointSequenceEndedEventArgs
 	, public PointSequenceEndInfo
 	, public Description<GuiPointSequenceEndedEventArgs>
 {
-	GuiPointSequenceEndedEventArgs();
-	GuiPointSequenceEndedEventArgs(GuiGraphicsComposition* composition);
+	const collections::List<Nullable<Point_<GuiCoordinate>>>& points;
+
+	GuiPointSequenceEndedEventArgs(const collections::List<Nullable<Point_<GuiCoordinate>>>& points);
+	GuiPointSequenceEndedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point_<GuiCoordinate>>>& points);
+
+	const collections::List<Nullable<Point_<GuiCoordinate>>>& GetPoints() const;
 };
 
 typedef GuiGraphicsEvent<GuiPointEventArgs>					GuiPointEvent;
@@ -106,7 +112,6 @@ GuiPointSequenceStartedEvent		pointSequenceStarted;
 GuiPointEvent					pointDown;
 GuiPointEvent					pointUpdate;
 GuiPointEvent					pointUp;
-GuiPointEvent					pointCancel;
 GuiPointEvent					pointEnter;
 GuiPointEvent					pointLeave;
 GuiPointSequenceEndedEvent		pointSequenceEnded;
@@ -120,7 +125,8 @@ GuiPointSequenceEndedEvent		pointSequenceEnded;
 vuint64_t													pointSequenceId = 0;
 bool														pointSequenceAccepted = false;
 GuiGraphicsComposition*										pointCaptureComposition = nullptr;
-collections::Dictionary<vuint64_t, NativeWindowPointInfo>		activePoints;
+collections::Dictionary<vint, NativeWindowPointInfo>			activePoints;
+collections::List<Nullable<Point_<GuiCoordinate>>>			points;
 
 void							PointCapture(const NativeWindowPointInfo& firstPoint);
 void							PointUncapture();
@@ -132,8 +138,7 @@ void							RaisePointSequenceStartedEvent(GuiPointSequenceStartedEventArgs& argu
 void							RaisePointSequenceEndedEvent(GuiPointSequenceEndedEventArgs& arguments);
 void							OnPointInput(
 									const NativeWindowPointInfo& info,
-									GuiPointEvent GuiGraphicsEventReceiver::* eventReceiverEvent,
-									Nullable<PointCancelReason> cancelReason = {});
+									GuiPointEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 ```
 
 ### GuiGraphicsHost: private additions
@@ -143,7 +148,6 @@ void							PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& a
 void							PointDown(const NativeWindowPointInfo& info) override;
 void							PointUpdate(const NativeWindowPointInfo& info) override;
 void							PointUp(const NativeWindowPointInfo& info) override;
-void							PointCancel(const NativeWindowPointInfo& info, PointCancelReason reason) override;
 void							PointEntered(const NativeWindowPointInfo& info) override;
 void							PointLeaved(const NativeWindowPointInfo& info) override;
 void							PointSequenceEnded(const PointSequenceEndInfo& info) override;
@@ -168,7 +172,6 @@ void							PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& a
 void							PointDown(const NativeWindowPointInfo& info) override;
 void							PointUpdate(const NativeWindowPointInfo& info) override;
 void							PointUp(const NativeWindowPointInfo& info) override;
-void							PointCancel(const NativeWindowPointInfo& info, PointCancelReason reason) override;
 void							PointEntered(const NativeWindowPointInfo& info) override;
 void							PointLeaved(const NativeWindowPointInfo& info) override;
 void							PointSequenceEnded(const PointSequenceEndInfo& info) override;
@@ -179,7 +182,7 @@ void							PointSequenceEnded(const PointSequenceEndInfo& info) override;
 ### GUIREFLECTIONBASIC_TYPELIST: additional entries
 
 ```cpp
-			F(presentation::PointCancelReason)\
+			F(presentation::PointSequenceEndReason)\
 			F(presentation::NativeWindowPointInfo)\
 			F(presentation::WindowPointInfo)\
 			F(presentation::PointSequenceEndInfo)\
@@ -538,19 +541,19 @@ Windows acquisition state belongs to the private `WindowsForm` class in `<GacUI 
 
 ## 3.2 Sequence identity and lifetime
 
-A point sequence covers a continuous chain of overlapping contacts in one native window. The first Down while no contacts are active allocates a nonzero `sequenceId`. Every subsequent point belongs to that sequence while at least one contact remains. Only the last Up/Cancel ends it. A contact can stop moving without leaving the active set.
+A point sequence covers a continuous chain of overlapping contacts in one native window. The first Down while no contacts are active allocates a nonzero `sequenceId`. Until cancellation, every subsequent point belongs to that sequence while at least one contact remains. The last normal Up ends it with `PointSequenceEndReason::Succeeded`. Any cancellation ends the entire public sequence immediately with a `Canceled_*` reason, as detailed in section 3.7. A contact can stop moving without leaving the active set.
 
-| Incoming contact transition | Active contacts afterward | Sequence behavior |
+| Incoming contact transition | Host `points` for an accepted sequence | Sequence behavior |
 |---|---|---|
-| A Down | A | Allocate S1; query Started before reporting A Down. |
-| B Down | A, B | Keep S1, its acceptance, and its routing target. |
-| A Up | B | Keep S1 even though its first point has ended. |
-| C Down | B, C | Keep S1 because B bridges the two contacts. |
-| B Up | C | Keep S1. |
-| C Up | Empty | Report the final Up if accepted, then End S1. |
-| D Down | D | Allocate S2 and query acceptance again. |
+| A Down | [A] | Allocate S1; A has `pointId == 0`. Query Started before reporting A Down. |
+| B Down | [A, B] | B has `pointId == 1`. Keep S1, its acceptance, and its routing target. |
+| A Up | [empty, B] | Keep S1 even though its first point has ended. |
+| C Down | [empty, B, C] | C has `pointId == 2`. Keep S1 because B bridges the two contacts; do not reuse slot 0. |
+| B Up | [empty, empty, C] | Keep S1. |
+| C Up | [empty, empty, empty] | Report the final Up if accepted, then End S1 with `Succeeded`. |
+| D Down | [D] | Allocate S2; D has `pointId == 0`. Query acceptance again. |
 
-The sequence ID is unique for the lifetime of its native window, including rejected sequences. It is not a hardware frame ID or a finger ID. `pointId` identifies one contact lifetime within the sequence; reused OS pointer IDs must not alias an earlier contact in that sequence. The pair of sequence ID and point ID identifies a contact. Remote connections will additionally scope those identities by window and connection generation in Step 2.
+The sequence ID is unique for the lifetime of its native window, including rejected sequences. It is not a hardware frame ID or a finger ID. `pointId` is a zero-based `vint` index assigned in Down order within that sequence: 0 for the first contact, 1 for the next, and so on. It remains unchanged for that contact, and its slot is never reused or compacted during the sequence. Map OS pointer IDs to these indices; reused OS IDs must not alias an earlier contact. If the platform reports several new contacts together, assign consecutive indices in the order their Down callbacks are delivered. The pair of sequence ID and point ID identifies a contact. Remote connections will additionally scope those identities by window and connection generation in Step 2.
 
 The native provider owns sequence allocation and active-contact bookkeeping, even when a sequence is rejected and no point payload is delivered. `GuiGraphicsHost` consumes the supplied sequence ID instead of reconstructing a different sequence from the events it accepts. Hosted forwarding preserves the root native ID and cannot restart the sequence for another logical window.
 
@@ -564,11 +567,11 @@ If any listener accepts, latch acceptance for the entire sequence and broadcast 
 
 If all listeners decline, suppress all subsequent **point-data callbacks** for that sequence and let the platform perform fallback as detailed in section 3.8. Continue private acquisition bookkeeping until the sequence ends. Do not query again for a later point, a new position, a changed control state, or a newly installed listener.
 
-`PointSequenceStarted` and `PointSequenceEnded` are lifecycle boundaries, distinct from point-data callbacks. They remain paired for rejected sequences too: rejection suppresses Down/Update/Up/Cancel/Enter/Leave delivery, but End closes the occurrence with `accepted == false`. This also gives the composition sequence query a matching End. End is not a successful point release and must not activate anything.
+`PointSequenceStarted` and `PointSequenceEnded` are lifecycle boundaries, distinct from point-data callbacks. They remain paired for rejected sequences too: rejection suppresses Down/Update/Up/Enter/Leave delivery, but End closes the occurrence with `accepted == false`. This also gives the composition sequence query a matching End. End is not a successful point release and must not activate anything.
 
 Listener installation/removal follows existing broadcast and lifetime rules; do not introduce a per-sequence native subscription or listener-selection system. Installation during a sequence does not replay Started or renegotiate acceptance. A stateful listener that did not observe Started ignores that sequence until the next Started. No callback is made to an uninstalled/destroyed listener.
 
-`PointSequenceEndInfo.accepted` reports the decision at the reporting layer. At the native window it is the aggregate listener decision. The hosted adapter and graphics host retain their own local answers and use those when reporting End downstream. `canceled` records whether any participating point was canceled; it does not imply that every point ended abnormally.
+`PointSequenceEndInfo.accepted` reports the decision at the reporting layer. At the native window it is the aggregate listener decision. The hosted adapter and graphics host retain their own local answers and use those when reporting End downstream. `PointSequenceEndInfo.reason` reports how the whole sequence ended: `Succeeded` for normal completion, or a `Canceled_*` member for cancellation. Acceptance and completion reason are independent; rejecting point input is not cancellation. There is no separate point-cancel callback or event.
 
 All new listener methods have non-pure, no-op definitions in `<GacUI repo>/Source/NativeWindow/GuiNativeWindow.cpp`. Existing listener sources need no new overrides. Adding virtual members still requires rebuilding C++ consumers; this is not a binary-compatibility promise.
 
@@ -576,29 +579,41 @@ All new listener methods have non-pure, no-op definitions in `<GacUI repo>/Sourc
 
 `GuiGraphicsHost::PointSequenceStarted` records the sequence ID and calls `PointCapture` with the first point. The capture helper converts its position to logical client coordinates, hit-tests once, and stores the result in `pointCaptureComposition` before routing the query. A miss declines without creating a composition route.
 
-Raise `pointSequenceStarted` at the captured composition and propagate through its parents using the existing mouse-event conventions. `compositionSource` remains the original target; `eventSource` is the first composition on that path with an event receiver. Each handler receives positions/contact bounds relative to its receiving composition.
+Raise `pointSequenceStarted` at the captured composition and propagate through its parents using the existing mouse-event conventions. `compositionSource` remains the original target; `eventSource` is the first composition on that path with an event receiver. Each handler receives positions/contact bounds and all nonempty entries in `points` relative to its receiving composition.
 
 A target or ancestor accepts by setting `GuiPointSequenceStartedEventArgs.accept` to true. That answer is sticky during the query: handlers may accept but must not revoke an earlier acceptance. `handled` retains its existing meaning of stopping further parent propagation. Setting `handled` alone does not accept point input. With no acceptance on the visited path, the answer remains false. Return the result synchronously through the native Started callback.
 
-For an accepted sequence, each `pointDown`, `pointUpdate`, `pointUp`, `pointCancel`, `pointEnter`, and `pointLeave` starts at the captured composition and follows the same parent propagation rules. Recalculate position/contact bounds for each receiving composition. A later finger landing over another control still goes to the original target. Moving outside its bounds or releasing the first finger does not retarget the sequence.
+For an accepted sequence, each `pointDown`, `pointUpdate`, `pointUp`, `pointEnter`, and `pointLeave` starts at the captured composition and follows the same parent propagation rules. Recalculate position/contact bounds and every nonempty `points` entry for each receiving composition. A later finger landing over another control still goes to the original target. Moving outside its bounds or releasing the first finger does not retarget the sequence.
 
-For a rejected sequence, keep only the query's target/lifecycle bookkeeping for `pointSequenceEnded`; there are no composition point-data events. For either outcome, route End to the captured composition and then release point capture. The `accepted` field on composition End is the chain's own query result.
+The host owns the mutable `points` list declared in section 0.3. `GuiPointEventArgs` and `GuiPointSequenceEndedEventArgs` borrow that same list through a const reference; Started inherits it. Native listener arguments do not contain a list. `activePoints` retains the latest native samples for active contacts, keyed by the same index, so the host can update the shared list in place for each receiver's coordinate system without accumulating coordinate conversions.
 
-The host maintains active point data by ID for accepted sequences, but it has **one captured composition per sequence**, not one per finger. Point state is separate from mouse capture, mouse button state, keyboard focus, and mouse hover. Accepting a point sequence does not capture the physical mouse.
+For a locally accepted sequence, maintain the list before invoking handlers:
 
-The new receiver events must be associated with their owning composition in `<GacUI repo>/Source/Application/GraphicsCompositions/GuiGraphicsEventReceiver.cpp`, following existing initialization. Define the declared argument constructors consistently with the existing mouse arguments.
+- Seed slot 0 from the first point before Started. The following first Down uses that slot instead of appending it again.
+- Each later Down appends its position at the next `pointId`. Update/Enter/Leave refresh the existing active slot.
+- Up removes the contact from `activePoints` and empties its slot before raising `pointUp`. The event's own `position` still reports the final Up position.
+- Never erase, compact, or reuse a slot during the sequence. `points.Count()` is the total number of contacts that have gone down; the number of nonempty entries is the number still down.
+- Successful End sees all slots empty after the final Up. Canceled End preserves the last known positions of all contacts that have not delivered Up, including the contact whose native cancellation ended the sequence. Do not synthesize Ups or empty those slots before End handlers run.
+
+For a rejected sequence, clear the provisional first-point data after the query and keep only its target/lifecycle bookkeeping for `pointSequenceEnded`; there are no composition point-data events. Its End has `accepted == false` and an empty list, meaning point tracking was not accepted, not that all physical contacts necessarily lifted. The full-list guarantee applies only to locally accepted sequences, even if another native listener accepted.
+
+For either outcome, route End to the captured composition and then release point capture and clear the list. End exposes the same list object as preceding events; a successful accepted sequence retains its all-empty slots through every End handler. The `accepted` field on composition End is the chain's own query result.
+
+The host has **one captured composition per sequence**, not one per finger. Point state is separate from mouse capture, mouse button state, keyboard focus, and mouse hover. Accepting a point sequence does not capture the physical mouse.
+
+The new receiver events must be associated with their owning composition in `<GacUI repo>/Source/Application/GraphicsCompositions/GuiGraphicsEventReceiver.cpp`, following existing initialization. Argument constructors must receive the host-owned list and initialize their reference; Started passes it to its base. There are no parameterless or composition-only constructors for these borrowed-list arguments. `GetPoints` returns the same const reference for read-only reflection access.
 
 ## 3.5 Capture/release functions, reuse, and handler lifetime
 
 Section 0.3 declares the new pair `GuiGraphicsHost::PointCapture` and `GuiGraphicsHost::PointUncapture`, at the same helper level as `MouseCapture` and `MouseUncapture`. Their purpose is the same: remember the initial composition for subsequent routed input and release it when the interaction finishes.
 
-`PointCapture` runs once at Started. It must not replace an existing sequence's target on a secondary Down. `PointUncapture` runs after `pointSequenceEnded` propagation, including for a rejected sequence, and clears the stored sequence/capture state. The first point's Up is insufficient while another point remains. `ResetPointCapture` performs the corresponding state reset from existing host/window disconnection paths.
+`PointCapture` runs once at Started. It must not replace an existing sequence's target on a secondary Down. `PointUncapture` runs after `pointSequenceEnded` propagation, including for a rejected sequence, and clears the stored sequence/capture state, native sample dictionary, and list only after End handlers have observed them. The first point's Up is insufficient while another point remains. `ResetPointCapture` performs the corresponding state reset from existing host/window disconnection paths.
 
 These are GacUI composition capture/release functions. Do not implement them by calling `INativeWindow::RequireCapture` or `ReleaseCapture`, which control mouse capture. Windows touch contacts already have implicit native ownership; other providers need their own native delivery mechanism. No general receiving-side Win32 pointer capture/release function is being proposed.
 
 Before implementing point propagation and capture, inspect `MouseCapture`, `MouseUncapture`, `ResetMouseCapture`, `OnMouseInput`, and `RaiseMouseEvent` in `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost.cpp`. Reuse or factor out the common first-hit selection, source/eventSource assignment, parent traversal, coordinate rebasing, and `handled` stopping logic where it fits. The section 0 entry points do not require duplicating that implementation. Typed helpers local to the implementation file can serve both mouse and point event arguments.
 
-Preserve the differences in state and lifetime: mouse release depends on held mouse buttons, while point release depends on the entire sequence ending. Existing `RaiseMouseEvent` is typed to mouse arguments/member pointers; adapt or extract its common routing instead of pretending point data is a mouse event. Point End can reuse parent traversal without coordinate fields.
+Preserve the differences in state and lifetime: mouse release depends on held mouse buttons, while point release depends on the entire sequence ending. Existing `RaiseMouseEvent` is typed to mouse arguments/member pointers; adapt or extract its common routing instead of pretending point data is a mouse event. Point End can reuse parent traversal without a changed-point payload, while rebasing its shared list for each receiver.
 
 **Deleting the receiving composition inside its mouse handler is a known crash, and the same behavior is expected for point handlers.** This change does not fix that issue, retain compositions to hide it, snapshot the tree to survive it, or add reentrant-deletion recovery. Point handlers follow the existing rule of deferring destruction/reparenting until after input dispatch. Tests must not demand safe synchronous deletion inside a point handler.
 
@@ -612,7 +627,7 @@ Hosted mode inserts `GuiHostedController` between the real native window and log
 
 Preserve the sequence ID and selected logical window for all subsequent points and End, including later fingers outside that window. Coordinate conversion uses that window's current rendering/client offset; it must not select another window based on a later point. Existing hosted mouse helpers that repeatedly hit-test cannot be reused unchanged, but their coordinate and listener-forwarding logic should be reviewed for reuse.
 
-Native position/contact bounds are relative to the receiving native window's client area. Hosted adapters translate into the selected logical window's native client space; `GuiGraphicsHost` uses existing `INativeWindow::Convert` conversions to reach GUI coordinates. Composition propagation rebases to each receiver. Do not mix Windows screen pixels, native client units, and GUI units.
+Native position/contact bounds are relative to the receiving native window's client area. Hosted adapters translate into the selected logical window's native client space; `GuiGraphicsHost` uses existing `INativeWindow::Convert` conversions to reach GUI coordinates. Composition propagation rebases the changed-point payload and all nonempty list entries to each receiver, including the list on End. Rebuild those list values from the retained native samples rather than treating the previous receiver's coordinates as native input. Do not mix Windows screen pixels, native client units, and GUI units.
 
 Keep point routing independent of the existing mouse `capturingWindow`, `hoveringWindow`, and window-manager drag state. On rejection, the existing mouse fallback path performs its own normal routing; the remembered point-query window does not override mouse targeting. `ResetPointSequence` clears a removed hosted target without retargeting an in-progress sequence.
 
@@ -622,10 +637,11 @@ Section 0.1 defines all new native data types; section 0.2 exposes their logical
 
 | Field or event | Contract |
 |---|---|
-| `sequenceId`, `pointId` | Nonzero sequence identity and contact-lifetime identity, as defined in section 3.2. |
+| `sequenceId`, `pointId` | Nonzero sequence identity and zero-based Down-order index, as defined in section 3.2. Point ID 0 is valid. |
 | `timestamp` | Monotonic microseconds in the provider's clock domain; use source sample time where available. It is not wall-clock time. |
 | `position`, `contactBounds` | Native client coordinates in `NativeWindowPointInfo`; logical receiver-relative coordinates in `WindowPointInfo`. Use existing geometry types and DPI conversion. |
-| `activePointCount` | Active count after the reported contact transition. Started includes its first point; final Up/Cancel has count zero. Boundary events do not change the count. |
+| `activePointCount` | Active count after the reported contact transition. Started includes its first point; final normal Up has count zero. Boundary events do not change the count. For accepted composition events it equals the number of nonempty list entries, not the list length. |
+| `points` | Composition-only borrowed reference to the host's shared list. `pointId` indexes its slot; empty means that contact has delivered Up. Started and End expose the same list, with rejection handled as in section 3.4. |
 | `primary` | Platform hint. Never filter out other fingers or promote an already-down finger when the primary ends. |
 | `ctrl`, `shift`, `alt`, `osSuper` | Modifier state at the sample. These do not encode contact count or acceptance. |
 | `pressure` | Optional normalized 0..1 measurement. Empty means unavailable/unknown, not zero. |
@@ -634,18 +650,20 @@ Section 0.1 defines all new native data types; section 0.2 exposes their logical
 | `PointDown` / `pointDown` | A contact joins the accepted sequence. |
 | `PointUpdate` / `pointUpdate` | Contact data changes or is reported again, including stationary pressure/size updates. |
 | `PointUp` / `pointUp` | A contact ends normally. This alone does not recognize a tap or activate a control. |
-| `PointCancel` / `pointCancel` | A contact ends abnormally, with a `PointCancelReason`. `cancelReason` is empty on other composition events. |
+| `PointSequenceEnded` / `pointSequenceEnded` | The whole sequence ends once. `reason` is `Succeeded` after the final normal Up, or a `Canceled_*` reason without synthetic Ups for contacts still down. |
 | `PointEntered`, `PointLeaved` / `pointEnter`, `pointLeave` | Native client-surface boundary notifications for an active contact. They retain the sequence target and bubble; they are not hit-test transitions between arbitrary compositions. |
 
-The complete Step 1 contact event set is represented above. `WM_POINTERDOWN`, `WM_POINTERUPDATE`, and `WM_POINTERUP` supply transitions. `WM_POINTERENTER`/`WM_POINTERLEAVE` supply boundaries only while the contact belongs to a live sequence. `WM_POINTERCAPTURECHANGED` and `POINTER_FLAG_CANCELED` become cancellation rather than a successful Up. A canceled native Up must not produce both Up and Cancel.
+The complete Step 1 contact event set is represented above. `WM_POINTERDOWN`, `WM_POINTERUPDATE`, and `WM_POINTERUP` supply transitions. `WM_POINTERENTER`/`WM_POINTERLEAVE` supply boundaries only while the contact belongs to a live sequence. `WM_POINTERCAPTURECHANGED` for an active contact ends the sequence with `Canceled_CaptureLost`; `POINTER_FLAG_CANCELED` ends it with `Canceled_PlatformCanceled`. A canceled native Up produces End rather than a successful Up, so its list entry remains populated during End. Use `Canceled_WindowDestroyed` for native-window teardown and `Canceled_Unknown` when no more specific reason is available.
 
 Other messages cataloged in section 1.2 are not additional contact events: activation, non-client processing, device changes, touch hit testing, and specialized routing keep their platform responsibilities. Wheel input retains the existing wheel path. Step 1 does not add hover-only sequences, pen handling, browser raw-update events, or a public native pointer-capture service. Later browser capture notifications also need normalization rather than a separate public callback for every DOM event.
 
-For every delivered Down, produce exactly one Up or Cancel at the native listener boundary. Capture loss can occur without a later Up/Leave, so cancel that point using its last valid data. Remove only that point; remaining points stay in the same sequence and retain its target. After the final terminal point event, deliver End once. Ignore delayed boundary/capture cleanup for completed contacts; it must not create another sequence. A removed listener/target cannot receive later callbacks.
+Every normally completed contact in an accepted sequence has one Up. If cancellation occurs, terminate the whole public sequence with exactly one End immediately, even if several contacts remain down. Emit no further point-data callbacks or synthetic Ups for that sequence. The host keeps the latest samples and occupied list slots through End propagation, then releases its capture and clears its state.
 
-Copy native information while it is valid. Callback arguments are borrowed for the callback duration; retained records copy values. The initial API delivers one changed point per callback, not a promise of simultaneous hardware sampling. If history is added later, preserve chronological order and do not duplicate the newest sample.
+The provider separately retains enough private native bookkeeping to consume or default-process trailing packets according to the original acceptance decision. Surviving contacts and new Downs overlapping that drain period do not start another public sequence, requery acceptance, or switch fallback modes. Retire a capture-lost/canceled native contact without waiting for an Up that may never arrive; track other still-owned contacts until their native termination. A fresh Down after that native activity has finished can start a new sequence. Ignore delayed boundary/capture cleanup for retired contacts. A removed listener/target cannot receive later callbacks.
 
-Native window destruction terminates remaining contacts and the sequence before listener teardown. A later native Up/capture-loss notification must not repeat a terminal event. Unsupported providers simply never emit the new callbacks and continue existing mouse behavior.
+Copy native information while it is valid. Callback arguments and the shared list view are borrowed for the handler duration; retained records copy values. The const reference prevents handlers from changing the host's list, but it is not an immutable snapshot: the same object is updated for later receivers and later events, and cleared after End. Copy the positions if they must outlive a callback. The initial API delivers one changed point per callback, not a promise of simultaneous hardware sampling. If history is added later, preserve chronological order and do not duplicate the newest sample.
+
+Native window destruction emits canceled End before listener teardown, preserving remaining occupied slots for End handlers. It does not fabricate Ups. A later native Up/capture-loss notification must not repeat End. Unsupported providers simply never emit the new callbacks and continue existing mouse behavior.
 
 ## 3.8 Dynamic platform fallback and Windows implementation
 
@@ -668,9 +686,9 @@ Duplicate filtering must retain real mouse input and OS fallback for rejected se
 
 ## 3.9 Demonstration and verification for Step 1
 
-The FullControlTest page requested by Step 1 consumes raw point events. It accepts in `pointSequenceStarted`, tracks positions by point ID, uses one point to drag, and computes two-point translation, rotation, and scale directly in its demo behavior. Rebase geometry when active contacts change so adding/lifting a finger does not jump the content. This demonstrates point input without adding a gesture API or changing built-in list/text controls.
+The FullControlTest page requested by Step 1 consumes raw point events. It accepts in `pointSequenceStarted`, reads active positions from the shared list using point IDs as indices, uses one point to drag, and computes two-point translation, rotation, and scale directly in its demo behavior. Rebase geometry when active contacts change so adding/lifting a finger does not jump the content. This demonstrates point input without adding a gesture API or changing built-in list/text controls.
 
-Add point IO to the existing automation service so ordered Down/Update/Up/Cancel samples exercise the same acquisition, query, capture, routing, and fallback decisions. Direct composition-event injection alone cannot verify native fallback. Keep IDs and simultaneous contacts explicit; do not model two fingers as two mouse buttons. The concrete command grammar/internal parser changes belong to that implementation work, not a new native service in section 0.
+Add point IO to the existing automation service so ordered Down/Update/Up samples and sequence-cancellation stimuli exercise the same acquisition, query, capture, routing, and fallback decisions. Cancellation stimuli produce End with a reason through the native path; they do not invoke a separate point-cancel callback. Direct composition-event injection alone cannot verify native fallback. Keep IDs and simultaneous contacts explicit; do not model two fingers as two mouse buttons. The concrete command grammar/internal parser changes belong to that implementation work, not a new native service in section 0.
 
 Required cases include:
 
@@ -678,7 +696,10 @@ Required cases include:
 - One Started/Ended pair with accepted=false and no point-data events on rejection; OS mouse fallback still reaches an ordinary control.
 - Accepting/rejecting successive sequences at the same position after changing handler state, without startup configuration or listener reinstall.
 - A Down, B Down elsewhere, A Up, B Update/Up: one sequence ID and one original composition/logical-window capture.
-- A/B/C overlapping contacts as in section 3.2; a new ID only after the active set becomes empty.
+- A/B/C overlapping contacts as in section 3.2; IDs 0/1/2 follow Down order despite slot 0 becoming empty. The next sequence starts again at point ID 0, with a new sequence ID.
+- Started and first Down share slot 0. Later Down appends, updates change the indexed slot, and Up empties it before the handler without reducing list length.
+- The same list object reaches all point and End handlers; its positions are correct for each receiving composition. Successful End sees all slots empty.
+- Cancellation with several points still down: one canceled End retains occupied slots and previous Up holes, with no synthetic Ups or later point events. Trailing native packets cannot restart the sequence or switch fallback. Rejected End has an empty, unavailable tracking list.
 - Primary release without promoting a remaining finger to mouse.
 - Movement outside the original composition/native window, boundary notifications, capture loss without Up, canceled Up, and duplicate terminal cleanup.
 - Physical mouse input while points are active; duplicate filtering does not lose rejected fallback.
@@ -690,7 +711,7 @@ Required cases include:
 
 Use deterministic routing/sequence tests plus native integration tests. Windows injected multi-contact input can verify routing/fallback, and real touch hardware validates the interaction. Do not claim these passed merely because mock listeners or direct event injection passed. When factoring shared mouse routing, also run existing mouse-input tests to ensure its propagation/capture behavior is preserved.
 
-Implement reflection in `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionBasic.cpp` for new enum/value types, `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionEvents.cpp` for arguments/constructors/fields, and `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionCompositions.cpp` for every new receiver event. Follow the existing type-list/event macros. Native listener callbacks remain C++ notifications.
+Implement reflection in `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionBasic.cpp` for new enum/value types, `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionEvents.cpp` for arguments/fields and read-only `Points` properties backed by `GetPoints`, and `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionCompositions.cpp` for every new receiver event. Follow the existing type-list/event macros. Do not register the reference member with `CLASS_MEMBER_FIELD` or apply `EVENTARGS_CONSTRUCTOR` to these types: they have no default/composition-only constructors. The host constructs these borrowed-list arguments; do not expose reflected constructors that could retain a temporary script-supplied list. Native listener callbacks remain C++ notifications.
 
 During implementation, run prescribed unit tests, metadata/resource generation, and focused FullControlTest/UIA checks for affected changes. Step 1 does not update the remote-protocol SOP or knowledge-base pages. The GacUI_Windows tutorial addition and those documentation updates belong to Step 2. This document edit changes no source, reflection implementation, demo, or generated output.
 
@@ -704,9 +725,9 @@ GacJS currently forwards input from `<GacJS repo>/Gaclib/gaclib/renderer/src/Gac
 
 Step 2 must resolve how the browser makes a timely local decision consistent with the current sequence query, or define a constrained browser fallback policy that can actually be implemented. Do not claim an arbitrary worker-round-trip query preserves both native browser fallback and uninterrupted custom point delivery. Creation-time opt-in must not silently replace the public per-occurrence contract.
 
-Accepted custom input also needs stable DOM capture and correlation of touch-origin compatibility mouse/click events. Canceling a pointer event alone does not suppress click dispatch. Preserve real mouse, keyboard, and accessibility activation. Browser takeover/cancellation terminates the affected points without waiting for Up. [Compatibility activation](https://www.w3.org/TR/pointerevents3/#compatibility-mapping-with-mouse-events).
+Accepted custom input also needs stable DOM capture and correlation of touch-origin compatibility mouse/click events. Canceling a pointer event alone does not suppress click dispatch. Preserve real mouse, keyboard, and accessibility activation. Browser takeover/cancellation ends the entire public sequence with a `Canceled_*` reason without waiting for Up, preserving the occupied composition-list slots until End completes. [Compatibility activation](https://www.w3.org/TR/pointerevents3/#compatibility-mapping-with-mouse-events).
 
-Transport must preserve Started before point data, the decision for that occurrence, per-point ordering, and End after terminal input. Coalesce only safe updates; never let B overwrite A or lose sequence boundaries. Include connection generation, preserve IDs through adapters, and require compatible peers before new messages are used. Existing mouse-only pairs keep their current protocol path.
+Transport must preserve Started before point data, the decision for that occurrence, Down-order point indices, per-point ordering, and one End after the final normal Up or immediately on cancellation. Remaining native cleanup after canceled End stays internal and cannot generate more point messages. Coalesce only safe updates; never let B overwrite A or lose sequence boundaries. Include connection generation, preserve IDs through adapters, and require compatible peers before new messages are used. Existing mouse-only pairs keep their current protocol path.
 
 ## 3.11 Later controls and gestures
 
