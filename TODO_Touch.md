@@ -2,9 +2,200 @@
 
 <!-- this section should include header file changing required by the job, declare any new types and methods, no explanation in this section, section 3 will reference the code here, do not delete this comment -->
 
+## 0.1 `<GacUI repo>/Source/NativeWindow/GuiNativeWindow.h`
+
+### New types in vl::presentation
+
+```cpp
+enum class PointCancelReason
+{
+	Unknown,
+	PlatformCanceled,
+	CaptureLost,
+	WindowDestroyed,
+};
+
+template<typename TPoint, typename TRect>
+struct WindowPointInfo_
+{
+	vuint64_t				sequenceId = 0;
+	vuint64_t				pointId = 0;
+	vuint64_t				timestamp = 0;
+	vint					activePointCount = 0;
+	TPoint					position;
+	bool					primary = false;
+	bool					ctrl = false;
+	bool					shift = false;
+	bool					alt = false;
+	bool					osSuper = false;
+	Nullable<TRect>			contactBounds;
+	Nullable<double>		pressure;
+	Nullable<double>		orientation;
+	Nullable<vuint64_t>		platformFrameId;
+};
+
+using NativeWindowPointInfo = WindowPointInfo_<NativePoint, NativeRect>;
+using WindowPointInfo = WindowPointInfo_<Point, Rect>;
+
+struct PointSequenceEndInfo
+{
+	vuint64_t				sequenceId = 0;
+	vuint64_t				timestamp = 0;
+	bool					accepted = false;
+	bool					canceled = false;
+};
+```
+
+### INativeWindowListener: public additions
+
+```cpp
+virtual void				PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept);
+virtual void				PointDown(const NativeWindowPointInfo& info);
+virtual void				PointUpdate(const NativeWindowPointInfo& info);
+virtual void				PointUp(const NativeWindowPointInfo& info);
+virtual void				PointCancel(const NativeWindowPointInfo& info, PointCancelReason reason);
+virtual void				PointEntered(const NativeWindowPointInfo& info);
+virtual void				PointLeaved(const NativeWindowPointInfo& info);
+virtual void				PointSequenceEnded(const PointSequenceEndInfo& info);
+```
+
+## 0.2 `<GacUI repo>/Source/Application/GraphicsCompositions/GuiGraphicsEventReceiver.h`
+
+### New types in vl::presentation::compositions
+
+```cpp
+struct GuiPointEventArgs
+	: public GuiEventArgs
+	, public WindowPointInfo
+	, public Description<GuiPointEventArgs>
+{
+	Nullable<PointCancelReason>		cancelReason;
+
+	GuiPointEventArgs();
+	GuiPointEventArgs(GuiGraphicsComposition* composition);
+};
+
+struct GuiPointSequenceStartedEventArgs
+	: public GuiPointEventArgs
+	, public Description<GuiPointSequenceStartedEventArgs>
+{
+	bool							accept = false;
+
+	GuiPointSequenceStartedEventArgs();
+	GuiPointSequenceStartedEventArgs(GuiGraphicsComposition* composition);
+};
+
+struct GuiPointSequenceEndedEventArgs
+	: public GuiEventArgs
+	, public PointSequenceEndInfo
+	, public Description<GuiPointSequenceEndedEventArgs>
+{
+	GuiPointSequenceEndedEventArgs();
+	GuiPointSequenceEndedEventArgs(GuiGraphicsComposition* composition);
+};
+
+typedef GuiGraphicsEvent<GuiPointEventArgs>					GuiPointEvent;
+typedef GuiGraphicsEvent<GuiPointSequenceStartedEventArgs>	GuiPointSequenceStartedEvent;
+typedef GuiGraphicsEvent<GuiPointSequenceEndedEventArgs>		GuiPointSequenceEndedEvent;
+```
+
+### GuiGraphicsEventReceiver: public additions
+
+```cpp
+GuiPointSequenceStartedEvent		pointSequenceStarted;
+GuiPointEvent					pointDown;
+GuiPointEvent					pointUpdate;
+GuiPointEvent					pointUp;
+GuiPointEvent					pointCancel;
+GuiPointEvent					pointEnter;
+GuiPointEvent					pointLeave;
+GuiPointSequenceEndedEvent		pointSequenceEnded;
+```
+
+## 0.3 `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost.h`
+
+### GuiGraphicsHost: protected additions
+
+```cpp
+vuint64_t													pointSequenceId = 0;
+bool														pointSequenceAccepted = false;
+GuiGraphicsComposition*										pointCaptureComposition = nullptr;
+collections::Dictionary<vuint64_t, NativeWindowPointInfo>		activePoints;
+
+void							PointCapture(const NativeWindowPointInfo& firstPoint);
+void							PointUncapture();
+void							ResetPointCapture();
+void							RaisePointEvent(
+									GuiPointEventArgs& arguments,
+									GuiPointEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
+void							RaisePointSequenceStartedEvent(GuiPointSequenceStartedEventArgs& arguments);
+void							RaisePointSequenceEndedEvent(GuiPointSequenceEndedEventArgs& arguments);
+void							OnPointInput(
+									const NativeWindowPointInfo& info,
+									GuiPointEvent GuiGraphicsEventReceiver::* eventReceiverEvent,
+									Nullable<PointCancelReason> cancelReason = {});
+```
+
+### GuiGraphicsHost: private additions
+
+```cpp
+void							PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept) override;
+void							PointDown(const NativeWindowPointInfo& info) override;
+void							PointUpdate(const NativeWindowPointInfo& info) override;
+void							PointUp(const NativeWindowPointInfo& info) override;
+void							PointCancel(const NativeWindowPointInfo& info, PointCancelReason reason) override;
+void							PointEntered(const NativeWindowPointInfo& info) override;
+void							PointLeaved(const NativeWindowPointInfo& info) override;
+void							PointSequenceEnded(const PointSequenceEndInfo& info) override;
+```
+
+## 0.4 `<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedController.h`
+
+### GuiHostedController: protected additions
+
+```cpp
+vuint64_t						pointSequenceId = 0;
+bool							pointSequenceAccepted = false;
+GuiHostedWindow*					pointSequenceWindow = nullptr;
+
+NativeWindowPointInfo			ConvertPointToHostedWindow(const NativeWindowPointInfo& info);
+void							ForwardPointInput(
+									const NativeWindowPointInfo& info,
+									void (INativeWindowListener::* callback)(const NativeWindowPointInfo&));
+void							ResetPointSequence();
+
+void							PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept) override;
+void							PointDown(const NativeWindowPointInfo& info) override;
+void							PointUpdate(const NativeWindowPointInfo& info) override;
+void							PointUp(const NativeWindowPointInfo& info) override;
+void							PointCancel(const NativeWindowPointInfo& info, PointCancelReason reason) override;
+void							PointEntered(const NativeWindowPointInfo& info) override;
+void							PointLeaved(const NativeWindowPointInfo& info) override;
+void							PointSequenceEnded(const PointSequenceEndInfo& info) override;
+```
+
+## 0.5 `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h`
+
+### GUIREFLECTIONBASIC_TYPELIST: additional entries
+
+```cpp
+			F(presentation::PointCancelReason)\
+			F(presentation::NativeWindowPointInfo)\
+			F(presentation::WindowPointInfo)\
+			F(presentation::PointSequenceEndInfo)\
+```
+
+### GUIREFLECTIONEVENT_TYPELIST: additional entries
+
+```cpp
+			F(presentation::compositions::GuiPointEventArgs)\
+			F(presentation::compositions::GuiPointSequenceStartedEventArgs)\
+			F(presentation::compositions::GuiPointSequenceEndedEventArgs)\
+```
+
 # 1. Windows touch and gesture capabilities
 
-This is a proposed plan, not an implemented feature. The implementation targets are native Windows and the GacJS browser renderer. Other providers should retain their existing mouse behavior without implementing touch. Platform references were checked on 2026-10-09.
+This is a research report and proposed plan, not an implemented feature. Step 1 targets Windows point input; Step 2 adds the GacJS browser renderer. Gesture facilities are retained here as research for later steps and are not used for recognition in the first version. Other providers retain their existing mouse behavior. Platform references were checked on 2026-10-09; the sequence contract in sections 0 and 3 was revised on 2026-10-14.
 
 The contact-input paths are Windows `WM_POINTER*` on Windows 8 or newer and browser Pointer Events. The catalogs below cover their application-facing touch, gesture, feedback, and testing facilities. Pen and touchpad facilities are identified separately. Device-driver development is outside this plan.
 
@@ -17,7 +208,7 @@ The contact-input paths are Windows `WM_POINTER*` on Windows 8 or newer and brow
 | `WM_GESTURE` | Automatic gestures produced by default pointer processing. | Platform behavior reference; raw contacts still use the pointer path. |
 | Direct Manipulation | A larger system for moving/scaling content, inertia, and composition. | Optional integration for native viewports and touchpads. |
 
-`WM_POINTER` is the only Windows contact-input path in this plan. Passing unhandled pointer input to `DefWindowProc` can produce `WM_GESTURE` or compatibility mouse input. Handling the pointer stream consistently lets GacUI provide its own gestures and mouse fallback, or explicitly feed Interaction Context. Recognition is separate from contact acquisition; enabling a recognizer does not promise independent, uninterrupted raw and gesture streams. [Pointer default processing](https://learn.microsoft.com/en-us/windows/win32/inputmsg/wm-pointerdown), [Interaction Context](https://learn.microsoft.com/en-us/windows/win32/input_intcontext/interaction-context-portal).
+`WM_POINTER` is the only Windows contact-input path in this plan. Passing unhandled pointer input to `DefWindowProc` can produce `WM_GESTURE` or compatibility mouse input. Handling the pointer stream consistently is required for the per-sequence point/fallback decision in section 3. Feeding Interaction Context or providing a shared gesture recognizer is later work. Recognition is separate from contact acquisition; enabling a recognizer does not promise independent, uninterrupted raw and gesture streams. [Pointer default processing](https://learn.microsoft.com/en-us/windows/win32/inputmsg/wm-pointerdown), [Interaction Context](https://learn.microsoft.com/en-us/windows/win32/input_intcontext/interaction-context-portal).
 
 ## 1.2 All pointer-related message groups
 
@@ -72,7 +263,7 @@ Touch down implicitly captures that pointer to its target HWND. Updates can ther
 
 `POINTER_FLAG_CANCELED` reports abnormal termination. It is a flag to read, not a command to set on received input. A canceled Up must not count as a successful release or click. Windows does not document one universal sequence for every cancellation cause. [Cancellation flag](https://learn.microsoft.com/en-us/windows/win32/inputmsg/pointer-flags-contants).
 
-Passing unhandled pointer input to `DefWindowProc` allows default gestures or mouse promotion. Microsoft warns that consuming some input and default-processing the rest can produce undefined behavior. For selective per-control fallback, the framework should consume its touch stream consistently and generate its own compatibility mouse events. `EnableMouseInPointer` controls the opposite direction and is a process-level choice. [Default pointer processing](https://learn.microsoft.com/en-us/windows/win32/inputmsg/wm-pointerdown), [EnableMouseInPointer](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enablemouseinpointer).
+Passing unhandled pointer input to `DefWindowProc` allows default gestures or mouse promotion. Microsoft warns that consuming some input and default-processing the rest can produce undefined behavior. The first-version design instead makes one point/fallback decision for an entire overlapping-contact sequence, retaining OS mouse fallback for a rejected sequence. Its native processing and gesture-suppression requirements must be verified as described in section 3.8. `EnableMouseInPointer` controls the opposite direction and is a process-level choice. [Default pointer processing](https://learn.microsoft.com/en-us/windows/win32/inputmsg/wm-pointerdown), [EnableMouseInPointer](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enablemouseinpointer).
 
 `GetCurrentInputMessageSource` identifies the source category of the current message. `GetMessageExtraInfo` has documented touch/pen signatures for promoted mouse messages. Use source information to prevent duplicate delivery while retaining real mouse input. [Input source](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getcurrentinputmessagesource), [promoted mouse identification](https://learn.microsoft.com/en-us/windows/win32/tablet/system-events-and-mouse-messages).
 
@@ -263,7 +454,7 @@ Preventing a DOM default action must happen synchronously in the browser handler
 
 ## 2.6 Browser gestures and default-action policy
 
-Browsers internally recognize pan, pinch zoom, and other actions, but there is **no portable general set of pan/pinch/rotate/swipe events for application controls**. Implement those recognizers from contacts when GacUI owns the interaction. For example, distance between two pointers provides pinch scale. [Pointer-based pinch example](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events/Pinch_zoom_gestures).
+Browsers internally recognize pan, pinch zoom, and other actions, but there is **no portable general set of pan/pinch/rotate/swipe events for application controls**. Custom recognition can be built from contacts when GacUI owns the interaction; that is later work, beyond the first-version point API. For example, distance between two pointers provides pinch scale. [Pointer-based pinch example](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events/Pinch_zoom_gestures).
 
 CSS `touch-action` declares which browser pan/zoom behaviors are allowed:
 
@@ -286,7 +477,7 @@ If the browser owns a DOM scroll container, observe resulting position through `
 
 Trackpads generally produce cursor/wheel input rather than individually exposed fingers. `wheel` supplies `deltaX/Y/Z` and `deltaMode`; units can be pixels, lines, or pages. A wheel event need not cause scrolling. Trackpad pinch can arrive with `ctrlKey == true`, but actual Ctrl+wheel can do the same, so this does not identify a touchscreen pinch. [wheel](https://developer.mozilla.org/en-US/docs/Web/API/Element/wheel_event), [ctrlKey](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/ctrlKey).
 
-Safari/WebKit additionally provides proprietary `gesturestart`, `gesturechange`, and `gestureend`. `GestureEvent.scale` is relative to the initial distance and `rotation` is relative to the initial orientation. This is useful optional integration, not a cross-browser gesture API. Do not process both these gestures and a shared recognizer for the same interaction. [Apple GestureEvent](https://developer.apple.com/documentation/webkitjs/gestureevent), [GestureEvent reference](https://developer.mozilla.org/en-US/docs/Web/API/GestureEvent).
+Safari/WebKit additionally provides proprietary `gesturestart`, `gesturechange`, and `gestureend`. `GestureEvent.scale` is relative to the initial distance and `rotation` is relative to the initial orientation. This is useful research for optional later integration, not a cross-browser gesture API or a Step 1 dependency. Do not process both these gestures and a shared recognizer for the same interaction. [Apple GestureEvent](https://developer.apple.com/documentation/webkitjs/gestureevent), [GestureEvent reference](https://developer.mozilla.org/en-US/docs/Web/API/GestureEvent).
 
 ## 2.8 Typical browser event sequences
 
@@ -323,285 +514,207 @@ Optional `EditContext` connects custom editors to text services. The VirtualKeyb
 | Inertia | Available in Windows recognizers/engines. | Browser owns native scrolling inertia; custom GacUI scrolling needs its own. |
 | Custom text handles | Custom-drawn controls must integrate or draw them. | Custom GacUI selection is not automatically native DOM selection. |
 
-# 3. Proposed GacUI native interfaces and input design
+# 3. First-version point input design
 
-## 3.1 Scope and existing constraints
+## 3.1 Scope and header inventory
 
-This section proposes API contracts and future work only. No implementation is included in this change.
+This is a design proposal, not an implemented feature. It follows Step 1 in `<GacUI repo>/ToDo/1.5.1.0.md`. Section 0 contains the complete proposed header additions for this point-input contract. Its blocks add declarations to the named namespaces, classes, and existing reflection macros; they do not replace existing classes or remove their members. Definitions and routing behavior belong in the corresponding implementation files.
 
-The recommendation is **struct-based callbacks on existing listeners, raw contacts at the native boundary, and shared gesture recognition and mouse fallback above that boundary**. No new public interface is needed. Windows and browsers should deliver equivalent contact lifetimes even when their native event names differ. Linux/macOS/TUI providers may continue providing mouse input only.
+Use **point** in new API names. The first implementation acquires touchscreen contacts through Windows `WM_POINTER*`, not legacy `WM_TOUCH`. The browser port uses Pointer Events in Step 2. Physical mouse input retains its existing API; pen hover, pen-specific editing, precision-touchpad integration, optional history/prediction, and specialized OS pointer messages remain outside Step 1.
 
-The relevant existing code is:
+The first version provides point sequence negotiation, point data, sequence-wide capture and routing, cancellation, and platform fallback. It does not add gesture callbacks, gesture event arguments, a gesture recognizer, inertia, a touch input service, or a new public interface. **There is no `INativeWindow::ConfigureTouchInput` or startup `MouseOnly`/`FrameworkTouch` mode.** Acceptance is queried for the current occurrence, when its first point goes down.
 
-| Area | Current shape and consequence |
+Sections 1 and 2 retain platform research, including gesture facilities for later work. Section 4 is retained unchanged as future control-behavior research; its deferred activation, momentum, selection handles, and gesture terminology do not add requirements to Step 1. Step 3 addresses controls, and Step 4 revisits gesture APIs.
+
+| Header declarations | Implementation responsibility |
 |---|---|
-| `<GacUI repo>/Source/NativeWindow/GuiNativeWindow.h` and `<GacUI repo>/Source/NativeWindow/GuiNativeWindow.cpp` | `INativeWindowListener` callbacks already have no-op definitions. Add struct-based notifications there and, for explicit opt-in, one defaulted configuration method on the existing `INativeWindow`. |
-| `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost.h` and `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost.cpp` | One mouse capture composition and one shared set of mouse-button states. Touch needs a separate per-contact table. Mouse `handled` controls routing; it is not a native default-action policy. |
-| `<GacUI repo>/Source/PlatformProviders/Hosted/GuiHostedController.h` | One mouse capturing/hovering window. Hosted touch needs contact-to-window routing as well as contact-to-composition routing. |
-| `<GacUI repo>/Source/PlatformProviders/Windows/WinNativeWindow.cpp` | Current mouse message path; add a separate raw-touch path and source deduplication. |
-| `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_IO.txt` | Mouse/keyboard protocol has no contact lifetime, touch source, or cancellation data. |
-| `<GacUI repo>/Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_IO.cpp` | A single pending mouse move is coalesced. Touch cannot reuse a single global last-move slot. |
-| `<GacJS repo>/Gaclib/gaclib/renderer/src/GacUIRendererImpl.ts` | Mouse event forwarding and wheel handling; pointer acquisition and local default-action policy need to be added. |
-| `<GacJS repo>/Gaclib/website/remote-protocol-wasm/src/index.ts` and `<GacJS repo>/Gaclib/website/remote-protocol-wasm/src/worker.ts` | Input crosses a worker boundary. Browser cancellation cannot wait for a core reply. |
+| Section 0.1: point data and `INativeWindowListener` callbacks | Native acquisition and a synchronous sequence-start query. No composition references, composition hit testing, or composition capture. |
+| Section 0.2: event arguments and receiver members | Expose point events to composition handlers and Workflow using existing event conventions. |
+| Section 0.3: `GuiGraphicsHost` additions | Hit-test the first point, ask the target/ancestor chain, capture that composition, and route the complete sequence. |
+| Section 0.4: `GuiHostedController` additions | Keep the sequence on the first selected hosted window and forward its listener events. |
+| Section 0.5: reflection type-list additions | Make the new data and arguments available to the existing reflection pipeline. |
 
-The hosted-window coordinate mapping and remote protocol design in the knowledge base should guide the implementation. Preserve native-to-logical conversion at the established boundaries instead of mixing Windows physical pixels, browser CSS pixels, and composition coordinates.
+Windows acquisition state belongs to the private `WindowsForm` class in `<GacUI repo>/Source/PlatformProviders/Windows/WinNativeWindow.cpp`. Its sequence counter, active contacts, and accepted/rejected state stay there; they do not require a new public Windows header API. Existing `INativeWindow`, controller services, and built-in control headers need no additions for this contract.
 
-## 3.2 Existing listeners, structs, and one configuration method
+## 3.2 Sequence identity and lifetime
 
-All incoming touch information can use methods added to `INativeWindowListener`. The following declaration sketch omits existing members and inheritance. The argument structs would be declared with native input types in `<GacUI repo>/Source/NativeWindow/GuiNativeWindow.h`.
+A point sequence covers a continuous chain of overlapping contacts in one native window. The first Down while no contacts are active allocates a nonzero `sequenceId`. Every subsequent point belongs to that sequence while at least one contact remains. Only the last Up/Cancel ends it. A contact can stop moving without leaving the active set.
 
-```cpp
-class INativeWindowListener
-{
-public:
-    virtual void TouchInputInfoChanged(const NativeTouchInputInfo& info);
-    virtual void TouchInput(const NativeTouchFrame& frame);
-
-    // Only needed if provider-side recognition is added later.
-    virtual void GestureInput(const NativeGestureEvent& gesture);
-};
-
-class INativeWindow
-{
-public:
-    virtual bool ConfigureTouchInput(const NativeTouchInputConfig& config);
-};
-```
-
-The listener methods have default no-op definitions. `ConfigureTouchInput` has a default definition returning false, so unsupported providers retain their current behavior without implementing anything. These are additions to existing interfaces, with **no new touch service, recognizer interface, or listener interface**. All methods are non-pure; adding virtual members preserves provider source compatibility but requires rebuilding consumers for C++ ABI compatibility. If a pure configuration method is required by project conventions, the entire no-feature migration is an override returning false.
-
-The initial implementation needs the two touch callbacks and the configuration method. Keep `GestureInput` optional future work: the shared recognizer raises composition events directly and must not send its results back through native listeners.
-
-| Struct | Information passed by value fields |
-|---|---|
-| `NativeTouchInputConfig` | Request revision, requested mode, and optional sampling preferences such as actual history. A future provider recognizer can add options here without returning another interface. |
-| `NativeTouchInputInfo` | Request revision/result, effective mode, capability values and their validity, and input-connection generation. The same callback reports configuration completion and later capability/availability changes. |
-| `NativeTouchFrame` | Ordered actual contact samples, delivery sequence, and optional platform-frame metadata. |
-| `NativeGestureEvent` | Recognized action, interaction ID, contact/session association, phase, transforms, and inertia state. |
-
-`NativeTouchInputMode` has two values:
-
-- `MouseOnly`: preserve existing input behavior. This is the initial mode.
-- `FrameworkTouch`: deliver contacts acquired from pointer events and suppress/filter duplicate native touch-to-mouse input. Physical mouse input still uses the existing path.
-
-`ConfigureTouchInput` returning false means the request was not accepted and the effective mode is unchanged. Returning true means **accepted for processing**, not that the renderer is already ready. `TouchInputInfoChanged` subsequently reports the matching revision as Applied or Rejected, the effective configuration, and a reason such as Unsupported or Busy. Queue completion through the existing event loop; do not introduce a new synchronous callback during listener installation.
-
-Install listeners and finish binding the host before requesting enhanced input. One acquisition owner configures each real window/surface: the graphics host in direct mode, or the hosting/renderer component that owns the underlying input chain. Other listeners observe and do not negotiate conflicting modes. Hosted child windows share that acquisition policy while retaining separate control routing. Uninstalling an observer does not change native mode.
-
-Configure enhanced input during initialization before accepting user interaction. Reject changes while delivered contacts are active; never split one contact lifetime between modes. An empty application contact set after cancellation does not prove physical fingers have lifted, so a later policy change applies to future native gestures only. The first implementation can limit configuration to initialization and teardown rather than promising live takeover.
-
-For a remote/browser provider, Applied means that the local handlers, CSS, capture bookkeeping, and duplicate filtering are installed. Order that notification before the first frame for the new configuration, and tag frames with its revision/connection generation. Existing-mode input remains ordered before that boundary. The core must not synthesize touch fallback or assume raw input is active merely because the configuration request was accepted. The owner drains/cancels its input before teardown; destroy the surface or complete a supported transition before detaching the owner.
-
-Capabilities include raw-touch support, known maximum contacts, actual history, and optional contact bounds/pressure/orientation. Unknown capacity is different from zero. Browser fields may have fallback values without a hardware-measurement flag; preserve unknown validity rather than inferring measured pressure from 0.5. Start the host's cache in MouseOnly/unknown state; a rejected request or an unsupported provider must not be mistaken for successful setup.
-
-**Could the additions be strictly listener-only?** Yes, a provider could ask a new listener callback for configuration, or enhanced providers could use a fixed startup policy. However, configuration is a request from the host to the provider, while input notifications flow in the other direction. A listener-query design would need rules for multiple listeners, when to query them again, and what happens when the last interested listener leaves. A fixed enabled policy would suppress old mouse behavior even for consumers that only inherit the new no-op callbacks.
-
-The existing Windows, hosted, and remote `InstallListener` implementations only register listeners. `GuiGraphicsHost::SetNativeWindow` installs its listener before finishing its host binding in `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost.cpp`. Adding an immediate setup callback there would introduce a lifecycle change. One explicit configuration method called after binding is therefore the recommended small exception to listener-only additions. It avoids both new public interfaces and hidden setup rules. No new method is needed on `INativeController` or its service plumbing.
-
-## 3.3 Is input state queried from a window useful?
-
-State associated with a window is useful, but it does not need to be exposed as another native interface. The graphics host already needs contact records, gesture ownership, mouse-fallback decisions, and the latest reported configuration. Store that state in ordinary internal structs updated by callbacks.
-
-| Possible need outside a callback | How to support it without a native service getter |
-|---|---|
-| Decide whether enhanced input is ready | Read the host's cached `NativeTouchInputInfo`, including applied revision. |
-| Show capability information or adapt a UI | Use the last capability notification; retain unknown/unavailable values. |
-| Advance hold, inertia, or selection autoscroll | Existing timers read the host's contact/gesture state. No new native query is necessary. |
-| Route a gesture or cancel an existing drag | Use the common host's interaction records and existing control/composition objects. |
-| Attach diagnostics after initialization | Read a copied host snapshot; do not manufacture Down events or reinterpret already active contacts as new interactions. |
-
-A future read-only method on an existing host/window class could return a snapshot struct if a concrete caller needs it. That would be convenience access to last-known state, not fresher physical input and not an object exposing another interface. Do not add it in the initial native contract: the current requirements are covered by listeners plus cached state.
-
-Callbacks carry immutable data valid for the callback. Consumers that retain data must copy the relevant fields/collections; remote adapters must serialize/copy before returning. Update the owner's cache in input order before notifying control observers, and use existing UI-thread/event-loop ownership. This avoids retaining references to Windows message data or DOM event objects. It also keeps a snapshot query from being mistaken for a way to reverse browser defaults after the event has finished.
-
-## 3.4 Normalized contact contract
-
-| Proposed type/field | Contract |
-|---|---|
-| `NativeTouchPhase` | `Down`, `Update`, `Up`, `Cancel`. |
-| `NativeTouchId` | Identifies one contact lifetime. Platform IDs can be reused even within a connection; add an internal lifetime token for retained gesture/activation records, and a connection generation where needed. |
-| `NativeTouchSample.id`, `.phase` | The changed contact and what happened to it. |
-| `.position` | Position relative to the receiving native window's client area, with fractional precision. Convert into logical composition coordinates during routing. |
-| `.timestamp` | Monotonic time in a documented unit, proposed microseconds, within a documented clock domain. Do not subtract browser timestamps from a Windows clock without conversion. |
-| `.primary` | Platform hint only; never filter raw contacts by this value. |
-| `.contactBounds`, `.pressure`, `.orientation`, `.validFields` | Optional measurements with explicit validity. Normalize pressure to 0..1, but retain whether it is measured/known. |
-| `.modifiers`, `.source` | Relevant modifier state and source classification. Keep touch, real mouse, and optional pen distinct. |
-| `.cancelReason` | Acquisition-level termination such as platform interruption, unrecoverable delivery ownership loss, connection loss, or native-surface teardown; allow unknown. Logical target/action cancellation belongs to routed interaction state instead. |
-| Optional `.platformFrameId` on each sample | Identifies a hardware input frame only when the backend supplies one. Samples in a transport/history batch may have different frame IDs; this is not a touch-session ID. |
-| `NativeTouchFrame.samples` | An ordered batch of actual changed samples. A one-sample batch is valid. |
-| `.sequence`, `.configurationRevision`, `.inputGeneration` | Order delivery and identify the applied input configuration/connection. |
-
-The adapter reads platform data while it is valid and copies it before asynchronous forwarding. A batch may contain several contacts and/or historical samples; document chronological ordering and do not process the newest sample twice after reading history. Prediction is an optional separate visual channel, not committed contact input.
-
-For every delivered Down, the normalized stream provides exactly one terminal outcome: Up **or** Cancel. A Windows canceled packet or ownership loss becomes Cancel. A browser `pointercancel` becomes Cancel. Suppress later native packets that would otherwise generate a duplicate terminal event. Up means contact completion, not necessarily a tap; the recognizer decides that.
-
-Maintain separate active records for A and B. `Up(A)` removes A only. No consumer should infer finger count from mouse button state, `primary`, or the number of events received in the last frame.
-
-For browser `lostpointercapture`, distinguish normal cleanup after Up/Cancel from unexpected loss while active. Unexpected loss can cause a **framework** cancellation if reliable routing cannot be maintained; it is not proof that the browser canceled the physical contact. Keep terminal bookkeeping idempotent.
-
-## 3.5 Contact IDs, frames, sessions, and gesture groups
-
-**These identities describe different things.** Neither Windows raw pointers nor browser Pointer Events supplies a portable ID for the whole interval from the first delivered Down until the last contact ends. Windows `pointerId` identifies an individual pointer, while `frameId` identifies samples from one device update. Browser `pointerId` also identifies an individual pointer. [Windows pointer/frame definitions](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-pointer_info), [browser pointer identity](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerId).
-
-| Identity | Scope and lifetime |
-|---|---|
-| Contact lifetime ID | One Down through Up/Cancel. Normalize reused native IDs with a lifetime token; retained records must not confuse a later contact with an earlier one. |
-| Platform frame ID | One hardware sampling update, potentially containing several contacts. Windows exposes it; browser events do not promise equivalent grouping. |
-| Delivery sequence | Orders normalized/transported batches. An application-assigned browser batch number is not evidence of a simultaneous hardware sample. |
-| Touch session ID | A framework ID covering overlapping delivered contacts in one acquisition scope, from its first Down until its active set becomes empty. |
-| Gesture interaction ID | One recognized action owned by a control. It can use a subset of contacts, span multiple sessions for double-tap, or outlive contacts during inertia. |
-
-Use an active-ID set in the common acquisition-root coordinator. Its scope is the input connection/generation and real root window or browser surface. In direct native mode this can live with `GuiGraphicsHost`; in hosted mode coordinate it before dispatching contacts to individual hosted windows. Add a session ID when Down arrives to an empty set, retain it while any delivered contact remains, and close it when the final Up/Cancel removes the final ID.
-
-| Delivered event | Active set afterward | Framework session |
+| Incoming contact transition | Active contacts afterward | Sequence behavior |
 |---|---|---|
-| A Down | A | Create S1. |
-| B Down | A, B | Keep S1. |
-| A Up | B | Keep S1; A ending does not end B. |
-| C Down | B, C | Keep S1 because B was still active. |
+| A Down | A | Allocate S1; query Started before reporting A Down. |
+| B Down | A, B | Keep S1, its acceptance, and its routing target. |
+| A Up | B | Keep S1 even though its first point has ended. |
+| C Down | B, C | Keep S1 because B bridges the two contacts. |
 | B Up | C | Keep S1. |
-| C Up | Empty | Close S1. |
-| Next Down | New contact | Create S2. |
+| C Up | Empty | Report the final Up if accepted, then End S1. |
+| D Down | D | Allocate S2 and query acceptance again. |
 
-Define this from ordered delivered input, not guesses about gaps between hardware samples. Preserve boundaries and history ordering when batching; a transport batch can contain the end of one session and the beginning of another, so a single session field on the whole batch is insufficient. Associate the computed session with each routed sample/event. Only use genuine native-frame metadata for algorithms that require samples taken together.
+The sequence ID is unique for the lifetime of its native window, including rejected sequences. It is not a hardware frame ID or a finger ID. `pointId` identifies one contact lifetime within the sequence; reused OS pointer IDs must not alias an earlier contact in that sequence. The pair of sequence ID and point ID identifies a contact. Remote connections will additionally scope those identities by window and connection generation in Step 2.
 
-Proposed `NativeTouchSessionInfo` is a data struct carried by common routed touch arguments: session ID, acquisition scope/generation, active count, session phase, and completion/cancellation state. The coordinator owns the full set; controls do not each reconstruct it from their partial event streams. Hosted routing preserves the root session identity and adds its own target/interaction identity. If protocol layers already carry normalized session IDs, preserve them instead of allocating new IDs at every layer; otherwise assign them once after ordered acquisition.
+The native provider owns sequence allocation and active-contact bookkeeping, even when a sequence is rejected and no point payload is delivered. `GuiGraphicsHost` consumes the supplied sequence ID instead of reconstructing a different sequence from the events it accepts. Hosted forwarding preserves the root native ID and cannot restart the sequence for another logical window.
 
-Two simultaneous fingers can share a raw session while targeting unrelated controls and separate gestures. Joining a pinch is a control/ancestor ownership decision, not a consequence of matching session IDs. Neither the primary flag nor capture ownership is a session identifier. Windows gesture-instance/sequence fields are documented as internally used and are not a raw-session contract. [GESTUREINFO](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-gestureinfo).
+## 3.3 Native sequence query and listener delivery
 
-On native Cancel or unrecoverable ownership loss, remove the affected contact without waiting for Up. Record that the session was interrupted; remaining delivered contacts still need their terminal bookkeeping even if the control has already canceled its gesture. If GacUI cancels only a logical action, keep the native contact in the acquisition set while draining its subsequent input. Removing a composition or hosted child cancels its routed interaction, not the root acquisition contact; tearing down the acquisition surface ends that native stream. Do not let a logically canceled contact start another action halfway through its lifetime.
+On the first native Down, read its data and establish the sequence record. Then call `INativeWindowListener::PointSequenceStarted` before dispatching `PointDown` or allowing fallback processing of that first Down. This is an ordinary input-time callback, not a callback triggered by listener installation or window creation.
 
-An empty delivered-contact set does not prove that every physical finger is off the screen. The browser can take over scrolling and send `pointercancel` while fingers remain down; their later Up events need not reach GacUI. Session completion therefore distinguishes normal release from cancellation. Fingers outside the acquisition surface are outside this grouping contract. [Browser cancellation](https://developer.mozilla.org/en-US/docs/Web/API/Element/pointercancel_event).
+The provider asks its installed listeners through the existing listener mechanism. Each callback starts with a false `accept` value; combine their answers with logical OR. Default implementations do nothing and therefore decline. A listener can accept according to its current state, including a decision obtained synchronously from its own downstream handling. The native provider only sees that answer; it never inspects GacUI compositions.
 
-Keep contact-session and gesture lifetimes separate:
+If any listener accepts, latch acceptance for the entire sequence and broadcast its point notifications through the ordinary listener list. **The native layer does not select a composition, remember a composition, or choose a listener according to composition hit testing.** `GuiGraphicsHost` or another listener owns its own downstream routing. All installed listeners can observe the accepted native stream. A graphics host whose own composition chain declined still suppresses its composition point-data events even if an independent native listener accepted.
 
-```text
-Contact session S1: Down -> contact updates -> last Up -> closed
-Scroll gesture G1:  Begin -> drag updates    -> inertia updates -> End
-```
+If all listeners decline, suppress all subsequent **point-data callbacks** for that sequence and let the platform perform fallback as detailed in section 3.8. Continue private acquisition bookkeeping until the sequence ends. Do not query again for a later point, a new position, a changed control state, or a newly installed listener.
 
-Inertia retains G1 with zero active contacts and a reference to its originating session; it does not keep a fake finger in S1. A later Down starts a new session and must stop or explicitly arbitrate with G1. A pinch may instead end when only one finger remains, before its broader session ends. These distinctions should be explicit in event structs and tests.
+`PointSequenceStarted` and `PointSequenceEnded` are lifecycle boundaries, distinct from point-data callbacks. They remain paired for rejected sequences too: rejection suppresses Down/Update/Up/Cancel/Enter/Leave delivery, but End closes the occurrence with `accepted == false`. This also gives the composition sequence query a matching End. End is not a successful point release and must not activate anything.
 
-## 3.6 Gesture structs, shared recognition, and inertia
+Listener installation/removal follows existing broadcast and lifetime rules; do not introduce a per-sequence native subscription or listener-selection system. Installation during a sequence does not replay Started or renegotiate acceptance. A stateful listener that did not observe Started ignores that sequence until the next Started. No callback is made to an uninstalled/destroyed listener.
 
-Define gesture output independently of Windows `GID_*` and Safari `GestureEvent`. Implement shared recognition as an ordinary internal helper using structs and the existing event/timer machinery. Its configure, process, advance-time, and cancel operations do not require new public interfaces or a factory returning one.
+`PointSequenceEndInfo.accepted` reports the decision at the reporting layer. At the native window it is the aggregate listener decision. The hosted adapter and graphics host retain their own local answers and use those when reporting End downstream. `canceled` records whether any participating point was canceled; it does not imply that every point ended abnormally.
 
-`NativeGestureInputFrame` contains contact samples converted into the gesture owner's logical coordinate space, preserving identities and times; `NativeTouchFrame` at the native boundary keeps its native client-coordinate contract. The helper produces `NativeGestureEvent` data for the common composition event pipeline. A future provider recognizer can report the same data through the optional `INativeWindowListener::GestureInput` callback, with an explicit coordinate conversion at the boundary. Configure native recognition through the existing-window configuration struct only if that integration is added. Choose shared or provider recognition for an interaction; do not apply both outputs to the same contacts.
+All new listener methods have non-pure, no-op definitions in `<GacUI repo>/Source/NativeWindow/GuiNativeWindow.cpp`. Existing listener sources need no new overrides. Adding virtual members still requires rebuilding C++ consumers; this is not a binary-compatibility promise.
 
-`NativeGestureEvent` should contain:
+## 3.4 Composition query and sequence-wide routing
 
-- Kind: `Tap`, `DoubleTap`, `Hold`, `SecondaryTap`, or `Manipulation`. A swipe can be a control policy based on manipulation displacement/velocity; Windows cross-slide and press-and-tap can remain optional recognizer features.
-- Phase: `Completed` for discrete actions; `Begin`, `Update`, `End`, or `Cancel` for continuous actions. A Hold begins when its timer threshold is reached and ends/cancels later.
-- Stable gesture interaction ID, associated touch session ID(s), participating contact IDs, active contact count, timestamp, and center. Do not substitute a frame ID for any of these.
-- Incremental and total translation, scale, and rotation for manipulation. Document translation in logical units, scale as a ratio with identity 1, rotation in radians with one consistent direction, and velocity per second.
-- `inertia` flag and optional velocities. A manipulation may continue with zero active contacts, then End after inertia finishes.
+`GuiGraphicsHost::PointSequenceStarted` records the sequence ID and calls `PointCapture` with the first point. The capture helper converts its position to logical client coordinates, hit-tests once, and stores the result in `pointCaptureComposition` before routing the query. A miss declines without creating a composition route.
 
-An options struct selects tap/hold/manipulation, allowed pan axes, scale/rotation, thresholds, and inertia. Use a consistent logical distance and time basis. Existing timers supply ticks for hold and inertia; the helper must work when the finger is stationary and no Update arrives. Its cancel operation stops recognition and inertia, emits cancellation once where an action has begun, and does not claim to cancel the physical OS contact.
+Raise `pointSequenceStarted` at the captured composition and propagate through its parents using the existing mouse-event conventions. `compositionSource` remains the original target; `eventSource` is the first composition on that path with an event receiver. Each handler receives positions/contact bounds relative to its receiving composition.
 
-When a second finger joins, rebase the manipulation without a visible jump. When A leaves and B remains, a control can continue one-finger pan, or end the two-finger gesture and drain B; select that policy explicitly. Never restart mouse fallback from B halfway through this interaction. A contact cancellation cancels the affected gesture group unless a recognizer explicitly supports losing that contact safely.
+A target or ancestor accepts by setting `GuiPointSequenceStartedEventArgs.accept` to true. That answer is sticky during the query: handlers may accept but must not revoke an earlier acceptance. `handled` retains its existing meaning of stopping further parent propagation. Setting `handled` alone does not accept point input. With no acceptance on the visited path, the answer remains false. Return the result synchronously through the native Started callback.
 
-Continued scrolling after release is inertia, not further raw contact movement. Windows can calculate it through configured pan gestures, Interaction Context, or Direct Manipulation; Interaction Context requires the caller to supply timer ticks. A browser supplies momentum when it owns an actual DOM/page scroller. Custom GacUI scrolling from raw pointers needs a motion implementation; browser `touch-action: none` does not attach native inertia to a GacUI content offset. [Windows pan inertia](https://learn.microsoft.com/en-us/windows/win32/wintouch/windows-touch-gestures-overview), [Interaction Context timer](https://learn.microsoft.com/en-us/windows/win32/api/interactioncontext/nf-interactioncontext-processinertiainteractioncontext), [browser scrolling](https://trac.webkit.org/wiki/Scrolling).
+For an accepted sequence, each `pointDown`, `pointUpdate`, `pointUp`, `pointCancel`, `pointEnter`, and `pointLeave` starts at the captured composition and follows the same parent propagation rules. Recalculate position/contact bounds for each receiving composition. A later finger landing over another control still goes to the original target. Moving outside its bounds or releasing the first finger does not retarget the sequence.
 
-For initial parity, prefer shared tap/hold/pan/pinch recognition and one shared inertia helper. Estimate release velocity, advance deceleration using elapsed time, apply viewport bounds, and stop on cancellation or a new owning contact. Lists and text scroll containers reuse this behavior. Native Interaction Context, Direct Manipulation, and Safari gestures are optional later integrations; reconcile their thresholds, ownership, coordinates, and inertia first. Do not invent touch Updates after Up to carry animation.
+For a rejected sequence, keep only the query's target/lifecycle bookkeeping for `pointSequenceEnded`; there are no composition point-data events. For either outcome, route End to the captured composition and then release point capture. The `accepted` field on composition End is the chain's own query result.
 
-## 3.7 Routing and per-contact ownership
+The host maintains active point data by ID for accepted sequences, but it has **one captured composition per sequence**, not one per finger. Point state is separate from mouse capture, mouse button state, keyboard focus, and mouse hover. Accepting a point sequence does not capture the physical mouse.
 
-Use this flow:
+The new receiver events must be associated with their owning composition in `<GacUI repo>/Source/Application/GraphicsCompositions/GuiGraphicsEventReceiver.cpp`, following existing initialization. Define the declared argument constructors consistently with the existing mouse arguments.
 
-```text
-Windows pointer messages / browser Pointer Events
-    -> native adapter: contact data, source filtering, terminal normalization
-    -> optional remote transport
-    -> root-surface contact/session coordinator, then hosted-window mapping
-    -> GuiGraphicsHost: hit testing, logical touch capture
-    -> target/ancestor touch policy and shared recognizer
-    -> gesture behavior OR existing mouse event path
-```
+## 3.5 Capture/release functions, reuse, and handler lifetime
 
-Add composition events such as `touchDown`, `touchUpdate`, `touchUp`, `touchCancel`, and `gesture` alongside existing mouse events. Their arguments identify the contact/interaction and provide coordinates relative to the current receiving composition. Reflection and script exposure should follow the existing event conventions.
+Section 0.3 declares the new pair `GuiGraphicsHost::PointCapture` and `GuiGraphicsHost::PointUncapture`, at the same helper level as `MouseCapture` and `MouseUncapture`. Their purpose is the same: remember the initial composition for subsequent routed input and release it when the interaction finishes.
 
-Keep a per-contact logical capture map separate from `mouseCaptureComposition`. Down chooses the initial composition; capture keeps later samples with its owner even when the finger leaves. Hosted windows need an equivalent per-contact window map. Two contacts can target different controls, so merge them into one gesture only when an eligible common owner accepts them. For example, a document viewport may own its pinch group; unrelated buttons should not accidentally form a pinch.
+`PointCapture` runs once at Started. It must not replace an existing sequence's target on a secondary Down. `PointUncapture` runs after `pointSequenceEnded` propagation, including for a rejected sequence, and clears the stored sequence/capture state. The first point's Up is insufficient while another point remains. `ResetPointCapture` performs the corresponding state reset from existing host/window disconnection paths.
 
-Native delivery capture and logical composition capture are different. Windows provides implicit HWND ownership. The browser driver can retain DOM capture on its stable root while the common core changes logical ownership. Core routing therefore does not need a synchronous browser round trip for each capture change. Do not invent general Win32 pointer capture functions to mirror DOM methods.
+These are GacUI composition capture/release functions. Do not implement them by calling `INativeWindow::RequireCapture` or `ReleaseCapture`, which control mouse capture. Windows touch contacts already have implicit native ownership; other providers need their own native delivery mechanism. No general receiving-side Win32 pointer capture/release function is being proposed.
 
-Raw event `handled` stops further routing only. A separate gesture ownership/fallback decision selects who owns the interaction and whether compatibility mouse input is allowed. Evaluate target and ancestor policies before delivering a compatibility MouseDown. Proposed `GuiTouchEventArgs.preventMouseFallback` latches suppression for the interaction; setting it after MouseDown cannot undo prior callbacks. A host-level `CancelTouchInteraction(interactionId, reason)` operation should provide explicit logical cancellation without pretending to cancel OS contact.
+Before implementing point propagation and capture, inspect `MouseCapture`, `MouseUncapture`, `ResetMouseCapture`, `OnMouseInput`, and `RaiseMouseEvent` in `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost.cpp`. Reuse or factor out the common first-hit selection, source/eventSource assignment, parent traversal, coordinate rebasing, and `handled` stopping logic where it fits. The section 0 entry points do not require duplicating that implementation. Typed helpers local to the implementation file can serve both mouse and point event arguments.
 
-## 3.8 Mouse fallback that most controls can ignore
+Preserve the differences in state and lifetime: mouse release depends on held mouse buttons, while point release depends on the entire sequence ending. Existing `RaiseMouseEvent` is typed to mouse arguments/member pointers; adapt or extract its common routing instead of pretending point data is a mouse event. Point End can reuse parent traversal without coordinate fields.
 
-Use one shared fallback engine above the adapters. In `FrameworkTouch` mode, native/browser touch promotion is suppressed or filtered at acquisition; the shared engine alone produces GacUI compatibility mouse events. This permits different controls to choose different behavior without violating native stream rules.
+**Deleting the receiving composition inside its mouse handler is a known crash, and the same behavior is expected for point handlers.** This change does not fix that issue, retain compositions to hide it, snapshot the tree to survive it, or add reentrant-deletion recovery. Point handlers follow the existing rule of deferring destruction/reparenting until after input dispatch. Tests must not demand safe synchronous deletion inside a point handler.
 
-| Proposed policy | Behavior | Typical users |
-|---|---|---|
-| `ImmediateMouse` | The first eligible touch drives the existing mouse Down/Move/Up path immediately. | Ordinary controls outside gesture regions; explicit slider/splitter drag handles. |
-| `DeferredMouse` | Keep a tap candidate without mouse Down. If it finishes as a tap, deliver the existing mouse activation sequence. If a gesture wins or cancellation occurs, discard the candidate. | Items or links inside touch-scrollable content. |
-| `TouchOnly` | Raw/gesture behavior owns the interaction; no compatibility mouse events. | Selection handles, custom canvases, active pinch/pan behavior. |
+Outside active event dispatch, extend the existing disconnection/reset hooks to clear point capture just as they clear mouse capture. If a captured target is detached/destroyed through those normal paths before native End, clear its reference and stop composition delivery for the remaining sequence; do not hit-test a replacement or change to mouse fallback mid-sequence. Native input bookkeeping still ends normally, but no events can be delivered to a removed target. Do not manufacture a second sequence or a synthetic successful Up as cleanup.
 
-The ordinary default is `ImmediateMouse`. A touch-aware scrolling ancestor can make its content `DeferredMouse` before the first Down is promoted, so each ordinary child does not need touch code. Child controls with intentional mouse dragging can explicitly claim `ImmediateMouse`; once committed, an ancestor must not steal that sequence for scrolling unless the target supports real cancellation.
+## 3.6 Hosted windows and coordinate conversion
 
-Rules for the shared fallback engine:
+The normal native path is: Windows provider -> native listeners -> `GuiGraphicsHost` -> captured composition -> its parents. The provider never depends on the composition layer.
 
-1. At most one touch owns the compatibility mouse stream. Use the initial eligible primary contact; do not synthesize a new mouse Down from a non-primary finger already held down.
-2. Deliver all other contacts to the touch system. They are not extra mouse buttons.
-3. Once an interaction's contact group chooses a gesture or disables fallback, keep that decision for the rest of that group. Do not re-enable mouse behavior merely because one finger lifts. Sharing a touch session ID does not force unrelated controls into the same gesture or fallback policy.
-4. Deferred tap success uses the intended logical target and the existing mouse pipeline, with appropriate enter/move, Down, and Up. Validate both item identity and current hit testing; discard the tap if the replay point now reaches another target after layout/virtualization. Revalidate after callbacks, because Down can remove or change the target before Up. Activation happens on release; retain the original Down position for gesture thresholds, and use a documented replay coordinate that still hits the intended target.
-5. Movement beyond the threshold, a claimed multi-finger gesture, Hold activation, Cancel, or target removal discards deferred activation. It must produce neither a click nor a normal release for a Down that was never delivered.
-6. If a second finger arrives during an already committed immediate mouse drag, keep the existing owner's drag and withhold conflicting gestures by default. A cancel-aware target may explicitly yield. Extra contacts never become mouse owners mid-group.
-7. Keep physical-mouse button state and synthetic-touch state separate internally, with one owner for the whole pressed mouse stream. While a real mouse button is held, new touches cannot acquire compatibility mouse ownership. While touch owns a synthetic press, real mouse movement must not enter that drag; retain the physical position separately. A real mouse press first cancels the synthetic press and suppresses its remaining contact group, then takes ownership. Competing contacts may still reach independent raw-touch behaviors, subject to target ownership. Do not leave combined stuck-button state or let a physical move extend a touch-owned text selection.
-8. Add optional origin/contact metadata to common mouse event arguments so specialized consumers can distinguish real mouse and touch fallback. Existing consumers may ignore it; preserve defaults and update reflection/serialization where relevant.
-9. Implement double-tap policy once. Preserve existing mouse double-click conventions when falling back. A control requiring exclusive double-tap behavior can delay single-tap activation; do not impose that delay on every ordinary button.
+Hosted mode inserts `GuiHostedController` between the real native window and logical windows. At Started, select one eligible logical window at the first point's position, store it in `pointSequenceWindow`, translate that point into its client coordinates, and query its installed listeners. Its graphics host then performs composition hit testing and returns its own answer. Propagate the result to the original native query before returning.
 
-This policy is a framework decision, not a late request to Windows or the browser to promote one particular touch. Browser handlers must already know to suppress default promotion before the remote/core layer arbitrates controls.
+Preserve the sequence ID and selected logical window for all subsequent points and End, including later fingers outside that window. Coordinate conversion uses that window's current rendering/client offset; it must not select another window based on a later point. Existing hosted mouse helpers that repeatedly hit-test cannot be reused unchanged, but their coordinate and listener-forwarding logic should be reviewed for reuse.
 
-## 3.9 Cancellation without an accidental click
+Native position/contact bounds are relative to the receiving native window's client area. Hosted adapters translate into the selected logical window's native client space; `GuiGraphicsHost` uses existing `INativeWindow::Convert` conversions to reach GUI coordinates. Composition propagation rebases to each receiver. Do not mix Windows screen pixels, native client units, and GUI units.
 
-Treat these as distinct operations:
+Keep point routing independent of the existing mouse `capturingWindow`, `hoveringWindow`, and window-manager drag state. On rejection, the existing mouse fallback path performs its own normal routing; the remembered point-query window does not override mouse targeting. `ResetPointSequence` clears a removed hosted target without retargeting an in-progress sequence.
 
-| Operation | Meaning |
+## 3.7 Point data, event coverage, and cancellation
+
+Section 0.1 defines all new native data types; section 0.2 exposes their logical equivalents in composition arguments.
+
+| Field or event | Contract |
 |---|---|
-| Native contact cancellation | The platform stopped delivering an ordinary contact lifetime. Normalize to Cancel. |
-| Framework interaction cancellation | GacUI abandons a drag/gesture while the physical contact may continue. Drain remaining input without activation. |
-| Prevent mouse fallback | Keep raw/gesture input but do not create compatibility mouse input. |
-| Prevent browser default action | Synchronously prevent a DOM action, or predeclare browser pan/zoom policy. |
-| Release capture | Change routing ownership; it does not necessarily cancel contact. |
+| `sequenceId`, `pointId` | Nonzero sequence identity and contact-lifetime identity, as defined in section 3.2. |
+| `timestamp` | Monotonic microseconds in the provider's clock domain; use source sample time where available. It is not wall-clock time. |
+| `position`, `contactBounds` | Native client coordinates in `NativeWindowPointInfo`; logical receiver-relative coordinates in `WindowPointInfo`. Use existing geometry types and DPI conversion. |
+| `activePointCount` | Active count after the reported contact transition. Started includes its first point; final Up/Cancel has count zero. Boundary events do not change the count. |
+| `primary` | Platform hint. Never filter out other fingers or promote an already-down finger when the primary ends. |
+| `ctrl`, `shift`, `alt`, `osSuper` | Modifier state at the sample. These do not encode contact count or acceptance. |
+| `pressure` | Optional normalized 0..1 measurement. Empty means unavailable/unknown, not zero. |
+| `orientation` | Optional contact orientation in radians, clockwise from the upward axis; convert the platform representation. |
+| `platformFrameId` | Optional genuine platform frame identity, not sequence identity or transport-batch numbering. |
+| `PointDown` / `pointDown` | A contact joins the accepted sequence. |
+| `PointUpdate` / `pointUpdate` | Contact data changes or is reported again, including stationary pressure/size updates. |
+| `PointUp` / `pointUp` | A contact ends normally. This alone does not recognize a tap or activate a control. |
+| `PointCancel` / `pointCancel` | A contact ends abnormally, with a `PointCancelReason`. `cancelReason` is empty on other composition events. |
+| `PointEntered`, `PointLeaved` / `pointEnter`, `pointLeave` | Native client-surface boundary notifications for an active contact. They retain the sequence target and bubble; they are not hit-test transitions between arbitrary compositions. |
 
-Introduce an internal mouse-cancellation path and a composition `mouseCancel` event for a compatibility press already delivered. It clears the host's synthetic button/capture state and lets common button/drag/text behavior reset transient state. **Do not represent cancellation as an ordinary MouseUp**, because existing controls may activate on Up.
+The complete Step 1 contact event set is represented above. `WM_POINTERDOWN`, `WM_POINTERUPDATE`, and `WM_POINTERUP` supply transitions. `WM_POINTERENTER`/`WM_POINTERLEAVE` supply boundaries only while the contact belongs to a live sequence. `WM_POINTERCAPTURECHANGED` and `POINTER_FLAG_CANCELED` become cancellation rather than a successful Up. A canceled native Up must not produce both Up and Cancel.
 
-Existing `GuiButton` pressing state lives in `<GacUI repo>/Source/Controls/GuiButtonControls.cpp`; existing text dragging state lives in `<GacUI repo>/Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.cpp`. Clearing host capture alone does not clear those states. Update common behavior in the future implementation so ordinary controls inherit cleanup. A custom control with private pressed/drag state must handle cancellation to support `ImmediateMouse` correctly, since native cancellation is unavoidable. It needs a cancel handler rather than a full gesture implementation. The hook remains source-optional; a control without that support must use deferred activation where appropriate, or its containing native input surface must stay in `MouseOnly` mode.
+Other messages cataloged in section 1.2 are not additional contact events: activation, non-client processing, device changes, touch hit testing, and specialized routing keep their platform responsibilities. Wheel input retains the existing wheel path. Step 1 does not add hover-only sequences, pen handling, browser raw-update events, or a public native pointer-capture service. Later browser capture notifications also need normalization rather than a separate public callback for every DOM event.
 
-An action already fired on MouseDown cannot generally be undone. In particular, some button configurations click on Down, and list selection currently occurs on Down. Therefore cancellation is not a substitute for `DeferredMouse` in regions where scrolling/hold/pinch may win. The design can preserve old mouse behavior or defer side effects, but cannot promise to roll back arbitrary user callbacks.
+For every delivered Down, produce exactly one Up or Cancel at the native listener boundary. Capture loss can occur without a later Up/Leave, so cancel that point using its last valid data. Remove only that point; remaining points stay in the same sequence and retain its target. After the final terminal point event, deliver End once. Ignore delayed boundary/capture cleanup for completed contacts; it must not create another sequence. A removed listener/target cannot receive later callbacks.
 
-Window/control removal, disabling a target, input ownership loss, explicit cancellation, or a lost remote input connection must end owned interactions and stop inertia. This is input-state cleanup, not a new remote reconnection/recovery system. If a contact is still physically active after logical cancellation, track it only to drain its eventual terminal input. A new interaction requires a new Down.
+Copy native information while it is valid. Callback arguments are borrowed for the callback duration; retained records copy values. The initial API delivers one changed point per callback, not a promise of simultaneous hardware sampling. If history is added later, preserve chronological order and do not duplicate the newest sample.
 
-## 3.10 Browser and remote implementation requirements
+Native window destruction terminates remaining contacts and the sequence before listener teardown. A later native Up/capture-loss notification must not repeat a terminal event. Unsupported providers simply never emit the new callbacks and continue existing mouse behavior.
 
-The GacJS driver must make default-action decisions locally. For a fully custom GacUI input surface, configure `touch-action: none` on that surface before input, synchronously suppress appropriate pointer compatibility defaults, capture contacts on a stable DOM element, and filter duplicated touch activation. Do not change these choices in response to a worker round trip.
+## 3.8 Dynamic platform fallback and Windows implementation
 
-Make duplicate filtering an explicit driver contract: correlate touch-origin activation with the interaction already forwarded to GacUI, retaining the required correlation after Up because activation may arrive afterward. Avoid forwarding the same action through both pointer and mouse/click handlers. A blanket time window, `isTrusted`, or `click.detail` alone cannot reliably distinguish touch duplicates from real mouse, keyboard, or accessibility activation. Keep those independent activation paths functional. Preventing a click's default action does not itself stop its dispatch. [Activation rules](https://www.w3.org/TR/pointerevents3/#the-click-auxclick-and-contextmenu-events).
+The decision belongs to each sequence's first occurrence. A point-aware region can accept one sequence and decline the next at the same position if its state changes. No window-creation setting substitutes for this query.
 
-Framework-generated mouse events do not create trusted browser user activation. Gated browser actions need renderer-side integration with the originating trusted interaction. A worker round trip does not necessarily expire activation immediately, but activation can expire or be consumed; a deferred core callback cannot promise to open a picker, popup, or other gated UI. This is a separate constraint from synchronous `preventDefault`. [Browser user activation](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/User_activation).
+| Latched decision | Native processing | GacUI composition delivery |
+|---|---|---|
+| Accepted by at least one native listener | Handle the entire sequence as point input; suppress/filter duplicate touch-promoted mouse input. | A locally accepting host delivers Started, point data on its captured target/parents, then End. A locally declining host delivers Started/End only. |
+| Rejected | Keep private contact bookkeeping and use platform fallback for the entire sequence, starting with its first Down. | Started and End only; fallback mouse events use the existing mouse pipeline. |
 
-Apply this policy to the GacUI surface, not unrelated surrounding page content. Offer a deliberate alternative mode for browser-owned page scrolling/zooming: in that mode, accept native takeover and cancellation instead of promising uninterrupted GacUI contacts. If custom pinch disables page pinch on the surface, preserve another accessible zoom mechanism.
+On Windows, the intended fallback is OS-generated compatibility mouse input through the existing mouse-message path. GacUI does not synthesize an `ImmediateMouse`/`DeferredMouse` stream in Step 1. Do not consume the first Down and then ask Windows to reconstruct it later. Do not switch point handling/fallback in the middle of a sequence.
 
-Extend the remote protocol with configuration requests, applied/rejected acknowledgements, and ordered contact frames, including source, IDs, times, optional measurements, and Cancel. Hosted and remote adapters must forward the configuration and listener callbacks, preserve input generations and configuration revisions, and transform coordinates consistently. Preserve native frame metadata when available; assign the framework session once before hosted-window routing as described in section 3.5. A capability must be end-to-end; a Windows renderer with a mouse-only core is still mouse-only.
+Windows documentation warns that selectively consuming pointer input while passing other input to `DefWindowProc` can produce undefined behavior. Keep handling consistent for the complete sequence and verify accepted -> rejected -> accepted transitions on native input. The documentation is not proof that every sequence-switching strategy works; native fallback is an explicit integration acceptance requirement. [WM_POINTERDOWN](https://learn.microsoft.com/en-us/windows/win32/inputmsg/wm-pointerdown).
 
-The current protocol is generated from `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_IO.txt`. Do not assume an old peer ignores unknown messages or fields. Use a version-compatible negotiation path, or require matched protocol versions for enhanced mode and keep older pairs in their existing mode. The implementation must decide this before sending any new message.
+Rejecting point input also rejects delivery to any GacUI gesture path. There is no gesture path in this version, for accepted or rejected sequences. Windows default processing can produce gestures instead of mouse input, so forwarding a rejected Down to `DefWindowProc` alone is not a sufficient mouse-only fallback design. The provider must suppress those gesture behaviors while preserving mouse promotion. `SetGestureConfig` documents blocking all gestures; it may be used privately for suppression, not recognition. Its HWND-wide policy does not decide point acceptance and must not become a public input-mode/configuration API. Verify the combination rather than adding a framework mouse emulator if it fails. [Gesture configuration](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setgestureconfig).
 
-Coalesce only safe Update data while preserving per-contact order, group membership changes, and Down/Up/Cancel boundaries. Flush required updates before terminal events. Never let an update for B overwrite the only pending update for A. Keep history when a consumer requests it; do not promise every hardware sample in the ordinary UI path.
+Native delivery capture and composition capture are separate. Windows implicitly owns a contact at its native target window; `GuiGraphicsHost` captures one composition for the sequence using the pair in section 3.5. [Native pointer ownership](https://learn.microsoft.com/en-us/windows/win32/inputmsg/wm-pointerdown).
 
-## 3.11 Proposed implementation order and acceptance cases
+Duplicate filtering must retain real mouse input and OS fallback for rejected sequences. Do not suppress all touch-origin mouse events globally. An already-down secondary finger does not become a new primary mouse contact when the first finger lifts. Keep enough sequence/source bookkeeping to distinguish accepted-point duplicates from the rejected OS mouse path.
 
-- [ ] Add defaulted methods to the existing interfaces and define the configuration/event structs, data units/lifetimes, capabilities, and reflection. Verify old provider sources still compile without touch overrides; do not add new public interfaces.
-- [ ] Implement deterministic common contact routing, gesture timing, cancellation, and mouse fallback using supplied contact frames and a controllable clock.
-- [ ] Add Windows `WM_POINTER` acquisition, native cancellation mapping, coordinate conversion, and duplicate-mouse filtering.
-- [ ] Extend the remote protocol and hosted routing, then add GacJS Pointer Events with local CSS/default-action/capture policy.
-- [ ] Add shared scroll/list behavior, then text caret/selection handles and text-input integration described in section 4.
-- [ ] Add optional history/native recognizers only when a consumer needs them; keep pen and precision-touchpad work independently gated.
+## 3.9 Demonstration and verification for Step 1
 
-Future tests should cover: A Down, B Down, A Up, B Update/Up; cancellation with no later Up; canceled native Up; duplicate capture cleanup; stationary hold; movement beyond bounds; two controls receiving different fingers; second-finger arrival during a mouse drag; no mouse promotion of the remaining finger; list scroll without selection/click; tap fallback exactly once; physical mouse movement/press during synthetic drag; touch during a real mouse drag; target deletion/virtualization/layout changes and reentrant Down callbacks; held selection handle with edge autoscroll; remote batching/ordering; and old mouse-only providers. Verify inertia stops on new contact and Cancel. Browser cases also need delayed touch click after Up, touch followed immediately by real mouse input, keyboard/assistive activation while deduplication records remain, and gated actions through the worker path. Use native/browser integration tests as well as shared-core tests; JavaScript `dispatchEvent` alone does not exercise trusted native defaults.
+The FullControlTest page requested by Step 1 consumes raw point events. It accepts in `pointSequenceStarted`, tracks positions by point ID, uses one point to drag, and computes two-point translation, rotation, and scale directly in its demo behavior. Rebase geometry when active contacts change so adding/lifting a finger does not jump the content. This demonstrates point input without adding a gesture API or changing built-in list/text controls.
 
-Identity and grouping cases should include reused native pointer IDs; the same session while any delivered contact remains; a new session after the final terminal event; a transport batch spanning two sessions; separate control gestures in one session; pinch ending before the last contact; double-tap spanning two sessions; and inertia outliving all contacts. Configuration cases should include an unsupported provider, rejected/busy requests, an Applied callback ordered before the first frame using that revision, setup completed before enhanced delivery, and multiple observers that cannot independently change the owner's input mode.
+Add point IO to the existing automation service so ordered Down/Update/Up/Cancel samples exercise the same acquisition, query, capture, routing, and fallback decisions. Direct composition-event injection alone cannot verify native fallback. Keep IDs and simultaneous contacts explicit; do not model two fingers as two mouse buttons. The concrete command grammar/internal parser changes belong to that implementation work, not a new native service in section 0.
 
-When implementation changes reflected types, update `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionBasic.cpp` and `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionEvents.cpp` as needed and run the prescribed metadata/code generation and tests. This planning change does not modify those files.
+Required cases include:
+
+- Acceptance by the target, acceptance only by a parent, and no acceptance. `handled` without `accept` does not opt in.
+- One Started/Ended pair with accepted=false and no point-data events on rejection; OS mouse fallback still reaches an ordinary control.
+- Accepting/rejecting successive sequences at the same position after changing handler state, without startup configuration or listener reinstall.
+- A Down, B Down elsewhere, A Up, B Update/Up: one sequence ID and one original composition/logical-window capture.
+- A/B/C overlapping contacts as in section 3.2; a new ID only after the active set becomes empty.
+- Primary release without promoting a remaining finger to mouse.
+- Movement outside the original composition/native window, boundary notifications, capture loss without Up, canceled Up, and duplicate terminal cleanup.
+- Physical mouse input while points are active; duplicate filtering does not lose rejected fallback.
+- Multiple native listeners with different answers: accepted native data is broadcast, while a locally rejecting host raises no composition point stream.
+- `PointCapture`/`PointUncapture` pairing, including rejected sequences and release after End; mouse capture remains independent.
+- Deferred target removal through existing lifetime hooks; no stale capture reuse or retargeting. Safe in-handler deletion is explicitly not required.
+- Hosted window movement/DPI conversion during a sequence; coordinates remain correct for the same captured target.
+- Old providers/listeners with no overrides; existing mouse behavior remains available.
+
+Use deterministic routing/sequence tests plus native integration tests. Windows injected multi-contact input can verify routing/fallback, and real touch hardware validates the interaction. Do not claim these passed merely because mock listeners or direct event injection passed. When factoring shared mouse routing, also run existing mouse-input tests to ensure its propagation/capture behavior is preserved.
+
+Implement reflection in `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionBasic.cpp` for new enum/value types, `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionEvents.cpp` for arguments/constructors/fields, and `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionCompositions.cpp` for every new receiver event. Follow the existing type-list/event macros. Native listener callbacks remain C++ notifications.
+
+During implementation, run prescribed unit tests, metadata/resource generation, and focused FullControlTest/UIA checks for affected changes. Step 1 does not update the remote-protocol SOP or knowledge-base pages. The GacUI_Windows tutorial addition and those documentation updates belong to Step 2. This document edit changes no source, reflection implementation, demo, or generated output.
+
+## 3.10 Browser and remote follow-up in Step 2
+
+Step 2 adds the point demonstration to the GacUI_Windows tutorial, ports the contract to the remote protocol, and updates `<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md` to exercise the page with native renderers before verifying GacJS/WASM. It also covers the wGac fallback and knowledge-base updates. Those knowledge-base pages must be self-contained and must not refer to `<GacUI repo>/TODO_Touch.md`.
+
+The desired browser/remote contract remains: query the first occurrence, preserve its decision/ID, keep one target through hosted/host routing, and pair sequence boundaries. Extend `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_IO.txt` with sequence queries/results and point data when implementing Step 2; do not restore removed startup configuration requests or configuration revisions.
+
+GacJS currently forwards input from `<GacJS repo>/Gaclib/gaclib/renderer/src/GacUIRendererImpl.ts` across the bridge in `<GacJS repo>/Gaclib/website/remote-protocol-wasm/src/index.ts` and `<GacJS repo>/Gaclib/website/remote-protocol-wasm/src/worker.ts`. An asynchronous core answer cannot retroactively suppress the original browser event's default action. CSS `touch-action` must permit the intended ownership before contact begins; changing it during Down cannot transfer the current gesture. [Browser ownership rules](https://www.w3.org/TR/pointerevents3/#declaring-direct-manipulation-behavior).
+
+Step 2 must resolve how the browser makes a timely local decision consistent with the current sequence query, or define a constrained browser fallback policy that can actually be implemented. Do not claim an arbitrary worker-round-trip query preserves both native browser fallback and uninterrupted custom point delivery. Creation-time opt-in must not silently replace the public per-occurrence contract.
+
+Accepted custom input also needs stable DOM capture and correlation of touch-origin compatibility mouse/click events. Canceling a pointer event alone does not suppress click dispatch. Preserve real mouse, keyboard, and accessibility activation. Browser takeover/cancellation terminates the affected points without waiting for Up. [Compatibility activation](https://www.w3.org/TR/pointerevents3/#compatibility-mapping-with-mouse-events).
+
+Transport must preserve Started before point data, the decision for that occurrence, per-point ordering, and End after terminal input. Coalesce only safe updates; never let B overwrite A or lose sequence boundaries. Include connection generation, preserve IDs through adapters, and require compatible peers before new messages are used. Existing mouse-only pairs keep their current protocol path.
+
+## 3.11 Later controls and gestures
+
+Momentum scrolling and long pressing for lists/documents belong to Step 3. Gesture API design belongs to Step 4. Neither is a prerequisite for the raw-point demonstration or a reason to introduce a recognizer in Step 1.
+
+The gesture research in sections 1 and 2 remains useful: Windows can supply recognized manipulation/inertia data; portable browser code generally needs its own recognition/motion logic, with Safari-specific extensions as optional research. This difference does not change initial sequence acceptance or routing.
+
+Section 4 remains future control-behavior research exactly as written. Its policy names such as `DeferredMouse` and manipulation/hold sequences are not Step 1 API declarations. Later control implementation must reconcile those policies with sequence negotiation rather than restore startup configuration or per-finger routing.
 
 # 4. List and text control behavior
 
