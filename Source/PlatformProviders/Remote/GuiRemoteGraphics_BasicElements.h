@@ -33,6 +33,17 @@ namespace vl::presentation::elements_remoteprotocol
 		virtual void							NotifyMinSizeCacheInvalidated() = 0;
 	};
 
+	class GuiRemoteRawElement : public GuiRawElementBase
+	{
+		friend class GuiElementBase<GuiRawElementBase>;
+		static constexpr const wchar_t* ElementTypeName = L"Raw";
+	protected:
+		GuiRemoteRawElement();
+	public:
+		static vint					GetElementType();
+		static GuiRemoteRawElement*	Create();
+	};
+
 	template<typename TElement, typename TRenderer, remoteprotocol::RendererType _RendererType>
 	class GuiRemoteProtocolElementRenderer
 		: public GuiElementRendererBase<TElement, TRenderer, GuiRemoteGraphicsRenderTarget>
@@ -79,9 +90,9 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
-	class GuiRawElementRenderer : public GuiRemoteProtocolElementRenderer<GuiRawElementBase, GuiRawElementRenderer, remoteprotocol::RendererType::Raw>
+	class GuiRawElementRenderer : public GuiRemoteProtocolElementRenderer<GuiRemoteRawElement, GuiRawElementRenderer, remoteprotocol::RendererType::Raw>
 	{
-		friend class GuiElementRendererBase<GuiRawElementBase, GuiRawElementRenderer, GuiRemoteGraphicsRenderTarget>;
+		friend class GuiElementRendererBase<GuiRemoteRawElement, GuiRawElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	public:
 		GuiRawElementRenderer();
 

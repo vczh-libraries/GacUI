@@ -19,7 +19,7 @@
 #include <VlppOS.h>
 #if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
-#include "../Generated_FullControlTest/FullControlTestRawElement.h"
+#include "FullControlTestRawElementRemote.h"
 #include "../SharedArguments.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #endif

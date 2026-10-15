@@ -7,6 +7,24 @@ namespace vl::presentation::elements_remoteprotocol
 	using namespace remoteprotocol;
 
 /***********************************************************************
+GuiRemoteRawElement
+***********************************************************************/
+
+	GuiRemoteRawElement::GuiRemoteRawElement()
+	{
+	}
+
+	vint GuiRemoteRawElement::GetElementType()
+	{
+		return GetElementTypeInternal<GuiRemoteRawElement>();
+	}
+
+	GuiRemoteRawElement* GuiRemoteRawElement::Create()
+	{
+		return CreateInternal<GuiRemoteRawElement>();
+	}
+
+/***********************************************************************
 GuiRemoteProtocolElementRenderer
 ***********************************************************************/
 

@@ -128,7 +128,7 @@ is not good enough, looks like `elements_remoteprotocol::GuiRemoteRawElement` st
 # PROPOSALS
 
 - No.1 Share raw state while retaining concrete platform factories [DENIED]
-- No.2 Separate remote clock attachment and restore the concrete core raw type
+- No.2 Separate remote clock attachment and restore the concrete core raw type [CONFIRMED]
 
 ## No.1 Share raw state while retaining concrete platform factories
 
@@ -156,7 +156,7 @@ Added an ordinary TUI exception test for `CreateRawElement` so rejection is veri
 
 ### DENIED BY USER
 
-The continuation accepts the behavior but supersedes direct creation of the common raw class and the placement of renderer collection attachment in the shared drawing helper. The prior validation below remains historical evidence; No.2 keeps the implemented behavior while applying the requested refactoring. The Windows-only helper inventory remains deliberate because the shared project also compiles into Core without native Windows graphics backends.
+The continuation accepts the behavior but supersedes direct creation of the common raw class and the placement of renderer collection attachment in the shared drawing helper. The prior validation below remains historical evidence; No.2 keeps the implemented behavior while applying the requested refactoring. The final shared-inventory decision is documented in No.2 after inspecting the actual Windows library references and portable source extractor.
 
 
 The common element preserves one renderer/owner identity while platform factories continue creating their native subclasses. The isolated frame test proves ID assignments only dirty transport state; an independently requested frame transmits the latest ID. Data changes schedule rendering, and native dispatcher tests prove data-only updates repaint without DOM changes or input. Complete descriptors and JSON round trips preserve empty strings and Unicode. Native tests verify installation/removal ordering, coalesced change events, target recreation, retained disconnect state, replacement, late drawing attachment and retained pointers after shutdown.
@@ -177,8 +177,16 @@ Restore `elements_remoteprotocol::GuiRemoteRawElement` as a behavior-free subcla
 
 Document the exact `/Gdi` switch, default Direct2D behavior, supported five applications, duplicate rejection and a paired Core/renderer example in `<GacUI repo>/Project.md` beside the existing command-line arguments.
 
-Skip the optional shared-inventory move: `<GacUI repo>/Test/GacUISrc/RemotingTest_Core/RemotingTest_Core.vcxproj` imports `Generated_FullControlTest.vcxitems` but uses `Lib_GacUI_Core`, which excludes Windows Direct2D/GDI implementations. The drawing helper directly references their element RTTI, event arguments and WinDC methods; including it would introduce native graphics link dependencies into Core. `GacUI_Host`, the renderer and UnitTest do not import the generated application inventory at all, so they still require explicit helper entries. Preserve the current native-only compilation boundary.
+Move the drawing helper into `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/Generated_FullControlTest.vcxitems` and its filters, removing duplicate entries from `CppTest`, `CppTest_Metaonly` and `CppTest_Reflection`. The initial concern about Core was disproved by inspecting its actual `Lib_GacUI` reference, which includes `Source_GacUI_Windows` and both graphics backends. Portable builds use explicit source inventories: `<GacUI repo>/.github/Ubuntu/vl/cmd/vutil_CppFromVcxproj` extracts direct `ClCompile` entries without following imports, and Core/Wasm add generated application sources and the palette helper explicitly. They will continue excluding the Windows raw painter. `GacUI_Host`, the renderer and UnitTest do not import the generated application inventory, so retain their direct drawing-helper entries.
 
 ### CODE CHANGE
 
-Planned: move the collection adapter and update the renderer include/project/filter; restore the Core subtype and factory/renderer typing; update the existing factory regression; add `/Gdi` documentation. Verify both Debug architectures through the repository build and UnitTest wrappers, then exercise FullControlTest over named pipes with Direct2D and GDI. Preserve generated files and the remote debugging SOP.
+Moved the collection adapter into the renderer project and updated its include/project/filter. Restored the Core subtype with inherited state and concrete factory/renderer typing, and updated the existing regression to verify its dynamic type and shared element/renderer identity. Added `/Gdi` documentation. Centralized drawing-helper entries in the shared application inventory for the three native CppTest consumers, retaining direct entries for non-importing consumers. Generated C++/metadata/resources/snapshots and the remote debugging SOP are unchanged.
+
+### CONFIRMED
+
+- Both final Debug x64 and Win32 solution builds passed with zero warnings and zero errors, including Core after the shared-inventory cleanup. The selected UnitTest runs passed 81/81 cases in seven x64 files and 44/44 cases in four Win32 files, with no memory-leak report. The concrete Core subtype preserves inherited Id/Data behavior, transport, XML construction, reflection and the single renderer/composition identity.
+- An import-aware inventory check found exactly one drawing-helper compilation in each of CppTest, CppTest_Metaonly, CppTest_Reflection, GacUI_Host, RemotingTest_Core, RemotingTest_Rendering_Win32 and UnitTest. Portable Core/Wasm configurations and the direct-source extraction script were reviewed; they do not import the newly added shared helper. Native Unix/Wasm builds were not executed on this Windows host.
+- Live named-pipe FullControlTest passed with Direct2D, then with an active replacement GDI renderer while Core stayed running. In each case clock data advanced without input, matched the renderer descriptor and remained reachable in the active DOM. GDI resize changed the clock bounds from 595 by 370 to 715 by 450 while updates continued. Normal renderer-window close ended both applications; no owned test processes remain.
+- Focused `<GacUI repo>/Test/UIA_CppTest.ps1 -Scenario RawClock -AsPort 8892 -SkipBuild` passed 96 assertions using Direct2D. `<GacUI repo>/Test/UIA_CppTest_Metaonly.ps1 -Scenario RawClock -Gdi -AsPort 8890 -SkipBuild` passed 75 assertions. Both exercised timer state, useful bounds, palette refresh, UIA names/page selection, resize, normal shutdown and endpoint release. Assertion counts include timing-dependent polling. Remote renderers do not expose a semantic UIA tree, so their state was checked through automation and the corresponding native controls through these local UIA runs.
+- Reviewed all authored changes and project/filter pairs; `git diff --check` passed. No protocol, reflected signature or XML changes required regeneration.

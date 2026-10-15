@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{9D70EB43-E86A-4FA2-8C08-C5BDF073E2C5}</UniqueIdentifier>
+    </Filter>
     <Filter Include="x86">
       <UniqueIdentifier>{17bb8a98-a099-49c6-b84f-ac0bac1c1195}</UniqueIdentifier>
     </Filter>
@@ -11,6 +14,12 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestPalette.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestPalette.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestRawElement.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestRawElement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\MainWindow.h">
       <Filter>x86</Filter>
     </ClInclude>

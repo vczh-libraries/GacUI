@@ -21,6 +21,12 @@
     <ClCompile Include="GuiMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FullControlTestRawElementRemote.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="FullControlTestRawElementRemote.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
