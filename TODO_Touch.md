@@ -69,12 +69,12 @@ struct GuiPointEventArgs
 	, public WindowPointInfo
 	, public Description<GuiPointEventArgs>
 {
-	const collections::List<Nullable<Point_<GuiCoordinate>>>& points;
+	const collections::List<Nullable<Point>>& points;
 
-	GuiPointEventArgs(const collections::List<Nullable<Point_<GuiCoordinate>>>& points);
-	GuiPointEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point_<GuiCoordinate>>>& points);
+	GuiPointEventArgs(const collections::List<Nullable<Point>>& points);
+	GuiPointEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& points);
 
-	const collections::List<Nullable<Point_<GuiCoordinate>>>& GetPoints() const;
+	const collections::List<Nullable<Point>>& GetPoints() const;
 };
 
 struct GuiPointSequenceStartedEventArgs
@@ -83,8 +83,8 @@ struct GuiPointSequenceStartedEventArgs
 {
 	bool							accept = false;
 
-	GuiPointSequenceStartedEventArgs(const collections::List<Nullable<Point_<GuiCoordinate>>>& points);
-	GuiPointSequenceStartedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point_<GuiCoordinate>>>& points);
+	GuiPointSequenceStartedEventArgs(const collections::List<Nullable<Point>>& points);
+	GuiPointSequenceStartedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& points);
 };
 
 struct GuiPointSequenceEndedEventArgs
@@ -92,12 +92,12 @@ struct GuiPointSequenceEndedEventArgs
 	, public PointSequenceEndInfo
 	, public Description<GuiPointSequenceEndedEventArgs>
 {
-	const collections::List<Nullable<Point_<GuiCoordinate>>>& points;
+	const collections::List<Nullable<Point>>& points;
 
-	GuiPointSequenceEndedEventArgs(const collections::List<Nullable<Point_<GuiCoordinate>>>& points);
-	GuiPointSequenceEndedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point_<GuiCoordinate>>>& points);
+	GuiPointSequenceEndedEventArgs(const collections::List<Nullable<Point>>& points);
+	GuiPointSequenceEndedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& points);
 
-	const collections::List<Nullable<Point_<GuiCoordinate>>>& GetPoints() const;
+	const collections::List<Nullable<Point>>& GetPoints() const;
 };
 
 typedef GuiGraphicsEvent<GuiPointEventArgs>					GuiPointEvent;
@@ -126,7 +126,7 @@ vuint64_t													pointSequenceId = 0;
 bool														pointSequenceAccepted = false;
 GuiGraphicsComposition*										pointCaptureComposition = nullptr;
 collections::Dictionary<vint, NativeWindowPointInfo>			activePoints;
-collections::List<Nullable<Point_<GuiCoordinate>>>			points;
+collections::List<Nullable<Point>>			points;
 
 void							PointCapture(const NativeWindowPointInfo& firstPoint);
 void							PointUncapture();
