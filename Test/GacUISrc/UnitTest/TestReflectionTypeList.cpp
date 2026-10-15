@@ -41,6 +41,21 @@ TEST_FILE
 {
 	SetGuiMainProxy([]()
 	{
+		TEST_CASE(L"Raw elements expose shared Id and Data without property events")
+		{
+			auto rawType = GetTypeDescriptor(L"presentation::elements::GuiRawElementBase");
+			TEST_ASSERT(rawType);
+			TEST_ASSERT(rawType->CanConvertTo(GetTypeDescriptor<IGuiGraphicsElement>()));
+			for (auto name : { L"Id", L"Data" })
+			{
+				auto property = rawType->GetPropertyByName(name, true);
+				TEST_ASSERT(property);
+				TEST_ASSERT(property->GetGetter());
+				TEST_ASSERT(property->GetSetter());
+				TEST_ASSERT(!property->GetValueChangedEvent());
+			}
+		});
+
 		TEST_CASE(L"Ensure GUIREFLECTIONELEMENT_CLASS_TYPELIST has all IGuiGraphicsElement sub classes")
 		{
 			Reflection_TypeList<IGuiGraphicsElement>([](auto& types)

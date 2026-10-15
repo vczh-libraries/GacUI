@@ -2,69 +2,111 @@
 
 # PROBLEM DESCRIPTION
 
-Fix the date to initialize them to 2026-1-1 so it should stable the snapshot. Run unit test again to push new snapshots. For others, what do you think is the cause of unstable element allocation order? All UI elements are supposed to be created in UI thread, what part in background cause the difference? Is it able to stabilize?
+- In remote protodol, a `Raw` element is used to sync text data to the renderer.
+  - Currently raw element in XML will map to `GuiDirect2DElement` and `GuiGDIElement` dynamically, keep this.
+    - `GuiRemoteRendererSingle` should call `IGuiGraphicsResourceManager::CreateRawElement` and cast the result to `GuiRawElementBase`, so that the actual implementation decision stays inside the native platform.
+  - Make a raw element base class `GuiRawElementBase`:
+    - Add a `WString Data` property.
+    - Add a `WString Id` property.
+    - No `DataChanged` or `IdChanged` is needed.
+    - Changing `Data` will trigger repaint, changing `Id` will not.
+  - Current `GuiDirect2DElement` and `GuiGDIElement` should inherit from this `GuiRawElementBase`.
+  - Delete the empty `GuiRemoteRawElement` class. `GuiRawElementBase` must also be a concrete element that the remote core's resource manager can create and pair with its protocol renderer; native resource managers still create their platform-specific subclasses.
+  - `GuiRemoteRendererSingle` should expose a collection by `const List<Ptr<GuiRawElementBase>>& GetRawElements() const`, with `RawElement(Installed|Uninstalled|Changed)` events for accessing all raw elements. When `Installed` raises, the `Ptr<GuiRawElementBase>` field in the event args should already appear in `GetRawElements`. When `Uninstalled` raises, that field should still in `GetRawElements` and it will be removed from the list after all `Uninstalled` handlers are executed.
+    - Both `Id` or `Data` changing raise `RawElementChanged`, just like how changing other elements is working, but the event does not need to point out which property is changed.
+    - Events are generated from the remote renderer, no protocol messages for them.
+      - Remote protocol should add messsages for raw elements just like other elements.
+    - `GuiRemoteRendererSingle` will have events for `RawElement(Installed|Uninstalled|Changed)`.
+  - TUI will not support raw element. No raw element renderer should be added, using raw element with TUI is expected to crash because of this.
+  - In the remote probocol based unit test, add one test case to like, press a button and change `Id`, press another button and change `Data`.
+    - In the native unit test snapshot viewer, a raw element should be implemented by an label without linewrap and with ellipse, so that we can actually see `Id: Data` in the viewer.
+- On `FullControlTest` draw a clock, copy from `GacUI_Windows/Direct2DClock` tutorial, but it is driven by the text data.
+  - A timer will update the data to store time for every second, and because changing data triggers repaint, so the repaint event should just draw a clock according to the data, and the clock automatically looks live.
+  - Drawing can only be done with C++, so some manual code is needed, accessing native rendering devices with XML is impossible.
+  - We need to handle Direct2D and GDI, it is easy to use `dynamic_cast` on the `GuiRawElementBase` and use api directly.
+  - A function should be exposed from `Test/GacUISrc/Generated_FullControlTest/FullControlTestRawElement.(h|cpp)`, calling it will attach to the raw element, inside it all handlers will be attached according to the type of the actual implementation, you are going to implement Direct2D and GDI at the same time, no platform guard is needed you can assume this file is windows only.
+  - NO NEED to update `DebugRemoteProtocolSop.md`, this page will not be included, it is for human verification.
 
-# TEST [CONFIRMED]
+## DETAILS
 
-- The existing `RefreshThemes preserves overrides and safely snapshots windows` test in `<GacUI repo>/Test/GacUISrc/UnitTest/TestApplication_Theme.cpp` creates a date picker with the constructor's current-date default. The previous unchanged full test run regenerated the two `Application/RefreshThemes/OverridesAndWindows` frames with the highlight moving from October 13 to October 14.
-- Set the fixture date before attachment and rendering, then build the Debug x64 solution and run the complete UnitTest suite through the repository wrappers. Require all tests to pass, no skipped files, and no memory leak report after the summary.
-- Inspect every changed snapshot and verify both date-picker frames display January 2026 with January 1 selected. Compare file-dialog snapshots against the committed baseline.
-- Trace the background filesystem jobs, main-thread callbacks, virtualized row creation, and renderer ID allocation. Separate source-supported scheduling mechanisms from historical platform observations and controlled runtime evidence.
+### Raw element creation and reflection
+
+- The clock reference is `<Release repo>/Tutorial/GacUI_Windows/Direct2DClock/AnimationControl.cpp`.
+- Add the shared, reflected `GuiRawElementBase` under `<GacUI repo>/Source/GraphicsElement`, owning `Id` and `Data`. It is both the base of the Windows raw elements and the concrete portable raw element used by the remote core. Preserve one graphics-element identity, renderer and owner composition through the existing `GuiElementBase` machinery; avoid introducing two independent element bases. Keep construction and renderer registration specific to the concrete type: native `Create()` calls must construct the native subclass and use its renderer factory, not inherit a factory that constructs the common class.
+- Remove the empty `GuiRemoteRawElement` declaration and constructor from `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteGraphics_BasicElements.h` and `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteGraphics_BasicElements.cpp`. Retarget the core-side `GuiRawElementRenderer` and its registration to `GuiRawElementBase`, and update `GuiRemoteGraphicsResourceManager::CreateRawElement` in `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteGraphics.cpp` to create that common class with the protocol renderer. Keep this protocol renderer: the core still needs an element to hold and transmit state, independently of the native renderer process. Do not replace the deleted class with another empty core-only wrapper.
+- Keep platform selection in `IGuiGraphicsResourceManager::CreateRawElement`, declared in `<GacUI repo>/Source/GraphicsElement/GuiGraphicsResourceManager.h`, with its existing `Ptr<IGuiGraphicsElement>` return type. The XML constructor and `GuiRemoteRendererSingle` must use this factory and cast its result to `GuiRawElementBase`. The native renderer receives `GuiDirect2DElement` or `GuiGDIElement`; the core receives the common class; hosted mode forwards to its underlying manager. `GuiRemoteRendererSingle` creates an element when the core sends its creation message, not merely at process startup, and never constructs a core-side element or selects a native backend itself.
+- Preserve the XML `<Raw>` spelling: its existing virtual type name `presentation::elements::GuiRawElement` in `<GacUI repo>/Source/Compiler/InstanceLoaders/GuiInstanceLoader_Plugin.cpp` should be backed by the real reflected `GuiRawElementBase` instead of `IGuiGraphicsElement`. This XML alias does not require a C++ class named `GuiRawElement`. Use the same factory-backed construction path and make the reflection helper return `Ptr<GuiRawElementBase>` after the cast, so XML can assign inherited `Id` and `Data`. Update the type list, property registration, reflected helper signature, `<GacUI repo>/Source/GacUIReflectionHelper.h` and `<GacUI repo>/Source/GacUIReflectionHelper.cpp` consistently. Do not add property-change events.
+- Initialize both strings to empty. Same-value assignments are no-ops. `Id` is application data, not the numeric protocol renderer ID: empty and duplicate string IDs are valid and must not affect ownership or collection membership.
+- Preserve the existing TUI failure in `<GacUI repo>/Source/PlatformProviders/TUI/TuiGraphics.cpp`; do not register a TUI raw renderer or substitute a label there.
+
+### Synchronization and repaint timing
+
+- `GuiElementBase::InvokeOnElementStateChanged` currently combines renderer notification with composition invalidation. `Data` changes need both; `Id` changes must notify the renderer of dirty state without invalidating the composition. Keep this distinction in the shared element implementation.
+- Use the existing frame-batched synchronization contract: an isolated `Id` assignment does not schedule a frame. Its latest value reaches the remote renderer on the next otherwise-required frame, including one requested by a later `Data` change. `RawElementChanged` reports applied remote state, not every intermediate core-side setter invocation. Multiple changes before a frame may therefore coalesce.
+- The current remote raw renderer deliberately reports no changes and sends no descriptor. Add a raw descriptor with the numeric renderer ID and both string properties to the authored protocol definitions under `<GacUI repo>/Source/PlatformProviders/Remote/Protocol`, including `OrdinaryElementDescVariant`. Sending both strings whenever the raw element is dirty is sufficient; initial creation and reconnection must send complete current state, including empty strings.
+- Update the remote raw renderer, native descriptor dispatch, protocol serialization consumers and automation element state together. Do not add renderer-to-core protocol events for the three public raw-element events.
+- Applying a descriptor must update both strings before raising one `RawElementChanged`, and raise it only if at least one stored value changed. Remote native elements have no owner composition, so applying changed `Data` must also set the renderer's refresh state. An `Id`-only update must not independently request repaint. Do not rely on a changed DOM, mouse movement or another control to make a data-only update visible.
+
+### Native remote renderer lifecycle
+
+- Implement the collection and events in `GuiRemoteRendererSingle`, declared in `<GacUI repo>/Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h`. Use event arguments containing the actual `Ptr<GuiRawElementBase>`; all collection changes and callbacks occur on the renderer UI thread.
+- Collection membership follows native element creation and removal, not DOM visibility. On creation, obtain the platform raw element, put it in the renderer's element map and raw-element list, and then raise `RawElementInstalled`. Raise this before the initial render-target assignment so subscribers can attach native target-change handlers in time.
+- Creation messages precede property descriptors. Consequently, `RawElementInstalled` initially sees empty `Id` and `Data`; the first descriptor produces `RawElementChanged` if it changes them. Consumers selecting an element by `Id` must handle that later notification and can enumerate existing elements when subscribing late.
+- On destruction, raise `RawElementUninstalled` while the object is still in `GetRawElements()`, then detach its render target with `SetRenderTarget(nullptr)` and remove it after all handlers return. Apply this to explicit destruction, replacement of an existing numeric renderer ID, and the final element clearing in `AfterClosing`. Keep the object and native resources usable for handler detachment during the callback. Subscribers can retain the exposed `Ptr<GuiRawElementBase>`, so removal must not leave the surviving element pointing at a destroyed native target.
+- Resizing, DPI changes and render-target recreation do not reinstall the element. The existing disconnected/fatal-error retained frame keeps its elements until actual removal; disconnecting alone must not discard them or raise uninstall events. A replacement renderer receives fresh elements and complete state.
+- Attach drawing handlers once per element and detach them when their owner stops using it. Avoid a strong-reference cycle between an element, its event handlers and their captured state.
+
+### Snapshot recording and viewer
+
+- Add the raw descriptor to `UnitTest_ElementDescVariant` in `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_UnitTest.txt`. Extend descriptor dispatch and frame-state recording in `<GacUI repo>/Source/UnitTestUtilities/GuiUnitTestProtocol_Rendering.h` and `.cpp`; raw elements must no longer be treated as descriptor-free alongside focus rectangles.
+- Implement the existing `RendererType::Raw` branch in `<GacUI repo>/Source/UnitTestUtilities/SnapshotViewer/Application/GuiUnitTestSnapshotViewerApp.cpp` using a `GuiSolidLabelElement` displaying the recorded `Id + ": " + Data`. Disable wrapping and multiline layout, enable ellipsis, and retain the recorded bounds. This representation belongs only to snapshot playback; it must not become the production raw-element renderer or change protocol layout measurements.
+
+### FullControlTest clock
+
+- Author the page, raw element, initial time and once-per-second updates in `<GacUI repo>/Test/Resources/App/FullControlTest`. Use a stable clock `Id` and a simple documented `HH:mm:ss` data format. Give the raw composition explicit useful bounds because custom drawing does not provide text-derived minimum size. Own the timer with the window/page and stop its callbacks on disposal.
+- Adapt the tutorial rather than retaining its timing behavior: its timer requests repaint directly and its drawing reads the local clock. Here the UI/core timer alone updates `Data`; native painting parses that value and never reads local time or advances its own timer. Fixed `Data` must draw a fixed clock through repeated repaints.
+- Put the shared native attachment function in the requested `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestRawElement.h` and `.cpp`, alongside the manually maintained palette helper. Keep it independent of generated FullControlTest classes so the remote renderer can consume it too. Handle both `GuiDirect2DElement` and `GuiGDIElement`; respect render bounds, hosted offsets and clipping. Release/recreate Direct2D target-bound resources on target changes and restore GDI drawing state after painting. Support attachment after a render target already exists, as well as attachment before assignment.
+- Wire the function into the native FullControlTest entry points (`CppTest`, `CppTest_Metaonly`, `CppTest_Reflection` and `GacUI_Host`) and into `RemotingTest_Rendering_Win32` through the raw-element collection/events. Expose the clock element through an authored XML property or composition lookup that the interpreted host can also access. Subscribe in the remote renderer before processing pending protocol messages. The remote core only owns the XML state and timer; drawing attaches in the renderer process. Handle initial empty IDs, subsequent identity changes and late enumeration without duplicate handlers.
+- The helper files are Windows-only as requested. Include them only in Windows consumers; shared inventories also feed portable Core/Wasm builds. The remote renderer entry point has existing platform branches, so keep its Windows helper references in the Windows branch. Keep portable resource generation and raw data transport free of Windows graphics dependencies. No browser clock renderer is required by this Windows drawing task.
+- Update the relevant project inventories and filters for the manual helper. Regenerate architecture-specific FullControlTest sources and resources with the existing tools; do not hand-edit generated output. Keep `<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md` unchanged as requested.
+
+## VERIFICATION
+
+These are acceptance checks for implementation; this review does not execute the task.
+
+1. **Element and XML contract:** Use ordinary unit tests for default values, same-value assignments, empty/duplicate IDs and the inheritance/factory contract. Verify the remote core creates `GuiRawElementBase` with its protocol renderer, while native Direct2D/GDI factories create their actual subclasses with the corresponding native renderers; all factory results must cast to the common base. Verify an isolated `Id` change marks state dirty without requesting a composition repaint; a `Data` change requests repaint. Compile XML using the unchanged `<Raw>` tag to initialize and change both properties, checking generated C++ and Workflow loading against reflected `GuiRawElementBase`. Check that no source references to the deleted `GuiRemoteRawElement` remain and that core/unit-test operation needs no native drawing backend.
+2. **Protocol state:** Cover initial full state, `Id`-only changes followed by an independently requested frame, `Data`-only changes, both properties changing together, clearing either string, Unicode text, unchanged state and reconnection/full resynchronization. Exercise JSON serialization as well as direct protocol dispatch. Assert stored values and event counts; a button-click test alone cannot prove the no-repaint contract because the button can invalidate itself.
+3. **Native events and rendering:** Verify collection membership from inside every installed/uninstalled handler, all-handler completion before removal, one changed event after both fields are applied, replacement of an existing numeric renderer ID, final cleanup and retained disconnect state. Retain an external raw-element pointer across removal/window shutdown and verify its render target has been detached. Verify render-target recreation preserves element identity and does not repeat installation. Use focused native verification for `GuiRemoteRendererSingle`, which the existing unit-test mock does not cover. In particular, change only `Data` with unchanged bounds/DOM and no user input, and confirm the native picture refreshes.
+4. **Requested snapshot case:** Add one remote-protocol UI test with two buttons, changing `Id` and `Data` independently. Capture useful initial, ID-changed and data-changed frames, with names describing the preceding action, then close the window. Assert the descriptor values in each frame and replay the saved snapshots in the native viewer to see the corresponding `Id: Data` labels. Include a long value to verify truncation without wrapping. Keep non-rendering property/serialization checks in ordinary tests.
+5. **Generation and builds:** Follow `<GacUI repo>/Project.md` and the repository build/execute wrappers. Run `Metadata_UpdateProtocol` after authored protocol changes. Regenerate reflection metadata for Debug Win32 and Debug x64 and run `Metadata_Test`; regenerate FullControlTest through `GacUI_Compiler`, check for resource compiler errors, and repeat the required metadata generation after compilation. Rebuild affected consumers, including no-reflection, metadata-only, full-reflection, Workflow-hosted and native remote-renderer configurations. Run the required UnitTest project with the affected tests selected and inspect the final log for failures and memory leaks.
+6. **Clock behavior:** Verify both Direct2D and GDI in standalone and remote-renderer modes; compiling the GDI branch alone is insufficient. Confirm one-second updates without input, deterministic drawing for fixed data, resizing/clipping, switching away and back, palette refresh, close/reopen and renderer replacement. Verify late attachment and render-target recreation do not leave missing brushes, stale handlers or leaked drawing resources. Keep wall-clock values out of deterministic snapshot baselines.
+7. **Showcase and portability:** Update and run `<GacUI repo>/Test/UIA_CppTest.ps1` and `<GacUI repo>/Test/UIA_CppTest_Metaonly.ps1` as required by `<GacUI repo>/Project.md`, adding targeted page/control names and bounds checks. Use the GacUI automation service first for application interaction and UIA for its specific coverage. Check portable Core/Wasm source inventories exclude the Windows helper, and perform native Unix/Wasm build checks where those environments are available; report unavailable runtime coverage explicitly. Confirm TUI still rejects raw-element creation, without adding a raw renderer or destabilizing the normal TUI test suite.
+8. **Review artifacts:** Inspect generated diffs and new snapshot frames. When implementation is committed, keep authored files, generated files and snapshot changes in their required separate commits. This review itself changes only this task document.
+
+## REVIEW COMMENTS
+
+No unresolved review comments. The implementation choices and acceptance checks above resolve the identified gaps within the requested scope.
+
+# TEST
+
+- Baseline regression in `<GacUI repo>/Test/GacUISrc/UnitTest/TestReflectionTypeList.cpp` requires a reflected `GuiRawElementBase` with writable `Id` and `Data` and no property-change events. The baseline Debug x64 build passed; the full UnitTest run stopped at `Assertion failure: rawType`, confirming the missing shared reflected type.
+- Extend ordinary tests to cover creation/inheritance, same-value and empty/duplicate identifiers, renderer dirty state versus composition repaint, full descriptors, serialization and resynchronization.
+- Add the requested two-button XML snapshot case with initial, identifier-changed and data-changed frames. Verify recorded state and snapshot playback.
+- Verify native renderer collection/event ordering, property coalescing, data-only refresh and retained-pointer target detachment; verify both Windows drawing backends and showcase integrations.
+- Run protocol and resource generation, both metadata architectures and metadata tests, required solution builds and UnitTest through repository wrappers. Inspect compiler errors, snapshots and the final leak report. Run the showcase UIA wrappers and record unavailable platform coverage explicitly.
 
 # PROPOSALS
 
-- No.1 Initialize the theme fixture date to January 1, 2026 [CONFIRMED]
+- No.1 Share raw state while retaining concrete platform factories
 
-## No.1 Initialize the theme fixture date to January 1, 2026
+## No.1 Share raw state while retaining concrete platform factories
 
-Call `datePicker->SetDate(DateTime::FromDateTime(2026, 1, 1))` immediately after constructing the control in the existing theme-refresh test. This makes both the original and refreshed calendar snapshots independent of the execution date while preserving the production control's current-date default.
+Use a concrete `GuiRawElementBase` with one existing element/renderer/composition identity. Factor the existing `GuiElementBase` factory implementation into protected typed helpers so native subclasses can provide their own `Create` and element-type registration without inheriting a common-class factory. Keep platform selection in the resource manager. Reflect the common state and preserve the `<Raw>` virtual XML alias.
+
+Transmit a complete `ElementDesc_Raw` (numeric renderer ID, application string ID and data) whenever dirty. Identifier changes notify only the renderer; data changes also invalidate the composition. Apply both values before one renderer-local changed event and explicitly refresh only for changed data. Own native collection membership in the numeric element map lifecycle, install before target assignment, and uninstall before target detachment/removal, including replacement and shutdown.
+
+Record descriptors in snapshots and render their text only in the viewer. Author a clock page whose owned timer writes `HH:mm:ss`; keep native drawing and its detachable subscriptions in the Windows helper shared by standalone and remote consumers. Paint only the received data, with no native clock/timer.
 
 ### CODE CHANGE
 
-- Added the fixed date initialization in `<GacUI repo>/Test/GacUISrc/UnitTest/TestApplication_Theme.cpp`.
-- Regenerated the owning snapshots through UnitTest and reviewed the complete generated diff before committing source and snapshots separately.
-
-### CONFIRMED
-
-- The complete Debug x64 solution build succeeded with zero warnings and zero errors.
-- The complete UnitTest run passed 93/93 test files and 1820/1820 test cases. The completed `<GacUI repo>/.github/Scripts/Execute.log` contains no skipped tests or memory leak report after the summary.
-- Both `Application/RefreshThemes/OverridesAndWindows/frame_0.json` and `frame_1.json` contain the January 2026 calendar with day 1 selected. Each frame has seven changed values: the month name, four preceding-month day labels, and the old/new selection background colors. No element IDs or DOM structure changed.
-- The snapshot commit contains only those two date-picker frames. The source commit includes the fixture initialization and this investigation, with the preceding investigation archived by the repository script.
-
-# ELEMENT ALLOCATION INVESTIGATION
-
-## Reproduced on the same Windows build
-
-The full Debug x64 run after the date-only edit changed all five `ScrollResetOnNavigation` rendering artifacts to the exact blobs previously produced by the Linux run in `d6e54f44a`. The preceding unchanged Windows run retained the other allocation sequence. The earlier Windows/Linux correlation therefore does not establish a platform-specific cause: the same Windows executable configuration can produce both sequences.
-
-The two sequences create the same tree and grid rows with different sequential IDs. The previous structural comparison resolved each DOM element reference to its descriptor and omitted allocation IDs; both changed frames then had identical render trees, including geometry, colors, text, and child order.
-
-## UI-thread allocation confirmed with CDB
-
-A focused debugger execution of `TestApplication_Dialog_File.cpp` passed 28/28 cases. Breakpoints at the `ScrollResetOnNavigation` double-click and `GuiRemoteGraphicsRenderTarget::AllocateNewElementId` captured two allocation paths on the same main thread:
-
-- Element 552: the tree view's deferred `GuiScrollView::CalculateView` callback calls `CallUpdateView`, `RangedItemArrangerBase::OnViewChanged`, and `GuiVirtualRepeatCompositionBase::CreateStyle`. Attaching that row assigns the renderer ID. The debugger identified the control as `GuiBindableTreeView`.
-- Element 622: the `FileDialogViewModel::RefreshFiles` UI completion raises `IsLoadingFilesChanged`. The handler from `<GacUI repo>/Source/Utilities/FakeServices/Dialogs/FileDialog.xml` calls `dataGrid.SetViewPosition({x:0 y:0})`; the scroll event calls `CallUpdateView` and creates the grid rows. This path also reaches the same renderer-ID allocator on the main thread.
-- In the debugger run, these callbacks were entries 0 and 1 of the same `SharedAsyncService::ExecuteAsyncTasks` batch, whose `firstTaskId` was 37. The resulting five rendering artifacts exactly matched the original committed baseline again.
-
-Relevant implementation:
-
-- `<GacUI repo>/Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp`: `FileDialogTaskQueue` serializes filesystem work on an `InvokeAsync` worker. `RefreshFiles` enumerates folders/files there and posts the UI completion with `InvokeInMainThread`. UI collection mutation and loading-state notifications occur only in that completion.
-- `<GacUI repo>/Source/Controls/GuiContainerControls.cpp`: `CalculateView` uses `TryDelayExecuteIfNotDeleted`; scrolling itself calls `CallUpdateView` synchronously.
-- `<GacUI repo>/Source/Application/Controls/GuiBasicControls.cpp`: `TryDelayExecuteIfNotDeleted` posts hosted-control work through `InvokeInMainThread`.
-- `<GacUI repo>/Source/Utilities/SharedServices/GuiSharedAsyncService.cpp`: UI callbacks are appended to `taskItems`; each execution pass snapshots the current queue. The ordering between a UI-posted layout callback and a worker-posted completion depends on their enqueue times.
-- `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteGraphics.cpp` and `GuiRemoteGraphics_BasicElements.cpp`: attaching a new renderer allocates `++usedElementIds`.
-
-This is an ordering difference between serialized UI callbacks, not evidence of background-thread UI creation. Serializing filesystem jobs does not order their completions relative to independently queued UI layout work. Rendering-idle detection also does not constitute a barrier for all background tasks.
-
-A pointer-sorted `InvokeAfterRendering` callback map was inspected as another potential source of ordering differences. It was not on either captured allocation stack and is not the diagnosed explanation for this case.
-
-## Stabilization options
-
-For snapshot tests, use a deterministic asynchronous executor: preserve queued/asynchronous behavior, execute mocked background work at explicit harness phases, and deliver its UI completions in a defined order relative to layout and frame capture. This removes dependence on worker speed while retaining production asynchronous behavior. A real-worker regression should separately exercise concurrency and lifetime behavior.
-
-An alternative production change is to define navigation as explicit phases, with a dependency between tree layout and applying/resetting the file grid. Merely retaining the FIFO filesystem queue, adding a sleep, or waiting until the final screenshot looks idle does not fix allocation history. Any scheduling change needs deliberate snapshot review and repeated verification; no scheduler or production file-dialog behavior was changed in this request.
-
-## Artifact handling
-
-The focused debugger run also reordered declarations in 28 `[x64].txt` compiler listings that the full run had left unchanged. These diagnostic-run artifacts were restored explicitly. The five file-dialog rendering artifacts returned to their committed content through the debugger run itself. The retained snapshot changes are only the two theme-refresh calendar frames requested by the user.
+Implementation pending. Extend ordinary property/protocol tests and the two-button rendering fixture alongside each layer; regenerate protocol, reflection and resource outputs through their owning tools.
