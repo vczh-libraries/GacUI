@@ -21,9 +21,15 @@
 
 Deploy `Bin/app.mjs`, `Bin/app.wasm` and `Bin/app.worker.js` for each app; all generated outputs remain ignored build artifacts and must not be committed. Packaging leaves `app.mjs` unchanged. Emscripten loads the adjacent `app.worker.js`, which imports the adjacent `app.mjs`. GacJS's `wasm-worker.js` is the separate application host. No native Core, HTTP protocol listener or external view-model host is needed. RVMT uses the browser TypeScript host and generated x86 RPC binding.
 
+## Maintain a Test Matrix Card
+
+Maintain the test card in `<GacUI repo>/.github/TaskLogs/TestMatrix_Wasm.md`. At the start of every new job, completely overwrite this file with a fresh card containing the current date/time, one row each for FCT, RPT and RVMT with blank results, and empty observations/limitations and issues/fixes sections. Create the file if it does not exist. Do not carry over results or notes from earlier jobs; continuing the same job updates its current card without resetting progress.
+
+Update the card immediately when a test item starts, succeeds, fails or is fixed. Record actual observations, evidence and platform limitations there as they occur. SOP and setup documents are reusable instructions and blank samples: do not fill their sample cells or append run-specific results to them.
+
 ## Verification
 
-Maintain the current test card in `<GacUI repo>/.github/TaskLogs/Copilot_Investigate.md` with one row for FCT, RPT and RVMT. Record progress, actual observations, failures, fixes, evidence and platform limitations there as they occur. SOP and setup documents are reusable instructions and blank samples: do not fill their sample cells or append run-specific results to them. Run `npm run test-wasm` from the running entry package for the browser regression suite.
+Run `npm run test-wasm` from the running entry package for the browser regression suite.
 
 This job covers only the three browser Wasm apps. TuiControlTest and the terminal provider tests are native-only and are outside this matrix. If native TUI verification is also requested on Linux, follow `<GacUI repo>/.github/Jobs/job.rpXPlat.prompt.md`: copy the applicable `### Test Matrix Card` sample from `<GacUI repo>/.github/Jobs/DebugTuiControlTestSop.md` into `<wGac repo>/TestMatrix_Tui.md` and record all TUI test items, results and terminal comparisons there. Never record them in the SOP or count Wasm browser results as terminal coverage.
 
