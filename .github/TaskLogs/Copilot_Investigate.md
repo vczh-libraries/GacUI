@@ -87,6 +87,36 @@ These are acceptance checks for implementation; this review does not execute the
 
 No unresolved review comments. The implementation choices and acceptance checks above resolve the identified gaps within the requested scope.
 
+# UPDATES
+
+## UPDATE
+
+implementation is pretty good but one little refactoring:
+
+
+
+1\) Looks like `RawClockCollectionAttachment` and `AttachFullControlTestRawElements` could work by just knowing `AttachFullControlTestRawElement`, you can consider moving  `RawClockCollectionAttachment` and `AttachFullControlTestRawElements` to `RemotingTest_Win32_Renderer` project to store in a new pair of file directly, like `FullControlTestRawElementRemote.(h|cpp)`, and the function is called when `FullControlTest` is selected.
+
+
+
+2\) I think
+```cpp
+	Ptr<IGuiGraphicsElement> GuiRemoteGraphicsResourceManager::CreateRawElement()
+	{
+		return Ptr(GuiRawElementBase::Create());
+	}
+```
+
+is not good enough, looks like `elements_remoteprotocol::GuiRemoteRawElement` still has its value, but since it has totally no function, you can just make it inherits from `GuiRawElementBase` and do nothing. You can check out the commit 2dc37e0c45d186a82e4dee9163f98fb34c67a425 to see how it was originally created.
+
+
+
+3\) The new `/Gdi` argument is not documented, please find in documents where it explains those command line arguments for test apps (probably [Project.md](Project.md) but I am not sure), add the new `/Gdi` thing.
+
+
+
+4\) I find that `FullControlTestRawElement.(h|cpp)` are added to test app project files instead of `Generated_FullControlTest` project, is there any trouble adding it? If no please do the dependency clean up. But if there is actually any negative impact to other project files, skip this item and tell me why.
+
 # TEST [CONFIRMED]
 
 - Baseline regression in `<GacUI repo>/Test/GacUISrc/UnitTest/TestReflectionTypeList.cpp` requires a reflected `GuiRawElementBase` with writable `Id` and `Data` and no property-change events. The baseline Debug x64 build passed; the full UnitTest run stopped at `Assertion failure: rawType`, confirming the missing shared reflected type.
@@ -97,7 +127,8 @@ No unresolved review comments. The implementation choices and acceptance checks 
 
 # PROPOSALS
 
-- No.1 Share raw state while retaining concrete platform factories [CONFIRMED]
+- No.1 Share raw state while retaining concrete platform factories [DENIED]
+- No.2 Separate remote clock attachment and restore the concrete core raw type
 
 ## No.1 Share raw state while retaining concrete platform factories
 
@@ -123,7 +154,10 @@ Viewer playback exposed an encoding problem in the new UTF-8 C++ test fixture: M
 
 Added an ordinary TUI exception test for `CreateRawElement` so rejection is verified at runtime alongside the normal terminal-provider suite, without installing a raw renderer.
 
-### CONFIRMED
+### DENIED BY USER
+
+The continuation accepts the behavior but supersedes direct creation of the common raw class and the placement of renderer collection attachment in the shared drawing helper. The prior validation below remains historical evidence; No.2 keeps the implemented behavior while applying the requested refactoring. The Windows-only helper inventory remains deliberate because the shared project also compiles into Core without native Windows graphics backends.
+
 
 The common element preserves one renderer/owner identity while platform factories continue creating their native subclasses. The isolated frame test proves ID assignments only dirty transport state; an independently requested frame transmits the latest ID. Data changes schedule rendering, and native dispatcher tests prove data-only updates repaint without DOM changes or input. Complete descriptors and JSON round trips preserve empty strings and Unicode. Native tests verify installation/removal ordering, coalesced change events, target recreation, retained disconnect state, replacement, late drawing attachment and retained pointers after shutdown.
 
@@ -134,3 +168,17 @@ The common element preserves one renderer/owner identity while platform factorie
 - The saved `Elements/Raw/Properties` snapshots contain `Ready`, `Id changed independently`, and `Data changed to long Unicode text`; the final descriptor contains the intended Chinese characters. All three corrected frames replayed through native viewer UIA. Generated diffs were reviewed, and `<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md` remains unchanged.
 
 Remaining environment limits: native screenshot capture returned a black locked-desktop image, so visual pixel inspection of clipping/ellipsis could not be completed; native painting callbacks, viewer label state, recorded bounds and UIA/automation geometry were verified instead. Native Unix/Wasm build execution is unavailable because this Windows host has no WSL installation; portable inventories were checked to exclude the Windows helper.
+
+## No.2 Separate remote clock attachment and restore the concrete core raw type
+
+Move `RawClockCollectionAttachment` and `AttachFullControlTestRawElements` into `<GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32/FullControlTestRawElementRemote.h` and `.cpp`, and register both files in that project's inventory and filters. The remote adapter depends on the single-element attachment API; remove remote-renderer dependencies from `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestRawElement.h` and `.cpp`. Preserve subscription lifetime and the `FullControlTest.Clock` filter, including initially empty IDs and late enumeration. Application selection is Core-side `/FCT`; the renderer has no application selector. Keep its startup subscription before pending messages, so selecting FullControlTest in Core attaches the drawing when its clock descriptor arrives without adding a redundant renderer argument.
+
+Restore `elements_remoteprotocol::GuiRemoteRawElement` as a behavior-free subclass of `GuiRawElementBase`, with only the concrete construction/type-registration plumbing used by the Windows subclasses. Retarget the protocol renderer and Core factory to it; all state, notifications and reflection stay inherited. Update the ordinary Core test to verify the concrete subtype and the single inherited element/renderer identity. No protocol, XML or reflection schema changes are needed.
+
+Document the exact `/Gdi` switch, default Direct2D behavior, supported five applications, duplicate rejection and a paired Core/renderer example in `<GacUI repo>/Project.md` beside the existing command-line arguments.
+
+Skip the optional shared-inventory move: `<GacUI repo>/Test/GacUISrc/RemotingTest_Core/RemotingTest_Core.vcxproj` imports `Generated_FullControlTest.vcxitems` but uses `Lib_GacUI_Core`, which excludes Windows Direct2D/GDI implementations. The drawing helper directly references their element RTTI, event arguments and WinDC methods; including it would introduce native graphics link dependencies into Core. `GacUI_Host`, the renderer and UnitTest do not import the generated application inventory at all, so they still require explicit helper entries. Preserve the current native-only compilation boundary.
+
+### CODE CHANGE
+
+Planned: move the collection adapter and update the renderer include/project/filter; restore the Core subtype and factory/renderer typing; update the existing factory regression; add `/Gdi` documentation. Verify both Debug architectures through the repository build and UnitTest wrappers, then exercise FullControlTest over named pipes with Direct2D and GDI. Preserve generated files and the remote debugging SOP.
