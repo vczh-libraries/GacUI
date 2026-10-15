@@ -3292,7 +3292,7 @@ Type Declaration (Extra)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiGraphicsElement)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(OwnerComposition)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateRawElement, NO_PARAMETER, Ptr<IGuiGraphicsElement>(*)(), vl::reflection::description::GuiRawElement_Constructor)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateRawElement, NO_PARAMETER, Ptr<GuiRawElementBase>(*)(), vl::reflection::description::GuiRawElement_Constructor)
 			END_INTERFACE_MEMBER(IGuiGraphicsElement)
 
 			BEGIN_CLASS_MEMBER(IGuiGraphicsParagraph)
@@ -3346,6 +3346,12 @@ Type Declaration (Extra)
 /***********************************************************************
 Type Declaration (Class)
 ***********************************************************************/
+
+			BEGIN_CLASS_MEMBER(GuiRawElementBase)
+				CLASS_MEMBER_BASE(IGuiGraphicsElement)
+				CLASS_MEMBER_PROPERTY_FAST(Id)
+				CLASS_MEMBER_PROPERTY_FAST(Data)
+			END_CLASS_MEMBER(GuiRawElementBase)
 
 			BEGIN_CLASS_MEMBER(GuiFocusRectangleElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)

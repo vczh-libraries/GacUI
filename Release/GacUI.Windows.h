@@ -236,13 +236,16 @@ Raw API Rendering Element
 			/// <summary>
 			/// Defines an element for customized rendering using Direct2D.
 			/// </summary>
-			class GuiDirect2DElement : public GuiElementBase<GuiDirect2DElement>
+			class GuiDirect2DElement : public GuiRawElementBase
 			{
-				friend class GuiElementBase<GuiDirect2DElement>;
+				friend class GuiElementBase<GuiRawElementBase>;
 				static constexpr const wchar_t* ElementTypeName = L"Direct2DElement";
 			protected:
 				GuiDirect2DElement();
 			public:
+				static vint					GetElementType();
+				static GuiDirect2DElement*	Create();
+
 				/// <summary>Render target changed (before) event. Resources that binded to the render target can be released at this moment.</summary>
 				compositions::GuiGraphicsEvent<GuiDirect2DElementEventArgs>		BeforeRenderTargetChanged;
 				/// <summary>Render target changed (after) event. Resources that binded to the render target can be recreated at this moment.</summary>
@@ -324,6 +327,7 @@ OS Supporting
 extern void RendererMainDirect2D(vl::presentation::GuiHostedController* hostedController, bool raw);
 
 #endif
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\WINDOWS\DIRECT2D\RENDERERS\GUIGRAPHICSRENDERERSWINDOWSDIRECT2D.H
@@ -1535,13 +1539,16 @@ Raw API Rendering Element
 			/// <summary>
 			/// Defines an element for customized rendering using GDI.
 			/// </summary>
-			class GuiGDIElement : public GuiElementBase<GuiGDIElement>
+			class GuiGDIElement : public GuiRawElementBase
 			{
-				friend class GuiElementBase<GuiGDIElement>;
+				friend class GuiElementBase<GuiRawElementBase>;
 				static constexpr const wchar_t* ElementTypeName = L"GDIElement";
 			protected:
 				GuiGDIElement();
 			public:
+				static vint					GetElementType();
+				static GuiGDIElement*		Create();
+
 				/// <summary>Rendering event.</summary>
 				compositions::GuiGraphicsEvent<GuiGDIElementEventArgs>		Rendering;
 			};
@@ -1601,6 +1608,7 @@ OS Supporting
 extern void RendererMainGDI(vl::presentation::GuiHostedController* hostedController, bool raw);
 
 #endif
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\WINDOWS\GDI\RENDERERS\GUIGRAPHICSRENDERERSWINDOWSGDI.H

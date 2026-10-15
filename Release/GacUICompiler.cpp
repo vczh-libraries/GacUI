@@ -3073,7 +3073,7 @@ GuiInstanceLoaderManager
 				{
 					return CopyTypeInfo(ctor->GetMethod(0)->GetReturn());
 				}
-				else if (td == description::GetTypeDescriptor<elements::IGuiGraphicsElement>())
+				else if (td->CanConvertTo(description::GetTypeDescriptor<elements::IGuiGraphicsElement>()))
 				{
 					return Ptr(new SharedPtrTypeInfo(Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal))));
 				}
@@ -9810,7 +9810,7 @@ GuiPredefinedInstanceLoadersPlugin
 							))
 
 						manager->CreateVirtualType(
-							GlobalStringKey::Get(description::TypeInfo<IGuiGraphicsElement>::content.typeName),
+							GlobalStringKey::Get(description::TypeInfo<GuiRawElementBase>::content.typeName),
 							Ptr(new GuiRawElementInstanceLoader)
 							);
 

@@ -125,9 +125,9 @@ External Functions (Basic)
 				return GetCurrentController()->ResourceService()->GetSystemCursor(type);
 			}
 
-			Ptr<elements::IGuiGraphicsElement> GuiRawElement_Constructor()
+			Ptr<elements::GuiRawElementBase> GuiRawElement_Constructor()
 			{
-				return GetGuiGraphicsResourceManager()->CreateRawElement();
+				return GetGuiGraphicsResourceManager()->CreateRawElement().Cast<elements::GuiRawElementBase>();
 			}
 
 /***********************************************************************
@@ -161,6 +161,7 @@ External Functions (Compositions)
 		}
 	}
 }
+
 
 /***********************************************************************
 .\APPLICATION\CONTROLS\GUIAPPLICATION.CPP
@@ -31667,6 +31668,45 @@ namespace vl
 			using namespace collections;
 
 /***********************************************************************
+GuiRawElementBase
+***********************************************************************/
+
+			GuiRawElementBase::GuiRawElementBase()
+			{
+			}
+
+			WString GuiRawElementBase::GetId()
+			{
+				return id;
+			}
+
+			void GuiRawElementBase::SetId(const WString& value)
+			{
+				if (id != value)
+				{
+					id = value;
+					if (renderer)
+					{
+						renderer->OnElementStateChanged();
+					}
+				}
+			}
+
+			WString GuiRawElementBase::GetData()
+			{
+				return data;
+			}
+
+			void GuiRawElementBase::SetData(const WString& value)
+			{
+				if (data != value)
+				{
+					data = value;
+					InvokeOnElementStateChanged();
+				}
+			}
+
+/***********************************************************************
 GuiFocusRectangleElement
 ***********************************************************************/
 
@@ -32269,6 +32309,7 @@ GuiPolygonElement
 		}
 	}
 }
+
 
 /***********************************************************************
 .\GRAPHICSELEMENT\GUIGRAPHICSELEMENTINTERFACES.CPP
@@ -37072,6 +37113,16 @@ GuiRemoteRawElement
 	{
 	}
 
+	vint GuiRemoteRawElement::GetElementType()
+	{
+		return GetElementTypeInternal<GuiRemoteRawElement>();
+	}
+
+	GuiRemoteRawElement* GuiRemoteRawElement::Create()
+	{
+		return CreateInternal<GuiRemoteRawElement>();
+	}
+
 /***********************************************************************
 GuiRemoteProtocolElementRenderer
 ***********************************************************************/
@@ -37238,25 +37289,13 @@ GuiRawElementRenderer
 	{
 	}
 	
-	bool GuiRawElementRenderer::IsUpdated()
-	{
-		// there is no properties for this element
-		return false;
-	}
-
-	void GuiRawElementRenderer::ResetUpdated()
-	{
-		// nothing to update
-	}
-
-	void GuiRawElementRenderer::OnElementStateChanged()
-	{
-		// nothing to update
-	}
-
 	void GuiRawElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
-		// nothing to update
+		ElementDesc_Raw arguments;
+		arguments.id = id;
+		arguments.rawId = element->GetId();
+		arguments.data = element->GetData();
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************
@@ -43069,6 +43108,15 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_Raw>(const ::vl::presentation::remoteprotocol::ElementDesc_Raw & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
+		ConvertCustomTypeToJsonField(node, L"rawId", value.rawId);
+		ConvertCustomTypeToJsonField(node, L"data", value.data);
+		return node;
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(const ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
@@ -44009,6 +44057,21 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_Raw>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_Raw& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_Raw>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementDesc_Raw&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
+			if (field->name.value == L"rawId") ConvertJsonToCustomType(field->value, value.rawId); else
+			if (field->name.value == L"data") ConvertJsonToCustomType(field->value, value.data); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder& value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder&)#"
@@ -44778,7 +44841,10 @@ namespace vl::presentation::remote_renderer
 		fatalTextElement = nullptr;
 		renderingDom = nullptr;
 		focusedParagraphElements.Clear();
-		availableElements.Clear();
+		while (availableElements.Count() > 0)
+		{
+			RemoveElement(availableElements.Keys()[0]);
+		}
 		availableImages.Clear();
 	}
 
@@ -44852,6 +44918,11 @@ namespace vl::presentation::remote_renderer
 
 	GuiRemoteRendererSingle::~GuiRemoteRendererSingle()
 	{
+	}
+
+	const collections::List<Ptr<GuiRawElementBase>>& GuiRemoteRendererSingle::GetRawElements() const
+	{
+		return rawElements;
 	}
 
 	void GuiRemoteRendererSingle::RegisterMainWindow(INativeWindow* _window)
@@ -45415,12 +45486,14 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererCreated(const Ptr<collections::List<remoteprotocol::RendererCreation>>& arguments)
 	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererCreated(const Ptr<List<RendererCreation>>&)#"
 		if (disconnectingFromCore) return;
 		supressRefresh = true;
 		if (arguments)
 		{
 			for (auto&& rc : *arguments.Obj())
 			{
+				RemoveElement(rc.id);
 				Ptr<IGuiGraphicsElement> element;
 				switch (rc.type)
 				{
@@ -45428,7 +45501,8 @@ namespace vl::presentation::remote_renderer
 					element = Ptr(GuiFocusRectangleElement::Create());
 					break;
 				case RendererType::Raw:
-					// Do Nothing
+					element = GetGuiGraphicsResourceManager()->CreateRawElement().Cast<GuiRawElementBase>();
+					CHECK_ERROR(element, ERROR_MESSAGE_PREFIX L"The platform raw element must inherit GuiRawElementBase.");
 					break;
 				case RendererType::SolidBorder:
 					element = Ptr(GuiSolidBorderElement::Create());
@@ -45465,16 +45539,13 @@ namespace vl::presentation::remote_renderer
 
 				if (element)
 				{
+					availableElements.Add(rc.id, element);
+					if (auto raw = element.Cast<GuiRawElementBase>())
+					{
+						rawElements.Add(raw);
+						RawElementInstalled(GuiRemoteRawElementEventArgs{ raw });
+					}
 					element->GetRenderer()->SetRenderTarget(GetGuiGraphicsResourceManager()->GetRenderTarget(window));
-
-					if (availableElements.Keys().Contains(rc.id))
-					{
-						availableElements.Set(rc.id, element);
-					}
-					else
-					{
-						availableElements.Add(rc.id, element);
-					}
 				}
 
 				if (enabledAutomation)
@@ -45485,6 +45556,30 @@ namespace vl::presentation::remote_renderer
 				}
 			}
 		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteRendererSingle::RemoveElement(vint id)
+	{
+		auto index = availableElements.Keys().IndexOf(id);
+		if (index != -1)
+		{
+			auto element = availableElements.Values()[index];
+			auto raw = element.Cast<GuiRawElementBase>();
+			if (raw)
+			{
+				RawElementUninstalled(GuiRemoteRawElementEventArgs{ raw });
+			}
+			element->GetRenderer()->SetRenderTarget(nullptr);
+			if (raw)
+			{
+				rawElements.Remove(raw.Obj());
+			}
+			availableElements.Remove(id);
+		}
+		focusedParagraphElements.Remove(id);
+		solidLabelMeasurings.Remove(id);
+		renderingElements.Remove(id);
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererDestroyed(const Ptr<collections::List<vint>>& arguments)
@@ -45495,14 +45590,7 @@ namespace vl::presentation::remote_renderer
 		{
 			for (auto id : *arguments.Obj())
 			{
-				focusedParagraphElements.Remove(id);
-				availableElements.Remove(id);
-				solidLabelMeasurings.Remove(id);
-
-				if (enabledAutomation)
-				{
-					renderingElements.Remove(id);
-				}
+				RemoveElement(id);
 			}
 		}
 	}
@@ -45516,6 +45604,7 @@ namespace vl::presentation::remote_renderer
 			for (auto&& desc : *arguments.updatedElements.Obj())
 			{
 				desc.Apply(Overloading(
+					[&](const remoteprotocol::ElementDesc_Raw& d) { RequestRendererUpdateElement_Raw(d); },
 					[&](const remoteprotocol::ElementDesc_SolidBorder& d) { RequestRendererUpdateElement_SolidBorder(d); },
 					[&](const remoteprotocol::ElementDesc_SinkBorder& d) { RequestRendererUpdateElement_SinkBorder(d); },
 					[&](const remoteprotocol::ElementDesc_SinkSplitter& d) { RequestRendererUpdateElement_SinkSplitter(d); },
@@ -46471,6 +46560,21 @@ namespace vl::presentation::remote_renderer
 * Rendering (Elemnents)
 ***********************************************************************/
 
+	void GuiRemoteRendererSingle::RequestRendererUpdateElement_Raw(const remoteprotocol::ElementDesc_Raw& arguments)
+	{
+		auto element = availableElements[arguments.id].Cast<GuiRawElementBase>();
+		auto dataChanged = element->GetData() != arguments.data;
+		if (element->GetId() == arguments.rawId && !dataChanged) return;
+
+		element->SetId(arguments.rawId);
+		element->SetData(arguments.data);
+		if (dataChanged)
+		{
+			needRefresh = true;
+		}
+		RawElementChanged(GuiRemoteRawElementEventArgs{ element });
+	}
+
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_SolidBorder(const remoteprotocol::ElementDesc_SolidBorder& arguments)
 	{
 		vint index = availableElements.Keys().IndexOf(arguments.id);
@@ -46554,6 +46658,7 @@ namespace vl::presentation::remote_renderer
 		}
 	}
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTERENDERER\GUIREMOTERENDERERSINGLE_RENDERING_IMAGE.CPP
@@ -66655,7 +66760,13 @@ DumpWindowClientArea
 			auto rawElement = element.Obj();
 			WString elementDescription;
 
-			if (dynamic_cast<GuiFocusRectangleElement*>(rawElement))
+			if (auto raw = dynamic_cast<GuiRawElementBase*>(rawElement))
+			{
+				elementDescription = WString::Unmanaged(L"Raw");
+				ConvertCustomTypeToJsonField(compositionDump, L"elementId", raw->GetId());
+				ConvertCustomTypeToJsonField(compositionDump, L"elementData", raw->GetData());
+			}
+			else if (dynamic_cast<GuiFocusRectangleElement*>(rawElement))
 			{
 				elementDescription = WString::Unmanaged(L"FocusRectangle");
 			}

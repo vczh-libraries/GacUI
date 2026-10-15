@@ -323,7 +323,17 @@ GuiGraphicsParagraphWrapperElement
 				}
 				break;
 			case remoteprotocol::RendererType::Raw:
-				// Do Nothing
+				{
+					auto element = Ptr(GuiSolidLabelElement::Create());
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_Raw>();
+					element->SetText(desc.rawId + L": " + desc.data);
+					element->SetFont(GetCurrentController()->ResourceService()->GetDefaultFont());
+					element->SetColor(Color(255, 255, 255));
+					element->SetWrapLine(false);
+					element->SetMultiline(false);
+					element->SetEllipse(true);
+					bounds->SetOwnedElement(element);
+				}
 				break;
 			case remoteprotocol::RendererType::SolidBorder:
 				{

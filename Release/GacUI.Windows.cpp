@@ -5640,6 +5640,16 @@ GuiDirect2DElement
 			GuiDirect2DElement::GuiDirect2DElement()
 			{
 			}
+
+			vint GuiDirect2DElement::GetElementType()
+			{
+				return GetElementTypeInternal<GuiDirect2DElement>();
+			}
+
+			GuiDirect2DElement* GuiDirect2DElement::Create()
+			{
+				return CreateInternal<GuiDirect2DElement>();
+			}
 		}
 
 		namespace elements_windows_d2d
@@ -6312,6 +6322,7 @@ void RendererMainDirect2D(GuiHostedController* hostedController, bool raw)
 	windows::GetWindowsNativeController()->CallbackService()->UninstallListener(&resourceManager);
 	elements_windows_d2d::SetWindowsDirect2DResourceManager(nullptr);
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\WINDOWS\GDI\WINGDI.CPP
@@ -12407,6 +12418,16 @@ GuiGDIElement
 			GuiGDIElement::GuiGDIElement()
 			{
 			}
+
+			vint GuiGDIElement::GetElementType()
+			{
+				return GetElementTypeInternal<GuiGDIElement>();
+			}
+
+			GuiGDIElement* GuiGDIElement::Create()
+			{
+				return CreateInternal<GuiGDIElement>();
+			}
 		}
 
 		namespace elements_windows_gdi
@@ -12818,6 +12839,7 @@ void RendererMainGDI(GuiHostedController* hostedController, bool raw)
 	windows::GetWindowsNativeController()->CallbackService()->UninstallListener(&resourceManager);
 	elements_windows_gdi::SetWindowsGDIResourceManager(nullptr);
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\WINDOWS\SERVICESIMPL\WINDOWSCLIPBOARDSERVICE.CPP

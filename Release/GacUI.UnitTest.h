@@ -914,6 +914,7 @@ IGuiRemoteProtocolMessages (Elements)
 			lastElementDescs.Set(arguments.id, arguments);
 		}
 
+		void								Impl_RendererUpdateElement_Raw(const remoteprotocol::ElementDesc_Raw& arguments);
 		void								Impl_RendererUpdateElement_SolidBorder(const remoteprotocol::ElementDesc_SolidBorder& arguments);
 		void								Impl_RendererUpdateElement_SinkBorder(const remoteprotocol::ElementDesc_SinkBorder& arguments);
 		void								Impl_RendererUpdateElement_SinkSplitter(const remoteprotocol::ElementDesc_SinkSplitter& arguments);

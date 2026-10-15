@@ -12131,28 +12131,39 @@ Helpers
 					}
 					InvokeOnCompositionStateChanged();
 				}
-			public:
-				static vint GetElementType()
+				template<typename TConcrete>
+				static vint GetElementTypeInternal()
 				{
 					static vint elementType = -1;
 					if (elementType == -1)
 					{
 						auto manager = GetGuiGraphicsResourceManager(); 
 						CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element types."); 
-						elementType = manager->RegisterElementType(WString::Unmanaged(TElement::ElementTypeName)); 
+						elementType = manager->RegisterElementType(WString::Unmanaged(TConcrete::ElementTypeName));
 					}
 					return elementType;
 				}
 
-				static TElement* Create()
+				template<typename TConcrete>
+				static TConcrete* CreateInternal()
 				{
-					auto rendererFactory = GetGuiGraphicsResourceManager()->GetRendererFactory(TElement::GetElementType());
+					auto rendererFactory = GetGuiGraphicsResourceManager()->GetRendererFactory(TConcrete::GetElementType());
 					CHECK_ERROR(rendererFactory != nullptr, L"This element is not supported by the selected renderer.");
 
-					auto element = new TElement;
+					auto element = new TConcrete;
 					element->renderer = Ptr(rendererFactory->Create());
 					element->renderer->Initialize(element);
 					return element;
+				}
+			public:
+				static vint GetElementType()
+				{
+					return GetElementTypeInternal<TElement>();
+				}
+
+				static TElement* Create()
+				{
+					return CreateInternal<TElement>();
 				}
 
 				~GuiElementBase()
@@ -12325,6 +12336,7 @@ Helpers
 
 #endif
 
+
 /***********************************************************************
 .\GRAPHICSELEMENT\GUIGRAPHICSELEMENT.H
 ***********************************************************************/
@@ -12374,6 +12386,31 @@ Elements
 				vint					radiusY = 0;
 
 				GUI_DEFINE_COMPARE_OPERATORS(ElementShape)
+			};
+
+			/// <summary>Shared state for platform-specific raw drawing and remote raw elements.</summary>
+			class GuiRawElementBase : public GuiElementBase<GuiRawElementBase>
+			{
+				friend class GuiElementBase<GuiRawElementBase>;
+				static constexpr const wchar_t* ElementTypeName = L"Raw";
+			protected:
+				WString					id;
+				WString					data;
+
+				GuiRawElementBase();
+			public:
+				/// <summary>Get the application identifier, which may be empty or duplicated.</summary>
+				/// <returns>The application identifier.</returns>
+				WString					GetId();
+				/// <summary>Set the identifier without requesting a repaint. Remote state is synchronized on the next frame.</summary>
+				/// <param name="value">The application identifier.</param>
+				void					SetId(const WString& value);
+				/// <summary>Get the application-defined drawing data.</summary>
+				/// <returns>The drawing data.</returns>
+				WString					GetData();
+				/// <summary>Set the drawing data and request a repaint when it changes.</summary>
+				/// <param name="value">The drawing data.</param>
+				void					SetData(const WString& value);
 			};
 
 			/// <summary>
@@ -12982,6 +13019,7 @@ Elements
 }
 
 #endif
+
 
 /***********************************************************************
 .\CONTROLS\TEMPLATES\GUICONTROLTEMPLATES.H
@@ -20792,6 +20830,7 @@ namespace vl::presentation::remoteprotocol
 	struct WindowShowing;
 	struct IOMouseInfoWithButton;
 	struct GlobalShortcutKey;
+	struct ElementDesc_Raw;
 	struct ElementDesc_SolidBorder;
 	struct ElementDesc_SinkBorder;
 	struct ElementDesc_SinkSplitter;
@@ -20856,6 +20895,7 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::NativeWindowCharInfo> { static constexpr const wchar_t* Name = L"IOCharInfo"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GlobalShortcutKey> { static constexpr const wchar_t* Name = L"GlobalShortcutKey"; };
 	template<> struct JsonNameHelper<::vl::presentation::elements::ElementShape> { static constexpr const wchar_t* Name = L"ElementShape"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_Raw> { static constexpr const wchar_t* Name = L"ElementDesc_Raw"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder> { static constexpr const wchar_t* Name = L"ElementDesc_SolidBorder"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SinkBorder> { static constexpr const wchar_t* Name = L"ElementDesc_SinkBorder"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter> { static constexpr const wchar_t* Name = L"ElementDesc_SinkSplitter"; };
@@ -20956,6 +20996,7 @@ namespace vl::presentation::remoteprotocol
 	>;
 
 	using OrdinaryElementDescVariant = ::vl::Variant<
+		::vl::presentation::remoteprotocol::ElementDesc_Raw,
 		::vl::presentation::remoteprotocol::ElementDesc_SolidBorder,
 		::vl::presentation::remoteprotocol::ElementDesc_SinkBorder,
 		::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter,
@@ -20968,6 +21009,7 @@ namespace vl::presentation::remoteprotocol
 	>;
 
 	using UnitTest_ElementDescVariant = ::vl::Variant<
+		::vl::presentation::remoteprotocol::ElementDesc_Raw,
 		::vl::presentation::remoteprotocol::ElementDesc_SolidBorder,
 		::vl::presentation::remoteprotocol::ElementDesc_SinkBorder,
 		::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter,
@@ -21028,6 +21070,13 @@ namespace vl::presentation::remoteprotocol
 		bool alt;
 		bool osSuper;
 		::vl::presentation::VKEY code;
+	};
+
+	struct ElementDesc_Raw
+	{
+		::vl::vint id;
+		::vl::WString rawId;
+		::vl::WString data;
 	};
 
 	struct ElementDesc_SolidBorder
@@ -21372,6 +21421,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowCharInfo>(const ::vl::presentation::NativeWindowCharInfo & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GlobalShortcutKey>(const ::vl::presentation::remoteprotocol::GlobalShortcutKey & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::ElementShape>(const ::vl::presentation::elements::ElementShape & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_Raw>(const ::vl::presentation::remoteprotocol::ElementDesc_Raw & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(const ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_SinkBorder>(const ::vl::presentation::remoteprotocol::ElementDesc_SinkBorder & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter>(const ::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter & value);
@@ -21450,6 +21500,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowCharInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowCharInfo& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GlobalShortcutKey>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GlobalShortcutKey& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::ElementShape>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::ElementShape& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_Raw>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_Raw& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_SinkBorder>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_SinkBorder& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter& value);
@@ -22131,14 +22182,15 @@ namespace vl::presentation::elements_remoteprotocol
 		virtual void							NotifyMinSizeCacheInvalidated() = 0;
 	};
 
-	class GuiRemoteRawElement : public GuiElementBase<GuiRemoteRawElement>
+	class GuiRemoteRawElement : public GuiRawElementBase
 	{
-		friend class GuiElementBase<GuiRemoteRawElement>;
+		friend class GuiElementBase<GuiRawElementBase>;
 		static constexpr const wchar_t* ElementTypeName = L"Raw";
 	protected:
-
 		GuiRemoteRawElement();
 	public:
+		static vint					GetElementType();
+		static GuiRemoteRawElement*	Create();
 	};
 
 	template<typename TElement, typename TRenderer, remoteprotocol::RendererType _RendererType>
@@ -22193,10 +22245,7 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		GuiRawElementRenderer();
 
-		bool							IsUpdated() override;
-		void							ResetUpdated() override;
 		void							SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements) override;
-		void							OnElementStateChanged() override;
 	};
 
 	class GuiSolidBorderElementRenderer : public GuiRemoteProtocolElementRenderer<GuiSolidBorderElement, GuiSolidBorderElementRenderer, remoteprotocol::RendererType::SolidBorder>
@@ -23357,6 +23406,13 @@ namespace vl::presentation
 
 namespace vl::presentation::remote_renderer
 {
+	/// <summary>Renderer-local raw element notification arguments.</summary>
+	struct GuiRemoteRawElementEventArgs
+	{
+		/// <summary>The actual platform element. Its string identifier does not determine collection membership.</summary>
+		Ptr<elements::GuiRawElementBase>		element;
+	};
+
 	class GuiRemoteRendererSingle
 		: public Object
 		, public virtual IGuiRemoteProtocol
@@ -23425,6 +23481,7 @@ namespace vl::presentation::remote_renderer
 		SolidLabelMeasuringMap					solidLabelMeasurings;
 
 		ElementMap								availableElements;
+		collections::List<Ptr<elements::GuiRawElementBase>> rawElements;
 		ImageMap								availableImages;
 		Ptr<remoteprotocol::RenderingDom>		renderingDom;
 		remoteprotocol::DomIndex				renderingDomIndex;
@@ -23455,6 +23512,7 @@ namespace vl::presentation::remote_renderer
 		Ptr<elements::GuiSolidLabelElement>		fatalTextElement;
 
 		void									UpdateRenderTarget(elements::IGuiGraphicsRenderTarget* rt);
+		void									RemoveElement(vint id);
 		void									EnsureFatalOverlayElements(elements::IGuiGraphicsRenderTarget* rt);
 		void									RenderFatalOverlay(elements::IGuiGraphicsRenderTarget* rt);
 		void									RenderDom(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt);
@@ -23488,6 +23546,7 @@ namespace vl::presentation::remote_renderer
 		void									SendAccumulatedMessages();
 
 	private:
+		void									RequestRendererUpdateElement_Raw(const remoteprotocol::ElementDesc_Raw& arguments);
 		void									RequestRendererUpdateElement_SolidBorder(const remoteprotocol::ElementDesc_SolidBorder& arguments);
 		void									RequestRendererUpdateElement_SinkBorder(const remoteprotocol::ElementDesc_SinkBorder& arguments);
 		void									RequestRendererUpdateElement_SinkSplitter(const remoteprotocol::ElementDesc_SinkSplitter& arguments);
@@ -23501,6 +23560,16 @@ namespace vl::presentation::remote_renderer
 	public:
 		GuiRemoteRendererSingle(bool _enabledAutomation);
 		~GuiRemoteRendererSingle();
+
+		/// <summary>Raised on the UI thread after insertion and before the initial render-target assignment. Id and Data are initially empty.</summary>
+		Event<void(const GuiRemoteRawElementEventArgs&)> RawElementInstalled;
+		/// <summary>Raised on the UI thread before target detachment and removal, while the element remains in GetRawElements.</summary>
+		Event<void(const GuiRemoteRawElementEventArgs&)> RawElementUninstalled;
+		/// <summary>Raised on the UI thread once after applying a descriptor that changes Id or Data.</summary>
+		Event<void(const GuiRemoteRawElementEventArgs&)> RawElementChanged;
+		/// <summary>Get all installed native raw elements, including elements absent from the current DOM. Access on the renderer UI thread.</summary>
+		/// <returns>The installed elements, in creation order.</returns>
+		const collections::List<Ptr<elements::GuiRawElementBase>>& GetRawElements() const;
 
 		void									RegisterMainWindow(INativeWindow* _window);
 		void									UnregisterMainWindow();
@@ -26507,7 +26576,7 @@ External Functions
 			extern Ptr<presentation::INativeImage>							INativeImage_Constructor(const WString& path);
 			extern presentation::INativeCursor*								INativeCursor_Constructor1();
 			extern presentation::INativeCursor*								INativeCursor_Constructor2(presentation::INativeCursor::SystemCursorType type);
-			extern Ptr<presentation::elements::IGuiGraphicsElement>			GuiRawElement_Constructor();
+			extern Ptr<presentation::elements::GuiRawElementBase>			GuiRawElement_Constructor();
 
 			template<typename T>
 			Ptr<T> Element_Constructor()
@@ -26523,6 +26592,7 @@ External Functions
 }
 
 #endif
+
 
 /***********************************************************************
 .\GACUI.H
