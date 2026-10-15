@@ -114,9 +114,9 @@ External Functions (Basic)
 				return GetCurrentController()->ResourceService()->GetSystemCursor(type);
 			}
 
-			Ptr<elements::IGuiGraphicsElement> GuiRawElement_Constructor()
+			Ptr<elements::GuiRawElementBase> GuiRawElement_Constructor()
 			{
-				return GetGuiGraphicsResourceManager()->CreateRawElement();
+				return GetGuiGraphicsResourceManager()->CreateRawElement().Cast<elements::GuiRawElementBase>();
 			}
 
 /***********************************************************************

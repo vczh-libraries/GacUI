@@ -19,6 +19,16 @@ GuiGDIElement
 			GuiGDIElement::GuiGDIElement()
 			{
 			}
+
+			vint GuiGDIElement::GetElementType()
+			{
+				return GetElementTypeInternal<GuiGDIElement>();
+			}
+
+			GuiGDIElement* GuiGDIElement::Create()
+			{
+				return CreateInternal<GuiGDIElement>();
+			}
 		}
 
 		namespace elements_windows_gdi

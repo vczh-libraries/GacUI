@@ -290,6 +290,7 @@ namespace remote_protocol_tests
 				for (auto&& desc : *arguments.updatedElements.Obj())
 				{
 					desc.Apply(vl::Overloading(
+						[&](const ElementDesc_Raw& d) { eventLogs.Add(L"Updated(" + itow(d.id) + L", " + d.rawId + L", " + d.data + L")"); },
 						[&](const ElementDesc_SolidBorder& d) { RequestRendererUpdateElement_SolidBorder(d); },
 						[&](const ElementDesc_SinkBorder& d) { RequestRendererUpdateElement_SinkBorder(d); },
 						[&](const ElementDesc_SinkSplitter& d) { RequestRendererUpdateElement_SinkSplitter(d); },

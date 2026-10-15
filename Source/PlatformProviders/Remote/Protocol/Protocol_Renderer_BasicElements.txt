@@ -46,6 +46,13 @@ struct ElementShape
     var radiusY : int;
 }
 
+struct ElementDesc_Raw
+{
+    var id : int;
+    var rawId : string;
+    var data : string;
+}
+
 struct ElementDesc_SolidBorder
 {
     var id : int;

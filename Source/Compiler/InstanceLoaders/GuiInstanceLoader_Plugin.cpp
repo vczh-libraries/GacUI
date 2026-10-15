@@ -331,7 +331,7 @@ GuiPredefinedInstanceLoadersPlugin
 							))
 
 						manager->CreateVirtualType(
-							GlobalStringKey::Get(description::TypeInfo<IGuiGraphicsElement>::content.typeName),
+							GlobalStringKey::Get(description::TypeInfo<GuiRawElementBase>::content.typeName),
 							Ptr(new GuiRawElementInstanceLoader)
 							);
 

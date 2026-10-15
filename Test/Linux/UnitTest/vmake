@@ -19,6 +19,7 @@ CPP_VCXPROJS=(
     "../../GacUISrc/UnitTest/UnitTest.vcxproj"
     )
 CPP_REMOVES=(
+    "../../GacUISrc/Generated_FullControlTest/FullControlTestRawElement.cpp"
     "../../../Import/Vlpp.Windows.cpp"
     "../../../Import/VlppOS.Windows.cpp"
     "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.cpp"

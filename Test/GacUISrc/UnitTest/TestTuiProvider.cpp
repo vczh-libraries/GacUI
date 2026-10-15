@@ -224,6 +224,12 @@ using namespace tui_provider_tests;
 
 TEST_FILE
 {
+	TEST_CASE(L"TUI rejects raw graphics creation")
+	{
+		TuiGraphicsResourceManager resources;
+		TEST_EXCEPTION(resources.CreateRawElement(), Error, [](const Error&) {});
+	});
+
 	TEST_CASE(L"TUI presets share every neutral role and preserve the default palette")
 	{
 		auto skyblue = tuiskin::CreateDefaultColorPackage();

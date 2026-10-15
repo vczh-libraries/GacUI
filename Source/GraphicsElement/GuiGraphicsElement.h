@@ -47,6 +47,31 @@ Elements
 				GUI_DEFINE_COMPARE_OPERATORS(ElementShape)
 			};
 
+			/// <summary>Shared state for platform-specific raw drawing and remote raw elements.</summary>
+			class GuiRawElementBase : public GuiElementBase<GuiRawElementBase>
+			{
+				friend class GuiElementBase<GuiRawElementBase>;
+				static constexpr const wchar_t* ElementTypeName = L"Raw";
+			protected:
+				WString					id;
+				WString					data;
+
+				GuiRawElementBase();
+			public:
+				/// <summary>Get the application identifier, which may be empty or duplicated.</summary>
+				/// <returns>The application identifier.</returns>
+				WString					GetId();
+				/// <summary>Set the identifier without requesting a repaint. Remote state is synchronized on the next frame.</summary>
+				/// <param name="value">The application identifier.</param>
+				void					SetId(const WString& value);
+				/// <summary>Get the application-defined drawing data.</summary>
+				/// <returns>The drawing data.</returns>
+				WString					GetData();
+				/// <summary>Set the drawing data and request a repaint when it changes.</summary>
+				/// <param name="value">The drawing data.</param>
+				void					SetData(const WString& value);
+			};
+
 			/// <summary>
 			/// Defines a focus rectangle with a thickness of one pixel.
 			/// </summary>

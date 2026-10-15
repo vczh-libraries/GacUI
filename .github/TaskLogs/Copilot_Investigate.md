@@ -87,7 +87,7 @@ These are acceptance checks for implementation; this review does not execute the
 
 No unresolved review comments. The implementation choices and acceptance checks above resolve the identified gaps within the requested scope.
 
-# TEST
+# TEST [CONFIRMED]
 
 - Baseline regression in `<GacUI repo>/Test/GacUISrc/UnitTest/TestReflectionTypeList.cpp` requires a reflected `GuiRawElementBase` with writable `Id` and `Data` and no property-change events. The baseline Debug x64 build passed; the full UnitTest run stopped at `Assertion failure: rawType`, confirming the missing shared reflected type.
 - Extend ordinary tests to cover creation/inheritance, same-value and empty/duplicate identifiers, renderer dirty state versus composition repaint, full descriptors, serialization and resynchronization.
@@ -97,7 +97,7 @@ No unresolved review comments. The implementation choices and acceptance checks 
 
 # PROPOSALS
 
-- No.1 Share raw state while retaining concrete platform factories
+- No.1 Share raw state while retaining concrete platform factories [CONFIRMED]
 
 ## No.1 Share raw state while retaining concrete platform factories
 
@@ -109,4 +109,28 @@ Record descriptors in snapshots and render their text only in the viewer. Author
 
 ### CODE CHANGE
 
-Implementation pending. Extend ordinary property/protocol tests and the two-button rendering fixture alongside each layer; regenerate protocol, reflection and resource outputs through their owning tools.
+Implemented common raw state and concrete native factory helpers; reflected the common properties and factory return type; added the full raw protocol descriptor, native collection/events, explicit data refresh, snapshot recording/playback and automation fields. Added ordinary JSON/frame tests, focused Direct2D/GDI renderer lifecycle tests, and the two-button XML snapshot fixture. Authored the owned one-second clock animation and detachable Windows drawing helper, with consumer inventories and a targeted RawClock automation/UIA scenario. Regenerated protocol, reflection and resource output through the repository tools.
+
+Resource validation exposed the old interface-only shared ownership rule in the XML loader. Extend that existing rule to graphics-element subtypes without reflected constructors, retaining shared ownership for the new raw alias. Initialize the clock data in the page constructor, where the authored time helper is in scope. Test-harness repairs keep assertions inside test cases and accept either event-handler order while still requiring all uninstall callbacks before target detachment.
+
+The ordinary frame test uses the existing rendering protocol harness (the non-rendering harness deliberately rejects element messages). Snapshot playback uses white diagnostic text against the dark showcase snapshot background. Focused Debug x64 native tests pass for both Direct2D and GDI, including the actual clock painter, data-only repaint, repeated fixed-data paint, late attachment, target recreation, replacement, retained disconnect state and retained pointers after removal/shutdown; the final log contains no memory-leak report. Portable inventories exclude the Windows helper and the TUI rejection remains unchanged. Native Unix/Wasm execution is unavailable because this host has no WSL installation.
+
+CDB confirmed that the initial ID-only frame-count failure came from the hosted renderer's pending settling pass, with no call to `GuiGraphicsHost::RequestRender` after the setter. The ordinary state test now waits for the protocol idle notification before each action, preserving strict no-new-frame assertions for isolated ID and same-value assignments.
+
+The clock verification performs automation-service navigation and palette refresh before UIA inspection, waits for useful bounds while the large showcase layout settles, and avoids unrelated subtree event subscriptions. CDB identified the slow existing UIA subtree retirement during palette refresh. The completed runs verify timer updates, page names/selection, resizing, switching pages, palette refresh and normal shutdown.
+
+Viewer playback exposed an encoding problem in the new UTF-8 C++ test fixture: MSVC interpreted its non-ASCII source using the default code page. Saved that fixture with a UTF-8 BOM and added assertions for the actual Chinese code points independently of the source literal. Regenerated snapshots through both architecture test runs and replayed the corrected three frames in a fresh native viewer. CDB confirmed the initial, ID-changed and long-data label text, with wrapping/multiline disabled and ellipsis enabled.
+
+Added an ordinary TUI exception test for `CreateRawElement` so rejection is verified at runtime alongside the normal terminal-provider suite, without installing a raw renderer.
+
+### CONFIRMED
+
+The common element preserves one renderer/owner identity while platform factories continue creating their native subclasses. The isolated frame test proves ID assignments only dirty transport state; an independently requested frame transmits the latest ID. Data changes schedule rendering, and native dispatcher tests prove data-only updates repaint without DOM changes or input. Complete descriptors and JSON round trips preserve empty strings and Unicode. Native tests verify installation/removal ordering, coalesced change events, target recreation, retained disconnect state, replacement, late drawing attachment and retained pointers after shutdown.
+
+- `Metadata_UpdateProtocol`, `GacUI_Compiler`, post-generation `Metadata_Generate` for Debug Win32/x64, and CLI `Metadata_Test` completed successfully. No resource compiler error files remain. Both final solution builds report zero warnings and zero errors, including no-reflection, metadata-only, full-reflection, Workflow host and native remote renderer consumers.
+- The final Debug Win32 run passed 42/42 cases in four affected files. The final Debug x64 run passed 79/79 cases in seven affected files, including raw state/snapshots, native rendering/lifetime, reflection, rendering DOM, graphics-host startup, automation and TUI. The completed execution log contains no assertion failure or memory-leak report.
+- `<GacUI repo>/Test/UIA_CppTest.ps1 -Scenario RawClock` passed on Direct2D (162 assertions) and GDI (166). `<GacUI repo>/Test/UIA_CppTest_Metaonly.ps1 -Scenario RawClock` passed on Direct2D (216) and GDI (214). The shared wrapper also passed for `CppTest_Reflection` (223) and `GacUI_Host` (209). Each run verified normal shutdown and endpoint release. Repeated fresh launches covered reopen behavior.
+- Live named-pipe Core/renderer runs passed on Direct2D and GDI: the clock data advanced without input, the native descriptor matched Core, and the raw element remained reachable in the active DOM. Resize changed useful bounds; switching pages and palette refresh preserved updates. Active renderer replacement succeeded in both backend directions and resynchronized complete state. An initial replacement attempt used an IIS-owned automation port; CDB confirmed the HTTP listener startup failure, and the rerun on a free port passed. Owned test applications were closed afterward.
+- The saved `Elements/Raw/Properties` snapshots contain `Ready`, `Id changed independently`, and `Data changed to long Unicode text`; the final descriptor contains the intended Chinese characters. All three corrected frames replayed through native viewer UIA. Generated diffs were reviewed, and `<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md` remains unchanged.
+
+Remaining environment limits: native screenshot capture returned a black locked-desktop image, so visual pixel inspection of clipping/ellipsis could not be completed; native painting callbacks, viewer label state, recorded bounds and UIA/automation geometry were verified instead. Native Unix/Wasm build execution is unavailable because this Windows host has no WSL installation; portable inventories were checked to exclude the Windows helper.

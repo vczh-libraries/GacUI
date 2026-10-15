@@ -450,6 +450,94 @@ public static class GacUIShowcaseTests
         Wait(() => structureEvents > before, "column structure notification");
         bool stale = false; try { var ignored = cell.Current.Name; } catch (ElementNotAvailableException) { stale = true; } Check(stale, "column replacement retires cell");
     }
+    static Dictionary<string, object> RawClockSnapshot()
+    {
+        Dictionary<string, object> result = null;
+        Wait(() =>
+        {
+            foreach (var node in SnapshotNodes(ControlsSnapshot()))
+            {
+                object id;
+                if (node.TryGetValue("elementId", out id) && (string)id == "FullControlTest.Clock") { result = node; return true; }
+            }
+            return false;
+        }, "raw clock becomes visible", 120000);
+        return result;
+    }
+    static void ClickRenderedCaption(string caption)
+    {
+        Wait(() =>
+        {
+            foreach (var node in SnapshotNodes(ControlsSnapshot()))
+            {
+                object text;
+                if (!node.TryGetValue("elementText", out text) || (string)text != caption) continue;
+                var bounds = SnapshotBounds(node);
+                if (bounds.Width <= 0 || bounds.Height <= 0) continue;
+                Input("!LeftClick:" + (int)(bounds.Left + bounds.Width / 2) + "," + (int)(bounds.Top + bounds.Height / 2));
+                return true;
+            }
+            return false;
+        }, "rendered caption " + caption, 120000);
+    }
+    static void OpenRawClock()
+    {
+        Wait(() =>
+        {
+            bool hasPage = false;
+            foreach (var node in SnapshotNodes(ControlsSnapshot()))
+            {
+                object value;
+                if (node.TryGetValue("elementId", out value) && (string)value == "FullControlTest.Clock") return true;
+                if (node.TryGetValue("elementText", out value) && (string)value == "Raw Clock") hasPage = true;
+            }
+            ClickRenderedCaption(hasPage ? "Raw Clock" : "Misc");
+            return false;
+        }, "Raw Clock page opens through automation", 120000);
+    }
+    static void RawClockAutomation()
+    {
+        Test("Raw Clock / automation navigation, data timer and useful bounds");
+        OpenRawClock();
+        var clock = RawClockSnapshot();
+        string initial = (string)clock["elementData"];
+        Check(System.Text.RegularExpressions.Regex.IsMatch(initial, "^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$"), "clock has HH:mm:ss data");
+        var bounds = SnapshotBounds(clock);
+        Check(bounds.Width >= 200 && bounds.Height >= 200, "raw clock has explicit useful bounds");
+        Wait(() => (string)RawClockSnapshot()["elementData"] != initial, "clock data changes without input");
+
+        Test("Raw Clock / automation palette refresh preserves raw element");
+        ClickRenderedCaption("Window Manager");
+        ClickRenderedCaption("Aurora");
+        ControlsSnapshot();
+        OpenRawClock();
+        initial = (string)RawClockSnapshot()["elementData"];
+        Wait(() => (string)RawClockSnapshot()["elementData"] != initial, "clock continues after palette refresh");
+    }
+
+    static void RawClock(bool runAutomation)
+    {
+        if (runAutomation) RawClockAutomation();
+        var bounds = SnapshotBounds(RawClockSnapshot());
+        Test("Raw Clock / UIA names, page selection and resize");
+        root = AutomationElement.FromHandle(new IntPtr(root.Current.NativeWindowHandle));
+        var manager = Page(root, "Window Manager");
+        Check(Pattern<SelectionItemPattern>(Named(manager, "Aurora", ControlType.RadioButton), SelectionItemPattern.Pattern).Current.IsSelected, "Aurora palette selected through automation");
+        var page = Page(Page(root, "Misc"), "Raw Clock");
+        Check(Pattern<SelectionItemPattern>(page, SelectionItemPattern.Pattern).Current.IsSelected, "Raw Clock page selected through UIA");
+        var label = Named(page, "Clock data: HH:mm:ss, updated once per second", ControlType.Text);
+        Check(label.Current.BoundingRectangle.Width > 0 && label.Current.BoundingRectangle.Height > 0, "clock description has visible UIA bounds");
+        var original = root.Current.BoundingRectangle;
+        var transform = Pattern<TransformPattern>(root, TransformPattern.Pattern);
+        transform.Resize(original.Width + 100, original.Height + 80);
+        Wait(() => SnapshotBounds(RawClockSnapshot()).Width > bounds.Width, "clock follows resized bounds");
+        transform.Resize(original.Width, original.Height);
+        Page(root, "Control");
+        Page(Page(root, "Misc"), "Raw Clock");
+        string initial = (string)RawClockSnapshot()["elementData"];
+        Wait(() => (string)RawClockSnapshot()["elementData"] != initial, "clock continues after switching away and back");
+
+    }
     static void Calendars()
     {
         Test("Misc / DatePicker: selection and calendar grid/table");
@@ -2174,8 +2262,9 @@ public static class GacUIShowcaseTests
         Check(Thread.CurrentThread.GetApartmentState() == ApartmentState.MTA, "client must be MTA");
         IntPtr hwnd = IntPtr.Zero;
         Wait(() => { EnumWindows((h,p) => { uint id; GetWindowThreadProcessId(h,out id); var text=new StringBuilder(256); GetClassName(h,text,256); if (id==processId && text.ToString()=="VczhWindow" && IsWindowVisible(h)) hwnd=h; return true; },IntPtr.Zero); return hwnd!=IntPtr.Zero; }, "owned HWND");
-        Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
         inputEndpoint = "http://localhost:" + port + "/Automation/" + application + "/IO";
+        if (scenario == "RawClock") RawClockAutomation();
+        Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
         ownedProcess = processId; isHosted = hosted;
         isWorkflowBinary = application == "GacUI_Host";
         Check(root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI", "owned native GacUI root; HWND=" + hwnd + "; PID=" + root.Current.ProcessId + "; FrameworkId=" + root.Current.FrameworkId + "; Name=" + root.Current.Name);
@@ -2192,10 +2281,13 @@ public static class GacUIShowcaseTests
         }
         // Isolate idle timing from UIA event-cache work that can block behind the busy UI thread.
         if (scenario == "Review2") BusyIdleContract();
-        Automation.AddStructureChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref structureEvents));
-        Automation.AddAutomationPropertyChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref propertyEvents), AutomationElement.NameProperty, SelectionItemPattern.IsSelectedProperty, TogglePattern.ToggleStateProperty);
-        Automation.AddAutomationEventHandler(TextPattern.TextChangedEvent, root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref textEvents));
-        Automation.AddAutomationEventHandler(TextPattern.TextSelectionChangedEvent, root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref selectionEvents));
+        if (scenario != "RawClock")
+        {
+            Automation.AddStructureChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref structureEvents));
+            Automation.AddAutomationPropertyChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref propertyEvents), AutomationElement.NameProperty, SelectionItemPattern.IsSelectedProperty, TogglePattern.ToggleStateProperty);
+            Automation.AddAutomationEventHandler(TextPattern.TextChangedEvent, root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref textEvents));
+            Automation.AddAutomationEventHandler(TextPattern.TextSelectionChangedEvent, root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref selectionEvents));
+        }
         try
         {
             if (scenario == "All" || scenario == "Review") ReviewContracts();
@@ -2207,6 +2299,7 @@ public static class GacUIShowcaseTests
             if (scenario == "All" || scenario == "Text") TextControls();
             if (scenario == "All" || scenario == "Refresh") RefreshLists();
             if (scenario == "All" || scenario == "Calendar") Calendars();
+            if (scenario == "All" || scenario == "RawClock") RawClock(scenario == "All");
             if (scenario == "All" || scenario == "Layout" || scenario == "Responsive") ResponsiveLayout();
             if (scenario == "ResponsiveWindow") { ResponsiveRegressions(); ResponsiveLayout(false); }
             if (scenario == "ResponsivePalette") ResponsivePalette();

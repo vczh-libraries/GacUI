@@ -21,6 +21,16 @@ GuiDirect2DElement
 			GuiDirect2DElement::GuiDirect2DElement()
 			{
 			}
+
+			vint GuiDirect2DElement::GetElementType()
+			{
+				return GetElementTypeInternal<GuiDirect2DElement>();
+			}
+
+			GuiDirect2DElement* GuiDirect2DElement::Create()
+			{
+				return CreateInternal<GuiDirect2DElement>();
+			}
 		}
 
 		namespace elements_windows_d2d

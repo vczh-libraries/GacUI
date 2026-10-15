@@ -128,7 +128,10 @@ namespace vl::presentation::remote_renderer
 		fatalTextElement = nullptr;
 		renderingDom = nullptr;
 		focusedParagraphElements.Clear();
-		availableElements.Clear();
+		while (availableElements.Count() > 0)
+		{
+			RemoveElement(availableElements.Keys()[0]);
+		}
 		availableImages.Clear();
 	}
 
@@ -202,6 +205,11 @@ namespace vl::presentation::remote_renderer
 
 	GuiRemoteRendererSingle::~GuiRemoteRendererSingle()
 	{
+	}
+
+	const collections::List<Ptr<GuiRawElementBase>>& GuiRemoteRendererSingle::GetRawElements() const
+	{
+		return rawElements;
 	}
 
 	void GuiRemoteRendererSingle::RegisterMainWindow(INativeWindow* _window)

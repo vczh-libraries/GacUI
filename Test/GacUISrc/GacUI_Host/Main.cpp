@@ -9,6 +9,7 @@
 #include "../SharedArguments.h"
 #include "DarkSkinReflection.h"
 #include "../Generated_FullControlTest/FullControlTestPalette.h"
+#include "../Generated_FullControlTest/FullControlTestRawElement.h"
 
 using namespace vl;
 using namespace vl::collections;
@@ -18,7 +19,7 @@ using namespace vl::reflection::description;
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
 	if (!gacui_test::automationArguments.ParseWindowsCommandLine()) return 1;
-	int result = SetupWindowsDirect2DRenderer();
+	int result = gacui_test::automationArguments.gdi ? SetupWindowsGDIRenderer() : SetupWindowsDirect2DRenderer();
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
@@ -57,6 +58,7 @@ void GuiMain()
 	{
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 		BoxValue(window).AttachEvent(L"PaletteSelected", BoxParameter(Func<void(vint)>(&demo::OnPaletteSelected)));
+		auto rawClockAttachment = demo::AttachFullControlTestRawElement(UnboxValue<Ptr<GuiRawElementBase>>(BoxValue(window).GetProperty(L"ClockElement")));
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
 
@@ -67,6 +69,7 @@ void GuiMain()
 		windows::StopWindowsHttpAutomationService();
 		automationService.Stop();
 		GetNativeServiceSubstitution()->Unsubstitute(&automationService);
+		rawClockAttachment = nullptr;
 		delete window;
 	}
 }

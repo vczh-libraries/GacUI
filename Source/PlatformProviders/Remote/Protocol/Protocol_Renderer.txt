@@ -25,6 +25,7 @@ message RendererDestroyed                           { request: int[]; }
 
 union OrdinaryElementDescVariant
 {
+    ElementDesc_Raw,
     ElementDesc_SolidBorder,
     ElementDesc_SinkBorder,
     ElementDesc_SinkSplitter,

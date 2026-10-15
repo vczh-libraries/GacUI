@@ -10,6 +10,21 @@ namespace vl::presentation::remote_renderer
 * Rendering (Elemnents)
 ***********************************************************************/
 
+	void GuiRemoteRendererSingle::RequestRendererUpdateElement_Raw(const remoteprotocol::ElementDesc_Raw& arguments)
+	{
+		auto element = availableElements[arguments.id].Cast<GuiRawElementBase>();
+		auto dataChanged = element->GetData() != arguments.data;
+		if (element->GetId() == arguments.rawId && !dataChanged) return;
+
+		element->SetId(arguments.rawId);
+		element->SetData(arguments.data);
+		if (dataChanged)
+		{
+			needRefresh = true;
+		}
+		RawElementChanged(GuiRemoteRawElementEventArgs{ element });
+	}
+
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_SolidBorder(const remoteprotocol::ElementDesc_SolidBorder& arguments)
 	{
 		vint index = availableElements.Keys().IndexOf(arguments.id);

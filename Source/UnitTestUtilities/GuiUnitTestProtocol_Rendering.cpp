@@ -43,6 +43,7 @@ IGuiRemoteProtocolMessages (Rendering)
 			for (auto&& desc : *arguments.updatedElements.Obj())
 			{
 				desc.Apply(Overloading(
+					[&](const ElementDesc_Raw& d) { Impl_RendererUpdateElement_Raw(d); },
 					[&](const ElementDesc_SolidBorder& d) { Impl_RendererUpdateElement_SolidBorder(d); },
 					[&](const ElementDesc_SinkBorder& d) { Impl_RendererUpdateElement_SinkBorder(d); },
 					[&](const ElementDesc_SinkSplitter& d) { Impl_RendererUpdateElement_SinkSplitter(d); },
@@ -137,9 +138,9 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 		vint index = loggedTrace.createdElements->Keys().IndexOf(id);
 		CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
 		auto rendererType = loggedTrace.createdElements->Values()[index];
-		if (rendererType == RendererType::FocusRectangle || rendererType == RendererType::Raw)
+		if (rendererType == RendererType::FocusRectangle)
 		{
-			// FocusRectangle or Raw does not have a ElementDesc
+			// FocusRectangle does not have an ElementDesc.
 			return;
 		}
 
@@ -291,6 +292,13 @@ IGuiRemoteProtocolMessages (Elements)
 			)
 
 #define REQUEST_RENDERER_UPDATE_ELEMENT(RENDERER_TYPE) REQUEST_RENDERER_UPDATE_ELEMENT2(arguments, RENDERER_TYPE)
+
+	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_Raw(const ElementDesc_Raw& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_Raw(const ElementDesc_Raw&)#"
+		REQUEST_RENDERER_UPDATE_ELEMENT(RendererType::Raw);
+#undef ERROR_MESSAGE_PREFIX
+	}
 
 	void UnitTestRemoteProtocol_Rendering::Impl_RendererUpdateElement_SolidBorder(const ElementDesc_SolidBorder& arguments)
 	{

@@ -357,7 +357,13 @@ DumpWindowClientArea
 			auto rawElement = element.Obj();
 			WString elementDescription;
 
-			if (dynamic_cast<GuiFocusRectangleElement*>(rawElement))
+			if (auto raw = dynamic_cast<GuiRawElementBase*>(rawElement))
+			{
+				elementDescription = WString::Unmanaged(L"Raw");
+				ConvertCustomTypeToJsonField(compositionDump, L"elementId", raw->GetId());
+				ConvertCustomTypeToJsonField(compositionDump, L"elementData", raw->GetData());
+			}
+			else if (dynamic_cast<GuiFocusRectangleElement*>(rawElement))
 			{
 				elementDescription = WString::Unmanaged(L"FocusRectangle");
 			}

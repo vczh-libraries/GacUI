@@ -15,10 +15,17 @@ namespace gacui_test
 		bool specified = false;
 	public:
 		vl::vint port = 8888;
+		bool gdi = false;
 
 		// 0: another option; 1: consumed; -1: invalid automation option.
 		vl::vint Consume(const vl::WString& argument)
 		{
+			if (argument == L"/Gdi")
+			{
+				if (gdi) return -1;
+				gdi = true;
+				return 1;
+			}
 			if (argument.Length() < 7 || argument.Left(7) != L"/AsPort") return 0;
 			if (specified || argument.Length() <= 8 || argument[7] != L':') return -1;
 			vl::vint value = 0;

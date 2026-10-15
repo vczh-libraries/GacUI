@@ -21,6 +21,13 @@ namespace vl::presentation
 
 namespace vl::presentation::remote_renderer
 {
+	/// <summary>Renderer-local raw element notification arguments.</summary>
+	struct GuiRemoteRawElementEventArgs
+	{
+		/// <summary>The actual platform element. Its string identifier does not determine collection membership.</summary>
+		Ptr<elements::GuiRawElementBase>		element;
+	};
+
 	class GuiRemoteRendererSingle
 		: public Object
 		, public virtual IGuiRemoteProtocol
@@ -89,6 +96,7 @@ namespace vl::presentation::remote_renderer
 		SolidLabelMeasuringMap					solidLabelMeasurings;
 
 		ElementMap								availableElements;
+		collections::List<Ptr<elements::GuiRawElementBase>> rawElements;
 		ImageMap								availableImages;
 		Ptr<remoteprotocol::RenderingDom>		renderingDom;
 		remoteprotocol::DomIndex				renderingDomIndex;
@@ -119,6 +127,7 @@ namespace vl::presentation::remote_renderer
 		Ptr<elements::GuiSolidLabelElement>		fatalTextElement;
 
 		void									UpdateRenderTarget(elements::IGuiGraphicsRenderTarget* rt);
+		void									RemoveElement(vint id);
 		void									EnsureFatalOverlayElements(elements::IGuiGraphicsRenderTarget* rt);
 		void									RenderFatalOverlay(elements::IGuiGraphicsRenderTarget* rt);
 		void									RenderDom(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt);
@@ -152,6 +161,7 @@ namespace vl::presentation::remote_renderer
 		void									SendAccumulatedMessages();
 
 	private:
+		void									RequestRendererUpdateElement_Raw(const remoteprotocol::ElementDesc_Raw& arguments);
 		void									RequestRendererUpdateElement_SolidBorder(const remoteprotocol::ElementDesc_SolidBorder& arguments);
 		void									RequestRendererUpdateElement_SinkBorder(const remoteprotocol::ElementDesc_SinkBorder& arguments);
 		void									RequestRendererUpdateElement_SinkSplitter(const remoteprotocol::ElementDesc_SinkSplitter& arguments);
@@ -165,6 +175,16 @@ namespace vl::presentation::remote_renderer
 	public:
 		GuiRemoteRendererSingle(bool _enabledAutomation);
 		~GuiRemoteRendererSingle();
+
+		/// <summary>Raised on the UI thread after insertion and before the initial render-target assignment. Id and Data are initially empty.</summary>
+		Event<void(const GuiRemoteRawElementEventArgs&)> RawElementInstalled;
+		/// <summary>Raised on the UI thread before target detachment and removal, while the element remains in GetRawElements.</summary>
+		Event<void(const GuiRemoteRawElementEventArgs&)> RawElementUninstalled;
+		/// <summary>Raised on the UI thread once after applying a descriptor that changes Id or Data.</summary>
+		Event<void(const GuiRemoteRawElementEventArgs&)> RawElementChanged;
+		/// <summary>Get all installed native raw elements, including elements absent from the current DOM. Access on the renderer UI thread.</summary>
+		/// <returns>The installed elements, in creation order.</returns>
+		const collections::List<Ptr<elements::GuiRawElementBase>>& GetRawElements() const;
 
 		void									RegisterMainWindow(INativeWindow* _window);
 		void									UnregisterMainWindow();

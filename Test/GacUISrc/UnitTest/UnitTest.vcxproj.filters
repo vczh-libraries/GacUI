@@ -454,4 +454,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="TestRemote_Raw.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="TestRawElement_Windows.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\Generated_FullControlTest\FullControlTestRawElement.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClInclude Include="..\Generated_FullControlTest\FullControlTestRawElement.h"><Filter>Source Files</Filter></ClInclude>
+  </ItemGroup>
 </Project>

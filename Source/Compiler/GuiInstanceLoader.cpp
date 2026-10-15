@@ -1004,7 +1004,7 @@ GuiInstanceLoaderManager
 				{
 					return CopyTypeInfo(ctor->GetMethod(0)->GetReturn());
 				}
-				else if (td == description::GetTypeDescriptor<elements::IGuiGraphicsElement>())
+				else if (td->CanConvertTo(description::GetTypeDescriptor<elements::IGuiGraphicsElement>()))
 				{
 					return Ptr(new SharedPtrTypeInfo(Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal))));
 				}

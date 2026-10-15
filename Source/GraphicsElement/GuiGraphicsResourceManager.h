@@ -146,28 +146,39 @@ Helpers
 					}
 					InvokeOnCompositionStateChanged();
 				}
-			public:
-				static vint GetElementType()
+				template<typename TConcrete>
+				static vint GetElementTypeInternal()
 				{
 					static vint elementType = -1;
 					if (elementType == -1)
 					{
 						auto manager = GetGuiGraphicsResourceManager(); 
 						CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element types."); 
-						elementType = manager->RegisterElementType(WString::Unmanaged(TElement::ElementTypeName)); 
+						elementType = manager->RegisterElementType(WString::Unmanaged(TConcrete::ElementTypeName));
 					}
 					return elementType;
 				}
 
-				static TElement* Create()
+				template<typename TConcrete>
+				static TConcrete* CreateInternal()
 				{
-					auto rendererFactory = GetGuiGraphicsResourceManager()->GetRendererFactory(TElement::GetElementType());
+					auto rendererFactory = GetGuiGraphicsResourceManager()->GetRendererFactory(TConcrete::GetElementType());
 					CHECK_ERROR(rendererFactory != nullptr, L"This element is not supported by the selected renderer.");
 
-					auto element = new TElement;
+					auto element = new TConcrete;
 					element->renderer = Ptr(rendererFactory->Create());
 					element->renderer->Initialize(element);
 					return element;
+				}
+			public:
+				static vint GetElementType()
+				{
+					return GetElementTypeInternal<TElement>();
+				}
+
+				static TElement* Create()
+				{
+					return CreateInternal<TElement>();
 				}
 
 				~GuiElementBase()

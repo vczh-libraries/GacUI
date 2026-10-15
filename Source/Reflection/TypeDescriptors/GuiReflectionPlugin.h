@@ -141,6 +141,7 @@ Type List (Elements)
 			F(presentation::elements::GuiGradientBackgroundElement::Direction)\
 
 #define GUIREFLECTIONELEMENT_CLASS_TYPELIST(F)\
+			F(presentation::elements::GuiRawElementBase)\
 			F(presentation::elements::TuiBorderElement)\
 			F(presentation::elements::GuiFocusRectangleElement)\
 			F(presentation::elements::GuiSolidBorderElement)\

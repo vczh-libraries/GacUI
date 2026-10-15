@@ -1,12 +1,13 @@
 param(
-    [ValidateSet('CppTest','CppTest_Metaonly','GacUI_Host','Playground')][string]$Application,
+    [ValidateSet('CppTest','CppTest_Metaonly','CppTest_Reflection','GacUI_Host','Playground')][string]$Application,
     [ValidateRange(1,65535)][int]$AsPort,
     [ValidateSet('Win32','x64')][string]$Platform = 'x64',
     [int]$ClientProcessId = 0,
     [string]$BusyClick = '',
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime')][string]$Scenario = 'All',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock')][string]$Scenario = 'All',
     [switch]$HostedFixture,
     [switch]$GdiFixture,
+    [switch]$Gdi,
     [switch]$SkipBuild
 )
 $ErrorActionPreference = 'Stop'
@@ -76,6 +77,7 @@ try {
     $argument.InnerText = "/AsPort:$AsPort"
     if ($HostedFixture) { $argument.InnerText += ' /UiaHosted' }
     if ($GdiFixture) { $argument.InnerText += ' /UiaGdi' }
+    if ($Gdi) { $argument.InnerText += ' /Gdi' }
     $null = $group.AppendChild($argument)
     $null = $settings.DocumentElement.AppendChild($group)
     $settings.Save($userFile)

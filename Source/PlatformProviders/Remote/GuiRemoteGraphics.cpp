@@ -540,6 +540,6 @@ GuiRemoteGraphicsResourceManager
 
 	Ptr<IGuiGraphicsElement> GuiRemoteGraphicsResourceManager::CreateRawElement()
 	{
-		return Ptr(elements_remoteprotocol::GuiRemoteRawElement::Create());
+		return Ptr(GuiRawElementBase::Create());
 	}
 }

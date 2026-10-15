@@ -32,12 +32,14 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererCreated(const Ptr<collections::List<remoteprotocol::RendererCreation>>& arguments)
 	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererCreated(const Ptr<List<RendererCreation>>&)#"
 		if (disconnectingFromCore) return;
 		supressRefresh = true;
 		if (arguments)
 		{
 			for (auto&& rc : *arguments.Obj())
 			{
+				RemoveElement(rc.id);
 				Ptr<IGuiGraphicsElement> element;
 				switch (rc.type)
 				{
@@ -45,7 +47,8 @@ namespace vl::presentation::remote_renderer
 					element = Ptr(GuiFocusRectangleElement::Create());
 					break;
 				case RendererType::Raw:
-					// Do Nothing
+					element = GetGuiGraphicsResourceManager()->CreateRawElement().Cast<GuiRawElementBase>();
+					CHECK_ERROR(element, ERROR_MESSAGE_PREFIX L"The platform raw element must inherit GuiRawElementBase.");
 					break;
 				case RendererType::SolidBorder:
 					element = Ptr(GuiSolidBorderElement::Create());
@@ -82,16 +85,13 @@ namespace vl::presentation::remote_renderer
 
 				if (element)
 				{
+					availableElements.Add(rc.id, element);
+					if (auto raw = element.Cast<GuiRawElementBase>())
+					{
+						rawElements.Add(raw);
+						RawElementInstalled(GuiRemoteRawElementEventArgs{ raw });
+					}
 					element->GetRenderer()->SetRenderTarget(GetGuiGraphicsResourceManager()->GetRenderTarget(window));
-
-					if (availableElements.Keys().Contains(rc.id))
-					{
-						availableElements.Set(rc.id, element);
-					}
-					else
-					{
-						availableElements.Add(rc.id, element);
-					}
 				}
 
 				if (enabledAutomation)
@@ -102,6 +102,30 @@ namespace vl::presentation::remote_renderer
 				}
 			}
 		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteRendererSingle::RemoveElement(vint id)
+	{
+		auto index = availableElements.Keys().IndexOf(id);
+		if (index != -1)
+		{
+			auto element = availableElements.Values()[index];
+			auto raw = element.Cast<GuiRawElementBase>();
+			if (raw)
+			{
+				RawElementUninstalled(GuiRemoteRawElementEventArgs{ raw });
+			}
+			element->GetRenderer()->SetRenderTarget(nullptr);
+			if (raw)
+			{
+				rawElements.Remove(raw.Obj());
+			}
+			availableElements.Remove(id);
+		}
+		focusedParagraphElements.Remove(id);
+		solidLabelMeasurings.Remove(id);
+		renderingElements.Remove(id);
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererDestroyed(const Ptr<collections::List<vint>>& arguments)
@@ -112,14 +136,7 @@ namespace vl::presentation::remote_renderer
 		{
 			for (auto id : *arguments.Obj())
 			{
-				focusedParagraphElements.Remove(id);
-				availableElements.Remove(id);
-				solidLabelMeasurings.Remove(id);
-
-				if (enabledAutomation)
-				{
-					renderingElements.Remove(id);
-				}
+				RemoveElement(id);
 			}
 		}
 	}
@@ -133,6 +150,7 @@ namespace vl::presentation::remote_renderer
 			for (auto&& desc : *arguments.updatedElements.Obj())
 			{
 				desc.Apply(Overloading(
+					[&](const remoteprotocol::ElementDesc_Raw& d) { RequestRendererUpdateElement_Raw(d); },
 					[&](const remoteprotocol::ElementDesc_SolidBorder& d) { RequestRendererUpdateElement_SolidBorder(d); },
 					[&](const remoteprotocol::ElementDesc_SinkBorder& d) { RequestRendererUpdateElement_SinkBorder(d); },
 					[&](const remoteprotocol::ElementDesc_SinkSplitter& d) { RequestRendererUpdateElement_SinkSplitter(d); },

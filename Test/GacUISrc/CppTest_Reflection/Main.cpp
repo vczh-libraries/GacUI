@@ -2,6 +2,7 @@
 
 #include "DarkSkin.h"
 #include "../Generated_FullControlTest/FullControlTestPalette.h"
+#include "../Generated_FullControlTest/FullControlTestRawElement.h"
 #include "FullControlTestReflection.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #include "../SharedArguments.h"
@@ -25,6 +26,7 @@ void GuiMain()
 	{
 		demo::MainWindow window;
 		window.PaletteSelected.Add(&demo::OnPaletteSelected);
+		auto rawClockAttachment = demo::AttachFullControlTestRawElement(window.GetClockElement());
 		window.ForceCalculateSizeImmediately();
 		window.MoveToScreenCenter();
 
@@ -41,7 +43,7 @@ void GuiMain()
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
 	if (!gacui_test::automationArguments.ParseWindowsCommandLine()) return 1;
-	int result = SetupWindowsDirect2DRenderer();
+	int result = gacui_test::automationArguments.gdi ? SetupWindowsGDIRenderer() : SetupWindowsDirect2DRenderer();
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif

@@ -1,0 +1,51 @@
+<Instance ref.CodeBehind="false" ref.Class="demo::RawElementTabPage">
+  <ref.Members><![CDATA[
+    func GetClockElement(): GuiRawElementBase^ { return clock; }
+    prop ClockElement: GuiRawElementBase^ {GetClockElement}
+
+    @cpp:Private
+    static func Digits(value: int): string
+    {
+      if (value < 10) { return "0" & (cast string value); }
+      return cast string value;
+    }
+
+    @cpp:Private
+    static func CurrentTime(): string
+    {
+      var time = Sys::GetLocalTime();
+      return Digits(time.hour) & ":" & Digits(time.minute) & ":" & Digits(time.second);
+    }
+
+    @cpp:Private
+    static func Tick(element: GuiRawElementBase^): IGuiAnimation^
+    ${
+      while (true)
+      {
+        $Wait (cast UInt64 1000);
+        element.Data = CurrentTime();
+      }
+    }
+  ]]></ref.Members>
+  <ref.Ctor><![CDATA[
+    {
+      clock.Data = CurrentTime();
+      self.AddAnimation(Tick(clock));
+    }
+  ]]></ref.Ctor>
+  <TabPage ref.Name="self" Text="Raw Clock">
+    <ez:Layout>
+      <ez:Top>
+        <Label Text="Clock data: HH:mm:ss, updated once per second"/>
+      </ez:Top>
+      <ez:Fill>
+        <Bounds ref.Name="clockBounds" PreferredMinSize="x:240 y:240">
+          <SolidBackground Color="#202020"/>
+          <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <Raw ref.Name="clock" Id="FullControlTest.Clock"/>
+          </Bounds>
+        </Bounds>
+      </ez:Fill>
+    </ez:Layout>
+  </TabPage>
+</Instance>

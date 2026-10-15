@@ -77,6 +77,9 @@
 
         event PaletteSelected(int);
 
+        func GetClockElement(): GuiRawElementBase^ { return rawClockPage.ClockElement; }
+        prop ClockElement: GuiRawElementBase^ {GetClockElement}
+
         func ShowMouseModifiers(alt: bool, osSuper: bool): void
         {
           var altText = "0";
@@ -210,6 +213,7 @@
                 <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                 <att.Pages>
                   <demo:ElementTabPage Alt="E"/>
+                  <demo:RawElementTabPage ref.Name="rawClockPage"/>
                   <demo:AnimationTabPage Alt="A"/>
                   <demo:LocalizedStringsTabPage Alt="L"/>
                   <demo:LocalizedDialogsTabPage Alt="L"/>
@@ -374,6 +378,7 @@
   <Folder name="EmbeddedControlsSubTabPage" content="Link">EmbeddedControlsSubTabPage.xml</Folder>
 
   <Instance name="ElementTabPageResource" content="File">ElementTabPage.xml</Instance>
+  <Instance name="RawElementTabPageResource" content="File">RawElementTabPage.xml</Instance>
   <Folder name="AnimationTabPage" content="Link">AnimationTabPage.xml</Folder>
   <Folder name="LocalizedStringsTabPage" content="Link">LocalizedStringsTabPage.xml</Folder>
   <Folder name="LocalizedDialogsTabPage" content="Link">LocalizedDialogsTabPage.xml</Folder>

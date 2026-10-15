@@ -171,4 +171,8 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup><ClInclude Include="..\SharedArguments.h" /></ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Generated_FullControlTest\FullControlTestRawElement.h" />
+    <ClCompile Include="..\Generated_FullControlTest\FullControlTestRawElement.cpp" />
+  </ItemGroup>
 </Project>

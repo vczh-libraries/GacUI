@@ -7,14 +7,6 @@ namespace vl::presentation::elements_remoteprotocol
 	using namespace remoteprotocol;
 
 /***********************************************************************
-GuiRemoteRawElement
-***********************************************************************/
-
-	GuiRemoteRawElement::GuiRemoteRawElement()
-	{
-	}
-
-/***********************************************************************
 GuiRemoteProtocolElementRenderer
 ***********************************************************************/
 
@@ -180,25 +172,13 @@ GuiRawElementRenderer
 	{
 	}
 	
-	bool GuiRawElementRenderer::IsUpdated()
-	{
-		// there is no properties for this element
-		return false;
-	}
-
-	void GuiRawElementRenderer::ResetUpdated()
-	{
-		// nothing to update
-	}
-
-	void GuiRawElementRenderer::OnElementStateChanged()
-	{
-		// nothing to update
-	}
-
 	void GuiRawElementRenderer::SendUpdateElementMessages(bool fullContent, collections::List<remoteprotocol::OrdinaryElementDescVariant>& updatedElements)
 	{
-		// nothing to update
+		ElementDesc_Raw arguments;
+		arguments.id = id;
+		arguments.rawId = element->GetId();
+		arguments.data = element->GetData();
+		updatedElements.Add(remoteprotocol::OrdinaryElementDescVariant(arguments));
 	}
 
 /***********************************************************************

@@ -54,13 +54,16 @@ Raw API Rendering Element
 			/// <summary>
 			/// Defines an element for customized rendering using GDI.
 			/// </summary>
-			class GuiGDIElement : public GuiElementBase<GuiGDIElement>
+			class GuiGDIElement : public GuiRawElementBase
 			{
-				friend class GuiElementBase<GuiGDIElement>;
+				friend class GuiElementBase<GuiRawElementBase>;
 				static constexpr const wchar_t* ElementTypeName = L"GDIElement";
 			protected:
 				GuiGDIElement();
 			public:
+				static vint					GetElementType();
+				static GuiGDIElement*		Create();
+
 				/// <summary>Rendering event.</summary>
 				compositions::GuiGraphicsEvent<GuiGDIElementEventArgs>		Rendering;
 			};

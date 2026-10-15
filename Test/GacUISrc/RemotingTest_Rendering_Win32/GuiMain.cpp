@@ -19,6 +19,8 @@
 #include <VlppOS.h>
 #if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
+#include "../Generated_FullControlTest/FullControlTestRawElement.h"
+#include "../SharedArguments.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #endif
 
@@ -154,6 +156,9 @@ int StartClient(
 		);
 	GuiRemoteProtocolAsyncJsonChannelRenderer asyncRendererChannel(channelClient.GetProtocolChannel());
 	GuiRemoteRendererSingle remoteRenderer(true);
+#if defined VCZH_MSVC
+	auto rawClockAttachments = demo::AttachFullControlTestRawElements(remoteRenderer);
+#endif
 	GuiRemoteProtocolRendererChannel rendererChannel(&asyncRendererChannel, &remoteRenderer);
 	channelClient.SetRenderer(&remoteRenderer);
 	channelClient.SetAsyncRendererChannel(&asyncRendererChannel);
@@ -163,7 +168,7 @@ int StartClient(
 	CHECK_ERROR(!currentGuiContext, L"StartClient(...)#The GUI context has already been bound.");
 	currentGuiContext = &context;
 #if defined VCZH_MSVC
-	auto result = SetupRawWindowsDirect2DRenderer();
+	auto result = gacui_test::automationArguments.gdi ? SetupRawWindowsGDIRenderer() : SetupRawWindowsDirect2DRenderer();
 #elif defined VCZH_GCC && !defined VCZH_APPLE
 	auto result = elements::wgac::SetupRawWGacRenderer();
 #else

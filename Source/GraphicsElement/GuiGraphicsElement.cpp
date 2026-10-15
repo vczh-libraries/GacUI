@@ -9,6 +9,45 @@ namespace vl
 			using namespace collections;
 
 /***********************************************************************
+GuiRawElementBase
+***********************************************************************/
+
+			GuiRawElementBase::GuiRawElementBase()
+			{
+			}
+
+			WString GuiRawElementBase::GetId()
+			{
+				return id;
+			}
+
+			void GuiRawElementBase::SetId(const WString& value)
+			{
+				if (id != value)
+				{
+					id = value;
+					if (renderer)
+					{
+						renderer->OnElementStateChanged();
+					}
+				}
+			}
+
+			WString GuiRawElementBase::GetData()
+			{
+				return data;
+			}
+
+			void GuiRawElementBase::SetData(const WString& value)
+			{
+				if (data != value)
+				{
+					data = value;
+					InvokeOnElementStateChanged();
+				}
+			}
+
+/***********************************************************************
 GuiFocusRectangleElement
 ***********************************************************************/
 

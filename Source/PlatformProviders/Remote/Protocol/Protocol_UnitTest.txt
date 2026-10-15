@@ -6,6 +6,7 @@ struct ElementDesc_DocumentParagraphFull
 
 union UnitTest_ElementDescVariant
 {
+    ElementDesc_Raw,
     ElementDesc_SolidBorder,
     ElementDesc_SinkBorder,
     ElementDesc_SinkSplitter,
