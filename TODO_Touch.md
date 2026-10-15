@@ -1,3 +1,7 @@
+# 0. Proposed native and GacUI interface changes
+
+<!-- this section should include header file changing required by the job, declare any new types and methods, no explanation in this section, section 3 will reference the code here, do not delete this comment -->
+
 # 1. Windows touch and gesture capabilities
 
 This is a proposed plan, not an implemented feature. The implementation targets are native Windows and the GacJS browser renderer. Other providers should retain their existing mouse behavior without implementing touch. Platform references were checked on 2026-10-09.
