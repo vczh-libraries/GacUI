@@ -335,3 +335,5 @@ DarkSkinReflection.Linux.cpp
 TuiSkin.Linux.cpp
 TuiSkinResource.Linux.cpp
 TuiSkinReflection.Linux.cpp
+../../GacUISrc/UnitTest/TestRemote_Raw.cpp
+../../GacUISrc/UnitTest/TestRawElement_Windows.cpp
