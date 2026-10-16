@@ -53,9 +53,9 @@ The following rules apply when the first phrase is not in the list:
 - Keep the remaining as is.
   - Special treatment only for `investigate repro`:
     - If the remaining is just tagging a file, replace the tagging with the content of the file.
-    - If the remaining is empty, use the task description or task document already supplied in the conversation.
+    - If the remaining is empty, use the content of `REPO-ROOT/TODO_TASK.md`.
   - Special treatment only for `review`:
-    - If the remaining is empty, review the task description or task document already supplied in the conversation.
+    - If the remaining is empty, tag `REPO-ROOT/TODO_TASK.md`.
 - Treat the processed request as "the LATEST chat message" in the additional instruction file.
 - Follow the additional instruction file and start working immediately, there will be no more input.
 
@@ -77,7 +77,7 @@ When the request is `kb execute`, follow `kb.prompt.md` and "the LATEST chat mes
 
 When the request is `review`, follow `review.prompt.md` and "the LATEST chat message" becomes
 ```
-<the task description or task document already supplied in the conversation>
+<tagging REPO-ROOT/TODO_TASK.md>
 ```
 Special treatment applied
 
