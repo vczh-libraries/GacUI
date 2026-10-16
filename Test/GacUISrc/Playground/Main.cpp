@@ -33,6 +33,66 @@ public:
 	}
 };
 
+// Native observation only; the point fixture's UI and routing handlers live in XML.
+class PlaygroundPoints : public Object, public INativeWindowListener, public Description<PlaygroundPoints>
+{
+protected:
+	INativeWindow*				window;
+	Ptr<GuiRawElementBase>		output;
+
+	void Append(const WString& text)
+	{
+		output->SetData(output->GetData() + text + L";");
+	}
+
+	void Sample(const WString& event, const NativeWindowPointInfo& info)
+	{
+		Append(event + L":" + u64tow(info.sequenceId) + L":" + itow(info.pointId) + L":" + itow(info.activePointCount)
+			+ L":" + itow(info.position.x.value) + L"," + itow(info.position.y.value)
+			+ L":" + (info.contactBounds ? L"bounds" : L"none")
+			+ L":" + (info.pressure ? ftow(info.pressure.Value()) : L"none")
+			+ L":" + (info.orientation ? ftow(info.orientation.Value()) : L"none")
+			+ L":time=" + u64tow(info.timestamp)
+			+ L":frame=" + (info.platformFrameId ? u64tow(info.platformFrameId.Value()) : L"none"));
+	}
+
+public:
+	bool						accept = false;
+
+	PlaygroundPoints(GuiWindow* owner, Ptr<GuiRawElementBase> _output)
+		: window(owner->GetNativeWindow()), output(_output)
+	{
+		window->InstallListener(this);
+	}
+
+	~PlaygroundPoints()
+	{
+		if (window) window->UninstallListener(this);
+	}
+
+	void PointSequenceStarted(const NativeWindowPointInfo& info, bool& result) override
+	{
+		Append(L"Query:" + u64tow(info.sequenceId) + L":" + (result ? L"true" : L"false"));
+		Sample(L"Started", info);
+		result = accept;
+	}
+
+	void PointDown(const NativeWindowPointInfo& info) override { Sample(L"Down", info); }
+	void PointUpdate(const NativeWindowPointInfo& info) override { Sample(L"Update", info); }
+	void PointUp(const NativeWindowPointInfo& info) override { Sample(L"Up", info); }
+	void PointEntered(const NativeWindowPointInfo& info) override { Sample(L"Enter", info); }
+	void PointLeaved(const NativeWindowPointInfo& info) override { Sample(L"Leave", info); }
+	void PointSequenceEnded(const PointSequenceEndInfo& info) override
+	{
+		Append(L"Ended:" + u64tow(info.sequenceId) + L":" + (info.accepted ? L"true" : L"false") + L":" + itow((vint)info.reason));
+	}
+
+	void MouseDown(NativeMouseButton, const NativeWindowMouseInfo&) override { Append(L"MouseDown"); }
+	void MouseUp(NativeMouseButton, const NativeWindowMouseInfo&) override { Append(L"MouseUp"); }
+	void Destroying() override { Append(L"Destroying"); }
+	void Destroyed() override { window = nullptr; }
+};
+
 class PlaygroundUia : public Object, public Description<PlaygroundUia>
 {
 protected:
@@ -94,6 +154,7 @@ namespace vl::reflection::description
 {
 #define PLAYGROUND_TYPE_LIST(F)	\
 	F(Playground)\
+	F(PlaygroundPoints)\
 	F(PlaygroundUia)\
 	F(PlaygroundIndependentGroup)\
 
@@ -105,6 +166,11 @@ namespace vl::reflection::description
 		CLASS_MEMBER_CONSTRUCTOR(Ptr<Playground>(), NO_PARAMETER)
 		CLASS_MEMBER_METHOD(LoadBigJson, NO_PARAMETER)
 	END_CLASS_MEMBER(Playground)
+
+	BEGIN_CLASS_MEMBER(PlaygroundPoints)
+		CLASS_MEMBER_CONSTRUCTOR(Ptr<PlaygroundPoints>(GuiWindow*, Ptr<GuiRawElementBase>), { L"owner" _ L"output" })
+		CLASS_MEMBER_FIELD(accept)
+	END_CLASS_MEMBER(PlaygroundPoints)
 
 	BEGIN_CLASS_MEMBER(PlaygroundUia)
 		CLASS_MEMBER_CONSTRUCTOR(Ptr<PlaygroundUia>(), NO_PARAMETER)
@@ -199,7 +265,7 @@ void GuiMain()
 	LoadPlaygroundTypes();
 
 	List<WString> names;
-	names.Add(L"ResourceUiaReview");
+	names.Add(L"ResourcePointInput");
 
 	Group<WString, WString> deps;
 

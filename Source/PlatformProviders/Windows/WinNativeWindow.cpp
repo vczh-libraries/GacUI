@@ -10,6 +10,7 @@
 #include "ServicesImpl\WindowsDialogService.h"
 #define _WINSOCKAPI_
 #include <CommCtrl.h>
+#include <tpcshrd.h>
 #include <VlppOS.Windows.h>
 
 #pragma comment(lib, "Imm32.lib")
@@ -319,8 +320,120 @@ WindowsForm
 					}
 				}
 
+				NativeWindowPointInfo ConvertPoint(const POINTER_TOUCH_INFO& touch)
+				{
+					const auto& pointer = touch.pointerInfo;
+					POINT origin = { 0,0 };
+					ClientToScreen(handle, &origin);
+					NativeWindowPointInfo info;
+					info.position = NativePoint(pointer.ptPixelLocation.x - origin.x, pointer.ptPixelLocation.y - origin.y);
+					auto now = GetNativePointTimestamp();
+					vuint64_t age = 0;
+					if (pointer.PerformanceCount)
+					{
+						LARGE_INTEGER counter, frequency;
+						QueryPerformanceCounter(&counter);
+						QueryPerformanceFrequency(&frequency);
+						if ((vuint64_t)counter.QuadPart >= pointer.PerformanceCount)
+						{
+							age = (vuint64_t)(((vuint64_t)counter.QuadPart - pointer.PerformanceCount) * 1000000.0 / frequency.QuadPart);
+						}
+					}
+					else if (pointer.dwTime)
+					{
+						age = (vuint64_t)(DWORD)(GetTickCount() - pointer.dwTime) * 1000;
+					}
+					info.timestamp = now >= age ? now - age : now;
+					info.primary = (pointer.pointerFlags & POINTER_FLAG_PRIMARY) != 0;
+					info.ctrl = (pointer.dwKeyStates & POINTER_MOD_CTRL) != 0;
+					info.shift = (pointer.dwKeyStates & POINTER_MOD_SHIFT) != 0;
+					info.alt = WinIsKeyPressing(VKEY::KEY_MENU);
+					info.osSuper = IsOSSuperPressed();
+					info.platformFrameId = pointer.frameId;
+					if (touch.touchMask & TOUCH_MASK_CONTACTAREA)
+					{
+						info.contactBounds = NativeRect(touch.rcContact.left - origin.x, touch.rcContact.top - origin.y, touch.rcContact.right - origin.x, touch.rcContact.bottom - origin.y);
+					}
+					if (touch.touchMask & TOUCH_MASK_PRESSURE) info.pressure = touch.pressure / 1024.0;
+					if (touch.touchMask & TOUCH_MASK_ORIENTATION) info.orientation = ((touch.orientation + 90) % 360) * 3.14159265358979323846 / 180.0;
+					return info;
+				}
+
+				bool HandlePointMessage(UINT message, WPARAM wParam)
+				{
+					auto sourceToken = (vuint64_t)GET_POINTERID_WPARAM(wParam);
+					POINTER_INPUT_TYPE pointerType;
+					if (GetPointerType((UINT32)sourceToken, &pointerType) && pointerType != PT_TOUCH) return false;
+					bool tracked = pointInputState.contacts.Keys().Contains(sourceToken);
+					bool accepted = tracked ? pointInputState.accepted : (pointPolicies.Keys().Contains(sourceToken) && pointPolicies[sourceToken]);
+					if (message == WM_POINTERCAPTURECHANGED)
+					{
+						if (tracked)
+						{
+							CancelNativePointSequence(pointInputState, listeners, PointSequenceEndReason::Canceled_CaptureLost, GetNativePointTimestamp());
+							CancelIOPointFallback(pointCommandState, listeners);
+							RetireNativePoint(pointInputState, sourceToken);
+						}
+						return accepted;
+					}
+
+					POINTER_TOUCH_INFO touch;
+					if (!GetPointerTouchInfo((UINT32)sourceToken, &touch)) return accepted;
+					if (touch.pointerInfo.pointerFlags & POINTER_FLAG_CANCELED)
+					{
+						if (tracked)
+						{
+							CancelNativePointSequence(pointInputState, listeners, PointSequenceEndReason::Canceled_PlatformCanceled, ConvertPoint(touch).timestamp);
+							CancelIOPointFallback(pointCommandState, listeners);
+							RetireNativePoint(pointInputState, sourceToken);
+						}
+						return accepted;
+					}
+					if (message != WM_POINTERDOWN && !tracked) return accepted;
+
+					NativePointEvent event = NativePointEvent::Update;
+					switch (message)
+					{
+					case WM_POINTERDOWN: event = NativePointEvent::Down; break;
+					case WM_POINTERUP: event = NativePointEvent::Up; break;
+					case WM_POINTERENTER: event = NativePointEvent::Entered; break;
+					case WM_POINTERLEAVE: event = NativePointEvent::Leaved; break;
+					}
+					accepted = ProcessNativePointInput(pointInputState, listeners, event, sourceToken, ConvertPoint(touch));
+					pointPolicies.Set(sourceToken, accepted);
+					suppressTouchMouse = accepted;
+					return accepted;
+				}
+
 				bool HandleMessageInternal(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 				{
+					switch (uMsg)
+					{
+					case WM_POINTERDOWN:
+					case WM_POINTERUPDATE:
+					case WM_POINTERUP:
+					case WM_POINTERENTER:
+					case WM_POINTERLEAVE:
+					case WM_POINTERCAPTURECHANGED:
+						result = 0;
+						return HandlePointMessage(uMsg, wParam);
+					case WM_TABLET_QUERYSYSTEMGESTURESTATUS:
+						result = TABLET_DISABLE_PRESSANDHOLD | TABLET_DISABLE_FLICKS | TABLET_DISABLE_SMOOTHSCROLLING | TABLET_DISABLE_FLICKFALLBACKKEYS;
+						return true;
+					case WM_CANCELMODE:
+						CancelNativePointSequence(pointInputState, listeners, PointSequenceEndReason::Canceled_Unknown, GetNativePointTimestamp());
+						CancelIOPointFallback(pointCommandState, listeners);
+						break;
+					}
+					if (suppressTouchMouse && ((uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST) || (uMsg >= WM_NCMOUSEMOVE && uMsg <= WM_NCXBUTTONDBLCLK)))
+					{
+						auto extra = (ULONG_PTR)GetMessageExtraInfo();
+						if ((extra & 0xFFFFFF00) == 0xFF515700 && (extra & 0x80) != 0)
+						{
+							result = 0;
+							return true;
+						}
+					}
 					if (!supressClosePopups)
 					{
 						bool closePopups = false;
@@ -1006,6 +1119,10 @@ WindowsForm
 				WindowMode							windowMode;
 				bool								isMainWindow = false;
 				List<INativeWindowListener*>		listeners;
+				NativePointInputState				pointInputState;
+				IoPointCommandState					pointCommandState;
+				Dictionary<vuint64_t, bool>			pointPolicies;
+				bool								suppressTouchMouse = false;
 				vint								mouseLastX = -1;
 				vint								mouseLastY = -1;
 				bool								mouseHoving = false;
@@ -1054,6 +1171,8 @@ WindowsForm
 						InternalSetStyle(style);
 					}
 					UpdateDpiAwaredFields(true);
+					GESTURECONFIG gestureConfig = { 0,0,GC_ALLGESTURES };
+					CHECK_ERROR(SetGestureConfig(handle, 0, 1, &gestureConfig, sizeof(gestureConfig)), L"vl::presentation::windows::WindowsForm::WindowsForm(...)#Failed to disable gestures.");
 				}
 
 				~WindowsForm()
@@ -1090,6 +1209,8 @@ WindowsForm
 
 				void InvokeDestroying()
 				{
+					CancelNativePointSequence(pointInputState, listeners, PointSequenceEndReason::Canceled_WindowDestroyed, GetNativePointTimestamp());
+					CancelIOPointFallback(pointCommandState, listeners);
 					// TODO: (enumerable) foreach
 					for(vint i=0;i<listeners.Count();i++)
 					{
@@ -2194,7 +2315,7 @@ Windows Platform Native Controller
 			{
 				auto windowsForm = dynamic_cast<WindowsForm*>(window);
 				CHECK_ERROR(windowsForm, L"vl::presentation::windows::RunIOCommandOnWindowsNativeWindow(...)#The specified INativeWindow instance should be native.");
-				return RunIOCommandOnNativeWindow(state, GetWindowsNativeController(), windowsForm, windowsForm->listeners, ioCommand);
+				return RunIOCommandOnNativeWindow(state, GetWindowsNativeController(), windowsForm, windowsForm->listeners, ioCommand, &windowsForm->pointInputState, &windowsForm->pointCommandState);
 			}
 
 			void StopWindowsNativeController()

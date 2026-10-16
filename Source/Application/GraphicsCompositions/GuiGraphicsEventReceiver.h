@@ -32,6 +32,7 @@ namespace vl
 		namespace compositions
 		{
 			class GuiGraphicsComposition;
+			struct GuiPointSequenceStartedEventArgs;
 
 /***********************************************************************
 Event
@@ -188,7 +189,16 @@ Event
 					auto currentHandler=&handlers;
 					while(*currentHandler)
 					{
-						(*currentHandler)->handler->Execute(newSender?newSender:sender, argument);
+						if constexpr (std::is_same_v<T, GuiPointSequenceStartedEventArgs>)
+						{
+							bool accepted = argument.accept;
+							(*currentHandler)->handler->Execute(newSender ? newSender : sender, argument);
+							argument.accept |= accepted;
+						}
+						else
+						{
+							(*currentHandler)->handler->Execute(newSender ? newSender : sender, argument);
+						}
 						currentHandler=&(*currentHandler)->next;
 					}
 				}
@@ -312,6 +322,41 @@ Predefined Events
 				{
 				}
 			};
+
+			/// <summary>Point input relative to the receiving composition. Points is a borrowed sparse list, updated between callbacks and cleared after End; copy values to retain them.</summary>
+			struct GuiPointEventArgs : public GuiEventArgs, public WindowPointInfo, public Description<GuiPointEventArgs>
+			{
+				const collections::List<Nullable<Point>>& points;
+
+				GuiPointEventArgs(const collections::List<Nullable<Point>>& points);
+				GuiPointEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& points);
+				/// <summary>Get the host-owned read-only list. Empty slots belong to contacts that have lifted.</summary>
+				const collections::List<Nullable<Point>>& GetPoints() const;
+			};
+
+			/// <summary>First-contact query. Acceptance is sticky; handled alone only stops propagation.</summary>
+			struct GuiPointSequenceStartedEventArgs : public GuiPointEventArgs, public Description<GuiPointSequenceStartedEventArgs>
+			{
+				bool							accept = false;
+
+				GuiPointSequenceStartedEventArgs(const collections::List<Nullable<Point>>& points);
+				GuiPointSequenceStartedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& points);
+			};
+
+			/// <summary>Sequence completion. Canceled accepted sequences retain occupied slots through every End handler; rejected sequences expose an empty list.</summary>
+			struct GuiPointSequenceEndedEventArgs : public GuiEventArgs, public PointSequenceEndInfo, public Description<GuiPointSequenceEndedEventArgs>
+			{
+				const collections::List<Nullable<Point>>& points;
+
+				GuiPointSequenceEndedEventArgs(const collections::List<Nullable<Point>>& points);
+				GuiPointSequenceEndedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& points);
+				/// <summary>Get the same borrowed read-only list used by point events.</summary>
+				const collections::List<Nullable<Point>>& GetPoints() const;
+			};
+
+			typedef GuiGraphicsEvent<GuiPointEventArgs>					GuiPointEvent;
+			typedef GuiGraphicsEvent<GuiPointSequenceStartedEventArgs>	GuiPointSequenceStartedEvent;
+			typedef GuiGraphicsEvent<GuiPointSequenceEndedEventArgs>		GuiPointSequenceEndedEvent;
 
 			/// <summary>Control signal.</summary>
 			enum class ControlSignal
@@ -481,6 +526,21 @@ Event Receiver
 				GuiNotifyEvent					mouseEnter;
 				/// <summary>Mouse leave event.</summary>
 				GuiNotifyEvent					mouseLeave;
+
+				/// <summary>Query point input at the first contact, before any point data or mouse fallback.</summary>
+				GuiPointSequenceStartedEvent		pointSequenceStarted;
+				/// <summary>A contact joins the captured sequence.</summary>
+				GuiPointEvent					pointDown;
+				/// <summary>An active contact reports an updated sample.</summary>
+				GuiPointEvent					pointUpdate;
+				/// <summary>A contact lifts; its list slot is already empty.</summary>
+				GuiPointEvent					pointUp;
+				/// <summary>An active contact enters the native surface, preserving the sequence target.</summary>
+				GuiPointEvent					pointEnter;
+				/// <summary>An active contact leaves the native surface, preserving the sequence target.</summary>
+				GuiPointEvent					pointLeave;
+				/// <summary>The sequence ends; point capture is released after propagation.</summary>
+				GuiPointSequenceEndedEvent		pointSequenceEnded;
 				
 				/// <summary>Preview key event.</summary>
 				GuiKeyEvent						previewKey;

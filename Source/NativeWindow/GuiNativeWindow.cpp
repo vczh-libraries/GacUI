@@ -1,10 +1,138 @@
 #include "GuiNativeWindow.h"
+#include <chrono>
 
 namespace vl
 {
 	namespace presentation
 	{
 		const NativeWindowFrameConfig NativeWindowFrameConfig::Default = {};
+
+/***********************************************************************
+Native Point Input
+***********************************************************************/
+
+		vuint64_t GetNativePointTimestamp()
+		{
+			return (vuint64_t)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+		}
+
+		void ResetCompletedNativePointSequence(NativePointInputState& state)
+		{
+			state.sequenceId = 0;
+			state.nextPointId = 0;
+			state.accepted = false;
+			state.ended = false;
+			state.contacts.Clear();
+		}
+
+		void EndNativePointSequence(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, PointSequenceEndReason reason, vuint64_t timestamp)
+		{
+			state.ended = true;
+			PointSequenceEndInfo info;
+			info.sequenceId = state.sequenceId;
+			info.timestamp = timestamp;
+			info.accepted = state.accepted;
+			info.reason = reason;
+			for (auto listener : listeners)
+			{
+				listener->PointSequenceEnded(info);
+			}
+		}
+
+		bool ProcessNativePointInput(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, NativeWindowPointInfo info)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::ProcessNativePointInput#"
+			bool starting = event == NativePointEvent::Down && state.sequenceId == 0;
+			if (event == NativePointEvent::Down)
+			{
+				CHECK_ERROR(!state.contacts.Keys().Contains(sourceToken), ERROR_MESSAGE_PREFIX L"Contact is already down.");
+				if (starting)
+				{
+					CHECK_ERROR(state.lastSequenceId != (vuint64_t)-1, ERROR_MESSAGE_PREFIX L"Sequence IDs exhausted.");
+					state.sequenceId = ++state.lastSequenceId;
+				}
+				info.pointId = state.nextPointId++;
+			}
+			else
+			{
+				CHECK_ERROR(state.contacts.Keys().Contains(sourceToken), ERROR_MESSAGE_PREFIX L"Contact is not down.");
+				info.pointId = state.contacts[sourceToken].pointId;
+			}
+
+			info.sequenceId = state.sequenceId;
+			info.activePointCount = state.contacts.Count() + (event == NativePointEvent::Down ? 1 : event == NativePointEvent::Up ? -1 : 0);
+			if (event == NativePointEvent::Up)
+			{
+				state.contacts.Remove(sourceToken);
+			}
+			else
+			{
+				state.contacts.Set(sourceToken, info);
+			}
+
+			if (starting)
+			{
+				for (auto listener : listeners)
+				{
+					bool accept = false;
+					listener->PointSequenceStarted(info, accept);
+					state.accepted |= accept;
+				}
+			}
+
+			bool accepted = state.accepted;
+			if (!state.ended && accepted)
+			{
+				void (INativeWindowListener::* callback)(const NativeWindowPointInfo&) = nullptr;
+				switch (event)
+				{
+				case NativePointEvent::Down: callback = &INativeWindowListener::PointDown; break;
+				case NativePointEvent::Update: callback = &INativeWindowListener::PointUpdate; break;
+				case NativePointEvent::Up: callback = &INativeWindowListener::PointUp; break;
+				case NativePointEvent::Entered: callback = &INativeWindowListener::PointEntered; break;
+				case NativePointEvent::Leaved: callback = &INativeWindowListener::PointLeaved; break;
+				}
+				for (auto listener : listeners)
+				{
+					(listener->*callback)(info);
+				}
+			}
+
+			if (state.contacts.Count() == 0)
+			{
+				if (!state.ended)
+				{
+					EndNativePointSequence(state, listeners, PointSequenceEndReason::Succeeded, info.timestamp);
+				}
+				ResetCompletedNativePointSequence(state);
+			}
+			return accepted;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void CancelNativePointSequence(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, PointSequenceEndReason reason, vuint64_t timestamp)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::CancelNativePointSequence#"
+			CHECK_ERROR(reason != PointSequenceEndReason::Succeeded, ERROR_MESSAGE_PREFIX L"A cancellation reason is required.");
+			if (state.sequenceId != 0 && !state.ended)
+			{
+				EndNativePointSequence(state, listeners, reason, timestamp);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RetireNativePoint(NativePointInputState& state, vuint64_t sourceToken)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::RetireNativePoint#"
+			if (!state.contacts.Keys().Contains(sourceToken)) return;
+			CHECK_ERROR(state.ended, ERROR_MESSAGE_PREFIX L"Cancel the sequence before retiring a contact without Up.");
+			state.contacts.Remove(sourceToken);
+			if (state.contacts.Count() == 0)
+			{
+				ResetCompletedNativePointSequence(state);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
 
 /***********************************************************************
 INativeAutomationService
@@ -161,6 +289,34 @@ INativeWindowListener
 		}
 
 		void INativeWindowListener::MouseLeaved()
+		{
+		}
+
+		void INativeWindowListener::PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept)
+		{
+		}
+
+		void INativeWindowListener::PointDown(const NativeWindowPointInfo& info)
+		{
+		}
+
+		void INativeWindowListener::PointUpdate(const NativeWindowPointInfo& info)
+		{
+		}
+
+		void INativeWindowListener::PointUp(const NativeWindowPointInfo& info)
+		{
+		}
+
+		void INativeWindowListener::PointEntered(const NativeWindowPointInfo& info)
+		{
+		}
+
+		void INativeWindowListener::PointLeaved(const NativeWindowPointInfo& info)
+		{
+		}
+
+		void INativeWindowListener::PointSequenceEnded(const PointSequenceEndInfo& info)
 		{
 		}
 

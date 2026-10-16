@@ -48,6 +48,92 @@ INativeWindow
 		class INativeCursor;
 		class INativeWindowListener;
 
+		/// <summary>Completion of an overlapping-contact point sequence.</summary>
+		enum class PointSequenceEndReason
+		{
+			Succeeded,
+			Canceled_Unknown,
+			Canceled_PlatformCanceled,
+			Canceled_CaptureLost,
+			Canceled_WindowDestroyed,
+		};
+
+		/// <summary>A point sample copied by the adapter. Positions are client-relative; timestamps are monotonic microseconds.</summary>
+		template<typename TPoint, typename TRect>
+		struct WindowPointInfo_
+		{
+			/// <summary>Nonzero identity allocated once per sequence for the lifetime of its native window.</summary>
+			vuint64_t				sequenceId = 0;
+			/// <summary>Zero-based Down order within the sequence. Lifted indices are never reused.</summary>
+			vint					pointId = 0;
+			/// <summary>Microseconds from a monotonic clock, unrelated to wall-clock time.</summary>
+			vuint64_t				timestamp = 0;
+			/// <summary>Number of active contacts after this transition. Up has already removed its contact.</summary>
+			vint					activePointCount = 0;
+			/// <summary>Contact center in the receiver's coordinate space.</summary>
+			TPoint					position;
+			/// <summary>Platform primary-contact hint; it does not determine sequence lifetime or routing.</summary>
+			bool					primary = false;
+			bool					ctrl = false;
+			bool					shift = false;
+			bool					alt = false;
+			bool					osSuper = false;
+			/// <summary>Optional contact rectangle in the same coordinate space as position.</summary>
+			Nullable<TRect>			contactBounds;
+			/// <summary>Optional normalized pressure from zero to one.</summary>
+			Nullable<double>		pressure;
+			/// <summary>Optional clockwise angle in radians from the upward axis.</summary>
+			Nullable<double>		orientation;
+			/// <summary>Optional opaque platform frame identity; never use as a sequence or contact identity.</summary>
+			Nullable<vuint64_t>		platformFrameId;
+
+			auto operator<=>(const WindowPointInfo_&) const = default;
+		};
+
+		using NativeWindowPointInfo = WindowPointInfo_<NativePoint, NativeRect>;
+		using WindowPointInfo = WindowPointInfo_<Point, Rect>;
+
+		/// <summary>One sequence boundary, including rejected and canceled sequences.</summary>
+		struct PointSequenceEndInfo
+		{
+			vuint64_t				sequenceId = 0;
+			vuint64_t				timestamp = 0;
+			bool					accepted = false;
+			PointSequenceEndReason	reason = PointSequenceEndReason::Succeeded;
+
+			auto operator<=>(const PointSequenceEndInfo&) const = default;
+		};
+
+		/// <summary>Window-owned bookkeeping shared by native acquisition and injected input. Mutate only on the UI thread through the point helpers.</summary>
+		struct NativePointInputState
+		{
+			vuint64_t				lastSequenceId = 0;
+			vuint64_t				sequenceId = 0;
+			vint					nextPointId = 0;
+			bool					accepted = false;
+			bool					ended = false;
+			collections::Dictionary<vuint64_t, NativeWindowPointInfo> contacts;
+		};
+
+		/// <summary>A contact transition supplied by an input adapter.</summary>
+		enum class NativePointEvent
+		{
+			Down,
+			Update,
+			Up,
+			Entered,
+			Leaved,
+		};
+
+		/// <summary>Process a sample, allocate identities and deliver callbacks. Returns the latched acceptance even when the sample completes the sequence. Source tokens are opaque and may be reused after Up.</summary>
+		extern bool ProcessNativePointInput(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, NativeWindowPointInfo info);
+		/// <summary>End once without synthetic Ups; retain contacts and acceptance until the adapter retires remaining native activity.</summary>
+		extern void CancelNativePointSequence(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, PointSequenceEndReason reason, vuint64_t timestamp);
+		/// <summary>Retire a canceled or capture-lost contact after End delivery. Unknown delayed cleanup is ignored. Never resets the lifetime counter.</summary>
+		extern void RetireNativePoint(NativePointInputState& state, vuint64_t sourceToken);
+		/// <summary>Get monotonic microseconds for adapter-generated point samples and cancellation.</summary>
+		extern vuint64_t GetNativePointTimestamp();
+
 		enum class BoolOption
 		{
 			AlwaysTrue,
@@ -645,6 +731,21 @@ INativeWindow
 			/// Called when the mouse leaved the window.
 			/// </summary>
 			virtual void				MouseLeaved();
+
+			/// <summary>Query the first Down synchronously. Each listener receives false; answers are combined with OR for the whole sequence.</summary>
+			virtual void				PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept);
+			/// <summary>A contact joins an accepted sequence, with a new zero-based Down-order point ID.</summary>
+			virtual void				PointDown(const NativeWindowPointInfo& info);
+			/// <summary>An active contact reports a sample, including stationary updates.</summary>
+			virtual void				PointUpdate(const NativeWindowPointInfo& info);
+			/// <summary>A contact ends normally; the active count excludes it.</summary>
+			virtual void				PointUp(const NativeWindowPointInfo& info);
+			/// <summary>An active contact enters the native client surface.</summary>
+			virtual void				PointEntered(const NativeWindowPointInfo& info);
+			/// <summary>An active contact leaves the native client surface without changing its route.</summary>
+			virtual void				PointLeaved(const NativeWindowPointInfo& info);
+			/// <summary>Closes an accepted or rejected sequence once, after final Up or immediately on cancellation.</summary>
+			virtual void				PointSequenceEnded(const PointSequenceEndInfo& info);
 			
 			/// <summary>
 			/// Called a key is pressed.

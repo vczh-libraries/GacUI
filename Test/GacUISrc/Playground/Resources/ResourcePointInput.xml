@@ -1,0 +1,166 @@
+<Resource>
+  <Instance name="TouchingTabPageResource" content="File">../../../Resources/App/FullControlTest/TouchingTabPage.xml</Instance>
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
+      <ref.Members><![CDATA[
+        var probe1: PlaygroundPoints^ = null;
+        var probe2: PlaygroundPoints^ = null;
+        var childProbe: PlaygroundPoints^ = null;
+        var child: demo::TestWindow* = null;
+        var touchingWindow: demo::TouchingInspection* = null;
+
+        func Slots(points: const Point?[]): string
+        {
+          var text = "";
+          for (i in range[0, points.Count))
+          {
+            text = text & "," & (cast string i) & "=";
+            if (var point: Point? = points[i])
+            {
+              text = text & (cast string point.x) & ":" & (cast string point.y);
+            }
+            else { text = text & "empty"; }
+          }
+          return text;
+        }
+
+        func TraceData(name: string, arguments: GuiPointEventArgs*): void
+        {
+          trace.Data = trace.Data & name & ":" & (cast string arguments.sequenceId)
+            & ":" & (cast string arguments.pointId) & ":" & (cast string arguments.activePointCount)
+            & ":" & (cast string arguments.position.x) & "," & (cast string arguments.position.y)
+            & ":source=" & (cast string (arguments.compositionSource == inner))
+            & ":event=" & (cast string (arguments.eventSource == inner))
+            & Slots(arguments.Points) & ";";
+        }
+
+        func TraceEnd(name: string, arguments: GuiPointSequenceEndedEventArgs*): void
+        {
+          trace.Data = trace.Data & name & ":" & (cast string arguments.sequenceId)
+            & ":" & (cast string arguments.accepted) & ":" & (cast string (cast UInt64 arguments.reason))
+            & Slots(arguments.Points) & ";";
+        }
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        self.probe1 = new PlaygroundPoints^(self, native1);
+        self.probe2 = new PlaygroundPoints^(self, native2);
+        attach(inner.pointSequenceStarted, func(sender: GuiGraphicsComposition*, arguments: GuiPointSequenceStartedEventArgs*): void
+        {
+          arguments.accept = false;
+        });
+      }]]></ref.Ctor>
+      <ref.Dtor><![CDATA[{
+        if (self.child is not null) { delete self.child; }
+        if (self.touchingWindow is not null) { delete self.touchingWindow; }
+      }]]></ref.Dtor>
+      <Window ref.Name="self" Text="Point Input Inspection" ClientSize="x:540 y:540">
+        <CheckBox ref.Name="acceptChild" Text="Accept child" Selected="true">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:10 x2:160 y2:40"/>
+        </CheckBox>
+        <CheckBox ref.Name="acceptParent" Text="Accept parent">
+          <att.BoundsComposition-set ExpectedBounds="x1:180 y1:10 x2:340 y2:40"/>
+        </CheckBox>
+        <CheckBox ref.Name="stopChild" Text="Handled child">
+          <att.BoundsComposition-set ExpectedBounds="x1:360 y1:10 x2:520 y2:40"/>
+        </CheckBox>
+        <CheckBox ref.Name="acceptNative" Text="Native listener accepts">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:50 x2:220 y2:80"/>
+          <ev.SelectedChanged-eval><![CDATA[{ if (self.probe1 is not null) { self.probe1.accept = acceptNative.Selected; } }]]></ev.SelectedChanged-eval>
+        </CheckBox>
+        <Button Text="Clear trace">
+          <att.BoundsComposition-set ExpectedBounds="x1:230 y1:50 x2:360 y2:80"/>
+          <ev.Clicked-eval><![CDATA[{ trace.Data = ""; native1.Data = ""; native2.Data = ""; destruction.Data = ""; }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Detach child">
+          <att.BoundsComposition-set ExpectedBounds="x1:370 y1:50 x2:520 y2:80"/>
+          <ev.Clicked-eval><![CDATA[{ outer.RemoveChild(inner); }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Open window">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:90 x2:170 y2:120"/>
+          <ev.Clicked-eval><![CDATA[{
+            if (self.child is null)
+            {
+              self.child = new demo::TestWindow*();
+              self.child.Text = "Point Input Secondary";
+              self.childProbe = new PlaygroundPoints^(self.child, destruction);
+              self.child.Location = {x:{value:(self.Location.x.value + 100)} y:{value:(self.Location.y.value + 100)}};
+            }
+            self.child.ShowWithOwner(self);
+          }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Delete window">
+          <att.BoundsComposition-set ExpectedBounds="x1:190 y1:90 x2:350 y2:120"/>
+          <ev.Clicked-eval><![CDATA[{ if (self.child is not null) { delete self.child; self.child = null; self.childProbe = null; } }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Move window">
+          <att.BoundsComposition-set ExpectedBounds="x1:370 y1:90 x2:520 y2:120"/>
+          <ev.Clicked-eval><![CDATA[{ self.Location = {x:{value:(self.Location.x.value + 20)} y:{value:(self.Location.y.value + 30)}}; }]]></ev.Clicked-eval>
+        </Button>
+        <Bounds ref.Name="outer" ExpectedBounds="x1:20 y1:150 x2:510 y2:380">
+          <SolidBackground Color="#404040"/>
+          <ev.pointSequenceStarted-eval><![CDATA[{
+            trace.Data = trace.Data & "ParentAcceptBefore:" & (cast string arguments.accept) & ";";
+            arguments.accept = acceptParent.Selected;
+            self.TraceData("ParentStarted", arguments);
+          }]]></ev.pointSequenceStarted-eval>
+          <ev.pointDown-eval><![CDATA[{ self.TraceData("ParentDown", arguments); }]]></ev.pointDown-eval>
+          <ev.pointUpdate-eval><![CDATA[{ self.TraceData("ParentUpdate", arguments); }]]></ev.pointUpdate-eval>
+          <ev.pointUp-eval><![CDATA[{ self.TraceData("ParentUp", arguments); }]]></ev.pointUp-eval>
+          <ev.pointEnter-eval><![CDATA[{ self.TraceData("ParentEnter", arguments); }]]></ev.pointEnter-eval>
+          <ev.pointLeave-eval><![CDATA[{ self.TraceData("ParentLeave", arguments); }]]></ev.pointLeave-eval>
+          <ev.pointSequenceEnded-eval><![CDATA[{ self.TraceEnd("ParentEnded", arguments); }]]></ev.pointSequenceEnded-eval>
+          <Bounds ref.Name="inner" ExpectedBounds="x1:40 y1:30 x2:260 y2:180">
+            <Raw Id="PointProbe.Target"/>
+            <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" TransparentToMouse="true">
+              <SolidBackground Color="#87CEEB"/>
+            </Bounds>
+            <ev.pointSequenceStarted-eval><![CDATA[{
+              arguments.accept = acceptChild.Selected;
+              arguments.handled = stopChild.Selected;
+              self.TraceData("ChildStarted", arguments);
+            }]]></ev.pointSequenceStarted-eval>
+            <ev.pointDown-eval><![CDATA[{ self.TraceData("ChildDown", arguments); }]]></ev.pointDown-eval>
+            <ev.pointUpdate-eval><![CDATA[{ self.TraceData("ChildUpdate", arguments); }]]></ev.pointUpdate-eval>
+            <ev.pointUp-eval><![CDATA[{ self.TraceData("ChildUp", arguments); }]]></ev.pointUp-eval>
+            <ev.pointEnter-eval><![CDATA[{ self.TraceData("ChildEnter", arguments); }]]></ev.pointEnter-eval>
+            <ev.pointLeave-eval><![CDATA[{ self.TraceData("ChildLeave", arguments); }]]></ev.pointLeave-eval>
+            <ev.pointSequenceEnded-eval><![CDATA[{ self.TraceEnd("ChildEnded", arguments); }]]></ev.pointSequenceEnded-eval>
+          </Bounds>
+        </Bounds>
+        <Bounds ExpectedBounds="x1:10 y1:390 x2:130 y2:410"><Raw ref.Name="trace" Id="PointProbe.Composition"/></Bounds>
+        <Bounds ExpectedBounds="x1:140 y1:390 x2:260 y2:410"><Raw ref.Name="native1" Id="PointProbe.Native1"/></Bounds>
+        <Bounds ExpectedBounds="x1:270 y1:390 x2:390 y2:410"><Raw ref.Name="native2" Id="PointProbe.Native2"/></Bounds>
+        <Bounds ExpectedBounds="x1:400 y1:390 x2:520 y2:410"><Raw ref.Name="destruction" Id="PointProbe.Destruction"/></Bounds>
+        <Button Text="Disable window">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:430 x2:170 y2:460"/>
+          <ev.Clicked-eval><![CDATA[{ if (self.child is not null) { self.child.Enabled = false; } }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Enable window">
+          <att.BoundsComposition-set ExpectedBounds="x1:190 y1:430 x2:350 y2:460"/>
+          <ev.Clicked-eval><![CDATA[{ if (self.child is not null) { self.child.Enabled = true; } }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Modal window">
+          <att.BoundsComposition-set ExpectedBounds="x1:370 y1:430 x2:520 y2:460"/>
+          <ev.Clicked-eval><![CDATA[{ if (self.child is not null) { self.child.Hide(); self.child.ShowModal(self, func(): void {}); } }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Touching state">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:470 x2:170 y2:500"/>
+          <ev.Clicked-eval><![CDATA[{
+            if (self.touchingWindow is null) { self.touchingWindow = new demo::TouchingInspection*(); }
+            self.touchingWindow.ShowWithOwner(self);
+          }]]></ev.Clicked-eval>
+        </Button>
+      </Window>
+    </Instance>
+  </Instance>
+  <Instance name="TouchingInspectionResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TouchingInspection" xmlns:demo="demo::*">
+      <Window Text="Touching State Inspection" ClientSize="x:600 y:450">
+        <Tab>
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+          <att.Pages><demo:TouchingTabPage/></att.Pages>
+        </Tab>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>

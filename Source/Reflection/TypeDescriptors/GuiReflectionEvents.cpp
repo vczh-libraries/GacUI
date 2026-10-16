@@ -21,6 +21,12 @@ Type Declaration
 	CLASS_MEMBER_CONSTRUCTOR(Ptr<EVENTARGS>(), NO_PARAMETER)\
 	CLASS_MEMBER_CONSTRUCTOR(Ptr<EVENTARGS>(GuiGraphicsComposition*), {L"composition"})
 
+#define POINTARGS_POINTS(EVENTARGS)\
+	CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(GetPoints, NO_PARAMETER, const collections::List<Nullable<presentation::Point>>& (EVENTARGS::*)(),\
+		[](EVENTARGS* arguments) -> const collections::List<Nullable<presentation::Point>>& { return arguments->GetPoints(); },\
+		L"$This->GetPoints()", L"[=]() -> const ::vl::collections::List<::vl::Nullable<::vl::presentation::Point>>& { return $This->GetPoints(); }")\
+	CLASS_MEMBER_PROPERTY_READONLY(Points, GetPoints)
+
 			BEGIN_CLASS_MEMBER(GuiEventArgs)
 				EVENTARGS_CONSTRUCTOR(GuiEventArgs)
 
@@ -93,6 +99,39 @@ Type Declaration
 				CLASS_MEMBER_FIELD(nonClient)
 			END_CLASS_MEMBER(GuiMouseEventArgs)
 
+			BEGIN_CLASS_MEMBER(GuiPointEventArgs)
+				CLASS_MEMBER_BASE(GuiEventArgs)
+				CLASS_MEMBER_FIELD(sequenceId)
+				CLASS_MEMBER_FIELD(pointId)
+				CLASS_MEMBER_FIELD(timestamp)
+				CLASS_MEMBER_FIELD(activePointCount)
+				CLASS_MEMBER_FIELD(position)
+				CLASS_MEMBER_FIELD(primary)
+				CLASS_MEMBER_FIELD(ctrl)
+				CLASS_MEMBER_FIELD(shift)
+				CLASS_MEMBER_FIELD(alt)
+				CLASS_MEMBER_FIELD(osSuper)
+				CLASS_MEMBER_FIELD(contactBounds)
+				CLASS_MEMBER_FIELD(pressure)
+				CLASS_MEMBER_FIELD(orientation)
+				CLASS_MEMBER_FIELD(platformFrameId)
+				POINTARGS_POINTS(GuiPointEventArgs)
+			END_CLASS_MEMBER(GuiPointEventArgs)
+
+			BEGIN_CLASS_MEMBER(GuiPointSequenceStartedEventArgs)
+				CLASS_MEMBER_BASE(GuiPointEventArgs)
+				CLASS_MEMBER_FIELD(accept)
+			END_CLASS_MEMBER(GuiPointSequenceStartedEventArgs)
+
+			BEGIN_CLASS_MEMBER(GuiPointSequenceEndedEventArgs)
+				CLASS_MEMBER_BASE(GuiEventArgs)
+				CLASS_MEMBER_FIELD(sequenceId)
+				CLASS_MEMBER_FIELD(timestamp)
+				CLASS_MEMBER_FIELD(accepted)
+				CLASS_MEMBER_FIELD(reason)
+				POINTARGS_POINTS(GuiPointSequenceEndedEventArgs)
+			END_CLASS_MEMBER(GuiPointSequenceEndedEventArgs)
+
 			BEGIN_ENUM_ITEM(ControlSignal)
 				ENUM_CLASS_ITEM(RenderTargetChanged)
 				ENUM_CLASS_ITEM(ParentLineChanged)
@@ -136,6 +175,7 @@ Type Declaration
 			END_CLASS_MEMBER(GuiNodeMouseEventArgs)
 
 #undef EVENTARGS_CONSTRUCTOR
+#undef POINTARGS_POINTS
 #undef _
 
 /***********************************************************************

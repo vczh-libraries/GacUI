@@ -640,6 +640,96 @@ GuiHostedController::INativeWindowListener (Template)
 GuiHostedController::INativeWindowListener (IO Event Handling)
 ***********************************************************************/
 
+		NativeWindowPointInfo GuiHostedController::ConvertPointToHostedWindow(const NativeWindowPointInfo& info)
+		{
+			auto adjusted = info;
+			auto offset = pointSequenceWindow->GetRenderingOffset();
+			adjusted.position.x -= offset.x;
+			adjusted.position.y -= offset.y;
+			if (info.contactBounds)
+			{
+				auto bounds = info.contactBounds.Value();
+				adjusted.contactBounds = NativeRect(bounds.x1 - offset.x, bounds.y1 - offset.y, bounds.x2 - offset.x, bounds.y2 - offset.y);
+			}
+			return adjusted;
+		}
+
+		void GuiHostedController::ResetPointSequence()
+		{
+			pointSequenceId = 0;
+			pointSequenceAccepted = false;
+			pointSequenceWindow = nullptr;
+		}
+
+		void GuiHostedController::PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept)
+		{
+			ResetPointSequence();
+			pointSequenceId = firstPoint.sequenceId;
+			pointSequenceWindow = HitTestInClientSpace(firstPoint.position);
+			if (pointSequenceWindow && !pointSequenceWindow->IsEnabled()) pointSequenceWindow = nullptr;
+			if (pointSequenceWindow)
+			{
+				auto adjusted = ConvertPointToHostedWindow(firstPoint);
+				for (auto listener : pointSequenceWindow->listeners)
+				{
+					bool listenerAccept = false;
+					listener->PointSequenceStarted(adjusted, listenerAccept);
+					pointSequenceAccepted |= listenerAccept;
+				}
+			}
+			accept = pointSequenceAccepted;
+		}
+
+		void GuiHostedController::ForwardPointInput(const NativeWindowPointInfo& info, void (INativeWindowListener::* callback)(const NativeWindowPointInfo&))
+		{
+			if (info.sequenceId != pointSequenceId || !pointSequenceAccepted || !pointSequenceWindow) return;
+			auto adjusted = ConvertPointToHostedWindow(info);
+			for (auto listener : pointSequenceWindow->listeners)
+			{
+				(listener->*callback)(adjusted);
+			}
+		}
+
+		void GuiHostedController::PointDown(const NativeWindowPointInfo& info)
+		{
+			ForwardPointInput(info, &INativeWindowListener::PointDown);
+		}
+
+		void GuiHostedController::PointUpdate(const NativeWindowPointInfo& info)
+		{
+			ForwardPointInput(info, &INativeWindowListener::PointUpdate);
+		}
+
+		void GuiHostedController::PointUp(const NativeWindowPointInfo& info)
+		{
+			ForwardPointInput(info, &INativeWindowListener::PointUp);
+		}
+
+		void GuiHostedController::PointEntered(const NativeWindowPointInfo& info)
+		{
+			ForwardPointInput(info, &INativeWindowListener::PointEntered);
+		}
+
+		void GuiHostedController::PointLeaved(const NativeWindowPointInfo& info)
+		{
+			ForwardPointInput(info, &INativeWindowListener::PointLeaved);
+		}
+
+		void GuiHostedController::PointSequenceEnded(const PointSequenceEndInfo& info)
+		{
+			if (info.sequenceId != pointSequenceId) return;
+			if (pointSequenceWindow)
+			{
+				auto adjusted = info;
+				adjusted.accepted = pointSequenceAccepted;
+				for (auto listener : pointSequenceWindow->listeners)
+				{
+					listener->PointSequenceEnded(adjusted);
+				}
+			}
+			ResetPointSequence();
+		}
+
 		void GuiHostedController::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)
 		{
 			// A new window can appear under a stationary pointer. Refresh its control
@@ -986,6 +1076,7 @@ GuiHostedController::INativeWindowService
 
 			if (hostedWindow == enteringWindow) enteringWindow = nullptr;
 			if (hostedWindow == hoveringWindow) hoveringWindow = nullptr;
+			if (hostedWindow == pointSequenceWindow) ResetPointSequence();
 			if (hostedWindow == lastFocusedWindow) enteringWindow = nullptr;
 			if (hostedWindow == capturingWindow)
 			{

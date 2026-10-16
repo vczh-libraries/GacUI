@@ -464,8 +464,9 @@ public static class GacUIShowcaseTests
         }, "raw clock becomes visible", 120000);
         return result;
     }
-    static void ClickRenderedCaption(string caption)
+    static System.Windows.Rect RenderedCaptionBounds(string caption)
     {
+        var result = System.Windows.Rect.Empty;
         Wait(() =>
         {
             foreach (var node in SnapshotNodes(ControlsSnapshot()))
@@ -474,11 +475,17 @@ public static class GacUIShowcaseTests
                 if (!node.TryGetValue("elementText", out text) || (string)text != caption) continue;
                 var bounds = SnapshotBounds(node);
                 if (bounds.Width <= 0 || bounds.Height <= 0) continue;
-                Input("!LeftClick:" + (int)(bounds.Left + bounds.Width / 2) + "," + (int)(bounds.Top + bounds.Height / 2));
+                result = bounds;
                 return true;
             }
             return false;
         }, "rendered caption " + caption, 120000);
+        return result;
+    }
+    static void ClickRenderedCaption(string caption)
+    {
+        var bounds = RenderedCaptionBounds(caption);
+        Input("!LeftClick:" + (int)(bounds.Left + bounds.Width / 2) + "," + (int)(bounds.Top + bounds.Height / 2));
     }
     static void OpenRawClock()
     {
@@ -537,6 +544,171 @@ public static class GacUIShowcaseTests
         string initial = (string)RawClockSnapshot()["elementData"];
         Wait(() => (string)RawClockSnapshot()["elementData"] != initial, "clock continues after switching away and back");
 
+    }
+    static Dictionary<string, object> TouchingSnapshot()
+    {
+        Dictionary<string, object> result = null;
+        Wait(() =>
+        {
+            foreach (var node in SnapshotNodes(ControlsSnapshot()))
+            {
+                object id;
+                if (node.TryGetValue("elementId", out id) && (string)id == "FullControlTest.Touching") { result = node; return true; }
+            }
+            return false;
+        }, "Touching raw element becomes visible", 120000);
+        return result;
+    }
+    static double[] TouchingData()
+    {
+        return Array.ConvertAll(((string)TouchingSnapshot()["elementData"]).Split(','), value => double.Parse(value, System.Globalization.CultureInfo.InvariantCulture));
+    }
+    static void TouchingState(int count, double[] transform, string description)
+    {
+        Wait(() =>
+        {
+            var values = TouchingData();
+            if (values.Length != 5 + count * 3 || values[4] != count) return false;
+            for (int i = 0; i < 4; i++) if (Math.Abs(values[i] - transform[i]) > 0.001) return false;
+            return true;
+        }, description);
+    }
+    static void PointInput(string operation, int token, System.Windows.Rect bounds, int x, int y)
+    {
+        Input("!Point" + operation + ":" + token + "," + ((int)bounds.Left + x) + "," + ((int)bounds.Top + y));
+    }
+    static void OpenTouching()
+    {
+        Wait(() =>
+        {
+            bool hasPage = false;
+            foreach (var node in SnapshotNodes(ControlsSnapshot()))
+            {
+                object value;
+                if (node.TryGetValue("elementId", out value) && (string)value == "FullControlTest.Touching") return true;
+                if (node.TryGetValue("elementText", out value) && (string)value == "Touching") hasPage = true;
+            }
+            ClickRenderedCaption(hasPage ? "Touching" : "Misc");
+            return false;
+        }, "Touching page opens through automation", 120000);
+    }
+    static void TouchingAutomation()
+    {
+        Test("Touching / one and two contact transforms, membership, cancellation and source reuse");
+        OpenTouching();
+        var bounds = SnapshotBounds(TouchingSnapshot());
+        Check(bounds.Width >= 320 && bounds.Height >= 240, "Touching raw region has useful bounds");
+        var initial = TouchingData();
+        foreach (var invalid in new[] { "!PointDown:abc,1,2", "!PointDown:-1,1,2", "!PointCancel:1,Succeeded", "!PointUpdate:1,1", "!PointDown:1,1,2,pen" })
+        {
+            using (var client = new System.Net.WebClient())
+            {
+                client.Headers[System.Net.HttpRequestHeader.ContentType] = "application/json; charset=utf8";
+                var response = Encoding.UTF8.GetString(client.UploadData(inputEndpoint, Encoding.UTF8.GetBytes(invalid)));
+                Check(response == "Syntax Error!", "malformed point command is rejected synchronously: " + invalid);
+            }
+        }
+        Input("!MouseMove:0,0");
+        PointInput("Down", 7, bounds, 20, 20);
+        TouchingState(1, initial, "Down outside polygon preserves transform");
+        PointInput("Update", 7, bounds, 50, 40);
+        var moved = new double[] { initial[0] + 30, initial[1] + 20, initial[2], initial[3] };
+        TouchingState(1, moved, "one contact translates");
+        PointInput("Down", 8, bounds, 150, 40);
+        TouchingState(2, moved, "second contact rebases without jumping");
+        PointInput("Update", 8, bounds, 250, 40);
+        var scaled = new double[] { 150 + 2 * (moved[0] - 100), 40 + 2 * (moved[1] - 40), 2 * moved[2], 2 * moved[3] };
+        TouchingState(2, scaled, "two contact scaling and translation");
+        PointInput("Update", 8, bounds, 50, 240);
+        var rotated = new double[] { 50 - 2 * (moved[1] - 40), 140 + 2 * (moved[0] - 100), -2 * moved[3], 2 * moved[2] };
+        TouchingState(2, rotated, "two contact rotation");
+        PointInput("Down", 9, bounds, 300, 150);
+        PointInput("Update", 7, bounds, -30, -30);
+        TouchingState(3, rotated, "three contacts freeze while moving outside raw bounds");
+        var markers = TouchingData();
+        Check(markers[6] == -30 && markers[7] == -30, "marker follows captured contact outside raw bounds");
+        PointInput("Up", 9, bounds, 300, 150);
+        TouchingState(2, rotated, "three to two rebases");
+        PointInput("Up", 7, bounds, -30, -30);
+        TouchingState(1, rotated, "original contact can lift without ending sequence");
+        PointInput("Update", 8, bounds, 60, 255);
+        var final = new double[] { rotated[0] + 10, rotated[1] + 15, rotated[2], rotated[3] };
+        TouchingState(1, final, "remaining contact translates from new baseline");
+        PointInput("Up", 8, bounds, 60, 255);
+        TouchingState(0, final, "successful End clears markers");
+
+        PointInput("Down", 42, bounds, 20, 20);
+        PointInput("Down", 43, bounds, 20, 20);
+        TouchingState(2, final, "coincident contacts preserve transform");
+        PointInput("Update", 43, bounds, 40, 20);
+        TouchingState(2, final, "first separated sample establishes baseline");
+        PointInput("Up", 42, bounds, 20, 20);
+        PointInput("Down", 42, bounds, 80, 20);
+        TouchingState(2, final, "reused source token does not jump");
+        markers = TouchingData();
+        Check(markers[5] == 1 && markers[8] == 2, "public point indices retain the hole and never reuse a slot");
+        Input("!PointCancel:42,CaptureLost");
+        TouchingState(0, final, "canceled End clears showcase markers");
+        PointInput("Down", 44, bounds, 100, 20);
+        PointInput("Update", 43, bounds, 200, 20);
+        Input("!PointCancel:42,CaptureLost");
+        TouchingState(0, final, "canceled sequence drains without redispatch or requery");
+        PointInput("Up", 43, bounds, 200, 20);
+        PointInput("Up", 44, bounds, 100, 20);
+        PointInput("Down", 45, bounds, 20, 20);
+        TouchingState(1, final, "fresh sequence accepts after drain");
+        Check(TouchingData()[5] == 0, "fresh sequence starts at public index zero");
+        PointInput("Enter", 45, bounds, 20, 20);
+        PointInput("Leave", 45, bounds, -20, -20);
+        PointInput("Up", 45, bounds, -20, -20);
+        var boundary = new double[] { final[0] - 40, final[1] - 40, final[2], final[3] };
+        TouchingState(0, boundary, "boundary callbacks preserve the captured route");
+        Input("!LeftDown:" + ((int)bounds.Left + 20) + "," + ((int)bounds.Top + 20));
+        Input("!MouseMove:" + ((int)bounds.Left + 80) + "," + ((int)bounds.Top + 80));
+        Input("!LeftUp:" + ((int)bounds.Left + 80) + "," + ((int)bounds.Top + 80));
+        TouchingState(0, boundary, "ordinary mouse dragging does not manipulate the polygon");
+
+        Test("Touching / rejected sequence falls back only for the original first contact");
+        var clockTab = RenderedCaptionBounds("Raw Clock");
+        var touchingTab = RenderedCaptionBounds("Touching");
+        int clockX = (int)(clockTab.Width / 2), clockY = (int)(clockTab.Height / 2);
+        int touchingX = (int)(touchingTab.Width / 2), touchingY = (int)(touchingTab.Height / 2);
+        PointInput("Down", 70, clockTab, clockX, clockY);
+        PointInput("Down", 71, touchingTab, touchingX, touchingY);
+        PointInput("Up", 70, clockTab, clockX, clockY);
+        RawClockSnapshot();
+        PointInput("Down", 72, touchingTab, touchingX, touchingY);
+        PointInput("Up", 71, touchingTab, touchingX, touchingY);
+        PointInput("Up", 72, touchingTab, touchingX, touchingY);
+        Check(RawClockSnapshot() != null, "later contacts never replace the original fallback contact");
+        PointInput("Down", 73, touchingTab, touchingX, touchingY);
+        PointInput("Up", 73, touchingTab, touchingX, touchingY);
+        TouchingState(0, boundary, "next rejected sequence can click normally without a stuck mouse button");
+        PointInput("Down", 74, bounds, 20, 20);
+        TouchingState(1, boundary, "accepted input resumes after rejected sequences");
+        PointInput("Up", 74, bounds, 20, 20);
+        TouchingState(0, boundary, "final accepted sequence completes");
+    }
+    static void Touching(bool runAutomation)
+    {
+        if (runAutomation) TouchingAutomation();
+        Test("Touching / UIA tab name, selection, visible bounds and resize");
+        var page = Page(Page(root, "Misc"), "Touching");
+        Check(page.Current.Name == "Touching" && page.Current.ControlType == ControlType.TabItem, "Touching tab role and name");
+        Check(Pattern<SelectionItemPattern>(page, SelectionItemPattern.Pattern).Current.IsSelected, "Touching selected through UIA");
+        Check(page.Current.BoundingRectangle.Width > 0 && page.Current.BoundingRectangle.Height > 0, "Touching tab has visible UIA bounds");
+        var label = Named(page, "One finger: move. Two fingers: move, rotate and zoom. More: pause.", ControlType.Text);
+        Check(label.Current.BoundingRectangle.Width > 0 && label.Current.BoundingRectangle.Height > 0, "Touching instructions have visible UIA bounds");
+        var bounds = SnapshotBounds(TouchingSnapshot());
+        var original = root.Current.BoundingRectangle;
+        var transform = Pattern<TransformPattern>(root, TransformPattern.Pattern);
+        transform.Resize(original.Width + 100, original.Height + 80);
+        Wait(() => SnapshotBounds(TouchingSnapshot()).Width > bounds.Width, "Touching follows resized bounds");
+        transform.Resize(original.Width, original.Height);
+        var state = TouchingData();
+        Page(Page(root, "Misc"), "Raw Clock");
+        Page(Page(root, "Misc"), "Touching");
+        TouchingState(0, state, "switching tabs retains rectangle transform");
     }
     static void Calendars()
     {
@@ -2264,6 +2436,7 @@ public static class GacUIShowcaseTests
         Wait(() => { EnumWindows((h,p) => { uint id; GetWindowThreadProcessId(h,out id); var text=new StringBuilder(256); GetClassName(h,text,256); if (id==processId && text.ToString()=="VczhWindow" && IsWindowVisible(h)) hwnd=h; return true; },IntPtr.Zero); return hwnd!=IntPtr.Zero; }, "owned HWND");
         inputEndpoint = "http://localhost:" + port + "/Automation/" + application + "/IO";
         if (scenario == "RawClock") RawClockAutomation();
+        if (scenario == "Touching") TouchingAutomation();
         Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
         ownedProcess = processId; isHosted = hosted;
         isWorkflowBinary = application == "GacUI_Host";
@@ -2281,7 +2454,7 @@ public static class GacUIShowcaseTests
         }
         // Isolate idle timing from UIA event-cache work that can block behind the busy UI thread.
         if (scenario == "Review2") BusyIdleContract();
-        if (scenario != "RawClock")
+        if (scenario != "RawClock" && scenario != "Touching")
         {
             Automation.AddStructureChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref structureEvents));
             Automation.AddAutomationPropertyChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref propertyEvents), AutomationElement.NameProperty, SelectionItemPattern.IsSelectedProperty, TogglePattern.ToggleStateProperty);
@@ -2300,6 +2473,7 @@ public static class GacUIShowcaseTests
             if (scenario == "All" || scenario == "Refresh") RefreshLists();
             if (scenario == "All" || scenario == "Calendar") Calendars();
             if (scenario == "All" || scenario == "RawClock") RawClock(scenario == "All");
+            if (scenario == "All" || scenario == "Touching") Touching(scenario == "All");
             if (scenario == "All" || scenario == "Layout" || scenario == "Responsive") ResponsiveLayout();
             if (scenario == "ResponsiveWindow") { ResponsiveRegressions(); ResponsiveLayout(false); }
             if (scenario == "ResponsivePalette") ResponsivePalette();

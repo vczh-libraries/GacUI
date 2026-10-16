@@ -54,6 +54,16 @@ namespace vl
 			bool								capslockToggled = false;
 		};
 
+		/// <summary>Window-owned injected point fallback. Keep beside the window's NativePointInputState, not on the automation service.</summary>
+		struct IoPointCommandState
+		{
+			IoCommandState						mouse;
+			Nullable<vuint64_t>					fallbackToken;
+		};
+
+		/// <summary>Release an injected fallback mouse stream when either the platform or automation cancels its point sequence.</summary>
+		extern void CancelIOPointFallback(IoPointCommandState& state, collections::List<INativeWindowListener*>& listeners);
+
 		/*
 		* Predefined Commands:
 		* --------------------------------------------------------------------------------
@@ -73,6 +83,15 @@ namespace vl
 		*   DbClick means Down/Up/Down/DbClick/Up
 		* !MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?(,win|command|super)?
 		*   WindowMouseInfo_::wheel = ticks * 120 * direction (1 or -1)
+		* !Point(Down|Update|Up|Enter|Leave):CONTACT,X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?
+		*   CONTACT is a nonnegative adapter token, not a public point ID. Reuse only after Up.
+		*   Coordinates are logical client coordinates. Sequences/IDs and acceptance are generated internally.
+		* !PointCancel:CONTACT,(Unknown|PlatformCanceled|CaptureLost|WindowDestroyed)
+		*   Cancel the complete sequence and retire CONTACT. Remaining contacts drain until Up/cancellation.
+		*   Repeated cancellation cleanup of retired contacts is ignored. Invalid Down/Update/Up transitions fail fast.
+		* Point input needs the owning window's pointState and pointCommandState; other adapters return Unsupported.
+		* Rejected injected input sends only the original first contact's left-mouse stream; no secondary promotion.
+		* Cancellation releases a pending fallback mouse button outside the client area without clicking a control.
 		* 
 		* --------------------------------------------------------------------------------
 		* 
@@ -95,7 +114,9 @@ namespace vl
 													INativeController* nativeController,
 													INativeWindow* nativeWindow,
 													collections::List<INativeWindowListener*>& listeners,
-													WString command
+													WString command,
+													NativePointInputState* pointState = nullptr,
+													IoPointCommandState* pointCommandState = nullptr
 													);
 
 		class AutomationServiceBase : public Object, public INativeAutomationService

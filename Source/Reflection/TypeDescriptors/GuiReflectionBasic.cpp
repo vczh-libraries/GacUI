@@ -201,6 +201,47 @@ Type Declaration
 				ENUM_CLASS_ITEM(Mouse5)
 			END_ENUM_ITEM(NativeMouseButton)
 
+			BEGIN_ENUM_ITEM(PointSequenceEndReason)
+				ENUM_CLASS_ITEM(Succeeded)
+				ENUM_CLASS_ITEM(Canceled_Unknown)
+				ENUM_CLASS_ITEM(Canceled_PlatformCanceled)
+				ENUM_CLASS_ITEM(Canceled_CaptureLost)
+				ENUM_CLASS_ITEM(Canceled_WindowDestroyed)
+			END_ENUM_ITEM(PointSequenceEndReason)
+
+#define POINT_INFO_MEMBERS\
+	STRUCT_MEMBER(sequenceId)\
+	STRUCT_MEMBER(pointId)\
+	STRUCT_MEMBER(timestamp)\
+	STRUCT_MEMBER(activePointCount)\
+	STRUCT_MEMBER(position)\
+	STRUCT_MEMBER(primary)\
+	STRUCT_MEMBER(ctrl)\
+	STRUCT_MEMBER(shift)\
+	STRUCT_MEMBER(alt)\
+	STRUCT_MEMBER(osSuper)\
+	STRUCT_MEMBER(contactBounds)\
+	STRUCT_MEMBER(pressure)\
+	STRUCT_MEMBER(orientation)\
+	STRUCT_MEMBER(platformFrameId)
+
+			BEGIN_STRUCT_MEMBER(NativeWindowPointInfo)
+				POINT_INFO_MEMBERS
+			END_STRUCT_MEMBER(NativeWindowPointInfo)
+
+			BEGIN_STRUCT_MEMBER(WindowPointInfo)
+				POINT_INFO_MEMBERS
+			END_STRUCT_MEMBER(WindowPointInfo)
+
+#undef POINT_INFO_MEMBERS
+
+			BEGIN_STRUCT_MEMBER(PointSequenceEndInfo)
+				STRUCT_MEMBER(sequenceId)
+				STRUCT_MEMBER(timestamp)
+				STRUCT_MEMBER(accepted)
+				STRUCT_MEMBER(reason)
+			END_STRUCT_MEMBER(PointSequenceEndInfo)
+
 			BEGIN_ENUM_ITEM(BoolOption)
 				ENUM_CLASS_ITEM(AlwaysTrue)
 				ENUM_CLASS_ITEM(AlwaysFalse)

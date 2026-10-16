@@ -8,6 +8,52 @@ namespace vl
 		{
 
 /***********************************************************************
+Point Event Arguments
+***********************************************************************/
+
+			GuiPointEventArgs::GuiPointEventArgs(const collections::List<Nullable<Point>>& _points)
+				:points(_points)
+			{
+			}
+
+			GuiPointEventArgs::GuiPointEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& _points)
+				:GuiEventArgs(composition)
+				,points(_points)
+			{
+			}
+
+			const collections::List<Nullable<Point>>& GuiPointEventArgs::GetPoints() const
+			{
+				return points;
+			}
+
+			GuiPointSequenceStartedEventArgs::GuiPointSequenceStartedEventArgs(const collections::List<Nullable<Point>>& _points)
+				:GuiPointEventArgs(_points)
+			{
+			}
+
+			GuiPointSequenceStartedEventArgs::GuiPointSequenceStartedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& _points)
+				:GuiPointEventArgs(composition, _points)
+			{
+			}
+
+			GuiPointSequenceEndedEventArgs::GuiPointSequenceEndedEventArgs(const collections::List<Nullable<Point>>& _points)
+				:points(_points)
+			{
+			}
+
+			GuiPointSequenceEndedEventArgs::GuiPointSequenceEndedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& _points)
+				:GuiEventArgs(composition)
+				,points(_points)
+			{
+			}
+
+			const collections::List<Nullable<Point>>& GuiPointSequenceEndedEventArgs::GetPoints() const
+			{
+				return points;
+			}
+
+/***********************************************************************
 Event Receiver
 ***********************************************************************/
 
@@ -21,6 +67,13 @@ Event Receiver
 				,mouseMove(_sender)
 				,mouseEnter(_sender)
 				,mouseLeave(_sender)
+				,pointSequenceStarted(_sender)
+				,pointDown(_sender)
+				,pointUpdate(_sender)
+				,pointUp(_sender)
+				,pointEnter(_sender)
+				,pointLeave(_sender)
+				,pointSequenceEnded(_sender)
 				,previewKey(_sender)
 				,keyDown(_sender)
 				,keyUp(_sender)

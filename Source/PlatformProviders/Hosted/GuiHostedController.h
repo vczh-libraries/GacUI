@@ -60,6 +60,13 @@ GuiHostedController
 			NativePoint													hoveringLocation{ -1,-1 };
 			GuiHostedWindow*											hoveringWindow = nullptr;
 			GuiHostedWindow*											lastFocusedWindow = nullptr;
+			vuint64_t													pointSequenceId = 0;
+			bool														pointSequenceAccepted = false;
+			GuiHostedWindow*											pointSequenceWindow = nullptr;
+
+			NativeWindowPointInfo			ConvertPointToHostedWindow(const NativeWindowPointInfo& info);
+			void							ForwardPointInput(const NativeWindowPointInfo& info, void (INativeWindowListener::* callback)(const NativeWindowPointInfo&));
+			void							ResetPointSequence();
 
 			enum class WindowManagerOperation
 			{
@@ -153,6 +160,14 @@ GuiHostedController
 			void							MouseMoving(const NativeWindowMouseInfo& info) override;
 			void							MouseEntered() override;
 			void							MouseLeaved() override;
+
+			void							PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept) override;
+			void							PointDown(const NativeWindowPointInfo& info) override;
+			void							PointUpdate(const NativeWindowPointInfo& info) override;
+			void							PointUp(const NativeWindowPointInfo& info) override;
+			void							PointEntered(const NativeWindowPointInfo& info) override;
+			void							PointLeaved(const NativeWindowPointInfo& info) override;
+			void							PointSequenceEnded(const PointSequenceEndInfo& info) override;
 
 			void							KeyDown(const NativeWindowKeyInfo& info) override;
 			void							KeyUp(const NativeWindowKeyInfo& info) override;

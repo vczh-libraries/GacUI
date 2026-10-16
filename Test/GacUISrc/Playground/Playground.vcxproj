@@ -191,6 +191,7 @@
     <Xml Include="Resources\ResourceDocument.xml" />
     <Xml Include="Resources\ResourceRawElement.xml" />
     <Xml Include="Resources\ResourceUiaReview.xml" />
+    <Xml Include="Resources\ResourcePointInput.xml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png" />

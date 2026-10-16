@@ -49,6 +49,9 @@
     <Xml Include="Resources\ResourceUiaReview.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+    <Xml Include="Resources\ResourcePointInput.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png">

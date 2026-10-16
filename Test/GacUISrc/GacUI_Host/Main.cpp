@@ -59,6 +59,7 @@ void GuiMain()
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 		BoxValue(window).AttachEvent(L"PaletteSelected", BoxParameter(Func<void(vint)>(&demo::OnPaletteSelected)));
 		auto rawClockAttachment = demo::AttachFullControlTestRawElement(UnboxValue<Ptr<GuiRawElementBase>>(BoxValue(window).GetProperty(L"ClockElement")));
+		auto touchingAttachment = demo::AttachFullControlTestTouchingElement(UnboxValue<Ptr<GuiRawElementBase>>(BoxValue(window).GetProperty(L"TouchingElement")));
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
 
@@ -70,6 +71,7 @@ void GuiMain()
 		automationService.Stop();
 		GetNativeServiceSubstitution()->Unsubstitute(&automationService);
 		rawClockAttachment = nullptr;
+		touchingAttachment = nullptr;
 		delete window;
 	}
 }

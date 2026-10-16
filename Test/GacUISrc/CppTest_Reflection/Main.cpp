@@ -27,6 +27,7 @@ void GuiMain()
 		demo::MainWindow window;
 		window.PaletteSelected.Add(&demo::OnPaletteSelected);
 		auto rawClockAttachment = demo::AttachFullControlTestRawElement(window.GetClockElement());
+		auto touchingAttachment = demo::AttachFullControlTestTouchingElement(window.GetTouchingElement());
 		window.ForceCalculateSizeImmediately();
 		window.MoveToScreenCenter();
 

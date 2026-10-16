@@ -102,6 +102,11 @@ Host
 				GuiGraphicsComposition*					mouseCaptureComposition = nullptr;
 				bool									mouseButtonStates[5] = {};
 				CompositionList							mouseEnterCompositions;
+				vuint64_t								pointSequenceId = 0;
+				bool									pointSequenceAccepted = false;
+				GuiGraphicsComposition*					pointCaptureComposition = nullptr;
+				collections::Dictionary<vint, NativeWindowPointInfo> activePoints;
+				collections::List<Nullable<Point>>		points;
 				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
 
 				void									SetFocusInternal(GuiGraphicsComposition* composition);
@@ -110,6 +115,15 @@ Host
 				void									ResetMouseCapture();
 				void									MouseCapture(const NativeWindowMouseInfo& info);
 				void									MouseUncapture();
+				GuiGraphicsComposition*					FindInputComposition(NativePoint location);
+				void									PointCapture(const NativeWindowPointInfo& firstPoint);
+				void									PointUncapture();
+				void									ResetPointCapture();
+				void									RebasePoints(GuiGraphicsComposition* composition);
+				void									RaisePointEvent(GuiPointEventArgs& arguments, GuiPointEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
+				void									RaisePointSequenceStartedEvent(GuiPointSequenceStartedEventArgs& arguments);
+				void									RaisePointSequenceEndedEvent(GuiPointSequenceEndedEventArgs& arguments);
+				void									OnPointInput(const NativeWindowPointInfo& info, GuiPointEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									OnCharInput(const NativeWindowCharInfo& info, GuiGraphicsComposition* composition, GuiCharEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									RaiseMouseEvent(GuiMouseEventArgs& arguments, GuiGraphicsComposition* composition, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
@@ -133,6 +147,14 @@ Host
 				void									MouseMoving(const NativeWindowMouseInfo& info)override;
 				void									MouseEntered()override;
 				void									MouseLeaved()override;
+
+				void									PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept) override;
+				void									PointDown(const NativeWindowPointInfo& info) override;
+				void									PointUpdate(const NativeWindowPointInfo& info) override;
+				void									PointUp(const NativeWindowPointInfo& info) override;
+				void									PointEntered(const NativeWindowPointInfo& info) override;
+				void									PointLeaved(const NativeWindowPointInfo& info) override;
+				void									PointSequenceEnded(const PointSequenceEndInfo& info) override;
 
 				void									KeyDown(const NativeWindowKeyInfo& info)override;
 				void									KeyUp(const NativeWindowKeyInfo& info)override;

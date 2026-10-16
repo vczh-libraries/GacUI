@@ -119,7 +119,9 @@ RunIOCommandOnNativeWindow
 				L"!KeyPress:Key1+Key2+...+KeyN\r\n"
 				L"!MouseMove:X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?\r\n"
 				L"!(Left|Middle|Right|Mouse4|Mouse5)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?\r\n"
-				L"!MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?(,win|command|super)?";
+				L"!MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?(,win|command|super)?\r\n"
+				L"!Point(Down|Update|Up|Enter|Leave):CONTACT,X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?\r\n"
+				L"!PointCancel:CONTACT,(Unknown|PlatformCanceled|CaptureLost|WindowDestroyed)";
 
 			struct IOCommandModifiers
 			{
@@ -194,6 +196,19 @@ RunIOCommandOnNativeWindow
 				WheelCommandArguments arguments;
 			};
 
+			struct PointCommand
+			{
+				NativePointEvent event = NativePointEvent::Down;
+				vuint64_t sourceToken = 0;
+				MouseCommandArguments arguments;
+			};
+
+			struct PointCancelCommand
+			{
+				vuint64_t sourceToken = 0;
+				PointSequenceEndReason reason = PointSequenceEndReason::Canceled_Unknown;
+			};
+
 			using IOCommand = Variant<
 				SyntaxErrorCommand,
 				ExitCommand,
@@ -201,7 +216,9 @@ RunIOCommandOnNativeWindow
 				KeyCommand,
 				MouseMoveCommand,
 				MouseButtonCommand,
-				WheelCommand
+				WheelCommand,
+				PointCommand,
+				PointCancelCommand
 				>;
 
 			struct IOCommandHolder : Object
@@ -697,6 +714,40 @@ RunIOCommandOnNativeWindow
 
 			IOCommand ParseIOCommand(INativeController* nativeController, const WString& command)
 			{
+				if (StartsWith(command, L"!Point"))
+				{
+					auto colon = command.IndexOf(L':');
+					if (colon == -1) return SyntaxErrorCommand{};
+					auto operation = command.Sub(6, colon - 6);
+					auto arguments = command.Right(command.Length() - colon - 1);
+					auto comma = arguments.IndexOf(L',');
+					if (comma == -1) return SyntaxErrorCommand{};
+					vint token = 0;
+					if (!TryParseInteger(arguments.Left(comma), token) || token < 0) return SyntaxErrorCommand{};
+					auto tail = arguments.Right(arguments.Length() - comma - 1);
+					if (operation == L"Cancel")
+					{
+						PointCancelCommand parsed;
+						parsed.sourceToken = (vuint64_t)token;
+						if (tail == L"Unknown") parsed.reason = PointSequenceEndReason::Canceled_Unknown;
+						else if (tail == L"PlatformCanceled") parsed.reason = PointSequenceEndReason::Canceled_PlatformCanceled;
+						else if (tail == L"CaptureLost") parsed.reason = PointSequenceEndReason::Canceled_CaptureLost;
+						else if (tail == L"WindowDestroyed") parsed.reason = PointSequenceEndReason::Canceled_WindowDestroyed;
+						else return SyntaxErrorCommand{};
+						return parsed;
+					}
+					PointCommand parsed;
+					parsed.sourceToken = (vuint64_t)token;
+					if (operation == L"Down") parsed.event = NativePointEvent::Down;
+					else if (operation == L"Update") parsed.event = NativePointEvent::Update;
+					else if (operation == L"Up") parsed.event = NativePointEvent::Up;
+					else if (operation == L"Enter") parsed.event = NativePointEvent::Entered;
+					else if (operation == L"Leave") parsed.event = NativePointEvent::Leaved;
+					else return SyntaxErrorCommand{};
+					if (!TryParseMouseArguments(tail, parsed.arguments)) return SyntaxErrorCommand{};
+					return parsed;
+				}
+
 				if (command == L"!Exit")
 				{
 					return ExitCommand{};
@@ -794,7 +845,52 @@ RunIOCommandOnNativeWindow
 				return SyntaxErrorCommand{};
 			}
 
-			void ExecuteIOCommand(IoCommandState* state, INativeController* nativeController, INativeWindow* targetWindow, collections::List<INativeWindowListener*>& listeners, IOCommand&& ioCommand)
+			void ExecutePointCommand(IoCommandState* state, NativePointInputState& pointState, IoPointCommandState& pointCommandState, INativeWindow* targetWindow, collections::List<INativeWindowListener*>& listeners, const PointCommand& command)
+			{
+				NativeWindowPointInfo info;
+				info.position = ConvertGuiPointToNativePoint(targetWindow, command.arguments.position);
+				info.timestamp = GetNativePointTimestamp();
+				info.ctrl = IsCtrlPressing(state) || command.arguments.modifiers.ctrl;
+				info.shift = IsShiftPressing(state) || command.arguments.modifiers.shift;
+				info.alt = IsAltPressing(state) || command.arguments.modifiers.alt;
+				info.osSuper = IsOSSuperPressing(state) || command.arguments.modifiers.osSuper;
+				bool starting = pointState.sequenceId == 0 && command.event == NativePointEvent::Down;
+				info.primary = starting || (pointState.contacts.Keys().Contains(command.sourceToken) && pointState.contacts[command.sourceToken].pointId == 0);
+				bool draining = pointState.ended;
+				bool accepted = ProcessNativePointInput(pointState, listeners, command.event, command.sourceToken, info);
+				if (starting && !accepted) pointCommandState.fallbackToken = command.sourceToken;
+				if (!accepted && !draining && pointCommandState.fallbackToken && pointCommandState.fallbackToken.Value() == command.sourceToken)
+				{
+					auto mouse = &pointCommandState.mouse;
+					CopyFrom(mouse->pressingKeys, state->pressingKeys);
+					TemporaryModifiers temporary;
+					PressTemporaryModifiers(mouse, listeners, command.arguments.modifiers, temporary);
+					switch (command.event)
+					{
+					case NativePointEvent::Down:
+						ButtonDown(mouse, listeners, NativeMouseButton::Left, info.position);
+						break;
+					case NativePointEvent::Up:
+						ButtonUp(mouse, listeners, NativeMouseButton::Left, info.position);
+						pointCommandState.fallbackToken.Reset();
+						break;
+					default:
+						MouseMove(mouse, listeners, info.position);
+						break;
+					}
+					ReleaseTemporaryModifiers(mouse, listeners, temporary);
+				}
+			}
+
+			void ExecutePointCancelCommand(NativePointInputState& pointState, IoPointCommandState& pointCommandState, collections::List<INativeWindowListener*>& listeners, const PointCancelCommand& command)
+			{
+				if (!pointState.contacts.Keys().Contains(command.sourceToken)) return;
+				CancelNativePointSequence(pointState, listeners, command.reason, GetNativePointTimestamp());
+				CancelIOPointFallback(pointCommandState, listeners);
+				RetireNativePoint(pointState, command.sourceToken);
+			}
+
+			void ExecuteIOCommand(IoCommandState* state, INativeController* nativeController, INativeWindow* targetWindow, collections::List<INativeWindowListener*>& listeners, IOCommand&& ioCommand, NativePointInputState* pointState, IoPointCommandState* pointCommandState)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
 				CHECK_ERROR(nativeController, ERROR_MESSAGE_PREFIX L"Native controller is missing.");
@@ -890,10 +986,28 @@ RunIOCommandOnNativeWindow
 							PressTemporaryModifiers(state, *listenerList, wheelCommand.arguments.modifiers, temporary);
 							Wheel(state, *listenerList, wheelCommand.arguments.ticks * 120 * wheelCommand.direction, wheelCommand.horizontal);
 							ReleaseTemporaryModifiers(state, *listenerList, temporary);
+						},
+						[=](const PointCommand& pointCommand)
+						{
+							activateTargetWindow();
+							ExecutePointCommand(state, *pointState, *pointCommandState, targetWindow, *listenerList, pointCommand);
+						},
+						[=](const PointCancelCommand& pointCommand)
+						{
+							ExecutePointCancelCommand(*pointState, *pointCommandState, *listenerList, pointCommand);
 						}
 						));
 				});
 #undef ERROR_MESSAGE_PREFIX
+			}
+		}
+
+		void CancelIOPointFallback(IoPointCommandState& state, collections::List<INativeWindowListener*>& listeners)
+		{
+			if (state.fallbackToken)
+			{
+				state.fallbackToken.Reset();
+				iocommands::ButtonUp(&state.mouse, listeners, NativeMouseButton::Left, NativePoint(-1, -1));
 			}
 		}
 
@@ -902,7 +1016,9 @@ RunIOCommandOnNativeWindow
 			INativeController* nativeController,
 			INativeWindow* nativeWindow,
 			collections::List<INativeWindowListener*>& listeners,
-			WString command
+			WString command,
+			NativePointInputState* pointState,
+			IoPointCommandState* pointCommandState
 		)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
@@ -925,7 +1041,11 @@ RunIOCommandOnNativeWindow
 				return WString::Unmanaged(iocommands::IO_COMMAND_SYNTAX);
 			}
 
-			iocommands::ExecuteIOCommand(state, nativeController, targetWindow, listeners, std::move(ioCommand));
+			if ((ioCommand.TryGet<iocommands::PointCommand>() || ioCommand.TryGet<iocommands::PointCancelCommand>()) && (!pointState || !pointCommandState))
+			{
+				return WString::Unmanaged(L"Unsupported: point input is unavailable on this native window adapter.");
+			}
+			iocommands::ExecuteIOCommand(state, nativeController, targetWindow, listeners, std::move(ioCommand), pointState, pointCommandState);
 			return WString::Unmanaged(L"Queued");
 #undef ERROR_MESSAGE_PREFIX
 		}

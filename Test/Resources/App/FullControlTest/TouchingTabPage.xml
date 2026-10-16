@@ -1,0 +1,121 @@
+<Instance ref.CodeBehind="false" ref.Class="demo::TouchingTabPage">
+  <ref.Members><![CDATA[
+    func GetTouchingElement(): GuiRawElementBase^ { return touching; }
+    prop TouchingElement: GuiRawElementBase^ {GetTouchingElement}
+
+    var centerX: double = 180.0;
+    var centerY: double = 140.0;
+    var axisX: double = 1.0;
+    var axisY: double = 0.0;
+    var baselineCenterX: double = 0.0;
+    var baselineCenterY: double = 0.0;
+    var baselineAxisX: double = 1.0;
+    var baselineAxisY: double = 0.0;
+    var baselineX: double = 0.0;
+    var baselineY: double = 0.0;
+    var baselineDX: double = 0.0;
+    var baselineDY: double = 0.0;
+    var baselineValid: bool = false;
+    var membership: string = "";
+
+    func Publish(markers: string, count: int): void
+    {
+      touching.Data = (cast string centerX) & "," & (cast string centerY)
+        & "," & (cast string axisX) & "," & (cast string axisY)
+        & "," & (cast string count) & markers;
+    }
+
+    func UpdatePoints(arguments: GuiPointEventArgs*): void
+    {
+      var members = "";
+      var markers = "";
+      var count = 0;
+      var first: Point = {};
+      var second: Point = {};
+      for (i in range[0, arguments.Points.Count))
+      {
+        if (var point: Point? = arguments.Points[i])
+        {
+          members = members & "," & (cast string i);
+          markers = markers & "," & (cast string i) & "," & (cast string point.x) & "," & (cast string point.y);
+          if (count == 0) { first = cast Point point; }
+          if (count == 1) { second = cast Point point; }
+          count = count + 1;
+        }
+      }
+
+      var x = cast double first.x;
+      var y = cast double first.y;
+      var dx = cast double (second.x - first.x);
+      var dy = cast double (second.y - first.y);
+      if (count == 2)
+      {
+        x = x + dx / 2.0;
+        y = y + dy / 2.0;
+      }
+      var separated = count != 2 or dx * dx + dy * dy > 0.000001;
+      if (members != membership or not baselineValid)
+      {
+        baselineCenterX = centerX;
+        baselineCenterY = centerY;
+        baselineAxisX = axisX;
+        baselineAxisY = axisY;
+        baselineX = x;
+        baselineY = y;
+        baselineDX = dx;
+        baselineDY = dy;
+        baselineValid = count > 0 and count <= 2 and separated;
+      }
+      else if (count == 1)
+      {
+        centerX = baselineCenterX + x - baselineX;
+        centerY = baselineCenterY + y - baselineY;
+      }
+      else if (count == 2 and separated)
+      {
+        var lengthSquared = baselineDX * baselineDX + baselineDY * baselineDY;
+        var real = (dx * baselineDX + dy * baselineDY) / lengthSquared;
+        var imaginary = (dy * baselineDX - dx * baselineDY) / lengthSquared;
+        centerX = x + real * (baselineCenterX - baselineX) - imaginary * (baselineCenterY - baselineY);
+        centerY = y + imaginary * (baselineCenterX - baselineX) + real * (baselineCenterY - baselineY);
+        axisX = real * baselineAxisX - imaginary * baselineAxisY;
+        axisY = imaginary * baselineAxisX + real * baselineAxisY;
+      }
+      else
+      {
+        baselineValid = false;
+      }
+      membership = members;
+      Publish(markers, count);
+    }
+  ]]></ref.Members>
+  <ref.Ctor><![CDATA[
+    { self.Publish("", 0); }
+  ]]></ref.Ctor>
+  <TabPage ref.Name="self" Text="Touching">
+    <ez:Layout>
+      <ez:Top>
+        <Label Text="One finger: move. Two fingers: move, rotate and zoom. More: pause."/>
+      </ez:Top>
+      <ez:Fill>
+        <Bounds PreferredMinSize="x:320 y:240">
+          <SolidBackground Color="#202020"/>
+          <Bounds ref.Name="touchingBounds" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <Raw ref.Name="touching" Id="FullControlTest.Touching"/>
+            <ev.pointSequenceStarted-eval><![CDATA[{ arguments.accept = true; }]]></ev.pointSequenceStarted-eval>
+            <ev.pointDown-eval><![CDATA[{ self.UpdatePoints(arguments); }]]></ev.pointDown-eval>
+            <ev.pointUpdate-eval><![CDATA[{ self.UpdatePoints(arguments); }]]></ev.pointUpdate-eval>
+            <ev.pointUp-eval><![CDATA[{ self.UpdatePoints(arguments); }]]></ev.pointUp-eval>
+            <ev.pointEnter-eval><![CDATA[{ self.UpdatePoints(arguments); }]]></ev.pointEnter-eval>
+            <ev.pointLeave-eval><![CDATA[{ self.UpdatePoints(arguments); }]]></ev.pointLeave-eval>
+            <ev.pointSequenceEnded-eval><![CDATA[{
+              self.membership = "";
+              self.baselineValid = false;
+              self.Publish("", 0);
+            }]]></ev.pointSequenceEnded-eval>
+          </Bounds>
+        </Bounds>
+      </ez:Fill>
+    </ez:Layout>
+  </TabPage>
+</Instance>
