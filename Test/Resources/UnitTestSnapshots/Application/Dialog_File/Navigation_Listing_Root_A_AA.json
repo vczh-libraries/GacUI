@@ -267,7 +267,7 @@
       "root": null
     },
     {
-      "frameId": 17,
+      "frameId": 18,
       "frameName": "DbClick: A",
       "windowSize": {
         "bounds": {
@@ -294,7 +294,7 @@
       "root": null
     },
     {
-      "frameId": 21,
+      "frameId": 22,
       "frameName": "Choose Filter: Text Files",
       "windowSize": {
         "bounds": {
@@ -321,7 +321,7 @@
       "root": null
     },
     {
-      "frameId": 28,
+      "frameId": 29,
       "frameName": "DbClick: AA",
       "windowSize": {
         "bounds": {
@@ -348,7 +348,7 @@
       "root": null
     },
     {
-      "frameId": 33,
+      "frameId": 34,
       "frameName": "Choose Filter: All Files",
       "windowSize": {
         "bounds": {
@@ -375,7 +375,7 @@
       "root": null
     },
     {
-      "frameId": 35,
+      "frameId": 36,
       "frameName": "Cancel",
       "windowSize": {
         "bounds": {
