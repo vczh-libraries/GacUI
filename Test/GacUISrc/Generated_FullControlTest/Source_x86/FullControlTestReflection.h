@@ -172,6 +172,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::TextEditorConstructor)
 			DECL_TYPE_INFO(::demo::TextListTabPage)
 			DECL_TYPE_INFO(::demo::TextListTabPageConstructor)
+			DECL_TYPE_INFO(::demo::TouchingTabPage)
+			DECL_TYPE_INFO(::demo::TouchingTabPageConstructor)
 			DECL_TYPE_INFO(::demo::TreeViewTabPage)
 			DECL_TYPE_INFO(::demo::TreeViewTabPageConstructor)
 			DECL_TYPE_INFO(::demo::VerticalTabTemplate)

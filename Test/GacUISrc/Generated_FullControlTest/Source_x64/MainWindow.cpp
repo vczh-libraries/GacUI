@@ -40,6 +40,11 @@ namespace demo
 		return ::vl::__vwsn::This(this->rawClockPage)->GetClockElement();
 	}
 
+	::vl::Ptr<::vl::presentation::elements::GuiRawElementBase> MainWindow::GetTouchingElement()
+	{
+		return ::vl::__vwsn::This(this->touchingPage)->GetTouchingElement();
+	}
+
 	void MainWindow::ShowMouseModifiers(bool alt, bool osSuper)
 	{
 		auto altText = ::vl::WString::Unmanaged(L"0");
