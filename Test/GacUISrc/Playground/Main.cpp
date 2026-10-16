@@ -33,7 +33,36 @@ public:
 	}
 };
 
-// Native observation only; the point fixture's UI and routing handlers live in XML.
+// Substitution is installed once. Replace the concrete service only while HTTP requests are stopped.
+class PlaygroundAutomation : public Object, public INativeAutomationService
+{
+protected:
+	Ptr<INativeAutomationService> service;
+public:
+	void Reset()
+	{
+		if (wcsstr(GetCommandLineW(), L"/UiaHosted"))
+		{
+			service = Ptr(new windows::WindowsAutomationServiceHosted);
+		}
+		else
+		{
+			service = Ptr(new windows::WindowsAutomationService);
+		}
+	}
+	bool Available() override { return service->Available(); }
+	void Stop() override { service->Stop(); }
+	bool CanDumpControlTree() override { return service->CanDumpControlTree(); }
+	WString DumpControlTree() override { return service->DumpControlTree(); }
+	bool CanDumpDomTree() override { return service->CanDumpDomTree(); }
+	WString DumpDomTree() override { return service->DumpDomTree(); }
+	IOCommandAvailability CanRunIOCommands() override { return service->CanRunIOCommands(); }
+	WString RunIOCommand(Nullable<WString> windowId, const WString& command) override { return service->RunIOCommand(windowId, command); }
+};
+
+Func<void()> restartPlaygroundAutomation;
+
+// Native observation and service lifecycle only; the point fixture's UI and routing handlers live in XML.
 class PlaygroundPoints : public Object, public INativeWindowListener, public Description<PlaygroundPoints>
 {
 protected:
@@ -68,6 +97,14 @@ public:
 	~PlaygroundPoints()
 	{
 		if (window) window->UninstallListener(this);
+	}
+
+	void RestartAutomation()
+	{
+		GetCurrentController()->AsyncService()->InvokeInMainThread(window, []()
+		{
+			restartPlaygroundAutomation();
+		});
 	}
 
 	void PointSequenceStarted(const NativeWindowPointInfo& info, bool& result) override
@@ -170,6 +207,7 @@ namespace vl::reflection::description
 	BEGIN_CLASS_MEMBER(PlaygroundPoints)
 		CLASS_MEMBER_CONSTRUCTOR(Ptr<PlaygroundPoints>(GuiWindow*, Ptr<GuiRawElementBase>), { L"owner" _ L"output" })
 		CLASS_MEMBER_FIELD(accept)
+		CLASS_MEMBER_METHOD(RestartAutomation, NO_PARAMETER)
 	END_CLASS_MEMBER(PlaygroundPoints)
 
 	BEGIN_CLASS_MEMBER(PlaygroundUia)
@@ -240,20 +278,27 @@ void OpenMainWindow()
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
 
-		Ptr<INativeAutomationService> automationService;
-		if (wcsstr(GetCommandLineW(), L"/UiaHosted"))
-		{
-			automationService = Ptr(new windows::WindowsAutomationServiceHosted);
-		}
-		else
-		{
-			automationService = Ptr(new windows::WindowsAutomationService);
-		}
+		auto automationService = Ptr(new PlaygroundAutomation);
 		GetNativeServiceSubstitution()->Substitute(automationService.Obj(), false);
-		windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/Playground"), gacui_test::automationArguments.port);
+		auto startAutomation = [&]()
+		{
+			automationService->Reset();
+			windows::StartWindowsHttpAutomationService(WString::Unmanaged(L"Automation/Playground"), gacui_test::automationArguments.port);
+		};
+		auto stopAutomation = [&]()
+		{
+			windows::StopWindowsHttpAutomationService();
+			automationService->Stop();
+		};
+		restartPlaygroundAutomation = [&]()
+		{
+			stopAutomation();
+			startAutomation();
+		};
+		startAutomation();
 		GetApplication()->Run(window);
-		windows::StopWindowsHttpAutomationService();
-		automationService->Stop();
+		restartPlaygroundAutomation = {};
+		stopAutomation();
 		GetNativeServiceSubstitution()->Unsubstitute(automationService.Obj());
 		delete window;
 	}

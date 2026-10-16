@@ -45,7 +45,6 @@ WindowsGDIRenderTarget
 			{
 			protected:
 				INativeWindow*				window = nullptr;
-				WinDC*						dc = nullptr;
 				List<Rect>					clippers;
 				vint						clipperCoverWholeTargetCounter = 0;
 				bool						hostedRendering = false;
@@ -53,6 +52,7 @@ WindowsGDIRenderTarget
 
 				void ApplyClipper(Rect validArea, bool clipperExists)
 				{
+					auto dc = GetDC();
 					if (clipperExists)
 					{
 						dc->ClipRegion(Ptr(new WinRegion(validArea.Left(), validArea.Top(), validArea.Right(), validArea.Bottom(), true)));
@@ -65,12 +65,10 @@ WindowsGDIRenderTarget
 
 				void StartRenderingOnNativeWindow() override
 				{
-					dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
 				}
 
 				RenderTargetFailure StopRenderingOnNativeWindow() override
 				{
-					dc = nullptr;
 					return RenderTargetFailure::None;
 				}
 
@@ -105,7 +103,8 @@ WindowsGDIRenderTarget
 
 				WinDC* GetDC()override
 				{
-					return dc ? dc : GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
+					// Hosted layout can replace the native bitmap between logical windows in one frame.
+					return GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
 				}
 			};
 

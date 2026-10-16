@@ -52,6 +52,7 @@
       <ref.Dtor><![CDATA[{
         if (self.child is not null) { delete self.child; }
         if (self.touchingWindow is not null) { delete self.touchingWindow; }
+        if (inner.Parent is null) { delete inner; }
       }]]></ref.Dtor>
       <Window ref.Name="self" Text="Point Input Inspection" ClientSize="x:540 y:540">
         <CheckBox ref.Name="acceptChild" Text="Accept child" Selected="true">
@@ -149,6 +150,10 @@
             if (self.touchingWindow is null) { self.touchingWindow = new demo::TouchingInspection*(); }
             self.touchingWindow.ShowWithOwner(self);
           }]]></ev.Clicked-eval>
+        </Button>
+        <Button Text="Restart automation">
+          <att.BoundsComposition-set ExpectedBounds="x1:190 y1:470 x2:350 y2:500"/>
+          <ev.Clicked-eval><![CDATA[{ self.probe1.RestartAutomation(); }]]></ev.Clicked-eval>
         </Button>
       </Window>
     </Instance>

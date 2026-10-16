@@ -871,8 +871,8 @@ RunIOCommandOnNativeWindow
 						ButtonDown(mouse, listeners, NativeMouseButton::Left, info.position);
 						break;
 					case NativePointEvent::Up:
-						ButtonUp(mouse, listeners, NativeMouseButton::Left, info.position);
 						pointCommandState.fallbackToken.Reset();
+						ButtonUp(mouse, listeners, NativeMouseButton::Left, info.position);
 						break;
 					default:
 						MouseMove(mouse, listeners, info.position);

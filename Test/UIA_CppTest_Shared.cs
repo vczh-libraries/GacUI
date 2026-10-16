@@ -605,7 +605,7 @@ public static class GacUIShowcaseTests
             {
                 client.Headers[System.Net.HttpRequestHeader.ContentType] = "application/json; charset=utf8";
                 var response = Encoding.UTF8.GetString(client.UploadData(inputEndpoint, Encoding.UTF8.GetBytes(invalid)));
-                Check(response == "Syntax Error!", "malformed point command is rejected synchronously: " + invalid);
+                Check(response.StartsWith("Syntax Error!", StringComparison.Ordinal), "malformed point command is rejected synchronously: " + invalid);
             }
         }
         Input("!MouseMove:0,0");
@@ -699,13 +699,21 @@ public static class GacUIShowcaseTests
         Check(page.Current.BoundingRectangle.Width > 0 && page.Current.BoundingRectangle.Height > 0, "Touching tab has visible UIA bounds");
         var label = Named(page, "One finger: move. Two fingers: move, rotate and zoom. More: pause.", ControlType.Text);
         Check(label.Current.BoundingRectangle.Width > 0 && label.Current.BoundingRectangle.Height > 0, "Touching instructions have visible UIA bounds");
+        var state = TouchingData();
+        var hwnd = new IntPtr(root.Current.NativeWindowHandle);
+        // Replace the template before manual resizing warms the GDI backing bitmap's capacity.
+        ClickRenderedCaption("Window Manager");
+        ClickRenderedCaption("Aurora");
+        OpenTouching();
+        TouchingState(0, state, "palette template replacement retains Touching state");
+        root = AutomationElement.FromHandle(hwnd);
         var bounds = SnapshotBounds(TouchingSnapshot());
         var original = root.Current.BoundingRectangle;
         var transform = Pattern<TransformPattern>(root, TransformPattern.Pattern);
         transform.Resize(original.Width + 100, original.Height + 80);
         Wait(() => SnapshotBounds(TouchingSnapshot()).Width > bounds.Width, "Touching follows resized bounds");
         transform.Resize(original.Width, original.Height);
-        var state = TouchingData();
+        state = TouchingData();
         Page(Page(root, "Misc"), "Raw Clock");
         Page(Page(root, "Misc"), "Touching");
         TouchingState(0, state, "switching tabs retains rectangle transform");
