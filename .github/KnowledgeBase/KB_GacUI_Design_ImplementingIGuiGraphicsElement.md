@@ -2,6 +2,28 @@
 
 This document explains the end-to-end design and required implementation steps for adding a new graphics element to GacUI (a lightweight element similar to `GuiSolidLabelElement`, not a complex document-like element). It is organized around the involved interfaces, lifecycle, renderer abstraction, platform integration, and the event / rendering pipeline.
 
+## Ownerdraw with Raw
+
+For application-defined graphics, `<Raw/>` is the standard and recommended ownerdraw API across native, hosted and remote-protocol GUI applications. TUI does not support it. Implement a new element/renderer family only when the existing raw drawing and state contract cannot represent the required behavior.
+
+`GuiRawElementBase`, defined in `<GacUI repo>/Source/GraphicsElement/GuiGraphicsElement.h`, owns reflected string properties `Id` and `Data`. The XML virtual type `presentation::elements::GuiRawElement` uses `IGuiGraphicsResourceManager::CreateRawElement()` and returns the common base. The factory keeps backend selection out of XML and application state:
+
+- Windows Direct2D creates `GuiDirect2DElement`; its `Rendering` arguments contain `ID2D1RenderTarget* rt`, Direct2D/DirectWrite factories and `Rect bounds`. `BeforeRenderTargetChanged` fires when an old target exists, so release its target-bound resources there; `AfterRenderTargetChanged` fires when a new target exists, so recreate them there. Initial attachment raises only the after event, and detachment raises only the before event. Late subscribers must initialize against an already attached target as well. Its definition is in `<GacUI repo>/Source/PlatformProviders/Windows/Direct2D/Renderers/GuiGraphicsWindowsDirect2D.h`.
+- Windows GDI creates `GuiGDIElement`; its `Rendering` arguments supply `WinDC* dc` and `Rect bounds`. `dc->GetHandle()` exposes the HDC when needed. Restore drawing state and selected objects before returning. Its definition is in `<GacUI repo>/Source/PlatformProviders/Windows/GDI/Renderers/GuiGraphicsWindowsGDI.h`.
+- Wayland creates `GuiWaylandElement`, defined in `<wGac repo>/WGac/Renderers/GuiWaylandElement.h`. Its callback borrows the current `cairo_t* context` and logical bounds. The current clip, hosted offset and DPI transform already apply. Do not cache/destroy the context or surface, or retain a context across a paint or resize.
+- macOS creates `GuiCocoaElement`, defined in `<iGac repo>/Mac/GraphicsElement/CoreGraphics/GuiCocoaElement.h`. Its callback borrows `CGContextRef context` with logical bounds, clipping and backing scale already applied. Do not retain/release this context or apply backing scale again. Cocoa isolates graphics state, text matrix and current path around the callback.
+- Hosted mode delegates creation to its underlying graphics manager. The remote Core creates the portable `GuiRemoteRawElement` subclass and pairs it with `GuiRawElementRenderer`, defined in `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteGraphics_BasicElements.h/.cpp`; it carries common state without native drawing handles.
+
+Every concrete subclass supplies its own `GetElementType()` and `Create()` through the shared element factory helpers, preserving a single element/renderer/composition identity. Do not inherit a base factory that would construct the wrong concrete class. Native callback APIs are C++ APIs; they do not add native handles or platform tags to the XML or remote schema.
+
+Both strings start empty. Empty and duplicate IDs are legal; `Id` is application metadata, not object identity. Equal assignments do nothing. A changed `Id` notifies the renderer of dirty state without asking the composition to repaint; a changed `Data` uses `InvokeOnElementStateChanged()` and requests repaint. In remote mode these changes are frame-batched, so an isolated ID update reaches the renderer on the next otherwise-required frame and intermediate values may coalesce.
+
+The raw element has no intrinsic picture size. Specify `PreferredMinSize` or other layout constraints on its owning composition, and render using the callback's current bounds and clip. Keep data production in XML/Workflow or a view model and native rendering in detachable C++ handlers. Store handler tokens and release them when the attachment ends; initialize late attachments from current state as well as future notifications.
+
+The standalone `<Release repo>/Tutorial/GacUI_Windows/RawClock` demonstrates XML-owned `HH:mm:ss` updates with Direct2D by default and GDI under `/Gdi`. FullControlTest's `<GacUI repo>/Test/Resources/App/FullControlTest/RawElementTabPage.xml` uses `Id="FullControlTest.Clock"`; platform-owned C++ helpers and the GacJS canvas attachment draw the received state without independent ticking timers. The native snapshot viewer represents a recorded raw element as an ellipsized `Id + ": " + Data` label; it does not run application painters.
+
+See `<GacUI repo>/.github/Guidelines/GacUIXmlResource.md` for XML authoring and [native remote and browser lifecycle](./KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md#raw-element-state-and-lifetime) for remote attachment rules.
+
 ## 1. Core Interfaces and Their Responsibilities
 
 1. IGuiGraphicsElement

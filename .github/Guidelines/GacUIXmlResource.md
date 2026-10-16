@@ -53,6 +53,31 @@ Take this file `Test\Resources\Metadata\Reflection64.txt` as an index, it collec
 When there is a `@FullName` on top of a class, it means the full name in C++; the class name will be the full name in XML.
 When there is no `@FullName` but the class name begins with `presentation::`, the full name in C++ begins with `vl::presentation::`.
 
+## Ownerdraw with `<Raw/>`
+
+`<Raw/>` is the standard and recommended way to add ownerdraw graphics to GacUI, in native and hosted applications and when using remote protocol. TUI does not support `<Raw/>`.
+
+```xml
+<Bounds PreferredMinSize="x:240 y:240">
+  <Raw ref.Name="drawing" Id="MyApp.Drawing" Data="initial drawing state"/>
+</Bounds>
+```
+
+The XML alias `presentation::elements::GuiRawElement` exposes the reflected `GuiRawElementBase`, defined in `<GacUI repo>/Source/GraphicsElement/GuiGraphicsElement.h`. `Id` identifies the application's drawing convention and `Data` carries its string state. Both start empty; empty and duplicate IDs are valid. Set a composition's minimum size explicitly because a raw element does not measure the custom picture. Workflow can assign `drawing.Data` or bind it to a view model; native C++ supplies the drawing callback.
+
+`IGuiGraphicsResourceManager::CreateRawElement()` selects the concrete implementation. Use the same XML on each backend, then cast the returned common base to the native type when attaching C++ handlers:
+
+| Native element | Rendering callback |
+| --- | --- |
+| `GuiDirect2DElement` | Windows Direct2D: `Rendering` supplies `rt`, Direct2D/DirectWrite factories and `bounds`. Release target-bound resources in `BeforeRenderTargetChanged` and recreate them in `AfterRenderTargetChanged`; also handle attachment after a target already exists. Defined in `<GacUI repo>/Source/PlatformProviders/Windows/Direct2D/Renderers/GuiGraphicsWindowsDirect2D.h`. |
+| `GuiGDIElement` | Windows GDI: `Rendering` supplies `dc` (`WinDC`, with `GetHandle()` for the HDC) and `bounds`. Restore selected objects and drawing state before returning. Defined in `<GacUI repo>/Source/PlatformProviders/Windows/GDI/Renderers/GuiGraphicsWindowsGDI.h`. |
+| `GuiWaylandElement` | Wayland: `Rendering` supplies a borrowed `cairo_t* context` and logical `bounds`. Use the callback's current context, clip and DPI transform; do not retain or destroy the context or its surface. Defined in `<wGac repo>/WGac/Renderers/GuiWaylandElement.h`. |
+| `GuiCocoaElement` | macOS: `Rendering` supplies a borrowed `CGContextRef context` and logical `bounds`, preserving clipping and backing scale. Do not retain or release the context. Defined in `<iGac repo>/Mac/GraphicsElement/CoreGraphics/GuiCocoaElement.h`. |
+
+Draw from the element's current `Data`, inside the supplied bounds and clip. A changed `Data` requests repaint; a changed `Id` marks state dirty but does not independently request a frame. Reassigning an equal value does nothing. The core has no native drawing callback in remote mode: it sends the numeric renderer identity plus the application `Id` and `Data`, and the receiving renderer installs its own drawing code. Native remote clients use `GuiRemoteRendererSingle::GetRawElements()` and `RawElementInstalled`, `RawElementChanged`, and `RawElementUninstalled`; installation precedes the first descriptor, so ID-based attachment must also handle later changes. Browser clients can attach canvas or other application-owned content through GacJS raw-element hooks.
+
+See [Raw ownerdraw and renderer lifetimes](../KnowledgeBase/KB_GacUI_Design_ImplementingIGuiGraphicsElement.md#ownerdraw-with-raw) and [remote raw-element lifecycle](../KnowledgeBase/KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md#raw-element-state-and-lifetime). `<Release repo>/Tutorial/GacUI_Windows/RawClock` is a standalone XML-driven clock with Direct2D by default and optional `/Gdi`; `<GacUI repo>/Test/Resources/App/FullControlTest/RawElementTabPage.xml` is the shared `Misc / Raw Clock` showcase.
+
 ## XML in a Single String
 
 To define an empty window, the XML looks like:

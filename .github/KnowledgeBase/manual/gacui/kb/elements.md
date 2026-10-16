@@ -25,6 +25,8 @@ Only when control templates do not fit your need, you are recommended to use ele
 - Source code: [kb_elements](https://github.com/vczh-libraries/Release/blob/master/SampleForDoc/GacUI/XmlRes/kb_elements/Resource.xml)
 - ![](https://gaclib.net/doc/gacui/kb_elements.gif)
 
+For owner drawing, use [<Raw/>](../.././gacui/components/elements/home.md). It is the standard approach for both native applications and remote protocol renderers. The application supplies an `Id` and `Data`; the renderer implements drawing with Direct2D, GDI, Cairo on Wayland, Core Graphics on macOS, or browser drawing APIs in GacJS. TUI does not support this element.
+
 There is **DocumentElement**. This element offer full featured document rendering. But they are not designed to be used directly, instead you are expected to use these controls:
 - **SinglelineTextBox**
 - **MultilineTextBox**

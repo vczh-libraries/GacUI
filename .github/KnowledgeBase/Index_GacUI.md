@@ -4,6 +4,17 @@ Project introduction remains in [Index.md](./Index.md#gacui).
 
 ### Choosing APIs
 
+#### Ownerdraw with Raw Elements
+
+Use `<Raw/>` for application-defined drawing in native, hosted and remote-protocol GUI applications. TUI does not support raw drawing.
+
+- Use `GuiRawElementBase::Id` and `Data` for a portable drawing convention and its string state; the active resource manager selects the concrete element.
+- Use `GuiDirect2DElement`, `GuiGDIElement`, `GuiWaylandElement` or `GuiCocoaElement` rendering events to draw with the platform's native API.
+- Use `GuiRemoteRendererSingle::GetRawElements()` and its installation/change/uninstallation events to attach native remote drawing. GacJS exposes corresponding browser hooks for application-owned DOM/canvas content.
+- Use `<Release repo>/Tutorial/GacUI_Windows/RawClock` for a standalone Direct2D/GDI example, and FullControlTest's `Misc / Raw Clock` for native and remote examples.
+
+[API Explanation](./KB_GacUI_Design_ImplementingIGuiGraphicsElement.md#ownerdraw-with-raw)
+
 #### Refreshing Existing Themes
 
 - Use `GuiApplication::RefreshThemes()` to refresh all live windows, including hidden popups, after changing the active theme or its palette.

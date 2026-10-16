@@ -157,6 +157,14 @@ Element lifecycle:
 2. **Notification**: `EnsureRequestedRenderersCreated()` (called at the start of each frame) batches pending creates and destroys into `RequestRendererCreated` / `RequestRendererDestroyed` messages to the renderer side.
 3. **Destruction**: `FinalizeInternal()` calls `UnregisterRenderer()`, moving the ID to `destroyedRenderers`.
 
+### Raw Ownerdraw State
+
+`<Raw/>` is the recommended ownerdraw API in native, hosted and remote-protocol GUI applications; TUI does not support it. The remote resource manager's `CreateRawElement()` creates `GuiRemoteRawElement`, a portable `GuiRawElementBase` subclass paired with `GuiRawElementRenderer` in `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteGraphics_BasicElements.h/.cpp`.
+
+`ElementDesc_Raw` contains numeric renderer `id`, application string `rawId` (the element's `Id`) and string `data` (its `Data`). Native pointers, drawing callbacks and pixels are not serialized. Both strings may be empty, and application IDs need not be unique. A changed `Data` requests rendering; an isolated changed `Id` only marks state dirty and is delivered on the next otherwise-required frame. Multiple assignments can coalesce before that frame; equal assignments do nothing.
+
+The receiving native or browser application attaches its own painter, using the same state contract. See [raw ownerdraw](./KB_GacUI_Design_ImplementingIGuiGraphicsElement.md#ownerdraw-with-raw) and [renderer lifecycle](./KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md#raw-element-state-and-lifetime) for platform selection, collection identity and callback ordering.
+
 ### Frame Rendering Flow
 
 A single rendering frame follows this sequence:

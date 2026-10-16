@@ -2,50 +2,35 @@
 
 # PROBLEM DESCRIPTION
 
-Execute GacUI/TODO_TASK4.md , commit and push all local changes once finishing.
-
-`TODO_TASK.md` and `TODO_TASK2.md` are two already completed works.
-`TODO_TASK3.md` is about porting the change to `wGac`.
-You are going to mirror `TODO_TASK3.md` to `iGac`. Skip WASM work items as they are not ready for macOS yet.
-Mirror `wGac` changes to `iGac`, follow `.github/Jobs/job.rpXPlat.prompt.md` to do full verification.
-You are going to use `GuiCocoaElement` as macOS's `<Raw/>` implementation.
+Replace the standalone Windows clock tutorial with RawClock, using the common raw-element contract and native Direct2D/GDI painters. Support default Direct2D and optional `/Gdi`, and run the complete Release build. Update canonical knowledge-base and XML authoring guidance, browser/Wayland/macOS documents, and the public website to describe `<Raw/>` as the recommended ownerdraw API in native, hosted and remote GUI applications, with TUI unsupported. Publish the website, commit and push all changes, then remove the five completed task specifications in a separate GacUI commit. Documentation must stand on its own without referring to the removed specifications.
 
 # TEST
 
-Verify the Cocoa raw factory, common state, callback context and bounds, clipping, graphics state and current path, fixed clock pixels, target replacement, remote collection identity, ID/data transitions, late attachment and retained pictures. Run the official import/sync/build sequence twice, the focused native suite in standard and hosted modes, and the GacUI unit suite. Recreate and complete the macOS native-renderer, WebKit MiniHTTP and TUI matrices from job.rpXPlat. Wasm is excluded by request.
+- Build `<Release repo>` with `<Tools repo>/Tools/Build.ps1 -Project Release`; verify RawClock generation, both drawing backends, ticking and layout.
+- Check documentation against current source contracts, including platform factory selection, native callback lifetimes, ID/data updates and remote/browser lifecycle APIs.
+- Build and test `<WebsiteSource repo>`, export static pages and the manual, publish through the existing GitHub Pages workflow, and verify the live changed pages.
+- Synchronize canonical `<Tools repo>/Copilot` guidance into consuming repositories and verify the second synchronization is stable.
+- Check all affected diffs and confirm no documentation references the removed task specifications.
 
 # PROPOSALS
 
-- No.1 Implement GuiCocoaElement with callback-scoped CoreGraphics drawing and macOS-owned clock attachments.
+- No.1 [CONFIRMED] Publish a common raw-ownerdraw tutorial and documentation contract across the existing native/browser implementations.
 
-## No.1 Implement GuiCocoaElement with callback-scoped CoreGraphics drawing
-
-Derive the reusable element from GuiRawElementBase with concrete factory helpers. Register the renderer in CoreGraphicsMain and return it from CreateRawElement. Borrow the active CGContext for each Rendering callback; preserve clipping, transform, drawing state, text matrix and current path. Keep clock drawing and identity-based collection attachment under <iGac repo>/MacShared, compiled into the native demo and remote renderer. Author the macOS remote hook in <GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32/GuiMain.cpp so synchronization preserves it.
+## No.1 [CONFIRMED] Publish RawClock and current raw-element guidance
 
 ### CODE CHANGE
 
-Implemented `GuiCocoaElement` and registered its CoreGraphics renderer and native factory in <iGac repo>/Mac/GraphicsElement/CoreGraphics. Each callback borrows the current render target context with logical bounds, scale and clipping intact. Graphics state, current path and text matrix are restored afterward. There is no cached context or Raw-specific minimum size.
+The tutorial keeps XML/Workflow ownership of clock state and uses standalone native attachment helpers derived from the FullControlTest example. The Windows startup path selects GDI with `/Gdi` and defaults to Direct2D. The refreshed BlackSkin showcase also retains a Windows clock attachment; `<Tools repo>/Tools/BuildRelease.ps1` synchronizes its helper from the owning GacUI source. Canonical guidance explains the four native element types, the portable remote Core element, frame-batched state and painter lifetime. Platform documents correct stale factory and hosted-renderer descriptions. Website pages describe the XML shape, native callbacks and remote state, and link the renamed tutorial.
 
-The local and remote FullControlTest attachments live in <iGac repo>/MacShared. They draw only the exact `FullControlTest.Clock` ID from valid `HH:mm:ss` data. The remote attachment subscribes before enumeration and tracks element identity, so duplicate/empty IDs, late installation, ID changes and retained disconnected pictures are supported. The synchronized Apple hook is authored in <GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32/GuiMain.cpp.
+### CONFIRMED
 
-The initial import exposed unrelated line-ending churn. <iGac repo>/import.sh now reproduces the committed snapshot conventions. Apple legacy typedef collisions were resolved by qualifying GacUI types. The Quartz test fixture was corrected to use the native flipped coordinate system; production rendering did not require a coordinate workaround.
-
-### VERIFICATION
-
-- CodePack, two complete import/sync sequences and the official full iGac build passed. Synchronization preserved the platform helper files and target references.
-- Four focused native Raw tests passed. Hosted factory, callback-state and fixed-clock tests passed; the real native-window remote lifecycle case is intentionally native-only. Coverage includes clipping, backing scale, text matrix/path isolation, strict clock input, target recreation, data-only redraw, identity transitions and retained pictures.
-- GacUI unit tests passed: 94 files and 1,837 cases. Generated build inventories and macOS snapshot changes are retained separately from authored code. Snapshot differences include file enumeration order, supplementary-character representation and Workflow member order.
-- Local, hosted and remote Cocoa clocks were visually inspected across input-free ticks, palette changes and renderer replacement/takeover. Native, WebKit MiniHTTP and TUI results and limitations are recorded in <iGac repo>/TestMatrix_NativeRenderer.md, <iGac repo>/TestMatrix_GacJS.md and <iGac repo>/TestMatrix_Tui.md. Wasm is excluded by request.
-- LLDB launch required Developer Tools Access authentication; its probe was canceled and owned processes stopped. Accessibility subsequently returned `-25211`, preventing native alert dismissal and physical/global shortcut verification. Those checks are not marked passed. After the user's window-targeting warning, all input was confined to process-specific HTTP automation or an owned PTY master fd; desktop input helpers were disabled.
-
-## No.2 Preserve the accepted browser view-model host after renderer takeover
-
-### EVIDENCE AND CODE CHANGE
-
-Live WebKit verification reproduced the failure three times: a browser-hosted RVMT session worked until an ordinary renderer took over, then the next RPC reported `RemotingTest_RvmHost disconnected.`. The entry page's unconditional `session.stop()` disposed the accepted host together with the replaced renderer.
-
-<GacJS repo>/Gaclib/website/entry/assets/index.html now retains the host after renderer disconnect/connection-stopped outcomes while disposing renderer and clock state. Host completion, page teardown and fatal outcomes still stop the entire session. Built-page tests cover disconnect, takeover, fatal cleanup, repeated pagehide and host completion after takeover. GacJS documentation describes the resulting lifetime.
-
-### VERIFICATION
-
-GacJS import, codegen, full build and tests passed, including 28 built-page/session tests. Live WebKit covered all five RVMT host modes with Unicode RPC, renderer replacement, rejected additional hosts where applicable, normal exit and idle/blocked host loss. The browser-host blocked-loss test retained a real request and response before stopping the host; Core terminated with the exact fatal mask and one matching page error. Windows-only live suites retain their expected macOS skip.
+- Website build and all 57 tests passed. Main/document static downloads and Markdown export passed. WebsiteSource commit `104ddfe` and published-site commit `7ed1780b1` were pushed; deployment run `38846804098` succeeded. Live RawClock introduction and raw-element documentation were inspected.
+- The required Wasm preparation attempt built GacJS successfully, then stopped because this Windows host has no `make` or WSL. The existing published Wasm demo remained byte-for-byte unchanged; failed-build makefile churn was restored. No new Wasm runtime result is claimed.
+- Canonical guidance and the exported manual were synchronized into eight consuming repositories. All canonical guidance files matched their copies, 32 updated manual copies matched the four exported pages, and introduced document links/source paths were checked. Existing side-specific ALT guidance was preserved during synchronization.
+- The final Markdown/HTML/XML audit across all fourteen affected repositories found no references to the task specifications outside those specifications themselves. The two remaining repository documentation inventories and workspace-root Markdown files were also clear.
+- Platform documentation was checked against native and TypeScript implementations. Wayland and Cocoa builds were not rerun on this Windows host; those repositories contain documentation-only changes.
+- BuildRelease PowerShell syntax passed. Independent review checked native resource lifetimes, GDI state restoration, backend parsing, resource locations, XML ownership and project inventories.
+- Focused RawClock Debug/Release x64 builds passed with zero warnings or errors. Debug x64 Direct2D and GDI runs showed ticking data, resized through UI Automation, completed native drawing callbacks with valid render targets/device contexts, and exited cleanly. A Debug Win32 resource-location smoke test and a Release x64 GDI callback/shutdown check also passed. One UI Automation CLI readback timed out after its target had already closed successfully.
+- BlackSkin Debug Win32 selected Misc / Raw Clock through automation and UI Automation, showed advancing `FullControlTest.Clock` data, completed its native Direct2D callback with valid target/bounds, and exited cleanly without a runtime-error dialog. The locked desktop produced black captures, so visible pixel appearance remains unverified.
+- The required `<Tools repo>/Tools/Build.ps1 -Project Release` completed with exit code zero. Tool deployment, Workflow build/code generation/rebuild, document and tutorial XML generation, all six Debug Win32 tutorial solutions with binary checks, and all six Release Win32 tutorial solutions passed. Together with the focused x64 builds, RawClock compiled in all four Debug/Release and Win32/x64 configurations.
+- Release changes were committed separately as authored tutorial/documentation changes (`fd95978f`) and generated resources/imports (`9586bb13`), then pushed. Documentation and website changes in the other affected repositories were also committed and pushed. The five completed task specifications are removed in the following dedicated GacUI cleanup commit.

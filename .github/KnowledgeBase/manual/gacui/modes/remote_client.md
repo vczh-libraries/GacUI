@@ -66,5 +66,7 @@ GuiRemoteProtocolAsyncJsonChannelRenderer queues messages from the channel and r
 
 The portable **/MiniHttp** path creates a default loopback TCP client with **vl::inter_process::async_tcp_socket::CreateDefaultAsyncSocketClient(port)**, wraps it in **vl::inter_process::async_tcp_socket::SocketHttpClient(socketClient, L"localhost", urlPrefix)**, and passes that object to **GuiRemoteProtocolChannelClient**. The renderer application shown by the linked test remains Win32 even though the VlppOS transport itself is available on Windows, Linux and macOS.
 
+For application-defined drawing, use [<Raw/>](../.././gacui/components/elements/home.md). `GuiRemoteRendererSingle` creates the active platform's native raw element and exposes `GetRawElements()`, `RawElementInstalled`, `RawElementUninstalled` and `RawElementChanged` so renderer code can attach its drawing callbacks. The protocol carries application ID and data strings; each renderer implements the drawing locally.
+
 Override GuiRemoteProtocolChannelClient::OnReadError, OnLocalError, or OnDisconnected when the renderer should show a fatal error dialog or call GuiRemoteRendererSingle::ForceExitByFatelError. See [RemotingTest_Rendering_Win32](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Rendering_Win32) for the complete named-pipe (**/Pipe**), Windows HTTP.sys/WinHTTP (**/Http**) and portable Mini HTTP (**/MiniHttp**) implementations.
 

@@ -14,5 +14,7 @@
 
 **If you decide to include Workflow script in resource binaries instead of generating C++ files**, [GacBuild.ps1](https://github.com/vczh-libraries/Release/tree/master/Tools) will generate different resource binaries for x86 and x64 platforms. Please be careful to load the correct one.
 
+Use [<Raw/> for owner drawing](../.././gacui/components/elements/home.md) in an XML composition tree. The resource defines the drawing area and application state; native C++ or browser renderer code supplies the drawing implementation. The same element works with native applications and remote protocol renderers; TUI does not support it.
+
 If you want to keep your executable file stand-alone, there is an extra option to generate the resource binary into the C++ code. In this case, you don't have to load the resource binary from file, the generated C++ code will take care it for you.
 

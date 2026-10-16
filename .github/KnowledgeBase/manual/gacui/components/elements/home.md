@@ -115,6 +115,39 @@ If **Color1** is darker than **Color2**, the element looks like a sink line.
 
 The **Size** property creates a coordinate space for **Points** with (0,0) in the top-left corner. When the size of the element is larger than the minimum size, the coordinate space is aligned to the center.
 
+## \<Raw\>: owner drawing
+
+`<Raw/>` is the standard, recommended way to implement owner drawing in GacUI, both in native applications and through the remote protocol. It places application-defined drawing inside a composition while keeping layout and input handling in GacUI. TUI does not support `<Raw/>`.
+
+Place one `<Raw/>` inside the composition that owns the drawing area. Its optional string properties are `Id` and `Data`; both default to an empty string. `ref.Name` exposes the element to generated code as `GuiRawElementBase`. The element has no intrinsic minimum size, so set a size on the composition when needed. For example, this fragment can appear inside an instance's composition tree:
+```xml
+<Bounds PreferredMinSize="x:240 y:240">
+  <Raw ref.Name="clock" Id="Example.Clock" Data="10:20:30"/>
+</Bounds>
+```
+
+`Id` selects the application's drawing convention; it is not a unique element key. Empty and duplicate IDs are valid, so track drawing attachments by element identity. `Data` carries application-defined state, such as the clock's `HH:mm:ss` string. Changing `Data` requests a repaint. Changing `Id` alone does not request one, and equal assignments do nothing. With the remote protocol, an ID-only change is sent on the next frame.
+
+### Native rendering APIs
+
+The active graphics resource manager chooses the concrete element for `<Raw/>`. All four native implementations derive from `GuiRawElementBase` and expose a C++ `Rendering` event:
+- `GuiDirect2DElement` on Windows provides `GuiDirect2DElementEventArgs` with `element`, `rt` (`ID2D1RenderTarget*`), Direct2D/DirectWrite factories and `bounds`. Release target-bound resources in `BeforeRenderTargetChanged` and recreate them for the new target in `AfterRenderTargetChanged`; late subscribers can initialize them on their first render.
+- `GuiGDIElement` on Windows provides `GuiGDIElementEventArgs` with `element`, `dc` (`windows::WinDC*`) and `bounds`. Use the supplied wrapper or its `GetHandle()` for GDI drawing.
+- `GuiWaylandElement` in wGac provides `GuiWaylandElementEventArgs` with `element`, `context` (`cairo_t*`) and `bounds`.
+- `GuiCocoaElement` in iGac provides `GuiCocoaElementEventArgs` with `element`, `context` (`CGContextRef`) and `bounds`.
+
+Attach handlers to the concrete native element after creating the UI, and keep them attached through its drawing lifetime. Draw within the supplied bounds using the current clip and coordinate transform. Borrow drawing contexts only for the callback; do not retain or destroy them, start another frame, or present the target. In particular, Wayland and Cocoa contexts may change between paint calls. Detach handlers before destroying their owning drawing objects.
+
+The [RawClock tutorial](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Windows/RawClock) demonstrates this API with Direct2D by default and GDI when launched with `/Gdi`. Its XML owns the clock state; native callbacks paint the supplied state.
+
+### Remote rendering
+
+A remote core creates a portable `GuiRemoteRawElement`, exposing the shared `GuiRawElementBase` state. The protocol sends the numeric renderer element `id`, application string `rawId` and string `data`. The receiving renderer draws locally; native pointers, drawing callbacks and rendered pixels are not transferred. Install a matching drawing implementation in each renderer that the application supports.
+
+The native `GuiRemoteRendererSingle` exposes `GetRawElements()` and `RawElementInstalled`, `RawElementUninstalled` and `RawElementChanged`. Subscribe before processing messages and enumerate existing elements for late attachment. An installed element initially has empty state; select or replace its drawing attachment when its ID changes. Changed callbacks see both updated descriptor fields, including data-only changes. Uninstallation is the point to remove attachments; a temporarily hidden element or retained disconnected picture may still exist.
+
+GacJS exposes `getRawElements()`, `rawElementInstalled`, `rawElementUninstalled` and `rawElementUpdated` on `IGacUIRenderer`. A `GacUIRawElement` contains a persistent `element` div plus application `id` and `data` strings. Application code owns any canvas or other drawing content placed inside that div, and must dispose its subscriptions and observers at teardown.
+
 ## \<ColorizedTextElement\> and \<DocumentElement\>
 
 These elements are for implementing editing and rendering of all text box controls. They are not supposed to be used directly.
