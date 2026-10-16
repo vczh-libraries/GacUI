@@ -9,8 +9,9 @@
 #include <Test.RemotingHelpers.h>
 #include "../Mac/NativeWindow/CocoaAutomationService.h"
 #include "../Mac/NativeWindow/OSX/CoreGraphics/CoreGraphicsApp.h"
+#include "../MacShared/FullControlTestRawElementRemote.h"
 #include <dispatch/dispatch.h>
-#else
+#elif defined _MSC_VER
 #include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
@@ -59,7 +60,7 @@ public:
 		GetApplication()->InvokeInMainThread(nullptr, proc);
 #elif defined VCZH_GCC && !defined VCZH_APPLE
 		GetCurrentController()->AsyncService()->InvokeInMainThread(nullptr, proc);
-#else
+#elif defined VCZH_GCC && defined VCZH_APPLE
 		auto queuedProc = new Func<void()>(proc);
 		dispatch_async_f(
 			dispatch_get_main_queue(),
@@ -157,9 +158,7 @@ int StartClient(
 		);
 	GuiRemoteProtocolAsyncJsonChannelRenderer asyncRendererChannel(channelClient.GetProtocolChannel());
 	GuiRemoteRendererSingle remoteRenderer(true);
-#if defined VCZH_MSVC || (defined VCZH_GCC && !defined VCZH_APPLE)
 	auto rawClockAttachments = demo::AttachFullControlTestRawElements(remoteRenderer);
-#endif
 	GuiRemoteProtocolRendererChannel rendererChannel(&asyncRendererChannel, &remoteRenderer);
 	channelClient.SetRenderer(&remoteRenderer);
 	channelClient.SetAsyncRendererChannel(&asyncRendererChannel);
@@ -172,7 +171,7 @@ int StartClient(
 	auto result = gacui_test::automationArguments.gdi ? SetupRawWindowsGDIRenderer() : SetupRawWindowsDirect2DRenderer();
 #elif defined VCZH_GCC && !defined VCZH_APPLE
 	auto result = elements::wgac::SetupRawWGacRenderer();
-#else
+#elif defined VCZH_GCC && defined VCZH_APPLE
 	auto result = SetupRawOSXCoreGraphicsRenderer();
 #endif
 	currentGuiContext = nullptr;
