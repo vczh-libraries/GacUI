@@ -214,3 +214,9 @@ Use GitTui to browse working-tree diffs and local branch history in a terminal, 
 - Demo project pair (`RemotingTest_Core` and `RemotingTest_Rendering_Win32`) demonstrates full protocol stack assembly for both core and renderer sides with named-pipe, Windows HTTP, and portable MiniHTTP transport.
 
 [Design Explanation](./KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md)
+
+#### Point Input, Capture and Remote Forwarding
+
+Native acceptance and cancellation, composition pointAction and borrowed sparse slots, hosted coordinate rebasing, explicit remote boundaries and 64-bit strings, Core fallback, native/browser ownership, Touching painters, and automation commands/endpoints.
+
+[Design Explanation](./KB_GacUI_Design_PointInput.md)

@@ -215,3 +215,7 @@ Named pipe, Windows HTTP, or MiniHTTP transport
 ```
 
 Events flow in the reverse direction through the same stack.
+
+## Point input
+
+Native remote renderers accept touch locally and forward ordered point records without mouse coalescing. Unsigned 64-bit point identities/timestamps are canonical decimal strings. Browser acquisition uses stable target capture and descendant touch-action policy; WASM shares the schema and renderer code. See [Point Input, Capture and Remote Forwarding](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.

@@ -320,3 +320,7 @@ Remote mode (`SetupRemoteNativeController`) always uses hosted mode:
 - `GuiHostedController` wraps `GuiRemoteController` just as it wraps Windows native controllers
 - `GuiRemoteGraphicsResourceManager` wraps `GuiRemoteController`, then `GuiHostedGraphicsResourceManager` wraps that
 - The single native window in remote mode is the `GuiRemoteWindow`, which sends rendering commands through the protocol rather than to a real screen
+
+## Point input
+
+Hosted point routing captures one logical window for the whole sequence. Positions and contact rectangles follow the hosted offset and DPI conversion; the primary hint never retargets the sequence. See [Point Input, Capture and Remote Forwarding](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.

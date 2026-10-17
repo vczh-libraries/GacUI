@@ -194,7 +194,21 @@ renderer replacement and intentional close steps.
     renderer and require the same exact label text without a fatal error or
     disconnect.
 
-### 7. Close the Application Through the File Menu
+### 7. Verify Touching and Rejected Touch
+
+Run these operations on Misc > Touching for native /Pipe, /Http and /MiniHttp with both Direct2D and GDI, and browser /Http and /MiniHttp. Use the topology guides for launch commands. Repeat input through renderer automation and, separately, Windows native touch injection or browser input injection. Core-only IO tests dispatch but bypasses acquisition/forwarding. Record unavailable locked-desktop and physical-device checks explicitly. Shared WASM code is not evidence of a WASM runtime pass.
+
+1. Confirm the dark surface contains a sky-blue rectangle. Hold one contact and move it: the rectangle translates by the same logical delta and a yellow contact circle follows. Release: all circles disappear while the transform remains.
+2. Add two contacts and translate, rotate and change their separation. Verify the rectangle follows the corresponding two-contact transform. Add a third contact: all three markers remain but the rectangle pauses. Remove one contact without movement: the transform must not jump. Resume motion and verify the new two-contact baseline.
+3. Exercise A Down, B Down, A Up, C Down, B Up, C Up. A's normal lostpointercapture must not terminate B in a browser. Reusing A's browser pointer ID for C gives a fresh Down-order slot. Observe one Started and one successful End, with consecutive transport indices; no compatibility mouse activation occurs on the accepting surface.
+4. Cancel via PlatformCanceled and unexpected CaptureLost with two contacts active. Verify one canceled End, marker removal, cleanup without a fabricated Up or click, and a clean subsequent sequence. Test renderer disposal/replacement while accepted and rejected sequences are active: the replacement must not inherit contacts, pressed fallback buttons, or capture.
+5. Touch an ordinary button or a tab: rejection produces one activation. A secondary finger cannot promote itself to mouse fallback after the first lifts. Cancel the first contact before Up and verify no activation. Repeat with physical mouse, wheel and keyboard to check the independent paths.
+6. In the browser, start over nested labels, paragraphs and raw canvases within a scrollable surrounding page. Verify the renderer descendants have touch-action none before Down, no page pan/zoom, and no duplicate click/auxclick/contextmenu or mouse boundary input. Move beyond the surface and rebuild child DOM during contact: stable target capture must retain the stream. Input outside the renderer keeps normal browser behavior.
+7. Resize, leave/revisit Touching and replace the renderer. Verify current Core state draws again with one painter/canvas and correct bounds. Verify both rectangle pixels and contact-circle pixels, not just nonempty raw data. Raw state is centerX,centerY,axisX,axisY,count followed by pointId,x,y triples; painters must not own gesture calculations.
+
+For native injection use `<GacUI repo>/Test/Touching_NativeInput.ps1`. Its remote mode selects `-Application RemotingTest_Rendering_Native`, the renderer `-TargetProcessId` and `-AsPort`, plus `-CoreAsPort` for Core Controls inspection. Renderer IO drives forwarding and renderer Dom confirms received state. Local UIA checks semantic controls; a remote renderer does not transport a UIA tree.
+
+### 8. Close the Application Through the File Menu
 
 Perform these steps in the third renderer.
 

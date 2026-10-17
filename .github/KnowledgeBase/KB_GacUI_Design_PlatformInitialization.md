@@ -249,3 +249,7 @@ Proper cleanup through systematic resource management:
 - Symmetric plugin loading and unloading
 
 This comprehensive initialization system enables GacUI to provide consistent, high-performance cross-platform GUI capabilities while maintaining platform-specific optimizations and providing extensive testing and debugging support.
+
+## Point input
+
+Windows touch acquisition and remote renderer ownership use the window-owned native point state, with acceptance latched for the entire overlapping-contact sequence. Other providers need explicit acquisition support. See [Point Input, Capture and Remote Forwarding](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.

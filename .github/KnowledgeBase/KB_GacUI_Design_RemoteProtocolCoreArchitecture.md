@@ -358,3 +358,7 @@ only components directly owned by the window leaves their labels stale.
 `GuiRemoteGraphicsImageService` implements `INativeImageService` and creates `GuiRemoteGraphicsImage` objects with core-side binary copies. Image metadata (dimensions, format) is lazily fetched from the renderer side via `ImageCreated` messages in the `ElementMeasurings` response.
 
 On reconnection (`OnControllerConnect`), all existing images are re-registered with the renderer side so it can recreate its local image objects. On disconnection (`OnControllerDisconnect`), the service suspends sending and resets metadata that may have become stale.
+
+## Point input
+
+Core validates explicit Started/action/End records, allocates local lifetime sequence IDs shared with Core automation, and owns acceptance plus first-contact-only typed mouse fallback. Final Up waits for explicit End. Disconnect cancels input and releases fallback capture. See [Point Input, Capture and Remote Forwarding](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.

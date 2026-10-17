@@ -230,3 +230,7 @@ Steps:
 
 ## 15. Summary
 The GacUI layout engine employs a clean separation between invalidation, measurement, arrangement, and rendering, with composition classification enabling optimized parent-child cooperation patterns. Predefined container families cover common layout paradigms (grid, linear, wrapping, docking, viewport, shared sizing, and repeated/virtualized items) while the responsive layer introduces adaptive multi-level UI transformation without complicating the core pass. Extension points are well-localized: new algorithms implement three virtual layout functions (or override contribution behavior), while responsive strategies implement discrete level semantics. Lazy flags and controlled item abstractions keep recomputation efficient, and successive host render cycles guarantee eventual stabilization even under cascading dynamic changes.
+
+## Point input
+
+Point input has one captured composition and three event surfaces: pointSequenceStarted, unified pointAction, and pointSequenceEnded. Its borrowed sparse point list is rebased for each receiver and cleared after End. See [Point Input, Capture and Remote Forwarding](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.

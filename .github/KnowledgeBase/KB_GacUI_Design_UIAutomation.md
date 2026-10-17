@@ -104,3 +104,7 @@ The `Lifetime` scenario uses `<GacUI repo>/Test/UIA_Lifetime.cs`, a native IUIAu
 The focus checks always require one reachable logical focused element and check calendar focus events. Global desktop focus requires an active Windows session with the test application in the foreground: the client checks both prerequisites and explicitly reports that check as unverified when either is absent. Otherwise it requires exact desktop focus identity. Pointer and keyboard menu tests use the application's IO endpoint, so they verify application input routing rather than physical desktop input delivery.
 
 Related design: [lists](./KB_GacUI_Design_ListControlArchitecture.md), [hosted windows](./KB_GacUI_Design_HostedModeWindowManagement.md), [focus](./KB_GacUI_Design_ControlFocusSwitchingAndTabAltHandling.md), and [platform initialization](./KB_GacUI_Design_PlatformInitialization.md).
+
+## Point input
+
+Typed !PointDown/Update/Up/Enter/Leave and !PointCancel automation is available on Windows native/hosted/renderer services and the remote Core. These listener injections do not prove hardware acquisition or OS compatibility-mouse suppression. See [Point Input, Capture and Remote Forwarding](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.
