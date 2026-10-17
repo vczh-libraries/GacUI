@@ -17,6 +17,9 @@ namespace vl::presentation::remoteprotocol
 	struct WindowShowing;
 	struct IOMouseInfoWithButton;
 	struct GlobalShortcutKey;
+	struct IOPointInfo;
+	struct IOPointAction;
+	struct IOPointEnd;
 	struct ElementDesc_Raw;
 	struct ElementDesc_SolidBorder;
 	struct ElementDesc_SinkBorder;
@@ -81,6 +84,9 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::NativeWindowKeyInfo> { static constexpr const wchar_t* Name = L"IOKeyInfo"; };
 	template<> struct JsonNameHelper<::vl::presentation::NativeWindowCharInfo> { static constexpr const wchar_t* Name = L"IOCharInfo"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GlobalShortcutKey> { static constexpr const wchar_t* Name = L"GlobalShortcutKey"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::IOPointInfo> { static constexpr const wchar_t* Name = L"IOPointInfo"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::IOPointAction> { static constexpr const wchar_t* Name = L"IOPointAction"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::IOPointEnd> { static constexpr const wchar_t* Name = L"IOPointEnd"; };
 	template<> struct JsonNameHelper<::vl::presentation::elements::ElementShape> { static constexpr const wchar_t* Name = L"ElementShape"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_Raw> { static constexpr const wchar_t* Name = L"ElementDesc_Raw"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder> { static constexpr const wchar_t* Name = L"ElementDesc_SolidBorder"; };
@@ -257,6 +263,39 @@ namespace vl::presentation::remoteprotocol
 		bool alt;
 		bool osSuper;
 		::vl::presentation::VKEY code;
+	};
+
+	struct IOPointInfo
+	{
+		::vl::WString sequenceId;
+		::vl::vint pointId;
+		::vl::WString timestamp;
+		::vl::vint activePointCount;
+		::vl::presentation::NativePoint position;
+		bool primary;
+		bool ctrl;
+		bool shift;
+		bool alt;
+		bool osSuper;
+		::vl::Nullable<::vl::presentation::NativeRect> contactBounds;
+		::vl::Nullable<double> pressure;
+		::vl::Nullable<double> orientation;
+		::vl::Nullable<::vl::WString> platformFrameId;
+	};
+
+	struct IOPointAction
+	{
+		::vl::vint eventIndex;
+		::vl::presentation::remoteprotocol::IOPointInfo info;
+	};
+
+	struct IOPointEnd
+	{
+		::vl::WString sequenceId;
+		::vl::vint eventIndex;
+		::vl::WString timestamp;
+		bool accepted;
+		::vl::presentation::PointSequenceEndReason reason;
 	};
 
 	struct ElementDesc_Raw
@@ -577,6 +616,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeCursor::SystemCursorType>(const ::vl::presentation::INativeCursor::SystemCursorType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeMouseButton>(const ::vl::presentation::NativeMouseButton & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::PointSequenceEndReason>(const ::vl::presentation::PointSequenceEndReason & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::ElementShapeType>(const ::vl::presentation::elements::ElementShapeType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::GuiGradientBackgroundElement::Direction>(const ::vl::presentation::elements::GuiGradientBackgroundElement::Direction & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::Gui3DSplitterElement::Direction>(const ::vl::presentation::elements::Gui3DSplitterElement::Direction & value);
@@ -607,6 +647,9 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowKeyInfo>(const ::vl::presentation::NativeWindowKeyInfo & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowCharInfo>(const ::vl::presentation::NativeWindowCharInfo & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GlobalShortcutKey>(const ::vl::presentation::remoteprotocol::GlobalShortcutKey & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOPointInfo>(const ::vl::presentation::remoteprotocol::IOPointInfo & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOPointAction>(const ::vl::presentation::remoteprotocol::IOPointAction & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOPointEnd>(const ::vl::presentation::remoteprotocol::IOPointEnd & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::ElementShape>(const ::vl::presentation::elements::ElementShape & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_Raw>(const ::vl::presentation::remoteprotocol::ElementDesc_Raw & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(const ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder & value);
@@ -656,6 +699,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeCursor::SystemCursorType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeCursor::SystemCursorType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeMouseButton>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeMouseButton& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::PointSequenceEndReason>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::PointSequenceEndReason& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::ElementShapeType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::ElementShapeType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::GuiGradientBackgroundElement::Direction>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::GuiGradientBackgroundElement::Direction& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::Gui3DSplitterElement::Direction>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::Gui3DSplitterElement::Direction& value);
@@ -686,6 +730,9 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowKeyInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowKeyInfo& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowCharInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowCharInfo& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GlobalShortcutKey>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GlobalShortcutKey& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOPointInfo& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointAction>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOPointAction& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointEnd>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOPointEnd& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::ElementShape>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::ElementShape& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_Raw>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_Raw& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder& value);
@@ -799,6 +846,13 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(IOKeyDown, ::vl::presentation::NativeWindowKeyInfo, REQ, NODROP)\
 	HANDLER(IOKeyUp, ::vl::presentation::NativeWindowKeyInfo, REQ, NODROP)\
 	HANDLER(IOChar, ::vl::presentation::NativeWindowCharInfo, REQ, NODROP)\
+	HANDLER(IOPointStarted, ::vl::presentation::remoteprotocol::IOPointAction, REQ, NODROP)\
+	HANDLER(IOPointDown, ::vl::presentation::remoteprotocol::IOPointAction, REQ, NODROP)\
+	HANDLER(IOPointUpdate, ::vl::presentation::remoteprotocol::IOPointAction, REQ, NODROP)\
+	HANDLER(IOPointUp, ::vl::presentation::remoteprotocol::IOPointAction, REQ, NODROP)\
+	HANDLER(IOPointEnter, ::vl::presentation::remoteprotocol::IOPointAction, REQ, NODROP)\
+	HANDLER(IOPointLeave, ::vl::presentation::remoteprotocol::IOPointAction, REQ, NODROP)\
+	HANDLER(IOPointEnded, ::vl::presentation::remoteprotocol::IOPointEnd, REQ, NODROP)\
 
 #define GACUI_REMOTEPROTOCOL_MESSAGE_REQUEST_TYPES(HANDLER)\
 	HANDLER(::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::GlobalShortcutKey>>)\
@@ -845,6 +899,8 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::NativeWindowMouseInfo)\
 	HANDLER(::vl::presentation::remoteprotocol::ControllerGlobalConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::IOMouseInfoWithButton)\
+	HANDLER(::vl::presentation::remoteprotocol::IOPointAction)\
+	HANDLER(::vl::presentation::remoteprotocol::IOPointEnd)\
 	HANDLER(::vl::presentation::remoteprotocol::ScreenConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowSizingConfig)\
 	HANDLER(::vl::vint)\

@@ -106,6 +106,23 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::PointSequenceEndReason>(const ::vl::presentation::PointSequenceEndReason & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::PointSequenceEndReason>(const ::vl::presentation::PointSequenceEndReason&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::PointSequenceEndReason::Succeeded: node->content.value = WString::Unmanaged(L"Succeeded"); break;
+		case ::vl::presentation::PointSequenceEndReason::Canceled_Unknown: node->content.value = WString::Unmanaged(L"Canceled_Unknown"); break;
+		case ::vl::presentation::PointSequenceEndReason::Canceled_PlatformCanceled: node->content.value = WString::Unmanaged(L"Canceled_PlatformCanceled"); break;
+		case ::vl::presentation::PointSequenceEndReason::Canceled_CaptureLost: node->content.value = WString::Unmanaged(L"Canceled_CaptureLost"); break;
+		case ::vl::presentation::PointSequenceEndReason::Canceled_WindowDestroyed: node->content.value = WString::Unmanaged(L"Canceled_WindowDestroyed"); break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::ElementShapeType>(const ::vl::presentation::elements::ElementShapeType & value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::elements::ElementShapeType>(const ::vl::presentation::elements::ElementShapeType&)#"
@@ -475,6 +492,45 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"alt", value.alt);
 		ConvertCustomTypeToJsonField(node, L"osSuper", value.osSuper);
 		ConvertCustomTypeToJsonField(node, L"code", value.code);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOPointInfo>(const ::vl::presentation::remoteprotocol::IOPointInfo & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"sequenceId", value.sequenceId);
+		ConvertCustomTypeToJsonField(node, L"pointId", value.pointId);
+		ConvertCustomTypeToJsonField(node, L"timestamp", value.timestamp);
+		ConvertCustomTypeToJsonField(node, L"activePointCount", value.activePointCount);
+		ConvertCustomTypeToJsonField(node, L"position", value.position);
+		ConvertCustomTypeToJsonField(node, L"primary", value.primary);
+		ConvertCustomTypeToJsonField(node, L"ctrl", value.ctrl);
+		ConvertCustomTypeToJsonField(node, L"shift", value.shift);
+		ConvertCustomTypeToJsonField(node, L"alt", value.alt);
+		ConvertCustomTypeToJsonField(node, L"osSuper", value.osSuper);
+		ConvertCustomTypeToJsonField(node, L"contactBounds", value.contactBounds);
+		ConvertCustomTypeToJsonField(node, L"pressure", value.pressure);
+		ConvertCustomTypeToJsonField(node, L"orientation", value.orientation);
+		ConvertCustomTypeToJsonField(node, L"platformFrameId", value.platformFrameId);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOPointAction>(const ::vl::presentation::remoteprotocol::IOPointAction & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"eventIndex", value.eventIndex);
+		ConvertCustomTypeToJsonField(node, L"info", value.info);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOPointEnd>(const ::vl::presentation::remoteprotocol::IOPointEnd & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"sequenceId", value.sequenceId);
+		ConvertCustomTypeToJsonField(node, L"eventIndex", value.eventIndex);
+		ConvertCustomTypeToJsonField(node, L"timestamp", value.timestamp);
+		ConvertCustomTypeToJsonField(node, L"accepted", value.accepted);
+		ConvertCustomTypeToJsonField(node, L"reason", value.reason);
 		return node;
 	}
 
@@ -968,6 +1024,20 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> void ConvertJsonToCustomType<::vl::presentation::PointSequenceEndReason>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::PointSequenceEndReason& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::PointSequenceEndReason>(Ptr<JsonNode>, ::vl::presentation::PointSequenceEndReason&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"Succeeded") value = ::vl::presentation::PointSequenceEndReason::Succeeded; else
+		if (jsonNode->content.value == L"Canceled_Unknown") value = ::vl::presentation::PointSequenceEndReason::Canceled_Unknown; else
+		if (jsonNode->content.value == L"Canceled_PlatformCanceled") value = ::vl::presentation::PointSequenceEndReason::Canceled_PlatformCanceled; else
+		if (jsonNode->content.value == L"Canceled_CaptureLost") value = ::vl::presentation::PointSequenceEndReason::Canceled_CaptureLost; else
+		if (jsonNode->content.value == L"Canceled_WindowDestroyed") value = ::vl::presentation::PointSequenceEndReason::Canceled_WindowDestroyed; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::ElementShapeType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::ElementShapeType& value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::elements::ElementShapeType>(Ptr<JsonNode>, ::vl::presentation::elements::ElementShapeType&)#"
@@ -1416,6 +1486,63 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"alt") ConvertJsonToCustomType(field->value, value.alt); else
 			if (field->name.value == L"osSuper") ConvertJsonToCustomType(field->value, value.osSuper); else
 			if (field->name.value == L"code") ConvertJsonToCustomType(field->value, value.code); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOPointInfo& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointInfo>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::IOPointInfo&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"sequenceId") ConvertJsonToCustomType(field->value, value.sequenceId); else
+			if (field->name.value == L"pointId") ConvertJsonToCustomType(field->value, value.pointId); else
+			if (field->name.value == L"timestamp") ConvertJsonToCustomType(field->value, value.timestamp); else
+			if (field->name.value == L"activePointCount") ConvertJsonToCustomType(field->value, value.activePointCount); else
+			if (field->name.value == L"position") ConvertJsonToCustomType(field->value, value.position); else
+			if (field->name.value == L"primary") ConvertJsonToCustomType(field->value, value.primary); else
+			if (field->name.value == L"ctrl") ConvertJsonToCustomType(field->value, value.ctrl); else
+			if (field->name.value == L"shift") ConvertJsonToCustomType(field->value, value.shift); else
+			if (field->name.value == L"alt") ConvertJsonToCustomType(field->value, value.alt); else
+			if (field->name.value == L"osSuper") ConvertJsonToCustomType(field->value, value.osSuper); else
+			if (field->name.value == L"contactBounds") ConvertJsonToCustomType(field->value, value.contactBounds); else
+			if (field->name.value == L"pressure") ConvertJsonToCustomType(field->value, value.pressure); else
+			if (field->name.value == L"orientation") ConvertJsonToCustomType(field->value, value.orientation); else
+			if (field->name.value == L"platformFrameId") ConvertJsonToCustomType(field->value, value.platformFrameId); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointAction>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOPointAction& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointAction>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::IOPointAction&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"eventIndex") ConvertJsonToCustomType(field->value, value.eventIndex); else
+			if (field->name.value == L"info") ConvertJsonToCustomType(field->value, value.info); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointEnd>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOPointEnd& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointEnd>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::IOPointEnd&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"sequenceId") ConvertJsonToCustomType(field->value, value.sequenceId); else
+			if (field->name.value == L"eventIndex") ConvertJsonToCustomType(field->value, value.eventIndex); else
+			if (field->name.value == L"timestamp") ConvertJsonToCustomType(field->value, value.timestamp); else
+			if (field->name.value == L"accepted") ConvertJsonToCustomType(field->value, value.accepted); else
+			if (field->name.value == L"reason") ConvertJsonToCustomType(field->value, value.reason); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX

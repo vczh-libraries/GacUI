@@ -1432,6 +1432,284 @@
         "$ast": "EnumDecl",
         "attributes": [{
             "$ast": "Attribute",
+            "cppType": "::vl::presentation::PointSequenceEndReason",
+            "name": "@Cpp"
+        }],
+        "name": "IOPointEndReason",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "Succeeded"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Canceled_Unknown"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Canceled_PlatformCanceled"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Canceled_CaptureLost"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Canceled_WindowDestroyed"
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "IOPointInfo",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "sequenceId",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "pointId",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "timestamp",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "activePointCount",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "position",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "NativePoint"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "primary",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "ctrl",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "shift",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "alt",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "osSuper",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "contactBounds",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "NativeRect"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "pressure",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "Double"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "orientation",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "Double"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "platformFrameId",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "String"
+                }
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "IOPointAction",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "eventIndex",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "info",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOPointInfo"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "IOPointEnd",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "sequenceId",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "eventIndex",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "timestamp",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "accepted",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "reason",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOPointEndReason"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOPointStarted",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOPointAction"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOPointDown",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOPointAction"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOPointUpdate",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOPointAction"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOPointUp",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOPointAction"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOPointEnter",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOPointAction"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOPointLeave",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOPointAction"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOPointEnded",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOPointEnd"
+            }
+        }
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [{
+            "$ast": "Attribute",
             "cppType": "::vl::presentation::elements::ElementShapeType",
             "name": "@Cpp"
         }],
