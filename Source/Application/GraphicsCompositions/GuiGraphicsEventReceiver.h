@@ -323,12 +323,23 @@ Predefined Events
 				}
 			};
 
+			enum class GuiPointEventsType
+			{
+				Started,
+				Down,
+				Update,
+				Up,
+				Enter,
+				Leave,
+			};
+
 			/// <summary>Point input relative to the receiving composition. Points is a borrowed sparse list, updated between callbacks and cleared after End; copy values to retain them.</summary>
 			struct GuiPointEventArgs : public GuiEventArgs, public WindowPointInfo, public Description<GuiPointEventArgs>
 			{
-				const collections::List<Nullable<Point>>& points;
+				GuiPointEventsType							eventType;
+				const collections::List<Nullable<Point>>&	points;
 
-				GuiPointEventArgs(const collections::List<Nullable<Point>>& points);
+				GuiPointEventArgs(GuiPointEventsType eventType, const collections::List<Nullable<Point>>& points);
 				GuiPointEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& points);
 				/// <summary>Get the host-owned read-only list. Empty slots belong to contacts that have lifted.</summary>
 				const collections::List<Nullable<Point>>& GetPoints() const;
@@ -354,8 +365,8 @@ Predefined Events
 				const collections::List<Nullable<Point>>& GetPoints() const;
 			};
 
-			typedef GuiGraphicsEvent<GuiPointEventArgs>					GuiPointEvent;
-			typedef GuiGraphicsEvent<GuiPointSequenceStartedEventArgs>	GuiPointSequenceStartedEvent;
+			typedef GuiGraphicsEvent<GuiPointEventArgs>						GuiPointEvent;
+			typedef GuiGraphicsEvent<GuiPointSequenceStartedEventArgs>		GuiPointSequenceStartedEvent;
 			typedef GuiGraphicsEvent<GuiPointSequenceEndedEventArgs>		GuiPointSequenceEndedEvent;
 
 			/// <summary>Control signal.</summary>
@@ -528,17 +539,9 @@ Event Receiver
 				GuiNotifyEvent					mouseLeave;
 
 				/// <summary>Query point input at the first contact, before any point data or mouse fallback.</summary>
-				GuiPointSequenceStartedEvent		pointSequenceStarted;
-				/// <summary>A contact joins the captured sequence.</summary>
-				GuiPointEvent					pointDown;
-				/// <summary>An active contact reports an updated sample.</summary>
-				GuiPointEvent					pointUpdate;
-				/// <summary>A contact lifts; its list slot is already empty.</summary>
-				GuiPointEvent					pointUp;
-				/// <summary>An active contact enters the native surface, preserving the sequence target.</summary>
-				GuiPointEvent					pointEnter;
-				/// <summary>An active contact leaves the native surface, preserving the sequence target.</summary>
-				GuiPointEvent					pointLeave;
+				GuiPointSequenceStartedEvent	pointSequenceStarted;
+				/// <summary><!-- put necessary comment to GuiPointEventsType and write a better comment here -->.</summary>
+				GuiPointEvent					pointAction;
 				/// <summary>The sequence ends; point capture is released after propagation.</summary>
 				GuiPointSequenceEndedEvent		pointSequenceEnded;
 				
