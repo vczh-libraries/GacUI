@@ -351,7 +351,8 @@ GuiGraphicsHost
 				pointCaptureComposition = nullptr;
 				pointSequenceId = 0;
 				pointSequenceAccepted = false;
-				activePoints.Clear();
+				pointsOrigin = Point();
+				pointsScale = NativeSize();
 				points.Clear();
 			}
 
@@ -362,18 +363,36 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::RebasePoints(GuiGraphicsComposition* composition)
 			{
-				auto bounds = composition->GetGlobalBounds();
-				auto origin = hostRecord.nativeWindow->GetClientBoundsInScreen().LeftTop();
-				for (auto [info, index] : indexed(activePoints.Values()))
+				auto origin = hostRecord.nativeWindow->Convert(hostRecord.nativeWindow->GetClientBoundsInScreen().LeftTop());
+				// A 96-unit reference preserves fractional Windows DPI scaling.
+				auto scale = hostRecord.nativeWindow->Convert(Size(96, 96));
+				if (composition)
 				{
-					auto position = hostRecord.nativeWindow->Convert(NativePoint(info.position.x - origin.x, info.position.y - origin.y));
-					points[activePoints.Keys()[index]] = Point(position.x - bounds.x1, position.y - bounds.y1);
+					auto bounds = composition->GetGlobalBounds();
+					origin.x += bounds.x1;
+					origin.y += bounds.y1;
 				}
+				if (pointsOrigin == origin && pointsScale == scale) return;
+				// Retain one logical-coordinate list and shift only its occupied slots.
+				// Rebase stationary contacts after window moves and DPI changes as well.
+				for (auto [point, index] : indexed(points))
+				{
+					if (point)
+					{
+						auto position = point.Value();
+						points[index] = Point(
+							(vint)(((vint64_t)position.x + pointsOrigin.x) * pointsScale.x.value / scale.x.value - origin.x),
+							(vint)(((vint64_t)position.y + pointsOrigin.y) * pointsScale.y.value / scale.y.value - origin.y)
+							);
+					}
+				}
+				pointsOrigin = origin;
+				pointsScale = scale;
 			}
 
-			void GuiGraphicsHost::RaisePointEvent(GuiPointEventArgs& arguments, GuiPointEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
+			void GuiGraphicsHost::RaisePointEvent(GuiPointEventArgs& arguments)
 			{
-				RaiseCompositionPointEvent(arguments, pointCaptureComposition, eventReceiverEvent, [&](GuiGraphicsComposition* receiver)
+				RaiseCompositionPointEvent(arguments, pointCaptureComposition, &GuiGraphicsEventReceiver::pointAction, [&](GuiGraphicsComposition* receiver)
 				{
 					RebasePoints(receiver);
 				});
@@ -395,27 +414,22 @@ GuiGraphicsHost
 				});
 			}
 
-			void GuiGraphicsHost::OnPointInput(const NativeWindowPointInfo& info, GuiPointEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
+			void GuiGraphicsHost::OnPointInput(const NativeWindowPointInfo& info, GuiPointEventsType eventType)
 			{
 				if (pointSequenceId != info.sequenceId || !pointSequenceAccepted || !pointCaptureComposition) return;
+				GuiPointEventArgs arguments(eventType, points);
+				static_cast<WindowPointInfo&>(arguments) = ConvertNativePointInfo(hostRecord.nativeWindow, info);
+				RebasePoints(nullptr);
 				while (points.Count() <= info.pointId) points.Add({});
-				if (eventReceiverEvent == &GuiGraphicsEventReceiver::pointUp)
+				if (eventType == GuiPointEventsType::Up)
 				{
-					activePoints.Remove(info.pointId);
 					points[info.pointId] = Nullable<Point>();
 				}
 				else
 				{
-					// Keep samples in the window's parent coordinate space, so moving a hosted
-					// window also rebases stationary contacts on the next event or End.
-					auto retained = info;
-					auto origin = hostRecord.nativeWindow->GetClientBoundsInScreen().LeftTop();
-					retained.position = NativePoint(info.position.x + origin.x, info.position.y + origin.y);
-					activePoints.Set(info.pointId, retained);
+					points[info.pointId] = arguments.position;
 				}
-				GuiPointEventArgs arguments(points);
-				static_cast<WindowPointInfo&>(arguments) = ConvertNativePointInfo(hostRecord.nativeWindow, info);
-				RaisePointEvent(arguments, eventReceiverEvent);
+				RaisePointEvent(arguments);
 			}
 
 			void GuiGraphicsHost::PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept)
@@ -423,45 +437,41 @@ GuiGraphicsHost
 				ResetPointCapture();
 				pointSequenceId = firstPoint.sequenceId;
 				PointCapture(firstPoint);
-				auto retained = firstPoint;
-				auto origin = hostRecord.nativeWindow->GetClientBoundsInScreen().LeftTop();
-				retained.position = NativePoint(firstPoint.position.x + origin.x, firstPoint.position.y + origin.y);
-				activePoints.Add(firstPoint.pointId, retained);
-				points.Add({});
 				GuiPointSequenceStartedEventArgs arguments(points);
 				static_cast<WindowPointInfo&>(arguments) = ConvertNativePointInfo(hostRecord.nativeWindow, firstPoint);
+				RebasePoints(nullptr);
+				points.Add(arguments.position);
 				RaisePointSequenceStartedEvent(arguments);
 				accept = pointSequenceAccepted = arguments.accept;
 				if (!accept)
 				{
-					activePoints.Clear();
 					points.Clear();
 				}
 			}
 
 			void GuiGraphicsHost::PointDown(const NativeWindowPointInfo& info)
 			{
-				OnPointInput(info, &GuiGraphicsEventReceiver::pointDown);
+				OnPointInput(info, GuiPointEventsType::Down);
 			}
 
 			void GuiGraphicsHost::PointUpdate(const NativeWindowPointInfo& info)
 			{
-				OnPointInput(info, &GuiGraphicsEventReceiver::pointUpdate);
+				OnPointInput(info, GuiPointEventsType::Update);
 			}
 
 			void GuiGraphicsHost::PointUp(const NativeWindowPointInfo& info)
 			{
-				OnPointInput(info, &GuiGraphicsEventReceiver::pointUp);
+				OnPointInput(info, GuiPointEventsType::Up);
 			}
 
 			void GuiGraphicsHost::PointEntered(const NativeWindowPointInfo& info)
 			{
-				OnPointInput(info, &GuiGraphicsEventReceiver::pointEnter);
+				OnPointInput(info, GuiPointEventsType::Enter);
 			}
 
 			void GuiGraphicsHost::PointLeaved(const NativeWindowPointInfo& info)
 			{
-				OnPointInput(info, &GuiGraphicsEventReceiver::pointLeave);
+				OnPointInput(info, GuiPointEventsType::Leave);
 			}
 
 			void GuiGraphicsHost::PointSequenceEnded(const PointSequenceEndInfo& info)

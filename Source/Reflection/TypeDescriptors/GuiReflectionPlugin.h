@@ -252,6 +252,7 @@ Type List (Events)
 			F(presentation::compositions::GuiKeyEventArgs)\
 			F(presentation::compositions::GuiCharEventArgs)\
 			F(presentation::compositions::GuiMouseEventArgs)\
+			F(presentation::compositions::GuiPointEventsType)\
 			F(presentation::compositions::GuiPointEventArgs)\
 			F(presentation::compositions::GuiPointSequenceStartedEventArgs)\
 			F(presentation::compositions::GuiPointSequenceEndedEventArgs)\

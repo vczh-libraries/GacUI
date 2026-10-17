@@ -90,6 +90,56 @@ TEST_FILE
 			TEST_ASSERT(embedded->name == L"embedded-control");
 		});
 
+		TEST_CASE(L"Unified point actions expose their kind and borrow the sequence list")
+		{
+			auto pointEventType = GetTypeDescriptor(L"presentation::compositions::GuiPointEventsType");
+			TEST_ASSERT(pointEventType);
+			auto pointEventEnum = pointEventType->GetEnumType();
+			TEST_ASSERT(pointEventEnum);
+			for (auto name : { L"Started", L"Down", L"Update", L"Up", L"Enter", L"Leave" })
+			{
+				TEST_ASSERT(pointEventEnum->IndexOfItem(name) != -1);
+			}
+
+			auto compositionType = GetTypeDescriptor<GuiGraphicsComposition>();
+			for (auto name : { L"pointSequenceStarted", L"pointAction", L"pointSequenceEnded" })
+			{
+				TEST_ASSERT(compositionType->GetEventByName(name, true));
+			}
+			for (auto name : { L"pointDown", L"pointUpdate", L"pointUp", L"pointEnter", L"pointLeave" })
+			{
+				TEST_ASSERT(!compositionType->GetEventByName(name, true));
+			}
+
+			GuiBoundsComposition composition;
+			List<Nullable<Point>> points;
+			points.Add(Point(10, 20));
+			points.Add({});
+			GuiPointSequenceStartedEventArgs started(points);
+			GuiPointSequenceStartedEventArgs sourcedStarted(&composition, points);
+			TEST_ASSERT(started.eventType == GuiPointEventsType::Started);
+			TEST_ASSERT(sourcedStarted.eventType == GuiPointEventsType::Started);
+			TEST_ASSERT(sourcedStarted.compositionSource == &composition);
+			TEST_ASSERT(&started.GetPoints() == &points);
+			TEST_ASSERT(&sourcedStarted.GetPoints() == &points);
+
+			for (auto eventType : { GuiPointEventsType::Down, GuiPointEventsType::Update, GuiPointEventsType::Up, GuiPointEventsType::Enter, GuiPointEventsType::Leave })
+			{
+				GuiPointEventArgs arguments(eventType, points);
+				GuiPointEventArgs sourcedArguments(&composition, eventType, points);
+				TEST_ASSERT(arguments.eventType == eventType);
+				TEST_ASSERT(sourcedArguments.eventType == eventType);
+				TEST_ASSERT(sourcedArguments.compositionSource == &composition);
+				TEST_ASSERT(&sourcedArguments.GetPoints() == &points);
+				auto boxed = BoxValue(&arguments);
+				TEST_ASSERT(UnboxValue<GuiPointEventsType>(boxed.GetProperty(L"eventType")) == eventType);
+				auto reflectedPoints = UnboxValue<Ptr<IValueReadonlyList>>(boxed.GetProperty(L"Points"));
+				TEST_ASSERT(reflectedPoints->GetCount() == 2);
+				TEST_ASSERT(UnboxValue<Nullable<Point>>(reflectedPoints->Get(0)).Value() == Point(10, 20));
+				TEST_ASSERT(!UnboxValue<Nullable<Point>>(reflectedPoints->Get(1)));
+			}
+		});
+
 		TEST_CASE(L"Ensure mouse button and Super modifier reflection surface")
 		{
 			auto mouseButtonType = GetTypeDescriptor(L"presentation::NativeMouseButton");

@@ -105,7 +105,8 @@ Host
 				vuint64_t								pointSequenceId = 0;
 				bool									pointSequenceAccepted = false;
 				GuiGraphicsComposition*					pointCaptureComposition = nullptr;
-				collections::Dictionary<vint, NativeWindowPointInfo> activePoints;
+				Point									pointsOrigin;
+				NativeSize								pointsScale;
 				collections::List<Nullable<Point>>		points;
 				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
 
@@ -120,10 +121,10 @@ Host
 				void									PointUncapture();
 				void									ResetPointCapture();
 				void									RebasePoints(GuiGraphicsComposition* composition);
-				void									RaisePointEvent(GuiPointEventArgs& arguments, GuiPointEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
+				void									RaisePointEvent(GuiPointEventArgs& arguments);
 				void									RaisePointSequenceStartedEvent(GuiPointSequenceStartedEventArgs& arguments);
 				void									RaisePointSequenceEndedEvent(GuiPointSequenceEndedEventArgs& arguments);
-				void									OnPointInput(const NativeWindowPointInfo& info, GuiPointEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
+				void									OnPointInput(const NativeWindowPointInfo& info, GuiPointEventsType eventType);
 				void									OnCharInput(const NativeWindowCharInfo& info, GuiGraphicsComposition* composition, GuiCharEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									RaiseMouseEvent(GuiMouseEventArgs& arguments, GuiGraphicsComposition* composition, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);

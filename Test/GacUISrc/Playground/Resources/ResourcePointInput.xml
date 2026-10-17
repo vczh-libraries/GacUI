@@ -24,9 +24,19 @@
           return text;
         }
 
+        func PointEventName(eventType: GuiPointEventsType): string
+        {
+          if (eventType == GuiPointEventsType::Started) { return "Started"; }
+          if (eventType == GuiPointEventsType::Down) { return "Down"; }
+          if (eventType == GuiPointEventsType::Update) { return "Update"; }
+          if (eventType == GuiPointEventsType::Up) { return "Up"; }
+          if (eventType == GuiPointEventsType::Enter) { return "Enter"; }
+          return "Leave";
+        }
+
         func TraceData(name: string, arguments: GuiPointEventArgs*): void
         {
-          trace.Data = trace.Data & name & ":" & (cast string arguments.sequenceId)
+          trace.Data = trace.Data & name & self.PointEventName(arguments.eventType) & ":" & (cast string arguments.sequenceId)
             & ":" & (cast string arguments.pointId) & ":" & (cast string arguments.activePointCount)
             & ":" & (cast string arguments.position.x) & "," & (cast string arguments.position.y)
             & ":source=" & (cast string (arguments.compositionSource == inner))
@@ -102,13 +112,9 @@
           <ev.pointSequenceStarted-eval><![CDATA[{
             trace.Data = trace.Data & "ParentAcceptBefore:" & (cast string arguments.accept) & ";";
             arguments.accept = acceptParent.Selected;
-            self.TraceData("ParentStarted", arguments);
+            self.TraceData("Parent", arguments);
           }]]></ev.pointSequenceStarted-eval>
-          <ev.pointDown-eval><![CDATA[{ self.TraceData("ParentDown", arguments); }]]></ev.pointDown-eval>
-          <ev.pointUpdate-eval><![CDATA[{ self.TraceData("ParentUpdate", arguments); }]]></ev.pointUpdate-eval>
-          <ev.pointUp-eval><![CDATA[{ self.TraceData("ParentUp", arguments); }]]></ev.pointUp-eval>
-          <ev.pointEnter-eval><![CDATA[{ self.TraceData("ParentEnter", arguments); }]]></ev.pointEnter-eval>
-          <ev.pointLeave-eval><![CDATA[{ self.TraceData("ParentLeave", arguments); }]]></ev.pointLeave-eval>
+          <ev.pointAction-eval><![CDATA[{ self.TraceData("Parent", arguments); }]]></ev.pointAction-eval>
           <ev.pointSequenceEnded-eval><![CDATA[{ self.TraceEnd("ParentEnded", arguments); }]]></ev.pointSequenceEnded-eval>
           <Bounds ref.Name="inner" ExpectedBounds="x1:40 y1:30 x2:260 y2:180">
             <Raw Id="PointProbe.Target"/>
@@ -118,13 +124,9 @@
             <ev.pointSequenceStarted-eval><![CDATA[{
               arguments.accept = acceptChild.Selected;
               arguments.handled = stopChild.Selected;
-              self.TraceData("ChildStarted", arguments);
+              self.TraceData("Child", arguments);
             }]]></ev.pointSequenceStarted-eval>
-            <ev.pointDown-eval><![CDATA[{ self.TraceData("ChildDown", arguments); }]]></ev.pointDown-eval>
-            <ev.pointUpdate-eval><![CDATA[{ self.TraceData("ChildUpdate", arguments); }]]></ev.pointUpdate-eval>
-            <ev.pointUp-eval><![CDATA[{ self.TraceData("ChildUp", arguments); }]]></ev.pointUp-eval>
-            <ev.pointEnter-eval><![CDATA[{ self.TraceData("ChildEnter", arguments); }]]></ev.pointEnter-eval>
-            <ev.pointLeave-eval><![CDATA[{ self.TraceData("ChildLeave", arguments); }]]></ev.pointLeave-eval>
+            <ev.pointAction-eval><![CDATA[{ self.TraceData("Child", arguments); }]]></ev.pointAction-eval>
             <ev.pointSequenceEnded-eval><![CDATA[{ self.TraceEnd("ChildEnded", arguments); }]]></ev.pointSequenceEnded-eval>
           </Bounds>
         </Bounds>

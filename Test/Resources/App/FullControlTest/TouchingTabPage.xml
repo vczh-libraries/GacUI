@@ -103,11 +103,7 @@
           <Bounds ref.Name="touchingBounds" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <Raw ref.Name="touching" Id="FullControlTest.Touching"/>
             <ev.pointSequenceStarted-eval><![CDATA[{ arguments.accept = true; }]]></ev.pointSequenceStarted-eval>
-            <ev.pointDown-eval><![CDATA[{ self.UpdatePoints(arguments); }]]></ev.pointDown-eval>
-            <ev.pointUpdate-eval><![CDATA[{ self.UpdatePoints(arguments); }]]></ev.pointUpdate-eval>
-            <ev.pointUp-eval><![CDATA[{ self.UpdatePoints(arguments); }]]></ev.pointUp-eval>
-            <ev.pointEnter-eval><![CDATA[{ self.UpdatePoints(arguments); }]]></ev.pointEnter-eval>
-            <ev.pointLeave-eval><![CDATA[{ self.UpdatePoints(arguments); }]]></ev.pointLeave-eval>
+            <ev.pointAction-eval><![CDATA[{ self.UpdatePoints(arguments); }]]></ev.pointAction-eval>
             <ev.pointSequenceEnded-eval><![CDATA[{
               self.membership = "";
               self.baselineValid = false;

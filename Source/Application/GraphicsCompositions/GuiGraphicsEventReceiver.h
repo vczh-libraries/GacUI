@@ -323,24 +323,32 @@ Predefined Events
 				}
 			};
 
+			/// <summary>Identifies a point sequence query or an action within an accepted sequence.</summary>
 			enum class GuiPointEventsType
 			{
+				/// <summary>The first-contact query, delivered only through pointSequenceStarted.</summary>
 				Started,
+				/// <summary>A contact joins the captured sequence.</summary>
 				Down,
+				/// <summary>An active contact reports an updated sample.</summary>
 				Update,
+				/// <summary>A contact lifts; its list slot is already empty.</summary>
 				Up,
+				/// <summary>An active contact enters the native surface, preserving the sequence target.</summary>
 				Enter,
+				/// <summary>An active contact leaves the native surface, preserving the sequence target.</summary>
 				Leave,
 			};
 
 			/// <summary>Point input relative to the receiving composition. Points is a borrowed sparse list, updated between callbacks and cleared after End; copy values to retain them.</summary>
 			struct GuiPointEventArgs : public GuiEventArgs, public WindowPointInfo, public Description<GuiPointEventArgs>
 			{
+				/// <summary>The query or action represented by this event.</summary>
 				GuiPointEventsType							eventType;
 				const collections::List<Nullable<Point>>&	points;
 
 				GuiPointEventArgs(GuiPointEventsType eventType, const collections::List<Nullable<Point>>& points);
-				GuiPointEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& points);
+				GuiPointEventArgs(GuiGraphicsComposition* composition, GuiPointEventsType eventType, const collections::List<Nullable<Point>>& points);
 				/// <summary>Get the host-owned read-only list. Empty slots belong to contacts that have lifted.</summary>
 				const collections::List<Nullable<Point>>& GetPoints() const;
 			};
@@ -539,8 +547,8 @@ Event Receiver
 				GuiNotifyEvent					mouseLeave;
 
 				/// <summary>Query point input at the first contact, before any point data or mouse fallback.</summary>
-				GuiPointSequenceStartedEvent	pointSequenceStarted;
-				/// <summary><!-- put necessary comment to GuiPointEventsType and write a better comment here -->.</summary>
+				GuiPointSequenceStartedEvent		pointSequenceStarted;
+				/// <summary>An action in the accepted captured sequence, identified by GuiPointEventArgs::eventType. Started is delivered only through pointSequenceStarted.</summary>
 				GuiPointEvent					pointAction;
 				/// <summary>The sequence ends; point capture is released after propagation.</summary>
 				GuiPointSequenceEndedEvent		pointSequenceEnded;

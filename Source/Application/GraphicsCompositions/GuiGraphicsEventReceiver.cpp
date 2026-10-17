@@ -11,13 +11,15 @@ namespace vl
 Point Event Arguments
 ***********************************************************************/
 
-			GuiPointEventArgs::GuiPointEventArgs(const collections::List<Nullable<Point>>& _points)
-				:points(_points)
+			GuiPointEventArgs::GuiPointEventArgs(GuiPointEventsType _eventType, const collections::List<Nullable<Point>>& _points)
+				:eventType(_eventType)
+				,points(_points)
 			{
 			}
 
-			GuiPointEventArgs::GuiPointEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& _points)
+			GuiPointEventArgs::GuiPointEventArgs(GuiGraphicsComposition* composition, GuiPointEventsType _eventType, const collections::List<Nullable<Point>>& _points)
 				:GuiEventArgs(composition)
+				,eventType(_eventType)
 				,points(_points)
 			{
 			}
@@ -68,11 +70,7 @@ Event Receiver
 				,mouseEnter(_sender)
 				,mouseLeave(_sender)
 				,pointSequenceStarted(_sender)
-				,pointDown(_sender)
-				,pointUpdate(_sender)
-				,pointUp(_sender)
-				,pointEnter(_sender)
-				,pointLeave(_sender)
+				,pointAction(_sender)
 				,pointSequenceEnded(_sender)
 				,previewKey(_sender)
 				,keyDown(_sender)

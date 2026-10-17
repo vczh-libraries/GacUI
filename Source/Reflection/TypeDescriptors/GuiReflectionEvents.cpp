@@ -99,8 +99,18 @@ Type Declaration
 				CLASS_MEMBER_FIELD(nonClient)
 			END_CLASS_MEMBER(GuiMouseEventArgs)
 
+			BEGIN_ENUM_ITEM(GuiPointEventsType)
+				ENUM_CLASS_ITEM(Started)
+				ENUM_CLASS_ITEM(Down)
+				ENUM_CLASS_ITEM(Update)
+				ENUM_CLASS_ITEM(Up)
+				ENUM_CLASS_ITEM(Enter)
+				ENUM_CLASS_ITEM(Leave)
+			END_ENUM_ITEM(GuiPointEventsType)
+
 			BEGIN_CLASS_MEMBER(GuiPointEventArgs)
 				CLASS_MEMBER_BASE(GuiEventArgs)
+				CLASS_MEMBER_FIELD(eventType)
 				CLASS_MEMBER_FIELD(sequenceId)
 				CLASS_MEMBER_FIELD(pointId)
 				CLASS_MEMBER_FIELD(timestamp)
