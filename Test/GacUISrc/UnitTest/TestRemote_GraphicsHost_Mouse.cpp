@@ -10,6 +10,7 @@ public:
 		events = _events;
 	}
 
+	using GuiRemoteRendererSingle::PointSequenceStarted;
 	using GuiRemoteRendererSingle::MouseDown;
 	using GuiRemoteRendererSingle::MouseUp;
 	using GuiRemoteRendererSingle::MouseDoubleClick;
@@ -22,6 +23,16 @@ public:
 
 TEST_FILE
 {
+	TEST_CASE(L"Remote renderer owns native point sequences")
+	{
+		MouseInputRenderer renderer(nullptr);
+		NativeWindowPointInfo info;
+		info.sequenceId = 1;
+		info.activePointCount = 1;
+		bool accept = false;
+		renderer.PointSequenceStarted(info, accept);
+		TEST_ASSERT(accept);
+	});
 	TEST_CATEGORY(L"MouseEntered and MouseLeaved on ControlHost")
 	{
 		GraphicsHostProtocol protocol;

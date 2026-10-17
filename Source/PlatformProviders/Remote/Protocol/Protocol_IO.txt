@@ -85,3 +85,54 @@ event IOMouseLeaved         {}
 event IOKeyDown             { request: IOKeyInfo; }
 event IOKeyUp               { request: IOKeyInfo; }
 event IOChar                { request: IOCharInfo; }
+
+[@Cpp(::vl::presentation::PointSequenceEndReason)]
+enum IOPointEndReason
+{
+    Succeeded,
+    Canceled_Unknown,
+    Canceled_PlatformCanceled,
+    Canceled_CaptureLost,
+    Canceled_WindowDestroyed,
+}
+
+struct IOPointInfo
+{
+    var sequenceId: string;
+    var pointId: int;
+    var timestamp: string;
+    var activePointCount: int;
+    var position: NativePoint;
+    var primary: bool;
+    var ctrl: bool;
+    var shift: bool;
+    var alt: bool;
+    var osSuper: bool;
+    var contactBounds: NativeRect?;
+    var pressure: double?;
+    var orientation: double?;
+    var platformFrameId: string?;
+}
+
+struct IOPointAction
+{
+    var eventIndex: int;
+    var info: IOPointInfo;
+}
+
+struct IOPointEnd
+{
+    var sequenceId: string;
+    var eventIndex: int;
+    var timestamp: string;
+    var accepted: bool;
+    var reason: IOPointEndReason;
+}
+
+event IOPointStarted        { request: IOPointAction; }
+event IOPointDown           { request: IOPointAction; }
+event IOPointUpdate         { request: IOPointAction; }
+event IOPointUp             { request: IOPointAction; }
+event IOPointEnter          { request: IOPointAction; }
+event IOPointLeave          { request: IOPointAction; }
+event IOPointEnded          { request: IOPointEnd; }
