@@ -13,6 +13,7 @@ Interfaces:
 
 #include "../../NativeWindow/GuiNativeWindow.h"
 #include "GuiRemoteEvents.h"
+#include "../../Utilities/SharedServices/GuiSharedAutomationService.h"
 
 namespace vl::presentation
 {
@@ -34,6 +35,13 @@ GuiRemoteWindow
 		GuiRemoteEvents&									remoteEvents;
 		collections::List<INativeWindowListener*>			listeners;
 		INativeWindow::WindowMode							windowMode = INativeWindow::Normal;
+
+		NativePointInputState				pointState;
+		IoPointCommandState					pointCommandState;
+		vuint64_t							wirePointSequenceId = 0;
+		vint								nextPointEventIndex = 0;
+		collections::SortedList<vuint64_t>	completedPointSequences;
+		NativeWindowPointInfo				firstPointSample;
 
 		bool												controllerDisconnected = false;
 		remoteprotocol::WindowSizingConfig					remoteWindowSizingConfig;
@@ -77,6 +85,12 @@ GuiRemoteWindow
 		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
 		void							OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments);
 		void							OnWindowActivatedUpdated(bool activated);
+
+		bool AcceptPointRecord(const WString& sequenceId, vint eventIndex);
+		void OnPointStarted(const remoteprotocol::IOPointAction& arguments);
+		void OnPointAction(NativePointEvent event, const remoteprotocol::IOPointAction& arguments);
+		void OnPointEnded(const remoteprotocol::IOPointEnd& arguments);
+		void CancelPointInput(PointSequenceEndReason reason);
 
 	public:
 		GuiRemoteWindow(GuiRemoteController* _remote);

@@ -152,7 +152,7 @@ RemoteProtocolAutomationService
 				return L"!Invalid window.";
 			}
 
-			return RunIOCommandOnNativeWindow(&ioCommandState, GetHostedApplication()->GetNativeController(), window, window->listeners, ioCommand);
+			return RunIOCommandOnNativeWindow(&ioCommandState, GetHostedApplication()->GetNativeController(), window, window->listeners, ioCommand, &window->pointState, &window->pointCommandState);
 		}
 
 		RemoteProtocolAutomationService::RemoteProtocolAutomationService()

@@ -12,6 +12,8 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::ClearPendingCoreEvents()
 	{
+		pointSequenceId = 0;
+		pointEventIndex = 0;
 		pendingMouseMove.Reset();
 		pendingHWheel.Reset();
 		pendingVWheel.Reset();

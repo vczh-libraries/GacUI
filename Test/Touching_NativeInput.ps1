@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory=$true)][int]$TargetProcessId,
-    [ValidateSet('CppTest','CppTest_Metaonly','CppTest_Reflection','GacUI_Host')][string]$Application = 'CppTest_Metaonly',
-    [ValidateRange(1,65535)][int]$AsPort = 8890
+    [ValidateSet('CppTest','CppTest_Metaonly','CppTest_Reflection','GacUI_Host','RemotingTest_Rendering_Native')][string]$Application = 'CppTest_Metaonly',
+    [ValidateRange(1,65535)][int]$AsPort = 8890,
+    [ValidateRange(1,65535)][int]$CoreAsPort = 8888
 )
 $ErrorActionPreference = 'Stop'
 # Run against an application already launched through copilotExecute.ps1.
@@ -89,6 +90,8 @@ public static class TouchingNativeInput {
 }
 '@
 $base = "http://localhost:$AsPort/Automation/$Application"
+$remoteRenderer = $Application -eq 'RemotingTest_Rendering_Native'
+$controlsBase = if ($remoteRenderer) { "http://localhost:$CoreAsPort/Automation/RemotingTest_Core" } else { $base }
 function Get-Nodes($value) {
     if ($null -eq $value) { return }
     if ($value -is [System.Array]) { foreach ($item in $value) { Get-Nodes $item }; return }
@@ -99,7 +102,7 @@ function Get-Nodes($value) {
 }
 function Snapshot {
     $null = [TouchingNativeInput]::Window($TargetProcessId)
-    Get-Nodes (Invoke-RestMethod "$base/Controls" -TimeoutSec 5)
+    Get-Nodes (Invoke-RestMethod "$controlsBase/Controls" -TimeoutSec 5)
 }
 function Find-Element([string]$id) { @(Snapshot | Where-Object elementId -EQ $id)[0] }
 function Caption([string]$text) { @(Snapshot | Where-Object elementText -EQ $text)[0] }
@@ -122,7 +125,19 @@ function Open-Touching {
     }
     throw 'Touching page could not be opened.'
 }
-function State { @((Find-Element 'FullControlTest.Touching').elementData.Split(',') | ForEach-Object { [double]::Parse($_,[Globalization.CultureInfo]::InvariantCulture) }) }
+function State {
+    $element = Find-Element 'FullControlTest.Touching'
+    if ($remoteRenderer) {
+        $matched = $false
+        for ($attempt=0; $attempt -lt 20; $attempt++) {
+            $raw = @(Get-Nodes (Invoke-RestMethod "$base/Dom" -TimeoutSec 5) | Where-Object rawId -EQ 'FullControlTest.Touching')[0]
+            if ($raw.data -eq $element.elementData) { $matched = $true; break }
+            Start-Sleep -Milliseconds 25
+        }
+        if (!$matched) { throw 'Renderer Dom did not receive Core Touching state.' }
+    }
+    @($element.elementData.Split(',') | ForEach-Object { [double]::Parse($_,[Globalization.CultureInfo]::InvariantCulture) })
+}
 function Frame($contacts) {
     $errorCode = [TouchingNativeInput]::Frame([TouchingNativeInput+TouchInfo[]]$contacts)
     if ($errorCode) { throw "InjectTouchInput failed with Win32 error $errorCode." }
@@ -167,7 +182,8 @@ try {
     Frame @([TouchingNativeInput]::Contact(1,0x40000,$tap))
     Start-Sleep -Milliseconds 200
     if (!(Find-Element 'FullControlTest.Clock')) { throw 'Rejected native touch did not retain compatibility mouse click.' }
-    Write-Output 'PASS rejected native touch retains OS mouse fallback.'
+    if ($remoteRenderer) { Write-Output 'PASS rejected native touch uses Core mouse fallback through renderer forwarding.' }
+    else { Write-Output 'PASS rejected native touch retains OS mouse fallback.' }
 
     $tab = Bounds (Caption 'Touching')
     $tap = [TouchingNativeInput]::ScreenPoint($window, ($tab.x1+$tab.x2)/2, ($tab.y1+$tab.y2)/2)

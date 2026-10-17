@@ -77,6 +77,78 @@ namespace vl::presentation::remote_renderer
 * Rendering (INativeWindow)
 ***********************************************************************/
 
+
+	void GuiRemoteRendererSingle::PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept)
+	{
+		accept = true;
+		if (!CanSendEvents()) return;
+		SendAccumulatedMessages();
+		pointSequenceId = firstPoint.sequenceId;
+		pointEventIndex = 0;
+		IOPointAction arguments;
+		arguments.eventIndex = pointEventIndex;
+		arguments.info = EncodePointInfo(firstPoint);
+		events->OnIOPointStarted(arguments);
+	}
+
+	void GuiRemoteRendererSingle::SendPointAction(NativePointEvent event, const NativeWindowPointInfo& info)
+	{
+		if (!CanSendEvents() || pointSequenceId == 0 || info.sequenceId != pointSequenceId) return;
+		CHECK_ERROR(pointEventIndex < 0x7FFFFFFF, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::SendPointAction#Point event indices exhausted.");
+		SendAccumulatedMessages();
+		IOPointAction arguments;
+		arguments.eventIndex = ++pointEventIndex;
+		arguments.info = EncodePointInfo(info);
+		switch (event)
+		{
+		case NativePointEvent::Down: events->OnIOPointDown(arguments); break;
+		case NativePointEvent::Update: events->OnIOPointUpdate(arguments); break;
+		case NativePointEvent::Up: events->OnIOPointUp(arguments); break;
+		case NativePointEvent::Entered: events->OnIOPointEnter(arguments); break;
+		case NativePointEvent::Leaved: events->OnIOPointLeave(arguments); break;
+		}
+	}
+
+	void GuiRemoteRendererSingle::PointSequenceEnded(const PointSequenceEndInfo& info)
+	{
+		if (!CanSendEvents() || pointSequenceId == 0 || info.sequenceId != pointSequenceId) return;
+		CHECK_ERROR(pointEventIndex < 0x7FFFFFFF, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::PointSequenceEnded#Point event indices exhausted.");
+		SendAccumulatedMessages();
+		IOPointEnd arguments;
+		arguments.sequenceId = u64tow(info.sequenceId);
+		arguments.eventIndex = ++pointEventIndex;
+		arguments.timestamp = u64tow(info.timestamp);
+		arguments.accepted = info.accepted;
+		arguments.reason = info.reason;
+		events->OnIOPointEnded(arguments);
+		pointSequenceId = 0;
+	}
+
+	void GuiRemoteRendererSingle::PointDown(const NativeWindowPointInfo& info)
+	{
+		SendPointAction(NativePointEvent::Down, info);
+	}
+
+	void GuiRemoteRendererSingle::PointUpdate(const NativeWindowPointInfo& info)
+	{
+		SendPointAction(NativePointEvent::Update, info);
+	}
+
+	void GuiRemoteRendererSingle::PointUp(const NativeWindowPointInfo& info)
+	{
+		SendPointAction(NativePointEvent::Up, info);
+	}
+
+	void GuiRemoteRendererSingle::PointEntered(const NativeWindowPointInfo& info)
+	{
+		SendPointAction(NativePointEvent::Entered, info);
+	}
+
+	void GuiRemoteRendererSingle::PointLeaved(const NativeWindowPointInfo& info)
+	{
+		SendPointAction(NativePointEvent::Leaved, info);
+	}
+
 	void GuiRemoteRendererSingle::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)
 	{
 		if (!CanSendEvents()) return;

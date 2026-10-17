@@ -858,27 +858,9 @@ RunIOCommandOnNativeWindow
 				info.primary = starting || (pointState.contacts.Keys().Contains(command.sourceToken) && pointState.contacts[command.sourceToken].pointId == 0);
 				bool draining = pointState.ended;
 				bool accepted = ProcessNativePointInput(pointState, listeners, command.event, command.sourceToken, info);
-				if (starting && !accepted) pointCommandState.fallbackToken = command.sourceToken;
-				if (!accepted && !draining && pointCommandState.fallbackToken && pointCommandState.fallbackToken.Value() == command.sourceToken)
+				if (!accepted && !draining)
 				{
-					auto mouse = &pointCommandState.mouse;
-					CopyFrom(mouse->pressingKeys, state->pressingKeys);
-					TemporaryModifiers temporary;
-					PressTemporaryModifiers(mouse, listeners, command.arguments.modifiers, temporary);
-					switch (command.event)
-					{
-					case NativePointEvent::Down:
-						ButtonDown(mouse, listeners, NativeMouseButton::Left, info.position);
-						break;
-					case NativePointEvent::Up:
-						pointCommandState.fallbackToken.Reset();
-						ButtonUp(mouse, listeners, NativeMouseButton::Left, info.position);
-						break;
-					default:
-						MouseMove(mouse, listeners, info.position);
-						break;
-					}
-					ReleaseTemporaryModifiers(mouse, listeners, temporary);
+					ProcessIOPointFallback(pointCommandState, listeners, command.event, command.sourceToken, info, starting);
 				}
 			}
 
@@ -999,6 +981,31 @@ RunIOCommandOnNativeWindow
 						));
 				});
 #undef ERROR_MESSAGE_PREFIX
+			}
+		}
+
+		void ProcessIOPointFallback(IoPointCommandState& state, collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, const NativeWindowPointInfo& info, bool starting)
+		{
+			if (starting) state.fallbackToken = sourceToken;
+			if (!state.fallbackToken || state.fallbackToken.Value() != sourceToken) return;
+			auto mouse = &state.mouse;
+			mouse->pressingKeys.Clear();
+			if (info.ctrl) mouse->pressingKeys.Add(VKEY::KEY_CONTROL);
+			if (info.shift) mouse->pressingKeys.Add(VKEY::KEY_SHIFT);
+			if (info.alt) mouse->pressingKeys.Add(VKEY::KEY_MENU);
+			if (info.osSuper) mouse->pressingKeys.Add(VKEY::KEY_LWIN);
+			switch (event)
+			{
+			case NativePointEvent::Down:
+				iocommands::ButtonDown(mouse, listeners, NativeMouseButton::Left, info.position);
+				break;
+			case NativePointEvent::Up:
+				state.fallbackToken.Reset();
+				iocommands::ButtonUp(mouse, listeners, NativeMouseButton::Left, info.position);
+				break;
+			default:
+				iocommands::MouseMove(mouse, listeners, info.position);
+				break;
 			}
 		}
 

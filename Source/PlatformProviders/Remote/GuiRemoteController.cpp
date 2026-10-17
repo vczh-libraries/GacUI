@@ -281,6 +281,7 @@ GuiRemoteController::INativeWindowService
 	{
 		CHECK_ERROR(!windowDestroyed, L"vl::presentation::GuiRemoteController::CreateNativeWindow(INativeWindow::WindowMode)#GuiHostedController is not supposed to call this function for twice.");
 		windowDestroyed = true;
+		remoteWindow.CancelPointInput(PointSequenceEndReason::Canceled_WindowDestroyed);
 
 		for (auto l : remoteWindow.listeners) l->Closed();
 		for (auto l : remoteWindow.listeners) l->Destroying();

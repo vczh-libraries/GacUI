@@ -1,4 +1,5 @@
 #include "TestRemote_GraphicsHost_Shared.h"
+#include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 
 class MouseInputRenderer : public remote_renderer::GuiRemoteRendererSingle
@@ -11,6 +12,12 @@ public:
 	}
 
 	using GuiRemoteRendererSingle::PointSequenceStarted;
+	using GuiRemoteRendererSingle::PointDown;
+	using GuiRemoteRendererSingle::PointUpdate;
+	using GuiRemoteRendererSingle::PointUp;
+	using GuiRemoteRendererSingle::PointEntered;
+	using GuiRemoteRendererSingle::PointLeaved;
+	using GuiRemoteRendererSingle::PointSequenceEnded;
 	using GuiRemoteRendererSingle::MouseDown;
 	using GuiRemoteRendererSingle::MouseUp;
 	using GuiRemoteRendererSingle::MouseDoubleClick;
@@ -23,6 +30,314 @@ public:
 
 TEST_FILE
 {
+	TEST_CASE(L"Point unsigned decimal decoding is exact and canonical")
+	{
+		for (auto text : { L"0", L"4294967295", L"9007199254740993", L"18446744073709551615" })
+		{
+			TEST_ASSERT(u64tow(DecodePointUnsigned(text)) == text);
+		}
+		for (auto text : { L"", L"00", L"01", L"-1", L"+1", L" 1", L"1 ", L"1.0", L"1e3", L"18446744073709551616" })
+		{
+			TEST_ERROR(DecodePointUnsigned(text));
+		}
+		NativeWindowPointInfo info;
+		info.sequenceId = (vuint64_t)-1;
+		info.timestamp = 9007199254740993ULL;
+		TEST_ASSERT(DecodePointInfo(EncodePointInfo(info)) == info);
+		info.platformFrameId = 0;
+		TEST_ASSERT(DecodePointInfo(EncodePointInfo(info)) == info);
+		info.platformFrameId = (vuint64_t)-1;
+		TEST_ASSERT(DecodePointInfo(EncodePointInfo(info)) == info);
+	});
+
+	for (vint dpi : { 1,2 })
+	for (vint mode = 0; mode < 4; mode++)
+	TEST_CATEGORY(L"Remote point capture, sparse contacts and fallback: " + itow(mode) + L" at DPI " + itow(dpi))
+	{
+		auto config = GraphicsHostProtocol::MakeUnitTestScreenConfig();
+		config.screenConfig.scalingX = config.screenConfig.scalingY = (double)dpi;
+		GraphicsHostProtocol protocol(config);
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		GuiBoundsComposition* parent = nullptr;
+		GuiBoundsComposition* child = nullptr;
+		vint queries = 0, parentQueries = 0, actions = 0, ends = 0, mouseDowns = 0, mouseUps = 0;
+		List<WString> pointLogs;
+		vuint64_t localSequence = 0;
+		bool accepted = mode < 2;
+		const List<Nullable<Point>>* borrowed = nullptr;
+		protocol.OnNextFrame([&]()
+		{
+			parent = new GuiBoundsComposition;
+			parent->SetExpectedBounds(Rect(10, 10, 210, 210));
+			child = new GuiBoundsComposition;
+			child->SetExpectedBounds(Rect(10, 10, 110, 110));
+			parent->AddChild(child);
+			controlHost->GetContainerComposition()->AddChild(parent);
+			controlHost->ForceCalculateSizeImmediately();
+			child->GetEventReceiver()->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceStartedEventArgs& a)
+			{
+				queries++;
+				TEST_ASSERT(a.sequenceId > localSequence);
+				localSequence = a.sequenceId;
+				TEST_ASSERT(a.eventType == GuiPointEventsType::Started);
+				TEST_ASSERT(a.position == Point(10, 10));
+				TEST_ASSERT(a.GetPoints().Count() == 1 && a.GetPoints()[0].Value() == a.position);
+				a.accept = accepted && mode != 1;
+				a.handled = mode == 2;
+			});
+			parent->GetEventReceiver()->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceStartedEventArgs& a)
+			{
+				parentQueries++;
+				TEST_ASSERT(a.position == Point(20, 20));
+				a.accept = accepted && mode == 1;
+			});
+			child->GetEventReceiver()->pointAction.AttachLambda([&](GuiGraphicsComposition*, GuiPointEventArgs& a)
+			{
+				actions++;
+				pointLogs.Add(itow((vint)a.eventType) + L":" + itow(a.pointId) + L":" + itow(a.activePointCount));
+				TEST_ASSERT(accepted && a.sequenceId == localSequence);
+				TEST_ASSERT(a.timestamp == 9007199254740993ULL);
+				TEST_ASSERT(a.ctrl && a.shift && a.alt && a.osSuper);
+				TEST_ASSERT(a.contactBounds.Value() == Rect(8, 7, 12, 13));
+				TEST_ASSERT(a.pressure.Value() == 0.75 && a.orientation.Value() == 1.25);
+				TEST_ASSERT(a.platformFrameId.Value() == (vuint64_t)-1);
+				TEST_ASSERT(a.GetPoints().Count() > a.pointId);
+				TEST_ASSERT((bool)a.GetPoints()[a.pointId] == (a.eventType != GuiPointEventsType::Up));
+				if (a.pointId == 2) TEST_ASSERT(!a.GetPoints()[0]);
+			});
+			child->GetEventReceiver()->pointSequenceEnded.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& a)
+			{
+				ends++;
+				TEST_ASSERT(a.accepted == accepted && a.sequenceId == localSequence);
+				borrowed = &a.GetPoints();
+				if (!accepted) TEST_ASSERT(a.GetPoints().Count() == 0);
+				else if (a.reason != PointSequenceEndReason::Succeeded)
+				{
+					if (a.GetPoints().Count() == 1) TEST_ASSERT(a.GetPoints()[0]);
+					else TEST_ASSERT(!a.GetPoints()[0] && a.GetPoints()[1]);
+				}
+			});
+			child->GetEventReceiver()->mouseDown.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs& a)
+			{
+				mouseDowns++;
+				TEST_ASSERT(!accepted && a.ctrl && a.shift && a.alt && a.osSuper);
+			});
+			child->GetEventReceiver()->mouseUp.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs&) { mouseUps++; });
+		});
+		protocol.OnNextFrame([&]()
+		{
+			auto events = protocol.GetEvents();
+			NativeWindowPointInfo sample;
+			sample.sequenceId = (vuint64_t)-1;
+			sample.timestamp = 9007199254740993ULL;
+			sample.activePointCount = 1;
+			sample.position = NativePoint(30 * dpi, 30 * dpi);
+			sample.primary = true;
+			sample.ctrl = sample.shift = sample.alt = sample.osSuper = true;
+			sample.contactBounds = NativeRect(28 * dpi, 27 * dpi, 32 * dpi, 33 * dpi);
+			sample.pressure = 0.75;
+			sample.orientation = 1.25;
+			sample.platformFrameId = (vuint64_t)-1;
+			IOPointAction a;
+			a.eventIndex = 0;
+			a.info = EncodePointInfo(sample);
+			events->OnIOPointDown(a); // Outside a sequence.
+			events->OnIOPointStarted(a);
+			TEST_ASSERT(queries == 1 && parentQueries == (mode == 2 ? 0 : 1));
+			events->OnIOPointStarted(a); // Nested Started cannot replace capture.
+			a.eventIndex = 1;
+			events->OnIOPointDown(a);
+			events->OnIOPointDown(a); // Duplicate is ignored.
+			a.eventIndex = 3;
+			TEST_ERROR(events->OnIOPointUpdate(a)); // Missing index is a protocol failure.
+			a.eventIndex = 2;
+			a.info.sequenceId = L"123";
+			events->OnIOPointUpdate(a); // Foreign sequence does not advance the index.
+			a.info.sequenceId = u64tow(sample.sequenceId);
+			events->OnIOPointUpdate(a);
+			a.eventIndex++;
+			a.info.pointId = 1; a.info.activePointCount = 2; a.info.primary = false;
+			events->OnIOPointDown(a);
+			a.eventIndex++;
+			a.info.pointId = 0; a.info.activePointCount = 1;
+			events->OnIOPointUp(a);
+			a.eventIndex++;
+			a.info.pointId = 1;
+			events->OnIOPointLeave(a);
+			a.eventIndex++;
+			events->OnIOPointEnter(a);
+			a.eventIndex++;
+			a.info.pointId = 2; a.info.activePointCount = 2;
+			events->OnIOPointDown(a);
+			a.eventIndex++;
+			a.info.pointId = 1; a.info.activePointCount = 1;
+			events->OnIOPointUp(a);
+			a.eventIndex++;
+			a.info.pointId = 2; a.info.activePointCount = 0;
+			events->OnIOPointUp(a);
+			TEST_ASSERT(ends == 0); // Final Up does not synthesize End.
+			IOPointEnd end;
+			end.sequenceId = a.info.sequenceId; end.eventIndex = ++a.eventIndex;
+			end.timestamp = L"18446744073709551615"; end.accepted = !accepted;
+			end.reason = PointSequenceEndReason::Succeeded;
+			events->OnIOPointEnded(end);
+			TEST_ASSERT(ends == 1 && borrowed && borrowed->Count() == 0);
+			TEST_ASSERT(actions == (accepted ? 9 : 0));
+			if (accepted) AssertEventLogs(pointLogs, L"1:0:1", L"2:0:1", L"1:1:2", L"3:0:1", L"5:1:1", L"4:1:1", L"1:2:2", L"3:1:1", L"3:2:0");
+			else AssertEventLogs(pointLogs);
+			TEST_ASSERT(mouseDowns == (accepted ? 0 : 1) && mouseUps == mouseDowns);
+			a.info = EncodePointInfo(sample); a.eventIndex = 0;
+			events->OnIOPointStarted(a); // Completed wire identity stays retired.
+			events->OnIOPointEnded(end);
+			TEST_ASSERT(queries == 1 && ends == 1);
+			for (auto reason : { PointSequenceEndReason::Canceled_PlatformCanceled, PointSequenceEndReason::Canceled_CaptureLost, PointSequenceEndReason::Canceled_WindowDestroyed, PointSequenceEndReason::Canceled_Unknown })
+			{
+				sample.sequenceId--;
+				a.info = EncodePointInfo(sample); a.eventIndex = 0;
+				events->OnIOPointStarted(a);
+				a.eventIndex = 1; events->OnIOPointDown(a);
+				if (reason == PointSequenceEndReason::Canceled_CaptureLost)
+				{
+					a.eventIndex = 2; a.info.pointId = 1; a.info.activePointCount = 2; events->OnIOPointDown(a);
+					a.eventIndex = 3; a.info.pointId = 0; a.info.activePointCount = 1; events->OnIOPointUp(a);
+				}
+				end.sequenceId = a.info.sequenceId; end.eventIndex = a.eventIndex + 1; end.reason = reason;
+				events->OnIOPointEnded(end);
+				TEST_ASSERT(borrowed->Count() == 0);
+				a.eventIndex = 2; events->OnIOPointUpdate(a);
+			}
+			TEST_ASSERT(ends == 5 && queries == 5);
+			pointLogs.Clear();
+			// Native renderer always owns acquisition; Core asks again each sequence.
+			accepted = !accepted;
+			MouseInputRenderer renderer(events);
+			sample.sequenceId = 123;
+			bool rendererAccept = false;
+			renderer.PointSequenceStarted(sample, rendererAccept);
+			TEST_ASSERT(rendererAccept);
+			renderer.PointDown(sample);
+			renderer.PointUpdate(sample);
+			renderer.PointUpdate(sample); // Stationary samples cannot be coalesced.
+			sample.activePointCount = 0;
+			renderer.PointUp(sample);
+			PointSequenceEndInfo boundary;
+			boundary.sequenceId = sample.sequenceId; boundary.timestamp = sample.timestamp;
+			boundary.accepted = true; boundary.reason = PointSequenceEndReason::Succeeded;
+			renderer.PointSequenceEnded(boundary);
+			TEST_ASSERT(ends == 6 && queries == 6);
+			if (accepted) AssertEventLogs(pointLogs, L"1:0:1", L"2:0:1", L"2:0:1", L"3:0:0");
+			else AssertEventLogs(pointLogs);
+			renderer.DisconnectFromCore();
+			sample.sequenceId++;
+			renderer.PointSequenceStarted(sample, rendererAccept);
+			renderer.PointDown(sample);
+			TEST_ASSERT(ends == 6 && queries == 6);
+
+			// A replacement connection retires active capture and may restart its wire IDs.
+			sample.activePointCount = 1;
+			a.info = EncodePointInfo(sample); a.eventIndex = 0;
+			events->OnIOPointStarted(a);
+			a.eventIndex = 1; events->OnIOPointDown(a);
+			events->OnControllerDisconnect();
+			TEST_ASSERT(queries == 7 && ends == 7 && borrowed->Count() == 0);
+			TEST_ASSERT(!GetCurrentController()->WindowService()->GetMainWindow()->IsCapturing());
+			a.eventIndex = 2; events->OnIOPointUpdate(a);
+			events->OnIOPointEnded(end);
+			TEST_ASSERT(queries == 7 && ends == 7);
+			events->OnControllerConnect(MakeGlobalConfig());
+			a.eventIndex = 0; events->OnIOPointStarted(a);
+			a.eventIndex = 1; events->OnIOPointDown(a);
+			a.eventIndex = 2; a.info.activePointCount = 0; events->OnIOPointUp(a);
+			end.sequenceId = a.info.sequenceId; end.eventIndex = 3; end.reason = PointSequenceEndReason::Succeeded;
+			events->OnIOPointEnded(end);
+			TEST_ASSERT(queries == 8 && ends == 8 && borrowed->Count() == 0);
+		});
+		protocol.OnNextFrame([&]() { controlHost->Hide(); });
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
+
+	TEST_CATEGORY(L"Core automation and renderer wire identities share the window allocator")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		RemoteProtocolAutomationService automation;
+		bool accepted = true;
+		vuint64_t sequence = 0;
+		vint queries = 0, ends = 0, clicks = 0;
+		bool validSequences = true, validEnds = true;
+		auto run = [&](const wchar_t* command)
+		{
+			TEST_ASSERT(automation.RunIOCommand({}, WString::Unmanaged(command)) == L"Queued");
+		};
+		protocol.OnNextFrame([&]()
+		{
+			auto button = new GuiButton(theme::ThemeName::Button);
+			button->GetBoundsComposition()->SetExpectedBounds(Rect(10, 10, 110, 110));
+			controlHost->GetContainerComposition()->AddChild(button->GetBoundsComposition());
+			button->Clicked.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { clicks++; });
+			auto receiver = button->GetBoundsComposition()->GetEventReceiver();
+			receiver->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceStartedEventArgs& a)
+			{
+				validSequences &= a.sequenceId > sequence;
+				sequence = a.sequenceId;
+				queries++;
+				a.accept = accepted;
+			});
+			receiver->pointSequenceEnded.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& a)
+			{
+				validEnds &= a.sequenceId == sequence && a.accepted == accepted;
+				ends++;
+			});
+			controlHost->ForceCalculateSizeImmediately();
+			run(L"!PointDown:7,30,30"); run(L"!PointUp:7,30,30");
+		});
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(queries == 1 && ends == 1 && clicks == 0);
+			auto events = protocol.GetEvents();
+			NativeWindowPointInfo sample;
+			sample.sequenceId = 1; sample.activePointCount = 1; sample.position = NativePoint(30, 30);
+			IOPointAction a; a.eventIndex = 0; a.info = EncodePointInfo(sample);
+			events->OnIOPointStarted(a);
+			a.eventIndex = 1; events->OnIOPointDown(a);
+			a.eventIndex = 2; a.info.activePointCount = 0; events->OnIOPointUp(a);
+			IOPointEnd end; end.sequenceId = L"1"; end.eventIndex = 3; end.timestamp = L"0";
+			end.reason = PointSequenceEndReason::Succeeded;
+			events->OnIOPointEnded(end);
+			TEST_ASSERT(queries == 2 && ends == 2 && clicks == 0);
+			run(L"!PointDown:7,30,30"); run(L"!PointUp:7,30,30");
+		});
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(queries == 3 && ends == 3 && clicks == 0);
+			accepted = false;
+			run(L"!PointDown:7,30,30"); run(L"!PointDown:8,40,40");
+			run(L"!PointUp:7,30,30"); run(L"!PointUp:8,40,40");
+		});
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(queries == 4 && ends == 4 && clicks == 1);
+			run(L"!PointDown:7,30,30"); run(L"!PointCancel:7,CaptureLost");
+		});
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(queries == 5 && ends == 5 && clicks == 1);
+			TEST_ASSERT(!GetCurrentController()->WindowService()->GetMainWindow()->IsCapturing());
+			run(L"!PointDown:7,30,30"); run(L"!PointUp:7,30,30");
+		});
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(queries == 6 && ends == 6 && clicks == 2 && validSequences && validEnds);
+			controlHost->Hide();
+		});
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
 	TEST_CASE(L"Remote renderer owns native point sequences")
 	{
 		MouseInputRenderer renderer(nullptr);

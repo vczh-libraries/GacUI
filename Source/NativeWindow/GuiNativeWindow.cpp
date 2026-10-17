@@ -1,5 +1,6 @@
 #include "GuiNativeWindow.h"
 #include <chrono>
+#include <limits>
 
 namespace vl
 {
@@ -39,18 +40,31 @@ Native Point Input
 			}
 		}
 
-		bool ProcessNativePointInput(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, NativeWindowPointInfo info)
+		void BeginNativePointSequence(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativeWindowPointInfo& firstPoint)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::ProcessNativePointInput#"
-			bool starting = event == NativePointEvent::Down && state.sequenceId == 0;
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::BeginNativePointSequence#"
+			CHECK_ERROR(state.sequenceId == 0 && state.contacts.Count() == 0, ERROR_MESSAGE_PREFIX L"A sequence is already active.");
+			CHECK_ERROR(state.lastSequenceId != (vuint64_t)-1, ERROR_MESSAGE_PREFIX L"Sequence IDs exhausted.");
+			firstPoint.sequenceId = state.sequenceId = ++state.lastSequenceId;
+			firstPoint.pointId = 0;
+			firstPoint.activePointCount = 1;
+			for (auto listener : listeners)
+			{
+				bool accept = false;
+				listener->PointSequenceStarted(firstPoint, accept);
+				state.accepted |= accept;
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void UpdateNativePointInput(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, NativeWindowPointInfo info)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::UpdateNativePointInput#"
+			CHECK_ERROR(state.sequenceId != 0, ERROR_MESSAGE_PREFIX L"No active sequence.");
 			if (event == NativePointEvent::Down)
 			{
 				CHECK_ERROR(!state.contacts.Keys().Contains(sourceToken), ERROR_MESSAGE_PREFIX L"Contact is already down.");
-				if (starting)
-				{
-					CHECK_ERROR(state.lastSequenceId != (vuint64_t)-1, ERROR_MESSAGE_PREFIX L"Sequence IDs exhausted.");
-					state.sequenceId = ++state.lastSequenceId;
-				}
+				CHECK_ERROR(state.nextPointId < std::numeric_limits<vint>::max(), ERROR_MESSAGE_PREFIX L"Point IDs exhausted.");
 				info.pointId = state.nextPointId++;
 			}
 			else
@@ -58,30 +72,11 @@ Native Point Input
 				CHECK_ERROR(state.contacts.Keys().Contains(sourceToken), ERROR_MESSAGE_PREFIX L"Contact is not down.");
 				info.pointId = state.contacts[sourceToken].pointId;
 			}
-
 			info.sequenceId = state.sequenceId;
 			info.activePointCount = state.contacts.Count() + (event == NativePointEvent::Down ? 1 : event == NativePointEvent::Up ? -1 : 0);
-			if (event == NativePointEvent::Up)
-			{
-				state.contacts.Remove(sourceToken);
-			}
-			else
-			{
-				state.contacts.Set(sourceToken, info);
-			}
-
-			if (starting)
-			{
-				for (auto listener : listeners)
-				{
-					bool accept = false;
-					listener->PointSequenceStarted(info, accept);
-					state.accepted |= accept;
-				}
-			}
-
-			bool accepted = state.accepted;
-			if (!state.ended && accepted)
+			if (event == NativePointEvent::Up) state.contacts.Remove(sourceToken);
+			else state.contacts.Set(sourceToken, info);
+			if (!state.ended && state.accepted)
 			{
 				void (INativeWindowListener::* callback)(const NativeWindowPointInfo&) = nullptr;
 				switch (event)
@@ -92,22 +87,25 @@ Native Point Input
 				case NativePointEvent::Entered: callback = &INativeWindowListener::PointEntered; break;
 				case NativePointEvent::Leaved: callback = &INativeWindowListener::PointLeaved; break;
 				}
-				for (auto listener : listeners)
-				{
-					(listener->*callback)(info);
-				}
+				for (auto listener : listeners) (listener->*callback)(info);
 			}
+#undef ERROR_MESSAGE_PREFIX
+		}
 
+		bool ProcessNativePointInput(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, NativeWindowPointInfo info)
+		{
+			if (event == NativePointEvent::Down && state.sequenceId == 0)
+			{
+				BeginNativePointSequence(state, listeners, info);
+			}
+			UpdateNativePointInput(state, listeners, event, sourceToken, info);
+			bool accepted = state.accepted;
 			if (state.contacts.Count() == 0)
 			{
-				if (!state.ended)
-				{
-					EndNativePointSequence(state, listeners, PointSequenceEndReason::Succeeded, info.timestamp);
-				}
+				if (!state.ended) EndNativePointSequence(state, listeners, PointSequenceEndReason::Succeeded, info.timestamp);
 				ResetCompletedNativePointSequence(state);
 			}
 			return accepted;
-#undef ERROR_MESSAGE_PREFIX
 		}
 
 		void CancelNativePointSequence(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, PointSequenceEndReason reason, vuint64_t timestamp)

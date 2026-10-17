@@ -141,6 +141,17 @@ namespace vl::presentation::remote_renderer
 
 	protected:
 
+		vuint64_t							pointSequenceId = 0;
+		vint								pointEventIndex = 0;
+		void SendPointAction(NativePointEvent event, const NativeWindowPointInfo& info);
+		void PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept) override;
+		void PointSequenceEnded(const PointSequenceEndInfo& info) override;
+		void PointDown(const NativeWindowPointInfo& info) override;
+		void PointUpdate(const NativeWindowPointInfo& info) override;
+		void PointUp(const NativeWindowPointInfo& info) override;
+		void PointEntered(const NativeWindowPointInfo& info) override;
+		void PointLeaved(const NativeWindowPointInfo& info) override;
+
 		void									MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
 		void									MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
 		void									MouseDoubleClick(NativeMouseButton button, const NativeWindowMouseInfo& info) override;

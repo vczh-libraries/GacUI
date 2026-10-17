@@ -119,8 +119,85 @@ GuiRemoteWindow
 GuiRemoteWindow (events)
 ***********************************************************************/
 
+
+	bool GuiRemoteWindow::AcceptPointRecord(const WString& sequenceId, vint eventIndex)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteWindow::AcceptPointRecord#"
+		if (controllerDisconnected || wirePointSequenceId == 0 || remoteprotocol::DecodePointUnsigned(sequenceId) != wirePointSequenceId) return false;
+		if (eventIndex < nextPointEventIndex) return false;
+		CHECK_ERROR(eventIndex == nextPointEventIndex, ERROR_MESSAGE_PREFIX L"Point event index gap.");
+		CHECK_ERROR(eventIndex < 0x7FFFFFFF, ERROR_MESSAGE_PREFIX L"Point event indices exhausted.");
+		return true;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteWindow::OnPointStarted(const remoteprotocol::IOPointAction& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteWindow::OnPointStarted#"
+		if (controllerDisconnected || pointState.sequenceId != 0) return;
+		auto info = remoteprotocol::DecodePointInfo(arguments.info);
+		if (completedPointSequences.Contains(info.sequenceId)) return;
+		CHECK_ERROR(info.sequenceId != 0 && arguments.eventIndex == 0 && info.pointId == 0 && info.activePointCount == 1, ERROR_MESSAGE_PREFIX L"Invalid Started record.");
+		wirePointSequenceId = info.sequenceId;
+		completedPointSequences.Add(wirePointSequenceId);
+		nextPointEventIndex = 1;
+		BeginNativePointSequence(pointState, listeners, info);
+		firstPointSample = info;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteWindow::OnPointAction(NativePointEvent event, const remoteprotocol::IOPointAction& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteWindow::OnPointAction#"
+		if (!AcceptPointRecord(arguments.info.sequenceId, arguments.eventIndex)) return;
+		auto info = remoteprotocol::DecodePointInfo(arguments.info);
+		info.sequenceId = pointState.sequenceId;
+		bool starting = pointState.nextPointId == 0;
+		CHECK_ERROR(!starting || (event == NativePointEvent::Down && info == firstPointSample), ERROR_MESSAGE_PREFIX L"First Down must match Started.");
+		CHECK_ERROR(info.pointId >= 0, ERROR_MESSAGE_PREFIX L"Invalid contact index.");
+		if (event == NativePointEvent::Down)
+		{
+			CHECK_ERROR(info.pointId == pointState.nextPointId, ERROR_MESSAGE_PREFIX L"Contact indices must follow Down order.");
+		}
+		else
+		{
+			CHECK_ERROR(pointState.contacts.Keys().Contains((vuint64_t)info.pointId), ERROR_MESSAGE_PREFIX L"Contact is not down.");
+		}
+		auto activeCount = pointState.contacts.Count() + (event == NativePointEvent::Down ? 1 : event == NativePointEvent::Up ? -1 : 0);
+		CHECK_ERROR(info.activePointCount == activeCount, ERROR_MESSAGE_PREFIX L"Invalid active contact count.");
+		UpdateNativePointInput(pointState, listeners, event, (vuint64_t)info.pointId, info);
+		if (!pointState.accepted) ProcessIOPointFallback(pointCommandState, listeners, event, (vuint64_t)info.pointId, info, starting);
+		nextPointEventIndex++;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteWindow::OnPointEnded(const remoteprotocol::IOPointEnd& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteWindow::OnPointEnded#"
+		if (!AcceptPointRecord(arguments.sequenceId, arguments.eventIndex)) return;
+		auto timestamp = remoteprotocol::DecodePointUnsigned(arguments.timestamp);
+		CHECK_ERROR(arguments.reason != PointSequenceEndReason::Succeeded || (pointState.nextPointId > 0 && pointState.contacts.Count() == 0), ERROR_MESSAGE_PREFIX L"Successful End requires all contacts Up.");
+		EndNativePointSequence(pointState, listeners, arguments.reason, timestamp);
+		if (arguments.reason != PointSequenceEndReason::Succeeded) CancelIOPointFallback(pointCommandState, listeners);
+		ResetCompletedNativePointSequence(pointState);
+		wirePointSequenceId = 0;
+		nextPointEventIndex = 0;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteWindow::CancelPointInput(PointSequenceEndReason reason)
+	{
+		CancelNativePointSequence(pointState, listeners, reason, GetNativePointTimestamp());
+		CancelIOPointFallback(pointCommandState, listeners);
+		ResetCompletedNativePointSequence(pointState);
+		wirePointSequenceId = 0;
+		nextPointEventIndex = 0;
+	}
+
 	void GuiRemoteWindow::OnControllerConnect()
 	{
+		CancelPointInput(PointSequenceEndReason::Canceled_CaptureLost);
+		completedPointSequences.Clear();
 		if (controllerDisconnected)
 		{
 			controllerDisconnected = false;
@@ -154,6 +231,8 @@ GuiRemoteWindow (events)
 	void GuiRemoteWindow::OnControllerDisconnect()
 	{
 		controllerDisconnected = true;
+		CancelPointInput(PointSequenceEndReason::Canceled_CaptureLost);
+		completedPointSequences.Clear();
 	}
 
 	void GuiRemoteWindow::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)
@@ -555,6 +634,7 @@ GuiRemoteWindow (INativeWindow)
 		if (statusCapturing)
 		{
 			statusCapturing = false;
+			if (controllerDisconnected) return true;
 			remoteMessages.RequestIOReleaseCapture();
 			bool disconnected = false;
 			remoteMessages.Submit(disconnected);

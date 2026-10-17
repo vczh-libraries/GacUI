@@ -125,6 +125,14 @@ INativeWindow
 			Leaved,
 		};
 
+		/// <summary>Begin an explicitly bounded sequence and allocate its local lifetime identity.</summary>
+		extern void BeginNativePointSequence(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativeWindowPointInfo& firstPoint);
+		/// <summary>Update contacts and dispatch a typed sample without implicitly ending the sequence.</summary>
+		extern void UpdateNativePointInput(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, NativeWindowPointInfo info);
+		/// <summary>Deliver a boundary using locally latched acceptance.</summary>
+		extern void EndNativePointSequence(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, PointSequenceEndReason reason, vuint64_t timestamp);
+		/// <summary>Discard completed contacts while retaining the window lifetime counter.</summary>
+		extern void ResetCompletedNativePointSequence(NativePointInputState& state);
 		/// <summary>Process a sample, allocate identities and deliver callbacks. Returns the latched acceptance even when the sample completes the sequence. Source tokens are opaque and may be reused after Up.</summary>
 		extern bool ProcessNativePointInput(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, NativeWindowPointInfo info);
 		/// <summary>End once without synthetic Ups; retain contacts and acceptance until the adapter retires remaining native activity.</summary>

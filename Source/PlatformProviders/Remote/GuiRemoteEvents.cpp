@@ -159,6 +159,42 @@ GuiRemoteEvents (events)
 		remote->callbackService.InvokeGlobalShortcutKeyActivated(arguments);
 	}
 
+
+	void GuiRemoteEvents::OnIOPointStarted(const remoteprotocol::IOPointAction& arguments)
+	{
+		remote->remoteWindow.OnPointStarted(arguments);
+	}
+
+	void GuiRemoteEvents::OnIOPointDown(const remoteprotocol::IOPointAction& arguments)
+	{
+		remote->remoteWindow.OnPointAction(NativePointEvent::Down, arguments);
+	}
+
+	void GuiRemoteEvents::OnIOPointUpdate(const remoteprotocol::IOPointAction& arguments)
+	{
+		remote->remoteWindow.OnPointAction(NativePointEvent::Update, arguments);
+	}
+
+	void GuiRemoteEvents::OnIOPointUp(const remoteprotocol::IOPointAction& arguments)
+	{
+		remote->remoteWindow.OnPointAction(NativePointEvent::Up, arguments);
+	}
+
+	void GuiRemoteEvents::OnIOPointEnter(const remoteprotocol::IOPointAction& arguments)
+	{
+		remote->remoteWindow.OnPointAction(NativePointEvent::Entered, arguments);
+	}
+
+	void GuiRemoteEvents::OnIOPointLeave(const remoteprotocol::IOPointAction& arguments)
+	{
+		remote->remoteWindow.OnPointAction(NativePointEvent::Leaved, arguments);
+	}
+
+	void GuiRemoteEvents::OnIOPointEnded(const remoteprotocol::IOPointEnd& arguments)
+	{
+		remote->remoteWindow.OnPointEnded(arguments);
+	}
+
 	void GuiRemoteEvents::OnIOButtonDown(const remoteprotocol::IOMouseInfoWithButton& arguments)
 	{
 		for (auto l : remote->remoteWindow.listeners) l->MouseDown(arguments.button, arguments.info);
@@ -212,5 +248,65 @@ GuiRemoteEvents (events)
 	void GuiRemoteEvents::OnIOChar(const NativeWindowCharInfo& arguments)
 	{
 		for (auto l : remote->remoteWindow.listeners) l->Char(arguments);
+	}
+}
+
+namespace vl::presentation::remoteprotocol
+{
+	vuint64_t DecodePointUnsigned(const WString& text)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::DecodePointUnsigned#"
+		CHECK_ERROR(text.Length() > 0 && (text.Length() == 1 || text[0] != L'0'), ERROR_MESSAGE_PREFIX L"Expected canonical unsigned decimal.");
+		vuint64_t value = 0;
+		for (vint i = 0; i < text.Length(); i++)
+		{
+			auto c = text[i];
+			CHECK_ERROR(c >= L'0' && c <= L'9', ERROR_MESSAGE_PREFIX L"Expected canonical unsigned decimal.");
+			auto digit = (vuint64_t)(c - L'0');
+			CHECK_ERROR(value <= ((vuint64_t)-1 - digit) / 10, ERROR_MESSAGE_PREFIX L"Unsigned decimal overflow.");
+			value = value * 10 + digit;
+		}
+		return value;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	IOPointInfo EncodePointInfo(const NativeWindowPointInfo& info)
+	{
+		IOPointInfo result;
+		result.sequenceId = u64tow(info.sequenceId);
+		result.pointId = info.pointId;
+		result.timestamp = u64tow(info.timestamp);
+		result.activePointCount = info.activePointCount;
+		result.position = info.position;
+		result.primary = info.primary;
+		result.ctrl = info.ctrl;
+		result.shift = info.shift;
+		result.alt = info.alt;
+		result.osSuper = info.osSuper;
+		result.contactBounds = info.contactBounds;
+		result.pressure = info.pressure;
+		result.orientation = info.orientation;
+		if (info.platformFrameId) result.platformFrameId = u64tow(info.platformFrameId.Value());
+		return result;
+	}
+
+	NativeWindowPointInfo DecodePointInfo(const IOPointInfo& info)
+	{
+		NativeWindowPointInfo result;
+		result.sequenceId = DecodePointUnsigned(info.sequenceId);
+		result.pointId = info.pointId;
+		result.timestamp = DecodePointUnsigned(info.timestamp);
+		result.activePointCount = info.activePointCount;
+		result.position = info.position;
+		result.primary = info.primary;
+		result.ctrl = info.ctrl;
+		result.shift = info.shift;
+		result.alt = info.alt;
+		result.osSuper = info.osSuper;
+		result.contactBounds = info.contactBounds;
+		result.pressure = info.pressure;
+		result.orientation = info.orientation;
+		if (info.platformFrameId) result.platformFrameId = DecodePointUnsigned(info.platformFrameId.Value());
+		return result;
 	}
 }

@@ -13,6 +13,13 @@ Interfaces:
 
 #include "Protocol/Generated/GuiRemoteProtocolSchema.h"
 
+namespace vl::presentation::remoteprotocol
+{
+	extern vuint64_t DecodePointUnsigned(const WString& text);
+	extern IOPointInfo EncodePointInfo(const NativeWindowPointInfo& info);
+	extern NativeWindowPointInfo DecodePointInfo(const IOPointInfo& info);
+}
+
 namespace vl::presentation
 {
 /***********************************************************************

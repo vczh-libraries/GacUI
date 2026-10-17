@@ -61,6 +61,8 @@ namespace vl
 			Nullable<vuint64_t>					fallbackToken;
 		};
 
+		/// <summary>Translate the original first rejected contact to mouse input using its typed payload. Other contacts never inherit fallback ownership.</summary>
+		extern void ProcessIOPointFallback(IoPointCommandState& state, collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, const NativeWindowPointInfo& info, bool starting);
 		/// <summary>Release an injected fallback mouse stream when either the platform or automation cancels its point sequence.</summary>
 		extern void CancelIOPointFallback(IoPointCommandState& state, collections::List<INativeWindowListener*>& listeners);
 
