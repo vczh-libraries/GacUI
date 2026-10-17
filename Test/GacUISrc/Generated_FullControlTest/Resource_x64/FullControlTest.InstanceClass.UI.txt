@@ -8240,35 +8240,7 @@ namespace demo
                 {
                     self.UpdatePoints(arguments);
                 };
-                attach(touchingBounds.pointDown, <event-handler>);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointEventArgs*) : (::system::Void)
-                {
-                    self.UpdatePoints(arguments);
-                };
-                attach(touchingBounds.pointUpdate, <event-handler>);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointEventArgs*) : (::system::Void)
-                {
-                    self.UpdatePoints(arguments);
-                };
-                attach(touchingBounds.pointUp, <event-handler>);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointEventArgs*) : (::system::Void)
-                {
-                    self.UpdatePoints(arguments);
-                };
-                attach(touchingBounds.pointEnter, <event-handler>);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointEventArgs*) : (::system::Void)
-                {
-                    self.UpdatePoints(arguments);
-                };
-                attach(touchingBounds.pointLeave, <event-handler>);
+                attach(touchingBounds.pointAction, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceEndedEventArgs*) : (::system::Void)

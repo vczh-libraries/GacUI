@@ -4683,15 +4683,7 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event pointDown : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiPointEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event pointEnter : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiPointEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event pointLeave : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiPointEventArgs*>^;
+    event pointAction : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiPointEventArgs*>^;
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
@@ -4700,14 +4692,6 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
     event pointSequenceStarted : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiPointSequenceStartedEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event pointUp : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiPointEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event pointUpdate : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiPointEventArgs*>^;
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
@@ -4886,6 +4870,7 @@ class presentation::compositions::GuiPointEventArgs : presentation::compositions
     property alt : system::Boolean;
     property contactBounds : presentation::Rect?;
     property ctrl : system::Boolean;
+    property eventType : presentation::compositions::GuiPointEventsType;
     property orientation : system::Double?;
     property osSuper : system::Boolean;
     property platformFrameId : system::UInt64?;
@@ -4901,6 +4886,16 @@ class presentation::compositions::GuiPointEventArgs : presentation::compositions
     @ClosureTemplate:[=]() -> const ::vl::collections::List<::vl::Nullable<::vl::presentation::Point>>& { return $This->GetPoints(); }
     function GetPoints() : system::ReadonlyList<presentation::Point?>^;
 
+}
+
+@ValueType
+enum presentation::compositions::GuiPointEventsType {
+    Down = 1,
+    Enter = 4,
+    Leave = 5,
+    Started = 0,
+    Up = 3,
+    Update = 2,
 }
 
 class presentation::compositions::GuiPointSequenceEndedEventArgs : presentation::compositions::GuiEventArgs {
