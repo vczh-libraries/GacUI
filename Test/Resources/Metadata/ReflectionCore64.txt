@@ -1648,30 +1648,8 @@ class presentation::compositions::GuiPointSequenceEndedEventArgs : presentation:
 
 }
 
-class presentation::compositions::GuiPointSequenceStartedEventArgs : system::ReferenceType {
-    property Points : system::ReadonlyList<presentation::Point?>^ { get:GetPoints }
+class presentation::compositions::GuiPointSequenceStartedEventArgs : presentation::compositions::GuiPointEventArgs {
     property acceptedComposition : presentation::compositions::GuiGraphicsComposition*;
-    property activePointCount : system::Int64;
-    property alt : system::Boolean;
-    property compositionSource : presentation::compositions::GuiGraphicsComposition*;
-    property contactBounds : presentation::Rect?;
-    property ctrl : system::Boolean;
-    property eventSource : presentation::compositions::GuiGraphicsComposition*;
-    property eventType : presentation::compositions::GuiPointEventsType;
-    property orientation : system::Double?;
-    property osSuper : system::Boolean;
-    property platformFrameId : system::UInt64?;
-    property pointId : system::Int64;
-    property position : presentation::Point;
-    property pressure : system::Double?;
-    property primary : system::Boolean;
-    property sequenceId : system::UInt64;
-    property shift : system::Boolean;
-    property timestamp : system::UInt64;
-
-    @InvokeTemplate:$This->GetPoints()
-    @ClosureTemplate:[=]() -> const ::vl::collections::List<::vl::Nullable<::vl::presentation::Point>>& { return $This->GetPoints(); }
-    function GetPoints() : system::ReadonlyList<presentation::Point?>^;
 
 }
 
