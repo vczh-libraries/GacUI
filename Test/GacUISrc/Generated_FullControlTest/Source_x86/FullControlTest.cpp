@@ -885,7 +885,7 @@ Closures
 
 	void __vwsnf120_FullControlTest_demo_TouchingTabPageConstructor___vwsn_demo_TouchingTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceStartedEventArgs* arguments) const
 	{
-		(::vl::__vwsn::This(arguments)->accept = true);
+		(::vl::__vwsn::This(arguments)->acceptedComposition = static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(__vwsnthis_0->touchingBounds));
 	}
 
 	//-------------------------------------------------------------------

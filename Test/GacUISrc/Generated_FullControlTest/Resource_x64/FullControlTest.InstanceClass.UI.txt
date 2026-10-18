@@ -8231,7 +8231,7 @@ namespace demo
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceStartedEventArgs*) : (::system::Void)
                 {
-                    (arguments.accept = true);
+                    (arguments.acceptedComposition = touchingBounds);
                 };
                 attach(touchingBounds.pointSequenceStarted, <event-handler>);
             }
