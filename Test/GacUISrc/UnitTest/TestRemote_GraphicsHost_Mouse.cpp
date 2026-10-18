@@ -1,4 +1,5 @@
 #include "TestRemote_GraphicsHost_Shared.h"
+#include "TestPointInput.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 
@@ -28,8 +29,414 @@ public:
 	using GuiRemoteRendererSingle::DisconnectFromCore;
 };
 
+class PointScrollView : public GuiScrollView
+{
+protected:
+	Size QueryFullSize()override { return Size(1000, 1000); }
+	void UpdateView(Rect)override {}
+	void OnPointAction(GuiGraphicsComposition* sender, GuiPointEventArgs& arguments)override
+	{
+		arguments.handled = consume;
+		GuiScrollView::OnPointAction(sender, arguments);
+	}
+	void OnPointSequenceEnded(GuiGraphicsComposition* sender, GuiPointSequenceEndedEventArgs& arguments)override
+	{
+		arguments.handled = consume;
+		arguments.fallbackClick = explicitFallback;
+		GuiScrollView::OnPointSequenceEnded(sender, arguments);
+	}
+public:
+	bool consume = false;
+	bool explicitFallback = false;
+	PointScrollView(bool hasScrolls = true) : GuiScrollView(theme::ThemeName::ScrollView)
+	{
+		SetControlTemplate([=](const description::Value&)
+		{
+			auto ct = new templates::GuiScrollViewTemplate;
+			ct->SetContainerComposition(ct);
+			if (hasScrolls)
+			{
+				auto h = new GuiScroll(theme::ThemeName::HScroll);
+				auto v = new GuiScroll(theme::ThemeName::VScroll);
+				for (auto scroll : { h,v })
+				{
+					scroll->SetControlTemplate([](const description::Value&) { return new templates::GuiScrollTemplate; });
+					ct->AddChild(scroll->GetBoundsComposition());
+				}
+				h->GetBoundsComposition()->SetExpectedBounds(Rect(0, 190, 190, 200));
+				v->GetBoundsComposition()->SetExpectedBounds(Rect(190, 0, 200, 190));
+				ct->SetHorizontalScroll(h);
+				ct->SetVerticalScroll(v);
+			}
+			return ct;
+		});
+	}
+};
+
 TEST_FILE
 {
+	TEST_CATEGORY(L"Point samples use current fractional DPI and hosted window offsets")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		GuiControl* surface = nullptr;
+		Point expectedFirst, expectedSecond;
+		Rect expectedContact;
+		bool checkSamples = false;
+		bool liftedFirst = false;
+		vint clicks = 0;
+		protocol.OnNextFrame([&]()
+		{
+			surface = new GuiControl(theme::ThemeName::CustomControl);
+			surface->SetAcceptPointEvents(true);
+			surface->GetBoundsComposition()->SetExpectedBounds(Rect(0, 0, 400, 400));
+			controlHost->GetContainerComposition()->AddChild(surface->GetBoundsComposition());
+			surface->GetBoundsComposition()->GetEventReceiver()->pointAction.AttachLambda([&](GuiGraphicsComposition*, GuiPointEventArgs& a)
+			{
+				if (!checkSamples) return;
+				TEST_ASSERT(a.GetPoints().Count() == 2);
+				TEST_ASSERT((bool)a.GetPoints()[0] == !liftedFirst);
+				if (!liftedFirst) TEST_ASSERT(a.GetPoints()[0].Value() == expectedFirst);
+				TEST_ASSERT(a.GetPoints()[1].Value() == expectedSecond);
+				TEST_ASSERT(a.position == (a.pointId == 0 ? expectedFirst : expectedSecond));
+				if (a.pointId == 0) TEST_ASSERT(a.contactBounds.Value() == expectedContact);
+			});
+			surface->GetBoundsComposition()->GetEventReceiver()->pointSequenceEnded.AttachLambda([](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& a) { a.fallbackClick = true; });
+			surface->GetBoundsComposition()->GetEventReceiver()->mouseDown.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs& a)
+			{
+				TEST_ASSERT(!surface->GetPointEventComposition());
+				TEST_ASSERT(Point(a.x, a.y) == expectedFirst);
+				clicks++;
+			});
+			controlHost->ForceCalculateSizeImmediately();
+		});
+		protocol.OnNextFrame([&]()
+		{
+			PointProtocolInput input(protocol.GetEvents());
+			auto host = surface->GetBoundsComposition()->GetRelatedGraphicsHost();
+			auto window = host->GetNativeWindow();
+			auto manager = host->GetPointActionManager();
+			auto local = [&](NativePoint screen)
+			{
+				auto origin = window->GetClientBoundsInScreen().LeftTop();
+				auto result = window->Convert(NativePoint(screen.x - origin.x, screen.y - origin.y));
+				auto bounds = surface->GetBoundsComposition()->GetGlobalBounds();
+				return Point(result.x - bounds.x1, result.y - bounds.y1);
+			};
+			input.Start(NativePoint(101, 103));
+			input.Down(1, NativePoint(203, 157));
+			checkSamples = true;
+			for (auto scale : { 1.25,1.5,1.75,1.0 })
+			{
+				auto screen = GraphicsHostProtocol::MakeUnitTestScreenConfig().screenConfig;
+				screen.scalingX = scale;
+				screen.scalingY = scale + 0.25;
+				protocol.GetEvents()->OnControllerScreenUpdated(screen);
+				controlHost->ForceCalculateSizeImmediately();
+				expectedFirst = local(NativePoint(101, 103));
+				expectedSecond = local(NativePoint(203, 157));
+				{ auto lt = local(NativePoint(98, 99)); auto rb = local(NativePoint(104, 107)); expectedContact = Rect(lt.x, lt.y, rb.x, rb.y); }
+				input.action.info.contactBounds = NativeRect(98, 99, 104, 107);
+				input.Move(NativePoint(101, 103));
+				TEST_ASSERT(manager->GetAxis() == 0 && manager->GetDisplacement() == Point());
+			}
+			auto bounds = window->GetBounds();
+			window->SetBounds(NativeRect(bounds.x1 + 20, bounds.y1 + 30, bounds.x2 + 20, bounds.y2 + 30));
+			expectedFirst = local(NativePoint(101, 103));
+			expectedSecond = local(NativePoint(203, 157));
+			{ auto lt = local(NativePoint(98, 99)); auto rb = local(NativePoint(104, 107)); expectedContact = Rect(lt.x, lt.y, rb.x, rb.y); }
+			input.Move(NativePoint(101, 103));
+			TEST_ASSERT(manager->GetDisplacement() == Point());
+			liftedFirst = true;
+			input.Up(0, NativePoint(101, 103));
+			input.Move(NativePoint(203, 157), 1);
+			checkSamples = false;
+			input.Up(1, NativePoint(203, 157)); input.End();
+			TEST_ASSERT(clicks == 0);
+			input.Start(NativePoint(101, 103));
+			auto screen = GraphicsHostProtocol::MakeUnitTestScreenConfig().screenConfig;
+			screen.scalingX = 1.5; screen.scalingY = 1.25;
+			protocol.GetEvents()->OnControllerScreenUpdated(screen);
+			controlHost->ForceCalculateSizeImmediately();
+			expectedFirst = local(NativePoint(101, 103));
+			input.Up(0, NativePoint(101, 103)); input.End();
+			TEST_ASSERT(clicks == 1);
+			input.Start(NativePoint(101, 103));
+			input.Move(NativePoint(113, 103));
+			TEST_ASSERT(manager->GetDisplacement() == Point(8, 0) && manager->GetAxis() == 0);
+			input.Move(NativePoint(116, 103));
+			TEST_ASSERT(manager->GetDisplacement() == Point(10, 0) && manager->GetAxis() == 1);
+			input.Up(0, NativePoint(116, 103)); input.End();
+			TEST_ASSERT(clicks == 1);
+			controlHost->Hide();
+		});
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
+	TEST_CATEGORY(L"Point selection belongs to one control and clears on lifecycle changes")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		PointScrollView* outer = nullptr;
+		PointScrollView* inner = nullptr;
+		GuiButton* child = nullptr;
+		GuiControl* unrelated = nullptr;
+		vint childActions = 0, innerActions = 0, outerActions = 0;
+		vint childEnds = 0, innerEnds = 0, outerEnds = 0, outerQueries = 0;
+		protocol.OnNextFrame([&]()
+		{
+			outer = new PointScrollView(false);
+			inner = new PointScrollView(false);
+			child = new GuiButton(theme::ThemeName::Button);
+			unrelated = new GuiControl(theme::ThemeName::CustomControl);
+			outer->GetBoundsComposition()->SetExpectedBounds(Rect(10, 10, 400, 400));
+			inner->GetBoundsComposition()->SetExpectedBounds(Rect(10, 10, 210, 210));
+			child->GetBoundsComposition()->SetExpectedBounds(Rect(10, 10, 100, 100));
+			unrelated->GetBoundsComposition()->SetExpectedBounds(Rect(450, 10, 550, 110));
+			controlHost->GetContainerComposition()->AddChild(outer->GetBoundsComposition());
+			controlHost->GetContainerComposition()->AddChild(unrelated->GetBoundsComposition());
+			outer->GetContainerComposition()->AddChild(inner->GetBoundsComposition());
+			inner->GetContainerComposition()->AddChild(child->GetBoundsComposition());
+			child->GetBoundsComposition()->GetEventReceiver()->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceStartedEventArgs& a)
+			{
+				// A later handler on the same receiver cannot erase the base adapter's selection.
+				a.acceptedComposition = nullptr;
+			});
+			outer->GetBoundsComposition()->GetEventReceiver()->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceStartedEventArgs& a)
+			{
+				outerQueries++;
+				if (outer->GetAcceptPointEvents())
+				{
+					TEST_ASSERT(a.acceptedComposition == (child->GetAcceptPointEvents() ? child->GetBoundsComposition() : inner->GetBoundsComposition()));
+					a.acceptedComposition = outer->GetBoundsComposition();
+				}
+			});
+			child->GetBoundsComposition()->GetEventReceiver()->pointAction.AttachLambda([&](GuiGraphicsComposition*, GuiPointEventArgs&) { childActions++; });
+			inner->GetBoundsComposition()->GetEventReceiver()->pointAction.AttachLambda([&](GuiGraphicsComposition*, GuiPointEventArgs&) { innerActions++; });
+			outer->GetBoundsComposition()->GetEventReceiver()->pointAction.AttachLambda([&](GuiGraphicsComposition*, GuiPointEventArgs&) { outerActions++; });
+			child->GetBoundsComposition()->GetEventReceiver()->pointSequenceEnded.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs&) { childEnds++; });
+			inner->GetBoundsComposition()->GetEventReceiver()->pointSequenceEnded.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs&) { innerEnds++; });
+			outer->GetBoundsComposition()->GetEventReceiver()->pointSequenceEnded.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs&) { outerEnds++; });
+			controlHost->ForceCalculateSizeImmediately();
+		});
+		protocol.OnNextFrame([&]()
+		{
+			PointProtocolInput input(protocol.GetEvents());
+			input.Start(NativePoint(50, 50));
+			TEST_ASSERT(inner->GetPointEventComposition() == inner->GetBoundsComposition());
+			TEST_ASSERT(outer->GetPointEventComposition() == inner->GetBoundsComposition());
+			TEST_ASSERT(!child->GetPointEventComposition() && !unrelated->GetPointEventComposition());
+			input.Move(NativePoint(50, 10));
+			input.Up(0, NativePoint(50, 10)); input.End();
+			TEST_ASSERT(childActions == 0 && innerActions == 3 && outerActions == 0 && innerEnds == 1 && childEnds == 0 && outerEnds == 0);
+			child->SetAcceptPointEvents(true);
+			input.Start(NativePoint(50, 50));
+			TEST_ASSERT(child->GetPointEventComposition() == child->GetBoundsComposition());
+			TEST_ASSERT(inner->GetPointEventComposition() == child->GetBoundsComposition() && outer->GetPointEventComposition() == child->GetBoundsComposition());
+			child->SetAcceptPointEvents(false);
+			input.Move(NativePoint(500, 450));
+			input.Up(0, NativePoint(500, 450)); input.End();
+			TEST_ASSERT(childActions == 3 && childEnds == 1 && innerActions == 3 && innerEnds == 1 && outerEnds == 0 && outerQueries == 2);
+			inner->SetAcceptPointEvents(false); outer->SetAcceptPointEvents(false);
+			input.Start(NativePoint(50, 50));
+			TEST_ASSERT(!controlHost->GetPointEventComposition());
+			input.Up(0, NativePoint(50, 50)); input.End();
+			TEST_ASSERT(childEnds == 1 && innerEnds == 1 && outerEnds == 0 && outerQueries == 3);
+			child->SetAcceptPointEvents(true);
+			input.Start(NativePoint(50, 50));
+			inner->GetContainerComposition()->RemoveChild(child->GetBoundsComposition());
+			TEST_ASSERT(!controlHost->GetPointEventComposition() && !child->GetPointEventComposition());
+			input.Up(0, NativePoint(50, 50)); input.End();
+			TEST_ASSERT(childEnds == 1);
+			inner->GetContainerComposition()->AddChild(child->GetBoundsComposition());
+			controlHost->ForceCalculateSizeImmediately();
+			input.Start(NativePoint(50, 50));
+			auto host = child->GetBoundsComposition()->GetRelatedGraphicsHost();
+			auto window = host->GetNativeWindow();
+			host->SetNativeWindow(nullptr);
+			TEST_ASSERT(!child->GetPointEventComposition());
+			host->SetNativeWindow(window);
+			input.Up(0, NativePoint(50, 50)); input.End();
+			TEST_ASSERT(childEnds == 1);
+			input.Start(NativePoint(50, 50)); input.Up(0, NativePoint(50, 50)); input.End();
+			TEST_ASSERT(childEnds == 2 && !controlHost->GetPointEventComposition());
+			controlHost->Hide();
+		});
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
+	TEST_CATEGORY(L"Point scrolling recognition and deferred clicks")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		PointScrollView* scroll = nullptr;
+		GuiButton* button = nullptr;
+		vint clicks = 0;
+		List<NativeMouseButton> downs, ups, physicalUps;
+		protocol.OnNextFrame([&]()
+		{
+			scroll = new PointScrollView;
+			scroll->GetBoundsComposition()->SetExpectedBounds(Rect(10, 10, 210, 210));
+			controlHost->GetContainerComposition()->AddChild(scroll->GetBoundsComposition());
+			button = new GuiButton(theme::ThemeName::Button);
+			button->GetBoundsComposition()->SetExpectedBounds(Rect(20, 20, 100, 100));
+			scroll->GetContainerComposition()->AddChild(button->GetBoundsComposition());
+			auto physical = new GuiBoundsComposition;
+			physical->SetExpectedBounds(Rect(450, 10, 550, 110));
+			controlHost->GetContainerComposition()->AddChild(physical);
+			physical->GetEventReceiver()->mouseUp.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs& a) { physicalUps.Add(a.button); });
+			button->Clicked.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { clicks++; });
+			button->GetBoundsComposition()->GetEventReceiver()->mouseDown.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs& a)
+			{
+				TEST_ASSERT(!scroll->GetPointEventComposition());
+				TEST_ASSERT(a.ctrl && a.shift && a.alt && a.osSuper);
+				TEST_ASSERT(a.x == 20 && a.y == 20);
+				TEST_ASSERT(button->TypedControlTemplateObject(true)->GetState() == (a.button == NativeMouseButton::Left ? ButtonState::Pressed : ButtonState::Active));
+				downs.Add(a.button);
+			});
+			button->GetBoundsComposition()->GetEventReceiver()->mouseUp.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs& a)
+			{
+				TEST_ASSERT(downs.Count() == ups.Count() + 1);
+				TEST_ASSERT(button->TypedControlTemplateObject(true)->GetState() == ButtonState::Active);
+				ups.Add(a.button);
+			});
+			scroll->GetBoundsComposition()->GetEventReceiver()->pointSequenceEnded.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& a)
+			{
+				TEST_ASSERT(scroll->GetPointEventComposition() == scroll->GetBoundsComposition());
+				TEST_ASSERT(controlHost->GetPointEventComposition() == scroll->GetBoundsComposition());
+				TEST_ASSERT(!button->GetPointEventComposition());
+				TEST_ASSERT(a.compositionSource == scroll->GetBoundsComposition() && a.eventSource == a.compositionSource);
+			});
+			controlHost->ForceCalculateSizeImmediately();
+		});
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(scroll->GetAcceptPointEvents() && !button->GetAcceptPointEvents());
+			PointProtocolInput input(protocol.GetEvents());
+			auto manager = scroll->GetBoundsComposition()->GetRelatedGraphicsHost()->GetPointActionManager();
+			auto resetView = [&]() { scroll->SetViewPosition(Point(300, 300)); };
+			auto finish = [&](NativePoint p)
+			{
+				input.Up(0, p);
+				input.End();
+				TEST_ASSERT(!scroll->GetPointEventComposition() && !controlHost->GetPointEventComposition());
+				TEST_ASSERT(!manager->GetFallbackClick() && manager->GetAxis() == 0);
+			};
+			protocol.MouseMove(NativePoint(500, 400));
+			input.Start(NativePoint(50, 50));
+			input.Up(0, NativePoint(50, 50));
+			input.End(499999);
+			TEST_ASSERT(clicks == 1 && downs.Count() == 1 && downs[0] == NativeMouseButton::Left && ups[0] == downs[0]);
+			input.Start(NativePoint(50, 50));
+			input.Up(0, NativePoint(50, 50));
+			input.End(500000);
+			TEST_ASSERT(clicks == 1 && downs.Count() == 2 && downs[1] == NativeMouseButton::Right && ups[1] == downs[1]);
+			for (auto delta : { NativePoint(7,0), NativePoint(8,0), NativePoint(9,0), NativePoint(0,9), NativePoint(6,6) })
+			{
+				resetView();
+				input.Start(NativePoint(120, 120));
+				input.Move(NativePoint(delta.x + 120, delta.y + 120));
+				auto expectedAxis = delta.x.value == 9 || delta.x.value == 6 ? 1 : delta.y.value == 9 ? 2 : 0;
+				TEST_ASSERT(manager->GetAxis() == expectedAxis);
+				TEST_ASSERT(scroll->GetViewPosition() == Point(300 - (expectedAxis == 1 ? delta.x.value : 0), 300 - (expectedAxis == 2 ? delta.y.value : 0)));
+				finish(NativePoint(delta.x + 120, delta.y + 120));
+			}
+			resetView();
+			input.Start(NativePoint(120, 120));
+			input.Move(NativePoint(90, 119));
+			TEST_ASSERT(scroll->GetViewPosition() == Point(330, 300));
+			input.Move(NativePoint(140, 30));
+			TEST_ASSERT(scroll->GetViewPosition() == Point(280, 300));
+			input.Move(NativePoint(120, 120));
+			TEST_ASSERT(scroll->GetViewPosition() == Point(300, 300) && manager->GetAxis() == 1);
+			finish(NativePoint(120, 120));
+			resetView();
+			input.Start(NativePoint(120, 120));
+			finish(NativePoint(120, 90));
+			TEST_ASSERT(scroll->GetViewPosition() == Point(300, 330));
+			for (vint unavailable = 0; unavailable < 3; unavailable++)
+			{
+				resetView();
+				auto bar = scroll->GetHorizontalScroll();
+				if (unavailable == 0) bar->SetVisible(false);
+				if (unavailable == 1) bar->SetEnabled(false);
+				if (unavailable == 2) scroll->SetEnabled(false);
+				auto before = bar->GetPosition();
+				input.Start(NativePoint(120, 120));
+				input.Move(NativePoint(70, 80));
+				TEST_ASSERT(bar->GetPosition() == before && scroll->GetVerticalScroll()->GetPosition() == 300);
+				finish(NativePoint(70, 80));
+				bar->SetVisible(true); bar->SetEnabled(true); scroll->SetEnabled(true);
+			}
+			resetView();
+			input.Start(NativePoint(120, 120));
+			input.Move(NativePoint(2000, 120));
+			TEST_ASSERT(scroll->GetViewPosition().x == 0);
+			input.Move(NativePoint(-2000, 120));
+			TEST_ASSERT(scroll->GetViewPosition().x == scroll->GetHorizontalScroll()->GetTotalSize() - scroll->GetHorizontalScroll()->GetPageSize());
+			finish(NativePoint(-2000, 120));
+			for (bool firstUp : { false,true })
+			{
+				resetView();
+				input.Start(NativePoint(120, 120));
+				input.Down(1, NativePoint(150, 150));
+				if (firstUp)
+				{
+					input.Up(0, NativePoint(120, 120));
+					input.Move(NativePoint(150, 40), 1);
+					input.Up(1, NativePoint(150, 40));
+				}
+				else
+				{
+					input.Up(1, NativePoint(150, 150));
+					input.Up(0, NativePoint(120, 120));
+				}
+				input.End();
+				TEST_ASSERT(scroll->GetViewPosition() == Point(300, 300));
+			}
+			scroll->consume = true;
+			resetView();
+			input.Start(NativePoint(120, 120));
+			input.Move(NativePoint(120, 70));
+			TEST_ASSERT(scroll->GetViewPosition() == Point(300, 300) && manager->GetAxis() == 2);
+			finish(NativePoint(120, 120));
+			input.Start(NativePoint(50, 50)); finish(NativePoint(50, 50));
+			TEST_ASSERT(clicks == 1 && downs.Count() == 2);
+			scroll->explicitFallback = true;
+			input.Start(NativePoint(50, 50)); finish(NativePoint(50, 50));
+			TEST_ASSERT(clicks == 2 && downs.Count() == 3);
+			scroll->consume = scroll->explicitFallback = false;
+			for (auto reason : { PointSequenceEndReason::Canceled_Unknown, PointSequenceEndReason::Canceled_PlatformCanceled, PointSequenceEndReason::Canceled_CaptureLost, PointSequenceEndReason::Canceled_WindowDestroyed })
+			{
+				input.Start(NativePoint(50, 50));
+				input.End(1000000, reason);
+				TEST_ASSERT(!scroll->GetPointEventComposition() && !manager->GetFallbackClick());
+				input.Start(NativePoint(50, 50)); finish(NativePoint(50, 50));
+			}
+			TEST_ASSERT(clicks == 6 && downs.Count() == 7 && ups.Count() == downs.Count());
+			TEST_ASSERT(!GetCurrentController()->WindowService()->GetMainWindow()->IsCapturing());
+			for (auto physicalButton : { NativeMouseButton::Left,NativeMouseButton::Mouse5 })
+			{
+				protocol.MouseMove(NativePoint(500, 50));
+				protocol.GetEvents()->OnIOButtonDown(MakeMouseInfoWithButton(physicalButton, physicalButton == NativeMouseButton::Left, false, false, 500, 50, 0));
+				TEST_ASSERT(protocol.capturing);
+				input.Start(NativePoint(50, 50)); finish(NativePoint(50, 50));
+				TEST_ASSERT(protocol.capturing);
+				protocol.GetEvents()->OnIOButtonUp(MakeMouseInfoWithButton(physicalButton, false, false, false, 600, 400, 0));
+				TEST_ASSERT(!protocol.capturing && physicalUps[physicalUps.Count() - 1] == physicalButton);
+			}
+			TEST_ASSERT(clicks == 8 && downs.Count() == 9 && ups.Count() == downs.Count() && physicalUps.Count() == 2);
+			controlHost->Hide();
+		});
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
 	TEST_CATEGORY(L"Scroll views accept point input through the protocol")
 	{
 		GraphicsHostProtocol protocol;
@@ -130,30 +537,29 @@ TEST_FILE
 				TEST_ASSERT(a.eventType == GuiPointEventsType::Started);
 				TEST_ASSERT(a.position == Point(10, 10));
 				TEST_ASSERT(a.GetPoints().Count() == 1 && a.GetPoints()[0].Value() == a.position);
-				a.accept = accepted && mode != 1;
-				a.handled = mode == 2;
+				a.acceptedComposition = accepted && mode != 1 ? child : nullptr;
 			});
 			parent->GetEventReceiver()->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceStartedEventArgs& a)
 			{
 				parentQueries++;
 				TEST_ASSERT(a.position == Point(20, 20));
-				a.accept = accepted && mode == 1;
+				a.acceptedComposition = accepted && mode == 1 ? parent : nullptr;
 			});
-			child->GetEventReceiver()->pointAction.AttachLambda([&](GuiGraphicsComposition*, GuiPointEventArgs& a)
+			(mode == 1 ? parent : child)->GetEventReceiver()->pointAction.AttachLambda([&](GuiGraphicsComposition*, GuiPointEventArgs& a)
 			{
 				actions++;
 				pointLogs.Add(itow((vint)a.eventType) + L":" + itow(a.pointId) + L":" + itow(a.activePointCount));
 				TEST_ASSERT(accepted && a.sequenceId == localSequence);
 				TEST_ASSERT(a.timestamp == 9007199254740993ULL);
 				TEST_ASSERT(a.ctrl && a.shift && a.alt && a.osSuper);
-				TEST_ASSERT(a.contactBounds.Value() == Rect(8, 7, 12, 13));
+				TEST_ASSERT(a.contactBounds.Value() == (mode == 1 ? Rect(18, 17, 22, 23) : Rect(8, 7, 12, 13)));
 				TEST_ASSERT(a.pressure.Value() == 0.75 && a.orientation.Value() == 1.25);
 				TEST_ASSERT(a.platformFrameId.Value() == (vuint64_t)-1);
 				TEST_ASSERT(a.GetPoints().Count() > a.pointId);
 				TEST_ASSERT((bool)a.GetPoints()[a.pointId] == (a.eventType != GuiPointEventsType::Up));
 				if (a.pointId == 2) TEST_ASSERT(!a.GetPoints()[0]);
 			});
-			child->GetEventReceiver()->pointSequenceEnded.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& a)
+			(mode == 1 ? parent : child)->GetEventReceiver()->pointSequenceEnded.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& a)
 			{
 				ends++;
 				TEST_ASSERT(a.accepted == accepted && a.sequenceId == localSequence);
@@ -191,7 +597,7 @@ TEST_FILE
 			a.info = EncodePointInfo(sample);
 			events->OnIOPointDown(a); // Outside a sequence.
 			events->OnIOPointStarted(a);
-			TEST_ASSERT(queries == 1 && parentQueries == (mode == 2 ? 0 : 1));
+			TEST_ASSERT(queries == 1 && parentQueries == 1);
 			events->OnIOPointStarted(a); // Nested Started cannot replace capture.
 			a.eventIndex = 1;
 			events->OnIOPointDown(a);
@@ -229,7 +635,7 @@ TEST_FILE
 			end.timestamp = L"18446744073709551615"; end.accepted = !accepted;
 			end.reason = PointSequenceEndReason::Succeeded;
 			events->OnIOPointEnded(end);
-			TEST_ASSERT(ends == 1 && borrowed && borrowed->Count() == 0);
+			TEST_ASSERT(ends == (accepted ? 1 : 0) && (!borrowed || borrowed->Count() == 0));
 			TEST_ASSERT(actions == (accepted ? 9 : 0));
 			if (accepted) AssertEventLogs(pointLogs, L"1:0:1", L"2:0:1", L"1:1:2", L"3:0:1", L"5:1:1", L"4:1:1", L"1:2:2", L"3:1:1", L"3:2:0");
 			else AssertEventLogs(pointLogs);
@@ -237,7 +643,7 @@ TEST_FILE
 			a.info = EncodePointInfo(sample); a.eventIndex = 0;
 			events->OnIOPointStarted(a); // Completed wire identity stays retired.
 			events->OnIOPointEnded(end);
-			TEST_ASSERT(queries == 1 && ends == 1);
+			TEST_ASSERT(queries == 1 && ends == (accepted ? 1 : 0));
 			for (auto reason : { PointSequenceEndReason::Canceled_PlatformCanceled, PointSequenceEndReason::Canceled_CaptureLost, PointSequenceEndReason::Canceled_WindowDestroyed, PointSequenceEndReason::Canceled_Unknown })
 			{
 				sample.sequenceId--;
@@ -251,10 +657,10 @@ TEST_FILE
 				}
 				end.sequenceId = a.info.sequenceId; end.eventIndex = a.eventIndex + 1; end.reason = reason;
 				events->OnIOPointEnded(end);
-				TEST_ASSERT(borrowed->Count() == 0);
+				TEST_ASSERT(!borrowed || borrowed->Count() == 0);
 				a.eventIndex = 2; events->OnIOPointUpdate(a);
 			}
-			TEST_ASSERT(ends == 5 && queries == 5);
+			TEST_ASSERT(ends == (accepted ? 5 : 0) && queries == 5);
 			pointLogs.Clear();
 			// Native renderer always owns acquisition; Core asks again each sequence.
 			accepted = !accepted;
@@ -272,14 +678,14 @@ TEST_FILE
 			boundary.sequenceId = sample.sequenceId; boundary.timestamp = sample.timestamp;
 			boundary.accepted = true; boundary.reason = PointSequenceEndReason::Succeeded;
 			renderer.PointSequenceEnded(boundary);
-			TEST_ASSERT(ends == 6 && queries == 6);
+			TEST_ASSERT(ends == (accepted ? 1 : 5) && queries == 6);
 			if (accepted) AssertEventLogs(pointLogs, L"1:0:1", L"2:0:1", L"2:0:1", L"3:0:0");
 			else AssertEventLogs(pointLogs);
 			renderer.DisconnectFromCore();
 			sample.sequenceId++;
 			renderer.PointSequenceStarted(sample, rendererAccept);
 			renderer.PointDown(sample);
-			TEST_ASSERT(ends == 6 && queries == 6);
+			TEST_ASSERT(ends == (accepted ? 1 : 5) && queries == 6);
 
 			// A replacement connection retires active capture and may restart its wire IDs.
 			sample.activePointCount = 1;
@@ -287,18 +693,18 @@ TEST_FILE
 			events->OnIOPointStarted(a);
 			a.eventIndex = 1; events->OnIOPointDown(a);
 			events->OnControllerDisconnect();
-			TEST_ASSERT(queries == 7 && ends == 7 && borrowed->Count() == 0);
+			TEST_ASSERT(queries == 7 && ends == (accepted ? 2 : 5) && borrowed->Count() == 0);
 			TEST_ASSERT(!GetCurrentController()->WindowService()->GetMainWindow()->IsCapturing());
 			a.eventIndex = 2; events->OnIOPointUpdate(a);
 			events->OnIOPointEnded(end);
-			TEST_ASSERT(queries == 7 && ends == 7);
+			TEST_ASSERT(queries == 7 && ends == (accepted ? 2 : 5));
 			events->OnControllerConnect(MakeGlobalConfig());
 			a.eventIndex = 0; events->OnIOPointStarted(a);
 			a.eventIndex = 1; events->OnIOPointDown(a);
 			a.eventIndex = 2; a.info.activePointCount = 0; events->OnIOPointUp(a);
 			end.sequenceId = a.info.sequenceId; end.eventIndex = 3; end.reason = PointSequenceEndReason::Succeeded;
 			events->OnIOPointEnded(end);
-			TEST_ASSERT(queries == 8 && ends == 8 && borrowed->Count() == 0);
+			TEST_ASSERT(queries == 8 && ends == (accepted ? 3 : 5) && borrowed->Count() == 0);
 		});
 		protocol.OnNextFrame([&]() { controlHost->Hide(); });
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
@@ -327,12 +733,12 @@ TEST_FILE
 			controlHost->GetContainerComposition()->AddChild(button->GetBoundsComposition());
 			button->Clicked.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { clicks++; });
 			auto receiver = button->GetBoundsComposition()->GetEventReceiver();
-			receiver->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceStartedEventArgs& a)
+			receiver->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& a)
 			{
 				validSequences &= a.sequenceId > sequence;
 				sequence = a.sequenceId;
 				queries++;
-				a.accept = accepted;
+				a.acceptedComposition = accepted ? sender : nullptr;
 			});
 			receiver->pointSequenceEnded.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& a)
 			{
@@ -344,7 +750,7 @@ TEST_FILE
 		});
 		protocol.OnNextFrame([&]()
 		{
-			TEST_ASSERT(queries == 1 && ends == 1 && clicks == 0);
+			TEST_ASSERT(queries == 1 && ends == (accepted ? 1 : 0) && clicks == 0);
 			auto events = protocol.GetEvents();
 			NativeWindowPointInfo sample;
 			sample.sequenceId = 1; sample.activePointCount = 1; sample.position = NativePoint(30, 30);
@@ -367,18 +773,18 @@ TEST_FILE
 		});
 		protocol.OnNextFrame([&]()
 		{
-			TEST_ASSERT(queries == 4 && ends == 4 && clicks == 1);
+			TEST_ASSERT(queries == 4 && ends == 3 && clicks == 1);
 			run(L"!PointDown:7,30,30"); run(L"!PointCancel:7,CaptureLost");
 		});
 		protocol.OnNextFrame([&]()
 		{
-			TEST_ASSERT(queries == 5 && ends == 5 && clicks == 1);
+			TEST_ASSERT(queries == 5 && ends == 3 && clicks == 1);
 			TEST_ASSERT(!GetCurrentController()->WindowService()->GetMainWindow()->IsCapturing());
 			run(L"!PointDown:7,30,30"); run(L"!PointUp:7,30,30");
 		});
 		protocol.OnNextFrame([&]()
 		{
-			TEST_ASSERT(queries == 6 && ends == 6 && clicks == 2 && validSequences && validEnds);
+			TEST_ASSERT(queries == 6 && ends == 3 && clicks == 2 && validSequences && validEnds);
 			controlHost->Hide();
 		});
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));

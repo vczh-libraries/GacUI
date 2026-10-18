@@ -30,50 +30,6 @@ namespace vl
 				}
 			}
 
-			WindowPointInfo ConvertNativePointInfo(INativeWindow* window, const NativeWindowPointInfo& info)
-			{
-				WindowPointInfo result;
-				result.sequenceId = info.sequenceId;
-				result.pointId = info.pointId;
-				result.timestamp = info.timestamp;
-				result.activePointCount = info.activePointCount;
-				result.position = window->Convert(info.position);
-				result.primary = info.primary;
-				result.ctrl = info.ctrl;
-				result.shift = info.shift;
-				result.alt = info.alt;
-				result.osSuper = info.osSuper;
-				if (info.contactBounds)
-				{
-					auto bounds = info.contactBounds.Value();
-					auto leftTop = window->Convert(bounds.LeftTop());
-					auto rightBottom = window->Convert(bounds.RightBottom());
-					result.contactBounds = Rect(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y);
-				}
-				result.pressure = info.pressure;
-				result.orientation = info.orientation;
-				result.platformFrameId = info.platformFrameId;
-				return result;
-			}
-
-			template<typename TArgs, typename TRebase>
-			void RaiseCompositionPointEvent(TArgs& arguments, GuiGraphicsComposition* composition, GuiGraphicsEvent<TArgs> GuiGraphicsEventReceiver::* eventReceiverEvent, TRebase&& rebase)
-			{
-				auto position = arguments.position;
-				auto contactBounds = arguments.contactBounds;
-				RaiseCompositionInputEvent(arguments, composition, eventReceiverEvent, [&](GuiGraphicsComposition* receiver)
-				{
-					auto bounds = receiver->GetGlobalBounds();
-					arguments.position = Point(position.x - bounds.x1, position.y - bounds.y1);
-					if (contactBounds)
-					{
-						auto contact = contactBounds.Value();
-						arguments.contactBounds = Rect(contact.x1 - bounds.x1, contact.y1 - bounds.y1, contact.x2 - bounds.x1, contact.y2 - bounds.y1);
-					}
-					rebase(receiver);
-				});
-			}
-
 /***********************************************************************
 GuiGraphicsTimerManager
 ***********************************************************************/
@@ -146,7 +102,7 @@ GuiGraphicsHost
 				{
 					ResetMouseCapture();
 				}
-				if (pointCaptureComposition == composition)
+				if (pointActionManager->GetPointCapture() == composition)
 				{
 					ResetPointCapture();
 				}
@@ -183,9 +139,9 @@ GuiGraphicsHost
 			{
 				if (hostRecord.nativeWindow)
 				{
-					if (!hostRecord.nativeWindow->IsCapturing() && !info.nonClient)
+					if ((suppressNativeMouseCapture || !hostRecord.nativeWindow->IsCapturing()) && !info.nonClient)
 					{
-						hostRecord.nativeWindow->RequireCapture();
+						if (!suppressNativeMouseCapture) hostRecord.nativeWindow->RequireCapture();
 						mouseCaptureComposition = FindInputComposition(NativePoint(info.x, info.y));
 					}
 				}
@@ -195,7 +151,7 @@ GuiGraphicsHost
 			{
 				if(hostRecord.nativeWindow && !AnyMouseButtonDown())
 				{
-					hostRecord.nativeWindow->ReleaseCapture();
+					if (!suppressNativeMouseCapture) hostRecord.nativeWindow->ReleaseCapture();
 					mouseCaptureComposition=0;
 				}
 			}
@@ -341,19 +297,14 @@ GuiGraphicsHost
 				return windowComposition->FindVisibleComposition(hostRecord.nativeWindow->Convert(location), true);
 			}
 
-			void GuiGraphicsHost::PointCapture(const NativeWindowPointInfo& firstPoint)
+			void GuiGraphicsHost::PointCapture(GuiGraphicsComposition* composition)
 			{
-				pointCaptureComposition = FindInputComposition(firstPoint.position);
+				pointActionManager->PointCapture(composition);
 			}
 
 			void GuiGraphicsHost::ResetPointCapture()
 			{
-				pointCaptureComposition = nullptr;
-				pointSequenceId = 0;
-				pointSequenceAccepted = false;
-				pointsOrigin = Point();
-				pointsScale = NativeSize();
-				points.Clear();
+				pointActionManager->ResetPointCapture();
 			}
 
 			void GuiGraphicsHost::PointUncapture()
@@ -361,127 +312,86 @@ GuiGraphicsHost
 				ResetPointCapture();
 			}
 
-			void GuiGraphicsHost::RebasePoints(GuiGraphicsComposition* composition)
-			{
-				auto origin = hostRecord.nativeWindow->Convert(hostRecord.nativeWindow->GetClientBoundsInScreen().LeftTop());
-				// A 96-unit reference preserves fractional Windows DPI scaling.
-				auto scale = hostRecord.nativeWindow->Convert(Size(96, 96));
-				if (composition)
-				{
-					auto bounds = composition->GetGlobalBounds();
-					origin.x += bounds.x1;
-					origin.y += bounds.y1;
-				}
-				if (pointsOrigin == origin && pointsScale == scale) return;
-				// Retain one logical-coordinate list and shift only its occupied slots.
-				// Rebase stationary contacts after window moves and DPI changes as well.
-				for (auto [point, index] : indexed(points))
-				{
-					if (point)
-					{
-						auto position = point.Value();
-						points[index] = Point(
-							(vint)(((vint64_t)position.x + pointsOrigin.x) * pointsScale.x.value / scale.x.value - origin.x),
-							(vint)(((vint64_t)position.y + pointsOrigin.y) * pointsScale.y.value / scale.y.value - origin.y)
-							);
-					}
-				}
-				pointsOrigin = origin;
-				pointsScale = scale;
-			}
-
-			void GuiGraphicsHost::RaisePointEvent(GuiPointEventArgs& arguments)
-			{
-				RaiseCompositionPointEvent(arguments, pointCaptureComposition, &GuiGraphicsEventReceiver::pointAction, [&](GuiGraphicsComposition* receiver)
-				{
-					RebasePoints(receiver);
-				});
-			}
-
-			void GuiGraphicsHost::RaisePointSequenceStartedEvent(GuiPointSequenceStartedEventArgs& arguments)
-			{
-				RaiseCompositionPointEvent(arguments, pointCaptureComposition, &GuiGraphicsEventReceiver::pointSequenceStarted, [&](GuiGraphicsComposition* receiver)
-				{
-					RebasePoints(receiver);
-				});
-			}
-
-			void GuiGraphicsHost::RaisePointSequenceEndedEvent(GuiPointSequenceEndedEventArgs& arguments)
-			{
-				RaiseCompositionInputEvent(arguments, pointCaptureComposition, &GuiGraphicsEventReceiver::pointSequenceEnded, [&](GuiGraphicsComposition* receiver)
-				{
-					RebasePoints(receiver);
-				});
-			}
-
-			void GuiGraphicsHost::OnPointInput(const NativeWindowPointInfo& info, GuiPointEventsType eventType)
-			{
-				if (pointSequenceId != info.sequenceId || !pointSequenceAccepted || !pointCaptureComposition) return;
-				GuiPointEventArgs arguments(eventType, points);
-				static_cast<WindowPointInfo&>(arguments) = ConvertNativePointInfo(hostRecord.nativeWindow, info);
-				RebasePoints(nullptr);
-				while (points.Count() <= info.pointId) points.Add({});
-				if (eventType == GuiPointEventsType::Up)
-				{
-					points[info.pointId] = Nullable<Point>();
-				}
-				else
-				{
-					points[info.pointId] = arguments.position;
-				}
-				RaisePointEvent(arguments);
-			}
-
 			void GuiGraphicsHost::PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept)
 			{
-				ResetPointCapture();
-				pointSequenceId = firstPoint.sequenceId;
-				PointCapture(firstPoint);
-				GuiPointSequenceStartedEventArgs arguments(points);
-				static_cast<WindowPointInfo&>(arguments) = ConvertNativePointInfo(hostRecord.nativeWindow, firstPoint);
-				RebasePoints(nullptr);
-				points.Add(arguments.position);
-				RaisePointSequenceStartedEvent(arguments);
-				accept = pointSequenceAccepted = arguments.accept;
-				if (!accept)
+				pointActionManager->Initialize(firstPoint);
+				auto composition = FindInputComposition(firstPoint.position);
+				GuiPointSequenceStartedEventArgs arguments(pointActionManager->GetPoints(nullptr));
+				arguments.compositionSource = composition;
+				while (composition)
 				{
-					points.Clear();
+					if (composition->HasEventReceiver())
+					{
+						if (!arguments.eventSource) arguments.eventSource = composition;
+						static_cast<WindowPointInfo&>(arguments) = pointActionManager->ConvertSample(firstPoint, composition);
+						pointActionManager->GetPoints(composition);
+						composition->GetEventReceiver()->pointSequenceStarted.Execute(arguments);
+					}
+					composition = composition->GetParent();
 				}
+				PointCapture(arguments.acceptedComposition);
+				accept = arguments.acceptedComposition != nullptr;
 			}
 
 			void GuiGraphicsHost::PointDown(const NativeWindowPointInfo& info)
 			{
-				OnPointInput(info, GuiPointEventsType::Down);
+				pointActionManager->OnPointInput(info, GuiPointEventsType::Down);
 			}
 
 			void GuiGraphicsHost::PointUpdate(const NativeWindowPointInfo& info)
 			{
-				OnPointInput(info, GuiPointEventsType::Update);
+				pointActionManager->OnPointInput(info, GuiPointEventsType::Update);
 			}
 
 			void GuiGraphicsHost::PointUp(const NativeWindowPointInfo& info)
 			{
-				OnPointInput(info, GuiPointEventsType::Up);
+				pointActionManager->OnPointInput(info, GuiPointEventsType::Up);
 			}
 
 			void GuiGraphicsHost::PointEntered(const NativeWindowPointInfo& info)
 			{
-				OnPointInput(info, GuiPointEventsType::Enter);
+				pointActionManager->OnPointInput(info, GuiPointEventsType::Enter);
 			}
 
 			void GuiGraphicsHost::PointLeaved(const NativeWindowPointInfo& info)
 			{
-				OnPointInput(info, GuiPointEventsType::Leave);
+				pointActionManager->OnPointInput(info, GuiPointEventsType::Leave);
 			}
 
 			void GuiGraphicsHost::PointSequenceEnded(const PointSequenceEndInfo& info)
 			{
-				if (pointSequenceId != info.sequenceId) return;
-				GuiPointSequenceEndedEventArgs arguments(points);
-				static_cast<PointSequenceEndInfo&>(arguments) = info;
-				arguments.accepted = pointSequenceAccepted;
-				RaisePointSequenceEndedEvent(arguments);
+				if (!pointActionManager->PointSequenceEnded(info)) return;
+				auto button = pointActionManager->GetFallbackClick();
+				auto firstPoint = pointActionManager->GetFirstPoint();
 				PointUncapture();
+				if (!button) return;
+
+				// The synchronous click needs only composition capture; leave physical native capture intact.
+				auto physicalCapture = mouseCaptureComposition;
+				suppressNativeMouseCapture = true;
+				bool physicalButtons[5];
+				for (vint i = 0; i < 5; i++)
+				{
+					physicalButtons[i] = mouseButtonStates[i];
+					mouseButtonStates[i] = false;
+				}
+				mouseCaptureComposition = nullptr;
+				NativeWindowMouseInfo mouse;
+				mouse.x = firstPoint.position.x;
+				mouse.y = firstPoint.position.y;
+				mouse.ctrl = firstPoint.ctrl;
+				mouse.shift = firstPoint.shift;
+				mouse.alt = firstPoint.alt;
+				mouse.osSuper = firstPoint.osSuper;
+				MouseMoving(mouse);
+				mouse.left = button.Value() == NativeMouseButton::Left;
+				mouse.right = button.Value() == NativeMouseButton::Right;
+				MouseDown(button.Value(), mouse);
+				mouse.left = mouse.right = false;
+				MouseUp(button.Value(), mouse);
+				mouseCaptureComposition = physicalCapture;
+				for (vint i = 0; i < 5; i++) mouseButtonStates[i] = physicalButtons[i];
+				suppressNativeMouseCapture = false;
 			}
 
 			void GuiGraphicsHost::ResetRenderTarget()
@@ -849,6 +759,7 @@ GuiGraphicsHost
 			{
 				altActionManager = new GuiAltActionManager(controlHost);
 				tabActionManager = new GuiTabActionManager(controlHost);
+				pointActionManager = new GuiPointActionManager(this);
 				hostRecord.host = this;
 				windowComposition=new GuiWindowComposition;
 				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -863,6 +774,7 @@ GuiGraphicsHost
 
 				delete altActionManager;
 				delete tabActionManager;
+				delete pointActionManager;
 				if (shortcutKeyManager)
 				{
 					delete shortcutKeyManager;
@@ -870,6 +782,11 @@ GuiGraphicsHost
 				}
 
 				delete windowComposition;
+			}
+
+			GuiPointActionManager* GuiGraphicsHost::GetPointActionManager()
+			{
+				return pointActionManager;
 			}
 
 			INativeWindow* GuiGraphicsHost::GetNativeWindow()

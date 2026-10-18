@@ -320,6 +320,9 @@
     <ClCompile Include="TestControls_Editor_Regression.cpp">
       <Filter>Source Files\Controls\Editor</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_PointScrolling.cpp">
+      <Filter>Source Files\Controls\Editor</Filter>
+    </ClCompile>
     <ClCompile Include="TestApplication_Tab.cpp">
       <Filter>Source Files\Controls\Application</Filter>
     </ClCompile>
@@ -407,6 +410,9 @@
       <Filter>Source Files\Remote\Shared</Filter>
     </ClInclude>
     <ClInclude Include="TestControls.h">
+      <Filter>Source Files\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="TestPointInput.h">
       <Filter>Source Files\Controls</Filter>
     </ClInclude>
     <ClInclude Include="TestControls_List.h">

@@ -12,6 +12,7 @@ Interfaces:
 #include "GuiGraphicsHost_ShortcutKey.h"
 #include "GuiGraphicsHost_Alt.h"
 #include "GuiGraphicsHost_Tab.h"
+#include "GuiGraphicsHost_Point.h"
 #include "../GraphicsCompositions/GuiGraphicsWindowComposition.h"
 
 namespace vl
@@ -88,6 +89,7 @@ Host
 
 				GuiAltActionManager*					altActionManager = nullptr;
 				GuiTabActionManager*					tabActionManager = nullptr;
+				GuiPointActionManager*					pointActionManager = nullptr;
 				IGuiShortcutKeyManager*					shortcutKeyManager = nullptr;
 
 				controls::GuiControlHost*				controlHost = nullptr;
@@ -101,13 +103,8 @@ Host
 				GuiGraphicsTimerManager					timerManager;
 				GuiGraphicsComposition*					mouseCaptureComposition = nullptr;
 				bool									mouseButtonStates[5] = {};
+				bool									suppressNativeMouseCapture = false;
 				CompositionList							mouseEnterCompositions;
-				vuint64_t								pointSequenceId = 0;
-				bool									pointSequenceAccepted = false;
-				GuiGraphicsComposition*					pointCaptureComposition = nullptr;
-				Point									pointsOrigin;
-				NativeSize								pointsScale;
-				collections::List<Nullable<Point>>		points;
 				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
 
 				void									SetFocusInternal(GuiGraphicsComposition* composition);
@@ -117,14 +114,9 @@ Host
 				void									MouseCapture(const NativeWindowMouseInfo& info);
 				void									MouseUncapture();
 				GuiGraphicsComposition*					FindInputComposition(NativePoint location);
-				void									PointCapture(const NativeWindowPointInfo& firstPoint);
+				void									PointCapture(GuiGraphicsComposition* composition);
 				void									PointUncapture();
 				void									ResetPointCapture();
-				void									RebasePoints(GuiGraphicsComposition* composition);
-				void									RaisePointEvent(GuiPointEventArgs& arguments);
-				void									RaisePointSequenceStartedEvent(GuiPointSequenceStartedEventArgs& arguments);
-				void									RaisePointSequenceEndedEvent(GuiPointSequenceEndedEventArgs& arguments);
-				void									OnPointInput(const NativeWindowPointInfo& info, GuiPointEventsType eventType);
 				void									OnCharInput(const NativeWindowCharInfo& info, GuiGraphicsComposition* composition, GuiCharEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									RaiseMouseEvent(GuiMouseEventArgs& arguments, GuiGraphicsComposition* composition, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
@@ -219,6 +211,8 @@ Host
 				/// <summary>Get the timer manager.</summary>
 				/// <returns>The timer manager.</returns>
 				GuiGraphicsTimerManager*				GetTimerManager();
+				/// <summary>Get the manager owning the current point sequence.</summary>
+				GuiPointActionManager*					GetPointActionManager();
 				/// <summary>Notify that a composition is going to disconnect from this graphics host. Generally this happens when a composition's parent line changes.</summary>
 				/// <param name="composition">The composition to disconnect</param>
 				void									DisconnectComposition(GuiGraphicsComposition* composition);

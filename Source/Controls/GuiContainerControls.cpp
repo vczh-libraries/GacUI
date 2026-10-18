@@ -1,4 +1,5 @@
 #include "GuiContainerControls.h"
+#include "../Application/GraphicsHost/GuiGraphicsHost.h"
 
 /* CodePack:BeginIgnore() */
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -426,7 +427,40 @@ GuiScrollView
 			GuiScrollView::GuiScrollView(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
+				SetAcceptPointEvents(true);
 				containerComposition->CachedBoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerCachedBoundsChanged);
+			}
+
+			void GuiScrollView::OnPointSequenceStarted(GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& arguments)
+			{
+				GuiControl::OnPointSequenceStarted(sender, arguments);
+				if (arguments.acceptedComposition == boundsComposition)
+				{
+					pointStartViewPosition = GetViewPosition();
+				}
+			}
+
+			void GuiScrollView::OnPointAction(GuiGraphicsComposition* sender, GuiPointEventArgs& arguments)
+			{
+				if (arguments.handled || !GetVisuallyEnabled() || arguments.pointId != 0 || GetPointEventComposition() != boundsComposition) return;
+				auto manager = boundsComposition->GetRelatedGraphicsHost()->GetPointActionManager();
+				auto axis = manager->GetAxis();
+				if (axis == 0) return;
+				auto scroll = axis == 1 ? GetHorizontalScroll() : GetVerticalScroll();
+				if (!scroll || !scroll->GetVisible() || !scroll->GetVisuallyEnabled()) return;
+				auto displacement = manager->GetDisplacement();
+				auto position = GetViewPosition();
+				if (axis == 1) position.x = pointStartViewPosition.x - displacement.x;
+				else position.y = pointStartViewPosition.y - displacement.y;
+				SetViewPosition(position);
+			}
+
+			void GuiScrollView::OnPointSequenceEnded(GuiGraphicsComposition* sender, GuiPointSequenceEndedEventArgs& arguments)
+			{
+				if (!arguments.handled && GetPointEventComposition() == boundsComposition)
+				{
+					arguments.fallbackClick = true;
+				}
 			}
 
 			vint GuiScrollView::GetSmallMove()

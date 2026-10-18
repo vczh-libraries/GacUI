@@ -63,7 +63,10 @@ $launcher = $null
 $owned = $null
 $client = $null
 try {
-    if ($original) { [xml]$settings = [Text.Encoding]::UTF8.GetString($original) }
+    if ($original) {
+        $originalText = [Text.Encoding]::UTF8.GetString($original).TrimStart([char]0xFEFF)
+        [xml]$settings = $originalText
+    }
     else { [xml]$settings = '<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" />' }
     # The execution wrapper reads this configuration; preserve all other user settings.
     $group = $settings.CreateElement('PropertyGroup', $settings.DocumentElement.NamespaceURI)

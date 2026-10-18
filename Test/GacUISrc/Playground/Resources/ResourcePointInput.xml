@@ -44,6 +44,16 @@
             & Slots(arguments.Points) & ";";
         }
 
+        func TraceStarted(name: string, arguments: GuiPointSequenceStartedEventArgs*): void
+        {
+          trace.Data = trace.Data & name & self.PointEventName(arguments.eventType) & ":" & (cast string arguments.sequenceId)
+            & ":" & (cast string arguments.pointId) & ":" & (cast string arguments.activePointCount)
+            & ":" & (cast string arguments.position.x) & "," & (cast string arguments.position.y)
+            & ":source=" & (cast string (arguments.compositionSource == inner))
+            & ":event=" & (cast string (arguments.eventSource == inner))
+            & Slots(arguments.Points) & ";";
+        }
+
         func TraceEnd(name: string, arguments: GuiPointSequenceEndedEventArgs*): void
         {
           trace.Data = trace.Data & name & ":" & (cast string arguments.sequenceId)
@@ -56,7 +66,7 @@
         self.probe2 = new PlaygroundPoints^(self, native2);
         attach(inner.pointSequenceStarted, func(sender: GuiGraphicsComposition*, arguments: GuiPointSequenceStartedEventArgs*): void
         {
-          arguments.accept = false;
+          arguments.acceptedComposition = null;
         });
       }]]></ref.Ctor>
       <ref.Dtor><![CDATA[{
@@ -110,9 +120,9 @@
         <Bounds ref.Name="outer" ExpectedBounds="x1:20 y1:150 x2:510 y2:380">
           <SolidBackground Color="#404040"/>
           <ev.pointSequenceStarted-eval><![CDATA[{
-            trace.Data = trace.Data & "ParentAcceptBefore:" & (cast string arguments.accept) & ";";
-            arguments.accept = acceptParent.Selected;
-            self.TraceData("Parent", arguments);
+            trace.Data = trace.Data & "ParentAcceptBefore:" & (cast string (arguments.acceptedComposition is not null)) & ";";
+            if (acceptParent.Selected) { arguments.acceptedComposition = outer; }
+            self.TraceStarted("Parent", arguments);
           }]]></ev.pointSequenceStarted-eval>
           <ev.pointAction-eval><![CDATA[{ self.TraceData("Parent", arguments); }]]></ev.pointAction-eval>
           <ev.pointSequenceEnded-eval><![CDATA[{ self.TraceEnd("ParentEnded", arguments); }]]></ev.pointSequenceEnded-eval>
@@ -122,11 +132,11 @@
               <SolidBackground Color="#87CEEB"/>
             </Bounds>
             <ev.pointSequenceStarted-eval><![CDATA[{
-              arguments.accept = acceptChild.Selected;
-              arguments.handled = stopChild.Selected;
-              self.TraceData("Child", arguments);
+              if (acceptChild.Selected) { arguments.acceptedComposition = inner; }
+
+              self.TraceStarted("Child", arguments);
             }]]></ev.pointSequenceStarted-eval>
-            <ev.pointAction-eval><![CDATA[{ self.TraceData("Child", arguments); }]]></ev.pointAction-eval>
+            <ev.pointAction-eval><![CDATA[{ arguments.handled = stopChild.Selected; self.TraceData("Child", arguments); }]]></ev.pointAction-eval>
             <ev.pointSequenceEnded-eval><![CDATA[{ self.TraceEnd("ChildEnded", arguments); }]]></ev.pointSequenceEnded-eval>
           </Bounds>
         </Bounds>

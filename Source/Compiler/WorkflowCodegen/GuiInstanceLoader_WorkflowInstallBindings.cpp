@@ -364,13 +364,14 @@ Workflow_GenerateEventHandler
 				if (senderType == GetTypeDescriptor<GuiGraphicsComposition>())
 				{
 					auto expectedType = GetTypeDescriptor<GuiEventArgs>();
+					auto queryType = GetTypeDescriptor<GuiPointSequenceStartedEventArgs>();
 					List<ITypeDescriptor*> types;
 					types.Add(argumentType);
 					// TODO: (enumerable) foreach
 					for (vint i = 0; i < types.Count(); i++)
 					{
 						auto type = types[i];
-						if (type == expectedType)
+						if (type == expectedType || type == queryType)
 						{
 							standardName = true;
 							break;

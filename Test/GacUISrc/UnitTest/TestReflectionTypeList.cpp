@@ -1,4 +1,5 @@
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
+#include "../../../Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
 #include "../../../Source/GacUI.h"
 
 using namespace vl;
@@ -10,6 +11,13 @@ using namespace vl::presentation::elements;
 using namespace vl::presentation::compositions;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::templates;
+
+template<typename T>
+concept HasPointHandled = requires(T arguments) { arguments.handled; };
+
+static_assert(!HasPointHandled<GuiPointSequenceStartedEventArgs>);
+static_assert(HasPointHandled<GuiPointEventArgs>);
+static_assert(HasPointHandled<GuiPointSequenceEndedEventArgs>);
 
 template<typename T, typename U>
 void Reflection_TypeList(U&& callback)
@@ -92,6 +100,28 @@ TEST_FILE
 
 		TEST_CASE(L"Unified point actions expose their kind and borrow the sequence list")
 		{
+			auto startedType = GetTypeDescriptor<GuiPointSequenceStartedEventArgs>();
+			TEST_ASSERT(!startedType->CanConvertTo(GetTypeDescriptor<GuiEventArgs>()));
+			TEST_ASSERT(!startedType->GetPropertyByName(L"handled", true));
+			TEST_ASSERT(!startedType->GetPropertyByName(L"accept", true));
+			TEST_ASSERT(startedType->GetPropertyByName(L"acceptedComposition", true));
+			TEST_ASSERT(!startedType->GetConstructorGroup());
+			TEST_ASSERT(GetTypeDescriptor<GuiPointEventArgs>()->GetPropertyByName(L"handled", true));
+			TEST_ASSERT(GetTypeDescriptor<GuiPointSequenceEndedEventArgs>()->GetPropertyByName(L"handled", true));
+			TEST_ASSERT(GetTypeDescriptor<GuiPointSequenceEndedEventArgs>()->GetPropertyByName(L"fallbackClick", true));
+			auto controlType = GetTypeDescriptor<GuiControl>();
+			auto accepts = controlType->GetPropertyByName(L"AcceptPointEvents", true);
+			TEST_ASSERT(accepts && accepts->GetGetter() && accepts->GetSetter());
+			auto selected = controlType->GetPropertyByName(L"PointEventComposition", true);
+			TEST_ASSERT(selected && selected->GetGetter() && !selected->GetSetter());
+			GuiResourcePrecompileContext context;
+			for (auto name : { L"pointSequenceStarted",L"pointAction",L"pointSequenceEnded" })
+			{
+				auto eventInfo = GetTypeDescriptor<GuiGraphicsComposition>()->GetEventByName(name, true);
+				auto handler = Workflow_GenerateEventHandler(context, eventInfo);
+				TEST_ASSERT(handler->arguments.Count() == 2);
+				TEST_ASSERT(handler->arguments[0]->name.value == L"sender" && handler->arguments[1]->name.value == L"arguments");
+			}
 			auto pointEventType = GetTypeDescriptor(L"presentation::compositions::GuiPointEventsType");
 			TEST_ASSERT(pointEventType);
 			auto pointEventEnum = pointEventType->GetEnumType();

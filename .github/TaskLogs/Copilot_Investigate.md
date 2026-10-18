@@ -127,7 +127,7 @@ Exercise actual point protocol dispatch for ownership, sparse contacts, current 
 
 The baseline Debug x64 build passed with zero warnings/errors. The new protocol regression in `<GacUI repo>/Test/GacUISrc/UnitTest/TestRemote_GraphicsHost_Mouse.cpp` failed at `actions == 1`: an ordinary scroll view does not accept the first point. Existing source additionally confirms boolean acceptance, bubbling Action/End, and cached logical-coordinate rescaling.
 
-- No.1 Move point ownership and recognition into a host-owned manager.
+- No.1 Move point ownership and recognition into a host-owned manager. [CONFIRMED]
 
 ## No.1 Move point ownership and recognition into a host-owned manager
 
@@ -135,4 +135,30 @@ Keep Started dispatch at the graphics host, with sticky first-composition select
 
 ### CODE CHANGE
 
-Implementation pending. Add the specified manager source/header and inventories; update host, event arguments, controls, reflection, authored resources and tests. Native and remote wire acceptance remain unchanged.
+Implemented `GuiPointActionManager` and its source inventories, direct Action/End routing, sticky Started selection without handled, current native conversion, control acceptance/properties/hooks, axis-locked scroll-view movement, and deferred mouse synthesis. Migrated reflected fields/properties and authored Touching/Playground handlers. Added ordinary protocol ownership, recognition, DPI, lifecycle, fallback and reflection coverage, plus rendered list/editor fixtures. Native boolean acceptance and remote wire formats remain unchanged.
+
+The new protocol tests exposed an incorrect empty assignment to `Nullable<NativeMouseButton>`: debugger inspection showed a present Left value after reset despite two Downs. Explicit `Reset()` calls now clear the pending fallback. Multi-contact and terminal-state assertions cover this regression.
+
+The synchronous fallback temporarily uses composition mouse capture without changing native capture, then restores the independent physical composition/button bookkeeping. Regression coverage holds Left or Mouse5 on another composition while tapping and verifies that the later physical Up still reaches its original capture target.
+
+Resource generation found that `Workflow_GenerateEventHandler` recognized the standard `sender`/`arguments` names only through `GuiEventArgs` ancestry. Its type recognition now includes the independent Started query, with an ordinary regression for all three point handler signatures. This preserves existing authored event-handler syntax without reintroducing handled or changing reflection inheritance.
+
+The list fixture uses an explicit item width in a test-only arranger so both axes really overflow. The editor fixture initializes a nonempty first-line selection and resets both scrollbar positions before layout: `SetText` moves the caret, and `SetViewPosition(0)` can return early while a scrollbar is disabled during setup. Ready-frame assertions check the resulting zero view position. Ordinary protocol coverage also checks a fractional-DPI threshold boundary alongside stationary-contact rebasing: eight converted logical units remain unlocked, while ten lock without requesting a click.
+
+### CONFIRMED
+
+The original failing protocol regression now passes. The selected composition owns direct Action/End delivery and remains observable through End; mandatory cleanup runs independently of handled/default control behavior. Current native conversion preserves gesture geometry across DPI and window-origin changes. Recognition, scrollbar gating and deferred click eligibility agree with the threshold, axis, timing and multi-contact contracts. Ordinary mouse dispatch supplies normal hover/pressed/click behavior after point cleanup while preserving physical mouse capture.
+
+GacUI_Compiler completed both architectures successfully without remaining resource error artifacts, and all affected consumers were rebuilt. The rebuilt Playground compiled and loaded ResourcePointInput through all nine phases; automation confirmed child-only Action/End delivery, parent acceptance, and clean completion, while UIA exposed the expected inspection controls.
+
+The final Debug Win32 solution build completed with zero warnings/errors, followed by successful metadata generation. Its UnitTest run passed all 188 cases in the 10 selected files with no appended Debug memory-leak report. Both rendered point-scrolling fixtures passed their position, selection, tap and right-button assertions. The existing Raw/Properties compiler snapshots changed only declaration ordering during regeneration; they are retained with the snapshot outputs.
+
+The final Debug x64 solution build completed with zero warnings/errors. Metadata_Generate and Metadata_Test exited successfully, and all four metadata text round trips still match byte for byte. The final x64 UnitTest run passed all 208 cases in the 12 selected files, including the rendered fixtures, with no appended Debug memory-leak report.
+
+Both focused Touching UIA scenarios passed 226 assertions using rebuilt Debug x64 GDI applications. The shared assertions additionally verify captured Touching movement outside its surface, no deferred tab activation, and ordinary ListView point scrolling with preserved selection and bottom clamping. The launcher now strips a UTF-8 BOM before parsing saved project-user XML, and the C# runner initializes its UIA provider before the scenario's new UIA-based coordinate checks.
+
+The native live run used rebuilt Debug x64 CppTest with GDI and automation point commands on the existing List > ListView. A staged run first selected Task, then exercised forward scrolling, reversal within the held contact, horizontal movement/reset, bottom clamping, restoration and a short Reminder tap. Windows Graphics Capture observations and Controls data confirmed rendered movement and scrollbar positions; Task retained its selected blue background through reversal, and the final tap visibly selected Reminder. Results and stage observations are retained in the ignored `<GacUI repo>/Test/Output/LiveNativeListView.json` and `<GacUI repo>/Test/Output/NativeLiveStagesEvidence.json`.
+
+The live GacJS run used visible Chromium, HTTP transport to RemotingTest_Core `/FCT /Http`, and CDP touch emulation through the rendered page. All 18 assertions passed: Touching retains its selected target outside the surface; the existing List > ListView scrolls vertically, reverses within one held contact, clamps at the bottom, returns to the top, scrolls horizontally and restores its position. Selected Task rendering survives the drag, and a later short tap selects Reminder. Browser scroll coordinates stay at zero, the measured touch gestures emit no compatibility mouse/button wire events, and there are no page/protocol errors. Screenshots visibly confirm scrolling and selection. The ignored verifier and evidence are retained under `<GacJS repo>/Gaclib/website/entry/lib/live-touch-*`; no tracked GacJS implementation changes were needed. Verifier corrections accounted for DOM rendering, virtualized rows, and deliberate setup mouse events outside the measured touch intervals.
+
+These live checks used native automation and browser touch emulation; they do not claim physical touch-hardware coverage. Owned test applications and browser processes were stopped, their endpoints were released, and the preexisting IIS server was retained. `<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md` remains unchanged. Source review and whitespace checks pass; authored changes, generated metadata/resources, and unit-test snapshots are kept in separate commits.

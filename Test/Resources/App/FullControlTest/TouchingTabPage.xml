@@ -102,7 +102,7 @@
           <SolidBackground Color="#202020"/>
           <Bounds ref.Name="touchingBounds" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <Raw ref.Name="touching" Id="FullControlTest.Touching"/>
-            <ev.pointSequenceStarted-eval><![CDATA[{ arguments.accept = true; }]]></ev.pointSequenceStarted-eval>
+            <ev.pointSequenceStarted-eval><![CDATA[{ arguments.acceptedComposition = touchingBounds; }]]></ev.pointSequenceStarted-eval>
             <ev.pointAction-eval><![CDATA[{ self.UpdatePoints(arguments); }]]></ev.pointAction-eval>
             <ev.pointSequenceEnded-eval><![CDATA[{
               self.membership = "";

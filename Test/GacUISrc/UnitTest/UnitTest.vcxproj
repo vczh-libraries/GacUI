@@ -226,6 +226,7 @@
     </ClCompile>
     <ClCompile Include="TestControls_Editor_Key_Singleline.cpp" />
     <ClCompile Include="TestControls_Editor_Regression.cpp" />
+    <ClCompile Include="TestControls_PointScrolling.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_Binding.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_CellEditor.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_CellVisualizer.cpp" />
@@ -309,6 +310,7 @@
   <ItemGroup>
     <ClInclude Include="TestCompositions.h" />
     <ClInclude Include="TestControls.h" />
+    <ClInclude Include="TestPointInput.h" />
     <ClInclude Include="TestControls_List.h" />
     <ClInclude Include="TestItemProviders.h" />
     <ClInclude Include="TestControls_Ribbon.h" />

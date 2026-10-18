@@ -109,6 +109,7 @@ Basic Construction
 				Ptr<IGuiGraphicsEventHandler>			lostFocusHandler;
 
 				bool									acceptTabInput = false;
+				bool									acceptPointEvents = false;
 				vint									tabPriority = -1;
 				bool									isEnabled = true;
 				bool									isVisuallyEnabled = true;
@@ -143,6 +144,9 @@ Basic Construction
 				virtual void							OnBeforeReleaseGraphicsHost();
 				virtual void							UpdateVisuallyEnabled();
 				virtual void							UpdateDisplayFont();
+				virtual void							OnPointSequenceStarted(compositions::GuiGraphicsComposition* sender, compositions::GuiPointSequenceStartedEventArgs& arguments);
+				virtual void							OnPointAction(compositions::GuiGraphicsComposition* sender, compositions::GuiPointEventArgs& arguments);
+				virtual void							OnPointSequenceEnded(compositions::GuiGraphicsComposition* sender, compositions::GuiPointSequenceEndedEventArgs& arguments);
 				void									OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									SetFocusableComposition(compositions::GuiGraphicsComposition* value);
@@ -165,6 +169,13 @@ Basic Construction
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiControl(theme::ThemeName themeName);
 				~GuiControl();
+
+				/// <summary>Get whether this control claims unowned point sequences. False by default.</summary>
+				bool									GetAcceptPointEvents();
+				/// <summary>Set acceptance for subsequent point sequence queries.</summary>
+				void									SetAcceptPointEvents(bool value);
+				/// <summary>Get the current selected point composition inside this control's bounds subtree, or null.</summary>
+				compositions::GuiGraphicsComposition*	GetPointEventComposition();
 
 				/// <summary>Theme name changed event. This event raises when the theme name is changed.</summary>
 				compositions::GuiNotifyEvent			ControlThemeNameChanged;

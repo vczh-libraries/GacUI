@@ -438,6 +438,10 @@ GuiControl
 					containerComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
 					boundsComposition->AddChild(containerComposition);
+					auto receiver = boundsComposition->GetEventReceiver();
+					receiver->pointSequenceStarted.AttachMethod(this, &GuiControl::OnPointSequenceStarted);
+					receiver->pointAction.AttachMethod(this, &GuiControl::OnPointAction);
+					receiver->pointSequenceEnded.AttachMethod(this, &GuiControl::OnPointSequenceEnded);
 				}
 				{
 					ControlThemeNameChanged.SetAssociatedComposition(boundsComposition);
@@ -454,6 +458,45 @@ GuiControl
 					ContextChanged.SetAssociatedComposition(boundsComposition);
 				}
 				sharedPtrDestructorProc = &GuiControl::SharedPtrDestructorProc;
+			}
+
+			void GuiControl::OnPointSequenceStarted(GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& arguments)
+			{
+				if (acceptPointEvents && !arguments.acceptedComposition)
+				{
+					arguments.acceptedComposition = boundsComposition;
+				}
+			}
+
+			void GuiControl::OnPointAction(GuiGraphicsComposition* sender, GuiPointEventArgs& arguments)
+			{
+			}
+
+			void GuiControl::OnPointSequenceEnded(GuiGraphicsComposition* sender, GuiPointSequenceEndedEventArgs& arguments)
+			{
+			}
+
+			bool GuiControl::GetAcceptPointEvents()
+			{
+				return acceptPointEvents;
+			}
+
+			void GuiControl::SetAcceptPointEvents(bool value)
+			{
+				acceptPointEvents = value;
+			}
+
+			GuiGraphicsComposition* GuiControl::GetPointEventComposition()
+			{
+				if (auto host = boundsComposition->GetRelatedGraphicsHost())
+				{
+					auto target = host->GetPointActionManager()->GetPointCapture();
+					for (auto composition = target; composition; composition = composition->GetParent())
+					{
+						if (composition == boundsComposition) return target;
+					}
+				}
+				return nullptr;
 			}
 
 			GuiControl::~GuiControl()

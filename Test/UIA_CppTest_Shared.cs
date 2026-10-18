@@ -577,6 +577,20 @@ public static class GacUIShowcaseTests
     {
         Input("!Point" + operation + ":" + token + "," + ((int)bounds.Left + x) + "," + ((int)bounds.Top + y));
     }
+    static void PointInput(string operation, int token, AutomationElement element, double relativeX, double relativeY)
+    {
+        var bounds = element.Current.BoundingRectangle;
+        var point = new NativePoint
+        {
+            X = (int)Math.Round(bounds.Left + bounds.Width * relativeX),
+            Y = (int)Math.Round(bounds.Top + bounds.Height * relativeY),
+        };
+        var hwnd = new IntPtr(root.Current.NativeWindowHandle);
+        Check(ScreenToClient(hwnd, ref point), "convert point coordinate to client coordinates");
+        uint dpi = GetDpiForWindow(hwnd);
+        Check(dpi != 0, "read point coordinate DPI");
+        Input("!Point" + operation + ":" + token + "," + (int)Math.Round(point.X * 96.0 / dpi) + "," + (int)Math.Round(point.Y * 96.0 / dpi));
+    }
     static void OpenTouching()
     {
         Wait(() =>
@@ -688,6 +702,63 @@ public static class GacUIShowcaseTests
         TouchingState(1, boundary, "accepted input resumes after rejected sequences");
         PointInput("Up", 74, bounds, 20, 20);
         TouchingState(0, boundary, "final accepted sequence completes");
+
+        var touchingPage = Page(Page(root, "Misc"), "Touching");
+        var rawClockTab = Named(Page(root, "Misc"), "Raw Clock", ControlType.TabItem);
+        PointInput("Down", 75, bounds, 20, 20);
+        PointInput("Update", 75, rawClockTab, 0.50, 0.50);
+        Wait(() =>
+        {
+            var values = TouchingData();
+            return values.Length >= 5 && values[4] == 1
+                && (Math.Abs(values[0] - boundary[0]) > 0.001 || Math.Abs(values[1] - boundary[1]) > 0.001);
+        }, "accepted Touching update is delivered after the point leaves its surface");
+        var movedOutside = TouchingData();
+        PointInput("Up", 75, rawClockTab, 0.50, 0.50);
+        TouchingState(0, new double[] { movedOutside[0], movedOutside[1], movedOutside[2], movedOutside[3] },
+            "accepted Touching target remains stable when the point leaves its surface");
+        Wait(() => Pattern<SelectionItemPattern>(touchingPage, SelectionItemPattern.Pattern).Current.IsSelected,
+            "accepted Touching sequence keeps its page selected without deferred fallback click");
+
+        Test("Point input / built-in ListView scrolling preserves selection and clamps");
+        var listPage = Page(Page(root, "List"), "ListView");
+        var list = Find(listPage, ControlType.DataGrid)[0];
+        var scroll = Pattern<ScrollPattern>(list, ScrollPattern.Pattern);
+        Check(scroll.Current.VerticallyScrollable, "ListView is vertically scrollable");
+        scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
+        Wait(() => scroll.Current.VerticalScrollPercent == 0, "ListView returns to the top");
+        var rows = Find(list, ControlType.DataItem, TreeScope.Children);
+        Check(rows.Count > 2, "ListView exposes multiple visible rows");
+        var selectedRow = rows[0];
+        Pattern<SelectionItemPattern>(selectedRow, SelectionItemPattern.Pattern).Select();
+        var selection = Pattern<SelectionPattern>(list, SelectionPattern.Pattern);
+        var selectedName = selectedRow.Current.Name;
+        Action<string> checkSelection = description => Wait(() =>
+        {
+            try
+            {
+                var selected = selection.Current.GetSelection();
+                return selected.Length == 1 && selected[0].Current.Name == selectedName;
+            }
+            catch (ElementNotAvailableException) { return false; }
+        }, description);
+        var beforeScroll = scroll.Current.VerticalScrollPercent;
+        PointInput("Down", 901, list, 0.50, 0.50);
+        PointInput("Update", 901, list, 0.50, 0.12);
+        Wait(() => scroll.Current.VerticalScrollPercent > beforeScroll, "point drag scrolls ListView vertically");
+        PointInput("Up", 901, list, 0.50, 0.12);
+        checkSelection("point drag preserves ListView selection");
+        var afterForward = scroll.Current.VerticalScrollPercent;
+        PointInput("Down", 902, list, 0.50, 0.20);
+        PointInput("Update", 902, list, 0.50, 0.90);
+        Wait(() => scroll.Current.VerticalScrollPercent < afterForward, "reversed point drag scrolls ListView upward");
+        PointInput("Up", 902, list, 0.50, 0.90);
+        PointInput("Down", 903, list, 0.50, 0.50);
+        PointInput("Update", 903, list, 0.50, -2.00);
+        PointInput("Up", 903, list, 0.50, -2.00);
+        Wait(() => scroll.Current.VerticalScrollPercent == 100, "point drag clamps ListView at the bottom");
+        checkSelection("clamped point drag preserves ListView selection");
+        Page(Page(root, "Misc"), "Touching");
     }
     static void Touching(bool runAutomation)
     {
@@ -2443,11 +2514,11 @@ public static class GacUIShowcaseTests
         IntPtr hwnd = IntPtr.Zero;
         Wait(() => { EnumWindows((h,p) => { uint id; GetWindowThreadProcessId(h,out id); var text=new StringBuilder(256); GetClassName(h,text,256); if (id==processId && text.ToString()=="VczhWindow" && IsWindowVisible(h)) hwnd=h; return true; },IntPtr.Zero); return hwnd!=IntPtr.Zero; }, "owned HWND");
         inputEndpoint = "http://localhost:" + port + "/Automation/" + application + "/IO";
-        if (scenario == "RawClock") RawClockAutomation();
-        if (scenario == "Touching") TouchingAutomation();
-        Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
         ownedProcess = processId; isHosted = hosted;
         isWorkflowBinary = application == "GacUI_Host";
+        Wait(() => { root = AutomationElement.FromHandle(hwnd); return root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI"; }, "owned GacUI provider ready");
+        if (scenario == "RawClock") RawClockAutomation();
+        if (scenario == "Touching") TouchingAutomation();
         Check(root.Current.ProcessId == processId && root.Current.FrameworkId == "GacUI", "owned native GacUI root; HWND=" + hwnd + "; PID=" + root.Current.ProcessId + "; FrameworkId=" + root.Current.FrameworkId + "; Name=" + root.Current.Name);
         Check(root.Current.Name == (scenario == "Transitions" || scenario == "Review2" || scenario == "Review3" ? "UIA Review Fixture" : "Complete Control Showcase"), "application title");
         if (scenario == "Concurrent")
