@@ -30,6 +30,53 @@ public:
 
 TEST_FILE
 {
+	TEST_CATEGORY(L"Scroll views accept point input through the protocol")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		vint actions = 0;
+		protocol.OnNextFrame([&]()
+		{
+			auto scroll = new GuiScrollContainer(theme::ThemeName::ScrollView);
+			scroll->SetControlTemplate([](const description::Value&)
+			{
+				auto ct = new templates::GuiScrollViewTemplate;
+				ct->SetContainerComposition(ct);
+				return ct;
+			});
+			scroll->GetBoundsComposition()->SetExpectedBounds(Rect(10, 10, 210, 210));
+			controlHost->GetContainerComposition()->AddChild(scroll->GetBoundsComposition());
+			controlHost->ForceCalculateSizeImmediately();
+			scroll->GetBoundsComposition()->GetEventReceiver()->pointAction.AttachLambda([&](GuiGraphicsComposition*, GuiPointEventArgs&) { actions++; });
+			auto events = protocol.GetEvents();
+			NativeWindowPointInfo sample;
+			sample.sequenceId = 1;
+			sample.activePointCount = 1;
+			sample.position = NativePoint(30, 30);
+			IOPointAction a;
+			a.info = EncodePointInfo(sample);
+			a.eventIndex = 0;
+			events->OnIOPointStarted(a);
+			a.eventIndex = 1;
+			events->OnIOPointDown(a);
+			TEST_ASSERT(actions == 1);
+			a.eventIndex = 2;
+			a.info.activePointCount = 0;
+			events->OnIOPointUp(a);
+			IOPointEnd end;
+			end.sequenceId = L"1";
+			end.eventIndex = 3;
+			end.timestamp = L"0";
+			end.reason = PointSequenceEndReason::Succeeded;
+			events->OnIOPointEnded(end);
+			TEST_ASSERT(actions == 2);
+			controlHost->Hide();
+		});
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
 	TEST_CASE(L"Point unsigned decimal decoding is exact and canonical")
 	{
 		for (auto text : { L"0", L"4294967295", L"9007199254740993", L"18446744073709551615" })
