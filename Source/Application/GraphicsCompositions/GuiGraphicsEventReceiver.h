@@ -353,20 +353,14 @@ Predefined Events
 				const collections::List<Nullable<Point>>& GetPoints() const;
 			};
 
-			/// <summary>First-contact query. The first selected composition wins; the query continues through all ancestors.</summary>
-			struct GuiPointSequenceStartedEventArgs : public Object, public WindowPointInfo, public Description<GuiPointSequenceStartedEventArgs>
+			/// <summary>First-contact query. The first selected composition wins. Handled suppresses default control acceptance but does not stop the query through all ancestors.</summary>
+			struct GuiPointSequenceStartedEventArgs : public GuiPointEventArgs, public Description<GuiPointSequenceStartedEventArgs>
 			{
-				GuiGraphicsComposition*						compositionSource = nullptr;
-				GuiGraphicsComposition*						eventSource = nullptr;
 				/// <summary>Select the composition that will receive this sequence's actions and End, or leave null to decline.</summary>
 				GuiGraphicsComposition*						acceptedComposition = nullptr;
-				GuiPointEventsType							eventType = GuiPointEventsType::Started;
-				const collections::List<Nullable<Point>>&	points;
 
 				GuiPointSequenceStartedEventArgs(const collections::List<Nullable<Point>>& points);
 				GuiPointSequenceStartedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& points);
-				/// <summary>Get the borrowed sparse list relative to the current query receiver.</summary>
-				const collections::List<Nullable<Point>>& GetPoints() const;
 			};
 
 			/// <summary>Completion delivered to the selected composition. Canceled sequences retain occupied slots through every End handler.</summary>
@@ -526,7 +520,7 @@ Event Receiver
 ***********************************************************************/
 
 			/// <summary>
-			/// Contains all available user input events for a <see cref="GuiGraphicsComposition"/>. Most events route through the activated composition's ancestors and use <see cref="GuiEventArgs"/>. Point Started queries every ancestor without handled; accepted point Action and End events go directly to the selected composition.
+			/// Contains all available user input events for a <see cref="GuiGraphicsComposition"/>. Most events route through the activated composition's ancestors and use <see cref="GuiEventArgs"/>. Point Started queries every ancestor ignoring handled; accepted point Action and End events go directly to the selected composition.
 			/// </summary>
 			class GuiGraphicsEventReceiver : public Object
 			{

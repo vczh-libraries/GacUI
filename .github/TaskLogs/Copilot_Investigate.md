@@ -119,6 +119,18 @@ There is a known issue when handling mouse events on a composition, the handler 
 
 # UPDATES
 
+## UPDATE
+
+a small refactoring: I would like you to restore the inheritance, just simply ignore `handled` when processing `pointSequenceStarted`, it is acceptable, no need to remove `handled` from that event args.
+
+## UPDATE
+
+or you can let GuiControl::OnPointSequenceStarted checks handled and when it is true the acceptedComposition assignment will be skipped, that makes `handled` useful.
+
+## UPDATE
+
+I think this would be a way for a child control to stop a point experience acceptance, which actually adds a feature.
+
 # TEST [CONFIRMED]
 
 Exercise actual point protocol dispatch for ownership, sparse contacts, current conversion, recognition, fallback, and cleanup. Add rendered list and text-box scrolling cases. Verify reflection/resource migration, full required builds and metadata, existing UIA checks, and focused native/GacJS live point scrolling. The earlier task-review sentence records preparation; this investigate repro request executes the implementation.
@@ -127,7 +139,8 @@ Exercise actual point protocol dispatch for ownership, sparse contacts, current 
 
 The baseline Debug x64 build passed with zero warnings/errors. The new protocol regression in `<GacUI repo>/Test/GacUISrc/UnitTest/TestRemote_GraphicsHost_Mouse.cpp` failed at `actions == 1`: an ordinary scroll view does not accept the first point. Existing source additionally confirms boolean acceptance, bubbling Action/End, and cached logical-coordinate rescaling.
 
-- No.1 Move point ownership and recognition into a host-owned manager. [CONFIRMED]
+- No.1 Move point ownership and recognition into a host-owned manager. [DENIED]
+- No.2 Restore Started inheritance and let handled suppress default acceptance. [CONFIRMED]
 
 ## No.1 Move point ownership and recognition into a host-owned manager
 
@@ -145,7 +158,9 @@ Resource generation found that `Workflow_GenerateEventHandler` recognized the st
 
 The list fixture uses an explicit item width in a test-only arranger so both axes really overflow. The editor fixture initializes a nonempty first-line selection and resets both scrollbar positions before layout: `SetText` moves the caret, and `SetViewPosition(0)` can return early while a scrollbar is disabled during setup. Ready-frame assertions check the resulting zero view position. Ordinary protocol coverage also checks a fractional-DPI threshold boundary alongside stationary-contact rebasing: eight converted logical units remain unlocked, while ten lock without requesting a click.
 
-### CONFIRMED
+### DENIED BY USER
+
+The follow-up rejects only the independent Started argument hierarchy and the requirement to remove inherited `handled`. Keep the implemented ownership, scrolling and fallback behavior. Restore the C++ and reflected `GuiPointEventArgs` base, and ignore `handled` for query traversal while default control acceptance follows No.2. The verification below is the historical result for the original implementation; No.2 records verification of the revised contract.
 
 The original failing protocol regression now passes. The selected composition owns direct Action/End delivery and remains observable through End; mandatory cleanup runs independently of handled/default control behavior. Current native conversion preserves gesture geometry across DPI and window-origin changes. Recognition, scrollbar gating and deferred click eligibility agree with the threshold, axis, timing and multi-contact contracts. Ordinary mouse dispatch supplies normal hover/pressed/click behavior after point cleanup while preserving physical mouse capture.
 
@@ -162,3 +177,21 @@ The native live run used rebuilt Debug x64 CppTest with GDI and automation point
 The live GacJS run used visible Chromium, HTTP transport to RemotingTest_Core `/FCT /Http`, and CDP touch emulation through the rendered page. All 18 assertions passed: Touching retains its selected target outside the surface; the existing List > ListView scrolls vertically, reverses within one held contact, clamps at the bottom, returns to the top, scrolls horizontally and restores its position. Selected Task rendering survives the drag, and a later short tap selects Reminder. Browser scroll coordinates stay at zero, the measured touch gestures emit no compatibility mouse/button wire events, and there are no page/protocol errors. Screenshots visibly confirm scrolling and selection. The ignored verifier and evidence are retained under `<GacJS repo>/Gaclib/website/entry/lib/live-touch-*`; no tracked GacJS implementation changes were needed. Verifier corrections accounted for DOM rendering, virtualized rows, and deliberate setup mouse events outside the measured touch intervals.
 
 These live checks used native automation and browser touch emulation; they do not claim physical touch-hardware coverage. Owned test applications and browser processes were stopped, their endpoints were released, and the preexisting IIS server was retained. `<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md` remains unchanged. Source review and whitespace checks pass; authored changes, generated metadata/resources, and unit-test snapshots are kept in separate commits.
+
+## No.2 Restore Started inheritance and let handled suppress default acceptance
+
+Restore `GuiPointSequenceStartedEventArgs` as a `GuiPointEventArgs` subclass in `<GacUI repo>/Source/Application/GraphicsCompositions/GuiGraphicsEventReceiver.h/.cpp`. Delegate constructors to the base with `GuiPointEventsType::Started`, retain only `acceptedComposition` as the new field, and inherit the borrowed list accessor. Restore `CLASS_MEMBER_BASE(GuiPointEventArgs)` in `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionEvents.cpp`, removing duplicate registrations. Remove the special Started type check in `<GacUI repo>/Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowInstallBindings.cpp`; ordinary `GuiEventArgs` ancestry supplies XML handler parameter names again.
+
+Started dispatch continues through all handlers and ancestors regardless of `handled`, preserving sticky first-composition selection. Following the second update, add `!arguments.handled` to the default acceptance condition in `GuiControl::OnPointSequenceStarted` in `<GacUI repo>/Source/Application/Controls/GuiBasicControls.cpp`. A true value suppresses default acceptance but does not erase an existing selection or prevent a custom handler from explicitly selecting a composition. Extend the existing ordinary protocol test with these cases and a normal unhandled acceptance control. Update reflection assertions for inherited members, base conversion, source initialization and borrowed points. Preserve the no-reflected-constructor rule. Reconcile API comments, `<GacUI repo>/TODO_Touch_Step3.md` and the point-input design guidance.
+
+### CODE CHANGE
+
+Restored the C++ and reflected point-argument base, removed duplicated fields/accessor/registrations and the compiler special case, and added the handled guard to default control acceptance. Extended existing reflection and protocol cases to cover inherited access, continuing delivery, suppression of ancestor defaults, preserved selections and explicit custom acceptance. Updated the API and design/task documentation.
+
+Verify with Debug Win32 and x64 solution builds and selected UnitTest suites, regenerate both metadata architectures and run Metadata_Test through the repository wrappers. Regenerate resource outputs with GacUI_Compiler so serialized Workflow references use the restored reflected base, rebuilding consumers if generated C++ changes. Inspect generated metadata, resources and snapshot differences. The earlier live checks remain historical; this focused hierarchy refactor is covered by the existing routing, scrolling, reflection and handler-generation regressions.
+
+### CONFIRMED
+
+Both Debug solution builds succeeded with zero warnings and errors. The Win32 UnitTest run passed 188/188 cases in 10/10 selected files; x64 passed 208/208 cases in 12/12 selected files. Neither run appended a Debug memory-leak report. The extended protocol regression confirms normal unhandled acceptance, continued handlers and ancestor queries after a child sets handled, suppression of automatic ancestor acceptance, preservation of an existing selection, explicit custom acceptance despite handled, and terminal cleanup. Reflection checks confirm inherited access and conversion, default source/handled initialization, borrowed points and conventional XML handler argument names.
+
+Metadata_Generate succeeded for both architectures, and x64 Metadata_Test succeeded. All four metadata text round trips match byte for byte. The regenerated descriptors derive Started from GuiPointEventArgs and declare only acceptedComposition locally. With both metadata sets current, the x64 GacUI_Compiler completed its x86 and x64 resource passes successfully. Generated application resources and C++ have no tracked changes, and no resource error artifacts remain; no additional consumer rebuild is needed. Unit-test snapshots also remain unchanged. Source review and whitespace checks pass. Keep authored changes and regenerated metadata in separate commits.

@@ -170,7 +170,7 @@ Basic Construction
 				GuiControl(theme::ThemeName themeName);
 				~GuiControl();
 
-				/// <summary>Get whether this control claims unowned point sequences. False by default.</summary>
+				/// <summary>Get whether this control claims unowned, unhandled point sequences. False by default.</summary>
 				bool									GetAcceptPointEvents();
 				/// <summary>Set acceptance for subsequent point sequence queries.</summary>
 				void									SetAcceptPointEvents(bool value);

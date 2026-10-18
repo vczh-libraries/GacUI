@@ -186,6 +186,7 @@ TEST_FILE
 		GuiControl* unrelated = nullptr;
 		vint childActions = 0, innerActions = 0, outerActions = 0;
 		vint childEnds = 0, innerEnds = 0, outerEnds = 0, outerQueries = 0;
+		bool handleQuery = false, acceptHandledQuery = false;
 		protocol.OnNextFrame([&]()
 		{
 			outer = new PointScrollView(false);
@@ -202,13 +203,24 @@ TEST_FILE
 			inner->GetContainerComposition()->AddChild(child->GetBoundsComposition());
 			child->GetBoundsComposition()->GetEventReceiver()->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceStartedEventArgs& a)
 			{
+				TEST_ASSERT(!a.handled);
+				a.handled = handleQuery;
+			});
+			child->GetBoundsComposition()->GetEventReceiver()->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceStartedEventArgs& a)
+			{
+				TEST_ASSERT(a.handled == handleQuery);
 				// A later handler on the same receiver cannot erase the base adapter's selection.
 				a.acceptedComposition = nullptr;
 			});
 			outer->GetBoundsComposition()->GetEventReceiver()->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceStartedEventArgs& a)
 			{
+				TEST_ASSERT(a.handled == handleQuery);
 				outerQueries++;
-				if (outer->GetAcceptPointEvents())
+				if (handleQuery && !a.acceptedComposition)
+				{
+					if (acceptHandledQuery) a.acceptedComposition = outer->GetBoundsComposition();
+				}
+				else if (outer->GetAcceptPointEvents())
 				{
 					TEST_ASSERT(a.acceptedComposition == (child->GetAcceptPointEvents() ? child->GetBoundsComposition() : inner->GetBoundsComposition()));
 					a.acceptedComposition = outer->GetBoundsComposition();
@@ -232,6 +244,7 @@ TEST_FILE
 			input.Move(NativePoint(50, 10));
 			input.Up(0, NativePoint(50, 10)); input.End();
 			TEST_ASSERT(childActions == 0 && innerActions == 3 && outerActions == 0 && innerEnds == 1 && childEnds == 0 && outerEnds == 0);
+			handleQuery = true;
 			child->SetAcceptPointEvents(true);
 			input.Start(NativePoint(50, 50));
 			TEST_ASSERT(child->GetPointEventComposition() == child->GetBoundsComposition());
@@ -263,6 +276,19 @@ TEST_FILE
 			TEST_ASSERT(childEnds == 1);
 			input.Start(NativePoint(50, 50)); input.Up(0, NativePoint(50, 50)); input.End();
 			TEST_ASSERT(childEnds == 2 && !controlHost->GetPointEventComposition());
+			child->SetAcceptPointEvents(false);
+			inner->SetAcceptPointEvents(true); outer->SetAcceptPointEvents(true);
+			auto queries = outerQueries;
+			input.Start(NativePoint(50, 50));
+			TEST_ASSERT(!controlHost->GetPointEventComposition() && outerQueries == queries + 1);
+			input.Up(0, NativePoint(50, 50)); input.End();
+			TEST_ASSERT(childEnds == 2 && innerEnds == 1 && outerEnds == 0);
+			acceptHandledQuery = true;
+			input.Start(NativePoint(50, 50));
+			TEST_ASSERT(outer->GetPointEventComposition() == outer->GetBoundsComposition() && outerQueries == queries + 2);
+			input.Move(NativePoint(50, 10));
+			input.Up(0, NativePoint(50, 10)); input.End();
+			TEST_ASSERT(outerActions == 3 && outerEnds == 1 && !controlHost->GetPointEventComposition());
 			controlHost->Hide();
 		});
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));

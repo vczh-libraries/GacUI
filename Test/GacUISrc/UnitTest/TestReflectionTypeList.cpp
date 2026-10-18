@@ -15,7 +15,8 @@ using namespace vl::presentation::templates;
 template<typename T>
 concept HasPointHandled = requires(T arguments) { arguments.handled; };
 
-static_assert(!HasPointHandled<GuiPointSequenceStartedEventArgs>);
+static_assert(std::is_base_of_v<GuiPointEventArgs, GuiPointSequenceStartedEventArgs>);
+static_assert(HasPointHandled<GuiPointSequenceStartedEventArgs>);
 static_assert(HasPointHandled<GuiPointEventArgs>);
 static_assert(HasPointHandled<GuiPointSequenceEndedEventArgs>);
 
@@ -101,8 +102,9 @@ TEST_FILE
 		TEST_CASE(L"Unified point actions expose their kind and borrow the sequence list")
 		{
 			auto startedType = GetTypeDescriptor<GuiPointSequenceStartedEventArgs>();
-			TEST_ASSERT(!startedType->CanConvertTo(GetTypeDescriptor<GuiEventArgs>()));
-			TEST_ASSERT(!startedType->GetPropertyByName(L"handled", true));
+			TEST_ASSERT(startedType->CanConvertTo(GetTypeDescriptor<GuiPointEventArgs>()));
+			TEST_ASSERT(startedType->CanConvertTo(GetTypeDescriptor<GuiEventArgs>()));
+			TEST_ASSERT(startedType->GetPropertyByName(L"handled", true));
 			TEST_ASSERT(!startedType->GetPropertyByName(L"accept", true));
 			TEST_ASSERT(startedType->GetPropertyByName(L"acceptedComposition", true));
 			TEST_ASSERT(!startedType->GetConstructorGroup());
@@ -150,8 +152,21 @@ TEST_FILE
 			TEST_ASSERT(started.eventType == GuiPointEventsType::Started);
 			TEST_ASSERT(sourcedStarted.eventType == GuiPointEventsType::Started);
 			TEST_ASSERT(sourcedStarted.compositionSource == &composition);
+			TEST_ASSERT(sourcedStarted.eventSource == &composition);
+			TEST_ASSERT(!started.compositionSource && !started.eventSource);
+			TEST_ASSERT(!started.handled && !sourcedStarted.handled);
 			TEST_ASSERT(&started.GetPoints() == &points);
 			TEST_ASSERT(&sourcedStarted.GetPoints() == &points);
+			auto boxedStarted = BoxValue(&sourcedStarted);
+			TEST_ASSERT(UnboxValue<GuiPointEventArgs*>(boxedStarted) == &sourcedStarted);
+			TEST_ASSERT(UnboxValue<GuiPointEventsType>(boxedStarted.GetProperty(L"eventType")) == GuiPointEventsType::Started);
+			TEST_ASSERT(UnboxValue<GuiGraphicsComposition*>(boxedStarted.GetProperty(L"eventSource")) == &composition);
+			boxedStarted.SetProperty(L"handled", BoxValue(true));
+			TEST_ASSERT(sourcedStarted.handled);
+			auto startedPoints = UnboxValue<Ptr<IValueReadonlyList>>(boxedStarted.GetProperty(L"Points"));
+			TEST_ASSERT(startedPoints->GetCount() == 2);
+			TEST_ASSERT(UnboxValue<Nullable<Point>>(startedPoints->Get(0)).Value() == Point(10, 20));
+			TEST_ASSERT(!UnboxValue<Nullable<Point>>(startedPoints->Get(1)));
 
 			for (auto eventType : { GuiPointEventsType::Down, GuiPointEventsType::Update, GuiPointEventsType::Up, GuiPointEventsType::Enter, GuiPointEventsType::Leave })
 			{

@@ -30,20 +30,13 @@ Point Event Arguments
 			}
 
 			GuiPointSequenceStartedEventArgs::GuiPointSequenceStartedEventArgs(const collections::List<Nullable<Point>>& _points)
-				:points(_points)
+				:GuiPointEventArgs(GuiPointEventsType::Started, _points)
 			{
 			}
 
 			GuiPointSequenceStartedEventArgs::GuiPointSequenceStartedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& _points)
-				:compositionSource(composition)
-				,eventSource(composition)
-				,points(_points)
+				:GuiPointEventArgs(composition, GuiPointEventsType::Started, _points)
 			{
-			}
-
-			const collections::List<Nullable<Point>>& GuiPointSequenceStartedEventArgs::GetPoints() const
-			{
-				return points;
 			}
 
 			GuiPointSequenceEndedEventArgs::GuiPointSequenceEndedEventArgs(const collections::List<Nullable<Point>>& _points)

@@ -462,7 +462,7 @@ GuiControl
 
 			void GuiControl::OnPointSequenceStarted(GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& arguments)
 			{
-				if (acceptPointEvents && !arguments.acceptedComposition)
+				if (acceptPointEvents && !arguments.handled && !arguments.acceptedComposition)
 				{
 					arguments.acceptedComposition = boundsComposition;
 				}
