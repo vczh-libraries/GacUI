@@ -32,3 +32,4 @@ There is a known issue when handling mouse events on a composition, the handler 
   - `GuiGraphicsHost_Point.(h|cpp)` will be the file to store the new `pointActionManager`.
 - To verify, you can find any scrollable list or text box and try to scroldl them:
   - Make new remote protocol based unit test case, no need to update `DebugRemoteProtocolSop.md`.
+  - I will check snapshots later.
