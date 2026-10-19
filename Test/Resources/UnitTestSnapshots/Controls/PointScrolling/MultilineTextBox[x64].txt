@@ -31,9 +31,6 @@ namespace gacuisrc_unittest
         var list : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
 
         @cpp:Protected
-        var editor : ::presentation::controls::GuiMultilineTextBox* = null of (::presentation::controls::GuiMultilineTextBox*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
@@ -47,6 +44,15 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var outer : ::presentation::controls::GuiScrollContainer* = null of (::presentation::controls::GuiScrollContainer*);
+
+        @cpp:Protected
+        var editor : ::presentation::controls::GuiMultilineTextBox* = null of (::presentation::controls::GuiMultilineTextBox*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -102,6 +108,26 @@ namespace gacuisrc_unittest
                 <precompile>3.SetSite(0, 1, 1, 1);
             }
             {
+                (outer = new (::presentation::controls::GuiScrollContainer*)(::presentation::theme::ThemeName::ScrollView));
+                <this>.SetNamedObject("outer", outer);
+            }
+            {
+                (outer.VerticalAlwaysVisible = false);
+            }
+            {
+                (outer.ExtendToFullHeight = true);
+            }
+            {
+                (outer.ExtendToFullWidth = true);
+            }
+            (<precompile>5 = outer.BoundsComposition);
+            {
+                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (outer.HorizontalAlwaysVisible = false);
+            }
+            {
                 (editor = new (::presentation::controls::GuiMultilineTextBox*)(::presentation::theme::ThemeName::MultilineTextBox));
                 <this>.SetNamedObject("editor", editor);
             }
@@ -110,7 +136,10 @@ namespace gacuisrc_unittest
                 (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>3.AddChild(editor.BoundsComposition);
+                outer.AddChild(editor);
+            }
+            {
+                <precompile>3.AddChild(outer.BoundsComposition);
             }
             {
                 <precompile>0.AddChild(<precompile>3);

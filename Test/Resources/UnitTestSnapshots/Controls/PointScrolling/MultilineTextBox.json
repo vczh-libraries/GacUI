@@ -44,76 +44,86 @@
     [42, "Polygon"],
     [43, "Polygon"],
     [44, "SolidBackground"],
-    [45, "DocumentParagraph"],
-    [46, "DocumentParagraph"],
-    [47, "DocumentParagraph"],
-    [48, "SolidBackground"],
-    [49, "SolidLabel"],
-    [50, "DocumentParagraph"],
-    [51, "DocumentParagraph"],
-    [52, "DocumentParagraph"],
-    [53, "DocumentParagraph"],
-    [54, "DocumentParagraph"],
-    [55, "DocumentParagraph"],
-    [56, "DocumentParagraph"],
+    [45, "SolidBackground"],
+    [46, "SolidBorder"],
+    [47, "SolidBackground"],
+    [48, "SolidBorder"],
+    [49, "Polygon"],
+    [50, "Polygon"],
+    [51, "SolidBackground"],
+    [52, "SolidBackground"],
+    [53, "SolidBorder"],
+    [54, "Polygon"],
+    [55, "Polygon"],
+    [56, "SolidBackground"],
     [57, "DocumentParagraph"],
     [58, "DocumentParagraph"],
     [59, "DocumentParagraph"],
-    [60, "DocumentParagraph"],
-    [61, "DocumentParagraph"],
+    [60, "SolidBackground"],
+    [61, "SolidLabel"],
     [62, "DocumentParagraph"],
-    [63, "SolidBackground"],
-    [64, "SolidLabel"],
-    [65, "SolidBackground"],
-    [66, "SolidLabel"],
-    [67, "SolidBackground"],
-    [68, "SolidLabel"],
-    [69, "SolidBackground"],
-    [70, "SolidLabel"],
-    [71, "SolidBackground"],
-    [72, "SolidLabel"],
-    [73, "SolidBackground"],
-    [74, "SolidLabel"],
+    [63, "DocumentParagraph"],
+    [64, "DocumentParagraph"],
+    [65, "DocumentParagraph"],
+    [66, "DocumentParagraph"],
+    [67, "DocumentParagraph"],
+    [68, "DocumentParagraph"],
+    [69, "DocumentParagraph"],
+    [70, "DocumentParagraph"],
+    [71, "DocumentParagraph"],
+    [72, "DocumentParagraph"],
+    [73, "DocumentParagraph"],
+    [74, "DocumentParagraph"],
     [75, "SolidBackground"],
     [76, "SolidLabel"],
-    [77, "DocumentParagraph"],
-    [78, "DocumentParagraph"],
-    [79, "DocumentParagraph"],
-    [80, "DocumentParagraph"],
-    [81, "DocumentParagraph"],
-    [82, "DocumentParagraph"],
-    [83, "DocumentParagraph"],
-    [84, "DocumentParagraph"],
-    [85, "DocumentParagraph"],
-    [86, "DocumentParagraph"],
-    [87, "DocumentParagraph"],
-    [88, "DocumentParagraph"],
+    [77, "SolidBackground"],
+    [78, "SolidLabel"],
+    [79, "SolidBackground"],
+    [80, "SolidLabel"],
+    [81, "SolidBackground"],
+    [82, "SolidLabel"],
+    [83, "SolidBackground"],
+    [84, "SolidLabel"],
+    [85, "SolidBackground"],
+    [86, "SolidLabel"],
+    [87, "SolidBackground"],
+    [88, "SolidLabel"],
     [89, "DocumentParagraph"],
-    [90, "DocumentParagraph"],
-    [91, "DocumentParagraph"],
-    [92, "DocumentParagraph"],
-    [93, "DocumentParagraph"],
-    [94, "DocumentParagraph"],
-    [95, "DocumentParagraph"],
-    [96, "DocumentParagraph"],
-    [97, "DocumentParagraph"],
-    [98, "DocumentParagraph"],
-    [99, "DocumentParagraph"],
-    [100, "DocumentParagraph"],
-    [101, "DocumentParagraph"],
+    [90, "SolidBackground"],
+    [91, "SolidBorder"],
+    [92, "SolidBackground"],
+    [93, "SolidBorder"],
+    [94, "Polygon"],
+    [95, "Polygon"],
+    [96, "SolidBackground"],
+    [97, "SolidBackground"],
+    [98, "SolidBorder"],
+    [99, "Polygon"],
+    [100, "Polygon"],
+    [101, "SolidBackground"],
     [102, "DocumentParagraph"],
     [103, "DocumentParagraph"],
     [104, "DocumentParagraph"],
     [105, "DocumentParagraph"],
     [106, "DocumentParagraph"],
-    [107, "DocumentParagraph"]
+    [107, "DocumentParagraph"],
+    [108, "DocumentParagraph"],
+    [109, "DocumentParagraph"],
+    [110, "DocumentParagraph"],
+    [111, "DocumentParagraph"],
+    [112, "DocumentParagraph"],
+    [113, "DocumentParagraph"],
+    [114, "DocumentParagraph"],
+    [115, "DocumentParagraph"],
+    [116, "DocumentParagraph"],
+    [117, "DocumentParagraph"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
   "frames": [
     {
       "frameId": 5,
-      "frameName": "Ready",
+      "frameName": "Ready for text selection",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -139,8 +149,8 @@
       "root": null
     },
     {
-      "frameId": 8,
-      "frameName": "Dragged down",
+      "frameId": 7,
+      "frameName": "Touch drag selects text",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -166,8 +176,8 @@
       "root": null
     },
     {
-      "frameId": 11,
-      "frameName": "Reversed vertical drag",
+      "frameId": 10,
+      "frameName": "Replaced template keeps text input",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -193,8 +203,8 @@
       "root": null
     },
     {
-      "frameId": 14,
-      "frameName": "Clamped at bottom",
+      "frameId": 12,
+      "frameName": "Selection after template replacement",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -220,116 +230,8 @@
       "root": null
     },
     {
-      "frameId": 17,
-      "frameName": "Clamped at top",
-      "windowSize": {
-        "bounds": {
-          "x1": {"value": 0},
-          "y1": {"value": 0},
-          "x2": {"value": 0},
-          "y2": {"value": 0}
-        },
-        "clientBounds": {
-          "x1": {"value": 0},
-          "y1": {"value": 0},
-          "x2": {"value": 0},
-          "y2": {"value": 0}
-        },
-        "sizeState": "Minimized",
-        "customFramePadding": {
-          "left": {"value": 0},
-          "top": {"value": 0},
-          "right": {"value": 0},
-          "bottom": {"value": 0}
-        }
-      },
-      "elements": null,
-      "root": null
-    },
-    {
-      "frameId": 20,
-      "frameName": "Dragged right",
-      "windowSize": {
-        "bounds": {
-          "x1": {"value": 0},
-          "y1": {"value": 0},
-          "x2": {"value": 0},
-          "y2": {"value": 0}
-        },
-        "clientBounds": {
-          "x1": {"value": 0},
-          "y1": {"value": 0},
-          "x2": {"value": 0},
-          "y2": {"value": 0}
-        },
-        "sizeState": "Minimized",
-        "customFramePadding": {
-          "left": {"value": 0},
-          "top": {"value": 0},
-          "right": {"value": 0},
-          "bottom": {"value": 0}
-        }
-      },
-      "elements": null,
-      "root": null
-    },
-    {
-      "frameId": 23,
-      "frameName": "Reversed horizontal drag",
-      "windowSize": {
-        "bounds": {
-          "x1": {"value": 0},
-          "y1": {"value": 0},
-          "x2": {"value": 0},
-          "y2": {"value": 0}
-        },
-        "clientBounds": {
-          "x1": {"value": 0},
-          "y1": {"value": 0},
-          "x2": {"value": 0},
-          "y2": {"value": 0}
-        },
-        "sizeState": "Minimized",
-        "customFramePadding": {
-          "left": {"value": 0},
-          "top": {"value": 0},
-          "right": {"value": 0},
-          "bottom": {"value": 0}
-        }
-      },
-      "elements": null,
-      "root": null
-    },
-    {
-      "frameId": 26,
-      "frameName": "Clamped at left",
-      "windowSize": {
-        "bounds": {
-          "x1": {"value": 0},
-          "y1": {"value": 0},
-          "x2": {"value": 0},
-          "y2": {"value": 0}
-        },
-        "clientBounds": {
-          "x1": {"value": 0},
-          "y1": {"value": 0},
-          "x2": {"value": 0},
-          "y2": {"value": 0}
-        },
-        "sizeState": "Minimized",
-        "customFramePadding": {
-          "left": {"value": 0},
-          "top": {"value": 0},
-          "right": {"value": 0},
-          "bottom": {"value": 0}
-        }
-      },
-      "elements": null,
-      "root": null
-    },
-    {
-      "frameId": 28,
-      "frameName": "Tap selected content",
+      "frameId": 15,
+      "frameName": "View-only text still scrolls",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

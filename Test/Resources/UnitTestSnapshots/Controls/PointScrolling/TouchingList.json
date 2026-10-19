@@ -1,0 +1,251 @@
+﻿{
+  "createdElements": [
+    [1, "SolidBackground"],
+    [2, "SolidBorder"],
+    [3, "SolidBackground"],
+    [4, "SolidBorder"],
+    [5, "FocusRectangle"],
+    [6, "SolidLabel"],
+    [7, "Polygon"],
+    [8, "SolidBackground"],
+    [9, "SolidBorder"],
+    [10, "FocusRectangle"],
+    [11, "SolidLabel"],
+    [12, "Polygon"],
+    [13, "Polygon"],
+    [14, "SolidBackground"],
+    [15, "SolidBorder"],
+    [16, "FocusRectangle"],
+    [17, "SolidLabel"],
+    [18, "Polygon"],
+    [19, "ImageFrame"],
+    [20, "SolidLabel"],
+    [21, "SolidBackground"],
+    [22, "SolidBackground"],
+    [23, "FocusRectangle"],
+    [24, "SolidLabel"],
+    [25, "SolidBackground"],
+    [26, "SolidBorder"],
+    [27, "SolidBackground"],
+    [28, "SolidBorder"],
+    [29, "FocusRectangle"],
+    [30, "SolidLabel"],
+    [31, "SolidBackground"],
+    [32, "SolidBorder"],
+    [33, "FocusRectangle"],
+    [34, "SolidLabel"],
+    [35, "SolidBackground"],
+    [36, "SolidBorder"],
+    [37, "SolidBackground"],
+    [38, "SolidBorder"],
+    [39, "Polygon"],
+    [40, "Polygon"],
+    [41, "SolidBackground"],
+    [42, "SolidBackground"],
+    [43, "SolidBorder"],
+    [44, "Polygon"],
+    [45, "Polygon"],
+    [46, "SolidBackground"],
+    [47, "SolidBackground"],
+    [48, "SolidBackground"],
+    [49, "SolidLabel"],
+    [50, "SolidBackground"],
+    [51, "SolidLabel"],
+    [52, "SolidBackground"],
+    [53, "SolidBackground"],
+    [54, "SolidLabel"],
+    [55, "SolidBackground"],
+    [56, "SolidLabel"],
+    [57, "SolidBackground"],
+    [58, "SolidBackground"],
+    [59, "SolidLabel"],
+    [60, "SolidBackground"],
+    [61, "SolidLabel"],
+    [62, "SolidBackground"],
+    [63, "SolidBackground"],
+    [64, "SolidLabel"],
+    [65, "SolidBackground"],
+    [66, "SolidLabel"],
+    [67, "SolidBackground"],
+    [68, "SolidBackground"],
+    [69, "SolidLabel"],
+    [70, "SolidBackground"],
+    [71, "SolidLabel"],
+    [72, "SolidBackground"],
+    [73, "SolidBackground"],
+    [74, "SolidLabel"],
+    [75, "SolidBackground"],
+    [76, "SolidLabel"],
+    [77, "SolidBackground"],
+    [78, "SolidBackground"],
+    [79, "SolidLabel"],
+    [80, "SolidBackground"],
+    [81, "SolidLabel"]
+  ],
+  "imageCreations": [],
+  "imageMetadatas": [],
+  "frames": [
+    {
+      "frameId": 6,
+      "frameName": "Ready",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 9,
+      "frameName": "Partial red reveal",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 12,
+      "frameName": "Partial release reset",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 15,
+      "frameName": "Full red reveal waits for End",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 21,
+      "frameName": "Deferred middle row removal",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 26,
+      "frameName": "Clear and Add before queued removal",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    }
+  ]
+}

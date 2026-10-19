@@ -1,0 +1,1342 @@
+﻿================================(1/9)================================
+module <constructor>gacuisrc_unittest::SwipeWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class SwipeWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::SwipeWindow* = null of (::gacuisrc_unittest::SwipeWindow*);
+
+        @cpp:Protected
+        var sample : ::demo::TouchingListTabPage* = null of (::demo::TouchingListTabPage*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-SwipeWindow>Initialize(<this> : ::gacuisrc_unittest::SwipeWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.ClientSize = {x : 560; y : 400;} of (::presentation::Size));
+            }
+            {
+                (self.Text = "TouchingList swipes");
+            }
+            {
+                (<precompile>0 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
+            }
+            (sample = new (::demo::TouchingListTabPage*)());
+            <this>.SetNamedObject("sample", sample);
+            {
+                var <collection> = <precompile>0.Pages;
+                <collection>.Add(sample);
+            }
+            (<precompile>1 = <precompile>0.BoundsComposition);
+            {
+                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                self.AddChild(<precompile>0);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/9)================================
+module <instance>gacuisrc_unittest::SwipeWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("SwipeWindow")
+    @cpp:Friend(typeof(SwipeWindowConstructor))
+    class SwipeWindow : ::presentation::controls::GuiWindow, SwipeWindowConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::SwipeWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-SwipeWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(3/9)================================
+module <constructor>demo::TouchingTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class TouchingTabPageConstructor
+    {
+        @cpp:Protected
+        var self : ::demo::TouchingTabPage* = null of (::demo::TouchingTabPage*);
+
+        @cpp:Protected
+        var touchingBounds : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var touching : ::presentation::elements::GuiRawElementBase^ = null of (::presentation::elements::GuiRawElementBase^);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::eazy_layout::GuiEasyTopLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyTopLayout^);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        func <demo-TouchingTabPage>Initialize(<this> : ::demo::TouchingTabPage*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.Text = "Touching");
+            }
+            (<precompile>0 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            (<precompile>1 = new (::presentation::compositions::eazy_layout::GuiEasyTopLayout^)());
+            {
+                (<precompile>2 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            {
+                (<precompile>2.Text = "One finger: move. Two fingers: move, rotate and zoom. More: pause.");
+            }
+            {
+                (<precompile>1.Composition = <precompile>2.BoundsComposition);
+            }
+            (<precompile>3 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            (<precompile>4 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>4.PreferredMinSize = {x : 320; y : 240;} of (::presentation::Size));
+            }
+            (<precompile>5 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (<precompile>5.Color = (cast (::presentation::Color) "#202020"));
+            }
+            {
+                (<precompile>4.OwnedElement = <precompile>5);
+            }
+            (touchingBounds = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("touchingBounds", touchingBounds);
+            {
+                (touchingBounds.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            (touching = ::presentation::elements::IGuiGraphicsElement::CreateRawElement());
+            <this>.SetNamedObject("touching", touching);
+            {
+                (touching.Id = "FullControlTest.Touching");
+            }
+            {
+                (touchingBounds.OwnedElement = touching);
+            }
+            {
+                <precompile>4.AddChild(touchingBounds);
+            }
+            {
+                (<precompile>3.Composition = <precompile>4);
+            }
+            {
+                <precompile>0.Layouts.Add(<precompile>1);
+                <precompile>0.Layouts.Add(<precompile>3);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>0);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceStartedEventArgs*) : (::system::Void)
+                {
+                    (arguments.acceptedComposition = touchingBounds);
+                };
+                attach(touchingBounds.pointSequenceStarted, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointEventArgs*) : (::system::Void)
+                {
+                    self.UpdatePoints(arguments);
+                };
+                attach(touchingBounds.pointAction, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointGestureEventArgs*) : (::system::Void)
+                {
+                    if (((!arguments.handled) and arguments.Gesture is (GuiPointGesture_DraggingAndRotation)))
+                    {
+                        var transform = (cast (GuiPointGesture_DraggingAndRotation) arguments.Gesture);
+                        (arguments.selected = true);
+                        (arguments.handled = true);
+                        var real = (transform.scale * Math::Cos(transform.rotation));
+                        var imaginary = (transform.scale * Math::Sin(transform.rotation));
+                        var x = (((real * self.centerX) - (imaginary * self.centerY)) + (cast (double) transform.distance.x));
+                        var y = (((imaginary * self.centerX) + (real * self.centerY)) + (cast (double) transform.distance.y));
+                        var ax = ((real * self.axisX) - (imaginary * self.axisY));
+                        var ay = ((imaginary * self.axisX) + (real * self.axisY));
+                        (self.centerX = x);
+                        (self.centerY = y);
+                        (self.axisX = ax);
+                        (self.axisY = ay);
+                        self.Publish(self.markers, self.markerCount);
+                    }
+                };
+                attach(touchingBounds.pointGesture, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceEndedEventArgs*) : (::system::Void)
+                {
+                    (self.markers = "");
+                    (self.markerCount = 0);
+                    self.Publish("", 0);
+                };
+                attach(touchingBounds.pointSequenceEnded, <event-handler>);
+            }
+            <precompile>0.BuildLayout();
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(4/9)================================
+module <instance>demo::TouchingTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    @cpp:Friend(typeof(TouchingTabPageConstructor))
+    class TouchingTabPage : ::presentation::controls::GuiTabPage, TouchingTabPageConstructor
+    {
+        func GetTouchingElement() : (GuiRawElementBase^)
+        {
+            return touching;
+        }
+
+        prop TouchingElement : GuiRawElementBase^{GetTouchingElement}
+
+        var centerX : double = 180.0;
+
+        var centerY : double = 140.0;
+
+        var axisX : double = 1.0;
+
+        var axisY : double = 0.0;
+
+        var markers : string = "";
+
+        var markerCount : int = 0;
+
+        func Publish(serializedMarkers : string, count : int) : (void)
+        {
+            (touching.Data = ((((((((((cast (string) centerX) & ",") & (cast (string) centerY)) & ",") & (cast (string) axisX)) & ",") & (cast (string) axisY)) & ",") & (cast (string) count)) & serializedMarkers));
+        }
+
+        func UpdatePoints(arguments : GuiPointEventArgs*) : (void)
+        {
+            (markers = "");
+            (markerCount = 0);
+            {
+                var <for-begin>i : ::system::Int64 = 0;
+                var <for-end>i : ::system::Int64 = (arguments.Points.Count - 1);
+                var i = <for-begin>i;
+                while ((i <= <for-end>i))
+                {
+                    {
+                        if (var point : Point? = arguments.Points[i])
+                        {
+                            (markers = ((((((markers & ",") & (cast (string) i)) & ",") & (cast (string) point.x)) & ",") & (cast (string) point.y)));
+                            (markerCount = (markerCount + 1));
+                        }
+                    }
+                    (i = (i + 1));
+                }
+            }
+            Publish(markers, markerCount);
+        }
+
+        new* ()
+            :::presentation::controls::GuiTabPage(::presentation::theme::ThemeName::CustomControl)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("demo::TouchingTabPage");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<demo-TouchingTabPage>Initialize(this);
+            <instance-ctor>();
+        }
+
+        func <instance-ctor>() : (::system::Void)
+        {
+            self.Publish("", 0);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(5/9)================================
+module <constructor>demo::TouchingListItemTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class TouchingListItemTemplateConstructor
+    {
+        @cpp:Protected
+        var ViewModel : ::demo::TouchingListItem^ = null of (::demo::TouchingListItem^);
+
+        @cpp:Protected
+        var self : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+        @cpp:Protected
+        var deleteLabel : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+
+        @cpp:Protected
+        func <demo-TouchingListItemTemplate>Initialize(<this> : ::demo::TouchingListItemTemplate*) : (::system::Void)
+        {
+            (self = <this>);
+            (ViewModel = <this>.ViewModel);
+            {
+                (self.PreferredMinSize = {y : 112;} of (::presentation::Size));
+            }
+            (<precompile>0 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 1;} of (::presentation::Margin));
+            }
+            (<precompile>1 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (<precompile>1.Color = (cast (::presentation::Color) "#B82030"));
+            }
+            {
+                (<precompile>0.OwnedElement = <precompile>1);
+            }
+            (deleteLabel = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("deleteLabel", deleteLabel);
+            {
+                (deleteLabel.MinSizeLimitation = LimitToElement of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                (deleteLabel.AlignmentToParent = {left : (-1); top : 0; right : 16; bottom : 0;} of (::presentation::Margin));
+            }
+            (<precompile>2 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>2.VerticalAlignment = Center of (::presentation::Alignment));
+            }
+            {
+                (<precompile>2.Color = (cast (::presentation::Color) "#FFFFFF"));
+            }
+            {
+                (<precompile>2.Text = "DELETE IT");
+            }
+            {
+                (deleteLabel.OwnedElement = <precompile>2);
+            }
+            {
+                <precompile>0.AddChild(deleteLabel);
+            }
+            (<precompile>3 = new (::presentation::compositions::GuiBoundsComposition*)());
+            (<precompile>4 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (<precompile>4.Color = (cast (::presentation::Color) "#F0F0F0"));
+            }
+            {
+                (<precompile>3.OwnedElement = <precompile>4);
+            }
+            (<precompile>5 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>5.AlignmentToParent = {left : 16; top : 12; right : 16; bottom : 12;} of (::presentation::Margin));
+            }
+            (<precompile>6 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>6.Multiline = true);
+            }
+            {
+                (<precompile>6.WrapLine = true);
+            }
+            {
+                (<precompile>6.Color = (cast (::presentation::Color) "#202020"));
+            }
+            {
+                (<precompile>5.OwnedElement = <precompile>6);
+            }
+            {
+                <precompile>3.AddChild(<precompile>5);
+            }
+            {
+                <precompile>0.AddChild(<precompile>3);
+            }
+            {
+                self.AddChild(<precompile>0);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>2.Font;
+                    var <new> = (cast (::presentation::FontProperties) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>2.Font = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (ViewModel.Maximum = ((deleteLabel.CachedBounds.x2 - deleteLabel.CachedBounds.x1) + 32));
+                };
+                attach(deleteLabel.CachedBoundsChanged, <event-handler>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = ViewModel.Text of (::system::String);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>6.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>6.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>6.Font;
+                    var <new> = (cast (::presentation::FontProperties) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>6.Font = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::TouchingListItem^ = null of (::demo::TouchingListItem^);
+
+                    var <bind-cache>1 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-cache>2 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-cache>3 : ::demo::TouchingListItem^ = null of (::demo::TouchingListItem^);
+
+                    var <bind-cache>4 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-cache>5 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>3_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>4_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>5_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = {x1 : (-<bind-cache>0.Reveal); y1 : 0; x2 : ((<bind-cache>1.CachedBounds.x2 - <bind-cache>2.CachedBounds.x1) - <bind-cache>3.Reveal); y2 : ((<bind-cache>4.CachedBounds.y2 - <bind-cache>5.CachedBounds.y1) - 1);} of (::presentation::Rect);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>3_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>4_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>5_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (ViewModel ?? null of (::demo::TouchingListItem^)));
+                            (<bind-cache>1 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-cache>2 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-cache>3 = (ViewModel ?? null of (::demo::TouchingListItem^)));
+                            (<bind-cache>4 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-cache>5 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.RevealChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.CachedBoundsChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.CachedBoundsChanged, <bind-callback>2_0) ?? null));
+                            (<bind-handler>3_0 = (attach(<bind-cache>3.RevealChanged, <bind-callback>3_0) ?? null));
+                            (<bind-handler>4_0 = (attach(<bind-cache>4.CachedBoundsChanged, <bind-callback>4_0) ?? null));
+                            (<bind-handler>5_0 = (attach(<bind-cache>5.CachedBoundsChanged, <bind-callback>5_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.RevealChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.CachedBoundsChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            if (<bind-handler>2_0 is not null)
+                            {
+                                detach(<bind-cache>2.CachedBoundsChanged, <bind-handler>2_0);
+                                (<bind-handler>2_0 = null);
+                            }
+                            if (<bind-handler>3_0 is not null)
+                            {
+                                detach(<bind-cache>3.RevealChanged, <bind-handler>3_0);
+                                (<bind-handler>3_0 = null);
+                            }
+                            if (<bind-handler>4_0 is not null)
+                            {
+                                detach(<bind-cache>4.CachedBoundsChanged, <bind-handler>4_0);
+                                (<bind-handler>4_0 = null);
+                            }
+                            if (<bind-handler>5_0 is not null)
+                            {
+                                detach(<bind-cache>5.CachedBoundsChanged, <bind-handler>5_0);
+                                (<bind-handler>5_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::TouchingListItem^));
+                            (<bind-cache>1 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-cache>2 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-cache>3 = null of (::demo::TouchingListItem^));
+                            (<bind-cache>4 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-cache>5 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>3_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>4_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>5_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>3.ExpectedBounds;
+                    var <new> = (cast (::presentation::Rect) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>3.ExpectedBounds = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(6/9)================================
+module <instance>demo::TouchingListItemTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    @cpp:Friend(typeof(TouchingListItemTemplateConstructor))
+    class TouchingListItemTemplate : ::presentation::templates::GuiTextListItemTemplate, TouchingListItemTemplateConstructor
+    {
+        @cpp:Private
+        var <parameter>ViewModel : demo::TouchingListItem^ = null of (::demo::TouchingListItem^);
+
+        func GetViewModel() : (demo::TouchingListItem^)
+        {
+            return <parameter>ViewModel;
+        }
+
+        prop ViewModel : demo::TouchingListItem^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : demo::TouchingListItem^)
+        {
+            (<parameter>ViewModel = <ctor-parameter>ViewModel);
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("demo::TouchingListItemTemplate");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<demo-TouchingListItemTemplate>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(7/9)================================
+module <constructor>demo::TouchingListTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class TouchingListTabPageConstructor
+    {
+        @cpp:Protected
+        var self : ::demo::TouchingListTabPage* = null of (::demo::TouchingListTabPage*);
+
+        @cpp:Protected
+        var list : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::eazy_layout::GuiEasyTopLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyTopLayout^);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::eazy_layout::GuiEasyLeftLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::eazy_layout::GuiEasyLeftLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        func <demo-TouchingListTabPage>Initialize(<this> : ::demo::TouchingListTabPage*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.Text = "TouchingList");
+            }
+            (<precompile>0 = new (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*)());
+            (<precompile>1 = new (::presentation::compositions::eazy_layout::GuiEasyTopLayout^)());
+            (<precompile>2 = new (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^)());
+            {
+                (<precompile>3 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>3.Text = "Clear");
+            }
+            {
+                (<precompile>2.Composition = <precompile>3.BoundsComposition);
+            }
+            (<precompile>4 = new (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^)());
+            {
+                (<precompile>5 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>5.Text = "Add 5 Items");
+            }
+            {
+                (<precompile>4.Composition = <precompile>5.BoundsComposition);
+            }
+            {
+                <precompile>1.Layouts.Add(<precompile>2);
+                <precompile>1.Layouts.Add(<precompile>4);
+            }
+            (<precompile>6 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            {
+                (list = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+                <this>.SetNamedObject("list", list);
+            }
+            (<precompile>7 = list.BoundsComposition);
+            {
+                (list.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (demo::TouchingListItem^) <item>);
+                    return item.Text;
+                });
+            }
+            {
+                (list.HorizontalAlwaysVisible = false);
+            }
+            {
+                (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
+                {
+                    {
+                        if (<viewModel> is (::demo::TouchingListItem^))
+                        {
+                            return new (::demo::TouchingListItemTemplate*)((cast (::demo::TouchingListItem^) <viewModel>));
+                        }
+                    }
+                    raise "Cannot find a matched control template to create.";
+                });
+            }
+            {
+                (<precompile>6.Composition = list.BoundsComposition);
+            }
+            {
+                <precompile>0.Layouts.Add(<precompile>1);
+                <precompile>0.Layouts.Add(<precompile>6);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>0);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    self.ResetSwipe();
+                    self.Items.Clear();
+                };
+                attach(<precompile>3.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    self.AddItems();
+                };
+                attach(<precompile>5.Clicked, <event-handler>);
+            }
+            {
+                (list.ItemSource = self.Items);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceStartedEventArgs*) : (::system::Void)
+                {
+                    self.BeginSwipe(arguments);
+                };
+                attach(<precompile>7.pointSequenceStarted, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointEventArgs*) : (::system::Void)
+                {
+                    if (((arguments.eventType == GuiPointEventsType::Down) and (arguments.pointId != 0)))
+                    {
+                        (self.multipleContacts = true);
+                        self.ResetSwipe();
+                    }
+                };
+                attach(<precompile>7.pointAction, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointGestureEventArgs*) : (::system::Void)
+                {
+                    if (((!arguments.handled) and arguments.Gesture is (GuiPointGesture_Scrolling)))
+                    {
+                        var scrolling = (cast (GuiPointGesture_Scrolling) arguments.Gesture);
+                        if ((!scrolling.isVertical))
+                        {
+                            (arguments.selected = true);
+                            (arguments.handled = true);
+                            if ((self.swipeItem is not null and (!self.multipleContacts)))
+                            {
+                                (self.swipeItem.Reveal = Math::Max(0, Math::Min(self.swipeItem.Maximum, (self.swipeItem.Reveal - scrolling.distance))));
+                            }
+                        }
+                    }
+                };
+                attach(<precompile>7.pointGesture, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceEndedEventArgs*) : (::system::Void)
+                {
+                    self.EndSwipe(arguments);
+                };
+                attach(<precompile>7.pointSequenceEnded, <event-handler>);
+            }
+            <precompile>0.BuildLayout();
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(8/9)================================
+module <instance>demo::TouchingListTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    @cpp:Friend(typeof(TouchingListTabPageConstructor))
+    class TouchingListTabPage : ::presentation::controls::GuiTabPage, TouchingListTabPageConstructor
+    {
+        @cpp:Private
+        var <prop>Items : observe TouchingListItem^[] = {};
+
+        func GetItems() : (observe TouchingListItem^[])
+        {
+            return <prop>Items;
+        }
+
+        @cpp:Protected
+        func SetItems(<value> : observe TouchingListItem^[]) : (void)
+        {
+            (<prop>Items = <value>);
+        }
+
+        prop Items : observe TouchingListItem^[]{GetItems}
+
+        var serial : int = 0;
+
+        var swipeItem : TouchingListItem^ = null;
+
+        var multipleContacts : bool = false;
+
+        func ResetSwipe() : (void)
+        {
+            if (swipeItem is not null)
+            {
+                (swipeItem.Reveal = 0);
+            }
+            (swipeItem = null);
+        }
+
+        func AddItems() : (void)
+        {
+            {
+                var <for-begin>i : ::system::Int64 = 0;
+                var <for-end>i : ::system::Int64 = (5 - 1);
+                var i = <for-begin>i;
+                while ((i <= <for-end>i))
+                {
+                    {
+                        (serial = (serial + 1));
+                        Items.Add(new (TouchingListItem^)((("Item " & (cast (string) serial)) & " — Lorem ipsum dolor sit amet, consectetur adipiscing elit. Swipe left to reveal DELETE IT; release at full reveal to remove this item.")));
+                    }
+                    (i = (i + 1));
+                }
+            }
+        }
+
+        func BeginSwipe(arguments : GuiPointSequenceStartedEventArgs*) : (void)
+        {
+            ResetSwipe();
+            (multipleContacts = false);
+            var composition = arguments.compositionSource;
+            while ((composition is not null and (composition != list.BoundsComposition)))
+            {
+                if (var row : TouchingListItemTemplate* = (composition as (TouchingListItemTemplate*)))
+                {
+                    if ((row.AssociatedListControl == list))
+                    {
+                        (swipeItem = row.ViewModel);
+                    }
+                    break;
+                }
+                (composition = composition.Parent);
+            }
+        }
+
+        func EndSwipe(arguments : GuiPointSequenceEndedEventArgs*) : (void)
+        {
+            var target = swipeItem;
+            var remove = false;
+            if (((target is not null and (!multipleContacts)) and (arguments.reason == PointSequenceEndReason::Succeeded)))
+            {
+                (remove = ((target.Maximum > 0) and (target.Reveal == target.Maximum)));
+            }
+            ResetSwipe();
+            if (remove)
+            {
+                GuiApplication::GetApplication().InvokeInMainThread(list.RelatedControlHost, func () : (void)
+                {
+                    if (Items.Contains(target))
+                    {
+                        Items.Remove(target);
+                    }
+                });
+            }
+        }
+
+        new* ()
+            :::presentation::controls::GuiTabPage(::presentation::theme::ThemeName::CustomControl)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("demo::TouchingListTabPage");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<demo-TouchingListTabPage>Initialize(this);
+            <instance-ctor>();
+        }
+
+        func <instance-ctor>() : (::system::Void)
+        {
+            self.AddItems();
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(9/9)================================
+module touching_list;
+using system::*;
+
+namespace demo
+{
+    class TouchingListItem
+    {
+        @cpp:Private
+        var <prop>Text : string = "";
+
+        func GetText() : (string)
+        {
+            return <prop>Text;
+        }
+
+        func SetText(<value> : string) : (void)
+        {
+            (<prop>Text = <value>);
+        }
+
+        prop Text : string{GetText, SetText}
+
+        @cpp:Private
+        var <prop>Reveal : int = 0;
+
+        func GetReveal() : (int)
+        {
+            return <prop>Reveal;
+        }
+
+        func SetReveal(<value> : int) : (void)
+        {
+            if ((<prop>Reveal != <value>))
+            {
+                (<prop>Reveal = <value>);
+                RevealChanged();
+            }
+        }
+
+        event RevealChanged();
+
+        prop Reveal : int{GetReveal, SetReveal : RevealChanged}
+
+        @cpp:Private
+        var <prop>Maximum : int = 0;
+
+        func GetMaximum() : (int)
+        {
+            return <prop>Maximum;
+        }
+
+        func SetMaximum(<value> : int) : (void)
+        {
+            (<prop>Maximum = <value>);
+        }
+
+        prop Maximum : int{GetMaximum, SetMaximum}
+
+        new (text : string)
+        {
+            (Text = text);
+        }
+    }
+}
+
