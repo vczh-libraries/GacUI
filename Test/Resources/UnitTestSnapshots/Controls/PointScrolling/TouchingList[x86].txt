@@ -407,19 +407,25 @@ namespace demo
         var self : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
 
         @cpp:Protected
+        var deleteBackground : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var deleteLabel : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var foreground : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+        var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>2 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
 
         @cpp:Protected
         var <precompile>4 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
@@ -438,16 +444,28 @@ namespace demo
             {
                 (self.PreferredMinSize = {y : 112;} of (::presentation::Size));
             }
-            (<precompile>0 = new (::presentation::compositions::GuiBoundsComposition*)());
+            (<precompile>0 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 1;} of (::presentation::Margin));
+                (self.OwnedElement = <precompile>0);
             }
-            (<precompile>1 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>1.Color = (cast (::presentation::Color) "#B82030"));
+                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 1;} of (::presentation::Margin));
+            }
+            (deleteBackground = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("deleteBackground", deleteBackground);
+            {
+                (deleteBackground.AlignmentToParent = {left : (-1); top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            (<precompile>2 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (<precompile>2.Color = (cast (::presentation::Color) "#B82030"));
             }
             {
-                (<precompile>0.OwnedElement = <precompile>1);
+                (deleteBackground.OwnedElement = <precompile>2);
+            }
+            {
+                <precompile>1.AddChild(deleteBackground);
             }
             (deleteLabel = new (::presentation::compositions::GuiBoundsComposition*)());
             <this>.SetNamedObject("deleteLabel", deleteLabel);
@@ -457,29 +475,27 @@ namespace demo
             {
                 (deleteLabel.AlignmentToParent = {left : (-1); top : 0; right : 16; bottom : 0;} of (::presentation::Margin));
             }
-            (<precompile>2 = new (::presentation::elements::GuiSolidLabelElement^)());
+            (<precompile>3 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>2.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>3.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>2.Color = (cast (::presentation::Color) "#FFFFFF"));
+                (<precompile>3.Color = (cast (::presentation::Color) "#FFFFFF"));
             }
             {
-                (<precompile>2.Text = "DELETE IT");
+                (<precompile>3.Text = "DELETE IT");
             }
             {
-                (deleteLabel.OwnedElement = <precompile>2);
+                (deleteLabel.OwnedElement = <precompile>3);
             }
             {
-                <precompile>0.AddChild(deleteLabel);
+                <precompile>1.AddChild(deleteLabel);
             }
-            (<precompile>3 = new (::presentation::compositions::GuiBoundsComposition*)());
+            (foreground = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("foreground", foreground);
             (<precompile>4 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
-                (<precompile>4.Color = (cast (::presentation::Color) "#F0F0F0"));
-            }
-            {
-                (<precompile>3.OwnedElement = <precompile>4);
+                (foreground.OwnedElement = <precompile>4);
             }
             (<precompile>5 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
@@ -493,19 +509,165 @@ namespace demo
                 (<precompile>6.WrapLine = true);
             }
             {
-                (<precompile>6.Color = (cast (::presentation::Color) "#202020"));
-            }
-            {
                 (<precompile>5.OwnedElement = <precompile>6);
             }
             {
-                <precompile>3.AddChild(<precompile>5);
+                foreground.AddChild(<precompile>5);
             }
             {
-                <precompile>0.AddChild(<precompile>3);
+                <precompile>1.AddChild(foreground);
             }
             {
-                self.AddChild(<precompile>0);
+                self.AddChild(<precompile>1);
+            }
+            {
+                (<precompile>0.Color = self.Colors.ContentBorder);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = {x : <bind-cache>0.DragDistance; y : 0;} of (::presentation::Size);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.DragDistanceChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.DragDistanceChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = deleteBackground.PreferredMinSize;
+                    var <new> = (cast (::presentation::Size) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (deleteBackground.PreferredMinSize = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.DragDistance > 0) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.DragDistanceChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.DragDistanceChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = deleteBackground.Visible;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (deleteBackground.Visible = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -570,22 +732,106 @@ namespace demo
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>2.Font;
+                    var <old> = <precompile>3.Font;
                     var <new> = (cast (::presentation::FontProperties) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>2.Font = <new>);
+                    (<precompile>3.Font = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                var <created-subscription> = new (::system::Subscription^)
                 {
-                    (ViewModel.Maximum = ((deleteLabel.CachedBounds.x2 - deleteLabel.CachedBounds.x1) + 32));
+                    var <bind-cache>0 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-cache>1 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.VisuallyEnabled and <bind-cache>1.Selected) ? self.Colors.ItemBackgroundSelected : self.Colors.ContentBackground of (::presentation::Color);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-cache>1 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.SelectedChanged, <bind-callback>1_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.SelectedChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-cache>1 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
                 };
-                attach(deleteLabel.CachedBoundsChanged, <event-handler>);
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>4.Color;
+                    var <new> = (cast (::presentation::Color) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>4.Color = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -639,6 +885,97 @@ namespace demo
                         return;
                     }
                     (<precompile>6.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-cache>1 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.VisuallyEnabled ? <bind-cache>1.TextColor : self.Colors.TextDisabled of (::presentation::Color);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-cache>1 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.TextColorChanged, <bind-callback>1_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.TextColorChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-cache>1 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>6.Color;
+                    var <new> = (cast (::presentation::Color) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>6.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -718,17 +1055,104 @@ namespace demo
             {
                 var <created-subscription> = new (::system::Subscription^)
                 {
-                    var <bind-cache>0 : ::demo::TouchingListItem^ = null of (::demo::TouchingListItem^);
+                    var <bind-cache>0 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-cache>1 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = {left : (<bind-cache>0.DragDistance == 0) ? 0 : (-1); top : 0; right : (<bind-cache>1.DragDistance == 0) ? 0 : (-1); bottom : 0;} of (::presentation::Margin);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-cache>1 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.DragDistanceChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.DragDistanceChanged, <bind-callback>1_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.DragDistanceChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.DragDistanceChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-cache>1 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = foreground.AlignmentToParent;
+                    var <new> = (cast (::presentation::Margin) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (foreground.AlignmentToParent = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
 
                     var <bind-cache>1 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
 
                     var <bind-cache>2 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
 
-                    var <bind-cache>3 : ::demo::TouchingListItem^ = null of (::demo::TouchingListItem^);
-
-                    var <bind-cache>4 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
-
-                    var <bind-cache>5 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
+                    var <bind-cache>3 : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
 
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
@@ -738,17 +1162,13 @@ namespace demo
 
                     var <bind-handler>3_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
-                    var <bind-handler>4_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>5_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
                     var <bind-opened> : ::system::Boolean = false;
 
                     var <bind-closed> : ::system::Boolean = false;
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = {x1 : (-<bind-cache>0.Reveal); y1 : 0; x2 : ((<bind-cache>1.CachedBounds.x2 - <bind-cache>2.CachedBounds.x1) - <bind-cache>3.Reveal); y2 : ((<bind-cache>4.CachedBounds.y2 - <bind-cache>5.CachedBounds.y1) - 1);} of (::presentation::Rect);
+                        var <bind-activator-result> = {x1 : (-<bind-cache>0.DragDistance); y1 : 0; x2 : ((<bind-cache>1.CachedBounds.x2 - <bind-cache>2.CachedBounds.x1) - <bind-cache>3.DragDistance); y2 : 0;} of (::presentation::Rect);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -772,33 +1192,19 @@ namespace demo
                         <bind-activator>();
                     }
 
-                    func <bind-callback>4_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>5_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
                     override func Open() : (::system::Boolean)
                     {
                         if ((!<bind-opened>))
                         {
                             (<bind-opened> = true);
-                            (<bind-cache>0 = (ViewModel ?? null of (::demo::TouchingListItem^)));
+                            (<bind-cache>0 = (self ?? null of (::demo::TouchingListItemTemplate*)));
                             (<bind-cache>1 = (self ?? null of (::demo::TouchingListItemTemplate*)));
                             (<bind-cache>2 = (self ?? null of (::demo::TouchingListItemTemplate*)));
-                            (<bind-cache>3 = (ViewModel ?? null of (::demo::TouchingListItem^)));
-                            (<bind-cache>4 = (self ?? null of (::demo::TouchingListItemTemplate*)));
-                            (<bind-cache>5 = (self ?? null of (::demo::TouchingListItemTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.RevealChanged, <bind-callback>0_0) ?? null));
+                            (<bind-cache>3 = (self ?? null of (::demo::TouchingListItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.DragDistanceChanged, <bind-callback>0_0) ?? null));
                             (<bind-handler>1_0 = (attach(<bind-cache>1.CachedBoundsChanged, <bind-callback>1_0) ?? null));
                             (<bind-handler>2_0 = (attach(<bind-cache>2.CachedBoundsChanged, <bind-callback>2_0) ?? null));
-                            (<bind-handler>3_0 = (attach(<bind-cache>3.RevealChanged, <bind-callback>3_0) ?? null));
-                            (<bind-handler>4_0 = (attach(<bind-cache>4.CachedBoundsChanged, <bind-callback>4_0) ?? null));
-                            (<bind-handler>5_0 = (attach(<bind-cache>5.CachedBoundsChanged, <bind-callback>5_0) ?? null));
+                            (<bind-handler>3_0 = (attach(<bind-cache>3.DragDistanceChanged, <bind-callback>3_0) ?? null));
                             return true;
                         }
                         return false;
@@ -821,7 +1227,7 @@ namespace demo
                             (<bind-closed> = true);
                             if (<bind-handler>0_0 is not null)
                             {
-                                detach(<bind-cache>0.RevealChanged, <bind-handler>0_0);
+                                detach(<bind-cache>0.DragDistanceChanged, <bind-handler>0_0);
                                 (<bind-handler>0_0 = null);
                             }
                             if (<bind-handler>1_0 is not null)
@@ -836,31 +1242,17 @@ namespace demo
                             }
                             if (<bind-handler>3_0 is not null)
                             {
-                                detach(<bind-cache>3.RevealChanged, <bind-handler>3_0);
+                                detach(<bind-cache>3.DragDistanceChanged, <bind-handler>3_0);
                                 (<bind-handler>3_0 = null);
                             }
-                            if (<bind-handler>4_0 is not null)
-                            {
-                                detach(<bind-cache>4.CachedBoundsChanged, <bind-handler>4_0);
-                                (<bind-handler>4_0 = null);
-                            }
-                            if (<bind-handler>5_0 is not null)
-                            {
-                                detach(<bind-cache>5.CachedBoundsChanged, <bind-handler>5_0);
-                                (<bind-handler>5_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::TouchingListItem^));
+                            (<bind-cache>0 = null of (::demo::TouchingListItemTemplate*));
                             (<bind-cache>1 = null of (::demo::TouchingListItemTemplate*));
                             (<bind-cache>2 = null of (::demo::TouchingListItemTemplate*));
-                            (<bind-cache>3 = null of (::demo::TouchingListItem^));
-                            (<bind-cache>4 = null of (::demo::TouchingListItemTemplate*));
-                            (<bind-cache>5 = null of (::demo::TouchingListItemTemplate*));
+                            (<bind-cache>3 = null of (::demo::TouchingListItemTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>3_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>4_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>5_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -868,13 +1260,13 @@ namespace demo
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>3.ExpectedBounds;
+                    var <old> = foreground.ExpectedBounds;
                     var <new> = (cast (::presentation::Rect) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>3.ExpectedBounds = <new>);
+                    (foreground.ExpectedBounds = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -913,6 +1305,50 @@ namespace demo
     @cpp:Friend(typeof(TouchingListItemTemplateConstructor))
     class TouchingListItemTemplate : ::presentation::templates::GuiTextListItemTemplate, TouchingListItemTemplateConstructor
     {
+        @cpp:Private
+        var <prop>DragDistance : int = 0;
+
+        func GetDragDistance() : (int)
+        {
+            return <prop>DragDistance;
+        }
+
+        func SetDragDistance(<value> : int) : (void)
+        {
+            if ((<prop>DragDistance != <value>))
+            {
+                (<prop>DragDistance = <value>);
+                DragDistanceChanged();
+            }
+        }
+
+        event DragDistanceChanged();
+
+        prop DragDistance : int{GetDragDistance, SetDragDistance : DragDistanceChanged}
+
+        func GetMaxDragDistance() : (int)
+        {
+            return ((deleteLabel.CachedBounds.x2 - deleteLabel.CachedBounds.x1) + 32);
+        }
+
+        prop MaxDragDistance : int{GetMaxDragDistance}
+
+        @cpp:Private
+        var <prop>Colors : darkskin::ColorPackage = darkskin::Theme::GetColorPackage();
+
+        func GetColors() : (darkskin::ColorPackage)
+        {
+            return <prop>Colors;
+        }
+
+        @cpp:Protected
+        func SetColors(<value> : darkskin::ColorPackage) : (void)
+        {
+            (<prop>Colors = <value>);
+        }
+
+        prop Colors : darkskin::ColorPackage{GetColors}
+
         @cpp:Private
         var <parameter>ViewModel : demo::TouchingListItem^ = null of (::demo::TouchingListItem^);
 
@@ -993,7 +1429,13 @@ namespace demo
         var <precompile>6 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>7 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var <precompile>8 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+
+        @cpp:Protected
+        var <precompile>9 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <demo-TouchingListTabPage>Initialize(<this> : ::demo::TouchingListTabPage*) : (::system::Void)
@@ -1024,16 +1466,27 @@ namespace demo
             {
                 (<precompile>4.Composition = <precompile>5.BoundsComposition);
             }
+            (<precompile>6 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            {
+                (<precompile>7 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            {
+                (<precompile>7.Text = "Swipe left fully and release to delete.");
+            }
+            {
+                (<precompile>6.Composition = <precompile>7.BoundsComposition);
+            }
             {
                 <precompile>1.Layouts.Add(<precompile>2);
                 <precompile>1.Layouts.Add(<precompile>4);
+                <precompile>1.Layouts.Add(<precompile>6);
             }
-            (<precompile>6 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            (<precompile>8 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
             {
                 (list = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("list", list);
             }
-            (<precompile>7 = list.BoundsComposition);
+            (<precompile>9 = list.BoundsComposition);
             {
                 (list.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
@@ -1057,11 +1510,11 @@ namespace demo
                 });
             }
             {
-                (<precompile>6.Composition = list.BoundsComposition);
+                (<precompile>8.Composition = list.BoundsComposition);
             }
             {
                 <precompile>0.Layouts.Add(<precompile>1);
-                <precompile>0.Layouts.Add(<precompile>6);
+                <precompile>0.Layouts.Add(<precompile>8);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
@@ -1089,7 +1542,7 @@ namespace demo
                 {
                     self.BeginSwipe(arguments);
                 };
-                attach(<precompile>7.pointSequenceStarted, <event-handler>);
+                attach(<precompile>9.pointSequenceStarted, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointEventArgs*) : (::system::Void)
@@ -1100,7 +1553,7 @@ namespace demo
                         self.ResetSwipe();
                     }
                 };
-                attach(<precompile>7.pointAction, <event-handler>);
+                attach(<precompile>9.pointAction, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointGestureEventArgs*) : (::system::Void)
@@ -1114,19 +1567,23 @@ namespace demo
                             (arguments.handled = true);
                             if ((self.swipeItem is not null and (!self.multipleContacts)))
                             {
-                                (self.swipeItem.Reveal = Math::Max(0, Math::Min(self.swipeItem.Maximum, (self.swipeItem.Reveal - scrolling.distance))));
+                                var row = self.GetSwipeTemplate();
+                                if (row is not null)
+                                {
+                                    (row.DragDistance = Math::Max(0, Math::Min(row.MaxDragDistance, (row.DragDistance - scrolling.distance))));
+                                }
                             }
                         }
                     }
                 };
-                attach(<precompile>7.pointGesture, <event-handler>);
+                attach(<precompile>9.pointGesture, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceEndedEventArgs*) : (::system::Void)
                 {
                     self.EndSwipe(arguments);
                 };
-                attach(<precompile>7.pointSequenceEnded, <event-handler>);
+                attach(<precompile>9.pointSequenceEnded, <event-handler>);
             }
             <precompile>0.BuildLayout();
         }
@@ -1186,11 +1643,26 @@ namespace demo
 
         var multipleContacts : bool = false;
 
+        func GetSwipeTemplate() : (TouchingListItemTemplate*)
+        {
+            if (swipeItem is null)
+            {
+                return null;
+            }
+            var index = Items.IndexOf(swipeItem);
+            if ((index == (-1)))
+            {
+                return null;
+            }
+            return (cast (TouchingListItemTemplate*) list.Arranger.GetVisibleStyle(index));
+        }
+
         func ResetSwipe() : (void)
         {
-            if (swipeItem is not null)
+            var row = GetSwipeTemplate();
+            if (row is not null)
             {
-                (swipeItem.Reveal = 0);
+                (row.DragDistance = 0);
             }
             (swipeItem = null);
         }
@@ -1205,7 +1677,7 @@ namespace demo
                 {
                     {
                         (serial = (serial + 1));
-                        Items.Add(new (TouchingListItem^)((("Item " & (cast (string) serial)) & " — Lorem ipsum dolor sit amet, consectetur adipiscing elit. Swipe left to reveal DELETE IT; release at full reveal to remove this item.")));
+                        Items.Add(new (TouchingListItem^)(((("Item " & (cast (string) serial)) & " — ") & Sys::LoremIpsumSentence(180))));
                     }
                     (i = (i + 1));
                 }
@@ -1234,10 +1706,11 @@ namespace demo
         func EndSwipe(arguments : GuiPointSequenceEndedEventArgs*) : (void)
         {
             var target = swipeItem;
+            var row = GetSwipeTemplate();
             var remove = false;
-            if (((target is not null and (!multipleContacts)) and (arguments.reason == PointSequenceEndReason::Succeeded)))
+            if (((row is not null and (!multipleContacts)) and (arguments.reason == PointSequenceEndReason::Succeeded)))
             {
-                (remove = ((target.Maximum > 0) and (target.Reveal == target.Maximum)));
+                (remove = ((row.MaxDragDistance > 0) and (row.DragDistance == row.MaxDragDistance)));
             }
             ResetSwipe();
             if (remove)
@@ -1296,42 +1769,6 @@ namespace demo
         }
 
         prop Text : string{GetText, SetText}
-
-        @cpp:Private
-        var <prop>Reveal : int = 0;
-
-        func GetReveal() : (int)
-        {
-            return <prop>Reveal;
-        }
-
-        func SetReveal(<value> : int) : (void)
-        {
-            if ((<prop>Reveal != <value>))
-            {
-                (<prop>Reveal = <value>);
-                RevealChanged();
-            }
-        }
-
-        event RevealChanged();
-
-        prop Reveal : int{GetReveal, SetReveal : RevealChanged}
-
-        @cpp:Private
-        var <prop>Maximum : int = 0;
-
-        func GetMaximum() : (int)
-        {
-            return <prop>Maximum;
-        }
-
-        func SetMaximum(<value> : int) : (void)
-        {
-            (<prop>Maximum = <value>);
-        }
-
-        prop Maximum : int{GetMaximum, SetMaximum}
 
         new (text : string)
         {

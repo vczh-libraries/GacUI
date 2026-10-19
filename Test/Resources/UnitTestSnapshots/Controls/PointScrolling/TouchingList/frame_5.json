@@ -1,6 +1,6 @@
 ﻿{
-  "frameId": 26,
-  "frameName": "Clear and Add before queued removal",
+  "frameId": 23,
+  "frameName": "Deferred middle row removal",
   "windowSize": {
     "bounds": {
       "x1": {"value": 232},
@@ -448,21 +448,29 @@
     [
       35,
       [
-        "ElementDesc_SolidBackground",
+        "ElementDesc_SolidLabel",
         {
           "id": 35,
-          "backgroundColor": "#252526",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Top",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "Swipe left fully and release to delete.",
+          "measuringRequest": "TotalSize"
         }
       ]
     ],
     [
       36,
       [
-        "ElementDesc_SolidBorder",
+        "ElementDesc_SolidBackground",
         {
           "id": 36,
-          "borderColor": "#54545C",
+          "backgroundColor": "#252526",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -470,10 +478,10 @@
     [
       37,
       [
-        "ElementDesc_SolidBackground",
+        "ElementDesc_SolidBorder",
         {
           "id": 37,
-          "backgroundColor": "#3D3D42",
+          "borderColor": "#54545C",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -481,10 +489,10 @@
     [
       38,
       [
-        "ElementDesc_SolidBorder",
+        "ElementDesc_SolidBackground",
         {
           "id": 38,
-          "borderColor": "#434346",
+          "backgroundColor": "#3D3D42",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -492,17 +500,11 @@
     [
       39,
       [
-        "ElementDesc_Polygon",
+        "ElementDesc_SolidBorder",
         {
           "id": 39,
-          "size": {"x": 5, "y": 9},
-          "borderColor": "#555558",
-          "backgroundColor": "#555558",
-          "points": [
-            {"x": 4, "y": 0},
-            {"x": 0, "y": 4},
-            {"x": 4, "y": 8}
-          ]
+          "borderColor": "#434346",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
@@ -516,9 +518,9 @@
           "borderColor": "#555558",
           "backgroundColor": "#555558",
           "points": [
-            {"x": 0, "y": 0},
-            {"x": 4, "y": 4},
-            {"x": 0, "y": 8}
+            {"x": 4, "y": 0},
+            {"x": 0, "y": 4},
+            {"x": 4, "y": 8}
           ]
         }
       ]
@@ -526,11 +528,17 @@
     [
       41,
       [
-        "ElementDesc_SolidBackground",
+        "ElementDesc_Polygon",
         {
           "id": 41,
-          "backgroundColor": "#00000000",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+          "size": {"x": 5, "y": 9},
+          "borderColor": "#555558",
+          "backgroundColor": "#555558",
+          "points": [
+            {"x": 0, "y": 0},
+            {"x": 4, "y": 4},
+            {"x": 0, "y": 8}
+          ]
         }
       ]
     ],
@@ -540,7 +548,7 @@
         "ElementDesc_SolidBackground",
         {
           "id": 42,
-          "backgroundColor": "#3D3D42",
+          "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -548,10 +556,10 @@
     [
       43,
       [
-        "ElementDesc_SolidBorder",
+        "ElementDesc_SolidBackground",
         {
           "id": 43,
-          "borderColor": "#54545C",
+          "backgroundColor": "#3D3D42",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -559,17 +567,11 @@
     [
       44,
       [
-        "ElementDesc_Polygon",
+        "ElementDesc_SolidBorder",
         {
           "id": 44,
-          "size": {"x": 9, "y": 5},
-          "borderColor": "#999999",
-          "backgroundColor": "#999999",
-          "points": [
-            {"x": 0, "y": 4},
-            {"x": 4, "y": 0},
-            {"x": 8, "y": 4}
-          ]
+          "borderColor": "#54545C",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
@@ -583,6 +585,23 @@
           "borderColor": "#999999",
           "backgroundColor": "#999999",
           "points": [
+            {"x": 0, "y": 4},
+            {"x": 4, "y": 0},
+            {"x": 8, "y": 4}
+          ]
+        }
+      ]
+    ],
+    [
+      46,
+      [
+        "ElementDesc_Polygon",
+        {
+          "id": 46,
+          "size": {"x": 9, "y": 5},
+          "borderColor": "#999999",
+          "backgroundColor": "#999999",
+          "points": [
             {"x": 0, "y": 0},
             {"x": 4, "y": 4},
             {"x": 8, "y": 0}
@@ -591,12 +610,187 @@
       ]
     ],
     [
-      46,
+      47,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 46,
+          "id": 47,
           "backgroundColor": "#686868",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      48,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 48,
+          "backgroundColor": "#00000000",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      49,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 49,
+          "backgroundColor": "#3F3F46",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      50,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 50,
+          "backgroundColor": "#B82030",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      51,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 51,
+          "textColor": "#FFFFFF",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "DELETE IT",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      52,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 52,
+          "backgroundColor": "#252526",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      53,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 53,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Top",
+          "wrapLine": true,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": true,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "Item 1 — Lorem ipsum dolor sit amet consectetur adipiscing elit integer nec odio praesent libero sed cursus ante dapibus diam sed nisi nulla quis sem at nibh elementum imperdiet duis sagittis.",
+          "measuringRequest": null
+        }
+      ]
+    ],
+    [
+      60,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 60,
+          "backgroundColor": "#00000000",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      61,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 61,
+          "backgroundColor": "#3F3F46",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      62,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 62,
+          "backgroundColor": "#B82030",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      63,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 63,
+          "textColor": "#FFFFFF",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "DELETE IT",
+          "measuringRequest": "TotalSize"
+        }
+      ]
+    ],
+    [
+      64,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 64,
+          "backgroundColor": "#252526",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+        }
+      ]
+    ],
+    [
+      65,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 65,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Top",
+          "wrapLine": true,
+          "wrapLineHeightCalculation": false,
+          "ellipse": false,
+          "multiline": true,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "Item 3 — Inceptos himenaeos curabitur sodales ligula in libero sed dignissim lacinia nunc curabitur tortor pellentesque nibh aenean quam in scelerisque sem at dolor maecenas mattis sed convallis.",
+          "measuringRequest": null
+        }
+      ]
+    ],
+    [
+      66,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 66,
+          "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -607,7 +801,7 @@
         "ElementDesc_SolidBackground",
         {
           "id": 67,
-          "backgroundColor": "#00000000",
+          "backgroundColor": "#3F3F46",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -648,7 +842,7 @@
         "ElementDesc_SolidBackground",
         {
           "id": 70,
-          "backgroundColor": "#F0F0F0",
+          "backgroundColor": "#252526",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
@@ -659,7 +853,7 @@
         "ElementDesc_SolidLabel",
         {
           "id": 71,
-          "textColor": "#202020",
+          "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Top",
           "wrapLine": true,
@@ -667,149 +861,7 @@
           "ellipse": false,
           "multiline": true,
           "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "Item 11 — Lorem ipsum dolor sit amet, consectetur adipiscing elit. Swipe left to reveal DELETE IT; release at full reveal to remove this item.",
-          "measuringRequest": null
-        }
-      ]
-    ],
-    [
-      72,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 72,
-          "backgroundColor": "#00000000",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      73,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 73,
-          "backgroundColor": "#B82030",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      74,
-      [
-        "ElementDesc_SolidLabel",
-        {
-          "id": 74,
-          "textColor": "#FFFFFF",
-          "horizontalAlignment": "Left",
-          "verticalAlignment": "Center",
-          "wrapLine": false,
-          "wrapLineHeightCalculation": false,
-          "ellipse": false,
-          "multiline": false,
-          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "DELETE IT",
-          "measuringRequest": "TotalSize"
-        }
-      ]
-    ],
-    [
-      75,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 75,
-          "backgroundColor": "#F0F0F0",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      76,
-      [
-        "ElementDesc_SolidLabel",
-        {
-          "id": 76,
-          "textColor": "#202020",
-          "horizontalAlignment": "Left",
-          "verticalAlignment": "Top",
-          "wrapLine": true,
-          "wrapLineHeightCalculation": false,
-          "ellipse": false,
-          "multiline": true,
-          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "Item 12 — Lorem ipsum dolor sit amet, consectetur adipiscing elit. Swipe left to reveal DELETE IT; release at full reveal to remove this item.",
-          "measuringRequest": null
-        }
-      ]
-    ],
-    [
-      77,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 77,
-          "backgroundColor": "#00000000",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      78,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 78,
-          "backgroundColor": "#B82030",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      79,
-      [
-        "ElementDesc_SolidLabel",
-        {
-          "id": 79,
-          "textColor": "#FFFFFF",
-          "horizontalAlignment": "Left",
-          "verticalAlignment": "Center",
-          "wrapLine": false,
-          "wrapLineHeightCalculation": false,
-          "ellipse": false,
-          "multiline": false,
-          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "DELETE IT",
-          "measuringRequest": "TotalSize"
-        }
-      ]
-    ],
-    [
-      80,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 80,
-          "backgroundColor": "#F0F0F0",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      81,
-      [
-        "ElementDesc_SolidLabel",
-        {
-          "id": 81,
-          "textColor": "#202020",
-          "horizontalAlignment": "Left",
-          "verticalAlignment": "Top",
-          "wrapLine": true,
-          "wrapLineHeightCalculation": false,
-          "ellipse": false,
-          "multiline": true,
-          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "Item 13 — Lorem ipsum dolor sit amet, consectetur adipiscing elit. Swipe left to reveal DELETE IT; release at full reveal to remove this item.",
+          "text": "Item 4 — Tristique sem proin ut ligula vel nunc egestas porttitor morbi lectus risus iaculis vel suscipit quis luctus non massa fusce ac turpis quis ligula lacinia aliquet mauris ipsum nulla.",
           "measuringRequest": null
         }
       ]
@@ -1273,59 +1325,59 @@
                               "hitTestResult": null,
                               "cursor": null,
                               "element": 35,
+                              "bounds": {"x1": 155, "y1": 68, "x2": 546, "y2": 88},
+                              "validArea": {"x1": 155, "y1": 68, "x2": 546, "y2": 88}
+                            },
+                            "children": null
+                          },
+                          {
+                            "id": 144,
+                            "content": {
+                              "hitTestResult": null,
+                              "cursor": null,
+                              "element": 36,
                               "bounds": {"x1": 14, "y1": 93, "x2": 546, "y2": 386},
                               "validArea": {"x1": 14, "y1": 93, "x2": 546, "y2": 386}
                             },
                             "children": [
                               {
-                                "id": 144,
+                                "id": 148,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 36,
+                                  "element": 37,
                                   "bounds": {"x1": 14, "y1": 93, "x2": 546, "y2": 386},
                                   "validArea": {"x1": 14, "y1": 93, "x2": 546, "y2": 386}
                                 },
                                 "children": [
                                   {
-                                    "id": 168,
+                                    "id": 172,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 42,
+                                      "element": 43,
                                       "bounds": {"x1": 525, "y1": 94, "x2": 545, "y2": 385},
                                       "validArea": {"x1": 525, "y1": 94, "x2": 545, "y2": 385}
                                     },
                                     "children": [
                                       {
-                                        "id": 172,
+                                        "id": 176,
                                         "content": {
                                           "hitTestResult": null,
                                           "cursor": null,
-                                          "element": 43,
+                                          "element": 44,
                                           "bounds": {"x1": 525, "y1": 94, "x2": 545, "y2": 385},
                                           "validArea": {"x1": 525, "y1": 94, "x2": 545, "y2": 385}
                                         },
                                         "children": [
-                                          {
-                                            "id": 176,
-                                            "content": {
-                                              "hitTestResult": null,
-                                              "cursor": null,
-                                              "element": 44,
-                                              "bounds": {"x1": 530, "y1": 101, "x2": 539, "y2": 106},
-                                              "validArea": {"x1": 530, "y1": 101, "x2": 539, "y2": 106}
-                                            },
-                                            "children": null
-                                          },
                                           {
                                             "id": 180,
                                             "content": {
                                               "hitTestResult": null,
                                               "cursor": null,
                                               "element": 45,
-                                              "bounds": {"x1": 530, "y1": 372, "x2": 539, "y2": 377},
-                                              "validArea": {"x1": 530, "y1": 372, "x2": 539, "y2": 377}
+                                              "bounds": {"x1": 530, "y1": 101, "x2": 539, "y2": 106},
+                                              "validArea": {"x1": 530, "y1": 101, "x2": 539, "y2": 106}
                                             },
                                             "children": null
                                           },
@@ -1335,8 +1387,19 @@
                                               "hitTestResult": null,
                                               "cursor": null,
                                               "element": 46,
-                                              "bounds": {"x1": 529, "y1": 114, "x2": 541, "y2": 244},
-                                              "validArea": {"x1": 529, "y1": 114, "x2": 541, "y2": 244}
+                                              "bounds": {"x1": 530, "y1": 372, "x2": 539, "y2": 377},
+                                              "validArea": {"x1": 530, "y1": 372, "x2": 539, "y2": 377}
+                                            },
+                                            "children": null
+                                          },
+                                          {
+                                            "id": 188,
+                                            "content": {
+                                              "hitTestResult": null,
+                                              "cursor": null,
+                                              "element": 47,
+                                              "bounds": {"x1": 529, "y1": 114, "x2": 541, "y2": 186},
+                                              "validArea": {"x1": 529, "y1": 114, "x2": 541, "y2": 186}
                                             },
                                             "children": null
                                           }
@@ -1345,52 +1408,52 @@
                                     ]
                                   },
                                   {
-                                    "id": 268,
+                                    "id": 192,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 67,
+                                      "element": 48,
                                       "bounds": {"x1": 15, "y1": 94, "x2": 525, "y2": 206},
                                       "validArea": {"x1": 15, "y1": 94, "x2": 525, "y2": 206}
                                     },
                                     "children": [
                                       {
-                                        "id": 272,
+                                        "id": 196,
                                         "content": {
                                           "hitTestResult": null,
                                           "cursor": null,
-                                          "element": 68,
-                                          "bounds": {"x1": 15, "y1": 94, "x2": 525, "y2": 205},
-                                          "validArea": {"x1": 15, "y1": 94, "x2": 525, "y2": 205}
+                                          "element": 49,
+                                          "bounds": {"x1": 15, "y1": 94, "x2": 525, "y2": 206},
+                                          "validArea": {"x1": 15, "y1": 94, "x2": 525, "y2": 206}
                                         },
                                         "children": [
                                           {
-                                            "id": 276,
+                                            "id": 204,
                                             "content": {
                                               "hitTestResult": null,
                                               "cursor": null,
-                                              "element": 69,
+                                              "element": 51,
                                               "bounds": {"x1": 445, "y1": 94, "x2": 509, "y2": 205},
                                               "validArea": {"x1": 445, "y1": 94, "x2": 509, "y2": 205}
                                             },
                                             "children": null
                                           },
                                           {
-                                            "id": 280,
+                                            "id": 208,
                                             "content": {
                                               "hitTestResult": null,
                                               "cursor": null,
-                                              "element": 70,
+                                              "element": 52,
                                               "bounds": {"x1": 15, "y1": 94, "x2": 525, "y2": 205},
                                               "validArea": {"x1": 15, "y1": 94, "x2": 525, "y2": 205}
                                             },
                                             "children": [
                                               {
-                                                "id": 284,
+                                                "id": 212,
                                                 "content": {
                                                   "hitTestResult": null,
                                                   "cursor": null,
-                                                  "element": 71,
+                                                  "element": 53,
                                                   "bounds": {"x1": 31, "y1": 106, "x2": 509, "y2": 193},
                                                   "validArea": {"x1": 31, "y1": 106, "x2": 509, "y2": 193}
                                                 },
@@ -1403,52 +1466,52 @@
                                     ]
                                   },
                                   {
-                                    "id": 288,
+                                    "id": 240,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 72,
+                                      "element": 60,
                                       "bounds": {"x1": 15, "y1": 206, "x2": 525, "y2": 318},
                                       "validArea": {"x1": 15, "y1": 206, "x2": 525, "y2": 318}
                                     },
                                     "children": [
                                       {
-                                        "id": 292,
+                                        "id": 244,
                                         "content": {
                                           "hitTestResult": null,
                                           "cursor": null,
-                                          "element": 73,
-                                          "bounds": {"x1": 15, "y1": 206, "x2": 525, "y2": 317},
-                                          "validArea": {"x1": 15, "y1": 206, "x2": 525, "y2": 317}
+                                          "element": 61,
+                                          "bounds": {"x1": 15, "y1": 206, "x2": 525, "y2": 318},
+                                          "validArea": {"x1": 15, "y1": 206, "x2": 525, "y2": 318}
                                         },
                                         "children": [
                                           {
-                                            "id": 296,
+                                            "id": 252,
                                             "content": {
                                               "hitTestResult": null,
                                               "cursor": null,
-                                              "element": 74,
+                                              "element": 63,
                                               "bounds": {"x1": 445, "y1": 206, "x2": 509, "y2": 317},
                                               "validArea": {"x1": 445, "y1": 206, "x2": 509, "y2": 317}
                                             },
                                             "children": null
                                           },
                                           {
-                                            "id": 300,
+                                            "id": 256,
                                             "content": {
                                               "hitTestResult": null,
                                               "cursor": null,
-                                              "element": 75,
+                                              "element": 64,
                                               "bounds": {"x1": 15, "y1": 206, "x2": 525, "y2": 317},
                                               "validArea": {"x1": 15, "y1": 206, "x2": 525, "y2": 317}
                                             },
                                             "children": [
                                               {
-                                                "id": 304,
+                                                "id": 260,
                                                 "content": {
                                                   "hitTestResult": null,
                                                   "cursor": null,
-                                                  "element": 76,
+                                                  "element": 65,
                                                   "bounds": {"x1": 31, "y1": 218, "x2": 509, "y2": 305},
                                                   "validArea": {"x1": 31, "y1": 218, "x2": 509, "y2": 305}
                                                 },
@@ -1461,7 +1524,7 @@
                                     ]
                                   },
                                   {
-                                    "id": 309,
+                                    "id": 265,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
@@ -1471,52 +1534,52 @@
                                     },
                                     "children": [
                                       {
-                                        "id": 308,
+                                        "id": 264,
                                         "content": {
                                           "hitTestResult": null,
                                           "cursor": null,
-                                          "element": 77,
+                                          "element": 66,
                                           "bounds": {"x1": 15, "y1": 318, "x2": 525, "y2": 430},
                                           "validArea": {"x1": 15, "y1": 318, "x2": 525, "y2": 385}
                                         },
                                         "children": [
                                           {
-                                            "id": 312,
+                                            "id": 268,
                                             "content": {
                                               "hitTestResult": null,
                                               "cursor": null,
-                                              "element": 78,
-                                              "bounds": {"x1": 15, "y1": 318, "x2": 525, "y2": 429},
+                                              "element": 67,
+                                              "bounds": {"x1": 15, "y1": 318, "x2": 525, "y2": 430},
                                               "validArea": {"x1": 15, "y1": 318, "x2": 525, "y2": 385}
                                             },
                                             "children": [
                                               {
-                                                "id": 316,
+                                                "id": 276,
                                                 "content": {
                                                   "hitTestResult": null,
                                                   "cursor": null,
-                                                  "element": 79,
+                                                  "element": 69,
                                                   "bounds": {"x1": 445, "y1": 318, "x2": 509, "y2": 429},
                                                   "validArea": {"x1": 445, "y1": 318, "x2": 509, "y2": 385}
                                                 },
                                                 "children": null
                                               },
                                               {
-                                                "id": 320,
+                                                "id": 280,
                                                 "content": {
                                                   "hitTestResult": null,
                                                   "cursor": null,
-                                                  "element": 80,
+                                                  "element": 70,
                                                   "bounds": {"x1": 15, "y1": 318, "x2": 525, "y2": 429},
                                                   "validArea": {"x1": 15, "y1": 318, "x2": 525, "y2": 385}
                                                 },
                                                 "children": [
                                                   {
-                                                    "id": 324,
+                                                    "id": 284,
                                                     "content": {
                                                       "hitTestResult": null,
                                                       "cursor": null,
-                                                      "element": 81,
+                                                      "element": 71,
                                                       "bounds": {"x1": 31, "y1": 330, "x2": 509, "y2": 417},
                                                       "validArea": {"x1": 31, "y1": 330, "x2": 509, "y2": 385}
                                                     },

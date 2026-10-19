@@ -34,38 +34,38 @@
     [32, "SolidBorder"],
     [33, "FocusRectangle"],
     [34, "SolidLabel"],
-    [35, "SolidBackground"],
-    [36, "SolidBorder"],
-    [37, "SolidBackground"],
-    [38, "SolidBorder"],
-    [39, "Polygon"],
+    [35, "SolidLabel"],
+    [36, "SolidBackground"],
+    [37, "SolidBorder"],
+    [38, "SolidBackground"],
+    [39, "SolidBorder"],
     [40, "Polygon"],
-    [41, "SolidBackground"],
+    [41, "Polygon"],
     [42, "SolidBackground"],
-    [43, "SolidBorder"],
-    [44, "Polygon"],
+    [43, "SolidBackground"],
+    [44, "SolidBorder"],
     [45, "Polygon"],
-    [46, "SolidBackground"],
+    [46, "Polygon"],
     [47, "SolidBackground"],
     [48, "SolidBackground"],
-    [49, "SolidLabel"],
+    [49, "SolidBackground"],
     [50, "SolidBackground"],
     [51, "SolidLabel"],
     [52, "SolidBackground"],
-    [53, "SolidBackground"],
-    [54, "SolidLabel"],
+    [53, "SolidLabel"],
+    [54, "SolidBackground"],
     [55, "SolidBackground"],
-    [56, "SolidLabel"],
-    [57, "SolidBackground"],
+    [56, "SolidBackground"],
+    [57, "SolidLabel"],
     [58, "SolidBackground"],
     [59, "SolidLabel"],
     [60, "SolidBackground"],
-    [61, "SolidLabel"],
+    [61, "SolidBackground"],
     [62, "SolidBackground"],
-    [63, "SolidBackground"],
-    [64, "SolidLabel"],
-    [65, "SolidBackground"],
-    [66, "SolidLabel"],
+    [63, "SolidLabel"],
+    [64, "SolidBackground"],
+    [65, "SolidLabel"],
+    [66, "SolidBackground"],
     [67, "SolidBackground"],
     [68, "SolidBackground"],
     [69, "SolidLabel"],
@@ -73,14 +73,46 @@
     [71, "SolidLabel"],
     [72, "SolidBackground"],
     [73, "SolidBackground"],
-    [74, "SolidLabel"],
-    [75, "SolidBackground"],
-    [76, "SolidLabel"],
-    [77, "SolidBackground"],
+    [74, "SolidBackground"],
+    [75, "SolidLabel"],
+    [76, "SolidBackground"],
+    [77, "SolidLabel"],
     [78, "SolidBackground"],
-    [79, "SolidLabel"],
+    [79, "SolidBackground"],
     [80, "SolidBackground"],
-    [81, "SolidLabel"]
+    [81, "SolidLabel"],
+    [82, "SolidBackground"],
+    [83, "SolidLabel"],
+    [84, "SolidBackground"],
+    [85, "SolidBackground"],
+    [86, "SolidBackground"],
+    [87, "SolidLabel"],
+    [88, "SolidBackground"],
+    [89, "SolidLabel"],
+    [90, "SolidBackground"],
+    [91, "SolidBackground"],
+    [92, "SolidBackground"],
+    [93, "SolidLabel"],
+    [94, "SolidBackground"],
+    [95, "SolidLabel"],
+    [96, "SolidBackground"],
+    [97, "SolidBackground"],
+    [98, "SolidBackground"],
+    [99, "SolidLabel"],
+    [100, "SolidBackground"],
+    [101, "SolidLabel"],
+    [342, "SolidBackground"],
+    [343, "SolidBackground"],
+    [344, "SolidBackground"],
+    [345, "SolidLabel"],
+    [346, "SolidBackground"],
+    [347, "SolidLabel"],
+    [348, "SolidBackground"],
+    [349, "SolidBackground"],
+    [350, "SolidBackground"],
+    [351, "SolidLabel"],
+    [352, "SolidBackground"],
+    [353, "SolidLabel"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
@@ -113,7 +145,34 @@
       "root": null
     },
     {
-      "frameId": 9,
+      "frameId": 8,
+      "frameName": "Selected row uses DarkSkin",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 11,
       "frameName": "Partial red reveal",
       "windowSize": {
         "bounds": {
@@ -140,7 +199,7 @@
       "root": null
     },
     {
-      "frameId": 12,
+      "frameId": 14,
       "frameName": "Partial release reset",
       "windowSize": {
         "bounds": {
@@ -167,7 +226,7 @@
       "root": null
     },
     {
-      "frameId": 15,
+      "frameId": 17,
       "frameName": "Full red reveal waits for End",
       "windowSize": {
         "bounds": {
@@ -194,7 +253,7 @@
       "root": null
     },
     {
-      "frameId": 21,
+      "frameId": 23,
       "frameName": "Deferred middle row removal",
       "windowSize": {
         "bounds": {
@@ -221,8 +280,89 @@
       "root": null
     },
     {
-      "frameId": 26,
+      "frameId": 28,
       "frameName": "Clear and Add before queued removal",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 33,
+      "frameName": "Newly realized rows at bottom stay closed",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 38,
+      "frameName": "Recycled rows at top stay closed",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 40,
+      "frameName": "Disabled row uses DarkSkin",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
