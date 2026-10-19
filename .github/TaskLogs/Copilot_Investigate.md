@@ -2,196 +2,230 @@
 
 # PROBLEM DESCRIPTION
 
-Details are in [TODO_Touch.md](./TODO_Touch.md), but this document has a much bigger scope, so keep the target scope in this request, uncovered parts will be handled in future requests.
-
-`TODO_Touch_Step[2]?.md` are completed works.
+Details are in [TODO_Touch.md](./TODO_Touch.md), but this document has a much bigger scope, so keep the target scope in this request, uncovered parts will be handled in future requests. Here are completed works:
+- `TODO_Touch_Step1.md`
+- `TODO_Touch_Step2.md`
+- `TODO_Touch_Step3.md`
 
 There is a known issue when handling mouse events on a composition, the handler deletes the composition, and GacUI will crash. This is expected, and point events will be handled just like how mouse events are handled, it will have the same issue, and this is also expected. When implementing point events, you are going to figure out if any code for mouse events could be reused for propogating and capturing. GacUI will offer a pair of new capture/release functions for point events, they work like how captures are done to mouse events.
 
-- Make sure `handled` (default false) is available on `point(Action|Sequence|Ended)` events.
-  - This is a hint for events in compositions, in predefined controls, if `handled` is true, it means there is a sub composition to override the behavior, any event handler in predefined controls should skip this event.
-  - `accept` in `pointSequenceStarted` should be updated to `acceptedComposition`, and all future point events should be sent to this composition. If it is `nullptr`, it means not accepted. This is only for compositio's event, it does not affect `INativeWindowListener` design. `pointSequenceStarted` does not have `handled`, but assigning `acceptedComposition` has the same hint.
-    - Unlike `pointSequenceStarted` which will sent to the hittest deepest composition and its all parent compositions, `pointAction` and `pointSequenceEnded` will only sent to `acceptedComposition`.
-- Add `bool fallbackClick` to `pointSequenceEnded`, false by default. 
-  - `GuiGraphicsHost::pointsScale` should not exist, it should call `Convert` whenever scaling is needed. We can't assume scale does not change.
-  - `GuiGraphicsHost` will also remember the position of the point in `pointSequenceStarted`, and when it is accepted the state machine will run, and `pointSequenceEnded` as a true `fallbackClick`, it will first hittest the position, and do regular mouse up and mouse down with the specified mouse button decided by the state machine. If the state machine decides to none, this won't happen. This should have a lot of shared code to trigger the mouse click.
-- Add a `GuiControl::(Get|Set)AcceptPointEvents` property, default to false:
-  - No matter the property value, `pointSequenceStarted` of its bounds composition will be listened, and when it is true, `acceptedComposition` will be assigned with the bounds composition when `handled` is false.
-  - When `assignedComposition` is assigned, the reasonly property `GetPointEventComposition` will return that composition.
-  - In all conditions, `pointSequenceEnded` will clear `GetPointEventComposition`.
-  - All three point events will be handled by its virtual protected function `OnPoint(Action|Sequence(Started|Ended))`.
-- As an exception, `GuiScrollView` will call `SetAcceptPointEvents(true)`:
-  - In `OnPointSequenceStarted`, it will remember the position of the first point.
-- Implement a state machine in `GuiGraphicsHost`:
-  - When the first point drags more than 8 pixels, it will find the nearest direction of up-down or left/right, by checking the angle:
-    - Lock that position. You can use 0/1/2 to represent it.
-    - If the corresponding scroll bar is visibled and enabled, dragging means scrolling that much pixels comparing to the start position. Otherwise no scrolling happens.
-  - Only the first point will be used for scrolling.
-   - On `PointSequenceEnded`, only when there was one point activated and the 8 pixels never exceeds (you can check the state for example if it is 0), it fallbacks to left button, or right button when >= 0.5 second has passed.
-- Just like `altActionManager` and `tabActionManager`, a `pointActionManager` should be created to store all point related code, leaving `GuiGraphicsHost` to do:
-  - Trigger `pointSequenceStarted` by itself so that the `acceptedComposition` will be stored.
-  - The rest of the events will be redirected to `pointActionManager`.
-  - When `pointSequenceEnded` is called, the `Nullable<NativeMouseButton> pointActionManager->GetFallbackClick()` will tell `GuiGraphicsHost` if a fallback needs to happen.
-  - This refactor is to clean up as many code as possible from `GuiGraphicsHost` so all those complex logic will not mix up.
-  - `GuiGraphicsHost_Point.(h|cpp)` will be the file to store the new `pointActionManager`.
-- To verify, you can find any scrollable list or text box and try to scroldl them:
-  - Make new remote protocol based unit test case, no need to update `DebugRemoteProtocolSop.md`.
-  - I will check snapshots later.
+This request is about refactoring point experience implementation.
 
-## DETAILS
+1) `GuiPointActionManager`
 
-### Scope and interpretation
+I would like to convert fallback click to a more general gesture system. Here I proposed a extensible gesture state machine system, but the extensibility is only opened for `GuiPointActionManager`, it is not yet opened to any end users yet. Such gesture is totally based on pure calculation, instead of any OS supported gestures. And it should solve the wired relationship between `GuiScrollView` and `GuiPointActionManager`, making `GuiGraphicsHost::GetPointActionManager` no longer necessary, `GuiPointActionManager` becomes a pure private helper class for `GuiGraphicsHost`.
 
-- This step changes composition point ownership, adds control opt-in and basic axis-locked scrolling, and synthesizes an optional click after an accepted sequence ends. Preserve the completed native, hosted, automation, and remote-protocol contracts. Inertia, pinch recognition, parent scroll handoff, text-selection handles, mobile text input, and a timer-triggered context menu remain outside this request, even where the broader plan discusses them.
-- The shared GacUI implementation must automatically support GacJS through its existing point-input forwarding to Core. Keep scrolling, recognition, and deferred click behavior in the shared graphics-host/control implementation; no separate TypeScript scrolling implementation or new wire messages should be needed. Native and GacJS manual FullControlTest verification are both required after implementation.
-- Read `point(Action|Sequence|Ended)` as `pointAction` and `pointSequenceEnded`; the explicit exclusion of `handled` from `pointSequenceStarted` takes precedence. In the control acceptance rule, read "when handled is false" as `acceptedComposition == nullptr`. `assignedComposition` means `acceptedComposition`, and `GetPointEventComposition` is the getter for the read-only `PointEventComposition` property.
-- A regular fallback click is mouse Down followed by mouse Up. The reversed order in the original wording does not describe the intended click sequence. Long hold selects the right button at sequence End; it does not fire while the contact remains down.
-- The existing `PointCapture`, `PointUncapture`, and `ResetPointCapture` helpers in `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost.h/.cpp` already provide composition capture. Adapt/reuse them with the new manager instead of adding another native capture API. Point capture remains independent of mouse capture. Synchronous deletion inside an input handler remains explicitly unsupported.
+First of all we need a new interface
+```C++
+class IGuiPointGesture : public virtual Interface
+{
+public:
+  virtual void OnPointSequenceStarted(...) = 0;
+  virtual void OnPointAction(...) = 0;
+  virtual void OnPointSequenceEnded(...) = 0;
+  virtual bool IsGestureSelected() = 0;
+  virtual Nullable<NativeMouseButton> GetFallbackClick() = 0;
+};
+```
 
-### Event ownership and control lifecycle
+Fixed types of gestures will be defined in `GuiGraphicsHost_Point.cpp`, forming a `List<Ptr<IGuiPointGesture>>` stored inside `GuiPointActionManager` for iterating.
+The order is important because different gesture might have priority or implementation dependencies. There is a complex state machine inside `GuiPointActionManager`, this design will be gone forever, becoming multiple small state machines with priority in each `IGuiPointGesture` implementation.
 
-- `acceptedComposition` starts as `nullptr`. Deliver Started from the deepest hit composition through its parents, rebasing the sample and borrowed points for each receiver. The first non-null assignment wins and remains visible to subsequent handlers; later handlers cannot clear it or replace it with an ancestor. A selected composition must belong to the current graphics host. Continue the start query through the ancestors as requested; acceptance is the hint for their default behavior to skip.
-- After the query, store that final composition as the sequence target. Send Action and End only to its event receiver, with coordinates relative to it; they no longer bubble. Set their source fields consistently with direct delivery. Do not retarget when a point moves outside, a second contact lands elsewhere, or an ancestor is scrollable. `handled` defaults to false for each Action/End and suppresses predefined behavior, not mandatory contact bookkeeping or terminal cleanup.
-- Native `INativeWindowListener::PointSequenceStarted(firstPoint, bool& accept)` and its paired native End remain unchanged. Derive this host's local answer from the selected composition. A rejected composition query has no selected target and therefore no composition Action/End recipient; the native lifecycle and the existing rejected-input mouse fallback still run. Update tests that previously expected a rejected composition End or bubbling Action/End.
-- Started currently inherits `handled` through `GuiPointEventArgs` and `GuiEventArgs`. Adjust the argument hierarchy and reflected bases so Started actually lacks that member, while preserving source fields, its `WindowPointInfo` sample, `eventType`, and borrowed `GetPoints()` access. Do not merely hide an inherited member. Replace the special sticky-`accept` handling in `<GacUI repo>/Source/Application/GraphicsCompositions/GuiGraphicsEventReceiver.h` with the selected-composition rule. Keep the existing no-reflected-constructor rule for arguments borrowing the host's list.
-- Attach the three control adapters once to the persistent bounds composition, regardless of `AcceptPointEvents`. Route them through the protected virtual `OnPointSequenceStarted`, `OnPointAction`, and `OnPointSequenceEnded` hooks. The base start behavior claims its bounds only when opted in and the query is still unclaimed. `GuiScrollView` opts in by default; an explicitly accepting descendant takes precedence. Only the scroll view whose own bounds was selected performs its scrolling behavior.
-- Make `GetPointEventComposition` reflect the manager's current selected target when that target is within this control's bounds subtree, otherwise return `nullptr`. This lets an ancestor observe a child's ownership without caching a pointer that would require a bubbled End to clear. After the start query it remains available through End callbacks, and becomes null when capture is cleared afterward. Do not forward extra Action/End events to ancestor controls to maintain this property.
-- Keep cleanup outside overridable/handled-dependent behavior: successful End, canceled End, host detachment, and deferred target removal clear capture, the control-facing property, pending fallback, and sequence state. Preserve occupied sparse slots through canceled End and empty slots through successful End, clearing the borrowed list after callbacks. A setting change affects the next start query, not the already accepted sequence. Preserve existing lifetime hooks without adding support for deletion during a callback.
+**OnPointSequenceStarted**: `GuiPointActionManager::Initialize` will calls every `OnPointSequenceStarted`, until any `IsGestureSelected` returns true, this function reset any state in a gesture. Here I would like `pointActionManager->Initialize(firstPoint);` only called after accepted, as if it is not accepted, all subsequence `GuiGraphicsHost::Point*` will not be called anyway.
 
-### Manager and scrolling state
+**OnPointAction**: `GuiPointActionManager::OnPointInput` will call every `OnPointAction`, until any `IsGestureSelected` returns true. Or when there is already a selected gesture, only its `OnPointAction` will be called. The selection will be reset in `Initialize`.
 
-- Put the host-owned point manager in `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost_Point.h/.cpp`, following the Alt/Tab manager ownership pattern. It owns point samples, capture bookkeeping, movement/elapsed-time recognition, and the fallback decision. Keep Started dispatch/selection and ordinary mouse synthesis at the host boundary. `GuiScrollView` applies the recognized movement through its existing scroll APIs; keep control-type discovery and duplicated state machines out of `GuiGraphicsHost`.
-- First point means `pointId == 0`, not the platform `primary` hint or the first currently occupied slot. Started initializes it once; the following first Down must not reset its baseline. Later contacts remain visible in the borrowed sparse list but never drive scrolling. After point 0 lifts, no other contact is promoted. Any additional Down permanently disqualifies the sequence from click fallback, even if the extra contact lifts before End.
-- Treat the threshold as 8 logical GacUI coordinate units after current native conversion. Before locking, compare displacement from the initial position using radial distance (`dx * dx + dy * dy > 64`, with wide arithmetic). Exactly 8 does not lock. At the first crossing choose horizontal when `abs(dx) >= abs(dy)`, otherwise vertical; the equality rule gives a deterministic 45-degree tie. Keep that axis until End, including reversals or a return to the start.
-- Evaluate point 0's position on every position-bearing action, including final Up, so a distant release without an intervening Update cannot become a tap. Updating gesture bookkeeping is independent of whether a control handler consumes an action. Once the threshold is crossed, fallback stays disabled even if no scrollbar can move.
-- `GuiScrollView::OnPointSequenceStarted` invokes base acceptance, then records the starting point and starting view position when `arguments.acceptedComposition == boundsComposition`. Use the query argument here, since `GetPointEventComposition` reflects the final selection only after Started dispatch finishes. On an unhandled action, change only the locked axis to `initialViewPosition - displacementFromStart`, making content follow the finger. Use `SetViewPosition`/existing scrollbar range clamping in `<GacUI repo>/Source/Controls/GuiContainerControls.cpp`; do not apply total displacement repeatedly to the already changed position. Respect the control's enabled state and require the selected scrollbar to exist, be visible, and be enabled. An unavailable axis neither switches to the other axis nor hands input to a parent.
-- Reset recognition for each accepted occurrence. Retain enough terminal information for the host to read `GetFallbackClick()` after End handlers, then consume/clear it so a later rejected, canceled, or unrelated End cannot reuse the result.
+**OnPointSequenceEnded**: `GuiPointActionManager::PointSequenceEnded` will call every `OnPointSequenceEnded`, until any `IsGestureSelected` returns true. Or when there is already a selected gesture, only its `OnPointSequenceEnded` will be called.
 
-### Current conversion and fallback clicks
+**IsGestureSelected**: Returns false, until any `pointGesture` events is selected by the event handler, returns true. This value will be reset in `OnPointSequenceStarted`.
 
-- Remove `pointsScale`, rather than moving the cached scale into the new manager. Keep canonical native/screen-space samples sufficient to reconstruct stationary contacts when the window moves or its scale changes; derive callback-local positions, contact bounds, and the borrowed list using the current `INativeWindow::Convert` and current composition bounds. Do not repeatedly scale already rounded logical coordinates. Recompute the first-point baseline in the same current coordinate space as the latest sample before measuring displacement.
-- Retain the original start position independently of sparse slot 0, because normal Up empties that slot before End. At fallback time hit-test that original position using the current window conversion and layout, as requested. The original child composition or virtualized item is not a separately retained click target in this step.
-- `fallbackClick` is an opt-in request, initially false. The unhandled default `GuiScrollView::OnPointSequenceEnded` requests it for its owned sequence; other accepting controls/composition handlers may opt in explicitly. A custom point surface such as the Touching demonstration keeps it false. A request cannot override cancellation, a crossed threshold, or multiple-contact history. `handled` prevents predefined controls from requesting fallback, but does not erase an explicit request already made by a custom handler.
-- `GetFallbackClick()` returns a button only for an accepted, successfully ended sequence with a true final `fallbackClick`, exactly one Down in its history, and no threshold crossing. Use the existing monotonic microsecond sample timestamps: End minus Started below `500000` selects Left; at or above `500000` selects Right. No movement callback or timer is needed for a stationary hold. Every cancellation reason returns no button.
-- Read the fallback decision and retain the required start sample, finish point cleanup, then perform one ordinary mouse click. Reuse/refactor the existing hover/hit-test, Down, Up, propagation, modifier, button-state, and capture machinery. Moving the logical mouse/hover to the hit position before Down is necessary: `GuiButton::OnMouseUp` in `<GacUI repo>/Source/Controls/GuiButtonControls.cpp` requires its hover state, and typed automation already moves before button operations. Preserve physical-mouse state and do not leave synthetic pressed/captured state behind.
-- Keep this deferred accepted-sequence click separate from `ProcessIOPointFallback` in `<GacUI repo>/Source/Utilities/SharedServices/GuiSharedAutomationService.cpp`, which already implements a rejected sequence's immediate first-contact mouse stream. Do not produce both paths or change the remote protocol schema to carry composition-only fields.
+**GetFallbackClick**: `GuiPointActionManager::GetFallbackClick` will return the first `GetFallbackClick` that does not return empty, or when there is already a selected gesture, returns its `GetCallbackClick` directly.
 
-### Reflection and existing consumers
+By the way, in `GuiPointActionManager`, `Initialize`, `OnPointInput` and `PointSequenceEnded` will be renamed to `OnPointSequenceStarted`, `OnPointAction`, `OnPointSequenceEnded` to match the naming convention, and these 3 functions need to be placed together in h and cpp, followed by capturing functions, followed by the rest. `GetAxis` and `GetDisplacement` is no longer needed`.
 
-- Update point argument registration in `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionEvents.cpp`, and register read/write `AcceptPointEvents` plus read-only `PointEventComposition` in the `GuiControl` registration in `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionControls.cpp`. Keep native acceptance and wire types unchanged.
-- Migrate existing composition handlers from `accept` to assigning their intended composition, including `<GacUI repo>/Test/Resources/App/FullControlTest/TouchingTabPage.xml` and `<GacUI repo>/Test/GacUISrc/Playground/Resources/ResourcePointInput.xml`. Update affected tests and regenerate affected resources through their owning tools; do not modify generated C++ manually. Preserve the Touching page's custom gesture behavior without enabling click fallback.
-- Add the manager files beside Alt/Tab in `<GacUI repo>/Test/GacUISrc/Source_GacUI_CoreApplication/Source_GacUI_CoreApplication.vcxitems` and its filters. Add any new test source to `<GacUI repo>/Test/GacUISrc/UnitTest/UnitTest.vcxproj` and its filters. Follow `<GacUI repo>/.github/Guidelines/SourceFileManagement.md` for inventory changes.
+Secondly here are all predefined gestures.
 
-## VERIFICATION
+There is a `64` magic number in `GuiGraphicsHost_Point.cpp`, I have added a `StaticPointRange` constant, use `StaticPointRange * StaticPointRange` to replace it, scan for any other usages. Below are all suggested class names of `IGuiPointGesture` implementation, putting in `namespace predefined_gestures`.
 
-### Routing, recognition, and lifecycle
+**LeftClickGesture**: This one does not invoke `pointGesture` event. The state machine is simple, only when there is only one point through the whole sequence, and the point does not drag far away than `StaticPointRange` in anymoment in the sequence, its `GetFallbackClick` returns left button.
 
-- Extend the ordinary `GraphicsHostProtocol` coverage in `<GacUI repo>/Test/GacUISrc/UnitTest/TestRemote_GraphicsHost_Mouse.cpp`. Exercise actual `OnIOPointStarted`, point actions, and `OnIOPointEnded` through the existing protocol harness, not just direct calls to new virtual hooks. Retain sparse-slot, ordering, cancellation, automation, and physical-mouse regression coverage.
-- Assert deepest/ancestor acceptance, first assignment winning, default false `AcceptPointEvents`, default true on `GuiScrollView`, explicit opt-out on a subsequent sequence, and an accepting child inside nested scroll views. Verify Started reaches ancestors while Action/End reach only the selected target. Check the getter on owner, ancestor, and unrelated controls, during End callbacks and after cleanup. Exercise handled/custom overrides without allowing them to bypass cleanup.
-- Cover below, exactly at, and above the 8-unit threshold, horizontal/vertical/tied diagonal directions, reversal after lock, crossing then returning, and a final Up beyond the threshold without an Update. Check absent, hidden, disabled, and range-clamped scrollbars; an unavailable locked axis produces neither scrolling on another axis nor a fallback click.
-- Cover A Down, B Down, A Up, B Update/Up and A Down, B Down/Up, A Up. Only A can scroll, B never becomes the scrolling contact, and neither sequence can click. Verify a fresh sequence starts cleanly after successful End, each cancellation reason, host detachment, and deferred target removal. Do not introduce a test requiring safe synchronous deletion inside a handler.
-- Supply explicit monotonic timestamps for stationary holds just below and exactly at `500000` microseconds. Native `GetNativePointTimestamp` uses `std::chrono::steady_clock`; the existing date-time injection used by tooltip tests does not change it. Use the protocol samples' timestamps instead of sleeping or introducing another clock abstraction.
-- Verify fallback false, no eligible button, canceled End, and consumed/handled behavior produce their specified outcomes. An eligible tap generates exactly one Down then Up with the expected button/modifiers at the start position, after point cleanup. Begin with the mouse elsewhere and verify a child button actually clicks, including its normal hover/pressed state. Verify rejected input still uses only its preexisting fallback path.
-- Change scale during an accepted sequence through the existing `OnControllerScreenUpdated(ScreenConfig)` harness support, including nonuniform/fractional scale and stationary secondary contacts. Verify positions, contact bounds, sparse holes, displacement, and fallback hit location under current conversion; cover hosted offsets/window movement. Fixed-DPI tests alone do not verify removal of cached scaling.
+**RightClickGesture**: This one does not invoke `pointGesture` event. It is the same to `LeftClickGesture`, the only difference is that, only when the sequence lasts >= 0.5 seconds, its `GetFallbackClick` returns right button.
 
-### Useful rendered control tests
+**ScrollingGesture**: This one invoke `pointGesture` event. The logic is already implemented, but maybe with a little difference.
+If the whole sequence has only one point, when the first point moves longer than `StaticPointRange`, it locks down the scrolling direction and triggers the first `pointGesture`. Later any `OnPointAction` will calls `pointGesture` with the same direction until the second point happens, and no more `pointGesture` after that.
 
-- Add remote-protocol snapshot cases with overflowing content in a real scrollable list and multiline text box. Reuse fixture patterns from `<GacUI repo>/Test/GacUISrc/UnitTest/TestControls_List_GuiVirtualTextList.cpp` and `<GacUI repo>/Test/GacUISrc/UnitTest/TestControls_Editor_Regression.cpp`. Assert view/scrollbar positions as well as meaningful before/after frames for dragging in both axes, reversal, and clamping.
-- Verify dragging preserves list selection/text selection and causes no deferred item activation. Verify a short tap uses normal list selection or caret placement; for the right-button case, observe the ordinary right-button handler or an explicitly configured context menu. Do not assume every list or text box has a built-in context menu.
-- Use `GacUIUnitTest_StartFast_WithResourceAsText` and flat `OnNextIdleFrame` callbacks, with frame names describing the preceding action's result. Every snapshot case must save useful rendered output. Keep event-only, no-op, timing-boundary, and reflection assertions in ordinary tests rather than creating artificial frames. Leave the generated snapshots available for the user's later inspection.
+**DraggingAndRotationGesture**: This one invoke `pointGesture` event in both `OnPointSequenceStarted` and `OnPointAction`, the gesture starts immediately. But if `pointGesture` in `OnPointSequenceStarted` is not selected, `OnPointAction` will no longer invoke `pointGesture` in this sequence. The logic is already implemented in `Touching` test page but now we can move them here instead of doing math in XML files.
 
-### Manual FullControlTest verification on native and GacJS
+Here is their priority, aka the order added to the gesture list. We need to also keep class definitions in this order too:
+- RightClickGesture
+- LeftClickGesture
+- ScrollingGesture
+- DraggingAndRotationGesture
 
-- Perform two live application runs after rebuilding the implementation: native FullControlTest using `CppTest`, and FullControlTest through GacJS connected to `RemotingTest_Core /FCT /Http` on Windows. A Core/native-renderer pair may serve as the native run instead. Follow `<GacUI repo>/.github/Guidelines/Running-GacUI.md` and the setup sections of `<GacUI repo>/.github/Jobs/DebugRemoteProtocolWithGacJS.md`; for native remoting, use `<GacUI repo>/.github/Jobs/DebugRemoteProtocolWithNativeRenderer.md`. This is a focused scrolling check in both renderers, not a request to repeat the full application/transport matrices in those guides.
-- Open FullControlTest and choose an arbitrary existing scrollable control with overflowing content, such as a list or multiline text box. Use the same control/page in both runs where possible and record which was chosen. Exercise the existing control without adding a special demo or per-control touch handler; the shared `GuiScrollView` behavior should provide support automatically.
-- Begin a single-contact touch/point drag inside the content, move beyond the threshold, and release. Scroll forward and backward, including reversing direction during a drag; cover horizontal movement too when the chosen control has horizontal overflow. Verify visible content and the scrollbar/view position move together along the locked axis, stop at bounds, and do not activate an item or change text selection merely from dragging. Follow with a short tap to check ordinary selection/caret behavior and that the completed drag left no stuck capture.
-- Use the native application's automation service for point input when needed, including in a locked session; for a native remote renderer, send point input through its renderer endpoint. In GacJS, drive touch input or browser touch emulation through the rendered page so its acquisition and forwarding are exercised. Mouse-wheel scrolling, scrollbar-thumb dragging, ordinary mouse dragging, and Core-only `/IO` injection do not establish that this point-scrolling path works in GacJS. Check that the intended control scrolls while the containing browser page stays stationary and release does not generate a duplicate compatibility click.
-- Observe the actual native/browser rendering after each gesture, using current automation/DOM state to corroborate the scroll result. Record the native app or renderer, browser, transport when applicable, selected control, input method, and outcome of each run. Distinguish automation/emulation from real touch hardware; an unavailable input method is not a passed check. These live checks supplement the unit-test snapshots the user will inspect later.
+When a gesture is selected, the `selected` value will be ignored in this sequence, but to simplify control handling any control could just keep selecting this gesture forever.
 
-### Build and migration checks for implementation
+Thirdly we need to have a new `pointGesture` event added to `GuiGraphicsEventReceiver`. The event definition looks like this:
 
-- Extend `<GacUI repo>/Test/GacUISrc/UnitTest/TestReflectionTypeList.cpp` and relevant resource checks for `acceptedComposition`, `fallbackClick`, `handled` on Action/End and its absence on Started, and both control properties with the correct mutability. Ensure old composition `accept` use is migrated while native boolean acceptance remains intact.
-- Follow `<GacUI repo>/Project.md` and the repository build/execution wrappers. Reflection changes require Debug Win32 build and `Metadata_Generate`, then Debug x64 build, `Metadata_Generate`, and `Metadata_Test`. Regenerate affected resources with `GacUI_Compiler`, inspect its error artifacts, and rebuild affected consumers. Run the relevant UnitTest coverage and inspect completed summaries and Debug memory-leak output. Do not hand-edit generated artifacts.
-- Because migrating the existing FullControlTest handler changes an authored resource, keep its meaningful UIA expectations synchronized and run `<GacUI repo>/Test/UIA_CppTest.ps1` and `<GacUI repo>/Test/UIA_CppTest_Metaonly.ps1` as required by the project. Preserve the existing Touching behavior. The focused native and GacJS manual checks above are required in addition to automated verification. Keep `<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md` unchanged.
-- Keep authored changes, generated artifacts, and unit-test snapshots in their prescribed separate commits when implementing. This review changes only the task document; implementation, generation, builds, and runtime verification described above are future work.
+```C++
+struct GuiPointGesture_Scrolling
+{
+  bool isVertical; // true means up/down, false means left/right.
+  vint distance; // in unit of non-native pixels. right/down will be positive.
+};
+
+struct GuiPointGesture_DraggingAndRotation
+{
+  double rotation; // 2*pi a whole circle clockwise (because rignt/down is positive)
+  double scale;
+  Point distance;
+  // the calculation is in the definition order, an object is rotated by `rotation`, and the scaled by `scale`, and then move by `distance`.
+};
+
+class GuiPointGestureEventArgs
+  : public GuiEventArgs
+  , public vl::reflection::Description<GuiPointGestureEventArgs>
+{
+public:
+  Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation> gesture;
+  bool selected = false; // a control should not select a gesture when it is already handled, this keeps selected and handled different.
+
+  vl::reflection::description::Value GetGesture(); // read-only Gesture property of type object in reflection
+};
+```
+
+### DETAILS
+
+- Keep recognition in the shared graphics host, with the four fixed implementations and their definitions in the requested order. There is no end-user gesture registration API, OS recognizer, new wire message, or renderer-specific recognizer. Preserve the completed native, hosted, remote and automation sequence contracts.
+- Moving initialization after acceptance needs a separate Started-query sample: the current host initializes the manager before asking handlers because the query borrows its slot-0 list. Build a temporary one-slot list and rebase the sample/list for each receiver, then initialize the accepted sequence and establish capture before invoking gesture Started callbacks. Rejected sequences still receive native End; they must not consult stale manager state. See `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost.cpp`.
+- Retain manager-owned contact storage, coordinate conversion and capture; move recognition state into the individual gestures. Supply the recognizers with the current sample, sparse contact positions and terminal reason/timestamp. Started is not an additional Down. Remove all external manager dependencies, including `GuiControl::GetPointEventComposition` in `<GacUI repo>/Source/Application/Controls/GuiBasicControls.cpp` and manager-inspecting tests; preserve that property through a narrow host capture query.
+- Deliver `pointGesture` directly to the accepted composition, with the same source conventions as point Action/End and no parent handoff. Raw point bookkeeping and delivery continue after a gesture wins. The first `selected = true` is sticky within the dispatch and for the sequence; subsequent handlers cannot undo it. `handled` remains a separate per-event flag. Reset selection and candidate state for each accepted sequence, and never inspect a candidate's stale result from an earlier sequence.
+- Internal recognizer `OnPointSequenceEnded` callbacks and the public composition `pointSequenceEnded` event are separate: dispatch public End exactly once to the captured target on successful or canceled completion, whether a gesture was selected or stopped producing updates after a second contact. Keep capture and borrowed contacts valid through End callbacks, then clean up before synthesizing a click. Do not emit one public End per candidate, stop raw Action delivery after selection, or add gesture-specific terminal events.
+- Click candidates never select themselves or emit gestures. Eligibility requires a successful End, exactly one Down during the entire sequence, and no excursion strictly beyond `StaticPointRange`; evaluate final Up as well as intermediate positions. Use wide arithmetic for the squared radial test and `StaticPointRange * StaticPointRange`. Exactly eight logical units remains eligible. Use monotonic microsecond timestamps: Right wins at `500000`, Left below it, without a timer. Selected scrolling/manipulation returns no click. The new recognizers own automatic fallback for eligible accepted sequences with no selected gesture: remove the old `GuiPointSequenceEndedEventArgs::fallbackClick` opt-in, its reflection registration and its request/veto tests. End `handled` does not veto recognition or fallback. This intentionally changes raw accepting surfaces that never select a gesture; they now receive eligible tap/hold fallback automatically. Touching stays click-free by selecting manipulation at Started.
+- Scrolling uses point 0, locks horizontal on an equal-axis diagonal, and cannot switch axes. Any second Down permanently stops its gesture events for that sequence, even after the extra contact lifts; no remaining contact replaces point 0. An unselected scrolling candidate may keep offering its locked gesture until selected or disqualified. A manipulation candidate declined at Started never offers itself again in that sequence.
+- Interpret gesture payloads as increments applied to the current object/view. The first scrolling distance includes the full projected displacement from initial Down through threshold crossing; later distances are projected increments. Manipulation starts with identity `(rotation = 0, scale = 1, distance = (0,0))`. In accepted-composition coordinates, `p' = scale * R(rotation) * p + distance`; a two-contact step uses `distance = newCentroid - scale * R(rotation) * oldCentroid`, so an off-origin pinch rotates/scales about its contact centroid.
+- Move the existing Touching membership rules into the manipulation recognizer: one contact translates; two translate/rotate/scale; more than two pause. Compare occupied point IDs, not only count, and rebase without movement on membership changes, coincident pairs, and recovery from a paused state. Keep the selected gesture through these pauses. Preserve canonical native screen samples and reproject both baselines and current contacts using current conversion. Keep transform calculations in double precision; because the requested `Point` translation is integral, define deterministic rounding and carry transformed fractional residuals so repeated fractional rotations/translations do not accumulate truncation drift.
+- Register `GuiPointGestureEventArgs` as a reflected class with its own `Description` and `GuiEventArgs` base, writable `selected`, and read-only `Gesture` backed only by `GetGesture()`. Keep the strongly typed C++ `gesture` member public and unregistered. `GetGesture()` returns `vl::reflection::description::Value` containing a boxed copy of the active payload's registered value struct. Reflection exposes `object`, and Workflow tests/casts its runtime value to the appropriate payload type. There is no `SetGesture`, reflected assignment path, or assignment-validation requirement; changing a boxed copy does not mutate the native event payload.
+- The native variant contains exactly the scrolling and dragging/rotation payload alternatives; a null gesture has no semantic meaning. Assign the concrete payload and initialize its fields before emitting a gesture event. Keep the getter available to generated C++ without reflection metadata, using existing value boxing rather than runtime type lookup. This requires no generic Variant reflection support or two separate nullable gesture properties.
+- Add the event and argument types consistently to the receiver declarations/initialization and reflection type inventories, while keeping `IGuiPointGesture` internal. Read `GetCallbackClick` in the description as `GetFallbackClick`.
+
+### VERIFICATION
+
+- Extend the existing protocol-driven coverage in `<GacUI repo>/Test/GacUISrc/UnitTest/TestRemote_GraphicsHost_Mouse.cpp`; assert public events/results instead of the removed manager getters. Cover accepted/rejected/accepted sequences, native End after rejection, sticky selection, handled events, declined initial manipulation, independent capture, cancellation and fresh-sequence reset. Assert exactly one public End for selected/unselected gestures, cancellation and scrolling stopped by a second contact, with capture visible during End and cleared afterwards.
+- Cover radial movement below/at/above eight, diagonal ties, reversal, final-Up-only movement, crossing then returning, time below/at `500000`, and a second contact both before and after scroll selection. Assert no scroll resumption or click after the second contact, and no fallback after any cancellation reason.
+- Check identity, one-contact translation, off-origin two-contact rotation/scale, unchanged repeated samples, all 1/2/3-contact transitions, sparse/replaced IDs, coincident points, and fractional round trips. Change DPI/window position during a sequence and verify both stationary contacts and baselines use current conversion.
+- Preserve the rejected-input mouse stream separately from accepted-sequence deferred clicks. Replace old `fallbackClick` opt-in assertions with automatic eligible tap/hold on an accepting surface with no selected gesture, including when End is handled; selected gestures and ineligible/canceled sequences never click. Verify click button/modifiers/order, current hit testing at the original start position, point cleanup before synthesized mouse input, and unchanged physical mouse state. Keep rendering-independent assertions in ordinary tests.
+
+2) `GuiScrollView`
+
+A new empty `OnPointGesture` will be added to `GuiControl` for overriding.
+Now `GuiScrollView` only needs to handle `OnPointGesture`, to select this gesture, and keep scrolling when `OnPointGesture` is called.
+
+### DETAILS
+
+- Attach the new default-empty virtual hook once to the persistent bounds composition, following the existing point adapters in `<GacUI repo>/Source/Application/Controls/GuiBasicControls.cpp`. Of the four base hooks, only `GuiControl::OnPointSequenceStarted` performs automatic acceptance according to `AcceptPointEvents`; the default Action, Gesture and End hooks are empty. `GuiScrollView` keeps its default opt-in and overrides only `OnPointGesture`, consuming only the scrolling payload for its owned, unhandled, visually enabled sequence.
+- Select and mark handled when the locked axis has an existing, visible, visually enabled scrollbar; use the ordinary range-clamped scroll APIs in `<GacUI repo>/Source/Controls/GuiContainerControls.cpp`. Subtract the signed incremental distance from the current view coordinate, leaving the other axis unchanged. After clamping, reversal acts on the current view position. An unavailable axis does not select manipulation, switch axes, or hand off to a parent.
+- Remove the old scroll-view Started/Action/Ended overrides, axis/displacement coupling and baseline fields. Tap/hold fallback is supplied by the manager's click candidates, so no control-specific End hook or manager-to-scroll-view dependency is needed.
+
+### VERIFICATION
+
+- Retain real list scrolling coverage in `<GacUI repo>/Test/GacUISrc/UnitTest/TestControls_PointScrolling.cpp`, including useful rendered before/after frames, view-position assertions, both directions, clamping/reversal, stable selection, and no item activation after a drag.
+- Check absent/hidden/disabled scrollbars, a disabled control, nested scroll views and an accepting child. Verify exactly one owner moves, no fallback when movement crossed the threshold, and eligible tap/right-hold behavior without a scroll-view End override.
+
+3) `Touching` tab in `FullControlTest`
+
+The logic is moved so now this test page only need to handle `pointGesture` events.
+
+### DETAILS
+
+- Migrate `<GacUI repo>/Test/Resources/App/FullControlTest/TouchingTabPage.xml` so recognizer state and contact-to-transform mathematics live in the predefined gesture. Its gesture handler selects manipulation and applies the delivered transform to the displayed center/axis; it must not select scrolling.
+- Preserve the current raw drawing contract `centerX,centerY,axisX,axisY,count` followed by contact-ID/position triples, the rectangle and contact markers, and state across tab changes. Native and browser painters remain renderers of supplied state. Retain minimal raw Started handling for acceptance, Action handling for marker serialization, and End handling for marker clearing on success/cancellation. Only recognition and manipulation mathematics move into `pointGesture`; no phase/contact fields need to be added to that event.
+
+### VERIFICATION
+
+- Reuse the existing Touching assertions in `<GacUI repo>/Test/UIA_CppTest_Shared.cs` for translation, pinch/rotation, membership rebasing, three-contact pause, coincident points, source-token reuse and cancellation. Verify both transformed geometry and marker count/positions, with an explicit rounding tolerance for the integral translation payload.
+- Confirm successful and canceled completion clear markers, the next sequence starts cleanly, ordinary mouse dragging does not manipulate the rectangle, and an accepted manipulation never generates a fallback click. Exercise the actual XML handlers in generated-C++ and interpreted Workflow consumers using the read-only object-valued `Gesture` property.
+
+4) New `TouchingList` tab in `FullControlTest` besides `Touching`.
+
+This is a text list will big item (item template needed). On top there is "Clear" button to delete everyting, and "Add 5 Items" button to add 5 text items with some lorem ipsum make up content.
+
+Dragging up and down scrolls the list items, this should be automatically happens.
+
+Dragging right nothing happens.
+
+Dragging left will move the item towards left, with the right space filled by red. The red zone will have right aligned label called "DELETE IT". The label will have a reasonable margin, and it defines the maximum space of the red zone. The item should not be dragged more than the maximum red zone. When the sequence ends and the red zone is extended to its maximum space, the item will be deleted in `InvokeInMainThread`, immediate deletion will crash GacUI because following messages still need the alive composition.
+
+The dragging will need to be implement in the list itself, as gesture does not have a "to parent fallback" like `pointSequenceStarted` event.
+
+### DETAILS
+
+- Add the adjacent Misc tab through the existing FullControlTest resource inventory. The page/list owns gesture handling and data mutation; the custom text-item template owns presentation. Fit/wrap each row to the viewport width so there is no enabled horizontal scrollbar competing with swipe handling.
+- Let the list bounds accept the sequence. Use horizontal `ScrollingGesture` for swiping, leaving vertical gestures to the built-in scroll view; selecting manipulation at Started would prevent vertical scrolling. Do not let individual item templates accept the sequence. Remember the initially hit row's data identity from the raw Started event's original hit composition; check that the item belongs to this list. Starting on empty space acquires no deletion target.
+- The custom list handler selects/handles unhandled horizontal gestures. Accumulate reveal width as the negative horizontal movement, clamped to `[0, maximum]`; right-only dragging stays at zero and reversal retracts an existing reveal. Measure maximum from the right-aligned `DELETE IT` label plus padding. Keep the opaque sliding foreground and red background clipped within a stable row slot.
+- Delete exactly once only after successful single-contact completion with the final reveal at maximum. A partial release resets the row. Cancellation or any additional contact resets without deleting, including after maximum reveal was reached; retain raw Action handling to detect the additional Down and raw End handling for the reason/completion, even when the scrolling recognizer has stopped emitting events. Final Up position must contribute before the completion decision.
+- Queue removal with `InvokeInMainThread` using the underlying text-item/view-model identity, never a cached row composition or index. Virtualized templates can disappear and indices can change. Resolve current membership at execution; a prior Clear or removal makes the queued deletion inapplicable, and newly added items must not be deleted. Clear resets swipe presentation/state. Keep the known prohibition on synchronous composition deletion.
+
+### VERIFICATION
+
+- Verify Clear on populated/empty lists and exactly five new items per Add action; add enough items to overflow. Check tab/button names and roles, usable row sizes, wrapped text, label padding, clipping and the measured maximum reveal.
+- Exercise vertical scrolling, right-only movement, partial/full left swipes, reversal, final-Up-only motion, cancellation, a second contact, and starts outside rows. Assert item identity/count as well as the visible red region; full reveal alone must not delete before successful End.
+- Cover Clear/Add before queued removal, deletion of a middle row, and scrolling rows out of view and back. No other row may inherit swipe state or be deleted through a stale index. Capture meaningful rendered frames for partial reveal, reset and deferred removal.
+
+5) Verification and Documentation
+
+Native renderer, remote protocol with native renderer, GacJS, should all verify, but to keep the verification fast, only verify `Touching`, `TouchingList` and list control scrolling, additionally make sure touching on text is fallbacked to mouse so a simple dragging should select some text.
+
+`KB_GacUI_Design_PointInput.md` needs to update to introduce this new architure, emphasis that the extensibility only opens to GacUI maintainers. A complete rewrite is welcome to organize the document in this way and remember this is a page to introduce API and its design:
+- `INativeWindowListener` events, how to implement and how to handle. Mentioning only Windows and remote protocol supports touch experience.
+- Remote protocol, how to send point events in a correct way. Mentioning only Windows and GacJS supports touch experience.
+- How to handle point events in `GuiGraphicsEventReceiver`.
+- List predefined gestures and click fallbacks.
+- Controls that already use gestures.
+
+### DETAILS
+
+- The requested text-selection check changes existing behavior: editable multiline text currently inherits scroll-view point acceptance, and `<GacUI repo>/Test/GacUISrc/UnitTest/TestControls_PointScrolling.cpp` explicitly expects touch dragging to scroll without changing selection. Use the existing rejected-sequence mouse Down/Move/Up path for selectable/editable text content; a deferred click at End cannot implement range selection.
+- Apply this policy at the text-content input area, with lifecycle ownership alongside the handlers maintained by `GuiDocumentCommonInterface::ReplaceMouseArea` in `<GacUI repo>/Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.cpp`. When appropriate for enabled Selectable/Editable content, mark the Started query handled without accepting so enclosing default scroll views cannot claim it. Ensure interception occurs below accepting bounds and is reattached on template changes. Preserve explicit custom acceptance, ViewOnly document scrolling and scrollbar/chrome behavior.
+- Update `<GacUI repo>/.github/KnowledgeBase/KB_GacUI_Design_PointInput.md` in the requested API/design order. Explain routing, selected versus handled, capture/lifetime, coordinate units, cancellation, fixed gesture priority, incremental payload semantics and both mouse fallback paths. Document the native typed variant versus read-only reflected object property, its two boxed payload alternatives and Workflow type checks. Explain that raw Action/End remain available after selection and automatic click candidates replace the old End opt-in. Keep the maintainer-only extension boundary explicit, and distinguish implemented native acquisition from remote forwarding support.
+- This review edits only this task document. The builds, resource generation and runtime checks below belong to later implementation. The broader touch plan does not expand this step into inertia, OS gesture integration, text-selection handles, mobile keyboard support or an unrelated transport/application matrix.
+
+### VERIFICATION
+
+- Follow `<GacUI repo>/Project.md` and the repository build/execution wrappers. After reflection changes, perform the required Debug Win32 and x64 metadata generation plus x64 `Metadata_Test`; regenerate FullControlTest with `GacUI_Compiler`, check error artifacts, repeat the required metadata generation after compiler execution, then rebuild consumers. Run required UnitTest coverage and inspect completed summaries and Debug leak output. Generated code and snapshots must come from their owning tools.
+- Test both payload alternatives and require `GetGesture()` to return their nonempty boxed values. Cover event base conversion, payload-copy behavior and mutation of `selected` on the original arguments in `<GacUI repo>/Test/GacUISrc/UnitTest/TestReflectionTypeList.cpp`. Verify `Gesture` has object type and no setter, and the native `gesture` field is not reflected. Add ordinary compiler-rejection coverage for assigning `Gesture`; there is no runtime invalid-assignment test. Verify actual XML handlers type-check/cast the property in generated C++ without reflection and interpreted Workflow with full reflection; metadata generation alone does not prove either consumer works.
+- Extend the existing focused `-Scenario Touching` in `<GacUI repo>/Test/UIA_CppTest_Shared.cs` to cover TouchingList and text fallback, and run both `<GacUI repo>/Test/UIA_CppTest.ps1` and `<GacUI repo>/Test/UIA_CppTest_Metaonly.ps1`. Keep the requested live checks focused on these pages, list scrolling and text selection.
+- Perform three distinct live runs: standalone native FullControlTest, Core with a native remote renderer, and Core with GacJS. Use the existing setup guides and distinct Core/renderer automation ports. Drive the remote-native run through renderer IO, and the GacJS run through browser touch input/emulation; Core-only injection does not verify browser acquisition/forwarding. Use native automation when desktop injection is unavailable, and label its coverage accurately.
+- In each run check Touching transforms/markers, TouchingList swipe outcomes and list scrolling without accidental selection/activation. Drag selectable/editable text and assert a nonempty changing selection range; repeat inside a surrounding scroll view and after template replacement. Update the old multiline scroll assertion rather than retaining contradictory expectations. Keep a ViewOnly scrolling and scrollbar-start check separate.
+- Record application/renderer, transport, input method and observed state. In the browser verify the outer page stays stationary and release creates no duplicate compatibility click. Distinguish synthetic input from real hardware; unavailable checks remain unverified. During implementation keep authored changes, generated artifacts and snapshots in their prescribed separate commits.
 
 ## REVIEW COMMENTS
 
+### Variant reflection for Workflow handlers
+
+**review comment**: The proposed native `Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>` has no existing reflection mapping in `<GacUI repo>/Import/VlppReflection.h`. Registering `gesture` with the ordinary field macro requires type metadata that this specialization does not have, while both FullControlTest pages need to inspect gesture data from Workflow. The native C++ shape alone therefore does not define a usable XML-facing API. Per the follow-up instruction, leave this unresolved for now.
+
+**suggested solution**: One possible later design is to keep the native variant, register both payload structs, and expose typed nullable read-only properties for the active alternative on `GuiPointGestureEventArgs`. Existing nullable boxing and the event getter bridges in `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionEvents.cpp` provide relevant patterns. This is a proposal for later review, not a selected representation or a request to implement a reflection-library extension now.
+
+actually I have an idea, it looks like GuiPointGestureEventArgs should be a class instead of a struct, so we can actually change the property to object type in reflection only, but in fact such object type will becomes null, *_Scrolling and *_DraggingAndRotation in reality. Assigning values with other type will throw directly. This could be done by adding GetGesture method to GuiPointGestureEventArgs. And we still keep the strong typed `gesture` member exposed in C++, so that C++ code has compile time type check. This will be the most simplist change, just need to document it in `KB_GacUI_Design_PointInput.md`.
+
+**review comment**: Agreed with the object-valued property proposal and the subsequent clarification in chat that it is read-only. The task now specifies `GetGesture()` only, with a native variant containing exactly the two payload types and a boxed copy of the active payload returned to reflection. The subsequent instruction removes the earlier null proposal because it has no valid gesture semantic. The earlier assignment/throw requirement is also superseded; the native field stays strongly typed and writable, while reflection has no setter. This resolves the reflection boundary without adding generic Variant support.
+
+### Gesture-only handlers lack lifecycle and contact information
+
+**review comment**: The proposed gesture arguments contain only a transform and `selected`; the described gestures do not emit a terminal notification. Literal gesture-only consumers cannot retain all current behavior: Touching needs contact IDs/positions for its markers and End/cancellation to clear them; TouchingList needs the initial row and successful-versus-canceled completion; `GuiScrollView::OnPointSequenceEnded` in `<GacUI repo>/Source/Controls/GuiContainerControls.cpp` is currently the only default requester of `fallbackClick`. Removing those hooks would either lose required behavior or change the existing opt-in click policy.
+
+**suggested solution**: Keep minimal raw Started/Action/Ended handlers for acceptance, contact-marker/row bookkeeping and completion, including the existing fallback opt-in, while moving all recognition and manipulation mathematics into the gesture system. If "only pointGesture" is literal, instead specify gesture phase, borrowed contact information and terminal reason, and explicitly decide how click opt-in survives. Resolve that API boundary before implementing the affected consumers.
+
+I believe if any gesture consumer needs to know the end or cancellation, `pointSequenceEnded` still useful for this. I believe in the design above, `pointSequenceEnded` will still shot for a selected gesture. And after this new design, although we have for `GuiControl::OnPoint*` methods, but only `GUiControl::OnPointSequenceStarted` needs to accept, and only `GuiScrollView::OnPointGesture` needs to select and respond to a gesture. What do you think?
+
+**review comment**: Agreed. Selecting a gesture does not replace the raw point lifecycle: Action remains available for contact bookkeeping and End still reports success/cancellation once. The task retains those small sample handlers, keeps automatic acceptance in the base Started hook, and leaves built-in scroll behavior solely in `GuiScrollView::OnPointGesture`. To make that separation complete, the new click candidates replace the old `fallbackClick` opt-in rather than retaining a scroll-view End override; the details and verification now make this policy explicit.
+
 # UPDATES
-
-## UPDATE
-
-a small refactoring: I would like you to restore the inheritance, just simply ignore `handled` when processing `pointSequenceStarted`, it is acceptable, no need to remove `handled` from that event args.
-
-## UPDATE
-
-or you can let GuiControl::OnPointSequenceStarted checks handled and when it is true the acceptedComposition assignment will be skipped, that makes `handled` useful.
-
-## UPDATE
-
-I think this would be a way for a child control to stop a point experience acceptance, which actually adds a feature.
 
 # TEST [CONFIRMED]
 
-Exercise actual point protocol dispatch for ownership, sparse contacts, current conversion, recognition, fallback, and cleanup. Add rendered list and text-box scrolling cases. Verify reflection/resource migration, full required builds and metadata, existing UIA checks, and focused native/GacJS live point scrolling. The earlier task-review sentence records preparation; this investigate repro request executes the implementation.
+Extend the existing ordinary point protocol tests and reflection/compiler tests, plus rendered scrolling and sample verification. First reproduce automatic accepted-sequence click fallback on an accepting surface with no selected gesture. Then verify fixed priority, sticky gesture selection, lifecycle, coordinates and incremental transforms; migrate scroll views, Touching, TouchingList and text fallback. Run the required builds, metadata/resource generators, focused unit tests and three live application paths. The task document's historical review-only note does not limit this investigate repro implementation request.
+
+The baseline Debug x64 solution build succeeded with zero warnings/errors. Removing only the accepting surface's End fallback request reproduces the missing automatic fallback: the protocol test fails at `clicks == 1` in `Point samples use current fractional DPI and hosted window offsets`. The completed Execute.log records the assertion.
 
 # PROPOSALS
-
-The baseline Debug x64 build passed with zero warnings/errors. The new protocol regression in `<GacUI repo>/Test/GacUISrc/UnitTest/TestRemote_GraphicsHost_Mouse.cpp` failed at `actions == 1`: an ordinary scroll view does not accept the first point. Existing source additionally confirms boolean acceptance, bubbling Action/End, and cached logical-coordinate rescaling.
-
-- No.1 Move point ownership and recognition into a host-owned manager. [DENIED]
-- No.2 Restore Started inheritance and let handled suppress default acceptance. [CONFIRMED]
-
-## No.1 Move point ownership and recognition into a host-owned manager
-
-Keep Started dispatch at the graphics host, with sticky first-composition selection. Make Started an independent argument type without handled; preserve Action/End handled behavior. Store canonical screen-space native samples in the manager and rebuild callback coordinates with current conversion. Deliver Action/End directly, recognize only slot zero with a radial threshold and permanent axis lock, and retain an explicit terminal fallback decision. Controls attach persistent adapters; scroll views use the shared recognition and existing range-clamped view APIs. Perform requested mouse clicks after point cleanup using the normal mouse pipeline, preserving independent mouse capture/button bookkeeping. Migrate reflection and XML consumers, regenerate outputs, and verify protocol, rendering and live applications.
-
-### CODE CHANGE
-
-Implemented `GuiPointActionManager` and its source inventories, direct Action/End routing, sticky Started selection without handled, current native conversion, control acceptance/properties/hooks, axis-locked scroll-view movement, and deferred mouse synthesis. Migrated reflected fields/properties and authored Touching/Playground handlers. Added ordinary protocol ownership, recognition, DPI, lifecycle, fallback and reflection coverage, plus rendered list/editor fixtures. Native boolean acceptance and remote wire formats remain unchanged.
-
-The new protocol tests exposed an incorrect empty assignment to `Nullable<NativeMouseButton>`: debugger inspection showed a present Left value after reset despite two Downs. Explicit `Reset()` calls now clear the pending fallback. Multi-contact and terminal-state assertions cover this regression.
-
-The synchronous fallback temporarily uses composition mouse capture without changing native capture, then restores the independent physical composition/button bookkeeping. Regression coverage holds Left or Mouse5 on another composition while tapping and verifies that the later physical Up still reaches its original capture target.
-
-Resource generation found that `Workflow_GenerateEventHandler` recognized the standard `sender`/`arguments` names only through `GuiEventArgs` ancestry. Its type recognition now includes the independent Started query, with an ordinary regression for all three point handler signatures. This preserves existing authored event-handler syntax without reintroducing handled or changing reflection inheritance.
-
-The list fixture uses an explicit item width in a test-only arranger so both axes really overflow. The editor fixture initializes a nonempty first-line selection and resets both scrollbar positions before layout: `SetText` moves the caret, and `SetViewPosition(0)` can return early while a scrollbar is disabled during setup. Ready-frame assertions check the resulting zero view position. Ordinary protocol coverage also checks a fractional-DPI threshold boundary alongside stationary-contact rebasing: eight converted logical units remain unlocked, while ten lock without requesting a click.
-
-### DENIED BY USER
-
-The follow-up rejects only the independent Started argument hierarchy and the requirement to remove inherited `handled`. Keep the implemented ownership, scrolling and fallback behavior. Restore the C++ and reflected `GuiPointEventArgs` base, and ignore `handled` for query traversal while default control acceptance follows No.2. The verification below is the historical result for the original implementation; No.2 records verification of the revised contract.
-
-The original failing protocol regression now passes. The selected composition owns direct Action/End delivery and remains observable through End; mandatory cleanup runs independently of handled/default control behavior. Current native conversion preserves gesture geometry across DPI and window-origin changes. Recognition, scrollbar gating and deferred click eligibility agree with the threshold, axis, timing and multi-contact contracts. Ordinary mouse dispatch supplies normal hover/pressed/click behavior after point cleanup while preserving physical mouse capture.
-
-GacUI_Compiler completed both architectures successfully without remaining resource error artifacts, and all affected consumers were rebuilt. The rebuilt Playground compiled and loaded ResourcePointInput through all nine phases; automation confirmed child-only Action/End delivery, parent acceptance, and clean completion, while UIA exposed the expected inspection controls.
-
-The final Debug Win32 solution build completed with zero warnings/errors, followed by successful metadata generation. Its UnitTest run passed all 188 cases in the 10 selected files with no appended Debug memory-leak report. Both rendered point-scrolling fixtures passed their position, selection, tap and right-button assertions. The existing Raw/Properties compiler snapshots changed only declaration ordering during regeneration; they are retained with the snapshot outputs.
-
-The final Debug x64 solution build completed with zero warnings/errors. Metadata_Generate and Metadata_Test exited successfully, and all four metadata text round trips still match byte for byte. The final x64 UnitTest run passed all 208 cases in the 12 selected files, including the rendered fixtures, with no appended Debug memory-leak report.
-
-Both focused Touching UIA scenarios passed 226 assertions using rebuilt Debug x64 GDI applications. The shared assertions additionally verify captured Touching movement outside its surface, no deferred tab activation, and ordinary ListView point scrolling with preserved selection and bottom clamping. The launcher now strips a UTF-8 BOM before parsing saved project-user XML, and the C# runner initializes its UIA provider before the scenario's new UIA-based coordinate checks.
-
-The native live run used rebuilt Debug x64 CppTest with GDI and automation point commands on the existing List > ListView. A staged run first selected Task, then exercised forward scrolling, reversal within the held contact, horizontal movement/reset, bottom clamping, restoration and a short Reminder tap. Windows Graphics Capture observations and Controls data confirmed rendered movement and scrollbar positions; Task retained its selected blue background through reversal, and the final tap visibly selected Reminder. Results and stage observations are retained in the ignored `<GacUI repo>/Test/Output/LiveNativeListView.json` and `<GacUI repo>/Test/Output/NativeLiveStagesEvidence.json`.
-
-The live GacJS run used visible Chromium, HTTP transport to RemotingTest_Core `/FCT /Http`, and CDP touch emulation through the rendered page. All 18 assertions passed: Touching retains its selected target outside the surface; the existing List > ListView scrolls vertically, reverses within one held contact, clamps at the bottom, returns to the top, scrolls horizontally and restores its position. Selected Task rendering survives the drag, and a later short tap selects Reminder. Browser scroll coordinates stay at zero, the measured touch gestures emit no compatibility mouse/button wire events, and there are no page/protocol errors. Screenshots visibly confirm scrolling and selection. The ignored verifier and evidence are retained under `<GacJS repo>/Gaclib/website/entry/lib/live-touch-*`; no tracked GacJS implementation changes were needed. Verifier corrections accounted for DOM rendering, virtualized rows, and deliberate setup mouse events outside the measured touch intervals.
-
-These live checks used native automation and browser touch emulation; they do not claim physical touch-hardware coverage. Owned test applications and browser processes were stopped, their endpoints were released, and the preexisting IIS server was retained. `<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md` remains unchanged. Source review and whitespace checks pass; authored changes, generated metadata/resources, and unit-test snapshots are kept in separate commits.
-
-## No.2 Restore Started inheritance and let handled suppress default acceptance
-
-Restore `GuiPointSequenceStartedEventArgs` as a `GuiPointEventArgs` subclass in `<GacUI repo>/Source/Application/GraphicsCompositions/GuiGraphicsEventReceiver.h/.cpp`. Delegate constructors to the base with `GuiPointEventsType::Started`, retain only `acceptedComposition` as the new field, and inherit the borrowed list accessor. Restore `CLASS_MEMBER_BASE(GuiPointEventArgs)` in `<GacUI repo>/Source/Reflection/TypeDescriptors/GuiReflectionEvents.cpp`, removing duplicate registrations. Remove the special Started type check in `<GacUI repo>/Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowInstallBindings.cpp`; ordinary `GuiEventArgs` ancestry supplies XML handler parameter names again.
-
-Started dispatch continues through all handlers and ancestors regardless of `handled`, preserving sticky first-composition selection. Following the second update, add `!arguments.handled` to the default acceptance condition in `GuiControl::OnPointSequenceStarted` in `<GacUI repo>/Source/Application/Controls/GuiBasicControls.cpp`. A true value suppresses default acceptance but does not erase an existing selection or prevent a custom handler from explicitly selecting a composition. Extend the existing ordinary protocol test with these cases and a normal unhandled acceptance control. Update reflection assertions for inherited members, base conversion, source initialization and borrowed points. Preserve the no-reflected-constructor rule. Reconcile API comments, `<GacUI repo>/TODO_Touch_Step3.md` and the point-input design guidance.
-
-### CODE CHANGE
-
-Restored the C++ and reflected point-argument base, removed duplicated fields/accessor/registrations and the compiler special case, and added the handled guard to default control acceptance. Extended existing reflection and protocol cases to cover inherited access, continuing delivery, suppression of ancestor defaults, preserved selections and explicit custom acceptance. Updated the API and design/task documentation.
-
-Verify with Debug Win32 and x64 solution builds and selected UnitTest suites, regenerate both metadata architectures and run Metadata_Test through the repository wrappers. Regenerate resource outputs with GacUI_Compiler so serialized Workflow references use the restored reflected base, rebuilding consumers if generated C++ changes. Inspect generated metadata, resources and snapshot differences. The earlier live checks remain historical; this focused hierarchy refactor is covered by the existing routing, scrolling, reflection and handler-generation regressions.
-
-### CONFIRMED
-
-Both Debug solution builds succeeded with zero warnings and errors. The Win32 UnitTest run passed 188/188 cases in 10/10 selected files; x64 passed 208/208 cases in 12/12 selected files. Neither run appended a Debug memory-leak report. The extended protocol regression confirms normal unhandled acceptance, continued handlers and ancestor queries after a child sets handled, suppression of automatic ancestor acceptance, preservation of an existing selection, explicit custom acceptance despite handled, and terminal cleanup. Reflection checks confirm inherited access and conversion, default source/handled initialization, borrowed points and conventional XML handler argument names.
-
-Metadata_Generate succeeded for both architectures, and x64 Metadata_Test succeeded. All four metadata text round trips match byte for byte. The regenerated descriptors derive Started from GuiPointEventArgs and declare only acceptedComposition locally. With both metadata sets current, the x64 GacUI_Compiler completed its x86 and x64 resource passes successfully. Generated application resources and C++ have no tracked changes, and no resource error artifacts remain; no additional consumer rebuild is needed. Unit-test snapshots also remain unchanged. Source review and whitespace checks pass. Keep authored changes and regenerated metadata in separate commits.

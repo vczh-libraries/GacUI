@@ -102,7 +102,6 @@ TEST_FILE
 				TEST_ASSERT(a.position == (a.pointId == 0 ? expectedFirst : expectedSecond));
 				if (a.pointId == 0) TEST_ASSERT(a.contactBounds.Value() == expectedContact);
 			});
-			surface->GetBoundsComposition()->GetEventReceiver()->pointSequenceEnded.AttachLambda([](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& a) { a.fallbackClick = true; });
 			surface->GetBoundsComposition()->GetEventReceiver()->mouseDown.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs& a)
 			{
 				TEST_ASSERT(!surface->GetPointEventComposition());
