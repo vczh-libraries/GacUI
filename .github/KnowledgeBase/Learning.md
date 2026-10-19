@@ -3,21 +3,21 @@
 # Orders
 
 - Verify generated artifacts with downstream consumer checks [32]
-- Proactively remove code made redundant by refactoring [27]
-- Keep design documentation aligned with code after refactoring [26]
+- Keep design documentation aligned with code after refactoring [31]
+- Proactively remove code made redundant by refactoring [30]
 - Process staged tasks one by one with verification [25]
 - Port fixes from imports to source repositories [23]
+- Extract abstractions only for real shared behavior [21]
 - Verify and localize portability on every target OS [20]
-- Extract abstractions only for real shared behavior [17]
 - Crash early instead of adding error-tolerance fallbacks [16]
 - Fix behavior at the owning state instead of patching symptoms [14]
 - Validate expectations against implementation and existing tests [12]
 - Make `Stop()` drain asynchronous work before returning [8]
 - Do not assume async callback owners are heap allocated [5]
+- Treat environment correlation as evidence, not a cause [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [4]
-- Treat environment correlation as evidence, not a cause [4]
 - Don't assume observable changes are batched [3]
 - Use RAII scope cleanup instead of manual catch cleanup [3]
 - Use explicit positive compiler and platform guards [3]
@@ -62,6 +62,8 @@
 - Preserve compiler-generated modules during packaging [1]
 - Validate complete deployment inputs before writing outputs [1]
 - Reuse existing library algorithms before writing local equivalents [1]
+- Derive behavior thresholds from named constants [1]
+- Guard optional Workflow values with explicit conditionals [1]
 
 # Refinements
 
@@ -138,6 +140,8 @@ Keep application-specific choices in the application that owns them. When severa
 When macOS or WebAssembly can reuse most of a Linux implementation, keep the shared implementation in the existing `*.Linux.*` file with explicit positive platform guards and small conditional differences. Delete duplicate platform files and their project/filter registrations; retain separate files for genuinely different implementations such as a browser console bridge.
 
 Move reusable filesystem metadata and metadata-preserving copy operations into the library that owns filesystem abstractions. Keep orchestration-specific process launching in the tool. Represent unavailable platform timestamps explicitly, and reuse normalized path objects instead of maintaining a second path parser.
+
+When splitting a large state machine, put each genuine behavior in a focused implementation with explicit priority, while the owner keeps shared state and lifetime. Internal extensibility does not require a public registration API. Consumers should receive the result they need rather than inspect the owner's private state machine.
 
 ## Make `Stop()` drain asynchronous work before returning
 
@@ -353,6 +357,8 @@ When retiring a build option, remove its implementation and active configuration
 
 Audit actual consumers before retaining generated diagnostic files after an algorithm replacement. Remove logs that no longer serve generation, deployment or diagnosis instead of preserving them solely because the previous implementation emitted them.
 
+Consolidate shared helper compilation in the existing shared inventory after checking every consumer and portable extraction rule. Remove duplicate direct registrations from consumers that import it, while retaining direct registrations where that inventory is absent. An empty derived class is not automatically redundant: preserve it when its concrete identity selects a distinct factory or renderer registration.
+
 ## Keep design documentation aligned with code after refactoring
 
 When a refactoring changes architecture or behavior, update the corresponding design documents in the same task rather than deferring it. After a structural change, re-read the related documents and reconcile anything that became misaligned (for example, descriptions of a transport path that no longer exists). Treat documentation drift left by a previous refactoring as part of the current cleanup.
@@ -364,6 +370,10 @@ Once a shared behavioral suite already exists, follow-up platform implementation
 Keep API comments and sample handler names synchronized with refactored event signatures and names; mechanically working examples can still teach an obsolete public model.
 
 When a defect or user correction exposes misleading authoring guidance, correct the owning guidance along with the implementation. Keep historical verification records labeled as historical instead of rewriting them to claim that a later behavior was already tested.
+
+Document new command-line switches alongside the application's existing arguments, including which process or backend the switch selects. Do not leave working options discoverable only from implementation or task logs.
+
+Before deleting completed task specifications, move enduring API and design guidance into maintained documents and remove links to the temporary specifications. The maintained documentation and published examples must remain understandable without the deleted task history.
 
 ## Fix behavior at the owning state instead of patching symptoms
 
@@ -390,6 +400,8 @@ When a compiler diagnostic lacks a source location, repair the argument or synta
 When a bug reproduces on one machine but not another, do not assume hardware speed or timing is causal merely because the machines differ. Reproduce the smallest differing state or response shape deterministically, then identify the missing transition or dependency that the other environment happens to mask.
 
 The same standard applies when severe CPU usage coincides with a debugger or terminal session: treat the tool/output feedback path as a hypothesis until resource evidence identifies the consuming process or thread. Do not turn an unobserved incident into a durable application-thread-leak diagnosis.
+
+A snapshot's allocation IDs can differ while every UI object is still created on the UI thread. Trace the actual allocation stacks and callback enqueue order: a background completion can race with independently queued UI layout work without allocating UI objects itself. Reproduce the same difference on one build before attributing it to an operating system, and distinguish an identical rendered tree from a different allocation history.
 
 ## Verify and localize portability on every target OS
 
@@ -490,3 +502,11 @@ Validate every required source artifact and destination prerequisite across the 
 ## Reuse existing library algorithms before writing local equivalents
 
 Use the established library implementation when its contract matches the problem. For dependency ordering, prefer `collections::PartialOrderingProcessor` to a tool-local graph algorithm. Keep only the input mapping and reporting that the application actually needs.
+
+## Derive behavior thresholds from named constants
+
+Express a derived threshold in terms of its named source constant instead of repeating a raw value. For a squared distance comparison, use the named radius multiplied by itself with sufficiently wide arithmetic. Audit related uses together so changing the documented threshold cannot leave another branch on the old literal.
+
+## Guard optional Workflow values with explicit conditionals
+
+Do not use a boolean expression as the only null guard before reading a Workflow object's property. Interpreted Workflow can evaluate both operands, so put the dereference inside an explicit conditional after checking the optional value. Verify the same authored resource through generated C++ and interpreted Workflow; passing only the generated consumer can hide this difference.

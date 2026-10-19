@@ -13,6 +13,7 @@
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
 - Verify GacJS HTTP fatal errors through browser UI [4]
 - Verify `/IO` synchronous errors and queued success separately [4]
+- Keep FullControlTest UIA checks synchronized with showcase changes [4]
 - Caret navigation tests: type markers to expose caret [3]
 - Avoid duplicate tests across related categories [3]
 - Validate imported dependency APIs with GacUI build and unit test [3]
@@ -22,7 +23,6 @@
 - Prefer automation geometry before screenshots for layout verification [3]
 - Verify GitView diffs against real repository states [3]
 - Use remote-protocol snapshots only for useful rendering [3]
-- Keep FullControlTest UIA checks synchronized with showcase changes [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -39,6 +39,8 @@
 - Remote-debugging guides own complete Cartesian test matrices [2]
 - Verify palette refresh through retained state and actual host rendering [2]
 - Verify compiler releases through every tutorial architecture output [2]
+- Treat file-dialog snapshots as scheduling-sensitive contracts [2]
+- Make snapshot fixture inputs independent of the host environment [2]
 - Browser E2E tests must handle localized dialogs and host fixtures [1]
 - Verify GacGen RPC outputs with positive and negative resources [1]
 - Unit tests must own helper-thread and stack-callback lifetimes [1]
@@ -81,7 +83,6 @@
 - Isolate remote cache handoffs with single-response-shape tests [1]
 - MiniHTTP automation probes use IPv4 loopback [1]
 - Verify automation-service ownership changes in every consumer app [1]
-- Treat file-dialog snapshots as scheduling-sensitive contracts [1]
 - Verify renderer-localized shortcut labels in the remoting SOP [1]
 - Regenerate compiler snapshots through UnitTest after XML namespace changes [1]
 - Match native theme regressions to the initialized harness [1]
@@ -91,6 +92,7 @@
 - Cover every XML assignment route when batching loader validation [1]
 - Keep optimized native compile checks for Wasm demos [1]
 - Keep UiaList verification drivers in PowerShell [1]
+- Exercise actual showcase XML in generated and interpreted consumers [1]
 
 # Refinements
 
@@ -509,6 +511,8 @@ Recreate the native and GacJS test-matrix cards from their guide templates befor
 
 When refactoring asynchronous fake-file-dialog work, a passing unit-test summary and clean leak report are insufficient. Compare all tracked file-dialog snapshots byte for byte: moving queue consumption behind UI callbacks or batching submissions can keep functional assertions green while rewriting many snapshots through changed element-allocation and rendering order. Restore those artifacts and reject the refactor unless the scheduling and snapshot migration are explicitly intended.
 
+UI-thread allocation alone does not make renderer IDs deterministic. Deferred tree layout and a worker's file-grid completion can enter the same UI queue in different orders. If deterministic scheduling is required, control mocked worker completion relative to layout and capture in the test harness while preserving asynchronous behavior; sleeps or rendering-idle checks do not establish that ordering. Keep real-worker concurrency coverage separate and verify any intended scheduler change explicitly.
+
 ## Verify renderer-localized shortcut labels in the remoting SOP
 
 Keep exact shortcut-label expectations in `.github/Jobs/DebugRemoteProtocolSop.md` for both FullControlTest and RemoteProtocolTest. Inspect rendered labels after initial connection and renderer replacement, including commands owned by nested controls. The displayed modifier must follow the renderer's `Win`, `Command`, or `Super` label rather than the parser's internal name. Use sample chords that avoid reserved OS shortcuts; a direct event injection does not verify real native global-hot-key activation.
@@ -563,6 +567,8 @@ Honor an explicitly narrowed manual verification scope. For responsive-layout ch
 
 For permanent ViewSizes levels, extend the same four array-length cases to direct/indirect children and both axes. Remove every child, resize while empty, then reattach rows initialized from the group; include synchronous replacement during CurrentLevelChanged and verify no extra notifications. Add direct compact-to-largest-to-compact UI jumps so an intermediate resize cannot hide a missing transition.
 
+For point/gesture changes, use the focused Touching scenario to cover Touching, TouchingList, list scrolling and text selection, including selection after template replacement. Exercise generated native, interpreted Workflow, renderer-side IO and browser acquisition separately where requested. Keep raw lifecycle and identity-safe deferred-removal assertions alongside rendered reveal/reset results. Report synthetic automation, browser pixels and physical hardware as distinct evidence.
+
 ## Verify GitView diffs against real repository states
 
 Use disposable repositories to distinguish staged, working-tree and historical contents in GitView tests. Assert exact source rows, line numbers, colors and context boundaries, including blank lines, large line numbers, missing final newlines, patch-like source text, BOMs and binary files. Construct binary fixtures as bytes and inspect them when Git classifies them unexpectedly; a text writer can invalidate a NUL-based fixture. Complement model assertions with terminal input/output checks of compact layout, splitter movement, scrolling, status wrapping and retained commit details.
@@ -588,3 +594,13 @@ Build each of `Test/Linux/WasmFCT`, `WasmRPT` and `WasmRVMT` with the corrected 
 Maintain `Tools/UiaList/Verification` drivers in PowerShell, sharing wrapper launch, UTF-8 JSON framing, response deadlines, transcript handling and typed assertions in `CliCommon.ps1`. Preserve each driver's independent fixture expectations, exact call counts and coverage when converting languages. When only these scripts change, verify every replacement entry point against the existing binaries; no C++ rebuild or unrelated suite is needed for that script-only update. Keep the verification README focused on current commands and prerequisites without dated headings or prose.
 
 Select one `pwsh` executable when discovery returns several, preserve null at stdout EOF instead of coercing it to an empty line, and open live fixture logs with shared read/write access. Include malformed encoding, pipelined responses, preview/reference lifetime, both hosted and native showcases, and direct serializer cases in the retained driver coverage.
+
+## Make snapshot fixture inputs independent of the host environment
+
+Install environmental mocks before constructing values whose normalization uses them. In the file-dialog harness, compute the initial `FilePath` inside the GUI-main proxy after `FileSystemMock` is installed, then capture the normalized filename by value for asynchronous callbacks. Verify both the requested value and the affected frame/protocol artifacts, and search snapshots for checkout-specific paths instead of accepting host-dependent baselines.
+
+Initialize snapshot-visible dates explicitly before attaching or rendering a date picker; use the requested fixed fixture date rather than changing the production current-date default. Inspect all regenerated artifacts and retain only the intended change. Unrelated calendar or allocation-order drift is not an expected consequence of a filename or theme edit.
+
+## Exercise actual showcase XML in generated and interpreted consumers
+
+Link the actual affected FullControlTest XML into a fast resource fixture instead of recreating its handlers in a simplified test. Run the failing interaction through interpreted Workflow as well as generated C++; metadata generation and native-only success do not prove the same script path works. For touch completion, reproduce the extra-contact reset followed by End before fixing the optional-target access. When a test depends on window movement, assert that the selected host window actually moved before interpreting unchanged coordinates as evidence.

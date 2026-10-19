@@ -13,6 +13,7 @@
 - Remote core accepts replacement renderers by detaching stale renderer [4]
 - `RemotingTest_Core /RVMT` gates singleton channels by startup phase [4]
 - RVM accepted-host loss poisons the requester dispatcher outside locks [4]
+- Preserve the established handler-lifetime rule for point dispatch [4]
 - Automation `/IO` parses synchronously and queues parsed commands [3]
 - `CppTest_Rvm` is a GUI app and stays console-free [3]
 - Omit redundant EazyLayout sample properties and wrappers [3]
@@ -31,6 +32,9 @@
 - Render GitView diffs as numbered source rows [2]
 - Keep GitView commit metadata in the status panel [2]
 - Apply EazyLayout configuration only through BuildLayout [2]
+- Separate raw painters from remote collection attachment [2]
+- Keep item templates focused on rendering [2]
+- Keep point state in a graphics-host helper [2]
 - Nest EazyLayout descriptor groups under one owning layout [1]
 - Use /AsPort for automation with default 8888 [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
@@ -101,14 +105,22 @@
 - Validate EazyLayout initial payloads during XML compilation [1]
 - Use merged DarkSkin sources in Wasm demo inventories [1]
 - Wasm demo startup owns connections and Reload restarts the application [1]
-- Keep item templates focused on rendering [1]
 - Initialize virtual responsive rows before attachment [1]
+- Keep raw factories concrete while inheriting common state [1]
+- Use one discriminated composition point-action event [1]
+- Share typed point fallback while Core owns remote acceptance [1]
+- Preserve Started inheritance and separate handled from acceptance [1]
+- Recompute point coordinates using current native conversion [1]
+- Keep raw point lifecycle independent of gesture recognition [1]
+- Expose typed gesture variants through a read-only reflected value [1]
 
 # Refinements
 
 ## Keep item templates focused on rendering
 
 Control and item templates render data and visual state; the owning window implements selection and menu actions. Reuse the list's selected index and the item template's existing index instead of adding duplicate global selection or index fields. A local observable selected flag can drive menu decoration without moving application logic into the template. Keep a sample's image inventory in its own image-folder resource, following neighboring samples.
+
+For a virtualized swipe-to-delete list, the list owns gesture handling and data mutation while row templates only present reveal state. Queue removal with `InvokeInMainThread` using the underlying item identity, not a cached composition or index. Resolve membership again when the callback executes so Clear, Add or virtualization cannot redirect deletion; reset transient presentation on cancellation or removal.
 
 ## Initialize virtual responsive rows before attachment
 
@@ -592,3 +604,45 @@ In `Test/Linux/Wasm/vmake-common`, compile DarkSkin from its merged `Source/Skin
 ## Wasm demo startup owns connections and Reload restarts the application
 
 `StartApplication` in `Test/RemotingHelpers/RemotingServer/Wasm/WasmNetworkProtocol.cpp` installs the fixed connection set during startup; retain only it and `SendDataToWasmCore` as application exports. The Wasm demos restart the entire application instead of replacing its renderer, so remove dynamic connect/disconnect APIs and takeover state. Enable Reload only after normal Core completion, including RPC finalization, and recreate the module, renderer and view-model host with no retained application state. Keep Reload disabled during startup, operation, canceled Exit and fatal failure.
+
+## Keep raw factories concrete while inheriting common state
+
+Keep `Id`, `Data` and shared behavior in `GuiRawElementBase`, while concrete raw types retain their own construction and renderer registration. The remote Core uses the behavior-free `elements_remoteprotocol::GuiRemoteRawElement` subclass; native managers create their platform subclasses. `IGuiGraphicsResourceManager::CreateRawElement` owns that choice. Removing an empty class is incorrect when its concrete identity selects the renderer. Preserve one element, renderer and owner-composition identity.
+
+## Separate raw painters from remote collection attachment
+
+Keep the single-element Windows painter in `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestRawElement.h` and `.cpp`. The renderer-local `FullControlTestRawElementRemote.h` and `.cpp` own collection subscription and call the single-element attachment API; the common painter should not depend on the remote renderer. Put shared drawing code in the existing shared inventory after checking all consumers, remove duplicate direct entries where that inventory is imported, and keep each implementation compiled exactly once.
+
+Platform ports own their native painters and collection attachments in their platform test support. Do not copy the Windows implementations into a Wayland or Cocoa checkout through synchronization. Keep synchronized application entry hooks upstream and have each platform build select its own native drawing implementation.
+
+## Preserve the established handler-lifetime rule for point dispatch
+
+Point dispatch follows the existing mouse-event lifetime contract: deleting the receiving composition synchronously from its handler is unsupported and can crash. Reuse applicable propagation and capture machinery without inventing a special recovery or ownership scheme for point handlers. Defer application mutations that remove compositions until input dispatch has completed.
+
+## Use one discriminated composition point-action event
+
+Expose Down, Update, Up, Enter and Leave through `GuiGraphicsEventReceiver::pointAction` and `GuiPointEventsType`, keeping Started and End as separate lifecycle events. This reduces consumer handler duplication. Migrate constructors, dispatch, reflection, authored XML, generated consumers and design guidance together. Remove contact containers that only mirror another list, while retaining distinct canonical samples needed for correct coordinate conversion; the borrowed sparse points keep lifted slots empty and remain valid through End callbacks.
+
+## Share typed point fallback while Core owns remote acceptance
+
+Remote renderers acquire the whole GacUI input surface and forward point sequences; Core decides application acceptance and translates rejected input to the first contact's mouse stream. Share typed native dispatch and fallback with automation instead of serializing internal events into automation command strings or duplicating policy in each renderer. Keep rejected-sequence streaming fallback distinct from accepted-sequence deferred clicks, and preserve independent physical mouse state.
+
+## Keep point state in a graphics-host helper
+
+Keep point contact storage, current coordinate conversion and capture in the private `GuiPointActionManager` helper. Split recognition into the fixed internal gesture implementations, with explicit priority and independent state; do not expose an end-user registration API. `GuiGraphicsHost` owns Started selection and mouse synthesis. Controls consume gesture payloads through their ordinary APIs instead of reading manager axis/displacement state; expose only a narrow host capture query when observation is necessary. Remove obsolete external manager access and control-specific recognition state.
+
+## Preserve Started inheritance and separate handled from acceptance
+
+Keep `GuiPointSequenceStartedEventArgs` derived from `GuiPointEventArgs` in C++ and reflection, including inherited `handled`. Started traversal continues through handlers and ancestors regardless of handled; `GuiControl::OnPointSequenceStarted` skips automatic acceptance when handled or when an owner is already selected. The first non-null `acceptedComposition` stays selected. Handled neither clears that owner nor prohibits explicit custom acceptance, so a child can block an ancestor's default point behavior without changing the event hierarchy. Action and End go to the selected target; mandatory cleanup is independent of handled.
+
+## Recompute point coordinates using current native conversion
+
+Retain canonical native samples and derive current payload positions, contact bounds, borrowed point positions and first-contact baselines through `INativeWindow::Convert` and current window/composition offsets. DPI or layout may change during a sequence. Moving a cached logical scale into another class does not correct its stale state; reproject stationary contacts as well as the changed contact, without repeated integer-rescaling drift.
+
+## Keep raw point lifecycle independent of gesture recognition
+
+Selecting a gesture does not replace raw point delivery. Preserve Action for contact bookkeeping and deliver one public End for success or cancellation, including after a recognizer stops offering updates. Keep capture and borrowed contacts alive through End, then clean up before synthesized mouse input. The base control accepts in Started; `GuiScrollView` consumes scrolling only in `OnPointGesture`. Samples may retain small raw handlers for markers, initial row identity and completion. Automatic eligible click recognizers replace the former End fallback opt-in; do not retain an obsolete control End hook just to request a click.
+
+## Expose typed gesture variants through a read-only reflected value
+
+Keep `GuiPointGestureEventArgs::gesture` strongly typed for native C++ and unregistered as a field. Expose its active registered payload through the class's `GetGesture()` as a read-only object-valued `Gesture` property for Workflow type checks and casts. Return a boxed copy and keep this path usable by generated C++ without reflection metadata. The final contract has exactly the scrolling and dragging/rotation alternatives, with no null gesture or setter; do not add generic Variant reflection or multiple nullable properties for this local bridge.
