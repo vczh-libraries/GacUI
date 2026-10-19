@@ -8,8 +8,6 @@
         class TouchingListItem
         {
           prop Text: string = "" {not observe}
-          prop Reveal: int = 0 {}
-          prop Maximum: int = 0 {not observe}
           new (text: string) { Text = text; }
         }
       }
@@ -18,25 +16,34 @@
   <Instance name="TouchingListItemTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TouchingListItemTemplate">
       <ref.Parameter Name="ViewModel" Class="demo::TouchingListItem"/>
+      <ref.Members><![CDATA[
+        prop DragDistance: int = 0 {}
+        func GetMaxDragDistance(): int
+        {
+          return deleteLabel.CachedBounds.x2 - deleteLabel.CachedBounds.x1 + 32;
+        }
+        prop MaxDragDistance: int {GetMaxDragDistance}
+        prop Colors: darkskin::ColorPackage = darkskin::Theme::GetColorPackage() {const, not observe}
+      ]]></ref.Members>
       <TextListItemTemplate ref.Name="self" PreferredMinSize="y:112">
+        <SolidBackground Color-eval="self.Colors.ContentBorder"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:1">
-          <SolidBackground Color="#B82030"/>
+          <Bounds ref.Name="deleteBackground" AlignmentToParent="left:-1 top:0 right:0 bottom:0" Visible-bind="self.DragDistance &gt; 0" PreferredMinSize-bind="{x:self.DragDistance; y:0;}">
+            <SolidBackground Color="#B82030"/>
+          </Bounds>
           <Bounds ref.Name="deleteLabel" MinSizeLimitation="LimitToElement" AlignmentToParent="left:-1 top:0 right:16 bottom:0">
             <SolidLabel Text="DELETE IT" Color="#FFFFFF" Font-bind="self.Font" VerticalAlignment="Center"/>
-            <ev.CachedBoundsChanged-eval><![CDATA[{
-              ViewModel.Maximum = deleteLabel.CachedBounds.x2 - deleteLabel.CachedBounds.x1 + 32;
-            }]]></ev.CachedBoundsChanged-eval>
           </Bounds>
-          <Bounds>
+          <Bounds ref.Name="foreground" AlignmentToParent-bind="{left:self.DragDistance == 0 ? 0 : -1; top:0; right:self.DragDistance == 0 ? 0 : -1; bottom:0;}">
             <att.ExpectedBounds-bind><![CDATA[{
-              x1: -ViewModel.Reveal;
+              x1: -self.DragDistance;
               y1: 0;
-              x2: self.CachedBounds.x2 - self.CachedBounds.x1 - ViewModel.Reveal;
-              y2: self.CachedBounds.y2 - self.CachedBounds.y1 - 1;
+              x2: self.CachedBounds.x2 - self.CachedBounds.x1 - self.DragDistance;
+              y2: 0;
             }]]></att.ExpectedBounds-bind>
-            <SolidBackground Color="#F0F0F0"/>
+            <SolidBackground Color-bind="self.VisuallyEnabled and self.Selected ? self.Colors.ItemBackgroundSelected : self.Colors.ContentBackground"/>
             <Bounds AlignmentToParent="left:16 top:12 right:16 bottom:12">
-              <SolidLabel Text-bind="ViewModel.Text" Color="#202020" Font-bind="self.Font" WrapLine="true" Multiline="true"/>
+              <SolidLabel Text-bind="ViewModel.Text" Color-bind="self.VisuallyEnabled ? self.TextColor : self.Colors.TextDisabled" Font-bind="self.Font" WrapLine="true" Multiline="true"/>
             </Bounds>
           </Bounds>
         </Bounds>
@@ -51,9 +58,18 @@
         var swipeItem: TouchingListItem^ = null;
         var multipleContacts: bool = false;
 
+        func GetSwipeTemplate(): TouchingListItemTemplate*
+        {
+          if (swipeItem is null) { return null; }
+          var index = Items.IndexOf(swipeItem);
+          if (index == -1) { return null; }
+          return cast TouchingListItemTemplate* list.Arranger.GetVisibleStyle(index);
+        }
+
         func ResetSwipe(): void
         {
-          if (swipeItem is not null) { swipeItem.Reveal = 0; }
+          var row = GetSwipeTemplate();
+          if (row is not null) { row.DragDistance = 0; }
           swipeItem = null;
         }
 
@@ -63,7 +79,7 @@
           {
             serial = serial + 1;
             Items.Add(new TouchingListItem^("Item " & cast string serial
-              & " — Lorem ipsum dolor sit amet, consectetur adipiscing elit. Swipe left to reveal DELETE IT; release at full reveal to remove this item."));
+              & " — " & Sys::LoremIpsumSentence(180)));
           }
         }
 
@@ -86,10 +102,11 @@
         func EndSwipe(arguments: GuiPointSequenceEndedEventArgs*): void
         {
           var target = swipeItem;
+          var row = GetSwipeTemplate();
           var remove = false;
-          if (target is not null and not multipleContacts and arguments.reason == PointSequenceEndReason::Succeeded)
+          if (row is not null and not multipleContacts and arguments.reason == PointSequenceEndReason::Succeeded)
           {
-            remove = target.Maximum > 0 and target.Reveal == target.Maximum;
+            remove = row.MaxDragDistance > 0 and row.DragDistance == row.MaxDragDistance;
           }
           ResetSwipe();
           if (remove)
@@ -115,6 +132,9 @@
                 <ev.Clicked-eval><![CDATA[{ self.AddItems(); }]]></ev.Clicked-eval>
               </Button>
             </ez:Left>
+            <ez:Fill>
+              <Label Text="Swipe left fully and release to delete."/>
+            </ez:Fill>
           </ez:Top>
           <ez:Fill>
             <BindableTextList ref.Name="list" env.ItemType="demo::TouchingListItem^" ItemTemplate="demo::TouchingListItemTemplate" HorizontalAlwaysVisible="false">
@@ -139,7 +159,11 @@
                       arguments.handled = true;
                       if (self.swipeItem is not null and not self.multipleContacts)
                       {
-                        self.swipeItem.Reveal = Math::Max(0, Math::Min(self.swipeItem.Maximum, self.swipeItem.Reveal - scrolling.distance));
+                        var row = self.GetSwipeTemplate();
+                        if (row is not null)
+                        {
+                          row.DragDistance = Math::Max(0, Math::Min(row.MaxDragDistance, row.DragDistance - scrolling.distance));
+                        }
                       }
                     }
                   }

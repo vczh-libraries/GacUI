@@ -622,12 +622,33 @@ public static class GacUIShowcaseTests
         Invoke(page, "Clear"); settleItems(); Check(Items(list).Count == 0, "Clear empty list");
         Invoke(page, "Add 5 Items"); settleItems(); Wait(() => Items(list).Count == 5, "Add creates exactly five items");
         Invoke(page, "Add 5 Items"); settleItems(); Wait(() => Items(list).Count == 10, "second Add creates five more identities");
+        var help = Named(page, "Swipe left fully and release to delete.", ControlType.Text).Current.BoundingRectangle;
+        var add = Named(page, "Add 5 Items", ControlType.Button).Current.BoundingRectangle;
+        Check(help.Left > add.Right && help.Top < add.Bottom && help.Bottom > add.Top, "one gesture hint beside Add");
+        var bodies = new HashSet<string>();
+        foreach (var item in Items(list))
+        {
+            var text = item.Current.Name;
+            Check(!text.Contains("Swipe") && !text.Contains("DELETE IT"), "rows contain sample content only");
+            Check(bodies.Add(text.Substring(text.IndexOf('\u2014') + 2)), "lorem ipsum bodies differ");
+        }
         var scroll = Pattern<ScrollPattern>(list, ScrollPattern.Pattern);
         Check(scroll.Current.VerticallyScrollable && !scroll.Current.HorizontallyScrollable, "wrapped rows scroll only vertically");
         scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
         var name = Items(list)[1].Current.Name;
         var label = RenderedCaptionBounds(name);
         Check(label.Height >= 70 && label.Width > 150, "large usable row content");
+        Action<string> closed = description =>
+        {
+            foreach (var node in SnapshotNodes(ControlsSnapshot()))
+            {
+                object element;
+                Check(!node.TryGetValue("element", out element) || !((string)element).Contains("#B82030"), description);
+            }
+        };
+        closed("closed rows never render a red panel");
+        Pattern<SelectionItemPattern>(Items(list)[1], SelectionItemPattern.Pattern).Select();
+        Check(Pattern<SelectionItemPattern>(Items(list)[1], SelectionItemPattern.Pattern).Current.IsSelected, "row selection is exposed");
         double maximum = 0;
         foreach (var node in SnapshotNodes(ControlsSnapshot()))
         {
@@ -660,6 +681,7 @@ public static class GacUIShowcaseTests
         Check(Items(list).Count == 10, "scrolling never resumes after a second contact");
         begin(1005, -width); reveal(width, "full reveal before cancellation");
         Input("!PointCancel:1005,PlatformCanceled"); reveal(0, "cancellation resets presentation");
+        closed("canceled rows hide red completely");
         Check(Items(list).Count == 10, "cancellation retains the identity");
         Test("TouchingList / final Up and deferred middle-row removal");
         PointInput("Down", 1006, label, 180, 25);
@@ -675,6 +697,11 @@ public static class GacUIShowcaseTests
         scroll.SetScrollPercent(ScrollPattern.NoScroll, 100);
         scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
         Wait(() => Math.Abs(RenderedCaptionBounds(remaining).Left - label.Left) <= 1, "recycled row has no inherited reveal");
+        for (int pass = 0; pass < 10; pass++)
+        {
+            scroll.SetScrollPercent(ScrollPattern.NoScroll, pass % 2 == 0 ? 100 : 0);
+            closed("rapidly recycled rows never render red");
+        }
         Invoke(page, "Clear"); settleItems(); Wait(() => Items(list).Count == 0, "Clear after deletion");
         PointInput("Down", 1008, list, 0.8, 0.5);
         PointInput("Update", 1008, list, 0.2, 0.5);

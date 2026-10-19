@@ -3,6 +3,11 @@
 
 using namespace gacui_unittest_template;
 
+namespace vl::reflection::description
+{
+	extern bool LoadDarkSkinTypes();
+}
+
 class PointScrollingItemArranger : public list::FixedHeightItemArranger
 {
 public:
@@ -30,10 +35,30 @@ struct PointSwipeState : Object
 	vint maximum = 0;
 };
 
+void AssertTouchingListNoRed(GuiGraphicsComposition* composition)
+{
+	if (!composition->GetVisible()) return;
+	if (auto background = composition->GetOwnedElement().Cast<GuiSolidBackgroundElement>())
+	{
+		TEST_ASSERT(background->GetColor() != Color(184, 32, 48));
+	}
+	for (auto child : composition->Children())
+	{
+		AssertTouchingListNoRed(child);
+	}
+}
+
 TEST_FILE
 {
 	TEST_CASE(L"TouchingList XML uses identity-based deferred removal")
 	{
+		auto manager = GetGlobalTypeManager();
+		collections::SortedList<WString> originalTypes;
+		for (vint i = 0; i < manager->GetTypeDescriptorCount(); i++)
+		{
+			originalTypes.Add(manager->GetTypeDescriptor(i)->GetTypeName());
+		}
+		TEST_ASSERT(LoadDarkSkinTypes());
 		const auto swipeResource = LR"GacUISrc(
 <Resource>
   <Folder name="Sample" content="Link">../App/FullControlTest/TouchingListTabPage.xml</Folder>
@@ -51,7 +76,8 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 		auto state = Ptr(new PointSwipeState);
-		auto reveal = [=]() { return UnboxValue<vint>(state->target.GetProperty(L"Reveal")); };
+		auto row = [=]() { return state->list->GetArranger()->GetVisibleStyle(1); };
+		auto reveal = [=]() { return UnboxValue<vint>(BoxValue(row()).GetProperty(L"DragDistance")); };
 		GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 		{
 			state->input = Ptr(new PointProtocolInput(protocol->GetEvents(), false));
@@ -59,9 +85,21 @@ TEST_FILE
 			{
 				TEST_ASSERT(state->items->GetCount() == 10);
 				TEST_ASSERT(!state->list->GetHorizontalScroll()->GetEnabled());
+				AssertTouchingListNoRed(state->list->GetArranger()->GetVisibleStyle(1));
 				state->target = state->items->Get(1);
-				state->maximum = UnboxValue<vint>(state->target.GetProperty(L"Maximum"));
+				state->maximum = UnboxValue<vint>(BoxValue(row()).GetProperty(L"MaxDragDistance"));
 				TEST_ASSERT(state->maximum > 32);
+				auto text0 = UnboxValue<WString>(state->items->Get(0).GetProperty(L"Text"));
+				auto text1 = UnboxValue<WString>(state->target.GetProperty(L"Text"));
+				TEST_ASSERT(text0.Sub(9, text0.Length() - 9) != text1.Sub(9, text1.Length() - 9));
+				auto foreground = FindObjectByName<GuiBoundsComposition>(row(), L"foreground");
+				TEST_ASSERT(foreground->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->GetColor() == darkskin::Theme::GetColorPackage().ContentBackground);
+				state->list->SetSelected(1, true);
+			});
+			protocol->OnNextIdleFrame(L"Selected row uses DarkSkin", [=]()
+			{
+				auto foreground = FindObjectByName<GuiBoundsComposition>(row(), L"foreground");
+				TEST_ASSERT(foreground->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->GetColor() == darkskin::Theme::GetColorPackage().ItemBackgroundSelected);
 				state->origin = protocol->LocationOf(state->list->GetArranger()->GetVisibleStyle(1), 0.7, 0.5);
 				// A second contact clears the target; interpreted End must not read its properties.
 				state->input->Start(state->origin);
@@ -75,11 +113,14 @@ TEST_FILE
 			protocol->OnNextIdleFrame(L"Partial red reveal", [=]()
 			{
 				TEST_ASSERT(reveal() == state->maximum / 2 && state->items->GetCount() == 10);
+				auto background = FindObjectByName<GuiBoundsComposition>(row(), L"deleteBackground");
+				TEST_ASSERT(background->GetVisible() && background->GetCachedBounds().Width() == state->maximum / 2);
 				state->input->Up(0, NativePoint(state->origin.x - state->maximum / 2, state->origin.y)); state->input->End();
 			});
 			protocol->OnNextIdleFrame(L"Partial release reset", [=]()
 			{
 				TEST_ASSERT(reveal() == 0 && state->items->GetCount() == 10);
+				AssertTouchingListNoRed(row());
 				state->input->Start(state->origin);
 				state->input->Move(NativePoint(state->origin.x - state->maximum - 100, state->origin.y));
 			});
@@ -104,10 +145,32 @@ TEST_FILE
 			protocol->OnNextIdleFrame(L"Clear and Add before queued removal", [=]()
 			{
 				TEST_ASSERT(state->items->GetCount() == 5 && !state->items->Contains(state->target));
-				for (vint i = 0; i < state->items->GetCount(); i++)
+				AssertTouchingListNoRed(state->list->GetBoundsComposition());
+				state->list->SetViewPosition(Point(0, 10000));
+				AssertTouchingListNoRed(state->list->GetBoundsComposition());
+			});
+			protocol->OnNextIdleFrame(L"Newly realized rows at bottom stay closed", [=]()
+			{
+				AssertTouchingListNoRed(state->list->GetBoundsComposition());
+				for (vint i = 0; i < 20; i++)
 				{
-					TEST_ASSERT(UnboxValue<vint>(state->items->Get(i).GetProperty(L"Reveal")) == 0);
+					state->list->SetViewPosition(Point(0, i % 2 == 0 ? 0 : 10000));
+					AssertTouchingListNoRed(state->list->GetBoundsComposition());
 				}
+				state->list->SetViewPosition(Point(0, 0));
+			});
+			protocol->OnNextIdleFrame(L"Recycled rows at top stay closed", [=]()
+			{
+				TEST_ASSERT(reveal() == 0);
+				AssertTouchingListNoRed(state->list->GetBoundsComposition());
+				state->list->SetEnabled(false);
+			});
+			protocol->OnNextIdleFrame(L"Disabled row uses DarkSkin", [=]()
+			{
+				auto foreground = FindObjectByName<GuiBoundsComposition>(row(), L"foreground");
+				auto colors = darkskin::Theme::GetColorPackage();
+				TEST_ASSERT(foreground->GetOwnedElement().Cast<GuiSolidBackgroundElement>()->GetColor() == colors.ContentBackground);
+				TEST_ASSERT(foreground->Children()[0]->GetOwnedElement().Cast<GuiSolidLabelElement>()->GetColor() == colors.TextDisabled);
 				state->target = Value();
 				state->page = Value();
 				state->items = nullptr;
@@ -126,6 +189,15 @@ TEST_FILE
 		};
 		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 			L"Controls/PointScrolling/TouchingList", L"gacuisrc_unittest::SwipeWindow", swipeResource, installer);
+		// Leave the core-only reflection inventory unchanged for subsequent tests.
+		for (vint i = manager->GetTypeDescriptorCount() - 1; i >= 0; i--)
+		{
+			auto name = manager->GetTypeDescriptor(i)->GetTypeName();
+			if (!originalTypes.Contains(name))
+			{
+				TEST_ASSERT(manager->SetTypeDescriptor(name, nullptr));
+			}
+		}
 	});
 
 	const auto resource = LR"GacUISrc(

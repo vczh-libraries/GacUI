@@ -140,6 +140,7 @@ try {
     await click('Add 5 Items'); await click('Add 5 Items');
     await until(async () => await item(7)!==undefined,'Add actions create new row identities');
     const row=await item(7), left=row.bounds.x1;
+    assert(!(await all()).some(node=>node.element?.startsWith('Background:#B82030,')));
     const deletion=(await all()).find(node=>node.elementText==='DELETE IT' && node.bounds.y1<=row.bounds.y1 && node.bounds.y2>=row.bounds.y2);
     const maximum=deletion.bounds.x2-deletion.bounds.x1+32, half=Math.floor(maximum/2);
     assert(maximum>32 && row.bounds.y2-row.bounds.y1>=70 && row.element.includes('WrapLine'));
@@ -164,6 +165,7 @@ try {
     await until(async()=>(await item(8)).bounds.y1<next.bounds.y1,'TouchingList scrolls vertically');
     await touch('touchStart',[a]); await touch('touchMove',[{...a,y:a.y+300}]); await touch('touchEnd',[]);
     await until(async()=>(await item(8)).bounds.x1===left,'Recycled rows retain no swipe reveal');
+    assert(!(await all()).some(node=>node.element?.startsWith('Background:#B82030,')));
     noCompatibility(swipeStart);
 
     await click('List'); await click('ListView');

@@ -149,6 +149,7 @@ function Test-SwipeAndText {
     $left = [int]$row.bounds.x1
     $x = $left + 180
     $y = [int]$row.bounds.y1 + 25
+    if (@(Controls | Where-Object element -like 'Background:#B82030,*').Count -ne 0) { throw 'Closed rows render red.' }
     $label = @(Controls | Where-Object { $_.elementText -eq 'DELETE IT' -and $_.bounds.y1 -le $row.bounds.y1 -and $_.bounds.y2 -ge $row.bounds.y2 })[0]
     $maximum = [int]($label.bounds.x2 - $label.bounds.x1 + 32)
     if ($maximum -le 32) { throw 'Missing measured deletion label.' }
@@ -193,6 +194,7 @@ function Test-SwipeAndText {
     IO $rendererBase "!PointUpdate:108,$x,$($y+1000)"
     IO $rendererBase "!PointUp:108,$x,$($y+1000)"
     Wait-For { @(Controls | Where-Object elementText -like 'Item 8 *')[0].bounds.x1 -eq $left } 'recycled rows reset'
+    if (@(Controls | Where-Object element -like 'Background:#B82030,*').Count -ne 0) { throw 'Recycled rows render red.' }
     Select-Tab 'Clear'
     Wait-For { @(Controls | Where-Object elementText -like 'Item *').Count -eq 0 } 'Clear after deletion'
     IO $rendererBase "!PointDown:109,$x,$y"
