@@ -37,6 +37,7 @@ TEST_FILE
 		const auto swipeResource = LR"GacUISrc(
 <Resource>
   <Folder name="Sample" content="Link">../App/FullControlTest/TouchingListTabPage.xml</Folder>
+  <Instance name="TouchingSample" content="File">../App/FullControlTest/TouchingTabPage.xml</Instance>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::SwipeWindow" xmlns:demo="demo::*">
       <Window ref.Name="self" Text="TouchingList swipes" ClientSize="x:560 y:400">

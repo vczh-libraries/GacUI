@@ -69,6 +69,13 @@ function Set-Arguments($path,$arguments) {
     [xml]$xml = Get-Content -LiteralPath $path -Raw
     $group = $xml.CreateElement('PropertyGroup',$xml.DocumentElement.NamespaceURI)
     $group.SetAttribute('Condition', '''$(Configuration)|$(Platform)''==''Debug|x64''')
+    foreach ($existing in $xml.DocumentElement.ChildNodes) {
+        if ($existing.Condition -eq $group.Condition) {
+            foreach ($argument in @($existing.ChildNodes | Where-Object LocalName -EQ 'LocalDebuggerCommandArguments')) {
+                $null = $existing.RemoveChild($argument)
+            }
+        }
+    }
     $node = $xml.CreateElement('LocalDebuggerCommandArguments',$xml.DocumentElement.NamespaceURI)
     $node.InnerText = $arguments
     $null = $group.AppendChild($node)

@@ -10,11 +10,11 @@
     var markers: string = "";
     var markerCount: int = 0;
 
-    func Publish(markers: string, count: int): void
+    func Publish(serializedMarkers: string, count: int): void
     {
       touching.Data = (cast string centerX) & "," & (cast string centerY)
         & "," & (cast string axisX) & "," & (cast string axisY)
-        & "," & (cast string count) & markers;
+        & "," & (cast string count) & serializedMarkers;
     }
 
     func UpdatePoints(arguments: GuiPointEventArgs*): void

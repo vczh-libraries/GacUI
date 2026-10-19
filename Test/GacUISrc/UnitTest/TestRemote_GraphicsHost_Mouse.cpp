@@ -79,6 +79,7 @@ TEST_FILE
 		GraphicsHostProtocol protocol;
 		List<WString> eventLogs;
 		GuiWindow* controlHost = nullptr;
+		GuiWindow* pointWindow = nullptr;
 		GuiControl* surface = nullptr;
 		bool manipulate = true, chooseScroll = false;
 		vint actions = 0, ends = 0, clicks = 0, gestures = 0, initialOffers = 0;
@@ -86,10 +87,12 @@ TEST_FILE
 		List<GuiPointGesture_Scrolling> scrolling;
 		protocol.OnNextFrame([&]()
 		{
+			pointWindow = new GuiWindow(theme::ThemeName::CustomFrameWindow);
+			pointWindow->SetClientSize(Size(400, 400));
 			surface = new GuiControl(theme::ThemeName::CustomControl);
 			surface->SetAcceptPointEvents(true);
 			surface->GetBoundsComposition()->SetExpectedBounds(Rect(0, 0, 400, 400));
-			controlHost->GetContainerComposition()->AddChild(surface->GetBoundsComposition());
+			pointWindow->GetContainerComposition()->AddChild(surface->GetBoundsComposition());
 			auto receiver = surface->GetBoundsComposition()->GetEventReceiver();
 			receiver->pointAction.AttachLambda([&](GuiGraphicsComposition*, GuiPointEventArgs& a) { actions++; a.handled = true; });
 			receiver->pointGesture.AttachLambda([&](GuiGraphicsComposition*, GuiPointGestureEventArgs& a)
@@ -131,7 +134,9 @@ TEST_FILE
 				a.handled = true;
 			});
 			receiver->mouseDown.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs&) { clicks++; });
-			controlHost->ForceCalculateSizeImmediately();
+			pointWindow->ShowWithOwner(controlHost);
+			pointWindow->GetNativeWindow()->SetBounds(NativeRect(0, 0, 400, 400));
+			pointWindow->ForceCalculateSizeImmediately();
 		});
 		protocol.OnNextFrame([&]()
 		{
@@ -153,6 +158,7 @@ TEST_FILE
 			auto window = surface->GetBoundsComposition()->GetRelatedGraphicsHost()->GetNativeWindow();
 			auto bounds = window->GetBounds();
 			window->SetBounds(NativeRect(bounds.x1 + 20, bounds.y1 + 30, bounds.x2 + 20, bounds.y2 + 30));
+			TEST_ASSERT(window->GetClientBoundsInScreen().LeftTop() == NativePoint(bounds.x1 + 20, bounds.y1 + 30));
 			input.Move(NativePoint(110, 120)); position(160, 170);
 			window->SetBounds(bounds);
 			input.Down(1, NativePoint(210, 120)); position(160, 170);
@@ -160,6 +166,7 @@ TEST_FILE
 			protocol.GetEvents()->OnControllerScreenUpdated(screen);
 			input.Move(NativePoint(210, 120), 1); position(160, 170);
 			window->SetBounds(NativeRect(bounds.x1 + 20, bounds.y1 + 30, bounds.x2 + 20, bounds.y2 + 30));
+			TEST_ASSERT(window->GetClientBoundsInScreen().LeftTop() == NativePoint(bounds.x1 + 20, bounds.y1 + 30));
 			input.Move(NativePoint(110, 120)); position(160, 170);
 			window->SetBounds(bounds);
 			screen.scalingX = screen.scalingY = 1.0;
@@ -212,6 +219,7 @@ TEST_FILE
 			manipulate = true;
 			input.Start(NativePoint(100, 100)); input.End(0, PointSequenceEndReason::Canceled_PlatformCanceled);
 			TEST_ASSERT(ends == 4 && clicks == 1 && initialOffers == 4 && !surface->GetPointEventComposition());
+			delete pointWindow;
 			controlHost->Hide();
 		});
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
