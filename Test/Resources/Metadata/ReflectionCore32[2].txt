@@ -1423,6 +1423,10 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
+    event pointGesture : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiPointGestureEventArgs*>^;
+    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
+    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
+    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
     event pointSequenceEnded : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiPointSequenceEndedEventArgs*>^;
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
@@ -1634,10 +1638,32 @@ enum presentation::compositions::GuiPointEventsType {
     Update = 2,
 }
 
+class presentation::compositions::GuiPointGestureEventArgs : presentation::compositions::GuiEventArgs {
+    property Gesture : system::Object { get:GetGesture }
+    property selected : system::Boolean;
+
+    function GetGesture() : system::Object;
+
+    constructor () : presentation::compositions::GuiPointGestureEventArgs^;
+    constructor (composition : presentation::compositions::GuiGraphicsComposition*) : presentation::compositions::GuiPointGestureEventArgs^;
+}
+
+@ValueType
+struct presentation::compositions::GuiPointGesture_DraggingAndRotation {
+    property distance : presentation::Point;
+    property rotation : system::Double;
+    property scale : system::Double;
+}
+
+@ValueType
+struct presentation::compositions::GuiPointGesture_Scrolling {
+    property distance : system::Int32;
+    property isVertical : system::Boolean;
+}
+
 class presentation::compositions::GuiPointSequenceEndedEventArgs : presentation::compositions::GuiEventArgs {
     property Points : system::ReadonlyList<presentation::Point?>^ { get:GetPoints }
     property accepted : system::Boolean;
-    property fallbackClick : system::Boolean;
     property reason : presentation::PointSequenceEndReason;
     property sequenceId : system::UInt64;
     property timestamp : system::UInt64;

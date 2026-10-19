@@ -1,4 +1,4 @@
-﻿================================(1/8)================================
+﻿================================(1/9)================================
 module imageloader;
 using presentation::*;
 using presentation::controls::*;
@@ -298,7 +298,7 @@ func LoadListView(root : GuiInstanceRootObject*, callback : (func (ListViewItem^
     }
 }
 
-================================(2/8)================================
+================================(2/9)================================
 module viewmodel;
 using system::*;
 using presentation::*;
@@ -552,7 +552,7 @@ namespace demo
     }
 }
 
-================================(3/8)================================
+================================(3/9)================================
 module Animation;
 using system::*;
 using presentation::*;
@@ -696,7 +696,7 @@ namespace demo
     }
 }
 
-================================(4/8)================================
+================================(4/9)================================
 module ribbonscript;
 using presentation::*;
 
@@ -735,7 +735,7 @@ namespace demo
     }
 }
 
-================================(5/8)================================
+================================(5/9)================================
 module easy_layout_responsive;
 using presentation::*;
 
@@ -882,7 +882,7 @@ namespace demo
     }
 }
 
-================================(6/8)================================
+================================(6/9)================================
 module <localized-strings>demo::StringResource;
 
 namespace demo
@@ -1109,7 +1109,7 @@ namespace demo
     }
 }
 
-================================(7/8)================================
+================================(7/9)================================
 module refresh_viewmodel;
 using system::*;
 using presentation::*;
@@ -1294,12 +1294,78 @@ namespace demo
     }
 }
 
-================================(8/8)================================
+================================(8/9)================================
 module fontHelper;
 using presentation::*;
 
 func ChangeFontSize(oldFont : FontProperties, deltaSize : int) : (FontProperties)
 {
     return {fontFamily : oldFont.fontFamily; size : (oldFont.size + deltaSize); antialias : true;};
+}
+
+================================(9/9)================================
+module touching_list;
+using system::*;
+
+namespace demo
+{
+    class TouchingListItem
+    {
+        @cpp:Private
+        var <prop>Text : string = "";
+
+        func GetText() : (string)
+        {
+            return <prop>Text;
+        }
+
+        func SetText(<value> : string) : (void)
+        {
+            (<prop>Text = <value>);
+        }
+
+        prop Text : string{GetText, SetText}
+
+        @cpp:Private
+        var <prop>Reveal : int = 0;
+
+        func GetReveal() : (int)
+        {
+            return <prop>Reveal;
+        }
+
+        func SetReveal(<value> : int) : (void)
+        {
+            if ((<prop>Reveal != <value>))
+            {
+                (<prop>Reveal = <value>);
+                RevealChanged();
+            }
+        }
+
+        event RevealChanged();
+
+        prop Reveal : int{GetReveal, SetReveal : RevealChanged}
+
+        @cpp:Private
+        var <prop>Maximum : int = 0;
+
+        func GetMaximum() : (int)
+        {
+            return <prop>Maximum;
+        }
+
+        func SetMaximum(<value> : int) : (void)
+        {
+            (<prop>Maximum = <value>);
+        }
+
+        prop Maximum : int{GetMaximum, SetMaximum}
+
+        new (text : string)
+        {
+            (Text = text);
+        }
+    }
 }
 
