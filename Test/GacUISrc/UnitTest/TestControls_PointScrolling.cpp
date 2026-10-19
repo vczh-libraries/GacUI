@@ -63,6 +63,12 @@ TEST_FILE
 				state->maximum = UnboxValue<vint>(state->target.GetProperty(L"Maximum"));
 				TEST_ASSERT(state->maximum > 32);
 				state->origin = protocol->LocationOf(state->list->GetArranger()->GetVisibleStyle(1), 0.7, 0.5);
+				// A second contact clears the target; interpreted End must not read its properties.
+				state->input->Start(state->origin);
+				state->input->Down(1, NativePoint(state->origin.x + 20, state->origin.y));
+				state->input->Up(1, NativePoint(state->origin.x + 20, state->origin.y));
+				state->input->Up(0, state->origin); state->input->End();
+				TEST_ASSERT(reveal() == 0 && state->items->GetCount() == 10);
 				state->input->Start(state->origin);
 				state->input->Move(NativePoint(state->origin.x - state->maximum / 2, state->origin.y));
 			});

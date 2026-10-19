@@ -86,9 +86,11 @@
         func EndSwipe(arguments: GuiPointSequenceEndedEventArgs*): void
         {
           var target = swipeItem;
-          var remove = target is not null and not multipleContacts
-            and arguments.reason == PointSequenceEndReason::Succeeded
-            and target.Maximum > 0 and target.Reveal == target.Maximum;
+          var remove = false;
+          if (target is not null and not multipleContacts and arguments.reason == PointSequenceEndReason::Succeeded)
+          {
+            remove = target.Maximum > 0 and target.Reveal == target.Maximum;
+          }
           ResetSwipe();
           if (remove)
           {

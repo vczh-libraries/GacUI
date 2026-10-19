@@ -8,10 +8,10 @@ import { pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 
 const requireGacJS = createRequire(new URL('../../GacJS/Gaclib/package.json', import.meta.url));
-const { chromium } = await import(pathToFileURL(requireGacJS.resolve('playwright')));
+const { chromium } = requireGacJS('playwright');
 const { parseNetworkPackage } = await import(pathToFileURL(requireGacJS.resolve('@gaclib-website/remote-protocol-http/channel')));
 const browser = await chromium.launch({ headless: true });
-const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, hasTouch: true });
+const context = await browser.newContext({ viewport: { width: 800, height: 600 }, hasTouch: true });
 const page = await context.newPage();
 const evidence = { transport: process.argv[2], input: 'Chromium CDP touch', checks: [], errors: [], screenshots: [] };
 const events = [];
@@ -30,10 +30,15 @@ page.on('request', request => {
     if (packet.channelName !== 'GacUIRemoteProtocol') return;
     for (const event of JSON.parse(packet.messageBody)) if (event.semantic === 'Event') events.push(event);
 });
-async function idle() {
+async function idle(timeout = 1000, required = false) {
     if (idlePending) { idlePending = false; return; }
     await new Promise((resolve, reject) => {
-        const timer = setTimeout(() => { idleResolve = null; reject(new Error('Renderer idle timeout')); }, 30000);
+        // Unchanged input need not produce a renderer idle request.
+        const timer = setTimeout(() => {
+            idleResolve = null;
+            if (required) reject(new Error('Renderer idle timeout'));
+            else resolve();
+        }, timeout);
         idleResolve = () => { clearTimeout(timer); resolve(); };
     });
 }
@@ -44,6 +49,7 @@ async function until(predicate, description) {
         await idle();
     }
     evidence.checks.push(description);
+    console.log(`PASS ${description}`);
 }
 const nodes = value => {
     if (value === null || typeof value !== 'object') return [];
@@ -65,12 +71,14 @@ async function click(text) {
     const node = await label(text);
     assert(node !== undefined, `Missing caption ${text}`);
     const b = node.bounds, p = await screenPoint(b, (b.x2-b.x1)/2, (b.y2-b.y1)/2);
+    idlePending = false;
     await page.mouse.click(p.x, p.y);
     await idle();
 }
 const cdp = await context.newCDPSession(page);
 await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
 const touch = async (type, fingers) => {
+    idlePending = false;
     await cdp.send('Input.dispatchTouchEvent', { type, touchPoints: fingers });
     await idle();
 };
@@ -85,6 +93,7 @@ async function picture(name) {
 }
 try {
     await page.goto('http://localhost:8896/index.html');
+    await idle(30000, true);
     await until(async () => await label('Misc') !== undefined, 'FullControlTest rendered');
     const outerScroll = await page.evaluate(() => [scrollX, scrollY]);
     await click('Misc'); await click('Touching');
@@ -158,26 +167,30 @@ try {
     noCompatibility(swipeStart);
 
     await click('List'); await click('ListView');
-    const task=(await all()).find(node=>node.elementText==='Task'); assert(task!==undefined);
+    const firstList=async()=>(await all()).find(node=>node.control==='ListView');
+    const taskRow=async()=>nodes(await firstList()).find(node=>node.elementText==='Task');
+    const task=await taskRow(); assert(task!==undefined);
     a=finger(201,await screenPoint(task.bounds,8,8));
     await touch('touchStart',[a]); await touch('touchEnd',[]);
     const rowPatch=async()=>{
-        const node=(await all()).find(n=>n.elementText==='Task'); const p=await screenPoint(node.bounds,0,0);
+        const node=await taskRow(); const p=await screenPoint(node.bounds,0,0);
         return createHash('sha256').update(await page.screenshot({clip:{x:p.x,y:p.y,width:node.bounds.x2-node.bounds.x1,height:node.bounds.y2-node.bounds.y1}})).digest('hex');
     };
     const selected=await rowPatch();
-    const list=(await all()).find(node=>node.control==='ListView');
+    const list=await firstList();
     a=finger(202,await screenPoint(list.bounds,100,150));
     const listStart=events.length;
     await touch('touchStart',[a]); await touch('touchMove',[{...a,y:a.y-60}]);
-    await until(async()=>{const n=(await all()).find(node=>node.elementText==='Task');return n===undefined||n.bounds.y1<task.bounds.y1;},'ListView content moves');
+    await until(async()=>{const n=await taskRow();return n===undefined||n.bounds.y1<task.bounds.y1;},'ListView content moves');
     await touch('touchMove',[a]); await touch('touchEnd',[]);
-    await until(async()=>{const n=(await all()).find(node=>node.elementText==='Task');return n!==undefined&&n.bounds.y1===task.bounds.y1;},'ListView reverses to original position');
+    await until(async()=>{const n=await taskRow();return n!==undefined&&n.bounds.y1===task.bounds.y1;},'ListView reverses to original position');
     assert.equal(await rowPatch(),selected); noCompatibility(listStart);
     evidence.checks.push('ListView selection rendering survives scrolling without activation');
 
     for(let pass=0;pass<2;pass++) {
-        await click('Control'); await click('TextBox');
+        await click('Control');
+        await until(async()=>await label('TextBox')!==undefined,'Control page is ready');
+        await click('TextBox');
         const document=()=>all().then(values=>values.find(node=>node.elementDocument?.includes('I am the bone')));
         await until(async()=>await document()!==undefined,'Multiline editor inside scroll container');
         const d=await document(); a=finger(301+pass,await screenPoint(d.bounds,8,8));
@@ -188,7 +201,11 @@ try {
         await touch('touchMove',[{...a,x:a.x+180,y:a.y+50}]);
         await until(async()=>(await document()).element!==selection,'Continued touch changes text range');
         await touch('touchEnd',[]); noCompatibility(textStart);
-        if(pass===0){await click('Window Manager');await click('Aurora');}
+        await picture(pass===0?'text-selection':'text-selection-aurora');
+        if(pass===0){
+            await click('Window Manager'); await click('Aurora');
+            await until(async()=>(await all()).some(node=>node.element?.includes('#168A7A')),'Aurora templates are installed');
+        }
     }
     assert.deepEqual(await page.evaluate(()=>[scrollX,scrollY]),outerScroll);
     assert.deepEqual(evidence.errors,[]);

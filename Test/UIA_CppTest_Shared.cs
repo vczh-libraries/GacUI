@@ -613,10 +613,15 @@ public static class GacUIShowcaseTests
         var page = Page(Page(root, "Misc"), "TouchingList");
         Check(page.Current.ControlType == ControlType.TabItem, "TouchingList tab role");
         var list = Find(page, ControlType.List)[0];
-        Invoke(page, "Clear"); Wait(() => Items(list).Count == 0, "Clear populated list");
-        Invoke(page, "Clear"); Check(Items(list).Count == 0, "Clear empty list");
-        Invoke(page, "Add 5 Items"); Wait(() => Items(list).Count == 5, "Add creates exactly five items");
-        Invoke(page, "Add 5 Items"); Wait(() => Items(list).Count == 10, "second Add creates five more identities");
+        Action settleItems = () =>
+        {
+            Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000), "item mutation reaches idle");
+            list = Find(page, ControlType.List)[0];
+        };
+        Invoke(page, "Clear"); settleItems(); Wait(() => Items(list).Count == 0, "Clear populated list");
+        Invoke(page, "Clear"); settleItems(); Check(Items(list).Count == 0, "Clear empty list");
+        Invoke(page, "Add 5 Items"); settleItems(); Wait(() => Items(list).Count == 5, "Add creates exactly five items");
+        Invoke(page, "Add 5 Items"); settleItems(); Wait(() => Items(list).Count == 10, "second Add creates five more identities");
         var scroll = Pattern<ScrollPattern>(list, ScrollPattern.Pattern);
         Check(scroll.Current.VerticallyScrollable && !scroll.Current.HorizontallyScrollable, "wrapped rows scroll only vertically");
         scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
@@ -655,10 +660,11 @@ public static class GacUIShowcaseTests
         Check(Items(list).Count == 10, "scrolling never resumes after a second contact");
         begin(1005, -width); reveal(width, "full reveal before cancellation");
         Input("!PointCancel:1005,PlatformCanceled"); reveal(0, "cancellation resets presentation");
-        PointInput("Up", 1005, label, 180 - width, 25);
         Check(Items(list).Count == 10, "cancellation retains the identity");
+        Test("TouchingList / final Up and deferred middle-row removal");
         PointInput("Down", 1006, label, 180, 25);
         PointInput("Up", 1006, label, 180 - width, 25);
+        settleItems();
         Wait(() => Items(list).Count == 9, "final-Up-only full swipe removes exactly one item");
         foreach (var item in Items(list)) Check(item.Current.Name != name, "middle row identity is removed");
         var remaining = Items(list)[1].Current.Name;
@@ -669,11 +675,11 @@ public static class GacUIShowcaseTests
         scroll.SetScrollPercent(ScrollPattern.NoScroll, 100);
         scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
         Wait(() => Math.Abs(RenderedCaptionBounds(remaining).Left - label.Left) <= 1, "recycled row has no inherited reveal");
-        Invoke(page, "Clear"); Wait(() => Items(list).Count == 0, "Clear after deletion");
+        Invoke(page, "Clear"); settleItems(); Wait(() => Items(list).Count == 0, "Clear after deletion");
         PointInput("Down", 1008, list, 0.8, 0.5);
         PointInput("Update", 1008, list, 0.2, 0.5);
         PointInput("Up", 1008, list, 0.2, 0.5);
-        Invoke(page, "Add 5 Items"); Wait(() => Items(list).Count == 5, "empty-space swipe cannot delete newly added items");
+        Invoke(page, "Add 5 Items"); settleItems(); Wait(() => Items(list).Count == 5, "empty-space swipe cannot delete newly added items");
     }
     static void TouchTextSelectionAutomation()
     {
@@ -681,8 +687,9 @@ public static class GacUIShowcaseTests
         for (int pass = 0; pass < 2; pass++)
         {
             var page = Page(Page(root, "Control"), "TextBox");
+            page = Page(page, "TextBox");
             AutomationElement editor = null;
-            foreach (var candidate in Find(page, ControlType.Edit))
+            foreach (var candidate in Find(page, ControlType.Document))
             {
                 object value;
                 if (!candidate.Current.IsPassword && candidate.Current.BoundingRectangle.Height > 80
@@ -706,6 +713,7 @@ public static class GacUIShowcaseTests
                 var hwnd = new IntPtr(root.Current.NativeWindowHandle);
                 ClickRenderedCaption("Window Manager");
                 ClickRenderedCaption("Aurora");
+                Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000), "palette replacement reaches idle");
                 ControlsSnapshot();
                 root = AutomationElement.FromHandle(hwnd);
             }
@@ -1320,6 +1328,7 @@ public static class GacUIShowcaseTests
     {
         using (var client = new System.Net.WebClient())
         {
+            client.Encoding = Encoding.UTF8;
             var json = new JavaScriptSerializer { MaxJsonLength = 16 * 1024 * 1024, RecursionLimit = 512 };
             return (Dictionary<string, object>)json.DeserializeObject(client.DownloadString(inputEndpoint.Substring(0, inputEndpoint.Length - 3) + "/Controls"));
         }

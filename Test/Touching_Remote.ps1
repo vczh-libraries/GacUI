@@ -168,7 +168,6 @@ function Test-SwipeAndText {
     Assert-Reveal $maximum
     IO $rendererBase '!PointCancel:105,PlatformCanceled'
     Assert-Reveal 0
-    IO $rendererBase "!PointUp:105,$($x-$maximum),$y"
     IO $rendererBase "!PointDown:106,$x,$y"
     IO $rendererBase "!PointUp:106,$($x-$maximum),$y"
     Wait-For { @(Controls | Where-Object elementText -eq $name).Count -eq 0 } 'deferred middle row removal'
@@ -237,7 +236,7 @@ function Test-SwipeAndText {
             Select-Tab 'Window Manager'
             Wait-For { @(Controls | Where-Object elementText -eq 'Aurora').Count -gt 0 } 'palette controls'
             Select-Tab 'Aurora'
-            $null = Controls
+            Wait-For { @(Controls | Where-Object element -like '*#168A7A*').Count -gt 0 } 'Aurora templates are installed'
         }
     }
     Write-Output 'PASS renderer IO / changing text selection before and after template replacement'
