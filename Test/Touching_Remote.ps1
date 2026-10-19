@@ -16,6 +16,10 @@ $rendererOriginal = [IO.File]::ReadAllBytes($rendererUser)
 $coreBase = 'http://localhost:8888/Automation/RemotingTest_Core'
 $rendererBase = 'http://localhost:8889/Automation/RemotingTest_Rendering_Native'
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
+Add-Type -AssemblyName System.Web.Extensions
+$controlsJson = [System.Web.Script.Serialization.JavaScriptSerializer]::new()
+$controlsJson.MaxJsonLength = 16 * 1024 * 1024
+$controlsJson.RecursionLimit = 512
 Add-Type -ReferencedAssemblies System.Drawing @'
 using System;
 using System.Text;
@@ -99,9 +103,17 @@ function Start-Wrapped($name) {
 function Nodes($value) {
     if($null -eq $value) {return}
     if($value -is [Array]) {foreach($child in $value){Nodes $child};return}
+    if($value -is [Collections.IDictionary]) {$value;foreach($child in $value.Values){Nodes $child};return}
     if($value -is [pscustomobject]) {$value;foreach($property in $value.PSObject.Properties){Nodes $property.Value}}
 }
-function Controls {Nodes (Invoke-RestMethod "$coreBase/Controls" -TimeoutSec 10)}
+function Controls {
+    # Windows PowerShell's REST parser returns a string for deeply nested control trees.
+    $client = [Net.WebClient]::new()
+    $client.Encoding = [Text.Encoding]::UTF8
+    $snapshot = $client.DownloadString("$coreBase/Controls")
+    $client.Dispose()
+    Nodes ($controlsJson.DeserializeObject($snapshot))
+}
 function Find-Raw { @(Controls | Where-Object elementId -eq 'FullControlTest.Touching')[0] }
 function State { [double[]]((Find-Raw).elementData.Split(',') | ForEach-Object {[double]::Parse($_,[Globalization.CultureInfo]::InvariantCulture)}) }
 function IO($endpoint,$command) {
@@ -196,12 +208,17 @@ function Test-SwipeAndText {
     $list = @(Controls | Where-Object control -eq 'ListView')[0]
     $task = @(Nodes $list | Where-Object elementText -eq 'Task')[0]
     $tx=[int]$task.bounds.x1+8; $ty=[int]$task.bounds.y1+8
-    IO $rendererBase "!PointDown:120,$tx,$ty"
-    IO $rendererBase "!PointUp:120,$tx,$ty"
     function List-Rendering {
         $current = @(Controls | Where-Object control -eq 'ListView')[0]
-        (Nodes $current | Where-Object element | ForEach-Object { "$($_.element)|$($_.elementText)" }) -join "`n"
+        # Virtualization reorders composition children; compare their rendered positions and content.
+        (Nodes $current | Where-Object element | ForEach-Object {
+            "$($_.bounds.x1),$($_.bounds.y1),$($_.bounds.x2),$($_.bounds.y2)|$($_.element)|$($_.elementText)"
+        } | Sort-Object) -join "`n"
     }
+    $unselectedRendering = List-Rendering
+    IO $rendererBase "!PointDown:120,$tx,$ty"
+    IO $rendererBase "!PointUp:120,$tx,$ty"
+    Wait-For { (List-Rendering) -ne $unselectedRendering } 'tap selects ListView row'
     $beforeRendering = List-Rendering
     $lx=[int]$list.bounds.x1+100; $ly=[int]$list.bounds.y1+150
     IO $rendererBase "!PointDown:121,$lx,$ly"
@@ -216,6 +233,7 @@ function Test-SwipeAndText {
     Write-Output 'PASS renderer IO / ordinary ListView scrolling and selection rendering'
 
     for ($pass=0; $pass -lt 2; $pass++) {
+        Write-Output "TEST renderer IO / text selection pass $pass"
         Select-Tab 'Control'
         Wait-For { @(Controls | Where-Object elementText -eq 'TextBox').Count -gt 0 } 'Control page'
         Select-Tab 'TextBox'
