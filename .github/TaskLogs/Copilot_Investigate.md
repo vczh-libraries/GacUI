@@ -229,3 +229,15 @@ Extend the existing ordinary point protocol tests and reflection/compiler tests,
 The baseline Debug x64 solution build succeeded with zero warnings/errors. Removing only the accepting surface's End fallback request reproduces the missing automatic fallback: the protocol test fails at `clicks == 1` in `Point samples use current fractional DPI and hosted window offsets`. The completed Execute.log records the assertion.
 
 # PROPOSALS
+
+- No.1 Separate fixed gesture recognizers from point routing and migrate consumers.
+
+## No.1 Separate fixed gesture recognizers from point routing and migrate consumers
+
+Keep canonical native screen contacts, conversion and capture in the private graphics-host manager. Give Started its own temporary query list; initialize accepted state and capture before the four recognizers run. Fixed priority is RightClick, LeftClick, Scrolling, DraggingAndRotation. Each recognizer owns its eligibility and selection state. Selection is sticky within event dispatch and throughout a sequence; raw Action and exactly one public End remain independent. Automatic eligible clicks are read after End and synthesized after cleanup. Scrolling emits incremental locked-axis movement and permanently stops after another Down. Manipulation reprojects native baselines using current conversion, rebases membership and degenerate samples, and rounds translation half away from zero while carrying the transformed fractional residual.
+
+Add the typed two-alternative gesture event and its read-only object-valued reflection bridge. Replace scroll-view manager access with OnPointGesture and expose only the host's capture query for control observation. Migrate Touching recognition into the shared recognizer. Add an adjacent TouchingList with list-owned horizontal swipes, presentation-only virtual rows and identity-based queued removal. Put rejected-sequence text selection on the document mouse area, retaining template replacement ownership and ViewOnly scrolling.
+
+### CODE CHANGE
+
+Implementation pending. Extend ordinary protocol tests for priority, selection, cancellation, final samples, current conversion, manipulation and fallback; update reflection/compiler rejection coverage and useful rendered fixtures. Regenerate metadata and resources through their owning tools, verify generated-C++ and interpreted handlers, and run focused native, remote-native and GacJS scenarios. Rewrite the point-input API/design guidance and retain separate authored, generated and snapshot commits.
