@@ -230,7 +230,7 @@ The baseline Debug x64 solution build succeeded with zero warnings/errors. Remov
 
 # PROPOSALS
 
-- No.1 Separate fixed gesture recognizers from point routing and migrate consumers.
+- No.1 Separate fixed gesture recognizers from point routing and migrate consumers. [CONFIRMED]
 
 ## No.1 Separate fixed gesture recognizers from point routing and migrate consumers
 
@@ -256,4 +256,24 @@ Ordinary Direct2D CppTest_Metaonly also passes all 404 assertions and normal shu
 
 The added linked-XML regression reproduces that exact exception before the conditional fix and passes afterwards; the complete focused x64 run again passes 245/245 cases without leak output. The Chromium CDP touch run over HTTP now completes successfully with normal Core shutdown. It verifies transforms and marker pixels, partial/reset/deleted swipe frames, row identity and vertical scrolling, selection rendering across ListView scrolling, and changing text ranges before and after Aurora template replacement. It observes no outgoing compatibility mouse/button events during touch and no outer-page scrolling. Reviewed browser captures show wrapped text, a clipped red reveal, restored foreground, the correct replacement row and selected text in the new palette. Harness corrections scope the Task row to the first of the two ListViews, use an overflowing viewport, and wait for observable page/palette state after asynchronous navigation.
 
-GacUI_Host Debug Win32, loading the regenerated interpreted Workflow resource, passes all 404 focused assertions and shuts down normally. The HTTP Direct2D remote-native run also passes through renderer IO, including transforms/markers, TouchingList, ordinary ListView selection and scrolling, changing text selection before/after Aurora replacement, renderer state forwarding and normal shutdown. Its harness now explicitly decodes UTF-8 and parses deep control trees with JavaScriptSerializer: Windows PowerShell's REST parser returned the Control page as a string. List selection comparisons use sorted rendered positions and content because virtualization reorders composition children. Native PrintWindow capture returned black pixels in this desktop session and remains unverified; protocol state and browser pixels are verified. All input in these runs is synthetic automation or Chromium CDP touch, not physical touch hardware. Final resource generation and the post-generation build/metadata sequence are still running.
+GacUI_Host Debug Win32, loading the regenerated interpreted Workflow resource, passes all 404 focused assertions and shuts down normally. The HTTP Direct2D remote-native run also passes through renderer IO, including transforms/markers, TouchingList, ordinary ListView selection and scrolling, changing text selection before/after Aurora replacement, renderer state forwarding and normal shutdown. Its harness now explicitly decodes UTF-8 and parses deep control trees with JavaScriptSerializer: Windows PowerShell's REST parser returned the Control page as a string. List selection comparisons use sorted rendered positions and content because virtualization reorders composition children. Native PrintWindow capture returned black pixels in this desktop session and remains unverified; protocol state and browser pixels are verified. All input in these runs is synthetic automation or Chromium CDP touch, not physical touch hardware.
+
+### CONFIRMED
+
+The original accepting-surface regression now receives its automatic eligible click without an End opt-in. Fixed recognizers own their state and priority while the host retains contacts, conversion and capture. Protocol tests confirm sticky selection, exactly one public End, cleanup before fallback, click thresholds and timing, incremental scrolling, multi-contact disqualification, manipulation rebasing and current-coordinate conversion. Reflection and compiler tests confirm the two boxed payload alternatives, copy semantics, writable selection and read-only object-valued Gesture. The linked actual sample XML reproduces and fixes the interpreted null-target completion failure.
+
+Final GacUI_Compiler execution completed successfully for both architectures. Scanning for both singular and plural UI error artifact names found none. The required post-generation sequence completed: Debug Win32 build, Win32 Metadata_Generate, Debug x64 build, x64 Metadata_Generate, x64 Metadata_Test and a final x64 consumer build. All completed Build.log summaries report zero warnings and errors. The completed Execute.log summaries and Debug leak tails confirm:
+
+| Verification | Result |
+| --- | --- |
+| Debug Win32 focused UnitTest | 11/11 files, 225/225 cases; no leak output |
+| Debug x64 focused UnitTest | 13/13 files, 245/245 cases; no leak output |
+| Rebuilt hosted Direct2D CppTest, generated C++ without reflection | 404 assertions; normal close and endpoint release |
+| Rebuilt ordinary Direct2D CppTest_Metaonly | 404 assertions; normal close and endpoint release |
+| GacUI_Host Debug Win32, regenerated interpreted Workflow | 404 assertions; normal close and endpoint release |
+| HTTP Core with Direct2D native renderer, renderer IO input | Touching, TouchingList, list scrolling, changing text selection before/after template replacement, forwarding and shutdown passed |
+| HTTP Core with GacJS, Chromium CDP touch input | The same focused behaviors plus rendered pixels, stationary outer page and absence of compatibility mouse/button events passed; no page errors; normal Core shutdown |
+
+The three live paths establish the requested application, forwarding and browser-acquisition behavior. Text ranges change inside the surrounding scroll container and after Aurora template replacement; separate unit coverage retains ViewOnly scrolling, scrollbar starts and explicit custom acceptance. Useful snapshots record partial reveal, reset, full reveal before End, deferred middle-row deletion, Clear/Add identity safety, list scrolling and text selection. Browser captures were visually reviewed for clipping, wrapped text, row replacement and selected text.
+
+Physical touch hardware and native desktop pixels remain unverified in this session. Native automation and renderer IO are synthetic input; the black PrintWindow image is not counted as a visual pass. Browser pixel checks and protocol rendering snapshots provide the verified visual evidence. No GacJS production changes were needed. Review found no remaining external manager dependency or old fallback opt-in use. Authored changes, owning-tool-generated resources/metadata and unit snapshots are preserved in separate commits, all pushed to master.
