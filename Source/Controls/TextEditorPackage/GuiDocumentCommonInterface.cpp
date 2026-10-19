@@ -327,11 +327,13 @@ GuiDocumentCommonInterface
 					documentMouseArea->GetEventReceiver()->mouseDown.Detach(onMouseDownHandler);
 					documentMouseArea->GetEventReceiver()->mouseUp.Detach(onMouseUpHandler);
 					documentMouseArea->GetEventReceiver()->mouseLeave.Detach(onMouseLeaveHandler);
+					documentMouseArea->GetEventReceiver()->pointSequenceStarted.Detach(onPointSequenceStartedHandler);
 
 					onMouseMoveHandler = nullptr;
 					onMouseDownHandler = nullptr;
 					onMouseUpHandler = nullptr;
 					onMouseLeaveHandler = nullptr;
+					onPointSequenceStartedHandler = nullptr;
 				}
 				documentMouseArea = _mouseArea;
 				if (documentMouseArea)
@@ -345,6 +347,15 @@ GuiDocumentCommonInterface
 					onMouseDownHandler = documentMouseArea->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseDown);
 					onMouseUpHandler = documentMouseArea->GetEventReceiver()->mouseUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
 					onMouseLeaveHandler = documentMouseArea->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
+					onPointSequenceStartedHandler = documentMouseArea->GetEventReceiver()->pointSequenceStarted.AttachMethod(this, &GuiDocumentCommonInterface::OnPointSequenceStarted);
+				}
+			}
+
+			void GuiDocumentCommonInterface::OnPointSequenceStarted(GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& arguments)
+			{
+				if (documentControl->GetVisuallyEnabled() && editMode != GuiDocumentEditMode::ViewOnly)
+				{
+					arguments.handled = true;
 				}
 			}
 

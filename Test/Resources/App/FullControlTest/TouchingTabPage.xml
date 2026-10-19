@@ -7,16 +7,8 @@
     var centerY: double = 140.0;
     var axisX: double = 1.0;
     var axisY: double = 0.0;
-    var baselineCenterX: double = 0.0;
-    var baselineCenterY: double = 0.0;
-    var baselineAxisX: double = 1.0;
-    var baselineAxisY: double = 0.0;
-    var baselineX: double = 0.0;
-    var baselineY: double = 0.0;
-    var baselineDX: double = 0.0;
-    var baselineDY: double = 0.0;
-    var baselineValid: bool = false;
-    var membership: string = "";
+    var markers: string = "";
+    var markerCount: int = 0;
 
     func Publish(markers: string, count: int): void
     {
@@ -27,66 +19,18 @@
 
     func UpdatePoints(arguments: GuiPointEventArgs*): void
     {
-      var members = "";
-      var markers = "";
-      var count = 0;
-      var first: Point = {};
-      var second: Point = {};
+      markers = "";
+      markerCount = 0;
       for (i in range[0, arguments.Points.Count))
       {
         if (var point: Point? = arguments.Points[i])
         {
-          members = members & "," & (cast string i);
           markers = markers & "," & (cast string i) & "," & (cast string point.x) & "," & (cast string point.y);
-          if (count == 0) { first = cast Point point; }
-          if (count == 1) { second = cast Point point; }
-          count = count + 1;
+          markerCount = markerCount + 1;
         }
       }
 
-      var x = cast double first.x;
-      var y = cast double first.y;
-      var dx = cast double (second.x - first.x);
-      var dy = cast double (second.y - first.y);
-      if (count == 2)
-      {
-        x = x + dx / 2.0;
-        y = y + dy / 2.0;
-      }
-      var separated = count != 2 or dx * dx + dy * dy > 0.000001;
-      if (members != membership or not baselineValid)
-      {
-        baselineCenterX = centerX;
-        baselineCenterY = centerY;
-        baselineAxisX = axisX;
-        baselineAxisY = axisY;
-        baselineX = x;
-        baselineY = y;
-        baselineDX = dx;
-        baselineDY = dy;
-        baselineValid = count > 0 and count <= 2 and separated;
-      }
-      else if (count == 1)
-      {
-        centerX = baselineCenterX + x - baselineX;
-        centerY = baselineCenterY + y - baselineY;
-      }
-      else if (count == 2 and separated)
-      {
-        var lengthSquared = baselineDX * baselineDX + baselineDY * baselineDY;
-        var real = (dx * baselineDX + dy * baselineDY) / lengthSquared;
-        var imaginary = (dy * baselineDX - dx * baselineDY) / lengthSquared;
-        centerX = x + real * (baselineCenterX - baselineX) - imaginary * (baselineCenterY - baselineY);
-        centerY = y + imaginary * (baselineCenterX - baselineX) + real * (baselineCenterY - baselineY);
-        axisX = real * baselineAxisX - imaginary * baselineAxisY;
-        axisY = imaginary * baselineAxisX + real * baselineAxisY;
-      }
-      else
-      {
-        baselineValid = false;
-      }
-      membership = members;
-      Publish(markers, count);
+      Publish(markers, markerCount);
     }
   ]]></ref.Members>
   <ref.Ctor><![CDATA[
@@ -104,9 +48,28 @@
             <Raw ref.Name="touching" Id="FullControlTest.Touching"/>
             <ev.pointSequenceStarted-eval><![CDATA[{ arguments.acceptedComposition = touchingBounds; }]]></ev.pointSequenceStarted-eval>
             <ev.pointAction-eval><![CDATA[{ self.UpdatePoints(arguments); }]]></ev.pointAction-eval>
+            <ev.pointGesture-eval><![CDATA[{
+              if (not arguments.handled and arguments.Gesture is GuiPointGesture_DraggingAndRotation)
+              {
+                var transform = cast GuiPointGesture_DraggingAndRotation arguments.Gesture;
+                arguments.selected = true;
+                arguments.handled = true;
+                var real = transform.scale * Math::Cos(transform.rotation);
+                var imaginary = transform.scale * Math::Sin(transform.rotation);
+                var x = real * self.centerX - imaginary * self.centerY + cast double transform.distance.x;
+                var y = imaginary * self.centerX + real * self.centerY + cast double transform.distance.y;
+                var ax = real * self.axisX - imaginary * self.axisY;
+                var ay = imaginary * self.axisX + real * self.axisY;
+                self.centerX = x;
+                self.centerY = y;
+                self.axisX = ax;
+                self.axisY = ay;
+                self.Publish(self.markers, self.markerCount);
+              }
+            }]]></ev.pointGesture-eval>
             <ev.pointSequenceEnded-eval><![CDATA[{
-              self.membership = "";
-              self.baselineValid = false;
+              self.markers = "";
+              self.markerCount = 0;
               self.Publish("", 0);
             }]]></ev.pointSequenceEnded-eval>
           </Bounds>

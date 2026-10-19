@@ -20,8 +20,107 @@ struct PointScrollingState : Object
 	vint rightClicks = 0;
 };
 
+struct PointSwipeState : Object
+{
+	Ptr<PointProtocolInput> input;
+	GuiBindableTextList* list = nullptr;
+	Value page, target;
+	Ptr<IValueList> items;
+	NativePoint origin;
+	vint maximum = 0;
+};
+
 TEST_FILE
 {
+	TEST_CASE(L"TouchingList XML uses identity-based deferred removal")
+	{
+		const auto swipeResource = LR"GacUISrc(
+<Resource>
+  <Folder name="Sample" content="Link">../App/FullControlTest/TouchingListTabPage.xml</Folder>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::SwipeWindow" xmlns:demo="demo::*">
+      <Window ref.Name="self" Text="TouchingList swipes" ClientSize="x:560 y:400">
+        <Tab>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.Pages><demo:TouchingListTabPage ref.Name="sample"/></att.Pages>
+        </Tab>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+		auto state = Ptr(new PointSwipeState);
+		auto reveal = [=]() { return UnboxValue<vint>(state->target.GetProperty(L"Reveal")); };
+		GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			state->input = Ptr(new PointProtocolInput(protocol->GetEvents(), false));
+			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				TEST_ASSERT(state->items->GetCount() == 10);
+				TEST_ASSERT(!state->list->GetHorizontalScroll()->GetEnabled());
+				state->target = state->items->Get(1);
+				state->maximum = UnboxValue<vint>(state->target.GetProperty(L"Maximum"));
+				TEST_ASSERT(state->maximum > 32);
+				state->origin = protocol->LocationOf(state->list->GetArranger()->GetVisibleStyle(1), 0.7, 0.5);
+				state->input->Start(state->origin);
+				state->input->Move(NativePoint(state->origin.x - state->maximum / 2, state->origin.y));
+			});
+			protocol->OnNextIdleFrame(L"Partial red reveal", [=]()
+			{
+				TEST_ASSERT(reveal() == state->maximum / 2 && state->items->GetCount() == 10);
+				state->input->Up(0, NativePoint(state->origin.x - state->maximum / 2, state->origin.y)); state->input->End();
+			});
+			protocol->OnNextIdleFrame(L"Partial release reset", [=]()
+			{
+				TEST_ASSERT(reveal() == 0 && state->items->GetCount() == 10);
+				state->input->Start(state->origin);
+				state->input->Move(NativePoint(state->origin.x - state->maximum - 100, state->origin.y));
+			});
+			protocol->OnNextIdleFrame(L"Full red reveal waits for End", [=]()
+			{
+				TEST_ASSERT(reveal() == state->maximum && state->items->GetCount() == 10);
+				state->input->Up(0, NativePoint(state->origin.x - state->maximum - 100, state->origin.y)); state->input->End();
+				TEST_ASSERT(state->items->GetCount() == 10);
+			});
+			protocol->OnNextIdleFrame(L"Deferred middle row removal", [=]()
+			{
+				TEST_ASSERT(state->items->GetCount() == 9 && !state->items->Contains(state->target));
+				state->target = state->items->Get(1);
+				state->origin = protocol->LocationOf(state->list->GetArranger()->GetVisibleStyle(1), 0.7, 0.5);
+				state->input->Start(state->origin);
+				state->input->Up(0, NativePoint(state->origin.x - state->maximum, state->origin.y)); state->input->End();
+				// Clear and replace items before the pending removal runs; old indices cannot identify replacements.
+				state->page.Invoke(L"ResetSwipe");
+				state->items->Clear();
+				state->page.Invoke(L"AddItems");
+			});
+			protocol->OnNextIdleFrame(L"Clear and Add before queued removal", [=]()
+			{
+				TEST_ASSERT(state->items->GetCount() == 5 && !state->items->Contains(state->target));
+				for (vint i = 0; i < state->items->GetCount(); i++)
+				{
+					TEST_ASSERT(UnboxValue<vint>(state->items->Get(i).GetProperty(L"Reveal")) == 0);
+				}
+				state->target = Value();
+				state->page = Value();
+				state->items = nullptr;
+				GetApplication()->GetMainWindow()->Hide();
+			});
+		});
+		GacUIUnitTest_Installer installer;
+		installer.installWindow = [=](GuiWindow* window)
+		{
+			auto page = FindObjectByName<GuiTabPage>(window, L"sample");
+			state->page = BoxValue(page);
+			state->list = FindObjectByName<GuiBindableTextList>(page, L"list");
+			state->items = state->list->GetItemSource().Cast<IValueList>();
+			TEST_ASSERT(state->items);
+			state->page.Invoke(L"AddItems");
+		};
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			L"Controls/PointScrolling/TouchingList", L"gacuisrc_unittest::SwipeWindow", swipeResource, installer);
+	});
+
 	const auto resource = LR"GacUISrc(
 <Resource>
   <Instance name="WideItemResource">
@@ -47,9 +146,12 @@ TEST_FILE
             </TextList>
           </Cell>
           <Cell Site="row:0 column:1">
-            <MultilineTextBox ref.Name="editor">
+            <ScrollContainer ref.Name="outer" ExtendToFullWidth="true" ExtendToFullHeight="true" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </MultilineTextBox>
+              <MultilineTextBox ref.Name="editor">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              </MultilineTextBox>
+            </ScrollContainer>
           </Cell>
         </Table>
       </Window>
@@ -59,7 +161,7 @@ TEST_FILE
 )GacUISrc";
 
 	for (bool editor : { false,true })
-	TEST_CASE(editor ? L"Multiline text point scrolling" : L"List point scrolling")
+	TEST_CASE(editor ? L"Multiline text point selection" : L"List point scrolling")
 	{
 		auto state = Ptr(new PointScrollingState);
 		auto findView = [=]() -> GuiScrollView*
@@ -78,6 +180,65 @@ TEST_FILE
 		GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 		{
 			state->input = Ptr(new PointProtocolInput(protocol->GetEvents(), false));
+			if (editor)
+			{
+				protocol->OnNextIdleFrame(L"Ready for text selection", [=]()
+				{
+					auto view = findView();
+					state->origin = protocol->LocationOf(view, 0.3, 0.3);
+					state->input->Start(state->origin);
+					TEST_ASSERT(!view->GetPointEventComposition());
+					TEST_ASSERT(!FindObjectByName<GuiScrollContainer>(GetApplication()->GetMainWindow(), L"outer")->GetPointEventComposition());
+					state->input->Move(NativePoint(state->origin.x + 60, state->origin.y + 30));
+				});
+				protocol->OnNextIdleFrame(L"Touch drag selects text", [=]()
+				{
+					auto textBox = FindObjectByName<GuiMultilineTextBox>(GetApplication()->GetMainWindow(), L"editor");
+					TEST_ASSERT(textBox->GetCaretBegin() != textBox->GetCaretEnd());
+					TEST_ASSERT(textBox->GetViewPosition() == Point());
+					state->input->Up(0, NativePoint(state->origin.x + 60, state->origin.y + 30)); state->input->End();
+					textBox->SetControlTemplate([](const description::Value&) { return new darkskin::DocumentViewerTemplate; });
+				});
+				protocol->OnNextIdleFrame(L"Replaced template keeps text input", [=]()
+				{
+					state->origin = protocol->LocationOf(findView(), 0.4, 0.4);
+					state->input->Start(state->origin);
+					TEST_ASSERT(!findView()->GetPointEventComposition());
+					state->input->Move(NativePoint(state->origin.x + 50, state->origin.y));
+				});
+				protocol->OnNextIdleFrame(L"Selection after template replacement", [=]()
+				{
+					auto textBox = FindObjectByName<GuiMultilineTextBox>(GetApplication()->GetMainWindow(), L"editor");
+					TEST_ASSERT(textBox->GetCaretBegin() != textBox->GetCaretEnd());
+					state->input->Up(0, NativePoint(state->origin.x + 50, state->origin.y)); state->input->End();
+					textBox->SetEditMode(GuiDocumentEditMode::ViewOnly);
+					state->input->Start(state->origin);
+					TEST_ASSERT(findView()->GetPointEventComposition() == findView()->GetBoundsComposition());
+					state->input->Move(NativePoint(state->origin.x, state->origin.y - 40));
+				});
+				protocol->OnNextIdleFrame(L"View-only text still scrolls", [=]()
+				{
+					TEST_ASSERT(findView()->GetViewPosition().y == 40);
+					state->input->Up(0, NativePoint(state->origin.x, state->origin.y - 40)); state->input->End();
+					auto textBox = FindObjectByName<GuiMultilineTextBox>(GetApplication()->GetMainWindow(), L"editor");
+					textBox->SetEditMode(GuiDocumentEditMode::Editable);
+					auto begin = textBox->GetCaretBegin(), end = textBox->GetCaretEnd();
+					auto receiver = textBox->GetBoundsComposition()->GetEventReceiver();
+					auto handler = receiver->pointSequenceStarted.AttachLambda([](GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& a) { a.acceptedComposition = sender; });
+					state->input->Start(state->origin);
+					TEST_ASSERT(textBox->GetPointEventComposition() == textBox->GetBoundsComposition());
+					state->input->Move(NativePoint(state->origin.x, state->origin.y - 20));
+					state->input->Up(0, NativePoint(state->origin.x, state->origin.y - 20)); state->input->End();
+					TEST_ASSERT(textBox->GetCaretBegin() == begin && textBox->GetCaretEnd() == end);
+					receiver->pointSequenceStarted.Detach(handler);
+					state->origin = protocol->LocationOf(textBox->GetVerticalScroll(), 0.5, 0.5);
+					state->input->Start(state->origin);
+					TEST_ASSERT(textBox->GetPointEventComposition() == textBox->GetBoundsComposition());
+					state->input->End(0, PointSequenceEndReason::Canceled_PlatformCanceled);
+					GetApplication()->GetMainWindow()->Hide();
+				});
+				return;
+			}
 			protocol->OnNextIdleFrame(L"Ready", [=]()
 			{
 				auto view = findView();

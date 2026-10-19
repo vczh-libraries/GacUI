@@ -110,14 +110,14 @@ TEST_FILE
 			TEST_ASSERT(!startedType->GetConstructorGroup());
 			TEST_ASSERT(GetTypeDescriptor<GuiPointEventArgs>()->GetPropertyByName(L"handled", true));
 			TEST_ASSERT(GetTypeDescriptor<GuiPointSequenceEndedEventArgs>()->GetPropertyByName(L"handled", true));
-			TEST_ASSERT(GetTypeDescriptor<GuiPointSequenceEndedEventArgs>()->GetPropertyByName(L"fallbackClick", true));
+			TEST_ASSERT(!GetTypeDescriptor<GuiPointSequenceEndedEventArgs>()->GetPropertyByName(L"fallbackClick", true));
 			auto controlType = GetTypeDescriptor<GuiControl>();
 			auto accepts = controlType->GetPropertyByName(L"AcceptPointEvents", true);
 			TEST_ASSERT(accepts && accepts->GetGetter() && accepts->GetSetter());
 			auto selected = controlType->GetPropertyByName(L"PointEventComposition", true);
 			TEST_ASSERT(selected && selected->GetGetter() && !selected->GetSetter());
 			GuiResourcePrecompileContext context;
-			for (auto name : { L"pointSequenceStarted",L"pointAction",L"pointSequenceEnded" })
+			for (auto name : { L"pointSequenceStarted",L"pointAction",L"pointGesture",L"pointSequenceEnded" })
 			{
 				auto eventInfo = GetTypeDescriptor<GuiGraphicsComposition>()->GetEventByName(name, true);
 				auto handler = Workflow_GenerateEventHandler(context, eventInfo);
@@ -134,7 +134,7 @@ TEST_FILE
 			}
 
 			auto compositionType = GetTypeDescriptor<GuiGraphicsComposition>();
-			for (auto name : { L"pointSequenceStarted", L"pointAction", L"pointSequenceEnded" })
+			for (auto name : { L"pointSequenceStarted", L"pointAction", L"pointGesture", L"pointSequenceEnded" })
 			{
 				TEST_ASSERT(compositionType->GetEventByName(name, true));
 			}
@@ -183,6 +183,35 @@ TEST_FILE
 				TEST_ASSERT(UnboxValue<Nullable<Point>>(reflectedPoints->Get(0)).Value() == Point(10, 20));
 				TEST_ASSERT(!UnboxValue<Nullable<Point>>(reflectedPoints->Get(1)));
 			}
+		});
+
+		TEST_CASE(L"Gesture reflection boxes independent payload values")
+		{
+			auto type = GetTypeDescriptor<GuiPointGestureEventArgs>();
+			TEST_ASSERT(type->CanConvertTo(GetTypeDescriptor<GuiEventArgs>()));
+			auto property = type->GetPropertyByName(L"Gesture", true);
+			TEST_ASSERT(property && property->GetGetter() && !property->GetSetter());
+			TEST_ASSERT(property->GetReturn()->GetTypeDescriptor() == GetTypeDescriptor<Value>());
+			TEST_ASSERT(!type->GetPropertyByName(L"gesture", true));
+			GuiBoundsComposition composition;
+			GuiPointGestureEventArgs empty, arguments(&composition);
+			TEST_ASSERT(!empty.selected && !empty.handled && !empty.compositionSource && !empty.eventSource);
+			TEST_ASSERT(arguments.compositionSource == &composition && arguments.eventSource == &composition);
+			auto boxed = BoxValue(&arguments);
+			TEST_ASSERT(UnboxValue<GuiEventArgs*>(boxed) == &arguments);
+			boxed.SetProperty(L"selected", BoxValue(true));
+			TEST_ASSERT(arguments.selected);
+			arguments.gesture = GuiPointGesture_Scrolling{ .isVertical = true, .distance = -12 };
+			auto value = boxed.GetProperty(L"Gesture");
+			TEST_ASSERT(value.GetTypeDescriptor() == GetTypeDescriptor<GuiPointGesture_Scrolling>());
+			TEST_ASSERT(UnboxValue<GuiPointGesture_Scrolling>(value).distance == -12);
+			value.SetProperty(L"distance", BoxValue((vint)99));
+			TEST_ASSERT(arguments.gesture.Get<GuiPointGesture_Scrolling>().distance == -12);
+			arguments.gesture = GuiPointGesture_DraggingAndRotation{ .rotation = 0.25, .scale = 2.0, .distance = Point(3, 4) };
+			value = arguments.GetGesture();
+			TEST_ASSERT(value.GetTypeDescriptor() == GetTypeDescriptor<GuiPointGesture_DraggingAndRotation>());
+			auto transform = UnboxValue<GuiPointGesture_DraggingAndRotation>(value);
+			TEST_ASSERT(transform.rotation == 0.25 && transform.scale == 2.0 && transform.distance == Point(3, 4));
 		});
 
 		TEST_CASE(L"Ensure mouse button and Super modifier reflection surface")

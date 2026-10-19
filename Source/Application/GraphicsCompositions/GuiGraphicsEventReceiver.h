@@ -33,6 +33,7 @@ namespace vl
 		{
 			class GuiGraphicsComposition;
 			struct GuiPointSequenceStartedEventArgs;
+			class GuiPointGestureEventArgs;
 
 /***********************************************************************
 Event
@@ -194,6 +195,12 @@ Event
 							auto accepted = argument.acceptedComposition;
 							(*currentHandler)->handler->Execute(newSender ? newSender : sender, argument);
 							if (accepted) argument.acceptedComposition = accepted;
+						}
+						else if constexpr (std::is_same_v<T, GuiPointGestureEventArgs>)
+						{
+							auto selected = argument.selected;
+							(*currentHandler)->handler->Execute(newSender ? newSender : sender, argument);
+							argument.selected = selected || argument.selected;
 						}
 						else
 						{
@@ -411,8 +418,6 @@ Predefined Point Events
 			/// <summary>Completion delivered to the selected composition. Canceled sequences retain occupied slots through every End handler.</summary>
 			struct GuiPointSequenceEndedEventArgs : public GuiEventArgs, public PointSequenceEndInfo, public Description<GuiPointSequenceEndedEventArgs>
 			{
-				/// <summary>Request a mouse click if this successfully ended sequence qualifies as a tap or stationary hold.</summary>
-				bool										fallbackClick = false;
 				const collections::List<Nullable<Point>>& points;
 
 				GuiPointSequenceEndedEventArgs(const collections::List<Nullable<Point>>& points);
@@ -421,7 +426,47 @@ Predefined Point Events
 				const collections::List<Nullable<Point>>& GetPoints() const;
 			};
 
+			/// <summary>Incremental movement along a locked scrolling axis, in logical pixels.</summary>
+			struct GuiPointGesture_Scrolling
+			{
+				/// <summary>True for vertical movement; false for horizontal movement.</summary>
+				bool										isVertical = false;
+				/// <summary>Signed movement since the preceding gesture; right/down is positive. The first event includes the threshold-crossing displacement.</summary>
+				vint										distance = 0;
+
+				auto operator<=>(const GuiPointGesture_Scrolling&) const = default;
+			};
+
+			/// <summary>Incremental transform in accepted-composition coordinates: rotate, scale, then translate.</summary>
+			struct GuiPointGesture_DraggingAndRotation
+			{
+				/// <summary>Clockwise rotation in radians.</summary>
+				double										rotation = 0;
+				/// <summary>Uniform scale multiplier.</summary>
+				double										scale = 1;
+				/// <summary>Translation in logical pixels, rounded to nearest with ties towards positive infinity and transformed fractional residual carried between events.</summary>
+				Point										distance;
+
+				auto operator<=>(const GuiPointGesture_DraggingAndRotation&) const = default;
+			};
+
+			/// <summary>A predefined gesture offered directly to the accepted composition. Selection persists until the sequence ends.</summary>
+			class GuiPointGestureEventArgs : public GuiEventArgs, public Description<GuiPointGestureEventArgs>
+			{
+			public:
+				/// <summary>The typed native payload. Reflection exposes a boxed copy through the read-only Gesture property.</summary>
+				Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation> gesture;
+				/// <summary>Select this gesture when unhandled. Later handlers cannot undo selection.</summary>
+				bool										selected = false;
+
+				GuiPointGestureEventArgs();
+				GuiPointGestureEventArgs(GuiGraphicsComposition* composition);
+				/// <summary>Get a nonempty boxed copy of the active payload, available with or without reflection metadata.</summary>
+				reflection::description::Value				GetGesture();
+			};
+
 			typedef GuiGraphicsEvent<GuiPointEventArgs>						GuiPointEvent;
+			typedef GuiGraphicsEvent<GuiPointGestureEventArgs>				GuiPointGestureEvent;
 			typedef GuiGraphicsEvent<GuiPointSequenceStartedEventArgs>		GuiPointSequenceStartedEvent;
 			typedef GuiGraphicsEvent<GuiPointSequenceEndedEventArgs>		GuiPointSequenceEndedEvent;
 
@@ -557,6 +602,8 @@ Event Receiver
 				GuiPointSequenceStartedEvent	pointSequenceStarted;
 				/// <summary>An action in the accepted captured sequence, identified by GuiPointEventArgs::eventType. Started is delivered only through pointSequenceStarted.</summary>
 				GuiPointEvent					pointAction;
+				/// <summary>A predefined incremental gesture, offered directly to the accepted composition without parent handoff.</summary>
+				GuiPointGestureEvent				pointGesture;
 				/// <summary>The selected composition receives End; point capture is released after its handlers finish.</summary>
 				GuiPointSequenceEndedEvent		pointSequenceEnded;
 				

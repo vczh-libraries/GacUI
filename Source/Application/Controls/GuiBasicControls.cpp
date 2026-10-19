@@ -441,6 +441,7 @@ GuiControl
 					auto receiver = boundsComposition->GetEventReceiver();
 					receiver->pointSequenceStarted.AttachMethod(this, &GuiControl::OnPointSequenceStarted);
 					receiver->pointAction.AttachMethod(this, &GuiControl::OnPointAction);
+					receiver->pointGesture.AttachMethod(this, &GuiControl::OnPointGesture);
 					receiver->pointSequenceEnded.AttachMethod(this, &GuiControl::OnPointSequenceEnded);
 				}
 				{
@@ -476,6 +477,10 @@ GuiControl
 			{
 			}
 
+			void GuiControl::OnPointGesture(GuiGraphicsComposition* sender, GuiPointGestureEventArgs& arguments)
+			{
+			}
+
 			bool GuiControl::GetAcceptPointEvents()
 			{
 				return acceptPointEvents;
@@ -490,7 +495,7 @@ GuiControl
 			{
 				if (auto host = boundsComposition->GetRelatedGraphicsHost())
 				{
-					auto target = host->GetPointActionManager()->GetPointCapture();
+					auto target = host->GetPointCapture();
 					for (auto composition = target; composition; composition = composition->GetParent())
 					{
 						if (composition == boundsComposition) return target;

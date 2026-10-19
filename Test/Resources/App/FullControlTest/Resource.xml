@@ -218,6 +218,7 @@
                   <demo:ElementTabPage Alt="E"/>
                   <demo:RawElementTabPage ref.Name="rawClockPage"/>
                   <demo:TouchingTabPage ref.Name="touchingPage"/>
+                  <demo:TouchingListTabPage/>
                   <demo:AnimationTabPage Alt="A"/>
                   <demo:LocalizedStringsTabPage Alt="L"/>
                   <demo:LocalizedDialogsTabPage Alt="L"/>
@@ -384,6 +385,7 @@
   <Instance name="ElementTabPageResource" content="File">ElementTabPage.xml</Instance>
   <Instance name="RawElementTabPageResource" content="File">RawElementTabPage.xml</Instance>
   <Instance name="TouchingTabPageResource" content="File">TouchingTabPage.xml</Instance>
+  <Folder name="TouchingListTabPage" content="Link">TouchingListTabPage.xml</Folder>
   <Folder name="AnimationTabPage" content="Link">AnimationTabPage.xml</Folder>
   <Folder name="LocalizedStringsTabPage" content="Link">LocalizedStringsTabPage.xml</Folder>
   <Folder name="LocalizedDialogsTabPage" content="Link">LocalizedDialogsTabPage.xml</Folder>

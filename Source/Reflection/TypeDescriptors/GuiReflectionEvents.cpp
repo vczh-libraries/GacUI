@@ -138,10 +138,27 @@ Type Declaration
 				CLASS_MEMBER_FIELD(sequenceId)
 				CLASS_MEMBER_FIELD(timestamp)
 				CLASS_MEMBER_FIELD(accepted)
-				CLASS_MEMBER_FIELD(fallbackClick)
 				CLASS_MEMBER_FIELD(reason)
 				POINTARGS_POINTS(GuiPointSequenceEndedEventArgs)
 			END_CLASS_MEMBER(GuiPointSequenceEndedEventArgs)
+
+			BEGIN_STRUCT_MEMBER(GuiPointGesture_Scrolling)
+				STRUCT_MEMBER(isVertical)
+				STRUCT_MEMBER(distance)
+			END_STRUCT_MEMBER(GuiPointGesture_Scrolling)
+
+			BEGIN_STRUCT_MEMBER(GuiPointGesture_DraggingAndRotation)
+				STRUCT_MEMBER(rotation)
+				STRUCT_MEMBER(scale)
+				STRUCT_MEMBER(distance)
+			END_STRUCT_MEMBER(GuiPointGesture_DraggingAndRotation)
+
+			BEGIN_CLASS_MEMBER(GuiPointGestureEventArgs)
+				CLASS_MEMBER_BASE(GuiEventArgs)
+				EVENTARGS_CONSTRUCTOR(GuiPointGestureEventArgs)
+				CLASS_MEMBER_FIELD(selected)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Gesture)
+			END_CLASS_MEMBER(GuiPointGestureEventArgs)
 
 			BEGIN_ENUM_ITEM(ControlSignal)
 				ENUM_CLASS_ITEM(RenderTargetChanged)

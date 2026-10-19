@@ -1,0 +1,153 @@
+<Folder>
+  <Script name="TouchingListItemResource">
+    <Workflow><![CDATA[
+      module touching_list;
+      using system::*;
+      namespace demo
+      {
+        class TouchingListItem
+        {
+          prop Text: string = "" {not observe}
+          prop Reveal: int = 0 {}
+          prop Maximum: int = 0 {not observe}
+          new (text: string) { Text = text; }
+        }
+      }
+    ]]></Workflow>
+  </Script>
+  <Instance name="TouchingListItemTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TouchingListItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="demo::TouchingListItem"/>
+      <TextListItemTemplate ref.Name="self" PreferredMinSize="y:112">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:1">
+          <SolidBackground Color="#B82030"/>
+          <Bounds ref.Name="deleteLabel" MinSizeLimitation="LimitToElement" AlignmentToParent="left:-1 top:0 right:16 bottom:0">
+            <SolidLabel Text="DELETE IT" Color="#FFFFFF" Font-bind="self.Font" VerticalAlignment="Center"/>
+            <ev.CachedBoundsChanged-eval><![CDATA[{
+              ViewModel.Maximum = deleteLabel.CachedBounds.x2 - deleteLabel.CachedBounds.x1 + 32;
+            }]]></ev.CachedBoundsChanged-eval>
+          </Bounds>
+          <Bounds>
+            <att.ExpectedBounds-bind><![CDATA[{
+              x1: -ViewModel.Reveal;
+              y1: 0;
+              x2: self.CachedBounds.x2 - self.CachedBounds.x1 - ViewModel.Reveal;
+              y2: self.CachedBounds.y2 - self.CachedBounds.y1 - 1;
+            }]]></att.ExpectedBounds-bind>
+            <SolidBackground Color="#F0F0F0"/>
+            <Bounds AlignmentToParent="left:16 top:12 right:16 bottom:12">
+              <SolidLabel Text-bind="ViewModel.Text" Color="#202020" Font-bind="self.Font" WrapLine="true" Multiline="true"/>
+            </Bounds>
+          </Bounds>
+        </Bounds>
+      </TextListItemTemplate>
+    </Instance>
+  </Instance>
+  <Instance name="TouchingListTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TouchingListTabPage">
+      <ref.Members><![CDATA[
+        prop Items: observe TouchingListItem^[] = {} {const, not observe}
+        var serial: int = 0;
+        var swipeItem: TouchingListItem^ = null;
+        var multipleContacts: bool = false;
+
+        func ResetSwipe(): void
+        {
+          if (swipeItem is not null) { swipeItem.Reveal = 0; }
+          swipeItem = null;
+        }
+
+        func AddItems(): void
+        {
+          for (i in range[0, 5))
+          {
+            serial = serial + 1;
+            Items.Add(new TouchingListItem^("Item " & cast string serial
+              & " — Lorem ipsum dolor sit amet, consectetur adipiscing elit. Swipe left to reveal DELETE IT; release at full reveal to remove this item."));
+          }
+        }
+
+        func BeginSwipe(arguments: GuiPointSequenceStartedEventArgs*): void
+        {
+          ResetSwipe();
+          multipleContacts = false;
+          var composition = arguments.compositionSource;
+          while (composition is not null and composition != list.BoundsComposition)
+          {
+            if (var row: TouchingListItemTemplate* = composition as TouchingListItemTemplate*)
+            {
+              if (row.AssociatedListControl == list) { swipeItem = row.ViewModel; }
+              break;
+            }
+            composition = composition.Parent;
+          }
+        }
+
+        func EndSwipe(arguments: GuiPointSequenceEndedEventArgs*): void
+        {
+          var target = swipeItem;
+          var remove = target is not null and not multipleContacts
+            and arguments.reason == PointSequenceEndReason::Succeeded
+            and target.Maximum > 0 and target.Reveal == target.Maximum;
+          ResetSwipe();
+          if (remove)
+          {
+            GuiApplication::GetApplication().InvokeInMainThread(list.RelatedControlHost, func(): void
+            {
+              if (Items.Contains(target)) { Items.Remove(target); }
+            });
+          }
+        }
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[{ self.AddItems(); }]]></ref.Ctor>
+      <TabPage ref.Name="self" Text="TouchingList">
+        <ez:Layout>
+          <ez:Top>
+            <ez:Left>
+              <Button Text="Clear">
+                <ev.Clicked-eval><![CDATA[{ self.ResetSwipe(); self.Items.Clear(); }]]></ev.Clicked-eval>
+              </Button>
+            </ez:Left>
+            <ez:Left>
+              <Button Text="Add 5 Items">
+                <ev.Clicked-eval><![CDATA[{ self.AddItems(); }]]></ev.Clicked-eval>
+              </Button>
+            </ez:Left>
+          </ez:Top>
+          <ez:Fill>
+            <BindableTextList ref.Name="list" env.ItemType="demo::TouchingListItem^" ItemTemplate="demo::TouchingListItemTemplate" HorizontalAlwaysVisible="false">
+              <att.ItemSource-eval>self.Items</att.ItemSource-eval>
+              <att.TextProperty>Text</att.TextProperty>
+              <att.BoundsComposition-set>
+                <ev.pointSequenceStarted-eval><![CDATA[{ self.BeginSwipe(arguments); }]]></ev.pointSequenceStarted-eval>
+                <ev.pointAction-eval><![CDATA[{
+                  if (arguments.eventType == GuiPointEventsType::Down and arguments.pointId != 0)
+                  {
+                    self.multipleContacts = true;
+                    self.ResetSwipe();
+                  }
+                }]]></ev.pointAction-eval>
+                <ev.pointGesture-eval><![CDATA[{
+                  if (not arguments.handled and arguments.Gesture is GuiPointGesture_Scrolling)
+                  {
+                    var scrolling = cast GuiPointGesture_Scrolling arguments.Gesture;
+                    if (not scrolling.isVertical)
+                    {
+                      arguments.selected = true;
+                      arguments.handled = true;
+                      if (self.swipeItem is not null and not self.multipleContacts)
+                      {
+                        self.swipeItem.Reveal = Math::Max(0, Math::Min(self.swipeItem.Maximum, self.swipeItem.Reveal - scrolling.distance));
+                      }
+                    }
+                  }
+                }]]></ev.pointGesture-eval>
+                <ev.pointSequenceEnded-eval><![CDATA[{ self.EndSwipe(arguments); }]]></ev.pointSequenceEnded-eval>
+              </att.BoundsComposition-set>
+            </BindableTextList>
+          </ez:Fill>
+        </ez:Layout>
+      </TabPage>
+    </Instance>
+  </Instance>
+</Folder>

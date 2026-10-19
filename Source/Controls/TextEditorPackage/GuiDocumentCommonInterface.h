@@ -76,6 +76,7 @@ GuiDocumentCommonInterface
 				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseDownHandler;
 				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseUpHandler;
 				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseLeaveHandler;
+				Ptr<compositions::IGuiGraphicsEventHandler>	onPointSequenceStartedHandler;
 
 				Ptr<DocumentHyperlinkRun::Package>			activeHyperlinks;
 				bool										dragging = false;
@@ -123,6 +124,7 @@ GuiDocumentCommonInterface
 				void										OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void										OnMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void										OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnPointSequenceStarted(compositions::GuiGraphicsComposition* sender, compositions::GuiPointSequenceStartedEventArgs& arguments);
 
 				virtual Point								GetDocumentViewPosition() = 0;
 				virtual void								EnsureRectVisible(Rect bounds) = 0;

@@ -275,6 +275,26 @@ TEST_FILE
 			}
 		});
 
+		TEST_CASE(L"Workflow reads gesture alternatives but rejects assigning the getter")
+		{
+			for (bool assign : { false,true })
+			{
+				GuiResourceError::List errors;
+				auto parser = GetParserManager()->GetParser<glr::xml::XmlDocument>(L"XML");
+				auto code = assign ? WString(L"arguments.Gesture = null;") : WString(
+					L"if (arguments.Gesture is GuiPointGesture_Scrolling) { var value = cast GuiPointGesture_Scrolling arguments.Gesture; arguments.selected = value.distance != 0; } "
+					L"else if (arguments.Gesture is GuiPointGesture_DraggingAndRotation) { var value = cast GuiPointGesture_DraggingAndRotation arguments.Gesture; arguments.selected = value.scale > 0.0; }");
+				auto xml = parser->Parse({}, easy_layout_xml_tests::Resource(
+					L"<Bounds><ev.pointGesture-eval><![CDATA[{" + code + L"}]]></ev.pointGesture-eval></Bounds>"), errors);
+				TEST_ASSERT(xml && errors.Count() == 0);
+				auto resource = GuiResource::LoadFromXml(xml, L"PointGesture.xml", L".", errors);
+				TEST_ASSERT(resource && errors.Count() == 0);
+				PrecompileResource(resource, GuiResourceCpuArchitecture::Unspecified, nullptr, errors);
+				for (auto error : errors) TEST_PRINT(error.message);
+				TEST_ASSERT((errors.Count() > 0) == assign);
+			}
+		});
+
 		TEST_CASE(L"Compiler accepts easy splitter descriptors between fill tracks")
 		{
 			GuiResourceError::List errors;

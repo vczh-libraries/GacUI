@@ -569,7 +569,8 @@ public static class GacUIShowcaseTests
         {
             var values = TouchingData();
             if (values.Length != 5 + count * 3 || values[4] != count) return false;
-            for (int i = 0; i < 4; i++) if (Math.Abs(values[i] - transform[i]) > 0.001) return false;
+            // Integral translation carries fractional residuals between updates.
+            for (int i = 0; i < 4; i++) if (Math.Abs(values[i] - transform[i]) > (i < 2 ? 1.0 : 0.001)) return false;
             return true;
         }, description);
     }
@@ -605,6 +606,110 @@ public static class GacUIShowcaseTests
             ClickRenderedCaption(hasPage ? "Touching" : "Misc");
             return false;
         }, "Touching page opens through automation", 120000);
+    }
+    static void TouchingListAutomation()
+    {
+        Test("TouchingList / list-owned swipes, deferred identity removal and recycled rows");
+        var page = Page(Page(root, "Misc"), "TouchingList");
+        Check(page.Current.ControlType == ControlType.TabItem, "TouchingList tab role");
+        var list = Find(page, ControlType.List)[0];
+        Invoke(page, "Clear"); Wait(() => Items(list).Count == 0, "Clear populated list");
+        Invoke(page, "Clear"); Check(Items(list).Count == 0, "Clear empty list");
+        Invoke(page, "Add 5 Items"); Wait(() => Items(list).Count == 5, "Add creates exactly five items");
+        Invoke(page, "Add 5 Items"); Wait(() => Items(list).Count == 10, "second Add creates five more identities");
+        var scroll = Pattern<ScrollPattern>(list, ScrollPattern.Pattern);
+        Check(scroll.Current.VerticallyScrollable && !scroll.Current.HorizontallyScrollable, "wrapped rows scroll only vertically");
+        scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
+        var name = Items(list)[1].Current.Name;
+        var label = RenderedCaptionBounds(name);
+        Check(label.Height >= 70 && label.Width > 150, "large usable row content");
+        double maximum = 0;
+        foreach (var node in SnapshotNodes(ControlsSnapshot()))
+        {
+            object text;
+            if (!node.TryGetValue("elementText", out text) || (string)text != "DELETE IT") continue;
+            var bounds = SnapshotBounds(node);
+            if (bounds.Top <= label.Top && bounds.Bottom >= label.Bottom) maximum = bounds.Width + 32;
+        }
+        Check(maximum > 32, "maximum reveal is measured DELETE IT label plus padding");
+        int width = (int)Math.Round(maximum), half = width / 2;
+        Action<int, int> begin = (token, delta) =>
+        {
+            PointInput("Down", token, label, 180, 25);
+            PointInput("Update", token, label, 180 + delta, 25);
+        };
+        Action<double, string> reveal = (distance, description) => Wait(() =>
+            Math.Abs(RenderedCaptionBounds(name).Left - (label.Left - distance)) <= 1, description);
+        begin(1001, 50); reveal(0, "right-only drag does not reveal");
+        PointInput("Up", 1001, label, 230, 25);
+        begin(1002, -half); reveal(half, "partial left swipe exposes red region");
+        Check(Items(list).Count == 10, "partial reveal does not delete");
+        PointInput("Update", 1002, label, 180 - half + 15, 25); reveal(half - 15, "reversal retracts the reveal");
+        PointInput("Up", 1002, label, 180 - half + 15, 25); reveal(0, "partial release resets presentation");
+        begin(1003, -width - 50); reveal(width, "full reveal clamps at measured maximum");
+        Check(Items(list).Count == 10, "full reveal waits for successful completion");
+        PointInput("Down", 1004, label, 200, 25); reveal(0, "second contact clears swipe state");
+        PointInput("Up", 1004, label, 200, 25);
+        PointInput("Update", 1003, label, 180 - width - 60, 25);
+        PointInput("Up", 1003, label, 180 - width - 60, 25);
+        Check(Items(list).Count == 10, "scrolling never resumes after a second contact");
+        begin(1005, -width); reveal(width, "full reveal before cancellation");
+        Input("!PointCancel:1005,PlatformCanceled"); reveal(0, "cancellation resets presentation");
+        PointInput("Up", 1005, label, 180 - width, 25);
+        Check(Items(list).Count == 10, "cancellation retains the identity");
+        PointInput("Down", 1006, label, 180, 25);
+        PointInput("Up", 1006, label, 180 - width, 25);
+        Wait(() => Items(list).Count == 9, "final-Up-only full swipe removes exactly one item");
+        foreach (var item in Items(list)) Check(item.Current.Name != name, "middle row identity is removed");
+        var remaining = Items(list)[1].Current.Name;
+        PointInput("Down", 1007, list, 0.5, 0.8);
+        PointInput("Update", 1007, list, 0.5, 0.2);
+        PointInput("Up", 1007, list, 0.5, 0.2);
+        Wait(() => scroll.Current.VerticalScrollPercent > 0, "vertical gesture uses built-in list scrolling");
+        scroll.SetScrollPercent(ScrollPattern.NoScroll, 100);
+        scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
+        Wait(() => Math.Abs(RenderedCaptionBounds(remaining).Left - label.Left) <= 1, "recycled row has no inherited reveal");
+        Invoke(page, "Clear"); Wait(() => Items(list).Count == 0, "Clear after deletion");
+        PointInput("Down", 1008, list, 0.8, 0.5);
+        PointInput("Update", 1008, list, 0.2, 0.5);
+        PointInput("Up", 1008, list, 0.2, 0.5);
+        Invoke(page, "Add 5 Items"); Wait(() => Items(list).Count == 5, "empty-space swipe cannot delete newly added items");
+    }
+    static void TouchTextSelectionAutomation()
+    {
+        Test("Point input / editable text uses the rejected mouse stream");
+        for (int pass = 0; pass < 2; pass++)
+        {
+            var page = Page(Page(root, "Control"), "TextBox");
+            AutomationElement editor = null;
+            foreach (var candidate in Find(page, ControlType.Edit))
+            {
+                object value;
+                if (!candidate.Current.IsPassword && candidate.Current.BoundingRectangle.Height > 80
+                    && candidate.TryGetCurrentPattern(TextPattern.Pattern, out value)) { editor = candidate; break; }
+            }
+            Check(editor != null, "multiline editor exposes text ranges");
+            var content = new StringBuilder();
+            for (int line = 0; line < 20; line++) content.AppendLine("Line " + line + ": Touch dragging selects a changing range inside an enclosing scroll view.");
+            Pattern<ValuePattern>(editor, ValuePattern.Pattern).SetValue(content.ToString());
+            var text = Pattern<TextPattern>(editor, TextPattern.Pattern);
+            int token = 1101 + pass;
+            PointInput("Down", token, editor, 0.05, 0.05);
+            PointInput("Update", token, editor, 0.45, 0.15);
+            Wait(() => text.GetSelection().Length == 1 && text.GetSelection()[0].GetText(-1).Length > 0, "touch drag creates a nonempty selection");
+            var selected = text.GetSelection()[0].GetText(-1);
+            PointInput("Update", token, editor, 0.70, 0.25);
+            Wait(() => text.GetSelection()[0].GetText(-1) != selected, "continued drag changes the selection range");
+            PointInput("Up", token, editor, 0.70, 0.25);
+            if (pass == 0)
+            {
+                var hwnd = new IntPtr(root.Current.NativeWindowHandle);
+                ClickRenderedCaption("Window Manager");
+                ClickRenderedCaption("Aurora");
+                ControlsSnapshot();
+                root = AutomationElement.FromHandle(hwnd);
+            }
+        }
     }
     static void TouchingAutomation()
     {
@@ -758,6 +863,8 @@ public static class GacUIShowcaseTests
         PointInput("Up", 903, list, 0.50, -2.00);
         Wait(() => scroll.Current.VerticalScrollPercent == 100, "point drag clamps ListView at the bottom");
         checkSelection("clamped point drag preserves ListView selection");
+        TouchingListAutomation();
+        TouchTextSelectionAutomation();
         Page(Page(root, "Misc"), "Touching");
     }
     static void Touching(bool runAutomation)

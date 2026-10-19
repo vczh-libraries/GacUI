@@ -12,7 +12,6 @@ Interfaces:
 #include "GuiGraphicsHost_ShortcutKey.h"
 #include "GuiGraphicsHost_Alt.h"
 #include "GuiGraphicsHost_Tab.h"
-#include "GuiGraphicsHost_Point.h"
 #include "../GraphicsCompositions/GuiGraphicsWindowComposition.h"
 
 namespace vl
@@ -26,6 +25,7 @@ namespace vl
 
 		namespace compositions
 		{
+			class GuiPointActionManager;
 
 /***********************************************************************
 Animation
@@ -211,8 +211,8 @@ Host
 				/// <summary>Get the timer manager.</summary>
 				/// <returns>The timer manager.</returns>
 				GuiGraphicsTimerManager*				GetTimerManager();
-				/// <summary>Get the manager owning the current point sequence.</summary>
-				GuiPointActionManager*					GetPointActionManager();
+				/// <summary>Get the composition capturing the current point sequence.</summary>
+				GuiGraphicsComposition*					GetPointCapture();
 				/// <summary>Notify that a composition is going to disconnect from this graphics host. Generally this happens when a composition's parent line changes.</summary>
 				/// <param name="composition">The composition to disconnect</param>
 				void									DisconnectComposition(GuiGraphicsComposition* composition);

@@ -122,11 +122,8 @@ Scroll View
 				Point									scrollPositionBeforeTemplate;
 				Size									scrollTotalSizeBeforeTemplate;
 				Size									scrollPageSizeBeforeTemplate;
-				Point									pointStartViewPosition;
 
-				void									OnPointSequenceStarted(compositions::GuiGraphicsComposition* sender, compositions::GuiPointSequenceStartedEventArgs& arguments)override;
-				void									OnPointAction(compositions::GuiGraphicsComposition* sender, compositions::GuiPointEventArgs& arguments)override;
-				void									OnPointSequenceEnded(compositions::GuiGraphicsComposition* sender, compositions::GuiPointSequenceEndedEventArgs& arguments)override;
+				void									OnPointGesture(compositions::GuiGraphicsComposition* sender, compositions::GuiPointGestureEventArgs& arguments)override;
 
 				void									UpdateDisplayFont()override;
 

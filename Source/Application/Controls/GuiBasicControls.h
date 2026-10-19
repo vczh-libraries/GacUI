@@ -146,6 +146,7 @@ Basic Construction
 				virtual void							UpdateDisplayFont();
 				virtual void							OnPointSequenceStarted(compositions::GuiGraphicsComposition* sender, compositions::GuiPointSequenceStartedEventArgs& arguments);
 				virtual void							OnPointAction(compositions::GuiGraphicsComposition* sender, compositions::GuiPointEventArgs& arguments);
+				virtual void							OnPointGesture(compositions::GuiGraphicsComposition* sender, compositions::GuiPointGestureEventArgs& arguments);
 				virtual void							OnPointSequenceEnded(compositions::GuiGraphicsComposition* sender, compositions::GuiPointSequenceEndedEventArgs& arguments);
 				void									OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

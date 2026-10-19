@@ -431,35 +431,19 @@ GuiScrollView
 				containerComposition->CachedBoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerCachedBoundsChanged);
 			}
 
-			void GuiScrollView::OnPointSequenceStarted(GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& arguments)
+			void GuiScrollView::OnPointGesture(GuiGraphicsComposition* sender, GuiPointGestureEventArgs& arguments)
 			{
-				GuiControl::OnPointSequenceStarted(sender, arguments);
-				if (arguments.acceptedComposition == boundsComposition)
+				if (arguments.handled || !GetVisuallyEnabled() || GetPointEventComposition() != boundsComposition) return;
+				if (auto scrolling = arguments.gesture.TryGet<GuiPointGesture_Scrolling>())
 				{
-					pointStartViewPosition = GetViewPosition();
-				}
-			}
-
-			void GuiScrollView::OnPointAction(GuiGraphicsComposition* sender, GuiPointEventArgs& arguments)
-			{
-				if (arguments.handled || !GetVisuallyEnabled() || arguments.pointId != 0 || GetPointEventComposition() != boundsComposition) return;
-				auto manager = boundsComposition->GetRelatedGraphicsHost()->GetPointActionManager();
-				auto axis = manager->GetAxis();
-				if (axis == 0) return;
-				auto scroll = axis == 1 ? GetHorizontalScroll() : GetVerticalScroll();
-				if (!scroll || !scroll->GetVisible() || !scroll->GetVisuallyEnabled()) return;
-				auto displacement = manager->GetDisplacement();
-				auto position = GetViewPosition();
-				if (axis == 1) position.x = pointStartViewPosition.x - displacement.x;
-				else position.y = pointStartViewPosition.y - displacement.y;
-				SetViewPosition(position);
-			}
-
-			void GuiScrollView::OnPointSequenceEnded(GuiGraphicsComposition* sender, GuiPointSequenceEndedEventArgs& arguments)
-			{
-				if (!arguments.handled && GetPointEventComposition() == boundsComposition)
-				{
-					arguments.fallbackClick = true;
+					auto scroll = scrolling->isVertical ? GetVerticalScroll() : GetHorizontalScroll();
+					if (!scroll || !scroll->GetVisible() || !scroll->GetVisuallyEnabled()) return;
+					arguments.selected = true;
+					arguments.handled = true;
+					auto position = GetViewPosition();
+					if (scrolling->isVertical) position.y -= scrolling->distance;
+					else position.x -= scrolling->distance;
+					SetViewPosition(position);
 				}
 			}
 

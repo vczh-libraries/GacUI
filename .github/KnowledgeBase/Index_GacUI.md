@@ -1,4 +1,4 @@
-﻿# GacUI Knowledge Base
+# GacUI Knowledge Base
 
 Project introduction remains in [Index.md](./Index.md#gacui).
 
@@ -217,6 +217,6 @@ Use GitTui to browse working-tree diffs and local branch history in a terminal, 
 
 #### Point Input, Capture and Remote Forwarding
 
-Native acceptance and cancellation, composition pointAction and borrowed sparse slots, hosted coordinate rebasing, explicit remote boundaries and 64-bit strings, Core fallback, native/browser ownership, Touching painters, and automation commands/endpoints.
+Native acceptance and cancellation, remote boundaries and renderer acquisition, composition capture and raw lifecycle, fixed maintainer-only gestures with incremental payloads, the typed/native and object/Workflow bridge, automatic clicks, scroll views, text selection, Touching/TouchingList and automation verification.
 
 [Design Explanation](./KB_GacUI_Design_PointInput.md)

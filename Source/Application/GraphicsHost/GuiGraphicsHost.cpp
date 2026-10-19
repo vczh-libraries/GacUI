@@ -1,4 +1,5 @@
 #include "GuiGraphicsHost.h"
+#include "GuiGraphicsHost_Point.h"
 #include "../Controls/GuiWindowControls.h"
 #include "../../GraphicsElement/GuiGraphicsResourceManager.h"
 
@@ -314,9 +315,11 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept)
 			{
-				pointActionManager->Initialize(firstPoint);
+				ResetPointCapture();
 				auto composition = FindInputComposition(firstPoint.position);
-				GuiPointSequenceStartedEventArgs arguments(pointActionManager->GetPoints(nullptr));
+				List<Nullable<Point>> queryPoints;
+				queryPoints.Add(Point());
+				GuiPointSequenceStartedEventArgs arguments(queryPoints);
 				arguments.compositionSource = composition;
 				while (composition)
 				{
@@ -324,43 +327,43 @@ GuiGraphicsHost
 					{
 						if (!arguments.eventSource) arguments.eventSource = composition;
 						static_cast<WindowPointInfo&>(arguments) = pointActionManager->ConvertSample(firstPoint, composition);
-						pointActionManager->GetPoints(composition);
+						queryPoints[0] = arguments.position;
 						composition->GetEventReceiver()->pointSequenceStarted.Execute(arguments);
 					}
 					composition = composition->GetParent();
 				}
-				PointCapture(arguments.acceptedComposition);
 				accept = arguments.acceptedComposition != nullptr;
+				if (accept) pointActionManager->OnPointSequenceStarted(firstPoint, arguments.acceptedComposition);
 			}
 
 			void GuiGraphicsHost::PointDown(const NativeWindowPointInfo& info)
 			{
-				pointActionManager->OnPointInput(info, GuiPointEventsType::Down);
+				pointActionManager->OnPointAction(info, GuiPointEventsType::Down);
 			}
 
 			void GuiGraphicsHost::PointUpdate(const NativeWindowPointInfo& info)
 			{
-				pointActionManager->OnPointInput(info, GuiPointEventsType::Update);
+				pointActionManager->OnPointAction(info, GuiPointEventsType::Update);
 			}
 
 			void GuiGraphicsHost::PointUp(const NativeWindowPointInfo& info)
 			{
-				pointActionManager->OnPointInput(info, GuiPointEventsType::Up);
+				pointActionManager->OnPointAction(info, GuiPointEventsType::Up);
 			}
 
 			void GuiGraphicsHost::PointEntered(const NativeWindowPointInfo& info)
 			{
-				pointActionManager->OnPointInput(info, GuiPointEventsType::Enter);
+				pointActionManager->OnPointAction(info, GuiPointEventsType::Enter);
 			}
 
 			void GuiGraphicsHost::PointLeaved(const NativeWindowPointInfo& info)
 			{
-				pointActionManager->OnPointInput(info, GuiPointEventsType::Leave);
+				pointActionManager->OnPointAction(info, GuiPointEventsType::Leave);
 			}
 
 			void GuiGraphicsHost::PointSequenceEnded(const PointSequenceEndInfo& info)
 			{
-				if (!pointActionManager->PointSequenceEnded(info)) return;
+				if (!pointActionManager->OnPointSequenceEnded(info)) return;
 				auto button = pointActionManager->GetFallbackClick();
 				auto firstPoint = pointActionManager->GetFirstPoint();
 				PointUncapture();
@@ -784,9 +787,9 @@ GuiGraphicsHost
 				delete windowComposition;
 			}
 
-			GuiPointActionManager* GuiGraphicsHost::GetPointActionManager()
+			GuiGraphicsComposition* GuiGraphicsHost::GetPointCapture()
 			{
-				return pointActionManager;
+				return pointActionManager->GetPointCapture();
 			}
 
 			INativeWindow* GuiGraphicsHost::GetNativeWindow()

@@ -1,73 +1,107 @@
-# Point Input, Capture and Remote Forwarding
+# Point Input, Capture and Predefined Gestures
 
-## Ownership and native acquisition
+## Native listener contract
 
-Point input is an overlapping-contact sequence. The first Down asks listeners through `INativeWindowListener::PointSequenceStarted(firstPoint, accept)`; acceptance is ORed and latched until End. Accepted sequences deliver `PointDown`, `PointUpdate`, `PointUp`, `PointEntered` and `PointLeaved`. Rejected sequences still receive Started and End, but no point actions. `PointSequenceEndInfo::accepted` describes that local answer.
+Touch is an overlapping-contact sequence, delivered through `INativeWindowListener`. Implemented acquisition is currently Windows touch and the remote protocol provider. Pen and physical mouse retain their mouse path. Forwarding support does not imply hardware acquisition on another native platform.
 
-`NativePointInputState` belongs to the native window, on its UI thread. Its unsigned 64-bit lifetime counter allocates nonzero sequence IDs; resetting a sequence never resets that counter. Source tokens identify live physical/injected contacts. Each Down allocates a zero-based `pointId` in Down order. Up removes the contact before its callback. A reused source token after Up receives a new slot. `activePointCount` is the number of live contacts after the transition, not the sparse list length. The platform `primary` flag does not define sequence lifetime or fallback ownership.
+The first Down queries `PointSequenceStarted(firstPoint, accept)`. Listener acceptance is ORed and latched through End. An accepted sequence delivers `PointDown`, `PointUpdate`, `PointUp`, `PointEntered` and `PointLeaved`. Rejected sequences receive Started and End but no point actions; `PointSequenceEndInfo::accepted` describes that window's answer. Started is a query, not an extra Down.
 
-`BeginNativePointSequence`, `UpdateNativePointInput`, `EndNativePointSequence` and `ResetCompletedNativePointSequence` implement explicitly bounded sources. `ProcessNativePointInput` wraps them for native/automation input and ends successfully after the last Up. Cancellation emits one End without fabricated Ups, then retains native contacts until cleanup retires them through `RetireNativePoint`. Reasons are `Succeeded`, `Canceled_Unknown`, `Canceled_PlatformCanceled`, `Canceled_CaptureLost` and `Canceled_WindowDestroyed`.
+`NativePointInputState` in `<GacUI repo>/Source/NativeWindow/GuiNativeWindow.h` owns the native-window UI-thread sequence. A nonzero unsigned 64-bit sequence ID comes from a lifetime counter that survives sequence reset. Source tokens identify physical/injected contacts; every Down receives a new zero-based `pointId` in Down order. A reused source token receives a new slot. Up removes its contact before dispatch. `activePointCount` counts occupied contacts, not allocated slots; `primary` does not define ownership.
 
-Windows acquires touch through WM_POINTER in `<GacUI repo>/Source/PlatformProviders/Windows/WinNativeWindow.cpp`. Ordinary local Windows applications let rejected touch use platform mouse compatibility. A remote renderer accepts locally to own the complete stream and suppress platform promotion; the Core makes the application-level decision. Pen and physical mouse keep their existing mouse path. Other native providers must explicitly implement acquisition before claiming device support.
+`BeginNativePointSequence`, `UpdateNativePointInput`, `EndNativePointSequence` and `ResetCompletedNativePointSequence` support explicitly bounded sources. `ProcessNativePointInput` handles native/automation acquisition, completing after the last Up. Cancellation reports exactly one End without invented Ups, then drains native contacts with `RetireNativePoint`. Reasons are `Succeeded`, `Canceled_Unknown`, `Canceled_PlatformCanceled`, `Canceled_CaptureLost` and `Canceled_WindowDestroyed`.
 
-## Payload and coordinate spaces
+`NativeWindowPointInfo` uses native client pixels; `WindowPointInfo` uses logical pixels. Samples carry IDs, monotonic microsecond timestamps, active count, position, modifiers, primary hint and optional bounds, pressure, orientation and opaque platform frame ID. Null metadata differs from zero. Frame IDs never identify contacts.
 
-`NativeWindowPointInfo` stores native client coordinates; `WindowPointInfo` stores logical coordinates. Both carry sequence/contact IDs, monotonic microsecond timestamp, active count, position, primary hint, Ctrl/Shift/Alt/Super, optional contact bounds, pressure, orientation and opaque platform frame ID. Missing metadata stays null; zero is a present value. Platform frame IDs are never contact IDs.
+Hosted routing captures one hosted window and rebases position/contact bounds by its rendering offset. The graphics host preserves canonical native screen positions and reprojects both stored baselines and current contacts with the current window conversion, client origin and accepted-composition bounds. DPI/window changes therefore do not accumulate stale logical-coordinate scaling.
 
-Hosted routing captures one hosted window for the sequence and adjusts position and contact bounds for that window's rendering offset. `GuiPointActionManager` in `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost_Point.h/.cpp` stores canonical native screen positions. Each callback rebuilds logical samples, contact bounds and occupied sparse slots with the current window conversion, client origin and receiving composition bounds. Stationary contacts and the gesture baseline therefore follow DPI changes and window movement without accumulated rescaling. Pressure, timestamps, frame identity, modifiers and primary are copied unchanged. Browser coordinates are CSS pixels relative to the stable renderer target, independent of canvas device-pixel ratio.
+Windows WM_POINTER acquisition lives in `<GacUI repo>/Source/PlatformProviders/Windows/WinNativeWindow.cpp`. Ordinary Windows applications let rejected touch use platform mouse compatibility. Remote renderers accept locally to own the complete stream and suppress promotion; Core makes the application-level acceptance decision.
 
-## Composition contract and lifetime
+## Remote protocol and renderer acquisition
 
-Compositions expose `pointSequenceStarted`, unified `pointAction`, and `pointSequenceEnded` through `GuiGraphicsEventReceiver`. `GuiPointEventsType` distinguishes Started, Down, Update, Up, Enter and Leave. Started is the query, not an extra Down action. `GuiPointSequenceStartedEventArgs` inherits `GuiPointEventArgs` and adds `acceptedComposition` instead of `accept`; source/sample fields, `handled` and borrowed points come from its bases. The first handler returning a non-null selection wins; later handlers cannot clear or replace it. The query still visits every handler and ancestor of the original hit composition regardless of `handled`. Selection must belong to the same graphics host.
+The wire schema is `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_IO.txt`. Touch senders currently include Windows and GacJS. The records are `IOPointStarted`, `IOPointDown`, `IOPointUpdate`, `IOPointUp`, `IOPointEnter`, `IOPointLeave` and `IOPointEnded`. Started has eventIndex 0; first Down repeats its sample at 1. All later actions and End share one strictly consecutive index stream across contacts. These records are never coalesced through the pending mouse-move slot. Final Up does not replace explicit End.
 
-`Workflow_GenerateEventHandler` in `<GacUI repo>/Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowInstallBindings.cpp` recognizes all three point argument types through their `GuiEventArgs` ancestry when supplying the conventional XML handler names `sender` and `arguments`. Started also inherits its reflected point members through `GuiPointEventArgs`. Borrowed-list event arguments have no reflected constructors.
+Sequence IDs, timestamps and optional frame IDs are canonical unsigned decimal strings through 18446744073709551615. Never round-trip them through JavaScript numbers or `vint`. Contact/event indices remain bounded integers. Core ignores actions outside a sequence, foreign identities, nested Started, retired identities and stale/duplicate indices. Forward gaps are errors. Core validates first-Down equality, Down-order IDs and post-transition active counts; it assigns its own public sequence identity from the window counter also used by automation. End acceptance is Core's latched answer.
 
-Action and End go directly to the selected composition, with both sources set to that composition and `handled` initially false. Their coordinates are relative to it, even outside its bounds. Rejected sequences have no composition Action or End recipient; the native listener contract still reports End. `GuiPointEventArgs::GetPoints()` and the query/completion equivalents return a borrowed host-owned `List<Nullable<Point>>`. Started and the first Down use slot 0. Lifted slots become empty and are not reused. At successful End all allocated slots are empty. At canceled End occupied contacts and earlier holes remain visible through End handlers. After End, the list is cleared; copy values when retaining them beyond a callback. Detach handlers and respect composition deletion/capture lifetime instead of retaining event-argument pointers.
+Rejected Core streams use `ProcessIOPointFallback`: only the original first contact sends mouse Down/Move/Up, with its original modifiers and current position. Its Up releases the mouse even if another contact remains; later contacts never replace it. Cancellation releases outside the client to avoid activation. Disconnect/destruction cancels active input and releases fallback/capture.
 
-## Control acceptance, scrolling and deferred clicks
+GacJS acquires touch PointerEvents on a stable renderer target, with pointer capture, non-passive pointerdown and `touch-action: none` on that target and descendants before input. Coordinates are CSS pixels independent of canvas pixel ratio. Coalesced samples remain ordered. Normal lostpointercapture after Up does not cancel other contacts; unexpected loss cancels once and drains cleanup. Touch-origin compatibility mouse/boundary/activation events are suppressed while independent mouse/pen input retains its path. Connected disposal sends one canceled End; disconnected cleanup is silent because Core owns that boundary.
 
-`GuiControl::AcceptPointEvents` defaults to false. The three protected virtual point hooks are attached once to the persistent bounds composition. The default Started hook selects those bounds only when opted in, unclaimed and not handled. A child can set `handled = true` to suppress automatic acceptance by ancestor controls. This does not erase a selection already made or prevent custom handlers from explicitly assigning `acceptedComposition`. Started initializes `handled` to false for each query. The read-only `PointEventComposition` property returns the active manager target when it is inside the control's bounds subtree, including during End, and null after cleanup or detachment. It is observed state, not another routing decision.
+## Composition events, selection and lifetime
 
-`GuiScrollView` defaults to accepting points. A nearer accepting child owns its sequence. When the scroll view's own bounds own the sequence, unhandled actions from point 0 scroll along one locked axis. Recognition crosses a radial distance strictly greater than eight logical units; the larger absolute displacement chooses the axis, with horizontal winning ties. Final Up also participates. View position is the initial view position minus displacement from the original point. The locked scrollbar must exist, be visible and visually enabled; ordinary scrollbar APIs clamp its range. Reversal keeps the original baseline, and unavailable axes neither hand off to a parent nor switch axes. Other contacts never replace point 0, and any additional Down permanently disqualifies a click.
+`GuiGraphicsEventReceiver` in `<GacUI repo>/Source/Application/GraphicsCompositions/GuiGraphicsEventReceiver.h` exposes four events:
 
-`GuiPointSequenceEndedEventArgs::fallbackClick` defaults to false. The scroll view's unhandled End hook requests it; custom surfaces such as Touching leave it false. The manager grants a button only after successful End, exactly one Down and no threshold crossing: less than 500000 microseconds yields left, otherwise right. The host clears point capture and samples before synthesizing ordinary MouseMove, Down and Up at the original start screen position using current conversion/layout. This establishes normal hover and button behavior while preserving independent physical mouse capture and button bookkeeping. Handled suppresses the scroll view's default request, but an explicit custom fallback request remains authoritative. Native rejection fallback remains a separate existing path.
+| Event | Recipient and purpose |
+| --- | --- |
+| `pointSequenceStarted` | Original hit composition and ancestors, querying one `acceptedComposition`. |
+| `pointAction` | Accepted composition only; Down/Update/Up/Enter/Leave and sparse contacts. |
+| `pointGesture` | Accepted composition only; offered incremental gesture payload. |
+| `pointSequenceEnded` | Accepted composition once, on success or cancellation. |
 
-## Wire boundaries and Core dispatch
+The first non-null Started selection is sticky within dispatch and across ancestor traversal. Handled queries still visit handlers and ancestors, permitting explicit custom acceptance. Selection must belong to the same graphics host. Started borrows a temporary one-slot list, rebased for each receiver. Only after acceptance does the host initialize its private manager and establish capture, before recognizer Started callbacks. A rejected sequence cannot consult earlier recognition state.
 
-The source is `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_IO.txt`; regenerate C++ schema and metadata with Metadata_UpdateProtocol, then GacJS import/codegen. The seven ordered records are `IOPointStarted`, `IOPointDown`, `IOPointUpdate`, `IOPointUp`, `IOPointEnter`, `IOPointLeave`, and `IOPointEnded`. Started carries the first sample at eventIndex 0. First Down repeats that sample at index 1. All later actions and End share one strictly consecutive index stream across contacts. These events have no repeat-dropping annotation and never use the pending mouse-move slot.
+Action, Gesture and End have both source fields set to the accepted composition; they do not bubble or hand off to parents. Each event starts unhandled. Gesture `selected = true` is sticky within dispatch and for the rest of the sequence, independently of `handled`. Consumers should select only an unhandled offer, then mark it handled if consumed. Later handlers cannot undo selection. Selecting or pausing a gesture does not stop raw Action bookkeeping or the single public End.
 
-Sequence IDs, timestamps and optional platform frame IDs are canonical unsigned decimal strings, including values above 2^53 through 18446744073709551615. Null differs from `"0"`. Decode checks digits, canonical spelling and overflow without passing through `vint` or a JavaScript number. Contact and event indices remain bounded integers.
+Action/Started/End `Points` is a borrowed `List<Nullable<Point>>` in receiving-composition coordinates. Slot 0 belongs to the first contact, lifted slots are empty and IDs are never reused. Successful End has empty allocated slots; canceled End retains live contacts and holes. Capture and borrowed storage remain valid through End callbacks and are cleared afterwards. Copy values to retain them beyond a callback. Synchronous deletion of the receiving composition during input has the same unsupported lifetime behavior as mouse callbacks; queue removal with `InvokeInMainThread` and retain data identity, not a row composition or stale index.
 
-Core ignores actions/End outside a sequence, foreign sequence IDs, nested Started, retired sequence identities and stale/duplicate indices. A forward index gap is a protocol error. It verifies first Down matches Started, contacts follow Down order, and active counts match bookkeeping. Final Up does not synthesize End. Core assigns its own public sequence ID from the same window counter used by Core automation, so renderer-local identities cannot collide with completed automation sequences. The End acceptance bit is replaced with Core's latched answer.
+`GuiControl::PointEventComposition` observes capture inside the control's bounds subtree, including during End. It becomes null after cleanup/detachment. The host exposes only a narrow capture query; there is no public manager access or recognizer registration API.
 
-Rejected streams use `ProcessIOPointFallback`, shared with typed automation dispatch: only the original first contact generates mouse Down/Move/Up. Its Up releases fallback even while other contacts remain, and no contact is promoted afterwards. Modifiers and coordinates come directly from the sample. Cancellation releases a held fallback button outside the client to avoid activation. Disconnect/window destruction cancel active Core input and release fallback/capture; disconnected renderers stop forwarding. Channel lifetime isolation remains the transport layer's responsibility.
+### Typed C++ payload and Workflow bridge
 
-## Browser acquisition and drawing
+`GuiPointGestureEventArgs` is a reflected class deriving from `GuiEventArgs`, with writable `selected` and a read-only object-valued `Gesture` property backed by `GetGesture()`. Its native public `gesture` is exactly `Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>` and is not registered as a reflected field. The getter boxes an independent copy of the active value struct and works in generated C++ without reflection metadata. There is no null payload or setter; changing a boxed copy cannot change the native payload.
 
-GacJS handles touch PointerEvents on its stable renderer target, captures each pointer there, and installs `touch-action: none` for the target and all descendants before contacts begin. This covers nested overflow-hidden labels, paragraphs and raw canvases after DOM replacement. It processes coalesced samples in order. Normal Up followed by lostpointercapture does not cancel other contacts. Unexpected lost capture cancels once, retains the contact until physical Up/Cancel, and drains canceled cleanup without new point actions. A reused pointer ID receives a fresh Down-order slot.
-
-Cancelable touch pointerdown is handled by a non-passive listener. Touch-origin mouse compatibility, boundary events and activation defaults are suppressed synchronously using pointer/source-capability correlation. Independent mouse/pen input and non-touch activation retain their path. Connected disposal sends one `Canceled_WindowDestroyed` End before removing event listeners, captures and surface styling. After transport loss, `stop(true)` performs silent cleanup; Core owns the disconnect cancellation boundary.
-
-`Misc > Touching` owns gesture logic in `<GacUI repo>/Test/Resources/App/FullControlTest/TouchingTabPage.xml`. Raw state is `centerX,centerY,axisX,axisY,count`, followed by `count` triples `pointId,x,y`. The native and browser painters draw the supplied transformed rectangle and contact markers. They do not interpret gestures. Changing raw IDs replaces the native painter attachment; browser subscriptions own canvas/redraw cleanup. The browser painter and input contract are shared with the WASM entry, but WASM runtime verification is a separate task.
-
-## Automation commands and endpoints
-
-The parser is in `<GacUI repo>/Source/Utilities/SharedServices/GuiSharedAutomationService.cpp`. Commands are case-sensitive:
-
-`!PointDown:CONTACT,X,Y[,MODIFIER...]` (also Update, Up, Enter, Leave) and `!PointCancel:CONTACT,REASON`. CONTACT is a nonnegative canonical integer source token fitting the platform's `vint`; it is not the public Down-order slot. X/Y are signed logical client coordinates. Modifiers accept Ctrl/Control, Shift, Alt/Menu, Win/Command/Super, case-insensitively. Held automation modifiers are combined with per-sample modifiers. Cancellation reasons are exactly Unknown, PlatformCanceled, CaptureLost, or WindowDestroyed.
-
-For example, post each line as a separate UTF-8 body with Content-Type `application/json; charset=utf8`:
+Workflow consumers inspect the runtime object type:
 
 ```text
-!PointDown:10,80,100,Ctrl
-!PointDown:20,180,100,Ctrl
-!PointUpdate:20,200,120,Ctrl
-!PointUp:10,80,100,Ctrl
-!PointUp:20,200,120,Ctrl
-!PointDown:10,80,100
-!PointCancel:10,PlatformCanceled
+if (not arguments.handled and arguments.Gesture is GuiPointGesture_Scrolling)
+{
+  var scrolling = cast GuiPointGesture_Scrolling arguments.Gesture;
+  arguments.selected = true;
+  arguments.handled = true;
+  // Apply scrolling.distance along scrolling.isVertical's axis.
+}
 ```
 
-Use `http://localhost:8888/Automation/RemotingTest_Core/IO` for Core injection and `http://localhost:8889/Automation/RemotingTest_Rendering_Native/IO` for a native renderer started with `/AsPort:8889`. Omit window IDs for hosted/remote endpoints. Core exposes Controls; a native renderer exposes Dom. Ordinary Windows automation exposes its application's Controls and IO endpoints. GacJS input must be driven in the browser; it has no separate native renderer automation endpoint. A Queued response means dispatch was scheduled: observe state before asserting completion.
+The same type-check/cast pattern applies to `GuiPointGesture_DraggingAndRotation`. XML event handlers receive the conventional `sender` and `arguments` names through their `GuiEventArgs` ancestry. Borrowed-list argument types have no reflected constructors.
 
-Core injection verifies application dispatch, native renderer injection additionally verifies forwarding, and OS/browser injection verifies acquisition. Keep those results separate from real touch hardware. `<GacUI repo>/Test/Touching_NativeInput.ps1` supports standalone and remote renderers with distinct renderer/Core ports and verifies transported Dom state. The shared operations and expected outcomes are in `<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md`.
+## Four fixed recognizers and click fallback
+
+`GuiPointActionManager` in `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost_Point.h` is a private graphics-host helper for contacts, conversion, capture and recognizer dispatch. `IGuiPointGesture` is internal. Its fixed implementations are defined in `predefined_gestures` in `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost_Point.cpp`, in this priority order:
+
+1. `RightClickGesture` recognizes a successful single-Down sequence lasting at least 500000 microseconds with no excursion beyond eight logical units.
+2. `LeftClickGesture` recognizes the same eligible sequence without the duration minimum. Right wins at the time boundary.
+3. `ScrollingGesture` offers locked-axis incremental movement after crossing the radial eight-unit threshold.
+4. `DraggingAndRotationGesture` offers identity immediately at Started and continues only if that offer is selected.
+
+This extension boundary is for GacUI maintainers only. There is no end-user recognizer registration, OS gesture integration, renderer-specific recognition or additional wire message.
+
+Started resets candidates until one wins. Action and End visit candidates in order until selected; afterwards only the winner receives recognizer callbacks. Public raw End is independent and delivered once, including when scrolling stopped after another contact. Click candidates do not emit events or select themselves. They require exactly one Down and a successful End; final Up participates in the excursion test. Wide arithmetic compares squared radius with `StaticPointRange * StaticPointRange`. Exactly eight stays eligible. Once crossed, returning to the start cannot restore click eligibility. Cancellation or any extra Down disqualifies clicks.
+
+Eligible accepted sequences now get automatic deferred fallback without an End opt-in. The former `fallbackClick` field is removed; End `handled` cannot veto recognition. Selected scrolling/manipulation never clicks. Before synthesizing MouseMove, Down and Up, the host clears point state, then hit-tests at the original screen start using current conversion/layout and original modifiers. Independent physical mouse capture/button bookkeeping is preserved. This deferred accepted-sequence click differs from the immediate rejected-sequence mouse stream used for text selection.
+
+### Incremental movement
+
+Scrolling tracks point 0. At threshold crossing, the larger absolute displacement fixes the axis; horizontal wins ties. The first distance includes the entire projected displacement from initial Down. Later distances are signed projected increments (right/down positive). Any second Down permanently stops scrolling offers for that sequence, even after the extra point lifts. No contact replaces point 0. A declined locked scrolling offer may be offered again; declined initial manipulation is never offered again.
+
+Manipulation starts with `(rotation=0, scale=1, distance=(0,0))`. One contact translates, two translate/rotate/scale, and more than two pause. Occupied IDs determine membership. Membership changes, coincident pairs and recovery from a pause establish a new baseline without a jump. Selection remains active through pauses.
+
+Apply a payload in definition order, `p' = scale * R(rotation) * p + distance`, in accepted-composition logical coordinates. Positive radians rotate clockwise on screen. For two contacts, translation is `newCentroid - scale * R(rotation) * oldCentroid`, so off-origin rotation/scaling follows the contact centroid. Calculations use doubles. Integral `Point` translation rounds to nearest with ties towards positive infinity; transformed fractional residuals remain in `[-0.5, 0.5)` and carry into later increments. This bounds fractional drift and keeps unchanged samples stationary.
+
+## Built-in controls and sample consumers
+
+`GuiControl::AcceptPointEvents` defaults false. Four protected virtual hooks attach once to its persistent bounds. Only Started performs default acceptance: opted in, no previous owner and unhandled query. Action, Gesture and End defaults are empty.
+
+`GuiScrollView` opts in and overrides only `OnPointGesture`. For an owned, unhandled scrolling gesture, it requires the locked-axis scrollbar to exist, be visible and visually enabled. It selects/handles and subtracts the increment from the current view coordinate through ordinary range-clamped APIs. Reversal therefore responds immediately after clamping. An unavailable axis neither switches axes nor hands off to an ancestor. A nearer accepting child remains the sole owner.
+
+`GuiDocumentCommonInterface::ReplaceMouseArea` owns a Started handler alongside its mouse handlers. Enabled Selectable/Editable content marks the query handled without accepting, so default ancestor scroll views cannot take it. Rejected input supplies immediate mouse dragging and range selection. Explicit custom acceptance remains possible. Template replacement detaches/reattaches the handler; ViewOnly content and scrollbar/chrome starts retain scrolling behavior.
+
+`Misc > Touching` in `<GacUI repo>/Test/Resources/App/FullControlTest/TouchingTabPage.xml` selects manipulation, applies payloads to its center/axis and keeps raw handlers only for acceptance and markers. Raw drawing remains `centerX,centerY,axisX,axisY,count` followed by `pointId,x,y` triples. Native/GacJS painters only render supplied state.
+
+`Misc > TouchingList` in `<GacUI repo>/Test/Resources/App/FullControlTest/TouchingListTabPage.xml` accepts at list bounds. Its raw Started remembers the hit row's data identity; horizontal scrolling reveals a measured red DELETE IT region and vertical movement uses built-in scrolling. Row templates only present data. Reveal is clamped, right-only motion stays closed and reversal retracts. Raw extra Down/cancellation resets. Successful single-contact completion at maximum queues identity-based membership-checked removal. Clear and virtualization cannot redirect removal to a different row.
+
+## Automation and verification boundaries
+
+`<GacUI repo>/Source/Utilities/SharedServices/GuiSharedAutomationService.cpp` parses `!PointDown:CONTACT,X,Y[,MODIFIER...]` and the analogous Update/Up/Enter/Leave commands, plus `!PointCancel:CONTACT,REASON`. CONTACT is a canonical nonnegative source token fitting `vint`, not the public slot. X/Y are signed logical client coordinates. Ctrl/Control, Shift, Alt/Menu and Win/Command/Super modifiers are case-insensitive. Cancellation names are Unknown, PlatformCanceled, CaptureLost and WindowDestroyed.
+
+POST individual UTF-8 command bodies with Content-Type `application/json; charset=utf8`. Core input uses `http://localhost:8888/Automation/RemotingTest_Core/IO`; a native renderer started with `/AsPort:8889` uses `http://localhost:8889/Automation/RemotingTest_Rendering_Native/IO`. Omit window IDs for hosted/remote endpoints. Core exposes Controls; native renderers expose Dom. Queued means scheduled, so observe resulting state before asserting completion.
+
+Core injection checks application dispatch, renderer injection additionally checks forwarding, and OS/browser input checks acquisition. GacJS needs browser input because it has no native renderer automation endpoint. Record synthetic input separately from physical hardware. `<GacUI repo>/Test/UIA_CppTest_Shared.cs` contains focused Touching, TouchingList, list scrolling and text selection scenarios; `<GacUI repo>/Test/Touching_NativeInput.ps1` supports standalone and remote native input. Setup is documented in `<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md`.

@@ -99,9 +99,12 @@ So as I pray, unlimited blade works.]]>
           </Cell>
 
           <Cell Site="row:1 column:0">
-            <MultilineTextBox AcceptTabInput-bind="self.TextBoxAcceptTabInput" Text-uri="res://TextBoxComponents/Text" Alt="M" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+            <ScrollContainer ExtendToFullWidth="true" ExtendToFullHeight="true" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </MultilineTextBox>
+              <MultilineTextBox AcceptTabInput-bind="self.TextBoxAcceptTabInput" Text-uri="res://TextBoxComponents/Text" Alt="M" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              </MultilineTextBox>
+            </ScrollContainer>
           </Cell>
         </Table>
       </TabPage>
