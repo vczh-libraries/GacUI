@@ -38,15 +38,11 @@ namespace vl
 {
 	namespace presentation
 	{
+		class INativeWindowListener;
 
 /***********************************************************************
-INativeWindow
+Touch Experience
 ***********************************************************************/
-
-		class GuiImageData;
-		class DocumentModel;
-		class INativeCursor;
-		class INativeWindowListener;
 
 		/// <summary>Completion of an overlapping-contact point sequence.</summary>
 		enum class PointSequenceEndReason
@@ -141,6 +137,14 @@ INativeWindow
 		extern void RetireNativePoint(NativePointInputState& state, vuint64_t sourceToken);
 		/// <summary>Get monotonic microseconds for adapter-generated point samples and cancellation.</summary>
 		extern vuint64_t GetNativePointTimestamp();
+
+/***********************************************************************
+INativeWindow
+***********************************************************************/
+
+		class GuiImageData;
+		class DocumentModel;
+		class INativeCursor;
 
 		enum class BoolOption
 		{

@@ -9,7 +9,7 @@ namespace vl
 		const NativeWindowFrameConfig NativeWindowFrameConfig::Default = {};
 
 /***********************************************************************
-Native Point Input
+Touch Experience
 ***********************************************************************/
 
 		vuint64_t GetNativePointTimestamp()

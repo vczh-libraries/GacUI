@@ -323,6 +323,51 @@ Predefined Events
 				}
 			};
 
+			/// <summary>Control signal.</summary>
+			enum class ControlSignal
+			{
+				/// <summary>Render target changed.</summary>
+				RenderTargetChanged,
+				/// <summary>Render target changed.</summary>
+				ParentLineChanged,
+				/// <summary>Service added changed.</summary>
+				ServiceAdded,
+				/// <summary>The window need to update when data or layout is changed. This even only triggered on <see cref="controls::GuiControlHost"/>.</summary>
+				UpdateRequested,
+				/// <summary>The window finished all the updating works after data or layout is changed. This even only triggered on <see cref="controls::GuiControlHost"/>.</summary>
+				UpdateFullfilled,
+			};
+
+			/// <summary>Control signal event arguments.</summary>
+			struct GuiControlSignalEventArgs : public GuiEventArgs, public Description<GuiControlSignalEventArgs>
+			{
+				/// <summary>The event raiser composition.</summary>
+				ControlSignal				controlSignal = ControlSignal::ParentLineChanged;
+
+				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to null.</summary>
+				GuiControlSignalEventArgs()
+				{
+				}
+
+				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to a specified value.</summary>
+				/// <param name="composition">The speciied value to set <see cref="compositionSource"/> and <see cref="eventSource"/>.</param>
+				GuiControlSignalEventArgs(GuiGraphicsComposition* composition)
+					:GuiEventArgs(composition)
+				{
+				}
+			};
+
+			typedef GuiGraphicsEvent<GuiEventArgs>				GuiNotifyEvent;
+			typedef GuiGraphicsEvent<GuiRequestEventArgs>		GuiRequestEvent;
+			typedef GuiGraphicsEvent<GuiKeyEventArgs>			GuiKeyEvent;
+			typedef GuiGraphicsEvent<GuiCharEventArgs>			GuiCharEvent;
+			typedef GuiGraphicsEvent<GuiMouseEventArgs>			GuiMouseEvent;
+			typedef GuiGraphicsEvent<GuiControlSignalEventArgs>	GuiControlSignalEvent;
+
+/***********************************************************************
+Predefined Point Events
+***********************************************************************/
+
 			/// <summary>Identifies a point sequence query or an action within an accepted sequence.</summary>
 			enum class GuiPointEventsType
 			{
@@ -379,47 +424,6 @@ Predefined Events
 			typedef GuiGraphicsEvent<GuiPointEventArgs>						GuiPointEvent;
 			typedef GuiGraphicsEvent<GuiPointSequenceStartedEventArgs>		GuiPointSequenceStartedEvent;
 			typedef GuiGraphicsEvent<GuiPointSequenceEndedEventArgs>		GuiPointSequenceEndedEvent;
-
-			/// <summary>Control signal.</summary>
-			enum class ControlSignal
-			{
-				/// <summary>Render target changed.</summary>
-				RenderTargetChanged,
-				/// <summary>Render target changed.</summary>
-				ParentLineChanged,
-				/// <summary>Service added changed.</summary>
-				ServiceAdded,
-				/// <summary>The window need to update when data or layout is changed. This even only triggered on <see cref="controls::GuiControlHost"/>.</summary>
-				UpdateRequested,
-				/// <summary>The window finished all the updating works after data or layout is changed. This even only triggered on <see cref="controls::GuiControlHost"/>.</summary>
-				UpdateFullfilled,
-			};
-
-			/// <summary>Control signal event arguments.</summary>
-			struct GuiControlSignalEventArgs : public GuiEventArgs, public Description<GuiControlSignalEventArgs>
-			{
-				/// <summary>The event raiser composition.</summary>
-				ControlSignal				controlSignal = ControlSignal::ParentLineChanged;
-
-				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to null.</summary>
-				GuiControlSignalEventArgs()
-				{
-				}
-
-				/// <summary>Create an event arguments with <see cref="compositionSource"/> and <see cref="eventSource"/> set to a specified value.</summary>
-				/// <param name="composition">The speciied value to set <see cref="compositionSource"/> and <see cref="eventSource"/>.</param>
-				GuiControlSignalEventArgs(GuiGraphicsComposition* composition)
-					:GuiEventArgs(composition)
-				{
-				}
-			};
-
-			typedef GuiGraphicsEvent<GuiEventArgs>				GuiNotifyEvent;
-			typedef GuiGraphicsEvent<GuiRequestEventArgs>		GuiRequestEvent;
-			typedef GuiGraphicsEvent<GuiKeyEventArgs>			GuiKeyEvent;
-			typedef GuiGraphicsEvent<GuiCharEventArgs>			GuiCharEvent;
-			typedef GuiGraphicsEvent<GuiMouseEventArgs>			GuiMouseEvent;
-			typedef GuiGraphicsEvent<GuiControlSignalEventArgs>	GuiControlSignalEvent;
 
 /***********************************************************************
 Predefined Item Events
@@ -550,7 +554,7 @@ Event Receiver
 				GuiNotifyEvent					mouseLeave;
 
 				/// <summary>Query point input at the first contact, before any point data or mouse fallback.</summary>
-				GuiPointSequenceStartedEvent		pointSequenceStarted;
+				GuiPointSequenceStartedEvent	pointSequenceStarted;
 				/// <summary>An action in the accepted captured sequence, identified by GuiPointEventArgs::eventType. Started is delivered only through pointSequenceStarted.</summary>
 				GuiPointEvent					pointAction;
 				/// <summary>The selected composition receives End; point capture is released after its handlers finish.</summary>

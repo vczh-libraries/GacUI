@@ -9,6 +9,20 @@ namespace vl
 		{
 			using namespace collections;
 
+			constexpr vint StaticPointRange = 8;
+
+/***********************************************************************
+Predefined Gestures
+***********************************************************************/
+
+			namespace predefined_gestures
+			{
+			}
+
+/***********************************************************************
+GuiPointActionManager
+***********************************************************************/
+
 			GuiPointActionManager::GuiPointActionManager(GuiGraphicsHost* _host)
 				:host(_host)
 			{
