@@ -379,24 +379,28 @@ namespace vl_workflow_global
 	struct __vwsnf425_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 	struct __vwsnf426_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 	struct __vwsnf427_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
-	struct __vwsnf428_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-	struct __vwsnf429_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+	struct __vwsnf428_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+	struct __vwsnf429_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 	struct __vwsnf42_FullControlTest_demo_ListViewTabPage___vwsn_instance_ctor__;
-	struct __vwsnf430_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-	struct __vwsnf431_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+	struct __vwsnf430_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+	struct __vwsnf431_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 	struct __vwsnf432_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 	struct __vwsnf433_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 	struct __vwsnf434_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 	struct __vwsnf435_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-	struct __vwsnf436_FullControlTest_demo_TouchingListTabPage_EndSwipe_;
-	struct __vwsnf437_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-	struct __vwsnf438_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-	struct __vwsnf439_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+	struct __vwsnf436_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+	struct __vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+	struct __vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+	struct __vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 	struct __vwsnf43_FullControlTest_demo_ListViewTabPage___vwsn_instance_ctor__;
-	struct __vwsnf440_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+	struct __vwsnf440_FullControlTest_demo_TouchingListTabPage_EndSwipe_;
 	struct __vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
 	struct __vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
 	struct __vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+	struct __vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+	struct __vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+	struct __vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+	struct __vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
 	struct __vwsnf44_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 	struct __vwsnf45_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 	struct __vwsnf46_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
@@ -559,13 +563,18 @@ namespace vl_workflow_global
 	class __vwsnc17_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc180_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc181_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc182_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc183_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc184_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc185_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings;
-	class __vwsnc186_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings;
-	class __vwsnc187_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings;
+	class __vwsnc182_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc183_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc184_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc185_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc186_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc187_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc188_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc189_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc18_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc190_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings;
+	class __vwsnc191_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings;
+	class __vwsnc192_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings;
 	class __vwsnc19_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc1_FullControlTest_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize__vl_presentation_controls_list_IDataSorter;
 	class __vwsnc20_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
@@ -1429,7 +1438,7 @@ namespace demo
 
 	class DialogStringsInjection : public ::vl::Object, public ::vl::reflection::Description<DialogStringsInjection>
 	{
-		friend class ::vl_workflow_global::__vwsnc185_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings;
+		friend class ::vl_workflow_global::__vwsnc190_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DialogStringsInjection>;
 #endif
@@ -4606,8 +4615,8 @@ namespace demo
 
 	class StringResource : public ::vl::Object, public ::vl::reflection::Description<StringResource>
 	{
-		friend class ::vl_workflow_global::__vwsnc186_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings;
-		friend class ::vl_workflow_global::__vwsnc187_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings;
+		friend class ::vl_workflow_global::__vwsnc191_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings;
+		friend class ::vl_workflow_global::__vwsnc192_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<StringResource>;
 #endif
@@ -5048,17 +5057,6 @@ namespace demo
 	public:
 		::vl::WString GetText();
 		void SetText(const ::vl::WString& __vwsn_value_);
-	private:
-		::vl::vint32_t __vwsn_prop_Reveal;
-	public:
-		::vl::vint32_t GetReveal();
-		void SetReveal(::vl::vint32_t __vwsn_value_);
-		::vl::Event<void()> RevealChanged;
-	private:
-		::vl::vint32_t __vwsn_prop_Maximum;
-	public:
-		::vl::vint32_t GetMaximum();
-		void SetMaximum(::vl::vint32_t __vwsn_value_);
 		TouchingListItem(const ::vl::WString& text);
 	};
 
@@ -5068,25 +5066,36 @@ namespace demo
 		friend class ::vl_workflow_global::__vwsnc179_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc180_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc181_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc182_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc183_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc184_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc185_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc186_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf423_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf424_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf425_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf426_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf427_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf428_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf429_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf430_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf431_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TouchingListItemTemplateConstructor>;
 #endif
 	protected:
 		::demo::TouchingListItemTemplate* self;
 		::vl::Ptr<::demo::TouchingListItem> ViewModel;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_3;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_4;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiBoundsComposition* deleteBackground;
 		::vl::presentation::compositions::GuiBoundsComposition* deleteLabel;
+		::vl::presentation::compositions::GuiBoundsComposition* foreground;
 		void __vwsn_demo_TouchingListItemTemplate_Initialize(::demo::TouchingListItemTemplate* __vwsn_this_);
 	public:
 		TouchingListItemTemplateConstructor();
@@ -5099,14 +5108,32 @@ namespace demo
 		friend class ::vl_workflow_global::__vwsnc179_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc180_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc181_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc182_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc183_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc184_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc185_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc186_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf423_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf424_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf425_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf426_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf427_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf428_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf429_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf430_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf431_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TouchingListItemTemplate>;
 #endif
+	public:
+		::vl::vint32_t __vwsn_prop_DragDistance;
+		::vl::vint32_t GetDragDistance();
+		void SetDragDistance(::vl::vint32_t __vwsn_value_);
+		::vl::Event<void()> DragDistanceChanged;
+		::vl::vint32_t GetMaxDragDistance();
+		::darkskin::ColorPackage __vwsn_prop_Colors;
+		::darkskin::ColorPackage GetColors();
+		void SetColors(::darkskin::ColorPackage __vwsn_value_);
 	private:
 		::vl::Ptr<::demo::TouchingListItem> __vwsn_parameter_ViewModel;
 	public:
@@ -5117,14 +5144,14 @@ namespace demo
 
 	class TouchingListTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TouchingListTabPageConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf428_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf429_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf430_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf431_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf432_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf433_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf434_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf435_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf436_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TouchingListTabPageConstructor>;
 #endif
@@ -5137,7 +5164,9 @@ namespace demo
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout> __vwsn_precompile_4;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_5;
 		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout> __vwsn_precompile_6;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_7;
+		::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout> __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9;
 		::vl::presentation::controls::GuiBindableTextList* list;
 		void __vwsn_demo_TouchingListTabPage_Initialize(::demo::TouchingListTabPage* __vwsn_this_);
 	public:
@@ -5146,16 +5175,16 @@ namespace demo
 
 	class TouchingListTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TouchingListTabPageConstructor, public ::vl::reflection::Description<TouchingListTabPage>
 	{
-		friend struct ::vl_workflow_global::__vwsnf436_FullControlTest_demo_TouchingListTabPage_EndSwipe_;
+		friend struct ::vl_workflow_global::__vwsnf440_FullControlTest_demo_TouchingListTabPage_EndSwipe_;
 		friend class ::demo::TouchingListTabPageConstructor;
-		friend struct ::vl_workflow_global::__vwsnf428_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf429_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf430_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf431_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf432_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf433_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf434_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf435_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf436_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TouchingListTabPage>;
 #endif
@@ -5166,6 +5195,7 @@ namespace demo
 		::vl::vint32_t serial;
 		::vl::Ptr<::demo::TouchingListItem> swipeItem;
 		bool multipleContacts;
+		::demo::TouchingListItemTemplate* GetSwipeTemplate();
 		void ResetSwipe();
 		void AddItems();
 		void BeginSwipe(::vl::presentation::compositions::GuiPointSequenceStartedEventArgs* arguments);
@@ -5314,16 +5344,16 @@ namespace demo
 
 	class VerticalTabTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<VerticalTabTemplateConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc182_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc183_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc184_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf437_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf438_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf439_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf440_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend class ::vl_workflow_global::__vwsnc187_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc188_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc189_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VerticalTabTemplateConstructor>;
 #endif
@@ -5350,16 +5380,16 @@ namespace demo
 	class VerticalTabTemplate : public ::vl::presentation::templates::GuiRibbonTabTemplate, public ::demo::VerticalTabTemplateConstructor, public ::vl::reflection::Description<VerticalTabTemplate>
 	{
 		friend class ::demo::VerticalTabTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc182_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc183_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc184_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf437_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf438_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf439_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf440_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend class ::vl_workflow_global::__vwsnc187_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc188_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc189_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<VerticalTabTemplate>;
 #endif
@@ -8554,7 +8584,7 @@ Closures
 
 		__vwsnf424_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf425_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
@@ -8584,22 +8614,22 @@ Closures
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf428_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	struct __vwsnf428_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
 	{
-		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf428_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf428_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf429_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	struct __vwsnf429_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
 	{
-		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf429_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf429_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiListItemTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf42_FullControlTest_demo_ListViewTabPage___vwsn_instance_ctor__
@@ -8611,22 +8641,22 @@ Closures
 		void operator()(::vl::Ptr<::vl::presentation::controls::list::ListViewItem> item) const;
 	};
 
-	struct __vwsnf430_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	struct __vwsnf430_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
 	{
-		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf430_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf430_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf431_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	struct __vwsnf431_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_
 	{
-		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf431_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf431_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize_(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf432_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
@@ -8635,7 +8665,7 @@ Closures
 
 		__vwsnf432_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceStartedEventArgs* arguments) const;
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf433_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
@@ -8644,7 +8674,7 @@ Closures
 
 		__vwsnf433_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointEventArgs* arguments) const;
+		::vl::presentation::templates::GuiListItemTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf434_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
@@ -8653,7 +8683,7 @@ Closures
 
 		__vwsnf434_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointGestureEventArgs* arguments) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
 	struct __vwsnf435_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
@@ -8662,44 +8692,43 @@ Closures
 
 		__vwsnf435_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
 
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf436_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	{
+		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf436_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceStartedEventArgs* arguments) const;
+	};
+
+	struct __vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	{
+		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointEventArgs* arguments) const;
+	};
+
+	struct __vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	{
+		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointGestureEventArgs* arguments) const;
+	};
+
+	struct __vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_
+	{
+		::demo::TouchingListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0);
+
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceEndedEventArgs* arguments) const;
-	};
-
-	struct __vwsnf436_FullControlTest_demo_TouchingListTabPage_EndSwipe_
-	{
-		::vl::Ptr<::demo::TouchingListItem> target;
-		::demo::TouchingListTabPage* __vwsnthis_0;
-
-		__vwsnf436_FullControlTest_demo_TouchingListTabPage_EndSwipe_(::vl::Ptr<::demo::TouchingListItem> __vwsnctor_target, ::demo::TouchingListTabPage* __vwsnctorthis_0);
-
-		void operator()() const;
-	};
-
-	struct __vwsnf437_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
-	{
-		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf437_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
-
-		::vl::presentation::templates::GuiTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
-	};
-
-	struct __vwsnf438_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
-	{
-		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf438_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf439_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
-	{
-		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf439_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const;
 	};
 
 	struct __vwsnf43_FullControlTest_demo_ListViewTabPage___vwsn_instance_ctor__
@@ -8711,13 +8740,14 @@ Closures
 		void operator()(::vl::Ptr<::vl::presentation::controls::list::ListViewItem> item) const;
 	};
 
-	struct __vwsnf440_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
+	struct __vwsnf440_FullControlTest_demo_TouchingListTabPage_EndSwipe_
 	{
-		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
+		::vl::Ptr<::demo::TouchingListItem> target;
+		::demo::TouchingListTabPage* __vwsnthis_0;
 
-		__vwsnf440_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+		__vwsnf440_FullControlTest_demo_TouchingListTabPage_EndSwipe_(::vl::Ptr<::demo::TouchingListItem> __vwsnctor_target, ::demo::TouchingListTabPage* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const;
+		void operator()() const;
 	};
 
 	struct __vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
@@ -8726,7 +8756,7 @@ Closures
 
 		__vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		::vl::presentation::templates::GuiTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
@@ -8743,6 +8773,42 @@ Closures
 		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
 
 		__vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const;
+	};
+
+	struct __vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
+	{
+		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const;
+	};
+
+	struct __vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
+	{
+		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
+	{
+		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_
+	{
+		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
@@ -10941,7 +11007,7 @@ Closures
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -10954,9 +11020,12 @@ Closures
 
 		__vwsnc179_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -11005,18 +11074,110 @@ Closures
 
 		__vwsnc181_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::Ptr<::demo::TouchingListItem> __vwsn_bind_cache_0;
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_1 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc182_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc182_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
+
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc183_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc183_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
+
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_1 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc184_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc184_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
+
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc185_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc185_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
+
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_1 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_1_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc186_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::TouchingListItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc186_FullControlTest_demo_TouchingListItemTemplateConstructor___vwsn_demo_TouchingListItemTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::TouchingListItemTemplateConstructor* __vwsnctorthis_0);
+
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_0 = nullptr;
 		::demo::TouchingListItemTemplate* __vwsn_bind_cache_1 = nullptr;
 		::demo::TouchingListItemTemplate* __vwsn_bind_cache_2 = nullptr;
-		::vl::Ptr<::demo::TouchingListItem> __vwsn_bind_cache_3;
-		::demo::TouchingListItemTemplate* __vwsn_bind_cache_4 = nullptr;
-		::demo::TouchingListItemTemplate* __vwsn_bind_cache_5 = nullptr;
+		::demo::TouchingListItemTemplate* __vwsn_bind_cache_3 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_2_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_3_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_4_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_5_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
@@ -11024,19 +11185,17 @@ Closures
 		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		void __vwsn_bind_callback_3_0();
-		void __vwsn_bind_callback_4_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_5_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
 	};
 
-	class __vwsnc182_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc187_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc182_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc187_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
 
 		::demo::VerticalTabTemplate* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -11049,12 +11208,12 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc183_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc188_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc183_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc188_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
 
 		::demo::VerticalTabTemplate* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -11067,12 +11226,12 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc184_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc189_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::VerticalTabTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc184_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc189_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0);
 
 		::demo::VerticalTabTemplate* __vwsn_bind_cache_0 = nullptr;
 		::vl::presentation::controls::GuiRibbonTabPage* __vwsn_bind_cache_1 = nullptr;
@@ -11088,10 +11247,28 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc185_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings : public ::vl::Object, public virtual ::gaclib_controls::IDialogStringsStrings
+	class __vwsnc18_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		__vwsnc185_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings();
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc18_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::demo::MainWindow* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc190_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings : public ::vl::Object, public virtual ::gaclib_controls::IDialogStringsStrings
+	{
+	public:
+		__vwsnc190_FullControlTest_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings();
 
 		::vl::WString Abort() override;
 		::vl::WString Blue() override;
@@ -11134,12 +11311,12 @@ Closures
 		::vl::WString Yes() override;
 	};
 
-	class __vwsnc186_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
+	class __vwsnc191_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
 	{
 	public:
 		::vl::Locale __vwsn_ls_locale;
 
-		__vwsnc186_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
+		__vwsnc191_FullControlTest_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
 
 		::vl::WString Currency(const ::vl::WString& __vwsn_ls_0) override;
 		::vl::WString DateFormat(::vl::DateTime __vwsn_ls_0) override;
@@ -11155,12 +11332,12 @@ Closures
 		::vl::WString YearMonthDate(::vl::DateTime __vwsn_ls_0) override;
 	};
 
-	class __vwsnc187_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
+	class __vwsnc192_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
 	{
 	public:
 		::vl::Locale __vwsn_ls_locale;
 
-		__vwsnc187_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
+		__vwsnc192_FullControlTest_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
 
 		::vl::WString Currency(const ::vl::WString& __vwsn_ls_0) override;
 		::vl::WString DateFormat(::vl::DateTime __vwsn_ls_0) override;
@@ -11174,24 +11351,6 @@ Closures
 		::vl::WString TimeFormat(::vl::DateTime __vwsn_ls_0) override;
 		::vl::WString Title() override;
 		::vl::WString YearMonthDate(::vl::DateTime __vwsn_ls_0) override;
-	};
-
-	class __vwsnc18_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
-	{
-	public:
-		::demo::MainWindowConstructor* __vwsnthis_0;
-
-		__vwsnc18_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0);
-
-		::demo::MainWindow* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		bool Open() override;
-		bool Update() override;
-		bool Close() override;
 	};
 
 	class __vwsnc19_FullControlTest_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription

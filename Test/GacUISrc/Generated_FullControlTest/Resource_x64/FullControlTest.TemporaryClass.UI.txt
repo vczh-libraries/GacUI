@@ -3279,6 +3279,50 @@ namespace demo
 {
     class TouchingListItemTemplate : ::presentation::templates::GuiTextListItemTemplate
     {
+        @cpp:Private
+        var <prop>DragDistance : int = 0;
+
+        func GetDragDistance() : (int)
+        {
+            return <prop>DragDistance;
+        }
+
+        func SetDragDistance(<value> : int) : (void)
+        {
+            if ((<prop>DragDistance != <value>))
+            {
+                (<prop>DragDistance = <value>);
+                DragDistanceChanged();
+            }
+        }
+
+        event DragDistanceChanged();
+
+        prop DragDistance : int{GetDragDistance, SetDragDistance : DragDistanceChanged}
+
+        func GetMaxDragDistance() : (int)
+        {
+            raise "Not Implemented";
+        }
+
+        prop MaxDragDistance : int{GetMaxDragDistance}
+
+        @cpp:Private
+        var <prop>Colors : darkskin::ColorPackage = darkskin::Theme::GetColorPackage();
+
+        func GetColors() : (darkskin::ColorPackage)
+        {
+            return <prop>Colors;
+        }
+
+        @cpp:Protected
+        func SetColors(<value> : darkskin::ColorPackage) : (void)
+        {
+            (<prop>Colors = <value>);
+        }
+
+        prop Colors : darkskin::ColorPackage{GetColors}
+
         func GetViewModel() : (demo::TouchingListItem^)
         {
             raise "Not Implemented";
@@ -3345,6 +3389,11 @@ namespace demo
         var swipeItem : TouchingListItem^ = null;
 
         var multipleContacts : bool = false;
+
+        func GetSwipeTemplate() : (TouchingListItemTemplate*)
+        {
+            raise "Not Implemented";
+        }
 
         func ResetSwipe() : (void)
         {
@@ -4770,42 +4819,6 @@ namespace demo
         }
 
         prop Text : string{GetText, SetText}
-
-        @cpp:Private
-        var <prop>Reveal : int = 0;
-
-        func GetReveal() : (int)
-        {
-            return <prop>Reveal;
-        }
-
-        func SetReveal(<value> : int) : (void)
-        {
-            if ((<prop>Reveal != <value>))
-            {
-                (<prop>Reveal = <value>);
-                RevealChanged();
-            }
-        }
-
-        event RevealChanged();
-
-        prop Reveal : int{GetReveal, SetReveal : RevealChanged}
-
-        @cpp:Private
-        var <prop>Maximum : int = 0;
-
-        func GetMaximum() : (int)
-        {
-            return <prop>Maximum;
-        }
-
-        func SetMaximum(<value> : int) : (void)
-        {
-            (<prop>Maximum = <value>);
-        }
-
-        prop Maximum : int{GetMaximum, SetMaximum}
 
         new (text : string)
         {

@@ -1326,42 +1326,6 @@ namespace demo
 
         prop Text : string{GetText, SetText}
 
-        @cpp:Private
-        var <prop>Reveal : int = 0;
-
-        func GetReveal() : (int)
-        {
-            return <prop>Reveal;
-        }
-
-        func SetReveal(<value> : int) : (void)
-        {
-            if ((<prop>Reveal != <value>))
-            {
-                (<prop>Reveal = <value>);
-                RevealChanged();
-            }
-        }
-
-        event RevealChanged();
-
-        prop Reveal : int{GetReveal, SetReveal : RevealChanged}
-
-        @cpp:Private
-        var <prop>Maximum : int = 0;
-
-        func GetMaximum() : (int)
-        {
-            return <prop>Maximum;
-        }
-
-        func SetMaximum(<value> : int) : (void)
-        {
-            (<prop>Maximum = <value>);
-        }
-
-        prop Maximum : int{GetMaximum, SetMaximum}
-
         new (text : string)
         {
             (Text = text);
