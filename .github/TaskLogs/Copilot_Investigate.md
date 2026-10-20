@@ -268,7 +268,7 @@ Reproduce missing variant metadata and parameter boxing in VlppReflection first.
 
 # PROPOSALS
 
-- No.1 Ordered variant metadata and tagged parameter boxes
+- No.1 Ordered variant metadata and tagged parameter boxes [CONFIRMED]
 
 ## No.1 Ordered variant metadata and tagged parameter boxes
 
@@ -519,3 +519,29 @@ All required Debug x64 Touching scenarios passed: CppTest 6,826 assertions, CppT
 Coverage includes the raw point lifecycle and fallback routing, one/two-contact manipulation, ListView scrolling and clamping, TouchingList right/partial/full/reversed swipes, cancellation, extra contacts, final-Up-only motion, exactly-once deferred identity-based removal, recycled rows, and text selection across template replacement. Automation and UIA name/selection/bounds/resize checks ran in the existing shared scenario. The earlier Host startup timeout did not recur once the heavy builds finished; the successful retry used the verified x64 executable.
 
 Implementation, generated-output, metadata, ordinary-test and application verification are complete. Commit and push this checkpoint before starting the requested website documentation and publication phase.
+
+### Website documentation and publication completed
+
+The implementation checkpoint was pushed as ed8f62cca before starting the website phase. Authored documentation in `<WebsiteSource repo>/packages/website-doc2/src/articles/workflow/lang` now includes a dedicated Variants page and updates to types, expressions, binary operators, bindings, keyword indexing and navigation. `<WebsiteSource repo>/packages/website-doc2/src/articles/workflow/rpc.xml` documents recursive variant rejection and the existing dynamic JSON serialization failure. WebsiteSource commit 892e45d is pushed.
+
+The five language code blocks were checked against the statements in the executed VariantCasts, VariantComparison and A10_VariantImplicitObject fixtures. The RPC example exactly matches H2_RpcVariantParameter. These fixtures passed their positive, expected-diagnostic or nonfatal-runtime-failure assertions in the final compiler/VM/generated-C++ test matrix described above; this check reused those executed fixtures rather than claiming a separate standalone example run.
+
+`yarn install --frozen-lockfile`, `yarn build` and `yarn test` succeeded. The main website download, documentation download and Markdown export all completed with exit code 0. Changed XML parsed successfully. All 137 local links in the seven edited Markdown content pages resolve. The Markdown exporter still reports eight occurrences of existing missing registered/reference article URLs outside the changed pages.
+
+Browser-rendered checks passed for Variants, Types, Expressions, Binary Operators, Index of Keywords, Data Binding and RPC, with no console errors. The Variants layout, code blocks and navigation were inspected. The publication copy contained all 364 exported documentation files with matching hashes and no stale files. Generated HTML escaped newlines were normalized to the published convention, removing 286 files' newline-only changes. The final publication contains the seven changed content pages and four necessary Types-child navigation updates.
+
+Published commit 086e19f82 is pushed to `<vczh-libraries.github.io repo>` master. [Pages build and deployment run 39458446261](https://github.com/vczh-libraries/vczh-libraries.github.io/actions/runs/39458446261) completed successfully for that exact commit. Opening the published homepage redirected to the canonical gaclib.net domain. All seven edited live pages rendered the new content, and the RPC-to-Variants link worked with no browser console errors. The [live Variants documentation](https://gaclib.net/doc/current/workflow/lang/variant.html) is available.
+
+Both `copilotInitAll` calls were skipped as requested. All 213 exported manual files were copied and hash-verified in `<Tools repo>/Copilot/KnowledgeBase/manual`, and the final Copy of Online Manual section of `<Tools repo>/Copilot/KnowledgeBase/Index.md` was replaced from the export. There were no stale manual files. Canonical manual commit 50f612e is pushed. The existing Index line-ending convention and generated Markdown terminal blank line were preserved.
+
+This Windows host has no WSL/Linux WebAssembly build environment, so the publishing job's fresh Copy-WASM build was unavailable and was not counted as passed. The existing published demo was used for the local main-site export and left untouched in the publication repository. All 18 published wasm-fct files retained their original SHA-256 hashes. No new WebAssembly binary or browser-demo interaction coverage is claimed.
+
+### CONFIRMED
+
+The requested ordered variant model is implemented across reflection, Workflow compilation and execution, the mirrored parser, RPC validation and GacUI event reflection. Variant metadata deliberately has no element or descriptor; serialization and affected consumers handle that representation explicitly. Parameter boxes preserve declared option tags, including typed nulls, while exact variant conversion remains separate from ordinary conversions.
+
+The positive and negative tests establish exact ordered identity, native alternative collision rejection, explicit strong/weak/infer behavior, first-option defaults, payload-based partial comparison, object-option precedence and escape behavior, ownership/copy semantics, assembly reloads, and recursive RPC rejection. Final Workflow tests passed for Win32/x64 in the VM and all three generated-C++ reflection modes; full Release, stdio RPC and TypeScript verification also passed. Reflection and VlppParser2 verification passed as recorded above. Existing ordinary cast expectations were retained.
+
+GacUI now exposes the writable gesture variant field and removes the old Gesture/GetGesture workaround. Reflection/resource tests establish option order, extraction copies, whole-field write-back and mismatched-assignment rejection. Final Win32/x64 unit runs and all four Touching automation/UIA scenarios passed without reported leaks or runtime-error dialogs. The shared scenario preserves the original gesture lifecycle, transformations, scrolling and deferred identity-based removal behavior.
+
+Authored changes, required generated outputs, metadata, snapshots, synchronized guidance, website publication and the canonical manual have been committed and pushed in their owning repositories. The implementation is retained as the confirmed proposal. Coverage limitations are explicitly recorded: a fresh WebAssembly rebuild was unavailable, the existing published demo was preserved, and automation/UIA execution does not claim physical-desktop pixel inspection.
