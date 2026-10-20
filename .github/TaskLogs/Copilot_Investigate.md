@@ -511,3 +511,11 @@ The final ordinary GacUI runs passed all selected tests: Win32 11/11 files and 2
 The complete required `<Tools repo>/Tools/Build.ps1 Workflow` run succeeded with exit code 0, including both Release architectures, compiler/runtime/native consumers, TypeScript, stdio RPC, CodePack and CppMerge. StructTraversal again produced 28; the existing SharedMemsp case remains intentionally skipped by that suite. It left no additional tracked Workflow changes.
 
 All updated GacUI imports match their owning release files byte for byte. Generated imports, release files, metadata and resources were pushed as 52c15447d; the two unit-test snapshots were pushed separately as 03c1f4c12. All other affected repositories are clean and pushed. The four Debug x64 Touching application scenarios are now running without the earlier heavy build load.
+
+### Four-application interaction verification completed
+
+All required Debug x64 Touching scenarios passed: CppTest 6,826 assertions, CppTest_Metaonly 6,825, CppTest_Reflection 6,826 and GacUI_Host 6,826. Each completed normal Window.Close, owned-process termination and endpoint release. No native runtime-error dialog appeared, and the shared runner restored project user arguments.
+
+Coverage includes the raw point lifecycle and fallback routing, one/two-contact manipulation, ListView scrolling and clamping, TouchingList right/partial/full/reversed swipes, cancellation, extra contacts, final-Up-only motion, exactly-once deferred identity-based removal, recycled rows, and text selection across template replacement. Automation and UIA name/selection/bounds/resize checks ran in the existing shared scenario. The earlier Host startup timeout did not recur once the heavy builds finished; the successful retry used the verified x64 executable.
+
+Implementation, generated-output, metadata, ordinary-test and application verification are complete. Commit and push this checkpoint before starting the requested website documentation and publication phase.
