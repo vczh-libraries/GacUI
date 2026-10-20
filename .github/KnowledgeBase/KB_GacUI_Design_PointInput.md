@@ -47,21 +47,27 @@ Action/Started/End `Points` is a borrowed `List<Nullable<Point>>` in receiving-c
 
 ### Typed C++ payload and Workflow bridge
 
-`GuiPointGestureEventArgs` is a reflected class deriving from `GuiEventArgs`, with writable `selected` and a read-only object-valued `Gesture` property backed by `GetGesture()`. Its native public `gesture` is exactly `Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>` and is not registered as a reflected field. The getter boxes an independent copy of the active value struct and works in generated C++ without reflection metadata. There is no null payload or setter; changing a boxed copy cannot change the native payload.
+`GuiPointGestureEventArgs` is a reflected class deriving from `GuiEventArgs`, with writable `selected` and `gesture` fields. The native payload is exactly `Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>`, reflected to Workflow as `variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>` in that order. The former read-only object property `Gesture` and method `GetGesture()` are removed; consumers use lowercase `gesture`.
 
-Workflow consumers inspect the runtime object type:
+Reading the field and extracting either struct produce independent copies. Changing an extracted struct does not modify the event argument. Assigning a complete variant with the exact ordered field type writes back to the native argument; a payload by itself or a differently ordered variant does not implicitly convert. `selected` still changes the original argument directly.
+
+Workflow consumers weakly extract a nullable option:
 
 ```text
-if (not arguments.handled and arguments.Gesture is GuiPointGesture_Scrolling)
+if (not arguments.handled)
 {
-  var scrolling = cast GuiPointGesture_Scrolling arguments.Gesture;
-  arguments.selected = true;
-  arguments.handled = true;
-  // Apply scrolling.distance along scrolling.isVertical's axis.
+  if (var scrolling : GuiPointGesture_Scrolling? = arguments.gesture as GuiPointGesture_Scrolling?)
+  {
+    arguments.selected = true;
+    arguments.handled = true;
+    // Apply scrolling.distance along scrolling.isVertical's axis.
+  }
 }
 ```
 
-The same type-check/cast pattern applies to `GuiPointGesture_DraggingAndRotation`. XML event handlers receive the conventional `sender` and `arguments` names through their `GuiEventArgs` ancestry. Borrowed-list argument types have no reflected constructors.
+An inactive option returns null. The same nullable weak-cast pattern applies to `GuiPointGesture_DraggingAndRotation`; direct `is PayloadType` tests on a variant are not supported. To write an extracted `scrolling` value back, use `arguments.gesture = scrolling of variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>;`. Both alternatives are nonnullable structs, and a default variant contains the default scrolling value. These rules apply to interpreted Workflow and generated C++ in all reflection modes.
+
+XML event handlers receive the conventional `sender` and `arguments` names through their `GuiEventArgs` ancestry. Borrowed-list argument types have no reflected constructors.
 
 ## Four fixed recognizers and click fallback
 

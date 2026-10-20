@@ -15,6 +15,8 @@ There are two kinds of JSON schema for RPC serializable types:
 Pay attention to the `RpcObjectReference` and `RpcException` types, they are treated like structs. Serialization for both types is always needed, even when they do not appear in RPC metadata.
 Types listed here should include every type appearing in `WfLexicalScopeManager::rpcMetadata`, but when `RpcObjectReference` or `RpcException` also appears in the list, do not duplicate its processing.
 
+There is no RPC JSON schema for a variant. Static RPC validation rejects direct and recursively contained variant types before generating metadata or serializers. A variant explicitly escaped to object remains an outer variant box: dynamic serialization rejects that box with the existing unsupported-value failure, including when reached through an object list or dictionary. It does not serialize the active payload.
+
 ## Schema for Known Types
 
 1) primitive types

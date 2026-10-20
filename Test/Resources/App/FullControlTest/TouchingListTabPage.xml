@@ -150,19 +150,21 @@
                   }
                 }]]></ev.pointAction-eval>
                 <ev.pointGesture-eval><![CDATA[{
-                  if (not arguments.handled and arguments.Gesture is GuiPointGesture_Scrolling)
+                  if (not arguments.handled)
                   {
-                    var scrolling = cast GuiPointGesture_Scrolling arguments.Gesture;
-                    if (not scrolling.isVertical)
+                    if (var scrolling : GuiPointGesture_Scrolling? = arguments.gesture as GuiPointGesture_Scrolling?)
                     {
-                      arguments.selected = true;
-                      arguments.handled = true;
-                      if (self.swipeItem is not null and not self.multipleContacts)
+                      if (not scrolling.isVertical)
                       {
-                        var row = self.GetSwipeTemplate();
-                        if (row is not null)
+                        arguments.selected = true;
+                        arguments.handled = true;
+                        if (self.swipeItem is not null and not self.multipleContacts)
                         {
-                          row.DragDistance = Math::Max(0, Math::Min(row.MaxDragDistance, row.DragDistance - scrolling.distance));
+                          var row = self.GetSwipeTemplate();
+                          if (row is not null)
+                          {
+                            row.DragDistance = Math::Max(0, Math::Min(row.MaxDragDistance, row.DragDistance - scrolling.distance));
+                          }
                         }
                       }
                     }

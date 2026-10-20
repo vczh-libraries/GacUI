@@ -275,15 +275,26 @@ TEST_FILE
 			}
 		});
 
-		TEST_CASE(L"Workflow reads gesture alternatives but rejects assigning the getter")
+		TEST_CASE(L"Workflow extracts and assigns gesture variants with exact option types")
 		{
-			for (bool assign : { false,true })
+			const wchar_t* cases[] =
+			{
+				L"if (var scrolling : GuiPointGesture_Scrolling? = arguments.gesture as GuiPointGesture_Scrolling?) { arguments.selected = scrolling.distance != 0; } "
+				L"else if (var transform : GuiPointGesture_DraggingAndRotation? = arguments.gesture as GuiPointGesture_DraggingAndRotation?) { arguments.selected = transform.scale > 0.0; }",
+				L"var value : GuiPointGesture_Scrolling = {isVertical:true distance:7}; "
+				L"arguments.gesture = value of variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>; arguments.selected = true;",
+				L"var value : GuiPointGesture_DraggingAndRotation = {rotation:0.0 scale:2.0}; "
+				L"arguments.gesture = value of variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>; arguments.selected = true;",
+				L"arguments.gesture = 1;",
+				L"var value : GuiPointGesture_Scrolling = {distance:7}; arguments.gesture = value;",
+				L"var value : GuiPointGesture_Scrolling = {distance:7}; "
+				L"arguments.gesture = value of variant<GuiPointGesture_DraggingAndRotation, GuiPointGesture_Scrolling>;",
+			};
+			for (vint i = 0; i < sizeof(cases) / sizeof(*cases); i++)
 			{
 				GuiResourceError::List errors;
 				auto parser = GetParserManager()->GetParser<glr::xml::XmlDocument>(L"XML");
-				auto code = assign ? WString(L"arguments.Gesture = null;") : WString(
-					L"if (arguments.Gesture is GuiPointGesture_Scrolling) { var value = cast GuiPointGesture_Scrolling arguments.Gesture; arguments.selected = value.distance != 0; } "
-					L"else if (arguments.Gesture is GuiPointGesture_DraggingAndRotation) { var value = cast GuiPointGesture_DraggingAndRotation arguments.Gesture; arguments.selected = value.scale > 0.0; }");
+				auto code = WString::Unmanaged(cases[i]);
 				auto xml = parser->Parse({}, easy_layout_xml_tests::Resource(
 					L"<Bounds><ev.pointGesture-eval><![CDATA[{" + code + L"}]]></ev.pointGesture-eval></Bounds>"), errors);
 				TEST_ASSERT(xml && errors.Count() == 0);
@@ -291,7 +302,16 @@ TEST_FILE
 				TEST_ASSERT(resource && errors.Count() == 0);
 				PrecompileResource(resource, GuiResourceCpuArchitecture::Unspecified, nullptr, errors);
 				for (auto error : errors) TEST_PRINT(error.message);
-				TEST_ASSERT((errors.Count() > 0) == assign);
+				TEST_ASSERT((errors.Count() > 0) == (i >= 3));
+				if (i >= 3)
+				{
+					bool incompatibleAssignment = false;
+					for (auto error : errors)
+					{
+						if (wcsstr(error.message.Buffer(), L"A10")) incompatibleAssignment = true;
+					}
+					TEST_ASSERT(incompatibleAssignment);
+				}
 			}
 		});
 

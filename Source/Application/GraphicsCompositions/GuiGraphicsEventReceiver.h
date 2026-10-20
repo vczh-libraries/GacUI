@@ -454,15 +454,13 @@ Predefined Point Events
 			class GuiPointGestureEventArgs : public GuiEventArgs, public Description<GuiPointGestureEventArgs>
 			{
 			public:
-				/// <summary>The typed native payload. Reflection exposes a boxed copy through the read-only Gesture property.</summary>
+				/// <summary>The writable reflected variant payload. Reading or extracting it produces a copy; assign the complete variant to write it back.</summary>
 				Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation> gesture;
 				/// <summary>Select this gesture when unhandled. Later handlers cannot undo selection.</summary>
 				bool										selected = false;
 
 				GuiPointGestureEventArgs();
 				GuiPointGestureEventArgs(GuiGraphicsComposition* composition);
-				/// <summary>Get a nonempty boxed copy of the active payload, available with or without reflection metadata.</summary>
-				reflection::description::Value				GetGesture();
 			};
 
 			typedef GuiGraphicsEvent<GuiPointEventArgs>						GuiPointEvent;

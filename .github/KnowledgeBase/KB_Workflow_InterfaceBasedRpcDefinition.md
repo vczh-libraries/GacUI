@@ -26,6 +26,7 @@ All types below count as serializable types, but serialization itself is optiona
 - Nullable types.
   - Nullable could be applied to primitive types, struct types and enum types.
   - Also all nullable types should just be serializable.
+  - Metadata collection follows the nullable element type, including structs or enums referenced only through nullable fields, so their declarations survive metadata reconstruction and remain available to generated serializers.
 - Strong typed collection types, its element type, key type, value type should all be serializable.
   - Strong typed collection types here mean the type uses Workflow's collection type syntax.
     - `T{}`, `T[]`, `V[K]` and `observe T[]`.
@@ -33,6 +34,8 @@ All types below count as serializable types, but serialization itself is optiona
 - Interface with `@rpc:Interface`. Only shared pointer `T^` is acceptable, `T*` is not.
 
 `system::RpcObjectReference` and `system::RpcException` are internal RPC transport structs. Generated infrastructure serializes them when needed, but user-authored RPC interfaces cannot use them in function return values, function arguments, or event arguments.
+
+Variant types are not RPC serializable. Validation rejects them in method parameters and returns, properties and event arguments, including occurrences inside nullable wrappers, collection arguments and struct fields. Struct-field traversal tracks visited types and structs so repeated or recursive metadata terminates. This restriction does not change unrelated nonvariant serializability rules.
 
 ## Compile Errors:
 

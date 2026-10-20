@@ -185,33 +185,48 @@ TEST_FILE
 			}
 		});
 
-		TEST_CASE(L"Gesture reflection boxes independent payload values")
+		TEST_CASE(L"Gesture reflection preserves variant tags, copies and whole-field writes")
 		{
+			using Gesture = Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>;
 			auto type = GetTypeDescriptor<GuiPointGestureEventArgs>();
 			TEST_ASSERT(type->CanConvertTo(GetTypeDescriptor<GuiEventArgs>()));
-			auto property = type->GetPropertyByName(L"Gesture", true);
-			TEST_ASSERT(property && property->GetGetter() && !property->GetSetter());
-			TEST_ASSERT(property->GetReturn()->GetTypeDescriptor() == GetTypeDescriptor<Value>());
-			TEST_ASSERT(!type->GetPropertyByName(L"gesture", true));
+			auto property = type->GetPropertyByName(L"gesture", true);
+			TEST_ASSERT(property && property->IsReadable() && property->IsWritable());
+			auto fieldType = property->GetReturn();
+			TEST_ASSERT(fieldType->GetDecorator() == ITypeInfo::Variant);
+			TEST_ASSERT(!fieldType->GetElementType() && !fieldType->GetTypeDescriptor());
+			TEST_ASSERT(fieldType->GetGenericArgumentCount() == 2);
+			TEST_ASSERT(fieldType->GetGenericArgument(0)->GetTypeDescriptor() == GetTypeDescriptor<GuiPointGesture_Scrolling>());
+			TEST_ASSERT(fieldType->GetGenericArgument(1)->GetTypeDescriptor() == GetTypeDescriptor<GuiPointGesture_DraggingAndRotation>());
+			TEST_ASSERT(!type->GetPropertyByName(L"Gesture", true));
+			TEST_ASSERT(!type->GetMethodGroupByName(L"GetGesture", true));
 			GuiBoundsComposition composition;
 			GuiPointGestureEventArgs empty, arguments(&composition);
 			TEST_ASSERT(!empty.selected && !empty.handled && !empty.compositionSource && !empty.eventSource);
+			TEST_ASSERT(empty.gesture.Get<GuiPointGesture_Scrolling>().distance == 0);
 			TEST_ASSERT(arguments.compositionSource == &composition && arguments.eventSource == &composition);
 			auto boxed = BoxValue(&arguments);
 			TEST_ASSERT(UnboxValue<GuiEventArgs*>(boxed) == &arguments);
 			boxed.SetProperty(L"selected", BoxValue(true));
 			TEST_ASSERT(arguments.selected);
 			arguments.gesture = GuiPointGesture_Scrolling{ .isVertical = true, .distance = -12 };
-			auto value = boxed.GetProperty(L"Gesture");
-			TEST_ASSERT(value.GetTypeDescriptor() == GetTypeDescriptor<GuiPointGesture_Scrolling>());
-			TEST_ASSERT(UnboxValue<GuiPointGesture_Scrolling>(value).distance == -12);
-			value.SetProperty(L"distance", BoxValue((vint)99));
+			auto scrolling = UnboxParameter<Gesture>(boxed.GetProperty(L"gesture"));
+			TEST_ASSERT(scrolling.Ref().Get<GuiPointGesture_Scrolling>().distance == -12);
+			scrolling.Ref().Get<GuiPointGesture_Scrolling>().distance = 99;
 			TEST_ASSERT(arguments.gesture.Get<GuiPointGesture_Scrolling>().distance == -12);
+			boxed.SetProperty(L"gesture", BoxParameter(scrolling.Ref()));
+			TEST_ASSERT(arguments.gesture.Get<GuiPointGesture_Scrolling>().distance == 99);
 			arguments.gesture = GuiPointGesture_DraggingAndRotation{ .rotation = 0.25, .scale = 2.0, .distance = Point(3, 4) };
-			value = arguments.GetGesture();
-			TEST_ASSERT(value.GetTypeDescriptor() == GetTypeDescriptor<GuiPointGesture_DraggingAndRotation>());
-			auto transform = UnboxValue<GuiPointGesture_DraggingAndRotation>(value);
+			auto manipulation = UnboxParameter<Gesture>(boxed.GetProperty(L"gesture"));
+			auto transform = manipulation.Ref().Get<GuiPointGesture_DraggingAndRotation>();
 			TEST_ASSERT(transform.rotation == 0.25 && transform.scale == 2.0 && transform.distance == Point(3, 4));
+			manipulation.Ref().Get<GuiPointGesture_DraggingAndRotation>().scale = 3.0;
+			TEST_ASSERT(arguments.gesture.Get<GuiPointGesture_DraggingAndRotation>().scale == 2.0);
+			boxed.SetProperty(L"gesture", BoxParameter(manipulation.Ref()));
+			TEST_ASSERT(arguments.gesture.Get<GuiPointGesture_DraggingAndRotation>().scale == 3.0);
+			Variant<vint, WString> invalid(vint(1));
+			TEST_EXCEPTION(boxed.SetProperty(L"gesture", BoxParameter(invalid)), ArgumentTypeMismtatchException, [](const ArgumentTypeMismtatchException&) {});
+			TEST_ASSERT(arguments.gesture.Get<GuiPointGesture_DraggingAndRotation>().scale == 3.0);
 		});
 
 		TEST_CASE(L"Ensure mouse button and Super modifier reflection surface")

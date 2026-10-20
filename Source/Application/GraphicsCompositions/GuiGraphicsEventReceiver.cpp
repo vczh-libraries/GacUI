@@ -1,9 +1,5 @@
 #include "GuiGraphicsEventReceiver.h"
 
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-#include "../../Reflection/TypeDescriptors/GuiReflectionPlugin.h"
-#endif
-
 namespace vl
 {
 	namespace presentation
@@ -61,13 +57,6 @@ Point Event Arguments
 			GuiPointGestureEventArgs::GuiPointGestureEventArgs(GuiGraphicsComposition* composition)
 				:GuiEventArgs(composition)
 			{
-			}
-
-			reflection::description::Value GuiPointGestureEventArgs::GetGesture()
-			{
-				reflection::description::Value result;
-				gesture.Apply([&](const auto& payload) { result = reflection::description::BoxValue(payload); });
-				return result;
 			}
 
 			const collections::List<Nullable<Point>>& GuiPointSequenceEndedEventArgs::GetPoints() const

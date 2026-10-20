@@ -290,3 +290,208 @@ CompareVariantPayloads and its mode-preservation assertions pass the full Win32/
 Workflow baseline is committed and pushed as `8402987ce`, `5e2b2b249` and `4a6306a44` (authored, text outputs, other generated outputs). Both architectures pass LibraryTest 21/21, metadata generation 2/2, compiler 715/715, runtime 267/267 and each generated-C++ mode 234/234. The three strong-null functions return true in the VM and throw Error in generated C++; weak null and non-null controls agree. RPC stdio and TypeScript remain part of the final full verification.
 
 Begin Workflow implementation by importing the generated reflection release with Import-Project. Add WfVariantType and keyword/grammar support, then regenerate AST/parser visitors. Implement ordered structural identity, native-alternative collision checks, explicit variant conversions, unsupported-operation diagnostics and first-option defaults. Introduce TYPEINFO instruction operands with graph serialization, dedicated boxing/tag-validation operations, and partial Value comparison without changing the old numeric/equality instruction contracts. Native helpers must receive analyzed option-index mappings so erased container types cannot grant forbidden casts. Preserve the baseline functions and their expectations unchanged.
+Workflow implementation now adds generated WfVariantType syntax, ordered structural matching, duplicate native-option checks, explicit cast/infer semantics and unsupported-operation diagnostics. VBox stores the declared option metadata; VUnbox extracts one payload; VCast/VTryCast validate tags without ordinary pointer conversion or null checks. TYPEINFO operands serialize their ordered type graph and contribute reachable descriptors. General CompareValueLT/GT/LE/GE preserve partial ordering while existing equality and numeric instructions stay unchanged. First-option defaults are added to compiler lowering and reflected struct fields. C++ helpers receive analyzed option mappings and throw catchable Exception on a mismatched active option. The first compilation checkpoint precedes adding the full indexed variant fixture matrix; no variant acceptance claim is made yet.
+
+Initial Workflow fixtures: VariantCasts asserts exact scalar/variant casts and infers, mismatched active tags, raw/shared typed-null pairs, nullable T/T? handling, object-option precedence, copies and pointer payload comparisons. VariantComparison asserts all six operators, mixed operand types, nulls, explicit object escapes and NaN. VariantStorage covers fields, defaults (including an option struct), value copies, typed lists/dictionaries and captures. IndexInvalidType adds three malformed forms; independently indexed AnalyzerError fixtures cover arity, option validity, native collisions, implicit conversions, explicit/infer/weak failures and unsupported operations. Struct dependency analysis now descends through variant options, rejecting recursive value layouts before default construction or C++ generation.
+
+The native Workflow fixture type VariantProvider exposes value/const-reference/reference echoes, a variant field/property/event, typed variant enumeration, function/lazy-list options, an empty nullable option and an erased List pointer option. VariantNative verifies these boundaries, including runtime rejection when an erased native option is cast into a structurally typed Workflow list option. VariantBinding produces a scalar while caching a variant; VariantCoroutine and VariantStateMachine retain variant state across suspension/input boundaries. VariantInstructionTypes places PointClass pointer metadata only in a VCast target graph, exercising instruction-driven descriptor collection after assembly reload. VariantStorage also checks an object-first default: an absent value descriptor creates a tagged null payload.
+
+Workflow verification adds native harness coverage for the ordinary cast after a variant-to-object escape, asserting the existing full-reflection mismatch exception or metaonly/no-reflection Error. The VM harness asserts a nonfatal cast exception. A separate fresh-assembly-load test checks independent type-info objects, exact ordered options including an instruction-only PointClass reference, and one VBox plus two VCast operands. Win32 LibraryTest passed 21/21 and metadata generation passed 2/2; reviewed metadata changes add only the Variant decorator and VariantProvider signatures.
+
+The indexed VariantNative fixture exposed a lowering gap: foreach obtains an object from IValueEnumerator::GetCurrent and generates an ordinary cast to the statically known element type. Object-to-variant recovery is intentionally rejected, so this generated cast cannot implement typed variant enumeration. The correction retains the known element type on the compiler-generated call AST (an optional result-type annotation with no authored syntax), preserves it through existing generated copy visitors, and uses parameter unboxing in native output while leaving the already-boxed VM value intact. This is limited to the typed collection boundary; authored casts and the direct variant-result binding rejection keep their existing rules. The same audit covers indexed typed list/dictionary reads, whose VM payload is already boxed.
+
+CompilerTest_LoadAndCompile passed 809/809 cases for each target architecture after fixture corrections and typed enumeration lowering. The first VM run passed VariantBinding, VariantCasts (54), VariantComparison (31), VariantCoroutine, VariantInstructionTypes, and VariantIteration before exposing a native test-provider lifetime defect. CDB stopped at a freed WString copy in SelectEnumerator: VariantProvider::Items returned From(values).Evaluate(), which can retain the borrowed native list. The fixture now uses Evaluate(true) as prescribed by LazyList ownership documentation. Runtime failure assertions now require a nonfatal exception whose message identifies a variant option conversion. Generated nested-struct defaults also use the existing native Variant default constructor, avoiding a reference to an alias before that alias is declared.
+
+### Workflow rejection and runtime-failure checklist
+
+Each semantic row below is a separate file in `<Workflow repo>/Test/Resources/AnalyzerError`, registered in `IndexAnalyzerError.txt`. CompilerTest_LoadAndCompile passed every row for x86 and x64. The diagnostic prefix is asserted by the harness; later statements are not counted as independent negative coverage.
+
+| Rejection branch / indexed fixture | Expected diagnostic | Result |
+| --- | --- | --- |
+| `J0_VariantNoOptions` | `J0` | Passed x86/x64 |
+| `J0_VariantOneOption` | `J0` | Passed x86/x64 |
+| `J0_VariantDuplicate` | `J0` | Passed x86/x64 |
+| `J0_VariantAlias` | `J0` | Passed x86/x64 |
+| `J0_VariantErasedList` | `J0` | Passed x86/x64 |
+| `J0_VariantErasedDictionary` | `J0` | Passed x86/x64 |
+| `J0_VariantErasedUntypedList` | `J0` | Passed x86/x64 |
+| `J0_VariantNested` | `J0` | Passed x86/x64 |
+| `B0_VariantVoid` | `B0` | Passed x86/x64 |
+| `B1_VariantInterfaceValue` | `B1` | Passed x86/x64 |
+| `B7_VariantClassValue` | `B7` | Passed x86/x64 |
+| `B2_VariantRawDecoration` | `B2` | Passed x86/x64 |
+| `B3_VariantSharedDecoration` | `B3` | Passed x86/x64 |
+| `B4_VariantNullableDecoration` | `B4` | Passed x86/x64 |
+| `A10_VariantScalarInitializer` | `A10` | Passed x86/x64 |
+| `A10_VariantScalarExtraction` | `A10` | Passed x86/x64 |
+| `A10_VariantReorderedAssignment` | `A10` | Passed x86/x64 |
+| `A10_VariantImplicitSubset` | `A10` | Passed x86/x64 |
+| `A10_VariantImplicitObject` | `A10` | Passed x86/x64 |
+| `A10_VariantReturn` | `A10` | Passed x86/x64 |
+| `A21_VariantArgument` | `A21` | Passed x86/x64 |
+| `A14_VariantCommonType` | `A14` | Passed x86/x64 |
+| `A10_VariantBareNull` | `A10` | Passed x86/x64 |
+| `A9_VariantNullSelection` | `A9` | Passed x86/x64 |
+| `A9_VariantEmptySelection` | `A9` | Passed x86/x64 |
+| `A9_VariantLambdaSelection` | `A9` | Passed x86/x64 |
+| `A11_VariantStrongAbsent` | `A11` | Passed x86/x64 |
+| `A11_VariantStrongNumeric` | `A11` | Passed x86/x64 |
+| `A11_VariantStrongExtractNumeric` | `A11` | Passed x86/x64 |
+| `A11_VariantStrongNullablePromotion` | `A11` | Passed x86/x64 |
+| `A11_VariantStrongNullableExtraction` | `A11` | Passed x86/x64 |
+| `A11_VariantStrongDisjoint` | `A11` | Passed x86/x64 |
+| `A11_VariantStrongErasedDisjoint` | `A11` | Passed x86/x64 |
+| `A11_VariantObjectRecovery` | `A11` | Passed x86/x64 |
+| `A12_VariantWeakScalar` | `A12` | Passed x86/x64 |
+| `A12_VariantWeakTV` | `A12` | Passed x86/x64 |
+| `A12_VariantWeakVV` | `A12` | Passed x86/x64 |
+| `A11_VariantWeakMissingNullable` | `A11` | Passed x86/x64 |
+| `A11_VariantInferMissing` | `A11` | Passed x86/x64 |
+| `A11_VariantInferNumeric` | `A11` | Passed x86/x64 |
+| `A11_VariantInferNotSubset` | `A11` | Passed x86/x64 |
+| `A10_VariantNullTest` | `A10` | Passed x86/x64 |
+| `A10_VariantNotNullTest` | `A10` | Passed x86/x64 |
+| `J1_VariantArithmetic` | `J1` | Passed x86/x64 |
+| `J1_VariantLogical` | `J1` | Passed x86/x64 |
+| `A16_VariantUnary` | `A16` | Passed x86/x64 |
+| `A17_VariantIndex` | `A17` | Passed x86/x64 |
+| `A19_VariantInvoke` | `A19` | Passed x86/x64 |
+| `J1_VariantMember` | `J1` | Passed x86/x64 |
+| `J1_VariantTypeTestSource` | `J1` | Passed x86/x64 |
+| `J1_VariantTypeTestTarget` | `J1` | Passed x86/x64 |
+| `J1_VariantNotTypeTest` | `J1` | Passed x86/x64 |
+| `J1_VariantTypeQuery` | `J1` | Passed x86/x64 |
+| `J1_VariantExpressionTypeQuery` | `J1` | Passed x86/x64 |
+| `J1_VariantConstructorSelection` | `J1` | Passed x86/x64 |
+| `A18_VariantEnumeration` | `A18` | Passed x86/x64 |
+| `J0_VariantIntegerAlias` | `J0` | Passed x86/x64 |
+| `D13_VariantRecursiveStruct` | `D13` | Passed x86/x64 |
+| `A11_VariantStrongBaseToDerived` | `A11` | Passed x86/x64 |
+| `A11_VariantStrongDerivedToBase` | `A11` | Passed x86/x64 |
+| `A11_VariantStrongRawToShared` | `A11` | Passed x86/x64 |
+| `A11_VariantStrongSharedToRaw` | `A11` | Passed x86/x64 |
+| `A11_VariantWeakMissingPointer` | `A11` | Passed x86/x64 |
+| `A11_VariantWeakPointerOwnership` | `A11` | Passed x86/x64 |
+| `A11_VariantNativeUntypedOption` | `A11` | Passed x86/x64 |
+| `A16_VariantUnaryPositive` | `A16` | Passed x86/x64 |
+| `A16_VariantUnaryNegative` | `A16` | Passed x86/x64 |
+| `A14_VariantUnion` | `A14` | Passed x86/x64 |
+| `A14_VariantIntersection` | `A14` | Passed x86/x64 |
+| `A21_VariantBindingResult` | `A21` | Passed x86/x64 |
+| `F2_VariantUnknownOption` | `F2` | Passed x86/x64 |
+| `A23_VariantNewClass` | `A23` | Passed x86/x64 |
+| `A23_VariantNewInterface` | `A23` | Passed x86/x64 |
+| `J1_VariantObserveMember` | `J1` | Passed x86/x64 |
+| `J1_VariantSetMembership` | `J1` | Passed x86/x64 |
+| `A21_VariantOverload` | `A21` | Passed x86/x64 |
+| `B5_VariantChild` | `B5` | Passed x86/x64 |
+| `G6_VariantBaseType` | `G6` | Passed x86/x64 |
+| `A32_VariantMixinSource` | `A32` | Passed x86/x64 |
+| `A32_VariantMixinTarget` | `A32` | Passed x86/x64 |
+
+Malformed syntax is separately indexed in `<Workflow repo>/Test/Resources/IndexInvalidType.txt`: VariantMissingClose, VariantMissingComma and VariantMissingOption each assert a parser error. All three passed for both target architectures. Semantically invalid zero/one-option forms remain parseable and are rejected by J0 above.
+
+| Runtime branch | Indexed fixture / independent assertion | Expected outcome | Final verification |
+| --- | --- | --- | --- |
+| Inactive scalar VT | VariantCasts: number to string | Nonfatal variant cast exception | VM Win32/x64 passed; final native rerun pending |
+| Active option excluded by VV intersection | VariantCasts: number to variant<string, bool> | Nonfatal variant cast exception | VM Win32/x64 passed; final native rerun pending |
+| T versus T? exact strong extraction | VariantCasts: plain to int?, missing to int | Two independent nonfatal exceptions | VM Win32/x64 passed; final native rerun pending |
+| Different raw null tag | VariantCasts: derivedSlot to VariantBase* and variant<VariantBase*, bool> | Two independent nonfatal exceptions | VM Win32/x64 passed; final native rerun pending |
+| Base raw tag containing derived object | VariantCasts: taggedBase to VariantDerived* | Nonfatal exception; weak counterpart returns null | VM Win32/x64 passed; final native rerun pending |
+| Different shared null tag | VariantCasts: sharedDerived to VariantBase^ and variant<VariantBase^, bool> | Two independent nonfatal exceptions | VM Win32/x64 passed; final native rerun pending |
+| Base shared tag containing derived object | VariantCasts: taggedShared to VariantDerived^ | Nonfatal exception | VM Win32/x64 passed; final native rerun pending |
+| Null object excluded by VV intersection | VariantCasts: objectSlot to variant<int?, bool> | Nonfatal exception | VM Win32/x64 passed; final native rerun pending |
+| Explicit object option inactive | VariantCasts: nullableSlot to object | Nonfatal exception | VM Win32/x64 passed; final native rerun pending |
+| Object payload does not select another option | VariantCasts: opaque to int | Nonfatal exception | VM Win32/x64 passed; final native rerun pending |
+| Weak pointer mismatch, including null | VariantCasts: derivedSlot/sharedDerived/taggedBase weak casts | Null without exception | VM Win32/x64 passed; final native rerun pending |
+| Weak nullable mismatch | VariantCasts: other as int? | Null without exception; exact T and T? controls succeed | VM Win32/x64 passed; final native rerun pending |
+| Escaped wrapper ordinary strong cast | VariantCasts::EscapedPayload, TestRuntime.cpp and TestVariantCasts.cpp harnesses | VM nonfatal cast failure; native existing mismatch exception/Error by mode | VM Win32/x64 passed; final native rerun pending |
+| Native untyped collection versus typed option | VariantNative: erased to variant<int[], string> | Nonfatal exception | VM Win32/x64 passed; final native rerun pending |
+| Erased native alternative does not grant Workflow identity | VariantNative: typedVariant to variant<string[], string> | Nonfatal exception | VM Win32/x64 passed; final native rerun pending |
+
+Each strong runtime assertion catches and checks a nonfatal exception with a message identifying a variant option conversion, then continues to the next assertion. Matching null tags, ordered remapping, copied tags and both weak nullable representations are independently asserted in the same indexed fixture. RPC rejection coverage will be recorded with task 4.
+
+CDB confirmed the metadata-only iteration failure was caused by the test executable never loading metadata: both the saved string tag and the candidate integer tag contained null descriptor leaves. The metadata-only consumer must load its generated metadata before parameter boxing uses type identity. Add the same base/dependent binary loading used by CompilerTest_LoadAndCompile to CppTest_Metaonly, unload it after tests, and map the two existing 32-bit metadata files for its WebAssembly build. This preserves DynamicVariantBox in metadata-only mode rather than changing its representation or inferring a tag from the payload.
+
+Extend metadata-only bootstrap to generated sample types as well: compiler tests will serialize each C++-enabled assembly's custom type loader through GenerateMetaonlyTypes, excluding the already loaded native layers, then immediately unregister it. CppTest_Metaonly will load these generated metadata layers before running native samples. Add independently reached typed-list round trips for base/derived raw and shared null tags; this checks that two generated user-defined types cannot collapse through absent descriptor leaves. The existing release script rebuilds each consumer before execution and will include these test updates.
+Native VariantExtract stores success separately from its default-initialized result. This follows the repository rule against nested Nullable wrappers and keeps successful null extraction distinct from inactive-option failure.
+
+### VlppParser2 syntax mirror
+
+Mirror the four authored lexer/type grammar/type AST/expression AST files from Workflow into the built-in Workflow parser. Preserve the built-in generator's namespace/configuration. Extend its indexed-fixture runner with a separate InvalidType path that asserts a parser error; semantic-error fixtures must continue to parse and round-trip through AST JSON. Run the ordered bootstrap/compiler/rebuild/consumer sequence and TypeScript checks after Workflow's active release build.
+### RPC validation plan
+
+The existing IsSerializableType traversal already rejects an unrecognized direct decorator and recursively visits nullable/typed-collection arguments, but accepts structs without inspecting fields. Add a cycle-aware variant-containment traversal for struct fields while preserving the existing unrelated serializability rules. Separate indexed negative fixtures will cover parameters, returns, properties, events, list/dictionary positions, nullable structs, nested/repeated structs and collections of recursive structs. Positive nonvariant controls must exercise the same paths. The predefined JSON serializer already ends in the unsupported-value failure; verify descriptorless variant boxes reach that failure through the dynamic-object path in the VM and all generated-C++ modes before deciding whether any runtime guard is necessary.
+### GacUI variant-field migration plan
+
+Replace the object-valued Gesture getter with the writable reflected gesture field, retaining the native scrolling/manipulation alternative order. Change the two XML consumers to nullable weak extraction inside their existing handled guards. Ordinary metadata/resource tests will assert the removed API, ordered field metadata, extraction-copy behavior, whole-field write-back, mismatched assignment diagnostics and selected write-through. Preserve all point lifecycle and list-removal code. Verification remains pending until the updated dependency releases are imported and the prescribed metadata/resource/unit/UIA sequence completes.
+The GacUI authored migration is prepared: removed GetGesture and its now-unused reflection include, registered CLASS_MEMBER_FIELD(gesture), converted both sample handlers to nested nullable weak casts under the existing handled guard, and expanded ordinary reflection/resource assertions. Both edited XML files pass a structural parse with namespace processing disabled, matching GacUI's prefix handling; Workflow compilation and runtime/UI checks are still pending. Updated the canonical PointInput guidance and synchronized its eight existing copies after verifying they matched the previous canonical content (allowing line-ending differences).
+Prepared sixteen separate H2_RpcVariant* analyzer fixtures and the three-file StructTraversal RPC control (expected result 28). They are intentionally not indexed or added to project inventories yet: these files belong to the pending RPC validator change and must be excluded from the Workflow core commit. StructTraversal sends nullable structs containing repeated leaf types, nullable fields, dictionaries and recursive child lists through the service, including an empty recursive leaf. All are still unverified.
+### Workflow core checkpoint and current verification
+
+Pushed the Workflow core as a12010e76 (authored), 7037267 (generated text) and 36313fb22 (other generated outputs, including CodePack release files). The full release script rebuilt Win32/x64 and passed both LibraryTest and metadata-generator runs, then stopped at an empty trailing IndexCodegen entry. Restored the index's no-trailing-newline convention. The logged Release Win32 compiler rerun passed 810/810 for each target architecture, including copy/print round trips, and produced 52 generated custom-type metadata layers per architecture. The ordinary cast assembly logs remain unchanged.
+
+Release RuntimeTest passed 278/278 on both Win32 and x64 against the regenerated assemblies, including VariantCasts=60 and its six new typed-list null-tag assertions. Release x64 CppTest_Metaonly successfully loaded the generated metadata layers and passed 244/244, but that binary still contains the earlier VariantCasts=54 body. The new six native assertions, final Debug leak checks, and the required final complete Build.ps1 Workflow run remain pending. The RPC preparation files were excluded from all three core commits. Parser2's initial Debug x64 build has started; its ordered generator/test chain is pending.
+### VlppParser2 verification completed
+
+The ordered Debug x64 generator/rebuild sequence passed: AstGen 3/3, AstParserGen 46/46, LexerAndParser 4/4, LexerAndParser_Generated 24/24, ParserGen 142/142, ParserGen_Compiler 172/172, ParserGen_Generated 463/463, BuiltIn_Compiler 56/56, Json 131/131, Xml 25/25, Workflow 812/812 and Cpp 888/888. After indexing the RPC fixtures, corrected class-style var declarations in their struct fields and reran BuiltIn_Workflow: 829/829 passed. TypeScript preparation and tsc --noEmit passed. No Debug memory leaks were reported. Pushed 754a3d4b (authored), db4afd68 (generated text) and 4bd9335f (other generated outputs). Required generator output includes the regenerated BuiltIn-Cpp parser/trace files; its authored syntax was unchanged and all 888 C++ cases passed.
+
+### RPC implementation checkpoint
+
+Indexed sixteen H2_RpcVariant fixtures and StructTraversal=28, and added all nineteen source resources to the compiler project inventories. IsSerializableType now explicitly rejects Variant and uses a visited-type/visited-struct traversal to find variants beneath struct fields without changing unrelated nonvariant RPC rules. Added VM and native harness checks for the existing unsupported-value failure when an escaped variant is passed directly, inside object[], or inside object[string]. Generated the new VariantCasts serialization helpers with the Release compiler (810/810 for both target architectures before adding the RPC indexes), so native test sources can compile against them.
+
+Updated the canonical RPC definition/schema guidance and synchronized all eight existing copies after checking for independent edits. Workflow's x64 Debug build passed with zero warnings/errors; LibraryTest passed 21/21 and metadata generation passed 2/2. Win32 build and final compiler/runtime/native/RPC stdio checks are pending.
+### RPC reachability corrections and metadata fix
+
+Both Debug architectures built with zero warnings/errors; LibraryTest passed 21/21 and metadata generation passed 2/2 on each. Before adding the final generated-serializer check and the new positive RPC sample, all three x64 native modes passed 245/245, including VariantCasts=60 and the direct/list/dictionary unsupported-value assertions, with no reported leaks.
+
+The expanded compiler run exposed a missing event path: event validation checked reserved transport types but never checked variant containment. Added a targeted containment check for each event argument, preserving unrelated event acceptance, plus H2_RpcVariantEventStructCollection. The legal script rejection fixtures now contain sixteen H2 variant cases. A collection-valued Workflow struct field is rejected earlier by the existing D12 rule, so renamed that original recursive fixture to D12_RpcVariantRecursiveStruct instead of claiming it exercised RPC rejection. Added a separate ordinary analyzer test that builds a cyclic/repeated struct metadata graph with WfStruct/WfStructField, verifies nonvariant acceptance, then adds a variant leaf and verifies rejection. The end-to-end StructTraversal control now uses legal value-only structs and carries them through nullable, list and dictionary service methods.
+
+CDB stopped in VerifyRpcMetadata and showed F1 for RpcStructTraversal::OptionalLeaf: the generated metadata referenced the nullable field's struct but omitted its declaration. CollectSerializableTypesFromTypeInfo did not descend through Nullable. Added that traversal; metadata reconstruction then proceeded to the client checks. Corrected the client and GacUI examples to Workflow's required explicit nullable declaration form, if (var value : T? = expression). The canonical PointInput example and its synchronized copies use the same form. Parser2's updated fixture pass is 830/830 with a successful TypeScript check; its newly generated RPC outputs remain to commit.
+
+Added VM and native assertions through the actual PrimitiveTypes-generated rpcjson_Serialize function, whose enum/struct schema choices precede the predefined fallback. It must reject a variant box directly and inside an object list/dictionary with the same unsupported-value error. These new assertions, final RPC control execution, all final architecture/backend runs, stdio suites, and the complete release script remain pending.
+
+### Final Debug Workflow and RPC verification
+
+Both Win32 and x64 builds passed with zero warnings/errors. On each architecture LibraryTest passed 21/21, GenerateMetadata 2/2, CompilerTest_LoadAndCompile 829/829 for each generated target architecture, RuntimeTest 281/281, and each of CppTest, CppTest_Metaonly and CppTest_Reflection 247/247. These final native runs supersede the pending entries in the runtime table above, including VariantCasts=60 and the independently checked failure branches. No Debug memory leaks were reported.
+
+CDB confirmed the existing unsupported RPC JSON path throws Error with description "Unsupported RPC JSON serialization value."; it is not a Workflow runtime exception. The VM and all native modes independently passed direct, object-list and object-dictionary checks through both the predefined fallback and the actual PrimitiveTypes-generated serializer. The legal StructTraversal control returned 28, including the nullable-only OptionalLeaf metadata round trip. Both architecture stdio suites passed, and TypeScript preparation/build passed.
+
+All sixteen indexed H2 cases reached their intended first diagnostic on both architectures:
+
+| Fixture suffix after H2_RpcVariant | Result |
+| --- | --- |
+| DictionaryKey | H2, passed Win32/x64 |
+| DictionaryValue | H2, passed Win32/x64 |
+| Enumerable | H2, passed Win32/x64 |
+| Event | H2, passed Win32/x64 |
+| EventStructCollection | H2, passed Win32/x64 |
+| List | H2, passed Win32/x64 |
+| NestedStruct | H2, passed Win32/x64 |
+| NullableStruct | H2, passed Win32/x64 |
+| ObservableList | H2, passed Win32/x64 |
+| Parameter | H2, passed Win32/x64 |
+| Property | H2, passed Win32/x64 |
+| ReadonlyList | H2, passed Win32/x64 |
+| RepeatedStruct | H2, passed Win32/x64 |
+| Return | H2, passed Win32/x64 |
+| Struct | H2, passed Win32/x64 |
+| StructCollection | H2, passed Win32/x64 |
+
+D12_RpcVariantRecursiveStruct retains the existing earlier language restriction; cyclic/repeated RPC metadata is covered by the separate ordinary analyzer acceptance/rejection control. Parser2's final 830/830 Workflow fixture run and TypeScript check passed, with refreshed fixtures pushed as 76129d25. RPC authored and generated changes were pushed as d944d314f, ec0620416 and 7b8413e41, including the refreshed Workflow CodePack release.
+
+The complete final Workflow release script remains required. Updated Reflection and Workflow releases have been imported into GacUI; its initial Debug Win32 build is running. The removed getter may require the freshly built metadata/compiler projects to bootstrap resource regeneration before the whole solution can succeed.
+
+### GacUI bootstrap and resource fixture correction
+
+The initial Win32 build failed only in stale generated FullControlTest calls to GetGesture and their cascading expressions. Metadata_Generate and GacUI_Compiler built successfully; Win32 metadata generation succeeded and its text snapshot records the writable gesture variant in the original alternative order. The x64 bootstrap build is underway.
+
+The first Win32 ordinary test run passed the native variant-field reflection assertions, then reported F3 in the new resource fixture: its if/else-if nullable declarations reused the same local name value. Workflow resolves both branch names as targets there. Give the two fixture branches distinct scrolling and transform names, matching the actual sample handlers; rerun the resource assertions after rebuilding. No runtime-library crash dialog was found by the delegated native-window check.
+
+The initial x64 build likewise failed only on the stale generated getter calls. Both architecture metadata generators and x64 Metadata_Test completed successfully. GacUI_Compiler is now regenerating resources through the normal tool; no generated source has been edited manually.
+
+The hidden CodePack invocation stopped making visible progress before writing release files. CDB found its main thread in the console-output path at GetFileType. Terminated that exact diagnostic process and reran the same CodePack/configuration through the existing Start-Process-And-Wait helper with inherited interactive console handles; it completed with exit code 0 and regenerated the release files. This is an execution-environment workaround, not a CodePack source change.
+
+The canonical gesture/RPC guidance and its seven other repository copies were committed and pushed: Tools 381570c, Vlpp 444424f, VlppOS d78c332, VlppRegex fdaaa21, VlppReflection 3ae5ad1, VlppParser2 22cd3441, Workflow 9054a8001 and Release 9905309a. The GacUI copy remains with its pending authored commit.
+
+The corrected x64 ordinary suite passed 13/13 selected files and 245/245 cases with no reported leaks. Both valid whole-field assignments compiled; scalar, plain-payload and reordered-variant assignments independently reached A10. The native reflection round trips and PointScrolling interaction/snapshot cases passed. Snapshot differences are limited to the two architecture-specific compiled Workflow text files reflecting the new handlers; useful rendering frames and protocol baselines are unchanged. Final post-generation builds, metadata refresh, Win32 rerun and the four application UIA runs remain pending.

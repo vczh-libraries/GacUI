@@ -157,7 +157,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiEventArgs)
 				EVENTARGS_CONSTRUCTOR(GuiPointGestureEventArgs)
 				CLASS_MEMBER_FIELD(selected)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Gesture)
+				CLASS_MEMBER_FIELD(gesture)
 			END_CLASS_MEMBER(GuiPointGestureEventArgs)
 
 			BEGIN_ENUM_ITEM(ControlSignal)
