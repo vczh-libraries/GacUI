@@ -1901,6 +1901,105 @@ namespace vl
 {
 	namespace presentation
 	{
+		class INativeWindowListener;
+
+/***********************************************************************
+Touch Experience
+***********************************************************************/
+
+		/// <summary>Completion of an overlapping-contact point sequence.</summary>
+		enum class PointSequenceEndReason
+		{
+			Succeeded,
+			Canceled_Unknown,
+			Canceled_PlatformCanceled,
+			Canceled_CaptureLost,
+			Canceled_WindowDestroyed,
+		};
+
+		/// <summary>A point sample copied by the adapter. Positions are client-relative; timestamps are monotonic microseconds.</summary>
+		template<typename TPoint, typename TRect>
+		struct WindowPointInfo_
+		{
+			/// <summary>Nonzero identity allocated once per sequence for the lifetime of its native window.</summary>
+			vuint64_t				sequenceId = 0;
+			/// <summary>Zero-based Down order within the sequence. Lifted indices are never reused.</summary>
+			vint					pointId = 0;
+			/// <summary>Microseconds from a monotonic clock, unrelated to wall-clock time.</summary>
+			vuint64_t				timestamp = 0;
+			/// <summary>Number of active contacts after this transition. Up has already removed its contact.</summary>
+			vint					activePointCount = 0;
+			/// <summary>Contact center in the receiver's coordinate space.</summary>
+			TPoint					position;
+			/// <summary>Platform primary-contact hint; it does not determine sequence lifetime or routing.</summary>
+			bool					primary = false;
+			bool					ctrl = false;
+			bool					shift = false;
+			bool					alt = false;
+			bool					osSuper = false;
+			/// <summary>Optional contact rectangle in the same coordinate space as position.</summary>
+			Nullable<TRect>			contactBounds;
+			/// <summary>Optional normalized pressure from zero to one.</summary>
+			Nullable<double>		pressure;
+			/// <summary>Optional clockwise angle in radians from the upward axis.</summary>
+			Nullable<double>		orientation;
+			/// <summary>Optional opaque platform frame identity; never use as a sequence or contact identity.</summary>
+			Nullable<vuint64_t>		platformFrameId;
+
+			auto operator<=>(const WindowPointInfo_&) const = default;
+		};
+
+		using NativeWindowPointInfo = WindowPointInfo_<NativePoint, NativeRect>;
+		using WindowPointInfo = WindowPointInfo_<Point, Rect>;
+
+		/// <summary>One sequence boundary, including rejected and canceled sequences.</summary>
+		struct PointSequenceEndInfo
+		{
+			vuint64_t				sequenceId = 0;
+			vuint64_t				timestamp = 0;
+			bool					accepted = false;
+			PointSequenceEndReason	reason = PointSequenceEndReason::Succeeded;
+
+			auto operator<=>(const PointSequenceEndInfo&) const = default;
+		};
+
+		/// <summary>Window-owned bookkeeping shared by native acquisition and injected input. Mutate only on the UI thread through the point helpers.</summary>
+		struct NativePointInputState
+		{
+			vuint64_t				lastSequenceId = 0;
+			vuint64_t				sequenceId = 0;
+			vint					nextPointId = 0;
+			bool					accepted = false;
+			bool					ended = false;
+			collections::Dictionary<vuint64_t, NativeWindowPointInfo> contacts;
+		};
+
+		/// <summary>A contact transition supplied by an input adapter.</summary>
+		enum class NativePointEvent
+		{
+			Down,
+			Update,
+			Up,
+			Entered,
+			Leaved,
+		};
+
+		/// <summary>Begin an explicitly bounded sequence and allocate its local lifetime identity.</summary>
+		extern void BeginNativePointSequence(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativeWindowPointInfo& firstPoint);
+		/// <summary>Update contacts and dispatch a typed sample without implicitly ending the sequence.</summary>
+		extern void UpdateNativePointInput(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, NativeWindowPointInfo info);
+		/// <summary>Deliver a boundary using locally latched acceptance.</summary>
+		extern void EndNativePointSequence(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, PointSequenceEndReason reason, vuint64_t timestamp);
+		/// <summary>Discard completed contacts while retaining the window lifetime counter.</summary>
+		extern void ResetCompletedNativePointSequence(NativePointInputState& state);
+		/// <summary>Process a sample, allocate identities and deliver callbacks. Returns the latched acceptance even when the sample completes the sequence. Source tokens are opaque and may be reused after Up.</summary>
+		extern bool ProcessNativePointInput(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, NativeWindowPointInfo info);
+		/// <summary>End once without synthetic Ups; retain contacts and acceptance until the adapter retires remaining native activity.</summary>
+		extern void CancelNativePointSequence(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, PointSequenceEndReason reason, vuint64_t timestamp);
+		/// <summary>Retire a canceled or capture-lost contact after End delivery. Unknown delayed cleanup is ignored. Never resets the lifetime counter.</summary>
+		extern void RetireNativePoint(NativePointInputState& state, vuint64_t sourceToken);
+		/// <summary>Get monotonic microseconds for adapter-generated point samples and cancellation.</summary>
+		extern vuint64_t GetNativePointTimestamp();
 
 /***********************************************************************
 INativeWindow
@@ -1909,7 +2008,6 @@ INativeWindow
 		class GuiImageData;
 		class DocumentModel;
 		class INativeCursor;
-		class INativeWindowListener;
 
 		enum class BoolOption
 		{
@@ -2508,6 +2606,21 @@ INativeWindow
 			/// Called when the mouse leaved the window.
 			/// </summary>
 			virtual void				MouseLeaved();
+
+			/// <summary>Query the first Down synchronously. Each listener receives false; answers are combined with OR for the whole sequence.</summary>
+			virtual void				PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept);
+			/// <summary>A contact joins an accepted sequence, with a new zero-based Down-order point ID.</summary>
+			virtual void				PointDown(const NativeWindowPointInfo& info);
+			/// <summary>An active contact reports a sample, including stationary updates.</summary>
+			virtual void				PointUpdate(const NativeWindowPointInfo& info);
+			/// <summary>A contact ends normally; the active count excludes it.</summary>
+			virtual void				PointUp(const NativeWindowPointInfo& info);
+			/// <summary>An active contact enters the native client surface.</summary>
+			virtual void				PointEntered(const NativeWindowPointInfo& info);
+			/// <summary>An active contact leaves the native client surface without changing its route.</summary>
+			virtual void				PointLeaved(const NativeWindowPointInfo& info);
+			/// <summary>Closes an accepted or rejected sequence once, after final Up or immediately on cancellation.</summary>
+			virtual void				PointSequenceEnded(const PointSequenceEndInfo& info);
 			
 			/// <summary>
 			/// Called a key is pressed.
@@ -3797,6 +3910,8 @@ namespace vl
 		namespace compositions
 		{
 			class GuiGraphicsComposition;
+			struct GuiPointSequenceStartedEventArgs;
+			class GuiPointGestureEventArgs;
 
 /***********************************************************************
 Event
@@ -3953,7 +4068,22 @@ Event
 					auto currentHandler=&handlers;
 					while(*currentHandler)
 					{
-						(*currentHandler)->handler->Execute(newSender?newSender:sender, argument);
+						if constexpr (std::is_same_v<T, GuiPointSequenceStartedEventArgs>)
+						{
+							auto accepted = argument.acceptedComposition;
+							(*currentHandler)->handler->Execute(newSender ? newSender : sender, argument);
+							if (accepted) argument.acceptedComposition = accepted;
+						}
+						else if constexpr (std::is_same_v<T, GuiPointGestureEventArgs>)
+						{
+							auto selected = argument.selected;
+							(*currentHandler)->handler->Execute(newSender ? newSender : sender, argument);
+							argument.selected = selected || argument.selected;
+						}
+						else
+						{
+							(*currentHandler)->handler->Execute(newSender ? newSender : sender, argument);
+						}
 						currentHandler=&(*currentHandler)->next;
 					}
 				}
@@ -4120,6 +4250,103 @@ Predefined Events
 			typedef GuiGraphicsEvent<GuiControlSignalEventArgs>	GuiControlSignalEvent;
 
 /***********************************************************************
+Predefined Point Events
+***********************************************************************/
+
+			/// <summary>Identifies a point sequence query or an action within an accepted sequence.</summary>
+			enum class GuiPointEventsType
+			{
+				/// <summary>The first-contact query, delivered only through pointSequenceStarted.</summary>
+				Started,
+				/// <summary>A contact joins the captured sequence.</summary>
+				Down,
+				/// <summary>An active contact reports an updated sample.</summary>
+				Update,
+				/// <summary>A contact lifts; its list slot is already empty.</summary>
+				Up,
+				/// <summary>An active contact enters the native surface, preserving the sequence target.</summary>
+				Enter,
+				/// <summary>An active contact leaves the native surface, preserving the sequence target.</summary>
+				Leave,
+			};
+
+			/// <summary>Point input relative to the receiving composition. Points is a borrowed sparse list, updated between callbacks and cleared after End; copy values to retain them.</summary>
+			struct GuiPointEventArgs : public GuiEventArgs, public WindowPointInfo, public Description<GuiPointEventArgs>
+			{
+				/// <summary>The query or action represented by this event.</summary>
+				GuiPointEventsType							eventType;
+				const collections::List<Nullable<Point>>&	points;
+
+				GuiPointEventArgs(GuiPointEventsType eventType, const collections::List<Nullable<Point>>& points);
+				GuiPointEventArgs(GuiGraphicsComposition* composition, GuiPointEventsType eventType, const collections::List<Nullable<Point>>& points);
+				/// <summary>Get the host-owned read-only list. Empty slots belong to contacts that have lifted.</summary>
+				const collections::List<Nullable<Point>>& GetPoints() const;
+			};
+
+			/// <summary>First-contact query. The first selected composition wins. Handled suppresses default control acceptance but does not stop the query through all ancestors.</summary>
+			struct GuiPointSequenceStartedEventArgs : public GuiPointEventArgs, public Description<GuiPointSequenceStartedEventArgs>
+			{
+				/// <summary>Select the composition that will receive this sequence's actions and End, or leave null to decline.</summary>
+				GuiGraphicsComposition*						acceptedComposition = nullptr;
+
+				GuiPointSequenceStartedEventArgs(const collections::List<Nullable<Point>>& points);
+				GuiPointSequenceStartedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& points);
+			};
+
+			/// <summary>Completion delivered to the selected composition. Canceled sequences retain occupied slots through every End handler.</summary>
+			struct GuiPointSequenceEndedEventArgs : public GuiEventArgs, public PointSequenceEndInfo, public Description<GuiPointSequenceEndedEventArgs>
+			{
+				const collections::List<Nullable<Point>>& points;
+
+				GuiPointSequenceEndedEventArgs(const collections::List<Nullable<Point>>& points);
+				GuiPointSequenceEndedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& points);
+				/// <summary>Get the same borrowed read-only list used by point events.</summary>
+				const collections::List<Nullable<Point>>& GetPoints() const;
+			};
+
+			/// <summary>Incremental movement along a locked scrolling axis, in logical pixels.</summary>
+			struct GuiPointGesture_Scrolling
+			{
+				/// <summary>True for vertical movement; false for horizontal movement.</summary>
+				bool										isVertical = false;
+				/// <summary>Signed movement since the preceding gesture; right/down is positive. The first event includes the threshold-crossing displacement.</summary>
+				vint										distance = 0;
+
+				auto operator<=>(const GuiPointGesture_Scrolling&) const = default;
+			};
+
+			/// <summary>Incremental transform in accepted-composition coordinates: rotate, scale, then translate.</summary>
+			struct GuiPointGesture_DraggingAndRotation
+			{
+				/// <summary>Clockwise rotation in radians.</summary>
+				double										rotation = 0;
+				/// <summary>Uniform scale multiplier.</summary>
+				double										scale = 1;
+				/// <summary>Translation in logical pixels, rounded to nearest with ties towards positive infinity and transformed fractional residual carried between events.</summary>
+				Point										distance;
+
+				auto operator<=>(const GuiPointGesture_DraggingAndRotation&) const = default;
+			};
+
+			/// <summary>A predefined gesture offered directly to the accepted composition. Selection persists until the sequence ends.</summary>
+			class GuiPointGestureEventArgs : public GuiEventArgs, public Description<GuiPointGestureEventArgs>
+			{
+			public:
+				/// <summary>The writable reflected variant payload. Reading or extracting it produces a copy; assign the complete variant to write it back.</summary>
+				Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation> gesture;
+				/// <summary>Select this gesture when unhandled. Later handlers cannot undo selection.</summary>
+				bool										selected = false;
+
+				GuiPointGestureEventArgs();
+				GuiPointGestureEventArgs(GuiGraphicsComposition* composition);
+			};
+
+			typedef GuiGraphicsEvent<GuiPointEventArgs>						GuiPointEvent;
+			typedef GuiGraphicsEvent<GuiPointGestureEventArgs>				GuiPointGestureEvent;
+			typedef GuiGraphicsEvent<GuiPointSequenceStartedEventArgs>		GuiPointSequenceStartedEvent;
+			typedef GuiGraphicsEvent<GuiPointSequenceEndedEventArgs>		GuiPointSequenceEndedEvent;
+
+/***********************************************************************
 Predefined Item Events
 ***********************************************************************/
 			
@@ -4218,7 +4445,7 @@ Event Receiver
 ***********************************************************************/
 
 			/// <summary>
-			/// Contains all available user input events for a <see cref="GuiGraphicsComposition"/>. Almost all events are routed events. Routed events means, not only the activated composition receives the event, all it direct or indirect parents receives the event. The argument(all derives from <see cref="GuiEventArgs"/>) for the event will store the original event raiser composition.
+			/// Contains all available user input events for a <see cref="GuiGraphicsComposition"/>. Most events route through the activated composition's ancestors and use <see cref="GuiEventArgs"/>. Point Started queries every ancestor ignoring handled; accepted point Action and End events go directly to the selected composition.
 			/// </summary>
 			class GuiGraphicsEventReceiver : public Object
 			{
@@ -4246,6 +4473,15 @@ Event Receiver
 				GuiNotifyEvent					mouseEnter;
 				/// <summary>Mouse leave event.</summary>
 				GuiNotifyEvent					mouseLeave;
+
+				/// <summary>Query point input at the first contact, before any point data or mouse fallback.</summary>
+				GuiPointSequenceStartedEvent	pointSequenceStarted;
+				/// <summary>An action in the accepted captured sequence, identified by GuiPointEventArgs::eventType. Started is delivered only through pointSequenceStarted.</summary>
+				GuiPointEvent					pointAction;
+				/// <summary>A predefined incremental gesture, offered directly to the accepted composition without parent handoff.</summary>
+				GuiPointGestureEvent				pointGesture;
+				/// <summary>The selected composition receives End; point capture is released after its handlers finish.</summary>
+				GuiPointSequenceEndedEvent		pointSequenceEnded;
 				
 				/// <summary>Preview key event.</summary>
 				GuiKeyEvent						previewKey;
@@ -5249,6 +5485,7 @@ namespace vl
 
 		namespace compositions
 		{
+			class GuiPointActionManager;
 
 /***********************************************************************
 Animation
@@ -5312,6 +5549,7 @@ Host
 
 				GuiAltActionManager*					altActionManager = nullptr;
 				GuiTabActionManager*					tabActionManager = nullptr;
+				GuiPointActionManager*					pointActionManager = nullptr;
 				IGuiShortcutKeyManager*					shortcutKeyManager = nullptr;
 
 				controls::GuiControlHost*				controlHost = nullptr;
@@ -5325,6 +5563,7 @@ Host
 				GuiGraphicsTimerManager					timerManager;
 				GuiGraphicsComposition*					mouseCaptureComposition = nullptr;
 				bool									mouseButtonStates[5] = {};
+				bool									suppressNativeMouseCapture = false;
 				CompositionList							mouseEnterCompositions;
 				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
 
@@ -5334,6 +5573,10 @@ Host
 				void									ResetMouseCapture();
 				void									MouseCapture(const NativeWindowMouseInfo& info);
 				void									MouseUncapture();
+				GuiGraphicsComposition*					FindInputComposition(NativePoint location);
+				void									PointCapture(GuiGraphicsComposition* composition);
+				void									PointUncapture();
+				void									ResetPointCapture();
 				void									OnCharInput(const NativeWindowCharInfo& info, GuiGraphicsComposition* composition, GuiCharEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									RaiseMouseEvent(GuiMouseEventArgs& arguments, GuiGraphicsComposition* composition, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
@@ -5357,6 +5600,14 @@ Host
 				void									MouseMoving(const NativeWindowMouseInfo& info)override;
 				void									MouseEntered()override;
 				void									MouseLeaved()override;
+
+				void									PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept) override;
+				void									PointDown(const NativeWindowPointInfo& info) override;
+				void									PointUpdate(const NativeWindowPointInfo& info) override;
+				void									PointUp(const NativeWindowPointInfo& info) override;
+				void									PointEntered(const NativeWindowPointInfo& info) override;
+				void									PointLeaved(const NativeWindowPointInfo& info) override;
+				void									PointSequenceEnded(const PointSequenceEndInfo& info) override;
 
 				void									KeyDown(const NativeWindowKeyInfo& info)override;
 				void									KeyUp(const NativeWindowKeyInfo& info)override;
@@ -5420,6 +5671,8 @@ Host
 				/// <summary>Get the timer manager.</summary>
 				/// <returns>The timer manager.</returns>
 				GuiGraphicsTimerManager*				GetTimerManager();
+				/// <summary>Get the composition capturing the current point sequence.</summary>
+				GuiGraphicsComposition*					GetPointCapture();
 				/// <summary>Notify that a composition is going to disconnect from this graphics host. Generally this happens when a composition's parent line changes.</summary>
 				/// <param name="composition">The composition to disconnect</param>
 				void									DisconnectComposition(GuiGraphicsComposition* composition);
@@ -9436,6 +9689,7 @@ Basic Construction
 				Ptr<IGuiGraphicsEventHandler>			lostFocusHandler;
 
 				bool									acceptTabInput = false;
+				bool									acceptPointEvents = false;
 				vint									tabPriority = -1;
 				bool									isEnabled = true;
 				bool									isVisuallyEnabled = true;
@@ -9470,6 +9724,10 @@ Basic Construction
 				virtual void							OnBeforeReleaseGraphicsHost();
 				virtual void							UpdateVisuallyEnabled();
 				virtual void							UpdateDisplayFont();
+				virtual void							OnPointSequenceStarted(compositions::GuiGraphicsComposition* sender, compositions::GuiPointSequenceStartedEventArgs& arguments);
+				virtual void							OnPointAction(compositions::GuiGraphicsComposition* sender, compositions::GuiPointEventArgs& arguments);
+				virtual void							OnPointGesture(compositions::GuiGraphicsComposition* sender, compositions::GuiPointGestureEventArgs& arguments);
+				virtual void							OnPointSequenceEnded(compositions::GuiGraphicsComposition* sender, compositions::GuiPointSequenceEndedEventArgs& arguments);
 				void									OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									SetFocusableComposition(compositions::GuiGraphicsComposition* value);
@@ -9492,6 +9750,13 @@ Basic Construction
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiControl(theme::ThemeName themeName);
 				~GuiControl();
+
+				/// <summary>Get whether this control claims unowned, unhandled point sequences. False by default.</summary>
+				bool									GetAcceptPointEvents();
+				/// <summary>Set acceptance for subsequent point sequence queries.</summary>
+				void									SetAcceptPointEvents(bool value);
+				/// <summary>Get the current selected point composition inside this control's bounds subtree, or null.</summary>
+				compositions::GuiGraphicsComposition*	GetPointEventComposition();
 
 				/// <summary>Theme name changed event. This event raises when the theme name is changed.</summary>
 				compositions::GuiNotifyEvent			ControlThemeNameChanged;
@@ -13831,6 +14096,8 @@ Scroll View
 				Point									scrollPositionBeforeTemplate;
 				Size									scrollTotalSizeBeforeTemplate;
 				Size									scrollPageSizeBeforeTemplate;
+
+				void									OnPointGesture(compositions::GuiGraphicsComposition* sender, compositions::GuiPointGestureEventArgs& arguments)override;
 
 				void									UpdateDisplayFont()override;
 
@@ -19628,6 +19895,7 @@ GuiDocumentCommonInterface
 				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseDownHandler;
 				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseUpHandler;
 				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseLeaveHandler;
+				Ptr<compositions::IGuiGraphicsEventHandler>	onPointSequenceStartedHandler;
 
 				Ptr<DocumentHyperlinkRun::Package>			activeHyperlinks;
 				bool										dragging = false;
@@ -19675,6 +19943,7 @@ GuiDocumentCommonInterface
 				void										OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void										OnMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void										OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnPointSequenceStarted(compositions::GuiGraphicsComposition* sender, compositions::GuiPointSequenceStartedEventArgs& arguments);
 
 				virtual Point								GetDocumentViewPosition() = 0;
 				virtual void								EnsureRectVisible(Rect bounds) = 0;
@@ -20830,6 +21099,9 @@ namespace vl::presentation::remoteprotocol
 	struct WindowShowing;
 	struct IOMouseInfoWithButton;
 	struct GlobalShortcutKey;
+	struct IOPointInfo;
+	struct IOPointAction;
+	struct IOPointEnd;
 	struct ElementDesc_Raw;
 	struct ElementDesc_SolidBorder;
 	struct ElementDesc_SinkBorder;
@@ -20894,6 +21166,9 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::NativeWindowKeyInfo> { static constexpr const wchar_t* Name = L"IOKeyInfo"; };
 	template<> struct JsonNameHelper<::vl::presentation::NativeWindowCharInfo> { static constexpr const wchar_t* Name = L"IOCharInfo"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GlobalShortcutKey> { static constexpr const wchar_t* Name = L"GlobalShortcutKey"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::IOPointInfo> { static constexpr const wchar_t* Name = L"IOPointInfo"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::IOPointAction> { static constexpr const wchar_t* Name = L"IOPointAction"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::IOPointEnd> { static constexpr const wchar_t* Name = L"IOPointEnd"; };
 	template<> struct JsonNameHelper<::vl::presentation::elements::ElementShape> { static constexpr const wchar_t* Name = L"ElementShape"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_Raw> { static constexpr const wchar_t* Name = L"ElementDesc_Raw"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder> { static constexpr const wchar_t* Name = L"ElementDesc_SolidBorder"; };
@@ -21070,6 +21345,39 @@ namespace vl::presentation::remoteprotocol
 		bool alt;
 		bool osSuper;
 		::vl::presentation::VKEY code;
+	};
+
+	struct IOPointInfo
+	{
+		::vl::WString sequenceId;
+		::vl::vint pointId;
+		::vl::WString timestamp;
+		::vl::vint activePointCount;
+		::vl::presentation::NativePoint position;
+		bool primary;
+		bool ctrl;
+		bool shift;
+		bool alt;
+		bool osSuper;
+		::vl::Nullable<::vl::presentation::NativeRect> contactBounds;
+		::vl::Nullable<double> pressure;
+		::vl::Nullable<double> orientation;
+		::vl::Nullable<::vl::WString> platformFrameId;
+	};
+
+	struct IOPointAction
+	{
+		::vl::vint eventIndex;
+		::vl::presentation::remoteprotocol::IOPointInfo info;
+	};
+
+	struct IOPointEnd
+	{
+		::vl::WString sequenceId;
+		::vl::vint eventIndex;
+		::vl::WString timestamp;
+		bool accepted;
+		::vl::presentation::PointSequenceEndReason reason;
 	};
 
 	struct ElementDesc_Raw
@@ -21390,6 +21698,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeCursor::SystemCursorType>(const ::vl::presentation::INativeCursor::SystemCursorType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeMouseButton>(const ::vl::presentation::NativeMouseButton & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::PointSequenceEndReason>(const ::vl::presentation::PointSequenceEndReason & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::ElementShapeType>(const ::vl::presentation::elements::ElementShapeType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::GuiGradientBackgroundElement::Direction>(const ::vl::presentation::elements::GuiGradientBackgroundElement::Direction & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::Gui3DSplitterElement::Direction>(const ::vl::presentation::elements::Gui3DSplitterElement::Direction & value);
@@ -21420,6 +21729,9 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowKeyInfo>(const ::vl::presentation::NativeWindowKeyInfo & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowCharInfo>(const ::vl::presentation::NativeWindowCharInfo & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::GlobalShortcutKey>(const ::vl::presentation::remoteprotocol::GlobalShortcutKey & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOPointInfo>(const ::vl::presentation::remoteprotocol::IOPointInfo & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOPointAction>(const ::vl::presentation::remoteprotocol::IOPointAction & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOPointEnd>(const ::vl::presentation::remoteprotocol::IOPointEnd & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::ElementShape>(const ::vl::presentation::elements::ElementShape & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_Raw>(const ::vl::presentation::remoteprotocol::ElementDesc_Raw & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(const ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder & value);
@@ -21469,6 +21781,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeCursor::SystemCursorType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeCursor::SystemCursorType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeMouseButton>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeMouseButton& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::PointSequenceEndReason>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::PointSequenceEndReason& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::ElementShapeType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::ElementShapeType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::GuiGradientBackgroundElement::Direction>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::GuiGradientBackgroundElement::Direction& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::Gui3DSplitterElement::Direction>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::Gui3DSplitterElement::Direction& value);
@@ -21499,6 +21812,9 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowKeyInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowKeyInfo& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowCharInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowCharInfo& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::GlobalShortcutKey>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::GlobalShortcutKey& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOPointInfo& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointAction>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOPointAction& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointEnd>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOPointEnd& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::ElementShape>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::ElementShape& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_Raw>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_Raw& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_SolidBorder& value);
@@ -21612,6 +21928,13 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(IOKeyDown, ::vl::presentation::NativeWindowKeyInfo, REQ, NODROP)\
 	HANDLER(IOKeyUp, ::vl::presentation::NativeWindowKeyInfo, REQ, NODROP)\
 	HANDLER(IOChar, ::vl::presentation::NativeWindowCharInfo, REQ, NODROP)\
+	HANDLER(IOPointStarted, ::vl::presentation::remoteprotocol::IOPointAction, REQ, NODROP)\
+	HANDLER(IOPointDown, ::vl::presentation::remoteprotocol::IOPointAction, REQ, NODROP)\
+	HANDLER(IOPointUpdate, ::vl::presentation::remoteprotocol::IOPointAction, REQ, NODROP)\
+	HANDLER(IOPointUp, ::vl::presentation::remoteprotocol::IOPointAction, REQ, NODROP)\
+	HANDLER(IOPointEnter, ::vl::presentation::remoteprotocol::IOPointAction, REQ, NODROP)\
+	HANDLER(IOPointLeave, ::vl::presentation::remoteprotocol::IOPointAction, REQ, NODROP)\
+	HANDLER(IOPointEnded, ::vl::presentation::remoteprotocol::IOPointEnd, REQ, NODROP)\
 
 #define GACUI_REMOTEPROTOCOL_MESSAGE_REQUEST_TYPES(HANDLER)\
 	HANDLER(::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::GlobalShortcutKey>>)\
@@ -21658,6 +21981,8 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::NativeWindowMouseInfo)\
 	HANDLER(::vl::presentation::remoteprotocol::ControllerGlobalConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::IOMouseInfoWithButton)\
+	HANDLER(::vl::presentation::remoteprotocol::IOPointAction)\
+	HANDLER(::vl::presentation::remoteprotocol::IOPointEnd)\
 	HANDLER(::vl::presentation::remoteprotocol::ScreenConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowSizingConfig)\
 	HANDLER(::vl::vint)\
@@ -22370,6 +22695,13 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_SHARED
 #define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_SHARED
 
+
+namespace vl::presentation::remoteprotocol
+{
+	extern vuint64_t DecodePointUnsigned(const WString& text);
+	extern IOPointInfo EncodePointInfo(const NativeWindowPointInfo& info);
+	extern NativeWindowPointInfo DecodePointInfo(const IOPointInfo& info);
+}
 
 namespace vl::presentation
 {
@@ -23525,6 +23857,17 @@ namespace vl::presentation::remote_renderer
 		INativeWindowListener::HitTestResult	HitTest(NativePoint location) override;
 
 	protected:
+
+		vuint64_t							pointSequenceId = 0;
+		vint								pointEventIndex = 0;
+		void SendPointAction(NativePointEvent event, const NativeWindowPointInfo& info);
+		void PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept) override;
+		void PointSequenceEnded(const PointSequenceEndInfo& info) override;
+		void PointDown(const NativeWindowPointInfo& info) override;
+		void PointUpdate(const NativeWindowPointInfo& info) override;
+		void PointUp(const NativeWindowPointInfo& info) override;
+		void PointEntered(const NativeWindowPointInfo& info) override;
+		void PointLeaved(const NativeWindowPointInfo& info) override;
 
 		void									MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
 		void									MouseUp(NativeMouseButton button, const NativeWindowMouseInfo& info) override;
@@ -24756,6 +25099,18 @@ namespace vl
 			bool								capslockToggled = false;
 		};
 
+		/// <summary>Window-owned injected point fallback. Keep beside the window's NativePointInputState, not on the automation service.</summary>
+		struct IoPointCommandState
+		{
+			IoCommandState						mouse;
+			Nullable<vuint64_t>					fallbackToken;
+		};
+
+		/// <summary>Translate the original first rejected contact to mouse input using its typed payload. Other contacts never inherit fallback ownership.</summary>
+		extern void ProcessIOPointFallback(IoPointCommandState& state, collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, const NativeWindowPointInfo& info, bool starting);
+		/// <summary>Release an injected fallback mouse stream when either the platform or automation cancels its point sequence.</summary>
+		extern void CancelIOPointFallback(IoPointCommandState& state, collections::List<INativeWindowListener*>& listeners);
+
 		/*
 		* Predefined Commands:
 		* --------------------------------------------------------------------------------
@@ -24775,6 +25130,15 @@ namespace vl
 		*   DbClick means Down/Up/Down/DbClick/Up
 		* !MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?(,win|command|super)?
 		*   WindowMouseInfo_::wheel = ticks * 120 * direction (1 or -1)
+		* !Point(Down|Update|Up|Enter|Leave):CONTACT,X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?
+		*   CONTACT is a nonnegative adapter token, not a public point ID. Reuse only after Up.
+		*   Coordinates are logical client coordinates. Sequences/IDs and acceptance are generated internally.
+		* !PointCancel:CONTACT,(Unknown|PlatformCanceled|CaptureLost|WindowDestroyed)
+		*   Cancel the complete sequence and retire CONTACT. Remaining contacts drain until Up/cancellation.
+		*   Repeated cancellation cleanup of retired contacts is ignored. Invalid Down/Update/Up transitions fail fast.
+		* Point input needs the owning window's pointState and pointCommandState; other adapters return Unsupported.
+		* Rejected injected input sends only the original first contact's left-mouse stream; no secondary promotion.
+		* Cancellation releases a pending fallback mouse button outside the client area without clicking a control.
 		* 
 		* --------------------------------------------------------------------------------
 		* 
@@ -24797,7 +25161,9 @@ namespace vl
 													INativeController* nativeController,
 													INativeWindow* nativeWindow,
 													collections::List<INativeWindowListener*>& listeners,
-													WString command
+													WString command,
+													NativePointInputState* pointState = nullptr,
+													IoPointCommandState* pointCommandState = nullptr
 													);
 
 		class AutomationServiceBase : public Object, public INativeAutomationService
@@ -25198,6 +25564,13 @@ GuiHostedController
 			NativePoint													hoveringLocation{ -1,-1 };
 			GuiHostedWindow*											hoveringWindow = nullptr;
 			GuiHostedWindow*											lastFocusedWindow = nullptr;
+			vuint64_t													pointSequenceId = 0;
+			bool														pointSequenceAccepted = false;
+			GuiHostedWindow*											pointSequenceWindow = nullptr;
+
+			NativeWindowPointInfo			ConvertPointToHostedWindow(const NativeWindowPointInfo& info);
+			void							ForwardPointInput(const NativeWindowPointInfo& info, void (INativeWindowListener::* callback)(const NativeWindowPointInfo&));
+			void							ResetPointSequence();
 
 			enum class WindowManagerOperation
 			{
@@ -25291,6 +25664,14 @@ GuiHostedController
 			void							MouseMoving(const NativeWindowMouseInfo& info) override;
 			void							MouseEntered() override;
 			void							MouseLeaved() override;
+
+			void							PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept) override;
+			void							PointDown(const NativeWindowPointInfo& info) override;
+			void							PointUpdate(const NativeWindowPointInfo& info) override;
+			void							PointUp(const NativeWindowPointInfo& info) override;
+			void							PointEntered(const NativeWindowPointInfo& info) override;
+			void							PointLeaved(const NativeWindowPointInfo& info) override;
+			void							PointSequenceEnded(const PointSequenceEndInfo& info) override;
 
 			void							KeyDown(const NativeWindowKeyInfo& info) override;
 			void							KeyUp(const NativeWindowKeyInfo& info) override;
@@ -25542,6 +25923,13 @@ GuiRemoteWindow
 		collections::List<INativeWindowListener*>			listeners;
 		INativeWindow::WindowMode							windowMode = INativeWindow::Normal;
 
+		NativePointInputState				pointState;
+		IoPointCommandState					pointCommandState;
+		vuint64_t							wirePointSequenceId = 0;
+		vint								nextPointEventIndex = 0;
+		collections::SortedList<vuint64_t>	completedPointSequences;
+		NativeWindowPointInfo				firstPointSample;
+
 		bool												controllerDisconnected = false;
 		remoteprotocol::WindowSizingConfig					remoteWindowSizingConfig;
 		NativeSize											suggestedMinClientSize;
@@ -25584,6 +25972,12 @@ GuiRemoteWindow
 		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
 		void							OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments);
 		void							OnWindowActivatedUpdated(bool activated);
+
+		bool AcceptPointRecord(const WString& sequenceId, vint eventIndex);
+		void OnPointStarted(const remoteprotocol::IOPointAction& arguments);
+		void OnPointAction(NativePointEvent event, const remoteprotocol::IOPointAction& arguments);
+		void OnPointEnded(const remoteprotocol::IOPointEnd& arguments);
+		void CancelPointInput(PointSequenceEndReason reason);
 
 	public:
 		GuiRemoteWindow(GuiRemoteController* _remote);
@@ -32689,6 +33083,75 @@ https://github.com/vczh-libraries
 #ifndef VCZH_WORKFLOW_COMPILER_GENERATED_TUIFAKEDIALOGSERVICEUIINCLUDES
 #define VCZH_WORKFLOW_COMPILER_GENERATED_TUIFAKEDIALOGSERVICEUIINCLUDES
 
+
+#endif
+
+
+/***********************************************************************
+.\APPLICATION\GRAPHICSHOST\GUIGRAPHICSHOST_POINT.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Graphics Composition Host
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_POINT
+#define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_POINT
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace compositions
+		{
+			class GuiGraphicsHost;
+
+			class IGuiPointGesture : public virtual Interface
+			{
+			public:
+				virtual void								OnPointSequenceStarted(const NativeWindowPointInfo& info) = 0;
+				virtual void								OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType) = 0;
+				virtual void								OnPointSequenceEnded(const PointSequenceEndInfo& info) = 0;
+				virtual bool								IsGestureSelected() = 0;
+				virtual Nullable<NativeMouseButton>			GetFallbackClick() = 0;
+			};
+
+			class GuiPointActionManager : public Object
+			{
+			protected:
+				GuiGraphicsHost*							host;
+				GuiGraphicsComposition*						captureComposition = nullptr;
+				NativeWindowPointInfo						firstPoint;
+				NativePoint									firstPointScreen;
+				collections::List<Nullable<NativePoint>>	nativePoints;
+				collections::List<Nullable<Point>>			points;
+				collections::List<Ptr<IGuiPointGesture>>	gestures;
+				IGuiPointGesture*							selectedGesture = nullptr;
+				bool										ended = false;
+
+			public:
+				GuiPointActionManager(GuiGraphicsHost* _host);
+				void										OnPointSequenceStarted(const NativeWindowPointInfo& info, GuiGraphicsComposition* composition);
+				void										OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType);
+				bool										OnPointSequenceEnded(const PointSequenceEndInfo& info);
+
+				void										PointCapture(GuiGraphicsComposition* composition);
+				void										ResetPointCapture();
+				GuiGraphicsComposition*						GetPointCapture();
+
+				const collections::List<Nullable<NativePoint>>& GetNativePoints();
+				const collections::List<Nullable<Point>>&	GetPoints(GuiGraphicsComposition* relativeTo);
+				NativePoint									GetScreenPoint(const NativeWindowPointInfo& info);
+				Point										ConvertPoint(NativePoint screen, GuiGraphicsComposition* relativeTo);
+				WindowPointInfo								ConvertSample(const NativeWindowPointInfo& info, GuiGraphicsComposition* relativeTo);
+				NativeWindowPointInfo						GetFirstPoint();
+				Nullable<NativeMouseButton>					GetFallbackClick();
+			};
+		}
+	}
+}
 
 #endif
 

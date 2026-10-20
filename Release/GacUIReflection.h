@@ -133,6 +133,10 @@ Type List (Basic)
 			F(presentation::INativeCursor)\
 			F(presentation::INativeCursor::SystemCursorType)\
 			F(presentation::NativeMouseButton)\
+			F(presentation::PointSequenceEndReason)\
+			F(presentation::NativeWindowPointInfo)\
+			F(presentation::WindowPointInfo)\
+			F(presentation::PointSequenceEndInfo)\
 			F(presentation::BoolOption)\
 			F(presentation::NativeWindowFrameConfig)\
 			F(presentation::INativeWindow)\
@@ -324,6 +328,13 @@ Type List (Events)
 			F(presentation::compositions::GuiKeyEventArgs)\
 			F(presentation::compositions::GuiCharEventArgs)\
 			F(presentation::compositions::GuiMouseEventArgs)\
+			F(presentation::compositions::GuiPointEventsType)\
+			F(presentation::compositions::GuiPointEventArgs)\
+			F(presentation::compositions::GuiPointSequenceStartedEventArgs)\
+			F(presentation::compositions::GuiPointSequenceEndedEventArgs)\
+			F(presentation::compositions::GuiPointGesture_Scrolling)\
+			F(presentation::compositions::GuiPointGesture_DraggingAndRotation)\
+			F(presentation::compositions::GuiPointGestureEventArgs)\
 			F(presentation::compositions::ControlSignal)\
 			F(presentation::compositions::GuiControlSignalEventArgs)\
 			F(presentation::compositions::GuiItemEventArgs)\

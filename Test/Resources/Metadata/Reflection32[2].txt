@@ -4903,10 +4903,8 @@ enum presentation::compositions::GuiPointEventsType {
 }
 
 class presentation::compositions::GuiPointGestureEventArgs : presentation::compositions::GuiEventArgs {
-    property Gesture : system::Object { get:GetGesture }
+    property gesture : Variant<presentation::compositions::GuiPointGesture_Scrolling, presentation::compositions::GuiPointGesture_DraggingAndRotation>;
     property selected : system::Boolean;
-
-    function GetGesture() : system::Object;
 
     constructor () : presentation::compositions::GuiPointGestureEventArgs^;
     constructor (composition : presentation::compositions::GuiGraphicsComposition*) : presentation::compositions::GuiPointGestureEventArgs^;
@@ -10462,6 +10460,7 @@ enum system::reflection::TypeInfo::Decorator {
     RawPtr = 0,
     SharedPtr = 1,
     TypeDescriptor = 3,
+    Variant = 5,
 }
 
 @FullName:vl::reflection::description::IValueType

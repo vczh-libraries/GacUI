@@ -909,22 +909,24 @@ Closures
 
 	void __vwsnf122_FullControlTest_demo_TouchingTabPageConstructor___vwsn_demo_TouchingTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointGestureEventArgs* arguments) const
 	{
-		if (((! ::vl::__vwsn::This(arguments)->handled) && (dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::vl::presentation::compositions::GuiPointGesture_DraggingAndRotation>*>(::vl::__vwsn::This(arguments)->GetGesture().GetBoxedValue().Obj()) != nullptr)))
+		if ((! ::vl::__vwsn::This(arguments)->handled))
 		{
-			auto transform = ::vl::__vwsn::Unbox<::vl::presentation::compositions::GuiPointGesture_DraggingAndRotation>(::vl::__vwsn::This(arguments)->GetGesture());
-			(::vl::__vwsn::This(arguments)->selected = true);
-			(::vl::__vwsn::This(arguments)->handled = true);
-			auto real = (transform.scale * ::vl::reflection::description::Math::Cos(transform.rotation));
-			auto imaginary = (transform.scale * ::vl::reflection::description::Math::Sin(transform.rotation));
-			auto x = (((real * ::vl::__vwsn::This(__vwsnthis_0->self)->centerX) - (imaginary * ::vl::__vwsn::This(__vwsnthis_0->self)->centerY)) + static_cast<double>(transform.distance.x));
-			auto y = (((imaginary * ::vl::__vwsn::This(__vwsnthis_0->self)->centerX) + (real * ::vl::__vwsn::This(__vwsnthis_0->self)->centerY)) + static_cast<double>(transform.distance.y));
-			auto ax = ((real * ::vl::__vwsn::This(__vwsnthis_0->self)->axisX) - (imaginary * ::vl::__vwsn::This(__vwsnthis_0->self)->axisY));
-			auto ay = ((imaginary * ::vl::__vwsn::This(__vwsnthis_0->self)->axisX) + (real * ::vl::__vwsn::This(__vwsnthis_0->self)->axisY));
-			(::vl::__vwsn::This(__vwsnthis_0->self)->centerX = x);
-			(::vl::__vwsn::This(__vwsnthis_0->self)->centerY = y);
-			(::vl::__vwsn::This(__vwsnthis_0->self)->axisX = ax);
-			(::vl::__vwsn::This(__vwsnthis_0->self)->axisY = ay);
-			::vl::__vwsn::This(__vwsnthis_0->self)->Publish(::vl::__vwsn::This(__vwsnthis_0->self)->markers, ::vl::__vwsn::This(__vwsnthis_0->self)->markerCount);
+			if (auto transform = ::vl::__vwsn::NullableCast<::vl::presentation::compositions::GuiPointGesture_DraggingAndRotation>(::vl::__vwsn::VariantExtract<::vl::Nullable<::vl::presentation::compositions::GuiPointGesture_DraggingAndRotation>, 1>(::vl::__vwsn::This(arguments)->gesture, false)))
+			{
+				(::vl::__vwsn::This(arguments)->selected = true);
+				(::vl::__vwsn::This(arguments)->handled = true);
+				auto real = (transform.Value().scale * ::vl::reflection::description::Math::Cos(transform.Value().rotation));
+				auto imaginary = (transform.Value().scale * ::vl::reflection::description::Math::Sin(transform.Value().rotation));
+				auto x = (((real * ::vl::__vwsn::This(__vwsnthis_0->self)->centerX) - (imaginary * ::vl::__vwsn::This(__vwsnthis_0->self)->centerY)) + static_cast<double>(transform.Value().distance.x));
+				auto y = (((imaginary * ::vl::__vwsn::This(__vwsnthis_0->self)->centerX) + (real * ::vl::__vwsn::This(__vwsnthis_0->self)->centerY)) + static_cast<double>(transform.Value().distance.y));
+				auto ax = ((real * ::vl::__vwsn::This(__vwsnthis_0->self)->axisX) - (imaginary * ::vl::__vwsn::This(__vwsnthis_0->self)->axisY));
+				auto ay = ((imaginary * ::vl::__vwsn::This(__vwsnthis_0->self)->axisX) + (real * ::vl::__vwsn::This(__vwsnthis_0->self)->axisY));
+				(::vl::__vwsn::This(__vwsnthis_0->self)->centerX = x);
+				(::vl::__vwsn::This(__vwsnthis_0->self)->centerY = y);
+				(::vl::__vwsn::This(__vwsnthis_0->self)->axisX = ax);
+				(::vl::__vwsn::This(__vwsnthis_0->self)->axisY = ay);
+				::vl::__vwsn::This(__vwsnthis_0->self)->Publish(::vl::__vwsn::This(__vwsnthis_0->self)->markers, ::vl::__vwsn::This(__vwsnthis_0->self)->markerCount);
+			}
 		}
 	}
 
@@ -6609,19 +6611,21 @@ Closures
 
 	void __vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointGestureEventArgs* arguments) const
 	{
-		if (((! ::vl::__vwsn::This(arguments)->handled) && (dynamic_cast<::vl::reflection::description::IValueType::TypedBox<::vl::presentation::compositions::GuiPointGesture_Scrolling>*>(::vl::__vwsn::This(arguments)->GetGesture().GetBoxedValue().Obj()) != nullptr)))
+		if ((! ::vl::__vwsn::This(arguments)->handled))
 		{
-			auto scrolling = ::vl::__vwsn::Unbox<::vl::presentation::compositions::GuiPointGesture_Scrolling>(::vl::__vwsn::This(arguments)->GetGesture());
-			if ((! scrolling.isVertical))
+			if (auto scrolling = ::vl::__vwsn::NullableCast<::vl::presentation::compositions::GuiPointGesture_Scrolling>(::vl::__vwsn::VariantExtract<::vl::Nullable<::vl::presentation::compositions::GuiPointGesture_Scrolling>, 0>(::vl::__vwsn::This(arguments)->gesture, false)))
 			{
-				(::vl::__vwsn::This(arguments)->selected = true);
-				(::vl::__vwsn::This(arguments)->handled = true);
-				if ((static_cast<bool>(::vl::__vwsn::This(__vwsnthis_0->self)->swipeItem) && (! ::vl::__vwsn::This(__vwsnthis_0->self)->multipleContacts)))
+				if ((! scrolling.Value().isVertical))
 				{
-					auto row = ::vl::__vwsn::This(__vwsnthis_0->self)->GetSwipeTemplate();
-					if ((row != nullptr))
+					(::vl::__vwsn::This(arguments)->selected = true);
+					(::vl::__vwsn::This(arguments)->handled = true);
+					if ((static_cast<bool>(::vl::__vwsn::This(__vwsnthis_0->self)->swipeItem) && (! ::vl::__vwsn::This(__vwsnthis_0->self)->multipleContacts)))
 					{
-						::vl::__vwsn::This(row)->SetDragDistance(::vl::reflection::description::Math::Max(static_cast<::vl::vint32_t>(0), ::vl::reflection::description::Math::Min(::vl::__vwsn::This(row)->GetMaxDragDistance(), (::vl::__vwsn::This(row)->GetDragDistance() - scrolling.distance))));
+						auto row = ::vl::__vwsn::This(__vwsnthis_0->self)->GetSwipeTemplate();
+						if ((row != nullptr))
+						{
+							::vl::__vwsn::This(row)->SetDragDistance(::vl::reflection::description::Math::Max(static_cast<::vl::vint32_t>(0), ::vl::reflection::description::Math::Min(::vl::__vwsn::This(row)->GetMaxDragDistance(), (::vl::__vwsn::This(row)->GetDragDistance() - scrolling.Value().distance))));
+						}
 					}
 				}
 			}

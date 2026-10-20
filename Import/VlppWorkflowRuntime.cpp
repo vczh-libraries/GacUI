@@ -731,8 +731,9 @@ Serialization (CollectMetadata)
 					CollectTd(typeInfo->GetElementType(), prepare);
 					break;
 				case ITypeInfo::Generic:
+				case ITypeInfo::Variant:
 					{
-						CollectTd(typeInfo->GetElementType(), prepare);
+						if (typeInfo->GetDecorator() == ITypeInfo::Generic) CollectTd(typeInfo->GetElementType(), prepare);
 						vint count = typeInfo->GetGenericArgumentCount();
 						for (vint i = 0; i < count; i++)
 						{
@@ -870,6 +871,7 @@ Serialization (CollectMetadata)
 #define COLLECTMETADATA_EVENT(NAME)					case WfInsCode::NAME: EI(ins.eventParameter); break;
 #define COLLECTMETADATA_EVENT_COUNT(NAME)			case WfInsCode::NAME: EI(ins.eventParameter); break;
 #define COLLECTMETADATA_LABEL(NAME)					case WfInsCode::NAME: break;
+#define COLLECTMETADATA_TYPEINFO(NAME)			case WfInsCode::NAME: CollectTd(ins.typeInfoParameter.Obj(), prepare); break;
 #define COLLECTMETADATA_TYPE(NAME)					case WfInsCode::NAME: break;
 
 				for (vint i = 0; i < instructions.Count(); i++)
@@ -891,7 +893,8 @@ Serialization (CollectMetadata)
 							COLLECTMETADATA_EVENT,
 							COLLECTMETADATA_EVENT_COUNT,
 							COLLECTMETADATA_LABEL,
-							COLLECTMETADATA_TYPE
+							COLLECTMETADATA_TYPE,
+							COLLECTMETADATA_TYPEINFO
 							)
 					}
 				}
@@ -922,6 +925,7 @@ Serialization (CollectMetadata)
 #undef COLLECTMETADATA_EVENT
 #undef COLLECTMETADATA_EVENT_COUNT
 #undef COLLECTMETADATA_LABEL
+#undef COLLECTMETADATA_TYPEINFO
 #undef COLLECTMETADATA_TYPE
 #undef MI
 #undef TD
@@ -997,6 +1001,20 @@ Serizliation (ITypeInfo)
 					reader << decorator;
 					switch (static_cast<ITypeInfo::Decorator>(decorator))
 					{
+					case ITypeInfo::Variant:
+						{
+							auto variantType = Ptr(new VariantTypeInfo);
+							typeInfo = variantType;
+							vint count = 0;
+							reader << count;
+							for (vint i = 0; i < count; i++)
+							{
+								Ptr<ITypeInfo> argumentType;
+								IOType(reader, argumentType);
+								variantType->AddGenericArgument(argumentType);
+							}
+						}
+						break;
 					case ITypeInfo::RawPtr:
 						{
 							Ptr<ITypeInfo> elementType;
@@ -1061,8 +1079,9 @@ Serizliation (ITypeInfo)
 						IOType(writer, typeInfo->GetElementType());
 						break;
 					case ITypeInfo::Generic:
+					case ITypeInfo::Variant:
 						{
-							IOType(writer, typeInfo->GetElementType());
+							if (typeInfo->GetDecorator() == ITypeInfo::Generic) IOType(writer, typeInfo->GetElementType());
 							vint count = typeInfo->GetGenericArgumentCount();
 							writer << count;
 							for (vint i = 0; i < count; i++)
@@ -2130,6 +2149,7 @@ Serialization (Instruction)
 #define STREAMIO_EVENT(NAME)				case WfInsCode::NAME: EI(value.eventParameter); break;
 #define STREAMIO_EVENT_COUNT(NAME)			case WfInsCode::NAME: EI(value.eventParameter); IO(value.countParameter); break;
 #define STREAMIO_LABEL(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
+#define STREAMIO_TYPEINFO(NAME)				case WfInsCode::NAME: Serialization<ITypeInfo>::IOType(reader, value.typeInfoParameter); break;
 #define STREAMIO_TYPE(NAME)					case WfInsCode::NAME: IO(value.typeParameter); break;
 
 					switch (value.code)
@@ -2148,7 +2168,8 @@ Serialization (Instruction)
 							STREAMIO_EVENT,
 							STREAMIO_EVENT_COUNT,
 							STREAMIO_LABEL,
-							STREAMIO_TYPE)
+							STREAMIO_TYPE,
+							STREAMIO_TYPEINFO)
 					}
 
 #undef STREAMIO
@@ -2164,6 +2185,7 @@ Serialization (Instruction)
 #undef STREAMIO_EVENT
 #undef STREAMIO_EVENT_COUNT
 #undef STREAMIO_LABEL
+#undef STREAMIO_TYPEINFO
 #undef STREAMIO_TYPE
 #undef MI
 #undef TD
@@ -2193,6 +2215,7 @@ Serialization (Instruction)
 #define STREAMIO_EVENT(NAME)				case WfInsCode::NAME: EI(value.eventParameter); break;
 #define STREAMIO_EVENT_COUNT(NAME)			case WfInsCode::NAME: EI(value.eventParameter); IO(value.countParameter); break;
 #define STREAMIO_LABEL(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
+#define STREAMIO_TYPEINFO(NAME)				case WfInsCode::NAME: Serialization<ITypeInfo>::IOType(writer, value.typeInfoParameter.Obj()); break;
 #define STREAMIO_TYPE(NAME)					case WfInsCode::NAME: IO(value.typeParameter); break;
 
 					switch (value.code)
@@ -2211,7 +2234,8 @@ Serialization (Instruction)
 							STREAMIO_EVENT,
 							STREAMIO_EVENT_COUNT,
 							STREAMIO_LABEL,
-							STREAMIO_TYPE)
+							STREAMIO_TYPE,
+							STREAMIO_TYPEINFO)
 					}
 
 #undef STREAMIO
@@ -2227,6 +2251,7 @@ Serialization (Instruction)
 #undef STREAMIO_EVENT
 #undef STREAMIO_EVENT_COUNT
 #undef STREAMIO_LABEL
+#undef STREAMIO_TYPEINFO
 #undef STREAMIO_TYPE
 #undef MI
 #undef TD
@@ -3701,7 +3726,7 @@ WfRuntimeThreadContext (TypeConversion)
 					}
 					break;
 				case Value::BoxedValue:
-					if (result.GetValueType() != Value::BoxedValue)
+					if (result.GetValueType() != Value::BoxedValue || !result.GetTypeDescriptor())
 					{
 						return false;
 					}
@@ -4097,6 +4122,62 @@ WfRuntimeThreadContext
 						operand.DeleteRawPtr();
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
+				case WfInsCode::VBox:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						DynamicVariantBox box{ operand, ins.typeInfoParameter };
+						auto result = Value::From(Ptr(new IValueType::TypedBox<DynamicVariantBox>(box)), nullptr);
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::VUnbox:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						auto box = operand.GetBoxedValue().Cast<IValueType::TypedBox<DynamicVariantBox>>();
+						CONTEXT_ACTION(PushValue(box->value.value), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::VCast:
+				case WfInsCode::VTryCast:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						auto& box = operand.GetBoxedValue().Cast<IValueType::TypedBox<DynamicVariantBox>>()->value;
+						auto target = ins.typeInfoParameter.Obj();
+						bool match = false;
+						if (target->GetDecorator() == ITypeInfo::Variant)
+						{
+							for (vint i = 0; i < target->GetGenericArgumentCount(); i++)
+							{
+								if (IsSameTypeInfo(box.type.Obj(), target->GetGenericArgument(i))) match = true;
+							}
+						}
+						else
+						{
+							match = IsSameTypeInfo(box.type.Obj(), target);
+							if (ins.code == WfInsCode::VTryCast && target->GetDecorator() == ITypeInfo::Nullable)
+							{
+								match |= IsSameTypeInfo(box.type.Obj(), target->GetElementType());
+							}
+						}
+						if (match)
+						{
+							auto result = target->GetDecorator() == ITypeInfo::Variant ? operand : box.value;
+							CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
+						}
+						else if (ins.code == WfInsCode::VTryCast)
+						{
+							CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
+						}
+						else
+						{
+							RaiseException(L"Failed to convert variant option \"" + box.type->GetTypeFriendlyName()
+								+ L"\" to \"" + target->GetTypeFriendlyName() + L"\".", false);
+						}
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
 				case WfInsCode::ConvertToType:
 					{
 						Value result, converted;
@@ -4111,6 +4192,10 @@ WfRuntimeThreadContext
 							if (result.IsNull())
 							{
 								from = L"<null>";
+							}
+							else if (!result.GetTypeDescriptor())
+							{
+								from = result.GetTypeFriendlyName();
 							}
 							else
 							{
@@ -4455,6 +4540,27 @@ WfRuntimeThreadContext
 					{
 						return OPERATOR_OpCompareValue(*this);
 					}
+				case WfInsCode::CompareValueLT:
+				case WfInsCode::CompareValueGT:
+				case WfInsCode::CompareValueLE:
+				case WfInsCode::CompareValueGE:
+					{
+						Value first, second;
+						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
+						auto ordering = first <=> second;
+						bool result = false;
+						switch (ins.code)
+						{
+						case WfInsCode::CompareValueLT: result = ordering < 0; break;
+						case WfInsCode::CompareValueGT: result = ordering > 0; break;
+						case WfInsCode::CompareValueLE: result = ordering <= 0; break;
+						case WfInsCode::CompareValueGE: result = ordering >= 0; break;
+						default:;
+						}
+						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
 				case WfInsCode::OpNot:
 					BEGIN_TYPE
 						EXECUTE(OpNot_Bool, Bool)
@@ -4779,6 +4885,7 @@ WfRuntimeThreadContext
 
 #endif
 
+
 /***********************************************************************
 .\WFRUNTIMEINSTRUCTION.CPP
 ***********************************************************************/
@@ -4937,6 +5044,15 @@ WfInstruction
 				return ins; \
 			}\
 
+#define CTOR_TYPEINFO(NAME)\
+			WfInstruction WfInstruction::NAME(Ptr<ITypeInfo> typeInfo)\
+			{\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.typeInfoParameter = typeInfo; \
+				return ins; \
+			}\
+
 			INSTRUCTION_CASES(
 				CTOR,
 				CTOR_VALUE,
@@ -4951,7 +5067,8 @@ WfInstruction
 				CTOR_EVENT,
 				CTOR_EVENT_COUNT,
 				CTOR_LABEL,
-				CTOR_TYPE)
+				CTOR_TYPE,
+				CTOR_TYPEINFO)
 
 #undef CTOR
 #undef CTOR_VALUE
@@ -4967,6 +5084,7 @@ WfInstruction
 #undef CTOR_EVENT_COUNT
 #undef CTOR_LABEL
 #undef CTOR_TYPE
+#undef CTOR_TYPEINFO
 		}
 	}
 }
@@ -5423,6 +5541,24 @@ WfField
 WfStructField
 ***********************************************************************/
 
+			Value CreateFieldDefault(ITypeInfo* type)
+			{
+				if (type->GetDecorator() == ITypeInfo::Variant)
+				{
+					auto option = type->GetGenericArgument(0);
+					DynamicVariantBox box{ CreateFieldDefault(option), Ptr(option) };
+					return Value::From(Ptr(new IValueType::TypedBox<DynamicVariantBox>(box)), nullptr);
+				}
+				if (type->GetDecorator() == ITypeInfo::TypeDescriptor)
+				{
+					if (auto valueType = type->GetTypeDescriptor()->GetValueType())
+					{
+						return valueType->CreateDefault();
+					}
+				}
+				return Value();
+			}
+
 			Value WfStructField::GetValueInternal(const Value& thisObject)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -5434,7 +5570,7 @@ WfStructField
 				vint index = structValue->fieldValues.Keys().IndexOf(this);
 				if (index == -1)
 				{
-					return returnInfo->GetTypeDescriptor()->GetValueType()->CreateDefault();
+					return CreateFieldDefault(returnInfo.Obj());
 				}
 				else
 				{
@@ -5956,18 +6092,18 @@ WfStructInstance
 					{
 						af = as.Values()[ai];
 					}
-					else if (p->GetReturn()->GetDecorator() == ITypeInfo::TypeDescriptor)
+					else
 					{
-						af = p->GetReturn()->GetTypeDescriptor()->GetValueType()->CreateDefault();
+						af = CreateFieldDefault(p->GetReturn());
 					}
 
 					if (p == bp)
 					{
 						bf = bs.Values()[bi];
 					}
-					else if (p->GetReturn()->GetDecorator() == ITypeInfo::TypeDescriptor)
+					else
 					{
-						bf = p->GetReturn()->GetTypeDescriptor()->GetValueType()->CreateDefault();
+						bf = CreateFieldDefault(p->GetReturn());
 					}
 
 					auto result = af <=> bf;
@@ -6108,3 +6244,4 @@ WfTypeImpl
 		}
 	}
 }
+

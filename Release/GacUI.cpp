@@ -1170,6 +1170,11 @@ GuiControl
 					containerComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
 					boundsComposition->AddChild(containerComposition);
+					auto receiver = boundsComposition->GetEventReceiver();
+					receiver->pointSequenceStarted.AttachMethod(this, &GuiControl::OnPointSequenceStarted);
+					receiver->pointAction.AttachMethod(this, &GuiControl::OnPointAction);
+					receiver->pointGesture.AttachMethod(this, &GuiControl::OnPointGesture);
+					receiver->pointSequenceEnded.AttachMethod(this, &GuiControl::OnPointSequenceEnded);
 				}
 				{
 					ControlThemeNameChanged.SetAssociatedComposition(boundsComposition);
@@ -1186,6 +1191,49 @@ GuiControl
 					ContextChanged.SetAssociatedComposition(boundsComposition);
 				}
 				sharedPtrDestructorProc = &GuiControl::SharedPtrDestructorProc;
+			}
+
+			void GuiControl::OnPointSequenceStarted(GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& arguments)
+			{
+				if (acceptPointEvents && !arguments.handled && !arguments.acceptedComposition)
+				{
+					arguments.acceptedComposition = boundsComposition;
+				}
+			}
+
+			void GuiControl::OnPointAction(GuiGraphicsComposition* sender, GuiPointEventArgs& arguments)
+			{
+			}
+
+			void GuiControl::OnPointSequenceEnded(GuiGraphicsComposition* sender, GuiPointSequenceEndedEventArgs& arguments)
+			{
+			}
+
+			void GuiControl::OnPointGesture(GuiGraphicsComposition* sender, GuiPointGestureEventArgs& arguments)
+			{
+			}
+
+			bool GuiControl::GetAcceptPointEvents()
+			{
+				return acceptPointEvents;
+			}
+
+			void GuiControl::SetAcceptPointEvents(bool value)
+			{
+				acceptPointEvents = value;
+			}
+
+			GuiGraphicsComposition* GuiControl::GetPointEventComposition()
+			{
+				if (auto host = boundsComposition->GetRelatedGraphicsHost())
+				{
+					auto target = host->GetPointCapture();
+					for (auto composition = target; composition; composition = composition->GetParent())
+					{
+						if (composition == boundsComposition) return target;
+					}
+				}
+				return nullptr;
 			}
 
 			GuiControl::~GuiControl()
@@ -4591,6 +4639,63 @@ namespace vl
 		{
 
 /***********************************************************************
+Point Event Arguments
+***********************************************************************/
+
+			GuiPointEventArgs::GuiPointEventArgs(GuiPointEventsType _eventType, const collections::List<Nullable<Point>>& _points)
+				:eventType(_eventType)
+				,points(_points)
+			{
+			}
+
+			GuiPointEventArgs::GuiPointEventArgs(GuiGraphicsComposition* composition, GuiPointEventsType _eventType, const collections::List<Nullable<Point>>& _points)
+				:GuiEventArgs(composition)
+				,eventType(_eventType)
+				,points(_points)
+			{
+			}
+
+			const collections::List<Nullable<Point>>& GuiPointEventArgs::GetPoints() const
+			{
+				return points;
+			}
+
+			GuiPointSequenceStartedEventArgs::GuiPointSequenceStartedEventArgs(const collections::List<Nullable<Point>>& _points)
+				:GuiPointEventArgs(GuiPointEventsType::Started, _points)
+			{
+			}
+
+			GuiPointSequenceStartedEventArgs::GuiPointSequenceStartedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& _points)
+				:GuiPointEventArgs(composition, GuiPointEventsType::Started, _points)
+			{
+			}
+
+			GuiPointSequenceEndedEventArgs::GuiPointSequenceEndedEventArgs(const collections::List<Nullable<Point>>& _points)
+				:points(_points)
+			{
+			}
+
+			GuiPointSequenceEndedEventArgs::GuiPointSequenceEndedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& _points)
+				:GuiEventArgs(composition)
+				,points(_points)
+			{
+			}
+
+			GuiPointGestureEventArgs::GuiPointGestureEventArgs()
+			{
+			}
+
+			GuiPointGestureEventArgs::GuiPointGestureEventArgs(GuiGraphicsComposition* composition)
+				:GuiEventArgs(composition)
+			{
+			}
+
+			const collections::List<Nullable<Point>>& GuiPointSequenceEndedEventArgs::GetPoints() const
+			{
+				return points;
+			}
+
+/***********************************************************************
 Event Receiver
 ***********************************************************************/
 
@@ -4604,6 +4709,10 @@ Event Receiver
 				,mouseMove(_sender)
 				,mouseEnter(_sender)
 				,mouseLeave(_sender)
+				,pointSequenceStarted(_sender)
+				,pointAction(_sender)
+				,pointGesture(_sender)
+				,pointSequenceEnded(_sender)
 				,previewKey(_sender)
 				,keyDown(_sender)
 				,keyUp(_sender)
@@ -4674,6 +4783,24 @@ namespace vl
 			using namespace collections;
 			using namespace controls;
 			using namespace elements;
+
+			template<typename TArgs, typename TPrepare>
+			void RaiseCompositionInputEvent(TArgs& arguments, GuiGraphicsComposition* composition, GuiGraphicsEvent<TArgs> GuiGraphicsEventReceiver::* eventReceiverEvent, TPrepare&& prepare)
+			{
+				arguments.compositionSource = composition;
+				arguments.eventSource = nullptr;
+				while (composition)
+				{
+					if (composition->HasEventReceiver())
+					{
+						if (!arguments.eventSource) arguments.eventSource = composition;
+						prepare(composition);
+						(composition->GetEventReceiver()->*eventReceiverEvent).Execute(arguments);
+						if (arguments.handled) break;
+					}
+					composition = composition->GetParent();
+				}
+			}
 
 /***********************************************************************
 GuiGraphicsTimerManager
@@ -4747,6 +4874,10 @@ GuiGraphicsHost
 				{
 					ResetMouseCapture();
 				}
+				if (pointActionManager->GetPointCapture() == composition)
+				{
+					ResetPointCapture();
+				}
 				if(focusedComposition==composition)
 				{
 					focusedComposition=0;
@@ -4780,11 +4911,10 @@ GuiGraphicsHost
 			{
 				if (hostRecord.nativeWindow)
 				{
-					if (!hostRecord.nativeWindow->IsCapturing() && !info.nonClient)
+					if ((suppressNativeMouseCapture || !hostRecord.nativeWindow->IsCapturing()) && !info.nonClient)
 					{
-						hostRecord.nativeWindow->RequireCapture();
-						auto point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
-						mouseCaptureComposition = windowComposition->FindVisibleComposition(point, true);
+						if (!suppressNativeMouseCapture) hostRecord.nativeWindow->RequireCapture();
+						mouseCaptureComposition = FindInputComposition(NativePoint(info.x, info.y));
 					}
 				}
 			}
@@ -4793,7 +4923,7 @@ GuiGraphicsHost
 			{
 				if(hostRecord.nativeWindow && !AnyMouseButtonDown())
 				{
-					hostRecord.nativeWindow->ReleaseCapture();
+					if (!suppressNativeMouseCapture) hostRecord.nativeWindow->ReleaseCapture();
 					mouseCaptureComposition=0;
 				}
 			}
@@ -4880,41 +5010,14 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::RaiseMouseEvent(GuiMouseEventArgs& arguments, GuiGraphicsComposition* composition, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
 			{
-				arguments.compositionSource=composition;
-				arguments.eventSource=0;
-				vint x=arguments.x;
-				vint y=arguments.y;
-
-				while(composition)
+				auto bounds = composition->GetGlobalBounds();
+				Point position(arguments.x + bounds.x1, arguments.y + bounds.y1);
+				RaiseCompositionInputEvent(arguments, composition, eventReceiverEvent, [&](GuiGraphicsComposition* receiver)
 				{
-					if(composition->HasEventReceiver())
-					{
-						if(!arguments.eventSource)
-						{
-							arguments.eventSource=composition;
-						}
-						GuiGraphicsEventReceiver* eventReceiver=composition->GetEventReceiver();
-						(eventReceiver->*eventReceiverEvent).Execute(arguments);
-						if(arguments.handled)
-						{
-							break;
-						}
-					}
-
-					GuiGraphicsComposition* parent=composition->GetParent();
-					if(parent)
-					{
-						Rect parentBounds=parent->GetCachedBounds();
-						Rect clientArea=parent->GetCachedClientArea();
-						Rect childBounds=composition->GetCachedBounds();
-
-						x+=childBounds.x1+(clientArea.x1-parentBounds.x1);
-						y+=childBounds.y1+(clientArea.y1-parentBounds.y1);
-						arguments.x=x;
-						arguments.y=y;
-					}
-					composition=parent;
-				}
+					auto receiverBounds = receiver->GetGlobalBounds();
+					arguments.x = position.x - receiverBounds.x1;
+					arguments.y = position.y - receiverBounds.y1;
+				});
 			}
 
 			void GuiGraphicsHost::OnMouseInput(NativeMouseButton button, const NativeWindowMouseInfo& info, bool capture, bool release, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
@@ -4932,8 +5035,7 @@ GuiGraphicsHost
 				}
 				else
 				{
-					auto point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
-					composition = windowComposition->FindVisibleComposition(point, true);
+					composition = FindInputComposition(NativePoint(info.x, info.y));
 				}
 				if (release)
 				{
@@ -4960,6 +5062,110 @@ GuiGraphicsHost
 					arguments.y = point.y - bounds.y1;
 					RaiseMouseEvent(arguments, composition, eventReceiverEvent);
 				}
+			}
+
+			GuiGraphicsComposition* GuiGraphicsHost::FindInputComposition(NativePoint location)
+			{
+				return windowComposition->FindVisibleComposition(hostRecord.nativeWindow->Convert(location), true);
+			}
+
+			void GuiGraphicsHost::PointCapture(GuiGraphicsComposition* composition)
+			{
+				pointActionManager->PointCapture(composition);
+			}
+
+			void GuiGraphicsHost::ResetPointCapture()
+			{
+				pointActionManager->ResetPointCapture();
+			}
+
+			void GuiGraphicsHost::PointUncapture()
+			{
+				ResetPointCapture();
+			}
+
+			void GuiGraphicsHost::PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept)
+			{
+				ResetPointCapture();
+				auto composition = FindInputComposition(firstPoint.position);
+				List<Nullable<Point>> queryPoints;
+				queryPoints.Add(Point());
+				GuiPointSequenceStartedEventArgs arguments(queryPoints);
+				arguments.compositionSource = composition;
+				while (composition)
+				{
+					if (composition->HasEventReceiver())
+					{
+						if (!arguments.eventSource) arguments.eventSource = composition;
+						static_cast<WindowPointInfo&>(arguments) = pointActionManager->ConvertSample(firstPoint, composition);
+						queryPoints[0] = arguments.position;
+						composition->GetEventReceiver()->pointSequenceStarted.Execute(arguments);
+					}
+					composition = composition->GetParent();
+				}
+				accept = arguments.acceptedComposition != nullptr;
+				if (accept) pointActionManager->OnPointSequenceStarted(firstPoint, arguments.acceptedComposition);
+			}
+
+			void GuiGraphicsHost::PointDown(const NativeWindowPointInfo& info)
+			{
+				pointActionManager->OnPointAction(info, GuiPointEventsType::Down);
+			}
+
+			void GuiGraphicsHost::PointUpdate(const NativeWindowPointInfo& info)
+			{
+				pointActionManager->OnPointAction(info, GuiPointEventsType::Update);
+			}
+
+			void GuiGraphicsHost::PointUp(const NativeWindowPointInfo& info)
+			{
+				pointActionManager->OnPointAction(info, GuiPointEventsType::Up);
+			}
+
+			void GuiGraphicsHost::PointEntered(const NativeWindowPointInfo& info)
+			{
+				pointActionManager->OnPointAction(info, GuiPointEventsType::Enter);
+			}
+
+			void GuiGraphicsHost::PointLeaved(const NativeWindowPointInfo& info)
+			{
+				pointActionManager->OnPointAction(info, GuiPointEventsType::Leave);
+			}
+
+			void GuiGraphicsHost::PointSequenceEnded(const PointSequenceEndInfo& info)
+			{
+				if (!pointActionManager->OnPointSequenceEnded(info)) return;
+				auto button = pointActionManager->GetFallbackClick();
+				auto firstPoint = pointActionManager->GetFirstPoint();
+				PointUncapture();
+				if (!button) return;
+
+				// The synchronous click needs only composition capture; leave physical native capture intact.
+				auto physicalCapture = mouseCaptureComposition;
+				suppressNativeMouseCapture = true;
+				bool physicalButtons[5];
+				for (vint i = 0; i < 5; i++)
+				{
+					physicalButtons[i] = mouseButtonStates[i];
+					mouseButtonStates[i] = false;
+				}
+				mouseCaptureComposition = nullptr;
+				NativeWindowMouseInfo mouse;
+				mouse.x = firstPoint.position.x;
+				mouse.y = firstPoint.position.y;
+				mouse.ctrl = firstPoint.ctrl;
+				mouse.shift = firstPoint.shift;
+				mouse.alt = firstPoint.alt;
+				mouse.osSuper = firstPoint.osSuper;
+				MouseMoving(mouse);
+				mouse.left = button.Value() == NativeMouseButton::Left;
+				mouse.right = button.Value() == NativeMouseButton::Right;
+				MouseDown(button.Value(), mouse);
+				mouse.left = mouse.right = false;
+				MouseUp(button.Value(), mouse);
+				mouseCaptureComposition = physicalCapture;
+				for (vint i = 0; i < 5; i++) mouseButtonStates[i] = physicalButtons[i];
+				suppressNativeMouseCapture = false;
 			}
 
 			void GuiGraphicsHost::ResetRenderTarget()
@@ -5327,6 +5533,7 @@ GuiGraphicsHost
 			{
 				altActionManager = new GuiAltActionManager(controlHost);
 				tabActionManager = new GuiTabActionManager(controlHost);
+				pointActionManager = new GuiPointActionManager(this);
 				hostRecord.host = this;
 				windowComposition=new GuiWindowComposition;
 				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -5341,6 +5548,7 @@ GuiGraphicsHost
 
 				delete altActionManager;
 				delete tabActionManager;
+				delete pointActionManager;
 				if (shortcutKeyManager)
 				{
 					delete shortcutKeyManager;
@@ -5348,6 +5556,11 @@ GuiGraphicsHost
 				}
 
 				delete windowComposition;
+			}
+
+			GuiGraphicsComposition* GuiGraphicsHost::GetPointCapture()
+			{
+				return pointActionManager->GetPointCapture();
 			}
 
 			INativeWindow* GuiGraphicsHost::GetNativeWindow()
@@ -5362,6 +5575,7 @@ GuiGraphicsHost
 					if (hostRecord.nativeWindow)
 					{
 						ResetMouseCapture();
+						ResetPointCapture();
 						GetCurrentController()->CallbackService()->UninstallListener(this);
 						hostRecord.nativeWindow->UninstallListener(this);
 					}
@@ -7105,7 +7319,24 @@ GuiScrollView
 			GuiScrollView::GuiScrollView(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
+				SetAcceptPointEvents(true);
 				containerComposition->CachedBoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerCachedBoundsChanged);
+			}
+
+			void GuiScrollView::OnPointGesture(GuiGraphicsComposition* sender, GuiPointGestureEventArgs& arguments)
+			{
+				if (arguments.handled || !GetVisuallyEnabled() || GetPointEventComposition() != boundsComposition) return;
+				if (auto scrolling = arguments.gesture.TryGet<GuiPointGesture_Scrolling>())
+				{
+					auto scroll = scrolling->isVertical ? GetVerticalScroll() : GetHorizontalScroll();
+					if (!scroll || !scroll->GetVisible() || !scroll->GetVisuallyEnabled()) return;
+					arguments.selected = true;
+					arguments.handled = true;
+					auto position = GetViewPosition();
+					if (scrolling->isVertical) position.y -= scrolling->distance;
+					else position.x -= scrolling->distance;
+					SetViewPosition(position);
+				}
 			}
 
 			vint GuiScrollView::GetSmallMove()
@@ -18683,11 +18914,13 @@ GuiDocumentCommonInterface
 					documentMouseArea->GetEventReceiver()->mouseDown.Detach(onMouseDownHandler);
 					documentMouseArea->GetEventReceiver()->mouseUp.Detach(onMouseUpHandler);
 					documentMouseArea->GetEventReceiver()->mouseLeave.Detach(onMouseLeaveHandler);
+					documentMouseArea->GetEventReceiver()->pointSequenceStarted.Detach(onPointSequenceStartedHandler);
 
 					onMouseMoveHandler = nullptr;
 					onMouseDownHandler = nullptr;
 					onMouseUpHandler = nullptr;
 					onMouseLeaveHandler = nullptr;
+					onPointSequenceStartedHandler = nullptr;
 				}
 				documentMouseArea = _mouseArea;
 				if (documentMouseArea)
@@ -18701,6 +18934,15 @@ GuiDocumentCommonInterface
 					onMouseDownHandler = documentMouseArea->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseDown);
 					onMouseUpHandler = documentMouseArea->GetEventReceiver()->mouseUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
 					onMouseLeaveHandler = documentMouseArea->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
+					onPointSequenceStartedHandler = documentMouseArea->GetEventReceiver()->pointSequenceStarted.AttachMethod(this, &GuiDocumentCommonInterface::OnPointSequenceStarted);
+				}
+			}
+
+			void GuiDocumentCommonInterface::OnPointSequenceStarted(GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& arguments)
+			{
+				if (documentControl->GetVisuallyEnabled() && editMode != GuiDocumentEditMode::ViewOnly)
+				{
+					arguments.handled = true;
 				}
 			}
 
@@ -32505,12 +32747,138 @@ GuiGraphicsResourceManager
 /***********************************************************************
 .\NATIVEWINDOW\GUINATIVEWINDOW.CPP
 ***********************************************************************/
+#include <chrono>
+#include <limits>
 
 namespace vl
 {
 	namespace presentation
 	{
 		const NativeWindowFrameConfig NativeWindowFrameConfig::Default = {};
+
+/***********************************************************************
+Touch Experience
+***********************************************************************/
+
+		vuint64_t GetNativePointTimestamp()
+		{
+			return (vuint64_t)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+		}
+
+		void ResetCompletedNativePointSequence(NativePointInputState& state)
+		{
+			state.sequenceId = 0;
+			state.nextPointId = 0;
+			state.accepted = false;
+			state.ended = false;
+			state.contacts.Clear();
+		}
+
+		void EndNativePointSequence(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, PointSequenceEndReason reason, vuint64_t timestamp)
+		{
+			state.ended = true;
+			PointSequenceEndInfo info;
+			info.sequenceId = state.sequenceId;
+			info.timestamp = timestamp;
+			info.accepted = state.accepted;
+			info.reason = reason;
+			for (auto listener : listeners)
+			{
+				listener->PointSequenceEnded(info);
+			}
+		}
+
+		void BeginNativePointSequence(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativeWindowPointInfo& firstPoint)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::BeginNativePointSequence#"
+			CHECK_ERROR(state.sequenceId == 0 && state.contacts.Count() == 0, ERROR_MESSAGE_PREFIX L"A sequence is already active.");
+			CHECK_ERROR(state.lastSequenceId != (vuint64_t)-1, ERROR_MESSAGE_PREFIX L"Sequence IDs exhausted.");
+			firstPoint.sequenceId = state.sequenceId = ++state.lastSequenceId;
+			firstPoint.pointId = 0;
+			firstPoint.activePointCount = 1;
+			for (auto listener : listeners)
+			{
+				bool accept = false;
+				listener->PointSequenceStarted(firstPoint, accept);
+				state.accepted |= accept;
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void UpdateNativePointInput(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, NativeWindowPointInfo info)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::UpdateNativePointInput#"
+			CHECK_ERROR(state.sequenceId != 0, ERROR_MESSAGE_PREFIX L"No active sequence.");
+			if (event == NativePointEvent::Down)
+			{
+				CHECK_ERROR(!state.contacts.Keys().Contains(sourceToken), ERROR_MESSAGE_PREFIX L"Contact is already down.");
+				CHECK_ERROR(state.nextPointId < std::numeric_limits<vint>::max(), ERROR_MESSAGE_PREFIX L"Point IDs exhausted.");
+				info.pointId = state.nextPointId++;
+			}
+			else
+			{
+				CHECK_ERROR(state.contacts.Keys().Contains(sourceToken), ERROR_MESSAGE_PREFIX L"Contact is not down.");
+				info.pointId = state.contacts[sourceToken].pointId;
+			}
+			info.sequenceId = state.sequenceId;
+			info.activePointCount = state.contacts.Count() + (event == NativePointEvent::Down ? 1 : event == NativePointEvent::Up ? -1 : 0);
+			if (event == NativePointEvent::Up) state.contacts.Remove(sourceToken);
+			else state.contacts.Set(sourceToken, info);
+			if (!state.ended && state.accepted)
+			{
+				void (INativeWindowListener::* callback)(const NativeWindowPointInfo&) = nullptr;
+				switch (event)
+				{
+				case NativePointEvent::Down: callback = &INativeWindowListener::PointDown; break;
+				case NativePointEvent::Update: callback = &INativeWindowListener::PointUpdate; break;
+				case NativePointEvent::Up: callback = &INativeWindowListener::PointUp; break;
+				case NativePointEvent::Entered: callback = &INativeWindowListener::PointEntered; break;
+				case NativePointEvent::Leaved: callback = &INativeWindowListener::PointLeaved; break;
+				}
+				for (auto listener : listeners) (listener->*callback)(info);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		bool ProcessNativePointInput(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, NativeWindowPointInfo info)
+		{
+			if (event == NativePointEvent::Down && state.sequenceId == 0)
+			{
+				BeginNativePointSequence(state, listeners, info);
+			}
+			UpdateNativePointInput(state, listeners, event, sourceToken, info);
+			bool accepted = state.accepted;
+			if (state.contacts.Count() == 0)
+			{
+				if (!state.ended) EndNativePointSequence(state, listeners, PointSequenceEndReason::Succeeded, info.timestamp);
+				ResetCompletedNativePointSequence(state);
+			}
+			return accepted;
+		}
+
+		void CancelNativePointSequence(NativePointInputState& state, const collections::List<INativeWindowListener*>& listeners, PointSequenceEndReason reason, vuint64_t timestamp)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::CancelNativePointSequence#"
+			CHECK_ERROR(reason != PointSequenceEndReason::Succeeded, ERROR_MESSAGE_PREFIX L"A cancellation reason is required.");
+			if (state.sequenceId != 0 && !state.ended)
+			{
+				EndNativePointSequence(state, listeners, reason, timestamp);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RetireNativePoint(NativePointInputState& state, vuint64_t sourceToken)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::RetireNativePoint#"
+			if (!state.contacts.Keys().Contains(sourceToken)) return;
+			CHECK_ERROR(state.ended, ERROR_MESSAGE_PREFIX L"Cancel the sequence before retiring a contact without Up.");
+			state.contacts.Remove(sourceToken);
+			if (state.contacts.Count() == 0)
+			{
+				ResetCompletedNativePointSequence(state);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
 
 /***********************************************************************
 INativeAutomationService
@@ -32667,6 +33035,34 @@ INativeWindowListener
 		}
 
 		void INativeWindowListener::MouseLeaved()
+		{
+		}
+
+		void INativeWindowListener::PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept)
+		{
+		}
+
+		void INativeWindowListener::PointDown(const NativeWindowPointInfo& info)
+		{
+		}
+
+		void INativeWindowListener::PointUpdate(const NativeWindowPointInfo& info)
+		{
+		}
+
+		void INativeWindowListener::PointUp(const NativeWindowPointInfo& info)
+		{
+		}
+
+		void INativeWindowListener::PointEntered(const NativeWindowPointInfo& info)
+		{
+		}
+
+		void INativeWindowListener::PointLeaved(const NativeWindowPointInfo& info)
+		{
+		}
+
+		void INativeWindowListener::PointSequenceEnded(const PointSequenceEndInfo& info)
 		{
 		}
 
@@ -33936,6 +34332,96 @@ GuiHostedController::INativeWindowListener (Template)
 GuiHostedController::INativeWindowListener (IO Event Handling)
 ***********************************************************************/
 
+		NativeWindowPointInfo GuiHostedController::ConvertPointToHostedWindow(const NativeWindowPointInfo& info)
+		{
+			auto adjusted = info;
+			auto offset = pointSequenceWindow->GetRenderingOffset();
+			adjusted.position.x -= offset.x;
+			adjusted.position.y -= offset.y;
+			if (info.contactBounds)
+			{
+				auto bounds = info.contactBounds.Value();
+				adjusted.contactBounds = NativeRect(bounds.x1 - offset.x, bounds.y1 - offset.y, bounds.x2 - offset.x, bounds.y2 - offset.y);
+			}
+			return adjusted;
+		}
+
+		void GuiHostedController::ResetPointSequence()
+		{
+			pointSequenceId = 0;
+			pointSequenceAccepted = false;
+			pointSequenceWindow = nullptr;
+		}
+
+		void GuiHostedController::PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept)
+		{
+			ResetPointSequence();
+			pointSequenceId = firstPoint.sequenceId;
+			pointSequenceWindow = HitTestInClientSpace(firstPoint.position);
+			if (pointSequenceWindow && !pointSequenceWindow->IsEnabled()) pointSequenceWindow = nullptr;
+			if (pointSequenceWindow)
+			{
+				auto adjusted = ConvertPointToHostedWindow(firstPoint);
+				for (auto listener : pointSequenceWindow->listeners)
+				{
+					bool listenerAccept = false;
+					listener->PointSequenceStarted(adjusted, listenerAccept);
+					pointSequenceAccepted |= listenerAccept;
+				}
+			}
+			accept = pointSequenceAccepted;
+		}
+
+		void GuiHostedController::ForwardPointInput(const NativeWindowPointInfo& info, void (INativeWindowListener::* callback)(const NativeWindowPointInfo&))
+		{
+			if (info.sequenceId != pointSequenceId || !pointSequenceAccepted || !pointSequenceWindow) return;
+			auto adjusted = ConvertPointToHostedWindow(info);
+			for (auto listener : pointSequenceWindow->listeners)
+			{
+				(listener->*callback)(adjusted);
+			}
+		}
+
+		void GuiHostedController::PointDown(const NativeWindowPointInfo& info)
+		{
+			ForwardPointInput(info, &INativeWindowListener::PointDown);
+		}
+
+		void GuiHostedController::PointUpdate(const NativeWindowPointInfo& info)
+		{
+			ForwardPointInput(info, &INativeWindowListener::PointUpdate);
+		}
+
+		void GuiHostedController::PointUp(const NativeWindowPointInfo& info)
+		{
+			ForwardPointInput(info, &INativeWindowListener::PointUp);
+		}
+
+		void GuiHostedController::PointEntered(const NativeWindowPointInfo& info)
+		{
+			ForwardPointInput(info, &INativeWindowListener::PointEntered);
+		}
+
+		void GuiHostedController::PointLeaved(const NativeWindowPointInfo& info)
+		{
+			ForwardPointInput(info, &INativeWindowListener::PointLeaved);
+		}
+
+		void GuiHostedController::PointSequenceEnded(const PointSequenceEndInfo& info)
+		{
+			if (info.sequenceId != pointSequenceId) return;
+			if (pointSequenceWindow)
+			{
+				auto adjusted = info;
+				adjusted.accepted = pointSequenceAccepted;
+				for (auto listener : pointSequenceWindow->listeners)
+				{
+					listener->PointSequenceEnded(adjusted);
+				}
+			}
+			ResetPointSequence();
+		}
+
 		void GuiHostedController::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)
 		{
 			// A new window can appear under a stationary pointer. Refresh its control
@@ -34282,6 +34768,7 @@ GuiHostedController::INativeWindowService
 
 			if (hostedWindow == enteringWindow) enteringWindow = nullptr;
 			if (hostedWindow == hoveringWindow) hoveringWindow = nullptr;
+			if (hostedWindow == pointSequenceWindow) ResetPointSequence();
 			if (hostedWindow == lastFocusedWindow) enteringWindow = nullptr;
 			if (hostedWindow == capturingWindow)
 			{
@@ -36086,6 +36573,7 @@ GuiRemoteController::INativeWindowService
 	{
 		CHECK_ERROR(!windowDestroyed, L"vl::presentation::GuiRemoteController::CreateNativeWindow(INativeWindow::WindowMode)#GuiHostedController is not supposed to call this function for twice.");
 		windowDestroyed = true;
+		remoteWindow.CancelPointInput(PointSequenceEndReason::Canceled_WindowDestroyed);
 
 		for (auto l : remoteWindow.listeners) l->Closed();
 		for (auto l : remoteWindow.listeners) l->Destroying();
@@ -36495,6 +36983,42 @@ GuiRemoteEvents (events)
 		remote->callbackService.InvokeGlobalShortcutKeyActivated(arguments);
 	}
 
+
+	void GuiRemoteEvents::OnIOPointStarted(const remoteprotocol::IOPointAction& arguments)
+	{
+		remote->remoteWindow.OnPointStarted(arguments);
+	}
+
+	void GuiRemoteEvents::OnIOPointDown(const remoteprotocol::IOPointAction& arguments)
+	{
+		remote->remoteWindow.OnPointAction(NativePointEvent::Down, arguments);
+	}
+
+	void GuiRemoteEvents::OnIOPointUpdate(const remoteprotocol::IOPointAction& arguments)
+	{
+		remote->remoteWindow.OnPointAction(NativePointEvent::Update, arguments);
+	}
+
+	void GuiRemoteEvents::OnIOPointUp(const remoteprotocol::IOPointAction& arguments)
+	{
+		remote->remoteWindow.OnPointAction(NativePointEvent::Up, arguments);
+	}
+
+	void GuiRemoteEvents::OnIOPointEnter(const remoteprotocol::IOPointAction& arguments)
+	{
+		remote->remoteWindow.OnPointAction(NativePointEvent::Entered, arguments);
+	}
+
+	void GuiRemoteEvents::OnIOPointLeave(const remoteprotocol::IOPointAction& arguments)
+	{
+		remote->remoteWindow.OnPointAction(NativePointEvent::Leaved, arguments);
+	}
+
+	void GuiRemoteEvents::OnIOPointEnded(const remoteprotocol::IOPointEnd& arguments)
+	{
+		remote->remoteWindow.OnPointEnded(arguments);
+	}
+
 	void GuiRemoteEvents::OnIOButtonDown(const remoteprotocol::IOMouseInfoWithButton& arguments)
 	{
 		for (auto l : remote->remoteWindow.listeners) l->MouseDown(arguments.button, arguments.info);
@@ -36548,6 +37072,66 @@ GuiRemoteEvents (events)
 	void GuiRemoteEvents::OnIOChar(const NativeWindowCharInfo& arguments)
 	{
 		for (auto l : remote->remoteWindow.listeners) l->Char(arguments);
+	}
+}
+
+namespace vl::presentation::remoteprotocol
+{
+	vuint64_t DecodePointUnsigned(const WString& text)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::DecodePointUnsigned#"
+		CHECK_ERROR(text.Length() > 0 && (text.Length() == 1 || text[0] != L'0'), ERROR_MESSAGE_PREFIX L"Expected canonical unsigned decimal.");
+		vuint64_t value = 0;
+		for (vint i = 0; i < text.Length(); i++)
+		{
+			auto c = text[i];
+			CHECK_ERROR(c >= L'0' && c <= L'9', ERROR_MESSAGE_PREFIX L"Expected canonical unsigned decimal.");
+			auto digit = (vuint64_t)(c - L'0');
+			CHECK_ERROR(value <= ((vuint64_t)-1 - digit) / 10, ERROR_MESSAGE_PREFIX L"Unsigned decimal overflow.");
+			value = value * 10 + digit;
+		}
+		return value;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	IOPointInfo EncodePointInfo(const NativeWindowPointInfo& info)
+	{
+		IOPointInfo result;
+		result.sequenceId = u64tow(info.sequenceId);
+		result.pointId = info.pointId;
+		result.timestamp = u64tow(info.timestamp);
+		result.activePointCount = info.activePointCount;
+		result.position = info.position;
+		result.primary = info.primary;
+		result.ctrl = info.ctrl;
+		result.shift = info.shift;
+		result.alt = info.alt;
+		result.osSuper = info.osSuper;
+		result.contactBounds = info.contactBounds;
+		result.pressure = info.pressure;
+		result.orientation = info.orientation;
+		if (info.platformFrameId) result.platformFrameId = u64tow(info.platformFrameId.Value());
+		return result;
+	}
+
+	NativeWindowPointInfo DecodePointInfo(const IOPointInfo& info)
+	{
+		NativeWindowPointInfo result;
+		result.sequenceId = DecodePointUnsigned(info.sequenceId);
+		result.pointId = info.pointId;
+		result.timestamp = DecodePointUnsigned(info.timestamp);
+		result.activePointCount = info.activePointCount;
+		result.position = info.position;
+		result.primary = info.primary;
+		result.ctrl = info.ctrl;
+		result.shift = info.shift;
+		result.alt = info.alt;
+		result.osSuper = info.osSuper;
+		result.contactBounds = info.contactBounds;
+		result.pressure = info.pressure;
+		result.orientation = info.orientation;
+		if (info.platformFrameId) result.platformFrameId = DecodePointUnsigned(info.platformFrameId.Value());
+		return result;
 	}
 }
 
@@ -41474,8 +42058,85 @@ GuiRemoteWindow
 GuiRemoteWindow (events)
 ***********************************************************************/
 
+
+	bool GuiRemoteWindow::AcceptPointRecord(const WString& sequenceId, vint eventIndex)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteWindow::AcceptPointRecord#"
+		if (controllerDisconnected || wirePointSequenceId == 0 || remoteprotocol::DecodePointUnsigned(sequenceId) != wirePointSequenceId) return false;
+		if (eventIndex < nextPointEventIndex) return false;
+		CHECK_ERROR(eventIndex == nextPointEventIndex, ERROR_MESSAGE_PREFIX L"Point event index gap.");
+		CHECK_ERROR(eventIndex < 0x7FFFFFFF, ERROR_MESSAGE_PREFIX L"Point event indices exhausted.");
+		return true;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteWindow::OnPointStarted(const remoteprotocol::IOPointAction& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteWindow::OnPointStarted#"
+		if (controllerDisconnected || pointState.sequenceId != 0) return;
+		auto info = remoteprotocol::DecodePointInfo(arguments.info);
+		if (completedPointSequences.Contains(info.sequenceId)) return;
+		CHECK_ERROR(info.sequenceId != 0 && arguments.eventIndex == 0 && info.pointId == 0 && info.activePointCount == 1, ERROR_MESSAGE_PREFIX L"Invalid Started record.");
+		wirePointSequenceId = info.sequenceId;
+		completedPointSequences.Add(wirePointSequenceId);
+		nextPointEventIndex = 1;
+		BeginNativePointSequence(pointState, listeners, info);
+		firstPointSample = info;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteWindow::OnPointAction(NativePointEvent event, const remoteprotocol::IOPointAction& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteWindow::OnPointAction#"
+		if (!AcceptPointRecord(arguments.info.sequenceId, arguments.eventIndex)) return;
+		auto info = remoteprotocol::DecodePointInfo(arguments.info);
+		info.sequenceId = pointState.sequenceId;
+		bool starting = pointState.nextPointId == 0;
+		CHECK_ERROR(!starting || (event == NativePointEvent::Down && info == firstPointSample), ERROR_MESSAGE_PREFIX L"First Down must match Started.");
+		CHECK_ERROR(info.pointId >= 0, ERROR_MESSAGE_PREFIX L"Invalid contact index.");
+		if (event == NativePointEvent::Down)
+		{
+			CHECK_ERROR(info.pointId == pointState.nextPointId, ERROR_MESSAGE_PREFIX L"Contact indices must follow Down order.");
+		}
+		else
+		{
+			CHECK_ERROR(pointState.contacts.Keys().Contains((vuint64_t)info.pointId), ERROR_MESSAGE_PREFIX L"Contact is not down.");
+		}
+		auto activeCount = pointState.contacts.Count() + (event == NativePointEvent::Down ? 1 : event == NativePointEvent::Up ? -1 : 0);
+		CHECK_ERROR(info.activePointCount == activeCount, ERROR_MESSAGE_PREFIX L"Invalid active contact count.");
+		UpdateNativePointInput(pointState, listeners, event, (vuint64_t)info.pointId, info);
+		if (!pointState.accepted) ProcessIOPointFallback(pointCommandState, listeners, event, (vuint64_t)info.pointId, info, starting);
+		nextPointEventIndex++;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteWindow::OnPointEnded(const remoteprotocol::IOPointEnd& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteWindow::OnPointEnded#"
+		if (!AcceptPointRecord(arguments.sequenceId, arguments.eventIndex)) return;
+		auto timestamp = remoteprotocol::DecodePointUnsigned(arguments.timestamp);
+		CHECK_ERROR(arguments.reason != PointSequenceEndReason::Succeeded || (pointState.nextPointId > 0 && pointState.contacts.Count() == 0), ERROR_MESSAGE_PREFIX L"Successful End requires all contacts Up.");
+		EndNativePointSequence(pointState, listeners, arguments.reason, timestamp);
+		if (arguments.reason != PointSequenceEndReason::Succeeded) CancelIOPointFallback(pointCommandState, listeners);
+		ResetCompletedNativePointSequence(pointState);
+		wirePointSequenceId = 0;
+		nextPointEventIndex = 0;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteWindow::CancelPointInput(PointSequenceEndReason reason)
+	{
+		CancelNativePointSequence(pointState, listeners, reason, GetNativePointTimestamp());
+		CancelIOPointFallback(pointCommandState, listeners);
+		ResetCompletedNativePointSequence(pointState);
+		wirePointSequenceId = 0;
+		nextPointEventIndex = 0;
+	}
+
 	void GuiRemoteWindow::OnControllerConnect()
 	{
+		CancelPointInput(PointSequenceEndReason::Canceled_CaptureLost);
+		completedPointSequences.Clear();
 		if (controllerDisconnected)
 		{
 			controllerDisconnected = false;
@@ -41509,6 +42170,8 @@ GuiRemoteWindow (events)
 	void GuiRemoteWindow::OnControllerDisconnect()
 	{
 		controllerDisconnected = true;
+		CancelPointInput(PointSequenceEndReason::Canceled_CaptureLost);
+		completedPointSequences.Clear();
 	}
 
 	void GuiRemoteWindow::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)
@@ -41910,6 +42573,7 @@ GuiRemoteWindow (INativeWindow)
 		if (statusCapturing)
 		{
 			statusCapturing = false;
+			if (controllerDisconnected) return true;
 			remoteMessages.RequestIOReleaseCapture();
 			bool disconnected = false;
 			remoteMessages.Submit(disconnected);
@@ -42727,6 +43391,23 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::PointSequenceEndReason>(const ::vl::presentation::PointSequenceEndReason & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::PointSequenceEndReason>(const ::vl::presentation::PointSequenceEndReason&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::PointSequenceEndReason::Succeeded: node->content.value = WString::Unmanaged(L"Succeeded"); break;
+		case ::vl::presentation::PointSequenceEndReason::Canceled_Unknown: node->content.value = WString::Unmanaged(L"Canceled_Unknown"); break;
+		case ::vl::presentation::PointSequenceEndReason::Canceled_PlatformCanceled: node->content.value = WString::Unmanaged(L"Canceled_PlatformCanceled"); break;
+		case ::vl::presentation::PointSequenceEndReason::Canceled_CaptureLost: node->content.value = WString::Unmanaged(L"Canceled_CaptureLost"); break;
+		case ::vl::presentation::PointSequenceEndReason::Canceled_WindowDestroyed: node->content.value = WString::Unmanaged(L"Canceled_WindowDestroyed"); break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::ElementShapeType>(const ::vl::presentation::elements::ElementShapeType & value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::elements::ElementShapeType>(const ::vl::presentation::elements::ElementShapeType&)#"
@@ -43096,6 +43777,45 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"alt", value.alt);
 		ConvertCustomTypeToJsonField(node, L"osSuper", value.osSuper);
 		ConvertCustomTypeToJsonField(node, L"code", value.code);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOPointInfo>(const ::vl::presentation::remoteprotocol::IOPointInfo & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"sequenceId", value.sequenceId);
+		ConvertCustomTypeToJsonField(node, L"pointId", value.pointId);
+		ConvertCustomTypeToJsonField(node, L"timestamp", value.timestamp);
+		ConvertCustomTypeToJsonField(node, L"activePointCount", value.activePointCount);
+		ConvertCustomTypeToJsonField(node, L"position", value.position);
+		ConvertCustomTypeToJsonField(node, L"primary", value.primary);
+		ConvertCustomTypeToJsonField(node, L"ctrl", value.ctrl);
+		ConvertCustomTypeToJsonField(node, L"shift", value.shift);
+		ConvertCustomTypeToJsonField(node, L"alt", value.alt);
+		ConvertCustomTypeToJsonField(node, L"osSuper", value.osSuper);
+		ConvertCustomTypeToJsonField(node, L"contactBounds", value.contactBounds);
+		ConvertCustomTypeToJsonField(node, L"pressure", value.pressure);
+		ConvertCustomTypeToJsonField(node, L"orientation", value.orientation);
+		ConvertCustomTypeToJsonField(node, L"platformFrameId", value.platformFrameId);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOPointAction>(const ::vl::presentation::remoteprotocol::IOPointAction & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"eventIndex", value.eventIndex);
+		ConvertCustomTypeToJsonField(node, L"info", value.info);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOPointEnd>(const ::vl::presentation::remoteprotocol::IOPointEnd & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"sequenceId", value.sequenceId);
+		ConvertCustomTypeToJsonField(node, L"eventIndex", value.eventIndex);
+		ConvertCustomTypeToJsonField(node, L"timestamp", value.timestamp);
+		ConvertCustomTypeToJsonField(node, L"accepted", value.accepted);
+		ConvertCustomTypeToJsonField(node, L"reason", value.reason);
 		return node;
 	}
 
@@ -43589,6 +44309,20 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> void ConvertJsonToCustomType<::vl::presentation::PointSequenceEndReason>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::PointSequenceEndReason& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::PointSequenceEndReason>(Ptr<JsonNode>, ::vl::presentation::PointSequenceEndReason&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"Succeeded") value = ::vl::presentation::PointSequenceEndReason::Succeeded; else
+		if (jsonNode->content.value == L"Canceled_Unknown") value = ::vl::presentation::PointSequenceEndReason::Canceled_Unknown; else
+		if (jsonNode->content.value == L"Canceled_PlatformCanceled") value = ::vl::presentation::PointSequenceEndReason::Canceled_PlatformCanceled; else
+		if (jsonNode->content.value == L"Canceled_CaptureLost") value = ::vl::presentation::PointSequenceEndReason::Canceled_CaptureLost; else
+		if (jsonNode->content.value == L"Canceled_WindowDestroyed") value = ::vl::presentation::PointSequenceEndReason::Canceled_WindowDestroyed; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::ElementShapeType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::ElementShapeType& value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::elements::ElementShapeType>(Ptr<JsonNode>, ::vl::presentation::elements::ElementShapeType&)#"
@@ -44037,6 +44771,63 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"alt") ConvertJsonToCustomType(field->value, value.alt); else
 			if (field->name.value == L"osSuper") ConvertJsonToCustomType(field->value, value.osSuper); else
 			if (field->name.value == L"code") ConvertJsonToCustomType(field->value, value.code); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOPointInfo& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointInfo>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::IOPointInfo&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"sequenceId") ConvertJsonToCustomType(field->value, value.sequenceId); else
+			if (field->name.value == L"pointId") ConvertJsonToCustomType(field->value, value.pointId); else
+			if (field->name.value == L"timestamp") ConvertJsonToCustomType(field->value, value.timestamp); else
+			if (field->name.value == L"activePointCount") ConvertJsonToCustomType(field->value, value.activePointCount); else
+			if (field->name.value == L"position") ConvertJsonToCustomType(field->value, value.position); else
+			if (field->name.value == L"primary") ConvertJsonToCustomType(field->value, value.primary); else
+			if (field->name.value == L"ctrl") ConvertJsonToCustomType(field->value, value.ctrl); else
+			if (field->name.value == L"shift") ConvertJsonToCustomType(field->value, value.shift); else
+			if (field->name.value == L"alt") ConvertJsonToCustomType(field->value, value.alt); else
+			if (field->name.value == L"osSuper") ConvertJsonToCustomType(field->value, value.osSuper); else
+			if (field->name.value == L"contactBounds") ConvertJsonToCustomType(field->value, value.contactBounds); else
+			if (field->name.value == L"pressure") ConvertJsonToCustomType(field->value, value.pressure); else
+			if (field->name.value == L"orientation") ConvertJsonToCustomType(field->value, value.orientation); else
+			if (field->name.value == L"platformFrameId") ConvertJsonToCustomType(field->value, value.platformFrameId); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointAction>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOPointAction& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointAction>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::IOPointAction&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"eventIndex") ConvertJsonToCustomType(field->value, value.eventIndex); else
+			if (field->name.value == L"info") ConvertJsonToCustomType(field->value, value.info); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointEnd>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOPointEnd& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOPointEnd>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::IOPointEnd&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"sequenceId") ConvertJsonToCustomType(field->value, value.sequenceId); else
+			if (field->name.value == L"eventIndex") ConvertJsonToCustomType(field->value, value.eventIndex); else
+			if (field->name.value == L"timestamp") ConvertJsonToCustomType(field->value, value.timestamp); else
+			if (field->name.value == L"accepted") ConvertJsonToCustomType(field->value, value.accepted); else
+			if (field->name.value == L"reason") ConvertJsonToCustomType(field->value, value.reason); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -44725,6 +45516,8 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::ClearPendingCoreEvents()
 	{
+		pointSequenceId = 0;
+		pointEventIndex = 0;
 		pendingMouseMove.Reset();
 		pendingHWheel.Reset();
 		pendingVWheel.Reset();
@@ -45116,6 +45909,78 @@ namespace vl::presentation::remote_renderer
 /***********************************************************************
 * Rendering (INativeWindow)
 ***********************************************************************/
+
+
+	void GuiRemoteRendererSingle::PointSequenceStarted(const NativeWindowPointInfo& firstPoint, bool& accept)
+	{
+		accept = true;
+		if (!CanSendEvents()) return;
+		SendAccumulatedMessages();
+		pointSequenceId = firstPoint.sequenceId;
+		pointEventIndex = 0;
+		IOPointAction arguments;
+		arguments.eventIndex = pointEventIndex;
+		arguments.info = EncodePointInfo(firstPoint);
+		events->OnIOPointStarted(arguments);
+	}
+
+	void GuiRemoteRendererSingle::SendPointAction(NativePointEvent event, const NativeWindowPointInfo& info)
+	{
+		if (!CanSendEvents() || pointSequenceId == 0 || info.sequenceId != pointSequenceId) return;
+		CHECK_ERROR(pointEventIndex < 0x7FFFFFFF, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::SendPointAction#Point event indices exhausted.");
+		SendAccumulatedMessages();
+		IOPointAction arguments;
+		arguments.eventIndex = ++pointEventIndex;
+		arguments.info = EncodePointInfo(info);
+		switch (event)
+		{
+		case NativePointEvent::Down: events->OnIOPointDown(arguments); break;
+		case NativePointEvent::Update: events->OnIOPointUpdate(arguments); break;
+		case NativePointEvent::Up: events->OnIOPointUp(arguments); break;
+		case NativePointEvent::Entered: events->OnIOPointEnter(arguments); break;
+		case NativePointEvent::Leaved: events->OnIOPointLeave(arguments); break;
+		}
+	}
+
+	void GuiRemoteRendererSingle::PointSequenceEnded(const PointSequenceEndInfo& info)
+	{
+		if (!CanSendEvents() || pointSequenceId == 0 || info.sequenceId != pointSequenceId) return;
+		CHECK_ERROR(pointEventIndex < 0x7FFFFFFF, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::PointSequenceEnded#Point event indices exhausted.");
+		SendAccumulatedMessages();
+		IOPointEnd arguments;
+		arguments.sequenceId = u64tow(info.sequenceId);
+		arguments.eventIndex = ++pointEventIndex;
+		arguments.timestamp = u64tow(info.timestamp);
+		arguments.accepted = info.accepted;
+		arguments.reason = info.reason;
+		events->OnIOPointEnded(arguments);
+		pointSequenceId = 0;
+	}
+
+	void GuiRemoteRendererSingle::PointDown(const NativeWindowPointInfo& info)
+	{
+		SendPointAction(NativePointEvent::Down, info);
+	}
+
+	void GuiRemoteRendererSingle::PointUpdate(const NativeWindowPointInfo& info)
+	{
+		SendPointAction(NativePointEvent::Update, info);
+	}
+
+	void GuiRemoteRendererSingle::PointUp(const NativeWindowPointInfo& info)
+	{
+		SendPointAction(NativePointEvent::Up, info);
+	}
+
+	void GuiRemoteRendererSingle::PointEntered(const NativeWindowPointInfo& info)
+	{
+		SendPointAction(NativePointEvent::Entered, info);
+	}
+
+	void GuiRemoteRendererSingle::PointLeaved(const NativeWindowPointInfo& info)
+	{
+		SendPointAction(NativePointEvent::Leaved, info);
+	}
 
 	void GuiRemoteRendererSingle::MouseDown(NativeMouseButton button, const NativeWindowMouseInfo& info)
 	{
@@ -65591,7 +66456,9 @@ RunIOCommandOnNativeWindow
 				L"!KeyPress:Key1+Key2+...+KeyN\r\n"
 				L"!MouseMove:X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?\r\n"
 				L"!(Left|Middle|Right|Mouse4|Mouse5)(Down|Up|Click|DbClick):X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?\r\n"
-				L"!MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?(,win|command|super)?";
+				L"!MouseWheel(Up|Down|Left|Right):ticks(,ctrl)?(,shift)?(,alt)?(,win|command|super)?\r\n"
+				L"!Point(Down|Update|Up|Enter|Leave):CONTACT,X,Y(,ctrl)?(,shift)?(,alt)?(,win|command|super)?\r\n"
+				L"!PointCancel:CONTACT,(Unknown|PlatformCanceled|CaptureLost|WindowDestroyed)";
 
 			struct IOCommandModifiers
 			{
@@ -65666,6 +66533,19 @@ RunIOCommandOnNativeWindow
 				WheelCommandArguments arguments;
 			};
 
+			struct PointCommand
+			{
+				NativePointEvent event = NativePointEvent::Down;
+				vuint64_t sourceToken = 0;
+				MouseCommandArguments arguments;
+			};
+
+			struct PointCancelCommand
+			{
+				vuint64_t sourceToken = 0;
+				PointSequenceEndReason reason = PointSequenceEndReason::Canceled_Unknown;
+			};
+
 			using IOCommand = Variant<
 				SyntaxErrorCommand,
 				ExitCommand,
@@ -65673,7 +66553,9 @@ RunIOCommandOnNativeWindow
 				KeyCommand,
 				MouseMoveCommand,
 				MouseButtonCommand,
-				WheelCommand
+				WheelCommand,
+				PointCommand,
+				PointCancelCommand
 				>;
 
 			struct IOCommandHolder : Object
@@ -66169,6 +67051,40 @@ RunIOCommandOnNativeWindow
 
 			IOCommand ParseIOCommand(INativeController* nativeController, const WString& command)
 			{
+				if (StartsWith(command, L"!Point"))
+				{
+					auto colon = command.IndexOf(L':');
+					if (colon == -1) return SyntaxErrorCommand{};
+					auto operation = command.Sub(6, colon - 6);
+					auto arguments = command.Right(command.Length() - colon - 1);
+					auto comma = arguments.IndexOf(L',');
+					if (comma == -1) return SyntaxErrorCommand{};
+					vint token = 0;
+					if (!TryParseInteger(arguments.Left(comma), token) || token < 0) return SyntaxErrorCommand{};
+					auto tail = arguments.Right(arguments.Length() - comma - 1);
+					if (operation == L"Cancel")
+					{
+						PointCancelCommand parsed;
+						parsed.sourceToken = (vuint64_t)token;
+						if (tail == L"Unknown") parsed.reason = PointSequenceEndReason::Canceled_Unknown;
+						else if (tail == L"PlatformCanceled") parsed.reason = PointSequenceEndReason::Canceled_PlatformCanceled;
+						else if (tail == L"CaptureLost") parsed.reason = PointSequenceEndReason::Canceled_CaptureLost;
+						else if (tail == L"WindowDestroyed") parsed.reason = PointSequenceEndReason::Canceled_WindowDestroyed;
+						else return SyntaxErrorCommand{};
+						return parsed;
+					}
+					PointCommand parsed;
+					parsed.sourceToken = (vuint64_t)token;
+					if (operation == L"Down") parsed.event = NativePointEvent::Down;
+					else if (operation == L"Update") parsed.event = NativePointEvent::Update;
+					else if (operation == L"Up") parsed.event = NativePointEvent::Up;
+					else if (operation == L"Enter") parsed.event = NativePointEvent::Entered;
+					else if (operation == L"Leave") parsed.event = NativePointEvent::Leaved;
+					else return SyntaxErrorCommand{};
+					if (!TryParseMouseArguments(tail, parsed.arguments)) return SyntaxErrorCommand{};
+					return parsed;
+				}
+
 				if (command == L"!Exit")
 				{
 					return ExitCommand{};
@@ -66266,7 +67182,34 @@ RunIOCommandOnNativeWindow
 				return SyntaxErrorCommand{};
 			}
 
-			void ExecuteIOCommand(IoCommandState* state, INativeController* nativeController, INativeWindow* targetWindow, collections::List<INativeWindowListener*>& listeners, IOCommand&& ioCommand)
+			void ExecutePointCommand(IoCommandState* state, NativePointInputState& pointState, IoPointCommandState& pointCommandState, INativeWindow* targetWindow, collections::List<INativeWindowListener*>& listeners, const PointCommand& command)
+			{
+				NativeWindowPointInfo info;
+				info.position = ConvertGuiPointToNativePoint(targetWindow, command.arguments.position);
+				info.timestamp = GetNativePointTimestamp();
+				info.ctrl = IsCtrlPressing(state) || command.arguments.modifiers.ctrl;
+				info.shift = IsShiftPressing(state) || command.arguments.modifiers.shift;
+				info.alt = IsAltPressing(state) || command.arguments.modifiers.alt;
+				info.osSuper = IsOSSuperPressing(state) || command.arguments.modifiers.osSuper;
+				bool starting = pointState.sequenceId == 0 && command.event == NativePointEvent::Down;
+				info.primary = starting || (pointState.contacts.Keys().Contains(command.sourceToken) && pointState.contacts[command.sourceToken].pointId == 0);
+				bool draining = pointState.ended;
+				bool accepted = ProcessNativePointInput(pointState, listeners, command.event, command.sourceToken, info);
+				if (!accepted && !draining)
+				{
+					ProcessIOPointFallback(pointCommandState, listeners, command.event, command.sourceToken, info, starting);
+				}
+			}
+
+			void ExecutePointCancelCommand(NativePointInputState& pointState, IoPointCommandState& pointCommandState, collections::List<INativeWindowListener*>& listeners, const PointCancelCommand& command)
+			{
+				if (!pointState.contacts.Keys().Contains(command.sourceToken)) return;
+				CancelNativePointSequence(pointState, listeners, command.reason, GetNativePointTimestamp());
+				CancelIOPointFallback(pointCommandState, listeners);
+				RetireNativePoint(pointState, command.sourceToken);
+			}
+
+			void ExecuteIOCommand(IoCommandState* state, INativeController* nativeController, INativeWindow* targetWindow, collections::List<INativeWindowListener*>& listeners, IOCommand&& ioCommand, NativePointInputState* pointState, IoPointCommandState* pointCommandState)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
 				CHECK_ERROR(nativeController, ERROR_MESSAGE_PREFIX L"Native controller is missing.");
@@ -66362,10 +67305,53 @@ RunIOCommandOnNativeWindow
 							PressTemporaryModifiers(state, *listenerList, wheelCommand.arguments.modifiers, temporary);
 							Wheel(state, *listenerList, wheelCommand.arguments.ticks * 120 * wheelCommand.direction, wheelCommand.horizontal);
 							ReleaseTemporaryModifiers(state, *listenerList, temporary);
+						},
+						[=](const PointCommand& pointCommand)
+						{
+							activateTargetWindow();
+							ExecutePointCommand(state, *pointState, *pointCommandState, targetWindow, *listenerList, pointCommand);
+						},
+						[=](const PointCancelCommand& pointCommand)
+						{
+							ExecutePointCancelCommand(*pointState, *pointCommandState, *listenerList, pointCommand);
 						}
 						));
 				});
 #undef ERROR_MESSAGE_PREFIX
+			}
+		}
+
+		void ProcessIOPointFallback(IoPointCommandState& state, collections::List<INativeWindowListener*>& listeners, NativePointEvent event, vuint64_t sourceToken, const NativeWindowPointInfo& info, bool starting)
+		{
+			if (starting) state.fallbackToken = sourceToken;
+			if (!state.fallbackToken || state.fallbackToken.Value() != sourceToken) return;
+			auto mouse = &state.mouse;
+			mouse->pressingKeys.Clear();
+			if (info.ctrl) mouse->pressingKeys.Add(VKEY::KEY_CONTROL);
+			if (info.shift) mouse->pressingKeys.Add(VKEY::KEY_SHIFT);
+			if (info.alt) mouse->pressingKeys.Add(VKEY::KEY_MENU);
+			if (info.osSuper) mouse->pressingKeys.Add(VKEY::KEY_LWIN);
+			switch (event)
+			{
+			case NativePointEvent::Down:
+				iocommands::ButtonDown(mouse, listeners, NativeMouseButton::Left, info.position);
+				break;
+			case NativePointEvent::Up:
+				state.fallbackToken.Reset();
+				iocommands::ButtonUp(mouse, listeners, NativeMouseButton::Left, info.position);
+				break;
+			default:
+				iocommands::MouseMove(mouse, listeners, info.position);
+				break;
+			}
+		}
+
+		void CancelIOPointFallback(IoPointCommandState& state, collections::List<INativeWindowListener*>& listeners)
+		{
+			if (state.fallbackToken)
+			{
+				state.fallbackToken.Reset();
+				iocommands::ButtonUp(&state.mouse, listeners, NativeMouseButton::Left, NativePoint(-1, -1));
 			}
 		}
 
@@ -66374,7 +67360,9 @@ RunIOCommandOnNativeWindow
 			INativeController* nativeController,
 			INativeWindow* nativeWindow,
 			collections::List<INativeWindowListener*>& listeners,
-			WString command
+			WString command,
+			NativePointInputState* pointState,
+			IoPointCommandState* pointCommandState
 		)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::RunIOCommandOnNativeWindow(...)#"
@@ -66397,7 +67385,11 @@ RunIOCommandOnNativeWindow
 				return WString::Unmanaged(iocommands::IO_COMMAND_SYNTAX);
 			}
 
-			iocommands::ExecuteIOCommand(state, nativeController, targetWindow, listeners, std::move(ioCommand));
+			if ((ioCommand.TryGet<iocommands::PointCommand>() || ioCommand.TryGet<iocommands::PointCancelCommand>()) && (!pointState || !pointCommandState))
+			{
+				return WString::Unmanaged(L"Unsupported: point input is unavailable on this native window adapter.");
+			}
+			iocommands::ExecuteIOCommand(state, nativeController, targetWindow, listeners, std::move(ioCommand), pointState, pointCommandState);
 			return WString::Unmanaged(L"Queued");
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -66555,7 +67547,7 @@ RemoteProtocolAutomationService
 				return L"!Invalid window.";
 			}
 
-			return RunIOCommandOnNativeWindow(&ioCommandState, GetHostedApplication()->GetNativeController(), window, window->listeners, ioCommand);
+			return RunIOCommandOnNativeWindow(&ioCommandState, GetHostedApplication()->GetNativeController(), window, window->listeners, ioCommand, &window->pointState, &window->pointCommandState);
 		}
 
 		RemoteProtocolAutomationService::RemoteProtocolAutomationService()
@@ -77548,6 +78540,421 @@ GuiEasyLayoutComposition
 			builder.Build(plan, bounds);
 		}
 #undef ERROR_MESSAGE_PREFIX
+	}
+}
+
+
+/***********************************************************************
+.\APPLICATION\GRAPHICSHOST\GUIGRAPHICSHOST_POINT.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace compositions
+		{
+			using namespace collections;
+
+			constexpr vint StaticPointRange = 8;
+
+/***********************************************************************
+Predefined Gestures
+***********************************************************************/
+
+			bool IsOutsideStaticPointRange(Point first, Point last)
+			{
+				auto dx = (vint64_t)last.x - first.x;
+				auto dy = (vint64_t)last.y - first.y;
+				return dx < -StaticPointRange || dx > StaticPointRange
+					|| dy < -StaticPointRange || dy > StaticPointRange
+					|| dx * dx + dy * dy > StaticPointRange * StaticPointRange;
+			}
+
+			class GuiPointGestureBase : public Object, public IGuiPointGesture
+			{
+			protected:
+				GuiPointActionManager* manager;
+				bool selected = false;
+
+				void RaiseGesture(const Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>& payload)
+				{
+					auto target = manager->GetPointCapture();
+					GuiPointGestureEventArgs arguments(target);
+					arguments.gesture = payload;
+					arguments.selected = selected;
+					if (target->HasEventReceiver()) target->GetEventReceiver()->pointGesture.Execute(arguments);
+					selected = selected || arguments.selected;
+				}
+
+			public:
+				GuiPointGestureBase(GuiPointActionManager* _manager) : manager(_manager) {}
+				bool IsGestureSelected()override { return selected; }
+				Nullable<NativeMouseButton> GetFallbackClick()override { return {}; }
+				void OnPointSequenceEnded(const PointSequenceEndInfo&)override {}
+			};
+
+			namespace predefined_gestures
+			{
+				class RightClickGesture : public GuiPointGestureBase
+				{
+				protected:
+					NativePoint first;
+					vuint64_t timestamp = 0;
+					vuint64_t minimumDuration;
+					vint downCount = 0;
+					bool eligible = false;
+					Nullable<NativeMouseButton> fallback;
+
+				public:
+					RightClickGesture(GuiPointActionManager* manager, vuint64_t duration = 500000)
+						:GuiPointGestureBase(manager), minimumDuration(duration) {}
+
+					void OnPointSequenceStarted(const NativeWindowPointInfo& info)override
+					{
+						selected = false;
+						first = manager->GetScreenPoint(info);
+						timestamp = info.timestamp;
+						downCount = 0;
+						eligible = true;
+						fallback.Reset();
+					}
+
+					void OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType)override
+					{
+						if (eventType == GuiPointEventsType::Down && ++downCount != 1) eligible = false;
+						if (eligible && info.pointId == 0)
+						{
+							auto start = manager->ConvertPoint(first, nullptr);
+							auto current = manager->ConvertPoint(manager->GetScreenPoint(info), nullptr);
+							if (IsOutsideStaticPointRange(start, current)) eligible = false;
+						}
+					}
+
+					void OnPointSequenceEnded(const PointSequenceEndInfo& info)override
+					{
+						if (eligible && downCount == 1 && info.reason == PointSequenceEndReason::Succeeded
+							&& info.timestamp - timestamp >= minimumDuration)
+						{
+							fallback = minimumDuration == 0 ? NativeMouseButton::Left : NativeMouseButton::Right;
+						}
+					}
+
+					Nullable<NativeMouseButton> GetFallbackClick()override { return fallback; }
+				};
+
+				class LeftClickGesture : public RightClickGesture
+				{
+				public:
+					LeftClickGesture(GuiPointActionManager* manager) : RightClickGesture(manager, 0) {}
+				};
+
+				class ScrollingGesture : public GuiPointGestureBase
+				{
+				protected:
+					NativePoint previous;
+					vint axis = 0;
+					bool stopped = false;
+
+				public:
+					ScrollingGesture(GuiPointActionManager* manager) : GuiPointGestureBase(manager) {}
+
+					void OnPointSequenceStarted(const NativeWindowPointInfo& info)override
+					{
+						selected = false;
+						previous = manager->GetScreenPoint(info);
+						axis = 0;
+						stopped = false;
+					}
+
+					void OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType)override
+					{
+						if (eventType == GuiPointEventsType::Down && info.pointId != 0) stopped = true;
+						if (stopped || info.pointId != 0) return;
+						auto screen = manager->GetScreenPoint(info);
+						auto start = manager->ConvertPoint(previous, nullptr);
+						auto current = manager->ConvertPoint(screen, nullptr);
+						auto dx = (vint64_t)current.x - start.x;
+						auto dy = (vint64_t)current.y - start.y;
+						if (axis == 0)
+						{
+							if (!IsOutsideStaticPointRange(start, current)) return;
+							axis = (dx < 0 ? -dx : dx) >= (dy < 0 ? -dy : dy) ? 1 : 2;
+						}
+						previous = screen;
+						RaiseGesture(GuiPointGesture_Scrolling{ .isVertical = axis == 2, .distance = (vint)(axis == 1 ? dx : dy) });
+					}
+				};
+
+				class DraggingAndRotationGesture : public GuiPointGestureBase
+				{
+				protected:
+					List<Nullable<NativePoint>> baseline;
+					double residualX = 0;
+					double residualY = 0;
+
+					void UpdateTransform(const List<Nullable<NativePoint>>& current)
+					{
+						vint ids[2] = { -1,-1 };
+						vint count = 0;
+						bool same = baseline.Count() == current.Count();
+						for (auto [point, i] : indexed(current))
+						{
+							if (i >= baseline.Count() || (bool)point != (bool)baseline[i]) same = false;
+							if (point)
+							{
+								if (count < 2) ids[count] = i;
+								count++;
+							}
+						}
+						if (same && count > 0 && count <= 2)
+						{
+							auto target = manager->GetPointCapture();
+							auto oldFirst = manager->ConvertPoint(baseline[ids[0]].Value(), target);
+							auto newFirst = manager->ConvertPoint(current[ids[0]].Value(), target);
+							double oldX = (double)oldFirst.x, oldY = (double)oldFirst.y;
+							double newX = (double)newFirst.x, newY = (double)newFirst.y;
+							double real = 1, imaginary = 0;
+							bool separated = true;
+							if (count == 2)
+							{
+								auto oldSecond = manager->ConvertPoint(baseline[ids[1]].Value(), target);
+								auto newSecond = manager->ConvertPoint(current[ids[1]].Value(), target);
+								auto oldDX = (double)oldSecond.x - oldX;
+								auto oldDY = (double)oldSecond.y - oldY;
+								auto newDX = (double)newSecond.x - newX;
+								auto newDY = (double)newSecond.y - newY;
+								auto lengthSquared = oldDX * oldDX + oldDY * oldDY;
+								separated = lengthSquared > 0 && newDX * newDX + newDY * newDY > 0;
+								if (separated)
+								{
+									real = (newDX * oldDX + newDY * oldDY) / lengthSquared;
+									imaginary = (newDY * oldDX - newDX * oldDY) / lengthSquared;
+									oldX += oldDX / 2; oldY += oldDY / 2;
+									newX += newDX / 2; newY += newDY / 2;
+								}
+							}
+							if (separated)
+							{
+								auto dx = newX - real * oldX + imaginary * oldY + real * residualX - imaginary * residualY;
+								auto dy = newY - imaginary * oldX - real * oldY + imaginary * residualX + real * residualY;
+								GuiPointGesture_DraggingAndRotation payload;
+								payload.rotation = std::atan2(imaginary, real);
+								payload.scale = std::sqrt(real * real + imaginary * imaginary);
+								// Ties round towards positive infinity, keeping residuals in [-0.5, 0.5).
+								payload.distance = Point((vint)std::floor(dx + 0.5), (vint)std::floor(dy + 0.5));
+								residualX = dx - payload.distance.x;
+								residualY = dy - payload.distance.y;
+								RaiseGesture(payload);
+							}
+						}
+						CopyFrom(baseline, current);
+					}
+
+				public:
+					DraggingAndRotationGesture(GuiPointActionManager* manager) : GuiPointGestureBase(manager) {}
+
+					void OnPointSequenceStarted(const NativeWindowPointInfo&)override
+					{
+						selected = false;
+						residualX = residualY = 0;
+						CopyFrom(baseline, manager->GetNativePoints());
+						RaiseGesture(GuiPointGesture_DraggingAndRotation{});
+					}
+
+					void OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType)override
+					{
+						if (!selected) return;
+						auto&& current = manager->GetNativePoints();
+						if (eventType == GuiPointEventsType::Up)
+						{
+							List<Nullable<NativePoint>> finalSample;
+							CopyFrom(finalSample, current);
+							finalSample[info.pointId] = manager->GetScreenPoint(info);
+							UpdateTransform(finalSample);
+							CopyFrom(baseline, current);
+						}
+						else UpdateTransform(current);
+					}
+				};
+			}
+
+/***********************************************************************
+GuiPointActionManager
+***********************************************************************/
+
+			GuiPointActionManager::GuiPointActionManager(GuiGraphicsHost* _host)
+				:host(_host)
+			{
+				gestures.Add(Ptr(new predefined_gestures::RightClickGesture(this)));
+				gestures.Add(Ptr(new predefined_gestures::LeftClickGesture(this)));
+				gestures.Add(Ptr(new predefined_gestures::ScrollingGesture(this)));
+				gestures.Add(Ptr(new predefined_gestures::DraggingAndRotationGesture(this)));
+			}
+
+			void GuiPointActionManager::OnPointSequenceStarted(const NativeWindowPointInfo& info, GuiGraphicsComposition* composition)
+			{
+				ResetPointCapture();
+				firstPoint = info;
+				firstPointScreen = GetScreenPoint(info);
+				nativePoints.Add(firstPointScreen);
+				PointCapture(composition);
+				for (auto gesture : gestures)
+				{
+					gesture->OnPointSequenceStarted(info);
+					if (gesture->IsGestureSelected())
+					{
+						selectedGesture = gesture.Obj();
+						break;
+					}
+				}
+			}
+
+			void GuiPointActionManager::OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType)
+			{
+				if (!captureComposition || ended || firstPoint.sequenceId != info.sequenceId) return;
+				while (nativePoints.Count() <= info.pointId) nativePoints.Add({});
+				nativePoints[info.pointId] = eventType == GuiPointEventsType::Up ? Nullable<NativePoint>() : Nullable<NativePoint>(GetScreenPoint(info));
+				GuiPointEventArgs arguments(captureComposition, eventType, GetPoints(captureComposition));
+				static_cast<WindowPointInfo&>(arguments) = ConvertSample(info, captureComposition);
+				if (captureComposition->HasEventReceiver()) captureComposition->GetEventReceiver()->pointAction.Execute(arguments);
+				if (selectedGesture) selectedGesture->OnPointAction(info, eventType);
+				else for (auto gesture : gestures)
+				{
+					gesture->OnPointAction(info, eventType);
+					if (gesture->IsGestureSelected())
+					{
+						selectedGesture = gesture.Obj();
+						break;
+					}
+				}
+			}
+
+			bool GuiPointActionManager::OnPointSequenceEnded(const PointSequenceEndInfo& info)
+			{
+				if (!captureComposition || ended || firstPoint.sequenceId != info.sequenceId) return false;
+				ended = true;
+				if (selectedGesture) selectedGesture->OnPointSequenceEnded(info);
+				else for (auto gesture : gestures)
+				{
+					gesture->OnPointSequenceEnded(info);
+					if (gesture->IsGestureSelected())
+					{
+						selectedGesture = gesture.Obj();
+						break;
+					}
+				}
+				GuiPointSequenceEndedEventArgs arguments(captureComposition, GetPoints(captureComposition));
+				static_cast<PointSequenceEndInfo&>(arguments) = info;
+				arguments.accepted = true;
+				if (captureComposition->HasEventReceiver()) captureComposition->GetEventReceiver()->pointSequenceEnded.Execute(arguments);
+				return true;
+			}
+
+			void GuiPointActionManager::PointCapture(GuiGraphicsComposition* composition)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::compositions::GuiPointActionManager::PointCapture#"
+				CHECK_ERROR(!composition || composition->GetRelatedGraphicsHost() == host, ERROR_MESSAGE_PREFIX L"The selected composition must belong to this graphics host.");
+				captureComposition = composition;
+				if (!composition) ResetPointCapture();
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void GuiPointActionManager::ResetPointCapture()
+			{
+				captureComposition = nullptr;
+				firstPoint = {};
+				firstPointScreen = {};
+				nativePoints.Clear();
+				points.Clear();
+				selectedGesture = nullptr;
+				ended = false;
+			}
+
+			GuiGraphicsComposition* GuiPointActionManager::GetPointCapture()
+			{
+				return captureComposition;
+			}
+
+			const List<Nullable<NativePoint>>& GuiPointActionManager::GetNativePoints()
+			{
+				return nativePoints;
+			}
+
+			const List<Nullable<Point>>& GuiPointActionManager::GetPoints(GuiGraphicsComposition* relativeTo)
+			{
+				points.Clear();
+				for (auto point : nativePoints)
+				{
+					points.Add(point ? Nullable<Point>(ConvertPoint(point.Value(), relativeTo)) : Nullable<Point>());
+				}
+				return points;
+			}
+
+			NativePoint GuiPointActionManager::GetScreenPoint(const NativeWindowPointInfo& info)
+			{
+				auto origin = host->GetNativeWindow()->GetClientBoundsInScreen().LeftTop();
+				return NativePoint(info.position.x + origin.x, info.position.y + origin.y);
+			}
+
+			Point GuiPointActionManager::ConvertPoint(NativePoint screen, GuiGraphicsComposition* relativeTo)
+			{
+				auto window = host->GetNativeWindow();
+				auto origin = window->GetClientBoundsInScreen().LeftTop();
+				auto bounds = relativeTo ? relativeTo->GetGlobalBounds() : Rect();
+				auto local = window->Convert(NativePoint(screen.x - origin.x, screen.y - origin.y));
+				return Point(local.x - bounds.x1, local.y - bounds.y1);
+			}
+
+			WindowPointInfo GuiPointActionManager::ConvertSample(const NativeWindowPointInfo& info, GuiGraphicsComposition* relativeTo)
+			{
+				auto window = host->GetNativeWindow();
+				auto bounds = relativeTo ? relativeTo->GetGlobalBounds() : Rect();
+				WindowPointInfo result;
+				result.sequenceId = info.sequenceId;
+				result.pointId = info.pointId;
+				result.timestamp = info.timestamp;
+				result.activePointCount = info.activePointCount;
+				auto position = window->Convert(info.position);
+				result.position = Point(position.x - bounds.x1, position.y - bounds.y1);
+				result.primary = info.primary;
+				result.ctrl = info.ctrl;
+				result.shift = info.shift;
+				result.alt = info.alt;
+				result.osSuper = info.osSuper;
+				if (info.contactBounds)
+				{
+					auto contact = info.contactBounds.Value();
+					auto lt = window->Convert(contact.LeftTop());
+					auto rb = window->Convert(contact.RightBottom());
+					result.contactBounds = Rect(lt.x - bounds.x1, lt.y - bounds.y1, rb.x - bounds.x1, rb.y - bounds.y1);
+				}
+				result.pressure = info.pressure;
+				result.orientation = info.orientation;
+				result.platformFrameId = info.platformFrameId;
+				return result;
+			}
+
+
+			NativeWindowPointInfo GuiPointActionManager::GetFirstPoint()
+			{
+				auto result = firstPoint;
+				auto origin = host->GetNativeWindow()->GetClientBoundsInScreen().LeftTop();
+				result.position = NativePoint(firstPointScreen.x - origin.x, firstPointScreen.y - origin.y);
+				return result;
+			}
+
+			Nullable<NativeMouseButton> GuiPointActionManager::GetFallbackClick()
+			{
+				if (!captureComposition || !ended) return {};
+				if (selectedGesture) return selectedGesture->GetFallbackClick();
+				for (auto gesture : gestures)
+				{
+					if (auto button = gesture->GetFallbackClick()) return button;
+				}
+				return {};
+			}
+		}
 	}
 }
 

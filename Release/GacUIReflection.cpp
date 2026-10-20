@@ -439,6 +439,47 @@ Type Declaration
 				ENUM_CLASS_ITEM(Mouse5)
 			END_ENUM_ITEM(NativeMouseButton)
 
+			BEGIN_ENUM_ITEM(PointSequenceEndReason)
+				ENUM_CLASS_ITEM(Succeeded)
+				ENUM_CLASS_ITEM(Canceled_Unknown)
+				ENUM_CLASS_ITEM(Canceled_PlatformCanceled)
+				ENUM_CLASS_ITEM(Canceled_CaptureLost)
+				ENUM_CLASS_ITEM(Canceled_WindowDestroyed)
+			END_ENUM_ITEM(PointSequenceEndReason)
+
+#define POINT_INFO_MEMBERS\
+	STRUCT_MEMBER(sequenceId)\
+	STRUCT_MEMBER(pointId)\
+	STRUCT_MEMBER(timestamp)\
+	STRUCT_MEMBER(activePointCount)\
+	STRUCT_MEMBER(position)\
+	STRUCT_MEMBER(primary)\
+	STRUCT_MEMBER(ctrl)\
+	STRUCT_MEMBER(shift)\
+	STRUCT_MEMBER(alt)\
+	STRUCT_MEMBER(osSuper)\
+	STRUCT_MEMBER(contactBounds)\
+	STRUCT_MEMBER(pressure)\
+	STRUCT_MEMBER(orientation)\
+	STRUCT_MEMBER(platformFrameId)
+
+			BEGIN_STRUCT_MEMBER(NativeWindowPointInfo)
+				POINT_INFO_MEMBERS
+			END_STRUCT_MEMBER(NativeWindowPointInfo)
+
+			BEGIN_STRUCT_MEMBER(WindowPointInfo)
+				POINT_INFO_MEMBERS
+			END_STRUCT_MEMBER(WindowPointInfo)
+
+#undef POINT_INFO_MEMBERS
+
+			BEGIN_STRUCT_MEMBER(PointSequenceEndInfo)
+				STRUCT_MEMBER(sequenceId)
+				STRUCT_MEMBER(timestamp)
+				STRUCT_MEMBER(accepted)
+				STRUCT_MEMBER(reason)
+			END_STRUCT_MEMBER(PointSequenceEndInfo)
+
 			BEGIN_ENUM_ITEM(BoolOption)
 				ENUM_CLASS_ITEM(AlwaysTrue)
 				ENUM_CLASS_ITEM(AlwaysFalse)
@@ -1374,6 +1415,10 @@ Type Declaration (Class)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(mouseMove)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(mouseEnter)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(mouseLeave)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(pointSequenceStarted)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(pointAction)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(pointSequenceEnded)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(pointGesture)
 				
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(previewKey)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(keyDown)
@@ -2513,6 +2558,8 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(VisuallyEnabled)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Focused)
 				CLASS_MEMBER_PROPERTY_FAST(AcceptTabInput)
+				CLASS_MEMBER_PROPERTY_FAST(AcceptPointEvents)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(PointEventComposition)
 				CLASS_MEMBER_PROPERTY_FAST(TabPriority)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Enabled)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Visible)
@@ -3571,6 +3618,12 @@ Type Declaration
 	CLASS_MEMBER_CONSTRUCTOR(Ptr<EVENTARGS>(), NO_PARAMETER)\
 	CLASS_MEMBER_CONSTRUCTOR(Ptr<EVENTARGS>(GuiGraphicsComposition*), {L"composition"})
 
+#define POINTARGS_POINTS(EVENTARGS)\
+	CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(GetPoints, NO_PARAMETER, const collections::List<Nullable<presentation::Point>>& (EVENTARGS::*)(),\
+		[](EVENTARGS* arguments) -> const collections::List<Nullable<presentation::Point>>& { return arguments->GetPoints(); },\
+		L"$This->GetPoints()", L"[=]() -> const ::vl::collections::List<::vl::Nullable<::vl::presentation::Point>>& { return $This->GetPoints(); }")\
+	CLASS_MEMBER_PROPERTY_READONLY(Points, GetPoints)
+
 			BEGIN_CLASS_MEMBER(GuiEventArgs)
 				EVENTARGS_CONSTRUCTOR(GuiEventArgs)
 
@@ -3643,6 +3696,67 @@ Type Declaration
 				CLASS_MEMBER_FIELD(nonClient)
 			END_CLASS_MEMBER(GuiMouseEventArgs)
 
+			BEGIN_ENUM_ITEM(GuiPointEventsType)
+				ENUM_CLASS_ITEM(Started)
+				ENUM_CLASS_ITEM(Down)
+				ENUM_CLASS_ITEM(Update)
+				ENUM_CLASS_ITEM(Up)
+				ENUM_CLASS_ITEM(Enter)
+				ENUM_CLASS_ITEM(Leave)
+			END_ENUM_ITEM(GuiPointEventsType)
+
+			BEGIN_CLASS_MEMBER(GuiPointEventArgs)
+				CLASS_MEMBER_BASE(GuiEventArgs)
+				CLASS_MEMBER_FIELD(eventType)
+				CLASS_MEMBER_FIELD(sequenceId)
+				CLASS_MEMBER_FIELD(pointId)
+				CLASS_MEMBER_FIELD(timestamp)
+				CLASS_MEMBER_FIELD(activePointCount)
+				CLASS_MEMBER_FIELD(position)
+				CLASS_MEMBER_FIELD(primary)
+				CLASS_MEMBER_FIELD(ctrl)
+				CLASS_MEMBER_FIELD(shift)
+				CLASS_MEMBER_FIELD(alt)
+				CLASS_MEMBER_FIELD(osSuper)
+				CLASS_MEMBER_FIELD(contactBounds)
+				CLASS_MEMBER_FIELD(pressure)
+				CLASS_MEMBER_FIELD(orientation)
+				CLASS_MEMBER_FIELD(platformFrameId)
+				POINTARGS_POINTS(GuiPointEventArgs)
+			END_CLASS_MEMBER(GuiPointEventArgs)
+
+			BEGIN_CLASS_MEMBER(GuiPointSequenceStartedEventArgs)
+				CLASS_MEMBER_BASE(GuiPointEventArgs)
+				CLASS_MEMBER_FIELD(acceptedComposition)
+			END_CLASS_MEMBER(GuiPointSequenceStartedEventArgs)
+
+			BEGIN_CLASS_MEMBER(GuiPointSequenceEndedEventArgs)
+				CLASS_MEMBER_BASE(GuiEventArgs)
+				CLASS_MEMBER_FIELD(sequenceId)
+				CLASS_MEMBER_FIELD(timestamp)
+				CLASS_MEMBER_FIELD(accepted)
+				CLASS_MEMBER_FIELD(reason)
+				POINTARGS_POINTS(GuiPointSequenceEndedEventArgs)
+			END_CLASS_MEMBER(GuiPointSequenceEndedEventArgs)
+
+			BEGIN_STRUCT_MEMBER(GuiPointGesture_Scrolling)
+				STRUCT_MEMBER(isVertical)
+				STRUCT_MEMBER(distance)
+			END_STRUCT_MEMBER(GuiPointGesture_Scrolling)
+
+			BEGIN_STRUCT_MEMBER(GuiPointGesture_DraggingAndRotation)
+				STRUCT_MEMBER(rotation)
+				STRUCT_MEMBER(scale)
+				STRUCT_MEMBER(distance)
+			END_STRUCT_MEMBER(GuiPointGesture_DraggingAndRotation)
+
+			BEGIN_CLASS_MEMBER(GuiPointGestureEventArgs)
+				CLASS_MEMBER_BASE(GuiEventArgs)
+				EVENTARGS_CONSTRUCTOR(GuiPointGestureEventArgs)
+				CLASS_MEMBER_FIELD(selected)
+				CLASS_MEMBER_FIELD(gesture)
+			END_CLASS_MEMBER(GuiPointGestureEventArgs)
+
 			BEGIN_ENUM_ITEM(ControlSignal)
 				ENUM_CLASS_ITEM(RenderTargetChanged)
 				ENUM_CLASS_ITEM(ParentLineChanged)
@@ -3686,6 +3800,7 @@ Type Declaration
 			END_CLASS_MEMBER(GuiNodeMouseEventArgs)
 
 #undef EVENTARGS_CONSTRUCTOR
+#undef POINTARGS_POINTS
 #undef _
 
 /***********************************************************************

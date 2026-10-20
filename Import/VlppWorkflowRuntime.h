@@ -108,9 +108,17 @@ Instruction
 				OpGE,					// 						: <int> -> <bool>													;
 				OpEQ,					// 						: <int> -> <bool>													;
 				OpNE,					// 						: <int> -> <bool>													;
+				VBox,					// typeInfo: Value -> boxed variant; the operand is the declared active option
+				VUnbox,					// boxed variant -> active payload
+				VCast,					// typeInfo: boxed variant -> variant or active payload; exact tag required
+				VTryCast,				// typeInfo: boxed variant -> active payload or null
+				CompareValueLT,			// Value, Value -> bool; partial ordering
+				CompareValueGT,			// Value, Value -> bool; partial ordering
+				CompareValueLE,			// Value, Value -> bool; partial ordering
+				CompareValueGE,			// Value, Value -> bool; partial ordering
 			};
 
-#define INSTRUCTION_CASES(APPLY, APPLY_VALUE, APPLY_FUNCTION, APPLY_FUNCTION_COUNT, APPLY_VARIABLE, APPLY_COUNT, APPLY_FLAG_TYPEDESCRIPTOR, APPLY_PROPERTY, APPLY_METHOD, APPLY_METHOD_COUNT, APPLY_EVENT, APPLY_EVENT_COUNT, APPLY_LABEL, APPLY_TYPE)\
+#define INSTRUCTION_CASES(APPLY, APPLY_VALUE, APPLY_FUNCTION, APPLY_FUNCTION_COUNT, APPLY_VARIABLE, APPLY_COUNT, APPLY_FLAG_TYPEDESCRIPTOR, APPLY_PROPERTY, APPLY_METHOD, APPLY_METHOD_COUNT, APPLY_EVENT, APPLY_EVENT_COUNT, APPLY_LABEL, APPLY_TYPE, APPLY_TYPEINFO)\
 			APPLY(Nop)\
 			APPLY_VALUE(LoadValue)\
 			APPLY_FUNCTION(LoadFunction)\
@@ -182,6 +190,14 @@ Instruction
 			APPLY(OpGE)\
 			APPLY(OpEQ)\
 			APPLY(OpNE)\
+			APPLY_TYPEINFO(VBox)\
+			APPLY(VUnbox)\
+			APPLY_TYPEINFO(VCast)\
+			APPLY_TYPEINFO(VTryCast)\
+			APPLY(CompareValueLT)\
+			APPLY(CompareValueGT)\
+			APPLY(CompareValueLE)\
+			APPLY(CompareValueGE)\
 
 			enum class WfInsType
 			{
@@ -246,6 +262,7 @@ Instruction
 			{
 				WfInsCode											code = WfInsCode::Nop;
 				WfRuntimeValue										valueParameter;
+				Ptr<reflection::description::ITypeInfo>				typeInfoParameter;
 				vint												countParameter = 0;
 				union
 				{
@@ -277,6 +294,7 @@ Instruction
 				#define CTOR_EVENT_COUNT(NAME)			static WfInstruction NAME(reflection::description::IEventInfo* eventInfo, vint count);
 				#define CTOR_LABEL(NAME)				static WfInstruction NAME(vint label);
 				#define CTOR_TYPE(NAME)					static WfInstruction NAME(WfInsType type);
+				#define CTOR_TYPEINFO(NAME)				static WfInstruction NAME(Ptr<reflection::description::ITypeInfo> typeInfo);
 
 				INSTRUCTION_CASES(
 					CTOR,
@@ -292,7 +310,8 @@ Instruction
 					CTOR_EVENT,
 					CTOR_EVENT_COUNT,
 					CTOR_LABEL,
-					CTOR_TYPE)
+					CTOR_TYPE,
+					CTOR_TYPEINFO)
 
 				#undef CTOR
 				#undef CTOR_VALUE
@@ -308,6 +327,7 @@ Instruction
 				#undef CTOR_EVENT_COUNT
 				#undef CTOR_LABEL
 				#undef CTOR_TYPE
+				#undef CTOR_TYPEINFO
 			};
 		}
 	}

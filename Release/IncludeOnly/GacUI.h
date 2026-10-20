@@ -139,3 +139,4 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIIncludes.h"
 #include "..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUI.h"
 #include "..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUIIncludes.h"
+#include "..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Point.h"

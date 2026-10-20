@@ -8253,22 +8253,24 @@ namespace demo
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointGestureEventArgs*) : (::system::Void)
                 {
-                    if (((!arguments.handled) and arguments.Gesture is (GuiPointGesture_DraggingAndRotation)))
+                    if ((!arguments.handled))
                     {
-                        var transform = (cast (GuiPointGesture_DraggingAndRotation) arguments.Gesture);
-                        (arguments.selected = true);
-                        (arguments.handled = true);
-                        var real = (transform.scale * Math::Cos(transform.rotation));
-                        var imaginary = (transform.scale * Math::Sin(transform.rotation));
-                        var x = (((real * self.centerX) - (imaginary * self.centerY)) + (cast (double) transform.distance.x));
-                        var y = (((imaginary * self.centerX) + (real * self.centerY)) + (cast (double) transform.distance.y));
-                        var ax = ((real * self.axisX) - (imaginary * self.axisY));
-                        var ay = ((imaginary * self.axisX) + (real * self.axisY));
-                        (self.centerX = x);
-                        (self.centerY = y);
-                        (self.axisX = ax);
-                        (self.axisY = ay);
-                        self.Publish(self.markers, self.markerCount);
+                        if (var transform : GuiPointGesture_DraggingAndRotation? = (arguments.gesture as (GuiPointGesture_DraggingAndRotation?)))
+                        {
+                            (arguments.selected = true);
+                            (arguments.handled = true);
+                            var real = (transform.scale * Math::Cos(transform.rotation));
+                            var imaginary = (transform.scale * Math::Sin(transform.rotation));
+                            var x = (((real * self.centerX) - (imaginary * self.centerY)) + (cast (double) transform.distance.x));
+                            var y = (((imaginary * self.centerX) + (real * self.centerY)) + (cast (double) transform.distance.y));
+                            var ax = ((real * self.axisX) - (imaginary * self.axisY));
+                            var ay = ((imaginary * self.axisX) + (real * self.axisY));
+                            (self.centerX = x);
+                            (self.centerY = y);
+                            (self.axisX = ax);
+                            (self.axisY = ay);
+                            self.Publish(self.markers, self.markerCount);
+                        }
                     }
                 };
                 attach(touchingBounds.pointGesture, <event-handler>);
@@ -40305,19 +40307,21 @@ namespace demo
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointGestureEventArgs*) : (::system::Void)
                 {
-                    if (((!arguments.handled) and arguments.Gesture is (GuiPointGesture_Scrolling)))
+                    if ((!arguments.handled))
                     {
-                        var scrolling = (cast (GuiPointGesture_Scrolling) arguments.Gesture);
-                        if ((!scrolling.isVertical))
+                        if (var scrolling : GuiPointGesture_Scrolling? = (arguments.gesture as (GuiPointGesture_Scrolling?)))
                         {
-                            (arguments.selected = true);
-                            (arguments.handled = true);
-                            if ((self.swipeItem is not null and (!self.multipleContacts)))
+                            if ((!scrolling.isVertical))
                             {
-                                var row = self.GetSwipeTemplate();
-                                if (row is not null)
+                                (arguments.selected = true);
+                                (arguments.handled = true);
+                                if ((self.swipeItem is not null and (!self.multipleContacts)))
                                 {
-                                    (row.DragDistance = Math::Max(0, Math::Min(row.MaxDragDistance, (row.DragDistance - scrolling.distance))));
+                                    var row = self.GetSwipeTemplate();
+                                    if (row is not null)
+                                    {
+                                        (row.DragDistance = Math::Max(0, Math::Min(row.MaxDragDistance, (row.DragDistance - scrolling.distance))));
+                                    }
                                 }
                             }
                         }

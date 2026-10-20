@@ -685,6 +685,53 @@ namespace vl
 			return unboxed.Ref();
 		}
 
+		template<typename ...TOptions>
+		reflection::description::Value VariantPayload(const Variant<TOptions...>& value)
+		{
+			reflection::description::Value result;
+			value.Apply([&](const auto& option)
+			{
+				result = reflection::description::BoxParameter(option);
+			});
+			return result;
+		}
+
+		template<typename TTo, vint ...TMapping, typename ...TOptions>
+		TTo VariantCast(const Variant<TOptions...>& value)
+		{
+			static_assert(sizeof...(TMapping) == sizeof...(TOptions));
+			Nullable<TTo> result;
+			value.Apply([&]<typename T>(const T& option)
+			{
+				constexpr vint mapping[] = { TMapping... };
+				constexpr vint target = mapping[Variant<TOptions...>::template IndexOf<T>];
+				if constexpr (target != -1)
+				{
+					result = TTo(VariantIndex<target>{}, option);
+				}
+			});
+			if (!result) throw Exception(L"Failed to convert the active variant option.");
+			return result.Value();
+		}
+
+		template<typename TTo, vint ...TOptionsAccepted, typename ...TOptions>
+		TTo VariantExtract(const Variant<TOptions...>& value, bool strongCast)
+		{
+			TTo result{};
+			bool matched = false;
+			value.Apply([&]<typename T>(const T& option)
+			{
+				constexpr vint index = Variant<TOptions...>::template IndexOf<T>;
+				if constexpr (((index == TOptionsAccepted) || ...))
+				{
+					result = TTo(option);
+					matched = true;
+				}
+			});
+			if (!matched && strongCast) throw Exception(L"Failed to extract the active variant option.");
+			return result;
+		}
+
 		template<typename T>
 		struct UnboxWeakHelper
 		{

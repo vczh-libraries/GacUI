@@ -170,3 +170,4 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Utilities\FakeServices\TuiDialogs\Source\TuiFakeDialogServiceUIResource.cpp"
 #include "..\..\Source\Utilities\FakeServices\TuiDialogs\TuiFakeDialogService.cpp"
 #include "..\..\Source\GraphicsComposition\EazyLayout\GuiEasyLayout.cpp"
+#include "..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Point.cpp"
