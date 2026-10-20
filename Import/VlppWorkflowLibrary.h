@@ -686,7 +686,7 @@ namespace vl
 		}
 
 		template<typename ...TOptions>
-		reflection::description::Value VariantPayload(const Variant<TOptions...>& value)
+		reflection::description::Value VariantExtractObject(const Variant<TOptions...>& value)
 		{
 			reflection::description::Value result;
 			value.Apply([&](const auto& option)
@@ -694,6 +694,12 @@ namespace vl
 				result = reflection::description::BoxParameter(option);
 			});
 			return result;
+		}
+
+		template<typename ...TOptions>
+		reflection::description::Value VariantPayload(const Variant<TOptions...>& value)
+		{
+			return VariantExtractObject(value);
 		}
 
 		template<typename TTo, vint ...TMapping, typename ...TOptions>
