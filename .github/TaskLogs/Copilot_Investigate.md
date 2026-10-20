@@ -262,6 +262,18 @@ Currently when we cast a `GuiWindow*` value to `GuiControl*`, if it is null, the
 But in variant is different, `variant<GuiWindow*, GuiControl*>` casting to `GuiControl*` could results in null if the variant stores null to the `GuiCOntrol*` slot.
 That's how I say type conversion involving or not involving variant are totally different, and adding instructions should be easier instead of messing up existing instructions. And I would expect no or only very limited changes applied to existing instructions' implementation.
 
+# UPDATES
+
+## UPDATE
+
+The change is overall good! I have one thing to add, you need to still add test cases, verify Workflow, VlppParser2, GacUI, fix the website, publish the website without running job:copilotInitAll.
+
+Keep the current keyword list and add the new unary operator "variant in X", the precedence design should be the same as the existing 4 unary operators +/-/not/cast. It does `VUnbox`, which is extract the actual value from inside a variant box, and its result type will be `object`. You can add a new `VariantExtractObject` C++ helper in this case.
+
+So we offer users a way to convert `variant` to `object`, but it needs explicit code. And we will see there is no easy way to convert a `variant` to `object` while keeping the variant box in Workflow, so this should not making the script difficult to use.
+
+Do some research to see if my statement is correct, execute it right away if yes.
+
 # TEST [CONFIRMED]
 
 Reproduce missing variant metadata and parameter boxing in VlppReflection first. Capture ordinary Workflow pointer/nullable casts before implementation. The verification matrices in the problem description are acceptance requirements; each semantic/runtime failure must have an independently reached assertion. Implementation, generated-output verification and publication remain pending.
@@ -269,6 +281,7 @@ Reproduce missing variant metadata and parameter boxing in VlppReflection first.
 # PROPOSALS
 
 - No.1 Ordered variant metadata and tagged parameter boxes [CONFIRMED]
+- No.2 Explicit unary extraction of a variant payload as object
 
 ## No.1 Ordered variant metadata and tagged parameter boxes
 
@@ -545,3 +558,15 @@ The positive and negative tests establish exact ordered identity, native alterna
 GacUI now exposes the writable gesture variant field and removes the old Gesture/GetGesture workaround. Reflection/resource tests establish option order, extraction copies, whole-field write-back and mismatched-assignment rejection. Final Win32/x64 unit runs and all four Touching automation/UIA scenarios passed without reported leaks or runtime-error dialogs. The shared scenario preserves the original gesture lifecycle, transformations, scrolling and deferred identity-based removal behavior.
 
 Authored changes, required generated outputs, metadata, snapshots, synchronized guidance, website publication and the canonical manual have been committed and pushed in their owning repositories. The implementation is retained as the confirmed proposal. Coverage limitations are explicitly recorded: a fresh WebAssembly rebuild was unavailable, the existing published demo was preserved, and automation/UIA execution does not claim physical-desktop pixel inspection.
+
+## No.2 Explicit unary extraction of a variant payload as object
+
+Research confirms that the existing lexer already contains both variant and in. Adding the expression to the recursive _Exp0 grammar gives it the same right-associative precedence as unary +, -, not and cast without adding keywords. The VM's VUnbox already extracts the active payload, and the native VariantPayload helper performs the corresponding parameter boxing.
+
+One premise needs qualification: the existing explicit cast to object preserves the outer variant box when object is not a declared option. When object is an option, that cast instead performs exact option extraction and fails for another active option. Keep this previously requested behavior; the new operator supplies an explicit, unconditional extraction of the active option and has static type object. It requires a statically variant operand and does not recursively unwrap an object payload that itself holds another box.
+
+### CODE CHANGE
+
+Add VariantExtract to WfUnaryOperator, parse variant in _Exp0, print it, validate a variant operand with the existing unary diagnostic, emit VUnbox, and emit the C++ payload helper. Reuse the existing helper implementation under the descriptive VariantExtractObject name for extraction, comparison and null tests. Mirror only the authored AST/grammar files into VlppParser2 and regenerate with the prescribed tools. Extend indexed fixtures and GacUI ordinary resource tests; publish updated syntax, precedence, binding and RPC documentation and the canonical manual after implementation verification, skipping both copilotInitAll calls.
+
+Verify scalar/string/nullable/raw/shared/object/struct/collection/function payloads, temporary and copied variants, one-time operand evaluation, ordinary object casts after extraction, explicit object-option behavior, box-preserving cast compatibility and one-level extraction. Exercise unary chaining and precedence, postfix/index/call operands, lower-precedence expressions, parser print/copy/JSON round trips, nonvariant and object operand rejection, and missing syntax. Run the prescribed Workflow Win32/x64 compiler/VM/all-three-C++-mode/RPC/TypeScript matrix and full release workflow, VlppParser2 ordered regeneration tests, GacUI dependency refresh/build/metadata/unit verification, then website build/export/browser/live/CI checks. Keep generated files and snapshots in their required separate commits.
