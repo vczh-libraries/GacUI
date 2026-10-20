@@ -393,21 +393,21 @@ Malformed syntax is separately indexed in `<Workflow repo>/Test/Resources/IndexI
 
 | Runtime branch | Indexed fixture / independent assertion | Expected outcome | Final verification |
 | --- | --- | --- | --- |
-| Inactive scalar VT | VariantCasts: number to string | Nonfatal variant cast exception | VM Win32/x64 passed; final native rerun pending |
-| Active option excluded by VV intersection | VariantCasts: number to variant<string, bool> | Nonfatal variant cast exception | VM Win32/x64 passed; final native rerun pending |
-| T versus T? exact strong extraction | VariantCasts: plain to int?, missing to int | Two independent nonfatal exceptions | VM Win32/x64 passed; final native rerun pending |
-| Different raw null tag | VariantCasts: derivedSlot to VariantBase* and variant<VariantBase*, bool> | Two independent nonfatal exceptions | VM Win32/x64 passed; final native rerun pending |
-| Base raw tag containing derived object | VariantCasts: taggedBase to VariantDerived* | Nonfatal exception; weak counterpart returns null | VM Win32/x64 passed; final native rerun pending |
-| Different shared null tag | VariantCasts: sharedDerived to VariantBase^ and variant<VariantBase^, bool> | Two independent nonfatal exceptions | VM Win32/x64 passed; final native rerun pending |
-| Base shared tag containing derived object | VariantCasts: taggedShared to VariantDerived^ | Nonfatal exception | VM Win32/x64 passed; final native rerun pending |
-| Null object excluded by VV intersection | VariantCasts: objectSlot to variant<int?, bool> | Nonfatal exception | VM Win32/x64 passed; final native rerun pending |
-| Explicit object option inactive | VariantCasts: nullableSlot to object | Nonfatal exception | VM Win32/x64 passed; final native rerun pending |
-| Object payload does not select another option | VariantCasts: opaque to int | Nonfatal exception | VM Win32/x64 passed; final native rerun pending |
-| Weak pointer mismatch, including null | VariantCasts: derivedSlot/sharedDerived/taggedBase weak casts | Null without exception | VM Win32/x64 passed; final native rerun pending |
-| Weak nullable mismatch | VariantCasts: other as int? | Null without exception; exact T and T? controls succeed | VM Win32/x64 passed; final native rerun pending |
-| Escaped wrapper ordinary strong cast | VariantCasts::EscapedPayload, TestRuntime.cpp and TestVariantCasts.cpp harnesses | VM nonfatal cast failure; native existing mismatch exception/Error by mode | VM Win32/x64 passed; final native rerun pending |
-| Native untyped collection versus typed option | VariantNative: erased to variant<int[], string> | Nonfatal exception | VM Win32/x64 passed; final native rerun pending |
-| Erased native alternative does not grant Workflow identity | VariantNative: typedVariant to variant<string[], string> | Nonfatal exception | VM Win32/x64 passed; final native rerun pending |
+| Inactive scalar VT | VariantCasts: number to string | Nonfatal variant cast exception | VM and all three native modes passed Win32/x64 |
+| Active option excluded by VV intersection | VariantCasts: number to variant<string, bool> | Nonfatal variant cast exception | VM and all three native modes passed Win32/x64 |
+| T versus T? exact strong extraction | VariantCasts: plain to int?, missing to int | Two independent nonfatal exceptions | VM and all three native modes passed Win32/x64 |
+| Different raw null tag | VariantCasts: derivedSlot to VariantBase* and variant<VariantBase*, bool> | Two independent nonfatal exceptions | VM and all three native modes passed Win32/x64 |
+| Base raw tag containing derived object | VariantCasts: taggedBase to VariantDerived* | Nonfatal exception; weak counterpart returns null | VM and all three native modes passed Win32/x64 |
+| Different shared null tag | VariantCasts: sharedDerived to VariantBase^ and variant<VariantBase^, bool> | Two independent nonfatal exceptions | VM and all three native modes passed Win32/x64 |
+| Base shared tag containing derived object | VariantCasts: taggedShared to VariantDerived^ | Nonfatal exception | VM and all three native modes passed Win32/x64 |
+| Null object excluded by VV intersection | VariantCasts: objectSlot to variant<int?, bool> | Nonfatal exception | VM and all three native modes passed Win32/x64 |
+| Explicit object option inactive | VariantCasts: nullableSlot to object | Nonfatal exception | VM and all three native modes passed Win32/x64 |
+| Object payload does not select another option | VariantCasts: opaque to int | Nonfatal exception | VM and all three native modes passed Win32/x64 |
+| Weak pointer mismatch, including null | VariantCasts: derivedSlot/sharedDerived/taggedBase weak casts | Null without exception | VM and all three native modes passed Win32/x64 |
+| Weak nullable mismatch | VariantCasts: other as int? | Null without exception; exact T and T? controls succeed | VM and all three native modes passed Win32/x64 |
+| Escaped wrapper ordinary strong cast | VariantCasts::EscapedPayload, TestRuntime.cpp and TestVariantCasts.cpp harnesses | VM nonfatal cast failure; native existing mismatch exception/Error by mode | VM and all three native modes passed Win32/x64 |
+| Native untyped collection versus typed option | VariantNative: erased to variant<int[], string> | Nonfatal exception | VM and all three native modes passed Win32/x64 |
+| Erased native alternative does not grant Workflow identity | VariantNative: typedVariant to variant<string[], string> | Nonfatal exception | VM and all three native modes passed Win32/x64 |
 
 Each strong runtime assertion catches and checks a nonfatal exception with a message identifying a variant option conversion, then continues to the next assertion. Matching null tags, ordered remapping, copied tags and both weak nullable representations are independently asserted in the same indexed fixture. RPC rejection coverage will be recorded with task 4.
 
@@ -495,3 +495,19 @@ The hidden CodePack invocation stopped making visible progress before writing re
 The canonical gesture/RPC guidance and its seven other repository copies were committed and pushed: Tools 381570c, Vlpp 444424f, VlppOS d78c332, VlppRegex fdaaa21, VlppReflection 3ae5ad1, VlppParser2 22cd3441, Workflow 9054a8001 and Release 9905309a. The GacUI copy remains with its pending authored commit.
 
 The corrected x64 ordinary suite passed 13/13 selected files and 245/245 cases with no reported leaks. Both valid whole-field assignments compiled; scalar, plain-payload and reordered-variant assignments independently reached A10. The native reflection round trips and PointScrolling interaction/snapshot cases passed. Snapshot differences are limited to the two architecture-specific compiled Workflow text files reflecting the new handlers; useful rendering frames and protocol baselines are unchanged. Final post-generation builds, metadata refresh, Win32 rerun and the four application UIA runs remain pending.
+
+Pushed the GacUI authored migration and guidance as 3a44bc7d4. The resource compiler completed its x86 pass and produced native nullable extraction from the writable gesture field. The x64 pass remains active. The required full Workflow release script completed its Win32 rebuild and advanced to the x64 rebuild. Read-only native-window checks found no runtime-error dialog for either process tree.
+
+The x64 FullControlTest resource pass completed with the same expected handler changes as x86: scrolling uses alternative 0, manipulation uses alternative 1, and generated code no longer calls GetGesture. Both architecture resource binaries increased by 2,755 bytes. The compiler continued through the remaining TUI resources.
+
+An early GacUI_Host Touching attempt timed out before its automation endpoint became ready, while the full Release rebuild and resource compiler were active. No Touching assertion ran and no native runtime-error dialog was found. The wrapper restored user arguments and cleaned up its owned process. The x64 executable was present and freshly built; this is an unresolved startup timeout, not evidence of a platform-path mismatch. Retry after the heavy builds finish, and investigate further if it recurs.
+
+### Final build, metadata and ordinary-test verification
+
+GacUI_Compiler completed both architectures and final source merges with exit code 0. No resource error file was found. Subsequent Debug Win32 and x64 solution builds both passed with zero warnings/errors. Metadata_Generate succeeded on both architectures, followed by successful x64 Metadata_Test.
+
+The final ordinary GacUI runs passed all selected tests: Win32 11/11 files and 225/225 cases; x64 13/13 files and 245/245 cases. Existing architecture-specific filters were preserved, and both include the reflection, resource and PointScrolling tests. No memory leaks were reported. Rendering snapshots and protocol baselines remain unchanged; the two compiled Workflow text snapshots contain only the expected handler migration.
+
+The complete required `<Tools repo>/Tools/Build.ps1 Workflow` run succeeded with exit code 0, including both Release architectures, compiler/runtime/native consumers, TypeScript, stdio RPC, CodePack and CppMerge. StructTraversal again produced 28; the existing SharedMemsp case remains intentionally skipped by that suite. It left no additional tracked Workflow changes.
+
+All updated GacUI imports match their owning release files byte for byte. Generated imports, release files, metadata and resources were pushed as 52c15447d; the two unit-test snapshots were pushed separately as 03c1f4c12. All other affected repositories are clean and pushed. The four Debug x64 Touching application scenarios are now running without the earlier heavy build load.
