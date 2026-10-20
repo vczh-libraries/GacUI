@@ -4,7 +4,7 @@
 
 ### Vlpp
 
-- `Variant` and `Union` with full support.
+- `Union` with full support.
   - Document.
   - Document `vl::Overloading`.
 - Extensible CLI argument parser acception different OS convention, serialization and module dependencies.
