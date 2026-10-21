@@ -1,5 +1,5 @@
 ﻿{
-  "frameId": 22,
+  "frameId": 26,
   "frameName": "Confirmed",
   "windowSize": {
     "bounds": {
@@ -1503,22 +1503,22 @@
       ]
     ],
     [
-      130,
+      127,
       [
         "ElementDesc_SolidBackground",
         {
-          "id": 130,
+          "id": 127,
           "backgroundColor": "#00000000",
           "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
     [
-      131,
+      128,
       [
         "ElementDesc_Polygon",
         {
-          "id": 131,
+          "id": 128,
           "size": {"x": 7, "y": 9},
           "borderColor": "#F1F1F1",
           "backgroundColor": "#00000000",
@@ -1531,11 +1531,11 @@
       ]
     ],
     [
-      132,
+      129,
       [
         "ElementDesc_Polygon",
         {
-          "id": 132,
+          "id": 129,
           "size": {"x": 7, "y": 9},
           "borderColor": "#F1F1F1",
           "backgroundColor": "#00000000",
@@ -1548,18 +1548,18 @@
       ]
     ],
     [
-      133,
+      130,
       [
         "ElementDesc_ImageFrame",
-        {"id": 133, "imageId": 3, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+        {"id": 130, "imageId": 3, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
       ]
     ],
     [
-      134,
+      131,
       [
         "ElementDesc_SolidLabel",
         {
-          "id": 134,
+          "id": 131,
           "textColor": "#F1F1F1",
           "horizontalAlignment": "Left",
           "verticalAlignment": "Center",

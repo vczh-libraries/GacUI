@@ -28,13 +28,13 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::SwipeWindow* = null of (::gacuisrc_unittest::SwipeWindow*);
 
         @cpp:Protected
-        var sample : ::demo::TouchingListTabPage* = null of (::demo::TouchingListTabPage*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
 
         @cpp:Protected
         var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var sample : ::demo::TouchingListTabPage* = null of (::demo::TouchingListTabPage*);
 
         @cpp:Protected
         func <gacuisrc_unittest-SwipeWindow>Initialize(<this> : ::gacuisrc_unittest::SwipeWindow*) : (::system::Void)
@@ -144,12 +144,6 @@ namespace demo
         var self : ::demo::TouchingTabPage* = null of (::demo::TouchingTabPage*);
 
         @cpp:Protected
-        var touchingBounds : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var touching : ::presentation::elements::GuiRawElementBase^ = null of (::presentation::elements::GuiRawElementBase^);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
@@ -166,6 +160,12 @@ namespace demo
 
         @cpp:Protected
         var <precompile>5 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var touchingBounds : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var touching : ::presentation::elements::GuiRawElementBase^ = null of (::presentation::elements::GuiRawElementBase^);
 
         @cpp:Protected
         func <demo-TouchingTabPage>Initialize(<this> : ::demo::TouchingTabPage*) : (::system::Void)
@@ -403,19 +403,7 @@ namespace demo
     class TouchingListItemTemplateConstructor
     {
         @cpp:Protected
-        var ViewModel : ::demo::TouchingListItem^ = null of (::demo::TouchingListItem^);
-
-        @cpp:Protected
         var self : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
-
-        @cpp:Protected
-        var deleteBackground : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var deleteLabel : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var foreground : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
@@ -437,6 +425,18 @@ namespace demo
 
         @cpp:Protected
         var <precompile>6 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+
+        @cpp:Protected
+        var ViewModel : ::demo::TouchingListItem^ = null of (::demo::TouchingListItem^);
+
+        @cpp:Protected
+        var deleteBackground : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var deleteLabel : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var foreground : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <demo-TouchingListItemTemplate>Initialize(<this> : ::demo::TouchingListItemTemplate*) : (::system::Void)
@@ -1407,9 +1407,6 @@ namespace demo
         var self : ::demo::TouchingListTabPage* = null of (::demo::TouchingListTabPage*);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
@@ -1438,6 +1435,9 @@ namespace demo
 
         @cpp:Protected
         var <precompile>9 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var list : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
 
         @cpp:Protected
         func <demo-TouchingListTabPage>Initialize(<this> : ::demo::TouchingListTabPage*) : (::system::Void)
@@ -1488,16 +1488,12 @@ namespace demo
                 (list = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("list", list);
             }
-            (<precompile>9 = list.BoundsComposition);
             {
                 (list.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (demo::TouchingListItem^) <item>);
                     return item.Text;
                 });
-            }
-            {
-                (list.HorizontalAlwaysVisible = false);
             }
             {
                 (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
@@ -1511,6 +1507,10 @@ namespace demo
                     raise "Cannot find a matched control template to create.";
                 });
             }
+            {
+                (list.HorizontalAlwaysVisible = false);
+            }
+            (<precompile>9 = list.BoundsComposition);
             {
                 (<precompile>8.Composition = list.BoundsComposition);
             }
@@ -1535,9 +1535,6 @@ namespace demo
                     self.AddItems();
                 };
                 attach(<precompile>5.Clicked, <event-handler>);
-            }
-            {
-                (list.ItemSource = self.Items);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceStartedEventArgs*) : (::system::Void)
@@ -1588,6 +1585,9 @@ namespace demo
                     self.EndSwipe(arguments);
                 };
                 attach(<precompile>9.pointSequenceEnded, <event-handler>);
+            }
+            {
+                (list.ItemSource = self.Items);
             }
             <precompile>0.BuildLayout();
         }
