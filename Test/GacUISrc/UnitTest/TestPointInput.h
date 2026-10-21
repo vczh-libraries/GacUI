@@ -59,7 +59,7 @@ public:
 
 	void						End(vuint64_t elapsed = 0, PointSequenceEndReason reason = PointSequenceEndReason::Succeeded)
 	{
-		IOPointEnd end;
+		IOPointEnd end = {};
 		end.sequenceId = action.info.sequenceId;
 		end.eventIndex = ++action.eventIndex;
 		end.timestamp = u64tow(timestamp + elapsed);

@@ -648,7 +648,7 @@ TEST_FILE
 			a.eventIndex = 2;
 			a.info.activePointCount = 0;
 			events->OnIOPointUp(a);
-			IOPointEnd end;
+			IOPointEnd end = {};
 			end.sequenceId = L"1";
 			end.eventIndex = 3;
 			end.timestamp = L"0";
@@ -937,7 +937,7 @@ TEST_FILE
 			events->OnIOPointStarted(a);
 			a.eventIndex = 1; events->OnIOPointDown(a);
 			a.eventIndex = 2; a.info.activePointCount = 0; events->OnIOPointUp(a);
-			IOPointEnd end; end.sequenceId = L"1"; end.eventIndex = 3; end.timestamp = L"0";
+			IOPointEnd end = {}; end.sequenceId = L"1"; end.eventIndex = 3; end.timestamp = L"0";
 			end.reason = PointSequenceEndReason::Succeeded;
 			events->OnIOPointEnded(end);
 			TEST_ASSERT(queries == 2 && ends == 2 && clicks == 2);
