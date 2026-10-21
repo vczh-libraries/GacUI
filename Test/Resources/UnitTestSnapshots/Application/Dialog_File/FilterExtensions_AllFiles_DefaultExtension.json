@@ -125,11 +125,11 @@
     [125, "ImageFrame"],
     [126, "SolidLabel"],
     [127, "SolidBackground"],
-    [128, "Polygon"],
-    [129, "Polygon"],
-    [130, "ImageFrame"],
-    [131, "SolidLabel"],
-    [132, "SolidBackground"],
+    [128, "ImageFrame"],
+    [129, "SolidLabel"],
+    [130, "SolidBackground"],
+    [131, "Polygon"],
+    [132, "Polygon"],
     [133, "ImageFrame"],
     [134, "SolidLabel"],
     [135, "SolidBackground"],
@@ -220,7 +220,7 @@
       "root": null
     },
     {
-      "frameId": 15,
+      "frameId": 11,
       "frameName": "Show Dialog",
       "windowSize": {
         "bounds": {
@@ -247,7 +247,7 @@
       "root": null
     },
     {
-      "frameId": 19,
+      "frameId": 15,
       "frameName": "Filter: Text Files",
       "windowSize": {
         "bounds": {
@@ -274,7 +274,7 @@
       "root": null
     },
     {
-      "frameId": 23,
+      "frameId": 19,
       "frameName": "Filter: All Files",
       "windowSize": {
         "bounds": {
@@ -301,7 +301,7 @@
       "root": null
     },
     {
-      "frameId": 26,
+      "frameId": 22,
       "frameName": "Confirmed",
       "windowSize": {
         "bounds": {

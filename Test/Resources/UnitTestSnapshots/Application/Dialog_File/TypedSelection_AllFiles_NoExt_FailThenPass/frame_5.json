@@ -1598,46 +1598,9 @@
     [
       136,
       [
-        "ElementDesc_ImageFrame",
-        {"id": 136, "imageId": 3, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
-      ]
-    ],
-    [
-      137,
-      [
-        "ElementDesc_SolidLabel",
-        {
-          "id": 137,
-          "textColor": "#F1F1F1",
-          "horizontalAlignment": "Left",
-          "verticalAlignment": "Center",
-          "wrapLine": false,
-          "wrapLineHeightCalculation": false,
-          "ellipse": false,
-          "multiline": false,
-          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "A",
-          "measuringRequest": "TotalSize"
-        }
-      ]
-    ],
-    [
-      138,
-      [
-        "ElementDesc_SolidBackground",
-        {
-          "id": 138,
-          "backgroundColor": "#00000000",
-          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-        }
-      ]
-    ],
-    [
-      139,
-      [
         "ElementDesc_Polygon",
         {
-          "id": 139,
+          "id": 136,
           "size": {"x": 7, "y": 9},
           "borderColor": "#F1F1F1",
           "backgroundColor": "#00000000",
@@ -1650,11 +1613,11 @@
       ]
     ],
     [
-      140,
+      137,
       [
         "ElementDesc_Polygon",
         {
-          "id": 140,
+          "id": 137,
           "size": {"x": 7, "y": 9},
           "borderColor": "#F1F1F1",
           "backgroundColor": "#00000000",
@@ -1663,6 +1626,43 @@
             {"x": 5, "y": 7},
             {"x": 0, "y": 7}
           ]
+        }
+      ]
+    ],
+    [
+      138,
+      [
+        "ElementDesc_ImageFrame",
+        {"id": 138, "imageId": 3, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": true, "enabled": true, "imageCreation": null}
+      ]
+    ],
+    [
+      139,
+      [
+        "ElementDesc_SolidLabel",
+        {
+          "id": 139,
+          "textColor": "#F1F1F1",
+          "horizontalAlignment": "Left",
+          "verticalAlignment": "Center",
+          "wrapLine": false,
+          "wrapLineHeightCalculation": false,
+          "ellipse": true,
+          "multiline": false,
+          "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
+          "text": "B",
+          "measuringRequest": null
+        }
+      ]
+    ],
+    [
+      140,
+      [
+        "ElementDesc_SolidBackground",
+        {
+          "id": 140,
+          "backgroundColor": "#00000000",
+          "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
         }
       ]
     ],
@@ -1684,11 +1684,11 @@
           "verticalAlignment": "Center",
           "wrapLine": false,
           "wrapLineHeightCalculation": false,
-          "ellipse": true,
+          "ellipse": false,
           "multiline": false,
           "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "B",
-          "measuringRequest": null
+          "text": "A",
+          "measuringRequest": "TotalSize"
         }
       ]
     ],
