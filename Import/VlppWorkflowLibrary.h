@@ -810,7 +810,18 @@ namespace vl
 		template<typename T>
 		bool InSet(const T& value, const collections::LazyList<T>& collection)
 		{
-			return collection.Any([&](const T& element) {return element == value; });
+			if constexpr (reflection::description::TypeInfoRetriver<T>::TypeFlag == reflection::description::TypeFlags::VariantType)
+			{
+				auto payload = VariantExtractObject(value);
+				return collection.Any([&](const T& element)
+				{
+					return reflection::description::CompareVariantPayloads(VariantExtractObject(element), payload) == 0;
+				});
+			}
+			else
+			{
+				return collection.Any([&](const T& element) {return element == value; });
+			}
 		}
 
 		template<typename T>

@@ -10532,6 +10532,9 @@ CreateTypeInfoFromType
 						auto manager = scope->FindManager();
 						switch (typeInfo->GetDecorator())
 						{
+						case ITypeInfo::Variant:
+							// Visit(WfVariantType*) has already validated each option.
+							break;
 						case ITypeInfo::RawPtr:
 						case ITypeInfo::SharedPtr:
 							switch (typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags())
@@ -10856,6 +10859,7 @@ CanConvertToType
 
 			bool CanConvertToType(reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType, bool explicitly)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::workflow::analyzer::CanConvertToType(...)#"
 				bool fromVariant = fromType->GetDecorator() == ITypeInfo::Variant;
 				bool toVariant = toType->GetDecorator() == ITypeInfo::Variant;
 				if (fromVariant || toVariant)
@@ -10891,9 +10895,13 @@ CanConvertToType
 
 				switch (fromType->GetDecorator())
 				{
+				case ITypeInfo::Variant:
+					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant conversions should have been handled before ordinary conversions.");
 				case ITypeInfo::RawPtr:
 					switch (toType->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant conversions should have been handled before ordinary conversions.");
 					case ITypeInfo::RawPtr:
 						return CanConvertToType(fromType->GetElementType(), toType->GetElementType(), explicitly);
 					case ITypeInfo::SharedPtr:
@@ -10907,6 +10915,8 @@ CanConvertToType
 				case ITypeInfo::SharedPtr:
 					switch (toType->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant conversions should have been handled before ordinary conversions.");
 					case ITypeInfo::RawPtr:
 						return explicitly && CanConvertToType(fromType->GetElementType(), toType->GetElementType(), explicitly);
 					case ITypeInfo::SharedPtr:
@@ -10920,6 +10930,8 @@ CanConvertToType
 				case ITypeInfo::Nullable:
 					switch (toType->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant conversions should have been handled before ordinary conversions.");
 					case ITypeInfo::RawPtr:
 					case ITypeInfo::SharedPtr:
 						return false;
@@ -10934,6 +10946,8 @@ CanConvertToType
 				case ITypeInfo::TypeDescriptor:
 					switch (toType->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant conversions should have been handled before ordinary conversions.");
 					case ITypeInfo::RawPtr:
 					case ITypeInfo::SharedPtr:
 						return false;
@@ -11011,6 +11025,8 @@ CanConvertToType
 				case ITypeInfo::Generic:
 					switch (toType->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant conversions should have been handled before ordinary conversions.");
 					case ITypeInfo::RawPtr:
 					case ITypeInfo::SharedPtr:
 					case ITypeInfo::Nullable:
@@ -11036,6 +11052,7 @@ CanConvertToType
 					break;
 				}
 				return false;
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 /***********************************************************************
@@ -11129,6 +11146,7 @@ IsNullAcceptableType
 				case ITypeInfo::TypeDescriptor:
 					return type->GetTypeDescriptor() == description::GetTypeDescriptor<Value>();
 				case ITypeInfo::Generic:
+				case ITypeInfo::Variant:
 					return false;
 				}
 				return false;
@@ -13500,14 +13518,15 @@ ValidateSemantic(Expression)
 				void Visit(WfSetTestingExpression* node)override
 				{
 					Ptr<ITypeInfo> elementType = GetExpressionType(manager, node->element, 0);
-					if (elementType && elementType->GetDecorator() == ITypeInfo::Variant)
-					{
-						manager->errors.Add(WfErrors::InvalidVariantExpression(node, L"Extract an option before testing set membership."));
-						return;
-					}
 
 					if (auto range = node->collection.Cast<WfRangeExpression>())
 					{
+						if (elementType && elementType->GetDecorator() == ITypeInfo::Variant)
+						{
+							manager->errors.Add(WfErrors::InvalidVariantExpression(node, L"Extract an option before testing range membership."));
+							return;
+						}
+
 						Ptr<ITypeInfo> beginType = GetExpressionType(manager, range->begin, 0);
 						Ptr<ITypeInfo> endType = GetExpressionType(manager, range->end, 0);
 
@@ -31840,6 +31859,7 @@ GenerateTypeCastInstructions
 
 			void GenerateTypeCastInstructions(WfCodegenContext& context, Ptr<reflection::description::ITypeInfo> expectedType, bool strongCast, WfExpression* node)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::workflow::emitter::GenerateTypeCastInstructions(...)#"
 				if (expectedType->GetTypeDescriptor() != GetTypeDescriptor<Value>())
 				{
 					vint fillElseIndex = -1;
@@ -31857,6 +31877,8 @@ GenerateTypeCastInstructions
 					{
 						switch (expectedType->GetDecorator())
 						{
+						case ITypeInfo::Variant:
+							CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant casts must use variant instructions.");
 						case ITypeInfo::RawPtr:
 							INSTRUCTION(Ins::ConvertToType(Value::RawPtr, expectedType->GetTypeDescriptor()));
 							break;
@@ -31874,6 +31896,8 @@ GenerateTypeCastInstructions
 					{
 						switch (expectedType->GetDecorator())
 						{
+						case ITypeInfo::Variant:
+							CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant casts must use variant instructions.");
 						case ITypeInfo::RawPtr:
 							INSTRUCTION(Ins::TryConvertToType(Value::RawPtr, expectedType->GetTypeDescriptor()));
 							break;
@@ -31896,6 +31920,7 @@ GenerateTypeCastInstructions
 						FILL_LABEL_TO_CURRENT(fillEndIndex);
 					}
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 /***********************************************************************
@@ -31904,10 +31929,13 @@ GetInstructionTypeArgument
 
 			void GenerateTypeTestingInstructions(WfCodegenContext& context, Ptr<reflection::description::ITypeInfo> expectedType, WfExpression* node)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::workflow::emitter::GenerateTypeTestingInstructions(...)#"
 				if (expectedType->GetTypeDescriptor() != GetTypeDescriptor<Value>())
 				{
 					switch (expectedType->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Type testing does not support variants.");
 					case ITypeInfo::RawPtr:
 						INSTRUCTION(Ins::TestType(Value::RawPtr, expectedType->GetTypeDescriptor()));
 						break;
@@ -31926,6 +31954,7 @@ GetInstructionTypeArgument
 					INSTRUCTION(Ins::Pop());
 					INSTRUCTION(Ins::LoadValue({ true }));
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 /***********************************************************************
@@ -32122,6 +32151,7 @@ Compile
 		}
 	}
 }
+
 
 /***********************************************************************
 .\EMITTER\WFEMITTER_DECLARATION.CPP
