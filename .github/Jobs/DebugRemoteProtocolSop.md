@@ -58,6 +58,10 @@ establish, drive, inspect, replace, and close the renderer session.
     - `RemotingTest_Core` catches the failure only to send the Core-authored
       fatal error to `RemotingTest_Renderer` before terminating.
 
+## Lifecycle Applicability
+
+HTTP/native renderer replacement preserves a live Core and its state. Wasm pages own their Core: skip HTTP takeover and external-host admission/loss operations there, and use shutdown/restart instead. On development Wasm pages, require Reload disabled during startup, operation and canceled RPT Exit, enabled only after successful shutdown, and disabled again after Reload. Verify Exit and Force Exit, fresh UI/RPC state, and termination of old workers and pthreads. The public demo restarts through browser refresh; it has no Reload button. Keep these checks separate from native OS global hot keys and unavailable physical/mobile hardware.
+
 ## Rules for Every Operation
 
 1. Read the current visible UI before acting. Use the active enclosing control,
@@ -194,23 +198,9 @@ renderer replacement and intentional close steps.
     renderer and require the same exact label text without a fatal error or
     disconnect.
 
-### 7. Verify Touching and Rejected Touch
+### 7. Close the Application Through the File Menu
 
-Run these operations on Misc > Touching for native /Pipe, /Http and /MiniHttp with both Direct2D and GDI, and browser /Http and /MiniHttp. Use the topology guides for launch commands. Repeat input through renderer automation and, separately, Windows native touch injection or browser input injection. Core-only IO tests dispatch but bypasses acquisition/forwarding. Record unavailable locked-desktop and physical-device checks explicitly. Shared WASM code is not evidence of a WASM runtime pass.
-
-1. Confirm the dark surface contains a sky-blue rectangle. Hold one contact and move it: the rectangle translates by the same logical delta and a yellow contact circle follows. Release: all circles disappear while the transform remains.
-2. Add two contacts and translate, rotate and change their separation. Verify the rectangle follows the corresponding two-contact transform. Add a third contact: all three markers remain but the rectangle pauses. Remove one contact without movement: the transform must not jump. Resume motion and verify the new two-contact baseline.
-3. Exercise A Down, B Down, A Up, C Down, B Up, C Up. A's normal lostpointercapture must not terminate B in a browser. Reusing A's browser pointer ID for C gives a fresh Down-order slot. Observe one Started and one successful End, with consecutive transport indices; no compatibility mouse activation occurs on the accepting surface.
-4. Cancel via PlatformCanceled and unexpected CaptureLost with two contacts active. Verify one canceled End, marker removal, cleanup without a fabricated Up or click, and a clean subsequent sequence. Test renderer disposal/replacement while accepted and rejected sequences are active: the replacement must not inherit contacts, pressed fallback buttons, or capture.
-5. Touch an ordinary button or a tab: rejection produces one activation. A secondary finger cannot promote itself to mouse fallback after the first lifts. Cancel the first contact before Up and verify no activation. Repeat with physical mouse, wheel and keyboard to check the independent paths.
-6. In the browser, start over nested labels, paragraphs and raw canvases within a scrollable surrounding page. Verify the renderer descendants have touch-action none before Down, no page pan/zoom, and no duplicate click/auxclick/contextmenu or mouse boundary input. Move beyond the surface and rebuild child DOM during contact: stable target capture must retain the stream. Input outside the renderer keeps normal browser behavior.
-7. Resize, leave/revisit Touching and replace the renderer. Verify current Core state draws again with one painter/canvas and correct bounds. Verify both rectangle pixels and contact-circle pixels, not just nonempty raw data. Raw state is centerX,centerY,axisX,axisY,count followed by pointId,x,y triples; painters must not own gesture calculations.
-
-For native injection use `<GacUI repo>/Test/Touching_NativeInput.ps1`. Its remote mode selects `-Application RemotingTest_Rendering_Native`, the renderer `-TargetProcessId` and `-AsPort`, plus `-CoreAsPort` for Core Controls inspection. Renderer IO drives forwarding and renderer Dom confirms received state. Local UIA checks semantic controls; a remote renderer does not transport a UIA tree.
-
-### 8. Close the Application Through the File Menu
-
-Perform these steps in the third renderer.
+Perform these steps in the third HTTP/native renderer, or the current Wasm renderer.
 
 1. Activate `File` and require its menu to be visible.
 2. In the active menu, activate exactly
@@ -368,7 +358,38 @@ Use a fresh application state.
    a changed palette and require legible, current colors in both custom and
    standard controls.
 
-### 7. Close the Application
+### 7. Verify Raw Clock
+
+1. Activate `Misc > Raw Clock`. Require one visible clock canvas in GacJS/Wasm, or the native Raw Clock painting. Inspect received `FullControlTest.Clock` data in `HH:mm:ss` form and require corresponding changing clock-hand pixels as Core updates the data. The painter must not run an independent ticking clock.
+2. Leave for `Elements`, then return. Require the current time and exactly one painter/canvas. Resize and require correctly sized, unclipped painting; in the browser the canvas backing dimensions follow its bounds and device pixel ratio.
+3. Choose another palette in `Window Manager`, return to Raw Clock, and require continued data/pixel updates with one canvas. Repeat after HTTP/native renderer replacement, or Wasm application shutdown and restart. Check painter observers/listeners are disposed with the old session and do not duplicate after restart.
+
+### 8. Verify Touching and Rejected Touch
+
+Run these operations on `/FCT` > `Misc > Touching` for Windows native /Pipe, /Http and /MiniHttp with both Direct2D and GDI, browser /Http and /MiniHttp, and Wasm. wGac and iGac native providers do not acquire touch and may skip touch-specific checks; this exclusion never applies to GacJS or Wasm on Linux/macOS. Use the topology guides for launch commands. Repeat input through renderer automation and, separately, Windows native touch injection or browser input injection. Core-only IO tests dispatch but bypasses acquisition/forwarding. Record unavailable locked-desktop and physical-device checks explicitly. Drive the actual Wasm renderer and observe its worker/channel messages and rendered state; native HTTP Core automation is not Wasm verification. Chromium browser-level touch injection verifies acquisition; identify Firefox DOM-synthetic checks separately.
+
+1. Confirm the dark surface contains a sky-blue rectangle. Hold one contact and move it: the rectangle translates by the same logical delta and a yellow contact circle follows. Release: all circles disappear while the transform remains.
+2. Add two contacts and translate, rotate and change their separation. Verify the rectangle follows the corresponding two-contact transform. Add a third contact: all three markers remain but the rectangle pauses. Remove one contact without movement: the transform must not jump. Resume motion and verify the new two-contact baseline.
+3. Exercise A Down, B Down, A Up, C Down, B Up, C Up. A's normal lostpointercapture must not terminate B in a browser. Reusing A's browser pointer ID for C gives a fresh Down-order slot. Observe one Started and one successful End, with consecutive transport indices, distinct Down-order slots and decimal-string 64-bit sequence/timestamp/frame fields preserved through the channel; no compatibility mouse activation occurs on the accepting surface.
+4. Cancel via PlatformCanceled and unexpected CaptureLost with two contacts active. Verify one canceled End, marker removal, cleanup without a fabricated Up or click, and a clean subsequent sequence. Test renderer disposal/replacement while accepted and rejected sequences are active: the replacement must not inherit contacts, pressed fallback buttons, or capture.
+5. Touch an ordinary button or a tab: rejection produces one activation. A secondary finger cannot promote itself to mouse fallback after the first lifts. Cancel the first contact before Up and verify no activation. Repeat with physical mouse, wheel and keyboard to check the independent paths.
+6. In the browser, start over nested labels, paragraphs and raw canvases within a scrollable surrounding page. Verify the renderer descendants have touch-action none before Down, no page pan/zoom, and no duplicate click/auxclick/contextmenu or mouse boundary input. Move beyond the surface and rebuild child DOM during contact: stable target capture must retain the stream. Input outside the renderer keeps normal browser behavior.
+7. Resize, leave/revisit Touching and replace the renderer. For Wasm use shutdown/restart instead of renderer replacement. Verify current Core state draws again with one painter/canvas and correct bounds. Verify both rectangle pixels and contact-circle pixels, not just nonempty raw data. Raw state is centerX,centerY,axisX,axisY,count followed by pointId,x,y triples; painters must not own gesture calculations.
+
+For native injection use `<GacUI repo>/Test/Touching_NativeInput.ps1`. Its remote mode selects `-Application RemotingTest_Rendering_Native`, the renderer `-TargetProcessId` and `-AsPort`, plus `-CoreAsPort` for Core Controls inspection. Renderer IO drives forwarding and renderer Dom confirms received state. Local UIA checks semantic controls; a remote renderer does not transport a UIA tree.
+
+### 9. Verify TouchingList and Ordinary Touch Input
+
+Use `Misc > TouchingList` in the same touch-capable configurations as section 8. wGac/iGac native touch exclusions do not exclude browser verification.
+
+1. Use `Clear` and `Add 5 Items` to establish known item identities and counts. Clear does not reset the serial counter. Inspect the visible row labels and layout; add more rows to exercise virtualization.
+2. Drag vertically and require list scrolling. Drag one row left and require the measured red `DELETE IT` area to be revealed. Clamp at its measured label width plus padding, reverse immediately, and release a partial swipe: the reveal resets without deletion. Right-only movement never reveals or deletes.
+3. Complete a single-contact swipe at maximum and release. After dispatch, require exactly the originally swiped identity to disappear and its successor to occupy the vacated position. Repeat with the final Up sample crossing the threshold. Verify remaining identities, not only count.
+4. Repeat with cancellation, a second contact, a start outside a row, and an incomplete swipe. Each leaves the same items and resets the reveal. Clear while a swipe is pending, add new items, and finish the old interaction: it must not remove a new identity. Scroll revealed rows out of view and back; recycled rows must not retain another row's reveal or receive deferred deletion.
+5. On an ordinary list, tap to select, scroll and reverse, and require selection to survive without extra activation. On `Control > TextBox`, drag through selectable/editor text and require a changing nonempty text range instead of parent scrolling. Repeat after palette/template replacement. Check physical mouse, wheel and keyboard independently.
+6. Repeat representative swipes after resize, palette refresh and application restart, and require stable layout and fresh input. Browser capture, nested content and compatibility-mouse checks from section 8 also apply to these rows and editors.
+
+### 10. Close the Application
 
 1. In GacJS, use the renderer's visible `Force Exit` control. In a native
    renderer, activate the application's top-level `Exit` tab and then activate
@@ -525,10 +546,12 @@ renderer connected throughout the failure.
 
 ## WebAssembly Application Reload
 
-The Wasm pages own a complete Core/renderer session and, for RVMT, its TypeScript
+The development Wasm pages own a complete Core/renderer session and, for RVMT, its TypeScript
 host. Their connections are installed at startup and last for that application.
 Separate renderer takeover and host-disconnection operations above apply to the
-native/HTTP demos, not these pages.
+native/HTTP demos, not these pages. The public FullControlTest demo uses browser
+refresh after shutdown instead of a Reload button; repeat its page operations
+after refresh and verify the old workers and painter observers are gone.
 
 1. Open each of `/wasm-fct/`, `/wasm-rpt/` and `/wasm-rvmt/` and perform its feature
    operations above. Require Reload to be disabled during startup and operation.

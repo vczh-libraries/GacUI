@@ -1,40 +1,40 @@
-# Release WebAssembly Verification
+# Test Matrix Card 2026-10-21T11:19:05.560Z
 
-Started: 2026-10-20T20:33:00-07:00.
-Completed: 2026-10-21T03:53:11-07:00.
+## Test Matrix
 
-| Application | Build | Chromium runtime | Firefox runtime |
-| --- | --- | --- | --- |
-| FCT | Native and Wasm passed | Passed | Passed |
-| RPT | Native and Wasm passed | Passed | Passed |
-| RVMT | Native and Wasm passed | Passed | Passed |
+| Test Item | 1st |
+| --- | --- |
+| FCT | PASS: Chromium and Firefox, including raw/touch/lifetime |
+| RPT | PASS: Chromium and Firefox, canceled Exit, normal/fatal, Reload |
+| RVMT | PASS: Chromium and Firefox RPC/Unicode/lifetime/Reload |
 
-## Observations and Limitations
+## Build and packaging
 
-- Emscripten 3.1.51 is installed for the documented separate-worker deployment contract.
-- Firefox completed the shared browser launcher suites for Vlpp (473 cases), VlppOS (107), VlppRegex (226), VlppReflection (63), VlppParser2 generated parsers (463), Workflow LibraryTest (21), Workflow RuntimeTest (284), all three Workflow CppTest reflection configurations (250 each), and GacUI (1,871 cases across 93 files). Each reported exactly one `wasm_main returns 0.` line.
-- Final GacJS import, code generation, build, and the full test suite passed (199 tests). A second generation pass produced byte-identical protocol and RPC bindings. The native Workflow driver conformance test verified exactly 119 executed cases and the 11 approved compatibility skips out of 130 indexed cases.
-- The normal GacJS website build left all nine Wasm module, binary, and pthread-worker deployment files absent, preserving the explicit copy step.
-- Packaging preserved all three original `app.mjs` files and their default factory exports. All nine explicitly deployed files matched their respective build outputs, and the final deployment after the last website rebuild reproduced those exact bytes. Missing and empty RVMT pthread workers, and a missing RVMT destination page, each rejected deployment before any deployed artifact changed.
-- All nine Wasm browser regressions passed: six Chromium tests and three Firefox tests. They verified startup and input, RPT Exit cancellation and the exact Core-authored fatal error, FCT editors and palette refresh, Raw Clock rendering, repeated Unicode RVMT translation, Exit/Force Exit and Reload state, recreated TypeScript hosts, separate pthread-worker imports, and worker cleanup when a live page closes.
-- Browser-reserved shortcuts and native OS global hot keys are outside the browser input coverage.
-- GacJS intentionally skipped its Windows-only native protocol E2E tests on Linux. This run does not provide Windows or macOS native coverage.
-- VlppParser2's generated AST output passed TypeScript verification for 972 fixtures: 14 XML, 101 JSON, and 857 Workflow fixtures.
-- Workflow's complete optimized native CI passed, including all three C++ reflection configurations, runtime tests, and the cross-process-compatible RPC suite. Its 130 RPC schemas per ABI passed TypeScript verification.
-- GacUI's complete optimized native CI passed. All three demo executables returned zero, and the freshly rebuilt GitViewTests passed all 12 cases.
-- Optimized native release CI passed for all nine repositories, including the downstream Release tools built from merged sources.
+| Check | Result |
+| --- | --- |
+| Three native compile/link checks, then Wasm -bw -o | PASS: all three native builds/executions, then final Wasm -bw -o |
+| GacJS install/import/codegen/build/test | PASS, including final build/test |
+| Explicit copy validation and nine runtime hashes | PASS: missing/empty worker and missing destination refused without partial updates; all nine files equal build outputs |
+| Shared pthread unit-test launcher | Passed: Firefox, Vlpp 32/32 files and 473/473 cases; one successful completion |
+| Public demo local and deployed verification | PASS: local and live gaclib.net, Chromium and Firefox |
 
-## Issues and Fixes
+## Observations and limitations
 
-- The full Firefox unit suite initially failed when the point-scrolling test loaded two FullControlTest touching XML files omitted from its OPFS manifest. Added those fixtures to the unit-test `vbuild` configuration and verified all 98 served inputs, including byte-identical responses for both added files. The point-scrolling tests now pass.
-- The subsequent full Firefox run aborted during OPFS snapshot writeback in the virtual-list-view tests. Its isolated context had only about 371 MiB of quota; a direct write probe reproduced `QuotaExceededError` after 368 MiB. A fresh regular Firefox profile exposes 10 GiB and passed a 640 MiB write probe. The full suite then passed the storage-heavy controls through more than 600 MB of snapshots with unchanged binaries and assertions.
-- That regular-profile run stopped later in the first mouse/gesture test during window cleanup. Focused debugging of the compiled Wasm module exposed the initial JSON parse error: the test's uninitialized `IOPointEnd.accepted` Boolean produced `"accepted":,`. Initialized the three affected test messages; the production sender already assigns all fields. The rebuilt Wasm module passed 576 focused cases across 22 files, including the failing mouse file and all following files. The optimized native rebuild passed 85 focused cases and then all 95 files and 1,898 cases. Its full output exactly matches the earlier 1,899-case run except for the conditional output-folder creation check, since the folder already existed. The complete rebuilt Firefox suite then passed all 93 files and 1,871 cases with exactly one successful `wasm_main` completion.
-- Updated `<Tools repo>/Ubuntu/vl/cmd/vgo` to enable native optimization and propagate clean, build, warning, and test failures. Controlled failure checks passed before the full native CI run.
-- Workflow's analyzer and emitter reported unhandled Variant switch cases. Added explicit handling, regenerated the compiler release, and synchronized the downstream imports; the complete optimized native Workflow and downstream CI passed.
-- GitTui's native link found missing Cairo, Pango, and GIO development packages on the host. Its optimized rebuild and the complete clean GacUI native CI passed in a disposable Ubuntu environment with the documented development dependencies. The resulting executable resolves all runtime libraries on the host, where GitViewTests also passed all 12 cases.
-- GacUI's native unit-test build reported Clang's potentially-evaluated-expression warning for `typeid(*raw.Obj())` in the raw-element test. Evaluated the pointer separately while retaining the exact dynamic-type assertion; the optimized rebuild is warning-free, all 16 focused raw-element tests passed, and the full native suite passed 1,899 cases across 95 files. The clean repository rerun also passed its native unit suite.
-- GacJS initially failed to build because the new upstream `StructTraversal` RPC sample had no handwritten TypeScript provider. Added its typed identity methods and registration, then rebuilt successfully. Its focused conformance run against the optimized native Workflow driver passed with expected and actual result `28`; the complete indexed conformance run also passed.
-- Native prerequisite tests exposed missing Workflow code-generation metadata on Linux. Enabled metadata generation outside the Windows-only C++ output block; all 250 metadata-only cases then passed both natively and in Firefox using the generated ABI metadata.
-- After importing the final file-dialog snapshot refresh, GacJS import, repeated code generation, and build passed, but its native RPC integration rerun aborted at `Collection_Nested_Default`. A controlled debugger pause reproduced a startup race: the driver signaled connection acceptance before the service channel was registered, allowing the coordinator login message to target an unavailable channel. Added a post-admission `OnClientReady` notification in VlppOS and moved Workflow stdio startup and ChatBot registration to it. The complete optimized VlppOS CI passed with two deterministic regressions covering blocked admission, network confirmation, and the local connection callback; its rebuilt Firefox suite passed 107 cases. The corrected native driver passed the same controlled scheduling pause, then all 119 TypeScript-provider cases with 11 approved skips. The rebuilt native C++ provider passed all 127 applicable cases with three shared-memory skips. The ChatBot server has only a Windows HTTP configuration, so its native scenario is outside this Linux run.
-- A later GacJS run exposed a separate RVM host EOF-test timeout: its polling helper exhausted 100 event-loop turns before the native child emitted its join line. Replaced those startup polls with bounded stdout-event waits while retaining exact join/ready messages and the required exit status; the rebuilt RVM host suite passed all 16 tests.
-- The subsequent controlled browser suite observed the outside button before Chromium delivered its touch-generated click. Changed that assertion to await the actual clicked attribute while preserving the exact expected value. The final GacJS build and full test run passed all 199 tests across 27 files, including both corrected harnesses and the native Workflow integration.
+- FCT native `-f -o` compile/link and silent executable exit passed. The Wasm rebuild uses the documented Emscripten 3.1.51 SDK; the system SDK is newer and does not emit the required separate worker.
+- GacJS install/import/codegen/build/test passed, including the final channel regression and RVM bootstrap cleanup fix.
+- WebsiteSource install/build and all package tests passed. No full website export/publication was run.
+
+- Portable Wasm channel regression passed (6 tests total), including 18446744073709551615 sequence IDs, timestamps above 2^53, sparse identities and CaptureLost.
+
+## Issues Found and Fix
+
+- WasmFCT final wrapper `-bw -o` completed with Emscripten 3.1.51. Chromium touch regression passed against the resulting module. The first run reached unexpected-capture-loss checking; the test released B but only moved A, so pending B capture loss was never processed. The driver now moves the released contact before asserting cancellation. No implementation change was required.
+
+- Chromium live Wasm touch regression passes: painted transform/contact pixels, sparse/reused IDs and indices, PlatformCanceled and real capture loss, outside-surface capture after resize, TouchingList identities/clamping/reversal/final-Up deletion and cancellation, recycled rows, rejected buttons, ordinary list selection/scrolling, text selection and keyboard. Repeated after palette refresh and shutdown/Reload. Test setup fixes: establish capture before release; reveal occluded delete label before measuring; sort recycled rows by rendered position; distinguish the two parallel lists; inspect the paragraph after selection splits its spans.
+
+- Final development suite: 10/10 tests passed (public tests opt-in and run separately). A Firefox run exposed a test timing issue: newly measured labels briefly have provisional 1x1 bounds; navigation now waits for stable elements and measured bounds. The complete rerun passed. Additional Firefox Wasm responsive-modal exercise covered all four appearances, 240/350/440/680 widths, height 220/320/520, reverse cycles, equal footers, account selection and reopening at 240x320.
+
+- Final rebuild/repackaging retained all nine exact development artifacts and the module default factories. The complete development suite passed again (10/10); final local public launcher tests passed 2/2.
+- Public commit `bec531fff` deployed. Fresh Chromium and Firefox contexts followed Web > Start WASM Now! on gaclib.net and passed Raw Clock, Touching, TouchingList, ordinary input, palette refresh, Exit/Force Exit, refresh, isolation, scoped service worker, completed download progress and worker/observer cleanup (2/2). No missing requests or console errors. The live 53,007,789-byte Wasm SHA-256 is `aeee524454f56eac87e7996949c5eac90d127422b0c69d0a3306f5f9794238dc`, equal to the staged binary.
+- Chromium uses native browser touch injection; Firefox touch uses explicitly synthetic PointerEvents. Physical/mobile touch hardware and macOS are unavailable/unexecuted, not inferred from browser injection.
+- Later user instruction removed `<Tools repo>/Copilot/Jobs` (commit `27b9058`); reusable job instructions remain in `<GacUI repo>/.github/Jobs`.

@@ -24,6 +24,10 @@
     - In `wGac` repo `build-prerequisites-ubuntu.sh` should be fixed.
     - In `iGac` repo cmake configurations should be fixed.
 
+## Native touch applicability
+
+wGac and iGac native providers do not support touch experience. Their touch-specific acquisition, Touching and TouchingList gesture checks may be skipped; keep excluded items in the test cards with blank results and this reason. Synthetic Core input does not establish native touch support. Raw Clock and existing mouse/keyboard checks still apply. This exclusion does not cover GacJS on Linux/macOS or Wasm browser input. Linux verification does not require running iGac and must not claim macOS coverage.
+
 ## Maintain a Test Matrix Card
 
 You need to maintain test card in:
