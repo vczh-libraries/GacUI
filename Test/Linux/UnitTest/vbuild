@@ -7,6 +7,8 @@
             "Resources/CompilerErrorTests/Baseline_x86/*.txt",
             "Resources/HostedWindowManagerTests/*.txt",
             "Resources/UnitTestResources/**/*.{xml,png,jpeg}",
+            "Resources/App/FullControlTest/TouchingListTabPage.xml",
+            "Resources/App/FullControlTest/TouchingTabPage.xml",
             "Resources/App/RemoteViewModelTest/Resource.xml"
         ],
         "folders": [

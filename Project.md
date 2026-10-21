@@ -343,4 +343,8 @@ The following unit test projects could be built to web assembly and run with a b
 
 The browser build selects the generated 32-bit skins and compiler baselines and uses the shared Ubuntu tools' `-O3` setting for compilation and linking. Its `vbuild` preloads test inputs into OPFS and creates an empty `Resources/UnitTestSnapshots` output folder; existing host snapshots are not input fixtures. Debug information is stored in `app.debug.wasm`, with a relative reference in `app.wasm` for automatic discovery. Exceptions and assertions remain enabled. Native builds default to `-O0`; add `-o` or `--optimize` to select `-O2` for native unit tests.
 
+Keep XML fixtures linked from `<GacUI repo>/Test/Resources/App` in `<GacUI repo>/Test/Linux/UnitTest/vbuild`, including the two FullControlTest touching fixtures used by the point-scrolling tests.
+
+The full browser suite writes hundreds of megabytes of snapshots. For automated Firefox runs, use a fresh regular profile (`firefox.launchPersistentContext`) with sufficient OPFS quota; isolated contexts can exhaust their smaller storage allowance before the suite finishes.
+
 The terminal provider and test cases in TestTuiProvider.cpp and TestControls_EasyLayout.cpp are native-only and excluded from WebAssembly. The shared XML fixture helper remains available to resource tests.
