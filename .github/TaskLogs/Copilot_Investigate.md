@@ -284,6 +284,30 @@ by the way, I think "`cast object X` currently preserves the variant box when `o
 
 If you really need a boxed variant, you can do it in C++, Workflow's unit test has some invokable C++ code and you can let your unit test use functions from there.
 
+## UPDATE
+
+I found one case needs to enable. Check out J1_VariantSetMembership.txt, we should actually allow it otherwise there is not possible to use `in` or use `List::Container` in any way. So when `variant type` in `container type`, we could allow when `container type` is any list or array, but not dictionary:
+
+I can't remember the original details of in but:
+
+- If in originally requires item type to be compatible of container type, keep it, but since no implicit conversion is available on variant, the container element type will need to be the exact same variant
+- Otherwise, keep the behavior and no type check is needed
+- This includes `in` and `not in`
+
+Figure out this question first, and then execute, commit and push once finishing. Guessing this will be the last feature extension around variant.
+
+
+
+And then verify the workflow syntax in the website again, you need to make sure:
+
+- All existing keywords are already mentioned in the keyword index page. The purpose of the keyword index page is that, when people see a keyword, it could know how many syntax uses it. You only need to list just enough pages for people to discover each feature about this keyword, you are not doing a complete index.
+- All operators are actually explained. I suspect that `in` and `not in` is actually missing because the document refer it to `Collection Types` but there is only `for-in` , there is no `in` and `not in`. Figure out if there are other missing topics.
+- Complete the `Index of Errors` page, list the error code, error text, and one or a few examples for each one. You need to covers every single error, but there is no need to cover every single scenarios for a specific error, here is just an index telling people we detech these errors.
+- Complete the `Runtime Instructions` page for missing instructions, with simplest and precise introduction following existing examples.
+- Complete the `Breaking changes from 1.0` page by mentioning we now support `variant` and list all supported operators, keep the word simple.
+
+publish the website but skip job:copilotInitAll
+
 # TEST [CONFIRMED]
 
 Reproduce missing variant metadata and parameter boxing in VlppReflection first. Capture ordinary Workflow pointer/nullable casts before implementation. The verification matrices in the problem description are acceptance requirements; each semantic/runtime failure must have an independently reached assertion. Implementation, generated-output verification and publication remain pending.
@@ -292,6 +316,7 @@ Reproduce missing variant metadata and parameter boxing in VlppReflection first.
 
 - No.1 Ordered variant metadata and tagged parameter boxes [CONFIRMED]
 - No.2 Explicit unary extraction of a variant payload as object [CONFIRMED]
+- No.3 Variant collection membership and complete Workflow language references
 
 ## No.1 Ordered variant metadata and tagged parameter boxes
 
@@ -619,3 +644,49 @@ The explicit cast fallback that preserved a whole variant box has been removed f
 The new positive fixtures, nine analyzer diagnostics, parser shape/round-trip/error checks and GacUI resource cases all passed. Final Workflow Debug counts per architecture were LibraryTest 21, metadata 2, compiler 847, runtime 283 and each native reflection mode 249, with no reported leaks. The complete canonical Workflow Release workflow, TypeScript and prescribed stdio RPC matrix passed. VlppParser2 completed its ordered generator and consumer verification, including the mirrored Workflow parser and TypeScript. GacUI completed both Debug builds, all four metadata comparisons and ordinary tests (225 Win32 and 245 x64), with no new snapshots or reported leaks. Public package tools, metadata, both resource architectures and the Debug x64 control-template consumers were verified as recorded above. No separate packaged-app interaction run is claimed; the original GacUI Touching interaction matrix remains the recorded runtime coverage.
 
 Workflow changes are pushed through abb4e017a, and VlppParser2 through 5457386e. WebsiteSource 9252276, published Pages aca9f17bc and Tools manual 7124e37 are pushed. All eight edited live documentation pages and the exact Pages deployment were verified. Both copilotInitAll steps were skipped. The previously published WebAssembly demo retains all 18 original file hashes; a fresh Wasm build was unavailable on this Windows host. The final GacUI commits retain the authored resource tests and this investigation separately from the regenerated dependency imports.
+
+## No.3 Variant collection membership and complete Workflow language references [CONFIRMED]
+
+Existing collection membership calls GetMergedType on the item and enumerable element type, accepting an implicit conversion in either direction. Variants have only identity implicit conversion, so the existing rule already requires the exact ordered variant type. The enumerable resolver supports typed lists, readonly lists, observable lists, arrays and enumerable sequences; dictionaries are not enumerable and remain rejected. Untyped collections have object elements and remain incompatible with a variant item. Direct Contains/IndexOf methods take object even on typed collection expressions, so allowing membership must not restore variant-to-object conversion for method calls.
+
+### CODE CHANGE
+
+Remove the blanket variant membership diagnostic for collection operands, retaining the existing compatibility rule. Keep rejection for direct range operands because that special lowering uses literal comparisons and bypasses ordinary range expression validation. Extend the existing C++ InSet helper for variants to use the same payload comparison as Workflow variant equality and VM boxed membership; do not add a native Variant equality operator or change ordinary membership. Cover exact typed containers, native enumerables, hits/misses, empty containers, not in, numeric alternatives, null alternatives, incomparable payloads, copies and single operand evaluation. Replace the old rejected valid fixture with positive coverage, and add rejection cases for mismatched/reordered variants, untyped/object collections, dictionary and range operands. Run the required Debug and full Release compiler/VM/native-mode/RPC/TypeScript verification before committing and pushing the feature.
+
+Then audit authored website syntax against the lexer/grammar, explain membership and any other missing operators, and ensure every keyword has sufficient feature links. Complete the error index against all 120 current numbered codes and their message templates, using existing diagnostic fixtures and explicit context for non-standalone examples. Complete all 79 runtime instructions against their declarations and implementations, correcting stale names/signatures/stack descriptions. Add a short variant/operator summary to the 1.0 migration page. Build, test, export and verify the changed documentation and published pages, update the canonical exported manual, commit and push, and skip both copilotInitAll steps. Independent documentation inventories may be prepared while compiler verification runs; publication follows successful implementation verification.
+
+### Verification progress
+
+Both Debug compiler bootstrap builds passed. LibraryTest passed 21/21 and metadata generation passed 2/2 on Win32 and x64. The native array provider added one reflected method to each architecture's generated C++ test-type baseline. The first compiler run rejected the new positive sample because unparenthesized call expressions combined with membership are grammatically ambiguous between CallExpression and SetTestingExpression. Explicitly group the call operands in the fixture, preserving the existing grammar, then regenerate all outputs and rerun the matrix.
+
+The documentation inventory also needs permanent A6, A30 and I3 examples. Add the three indexed negative fixtures. The negative-script harness must invoke GenerateModuleRpc after successful semantic analysis when RPC metadata is present, before C++ validation, because I3 is reported by RPC name generation rather than semantic analysis. These examples and the harness extension will run in the same compiler suite.
+
+The corrected compiler run passed 863/863 tests for both target architectures, including A6, A30 and I3. Review found a pre-existing identity limitation: native boxing of Func and LazyList creates fresh proxy objects, while VM copies can retain an existing proxy. Preserve the current variant equality model as requested rather than redesigning function/enumerable boxing across libraries. Extend the positive fixture to 61 assertions, including membership/negated-membership consistency with the existing equality/inequality operators for both script-created and native-returned function/enumerable payloads. Document this portability limitation on the Variants page. Regenerate the sample before the final VM/native runs.
+
+The expanded 61-assertion fixture was regenerated successfully; the final compiler run again passed 863/863 for both architectures without reported leaks. Full Debug native builds are in progress before VM/native execution and the mandatory canonical Release workflow.
+
+Website preparation passed yarn install --frozen-lockfile, all ten package builds, all 57 package tests, both downloads and Markdown export. The edited keyword index matches all 78 lexer keywords with no duplicate or extra entries. The error index covers all 120 numbered codes with 182 message templates, 114 exact fixture examples validated against both architectures' first diagnostics, six explicit native/compiler contexts, and four unnumbered parser errors. All 79 runtime instructions have correct names and embedded-argument counts.
+
+All 13 edited articles parse and render in the local browser without console errors. The final source-link audit checked 300 links, 178 internal routes and 23 rendered anchors. The exported Markdown has 908 links across 215 files, including 617 valid internal file links. Three existing registered-type placeholder targets remain excluded by the article-only Markdown exporter. All 1,740 local asset references in 290 exported HTML pages resolve. Two inherited broken runtime API links were corrected and verified absent from the refreshed exports.
+
+The local publication copy contains all 364 exported documentation files without stale files. Normalize generated HTML escaped newlines to the existing publication convention: 284 content-identical changes disappear, leaving exactly 13 changed pages. All 18 existing wasm-fct hashes remain unchanged; a fresh Linux/macOS Wasm build is unavailable on this Windows host, so no new Wasm binary is claimed. The canonical Tools manual has 213/213 matching exported hashes and no stale files, with twelve changed manuals; replacing its final index section is byte-identical. Both copilotInitAll steps are skipped. Publication and commits remain pending completion of feature verification.
+
+Both full Debug builds completed with zero warnings and errors. Win32 RuntimeTest passed 284/284 cases, and CppTest, CppTest_Metaonly and CppTest_Reflection each passed 250/250. The new membership fixture returned the expected 61 assertions. Completed test logs have no appended leak reports. Win32 stdio RPC passed all 127 expected/actual pairs with only the three prescribed SharedMemsp exclusions. The x64 execution matrix and final canonical Release workflow remain pending.
+
+The x64 execution matrix also passed: RuntimeTest 284/284 and each of the three C++ modes 250/250, without appended leaks. Its stdio RPC run passed all 127 expected/actual pairs and the same three prescribed exclusions. TypeScript prepare and tsc --noEmit completed successfully. The independent final review found no actionable concerns in the analyzer, C++ helper or regression fixtures. The complete canonical Release workflow is running before the final Workflow push. WebsiteSource f47baf1 is pushed, and the verified documentation is ready for Pages deployment.
+
+Publication commit 2b2e32f0b is pushed. [Pages build and deployment run 39517405414](https://github.com/vczh-libraries/vczh-libraries.github.io/actions/runs/39517405414) succeeded for that exact commit. The published homepage redirects to gaclib.net, and all thirteen edited live articles display the new content without browser console errors. The [collection membership section](https://gaclib.net/doc/current/workflow/lang/type.html#Collection-membership) was also visually checked. All publication changes are committed; content-identical checkout newline differences were normalized after confirming the unstaged diff was empty. Canonical manual commit 0284519 contains the twelve refreshed pages. Both copilotInitAll steps remain skipped.
+
+The full canonical <Tools repo>/Tools/Build.ps1 Workflow run completed in 50:42.39. Both clean Release rebuilds, all seven unit-test projects on both architectures, TypeScript, x64 stdio RPC, CodePack generation and the final CppMerge rebuild completed. The built CppMerge executable and both copied destinations have identical hashes. The only packaged source changes are the analyzer range guard and variant-aware InSet helper, matching their authored implementations.
+
+Verification orchestration correction: Build.ps1 returned normally after its final stage, but the enclosing monitoring command incorrectly treated its unset LASTEXITCODE as a nonzero result and threw afterward. Canonical Start-Process-And-Wait throws on child failure, and Build.ps1 propagates those exceptions; no canonical stage failed. The captured Release log contains the stage sequence, while inherited npm/RPC output bypassed Tee-Object. A short repeat of the canonical Release x64 RPC launcher retained its raw output and passed with exit code 0, all 127 expected/actual pairs matching, and the three prescribed SharedMemsp exclusions. The lengthy successful build pipeline was not repeated for the monitoring error.
+
+Workflow commits c8e85873b (authored), c42044dd3 (generated text) and 7eec77a24 (other generated outputs, including the package) are pushed. WebsiteSource f47baf1, published Pages 2b2e32f0b and canonical Tools manual 0284519 are also pushed.
+
+### CONFIRMED
+
+Existing collection membership requires compatible item and element types through GetMergedType. Preserve that rule: variants implicitly convert only to the exact same ordered variant type. Both in and not in now accept typed lists, readonly lists, observable lists, native arrays and enumerable sequences with that exact element type. Dictionaries, mismatched or reordered variants, object/untyped element types and direct variant ranges remain rejected. Contains/IndexOf still require object arguments; no variant-to-object boxing conversion has been restored. Native membership uses the existing variant payload comparison, including cross-option numeric equality.
+
+The positive fixture covers 61 assertions, and fifteen new analyzer fixtures cover membership rejection and the additional A6/A30/I3 documentation examples. Final Debug counts per architecture were LibraryTest 21, metadata 2, compiler 863, runtime 284 and each native reflection mode 250, with no reported leaks. Both Debug stdio RPC runs, TypeScript and the complete canonical Release workflow passed as detailed above. Existing function/enumerable wrapper-identity differences between the VM and generated C++ remain unchanged and are explicitly documented; membership follows the existing equality behavior.
+
+The published references cover all 78 keywords, all 120 numbered errors with 182 message templates and representative examples, all 79 runtime instructions, the missing membership and other operator explanations, and a simple variant/operator migration summary. Website build, all 57 package tests, export/link/asset checks, exact-commit Pages deployment and all thirteen edited live pages were verified. The canonical manual matches all 213 exported files. Both copilotInitAll steps were skipped, and the existing eighteen WebAssembly demo files retain their original hashes; no fresh Wasm build is claimed. No.3 extends the confirmed No.1 and No.2 implementations.
