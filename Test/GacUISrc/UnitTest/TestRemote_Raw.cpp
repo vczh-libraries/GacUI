@@ -149,7 +149,8 @@ TEST_FILE
 				host.SetClientSize({ 200,100 });
 				raw = GetGuiGraphicsResourceManager()->CreateRawElement().Cast<GuiRawElementBase>();
 				TEST_CASE_ASSERT(raw);
-				TEST_CASE_ASSERT(typeid(*raw.Obj()) == typeid(elements_remoteprotocol::GuiRemoteRawElement));
+				auto rawElement = raw.Obj();
+				TEST_CASE_ASSERT(typeid(*rawElement) == typeid(elements_remoteprotocol::GuiRemoteRawElement));
 				auto concrete = raw.Cast<elements_remoteprotocol::GuiRemoteRawElement>();
 				TEST_CASE_ASSERT(concrete.Cast<IGuiGraphicsElement>().Obj() == raw.Cast<IGuiGraphicsElement>().Obj());
 				TEST_CASE_ASSERT(concrete->GetRenderer() == raw->GetRenderer());
