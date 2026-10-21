@@ -1,66 +1,40 @@
-# Wasm and Raw Clock Verification
+# Release WebAssembly Verification
 
-Started: 2026-10-15T06:54:17-07:00. Runtime verification completed: 2026-10-15T07:42:54-07:00.
-
-## Actual Wasm Applications
+Started: 2026-10-20T20:33:00-07:00.
+Completed: 2026-10-21T03:53:11-07:00.
 
 | Application | Build | Chromium runtime | Firefox runtime |
 | --- | --- | --- | --- |
-| FCT | Full Emscripten 3.1.51 rebuild passed | Passed, including actual Raw Clock | Passed, including actual Raw Clock |
-| RPT | Full Emscripten 3.1.51 rebuild passed | Passed, including canceled Exit and fatal error | Passed |
-| RVMT | Full Emscripten 3.1.51 rebuild passed | Passed, including repeated Unicode RPC | Passed, including repeated Unicode RPC |
+| FCT | Native and Wasm passed | Passed | Passed |
+| RPT | Native and Wasm passed | Passed | Passed |
+| RVMT | Native and Wasm passed | Passed | Passed |
 
-`npm run test-wasm` passed all 9 tests: 6 Chromium and 3 Firefox. These ran the compiled C++ applications, not controlled protocol clients. All pages started cross-origin isolated, loaded their module/Wasm/pthread artifacts, and accepted input without startup error masks. Firefox observed worker URLs and resource timing for module loading; Chromium used CDP to inspect workers.
+## Observations and Limitations
 
-Both browsers verified Exit and Force Exit, disabled Reload while running, fresh UI/input/RPC after Reload, and termination of old workers. RPT canceled Exit without enabling Reload. Chromium additionally checked the exact Core-authored fatal error and termination of workers when closing a live page. RVMT used the in-page TypeScript host with repeated ASCII/Chinese translation. Firefox Unicode input used DOM keyboard events because it has no CDP input endpoint.
+- Emscripten 3.1.51 is installed for the documented separate-worker deployment contract.
+- Firefox completed the shared browser launcher suites for Vlpp (473 cases), VlppOS (107), VlppRegex (226), VlppReflection (63), VlppParser2 generated parsers (463), Workflow LibraryTest (21), Workflow RuntimeTest (284), all three Workflow CppTest reflection configurations (250 each), and GacUI (1,871 cases across 93 files). Each reported exactly one `wasm_main returns 0.` line.
+- Final GacJS import, code generation, build, and the full test suite passed (199 tests). A second generation pass produced byte-identical protocol and RPC bindings. The native Workflow driver conformance test verified exactly 119 executed cases and the 11 approved compatibility skips out of 130 indexed cases.
+- The normal GacJS website build left all nine Wasm module, binary, and pthread-worker deployment files absent, preserving the explicit copy step.
+- Packaging preserved all three original `app.mjs` files and their default factory exports. All nine explicitly deployed files matched their respective build outputs, and the final deployment after the last website rebuild reproduced those exact bytes. Missing and empty RVMT pthread workers, and a missing RVMT destination page, each rejected deployment before any deployed artifact changed.
+- All nine Wasm browser regressions passed: six Chromium tests and three Firefox tests. They verified startup and input, RPT Exit cancellation and the exact Core-authored fatal error, FCT editors and palette refresh, Raw Clock rendering, repeated Unicode RVMT translation, Exit/Force Exit and Reload state, recreated TypeScript hosts, separate pthread-worker imports, and worker cleanup when a live page closes.
+- Browser-reserved shortcuts and native OS global hot keys are outside the browser input coverage.
+- GacJS intentionally skipped its Windows-only native protocol E2E tests on Linux. This run does not provide Windows or macOS native coverage.
+- VlppParser2's generated AST output passed TypeScript verification for 972 fixtures: 14 XML, 101 JSON, and 857 Workflow fixtures.
+- Workflow's complete optimized native CI passed, including all three C++ reflection configurations, runtime tests, and the cross-process-compatible RPC suite. Its 130 RPC schemas per ABI passed TypeScript verification.
+- GacUI's complete optimized native CI passed. All three demo executables returned zero, and the freshly rebuilt GitViewTests passed all 12 cases.
+- Optimized native release CI passed for all nine repositories, including the downstream Release tools built from merged sources.
 
-FCT verified received `FullControlTest.Clock` IDs and valid time data, nonempty canvas pixels, and changed hands without input. Chromium checked one canvas, record/canvas identity through tab hide/show, pixel-buffer resizing, palette refresh, and fresh painting after both shutdown/reload paths. Existing FCT controls, editors, lists, shortcuts and palette tests and RPT grid/document/input tests remained enabled.
+## Issues and Fixes
 
-## Builds, Generation and Deployment
-
-- CodePack regenerated the GacUI release from current source. wGac imported the result; the generated raw base, factory helpers, descriptor and collection APIs match the upstream release byte for byte. Existing full/core 32/64 reflection metadata already includes the current raw base and factory return type, so metadata regeneration was unnecessary.
-- Both wGac import/synchronization/official-build cycles passed. The second synchronization preserved hashes of the reusable element, local clock helpers, CMake files and FCT hook. The copied remote entry point matches its upstream owner. Link inventories contain the local clock painter once in FCT and both local helpers once in the renderer, with no Windows clock helpers.
-- GacJS import, codegen, build and root tests passed. Root tests include controlled raw-element/clock and Wasm transport tests and Workflow RPC integration; Windows live-Core suites are explicitly skipped on Linux. A second codegen pass preserved its generated diff, which only reorders snapshot-index entries. No snapshot pixels or live times were added.
-- All three Wasm projects were fully rebuilt through their repository wrapper with `-fbw -o`. All nine deployed artifacts are nonempty and match their corresponding build outputs exactly. Packaging preserves the original module default factory export.
-- Deployment validation rejected a missing final worker, an empty final worker, and a missing final destination page before changing any of the nine deployed files. Normal deployment then succeeded. Generated Wasm artifacts remain ignored.
-
-## Live Native MiniHTTP with GacJS
-
-| Application | Firefox observations |
-| --- | --- |
-| FCT | Actual time/pixels, ticking without input, one canvas and retained identity across hide/show, resize, palette refresh, replacement after browser closure, live takeover, Force Exit |
-| RPT | Button, grid and document-dialog interactions, canceled and confirmed Exit |
-| RVMT | Only Core plus `index.html?rvmhost`; repeated ASCII/Chinese translation and normal Exit |
-
-All three passed with no page errors. Firefox reported canceled MiniHTTP requests as CORS diagnostics during final Core shutdown; success overlays and Core termination were observed. These shutdown diagnostics are separate from startup, drawing and RPC behavior. Browser console diagnostics, Core output and temporary captures were retained with the local verification artifacts.
-
-## Wayland Runtime and Focused Tests
-
-| Check | Result |
-| --- | --- |
-| Native FCT | Passed visible clock/ticks, tab hide/show, palette refresh, native buffer resize from 642×517 to 642×839, normal close and fresh reopen |
-| Hosted FCT | Passed the same clock/tick, tab, palette, size-change and close/reopen checks |
-| Native remote FCT | Passed clock/ticks, tab/palette changes, replacement after renderer closure and live takeover on port 8890; state and clock painting survived each new connection |
-| Normal remote shutdown | FCT closed through its Exit tab; Core and renderer both exited 0 |
-| Unexpected Core loss | After a live FCT clock check, terminating Core caused the native renderer to exit 0 without a fatal prompt or retry loop, matching the transport-disconnect lifecycle |
-| Native remote RPT | Passed button, grid and document dialog, canceled Exit, exact retained `This is a fatel error!` DOM/overlay, rejection of ordinary input, and cleanup using exact `!Exit`; intentional Core fatal exit was 134 |
-| Native RVMT | Passed repeated Unicode RPC using the native MiniHTTP host and normal application close; host stopped after requester shutdown |
-| `Test_RawElement /C` | 4/4 passed |
-| `Test_RawElement /C --hosted` | 3 applicable cases passed; the native-remote case explicitly returns in hosted mode |
-| `Test_RenderingLifecycle /C` | Passed |
-
-Focused tests separate concrete factory/common-property checks from drawing. They cover complete state at collection callbacks, empty/equal/ID-only/data-only changes, duplicate IDs, late attachment, uninstall/recreate, current-pass context lifetime, clipping, transforms, source/line state, independent Cairo path restoration, neighboring drawing, scales 1 and 2, offsets, detach/recreation and fixed clock hand positions. The real native remote renderer redraws changed data with no DOM update. After disconnect, an explicit redraw preserves clock pixels; fatal retention still paints the attached clock until actual teardown. Retained element pointers cannot paint after target/window destruction.
-
-Native render evidence came from the application's own Wayland shared-memory buffers. Inspected captures show the white dial/ticks and cyan/green/yellow hands, including the remote clock and retained RPT fatal overlay. These are render-buffer captures, not compositor screenshots.
-
-## Issues Resolved and Coverage Limits
-
-The first incremental Wasm link failed on a libc++ `std::__2::__basic_string_common` symbol; full rebuilds resolved it. System Emscripten 3.1.69 produces no separate `app.worker.js`. Its local changelog documents worker consolidation/removal. An isolated emsdk 3.1.51 supplied the required three-file contract without modifying generated modules; GacJS documentation now states this SDK requirement.
-
-The first Firefox test used page request events, which omit worker fetches. Worker URLs/resource timing fixed the observation method; all three Firefox cases then passed. Temporary HTTP/native helpers also needed completion-overlay waits after shutdown and stable measured coordinates after navigation; these were verification-helper issues, not product changes.
-
-The host lacks Cairo/Pango/GLib development packages, and sudo requires authentication. The full official wGac builds ran in a disposable Bubblewrap environment populated with Ubuntu packages from the documented prerequisites, using ordinary system include/library paths. Native execution used the host's actual Wayland compositor. No temporary dependency paths or download logic entered repository scripts.
-
-Desktop screenshot access was denied. Compositor-driven drag/movement and physical display-DPI switching were not verified; client resize/recreated surfaces and scaled/translated Cairo rendering were verified as described above. Automation injects application input and does not supply the compositor pointer serial required by a native border-drag gesture. Windows/macOS native execution was unavailable. Unchanged prerequisite-task native empty-main/launcher checks were not repeated; this run exercised all three actual Wasm applications and both required native rendering paths.
-
-The shared upstream change is confined to test-application entry code; its owning verification is the synchronized native renderer build/runtime. No upstream framework source implementation changed in this task, so the unrelated GacUI unit snapshot suite was not rerun.
+- The full Firefox unit suite initially failed when the point-scrolling test loaded two FullControlTest touching XML files omitted from its OPFS manifest. Added those fixtures to the unit-test `vbuild` configuration and verified all 98 served inputs, including byte-identical responses for both added files. The point-scrolling tests now pass.
+- The subsequent full Firefox run aborted during OPFS snapshot writeback in the virtual-list-view tests. Its isolated context had only about 371 MiB of quota; a direct write probe reproduced `QuotaExceededError` after 368 MiB. A fresh regular Firefox profile exposes 10 GiB and passed a 640 MiB write probe. The full suite then passed the storage-heavy controls through more than 600 MB of snapshots with unchanged binaries and assertions.
+- That regular-profile run stopped later in the first mouse/gesture test during window cleanup. Focused debugging of the compiled Wasm module exposed the initial JSON parse error: the test's uninitialized `IOPointEnd.accepted` Boolean produced `"accepted":,`. Initialized the three affected test messages; the production sender already assigns all fields. The rebuilt Wasm module passed 576 focused cases across 22 files, including the failing mouse file and all following files. The optimized native rebuild passed 85 focused cases and then all 95 files and 1,898 cases. Its full output exactly matches the earlier 1,899-case run except for the conditional output-folder creation check, since the folder already existed. The complete rebuilt Firefox suite then passed all 93 files and 1,871 cases with exactly one successful `wasm_main` completion.
+- Updated `<Tools repo>/Ubuntu/vl/cmd/vgo` to enable native optimization and propagate clean, build, warning, and test failures. Controlled failure checks passed before the full native CI run.
+- Workflow's analyzer and emitter reported unhandled Variant switch cases. Added explicit handling, regenerated the compiler release, and synchronized the downstream imports; the complete optimized native Workflow and downstream CI passed.
+- GitTui's native link found missing Cairo, Pango, and GIO development packages on the host. Its optimized rebuild and the complete clean GacUI native CI passed in a disposable Ubuntu environment with the documented development dependencies. The resulting executable resolves all runtime libraries on the host, where GitViewTests also passed all 12 cases.
+- GacUI's native unit-test build reported Clang's potentially-evaluated-expression warning for `typeid(*raw.Obj())` in the raw-element test. Evaluated the pointer separately while retaining the exact dynamic-type assertion; the optimized rebuild is warning-free, all 16 focused raw-element tests passed, and the full native suite passed 1,899 cases across 95 files. The clean repository rerun also passed its native unit suite.
+- GacJS initially failed to build because the new upstream `StructTraversal` RPC sample had no handwritten TypeScript provider. Added its typed identity methods and registration, then rebuilt successfully. Its focused conformance run against the optimized native Workflow driver passed with expected and actual result `28`; the complete indexed conformance run also passed.
+- Native prerequisite tests exposed missing Workflow code-generation metadata on Linux. Enabled metadata generation outside the Windows-only C++ output block; all 250 metadata-only cases then passed both natively and in Firefox using the generated ABI metadata.
+- After importing the final file-dialog snapshot refresh, GacJS import, repeated code generation, and build passed, but its native RPC integration rerun aborted at `Collection_Nested_Default`. A controlled debugger pause reproduced a startup race: the driver signaled connection acceptance before the service channel was registered, allowing the coordinator login message to target an unavailable channel. Added a post-admission `OnClientReady` notification in VlppOS and moved Workflow stdio startup and ChatBot registration to it. The complete optimized VlppOS CI passed with two deterministic regressions covering blocked admission, network confirmation, and the local connection callback; its rebuilt Firefox suite passed 107 cases. The corrected native driver passed the same controlled scheduling pause, then all 119 TypeScript-provider cases with 11 approved skips. The rebuilt native C++ provider passed all 127 applicable cases with three shared-memory skips. The ChatBot server has only a Windows HTTP configuration, so its native scenario is outside this Linux run.
+- A later GacJS run exposed a separate RVM host EOF-test timeout: its polling helper exhausted 100 event-loop turns before the native child emitted its join line. Replaced those startup polls with bounded stdout-event waits while retaining exact join/ready messages and the required exit status; the rebuilt RVM host suite passed all 16 tests.
+- The subsequent controlled browser suite observed the outside button before Chromium delivered its touch-generated click. Changed that assertion to await the actual clicked attribute while preserving the exact expected value. The final GacJS build and full test run passed all 199 tests across 27 files, including both corrected harnesses and the native Workflow integration.
