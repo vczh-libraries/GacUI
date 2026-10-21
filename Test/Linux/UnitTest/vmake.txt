@@ -105,6 +105,7 @@
 ../../../Source/Application/GraphicsHost/GuiGraphicsHost_Alt.cpp
 ../../../Source/Application/GraphicsHost/GuiGraphicsHost_ShortcutKey.cpp
 ../../../Source/Application/GraphicsHost/GuiGraphicsHost_Tab.cpp
+../../../Source/Application/GraphicsHost/GuiGraphicsHost_Point.cpp
 ../../../Source/Controls/GuiButtonControls.cpp
 ../../../Source/Controls/GuiContainerControls.cpp
 ../../../Source/Controls/GuiDateTimeControls.cpp
@@ -264,6 +265,7 @@
 ../../GacUISrc/UnitTest/TestControls_Editor_Key_Shared.cpp
 ../../GacUISrc/UnitTest/TestControls_Editor_Key_Singleline.cpp
 ../../GacUISrc/UnitTest/TestControls_Editor_Regression.cpp
+../../GacUISrc/UnitTest/TestControls_PointScrolling.cpp
 ../../GacUISrc/UnitTest/TestControls_List_DataGrid_Binding.cpp
 ../../GacUISrc/UnitTest/TestControls_List_DataGrid_CellEditor.cpp
 ../../GacUISrc/UnitTest/TestControls_List_DataGrid_CellVisualizer.cpp

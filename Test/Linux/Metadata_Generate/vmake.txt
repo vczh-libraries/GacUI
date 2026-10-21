@@ -105,6 +105,7 @@
 ../../../Source/Application/GraphicsHost/GuiGraphicsHost_Alt.cpp
 ../../../Source/Application/GraphicsHost/GuiGraphicsHost_ShortcutKey.cpp
 ../../../Source/Application/GraphicsHost/GuiGraphicsHost_Tab.cpp
+../../../Source/Application/GraphicsHost/GuiGraphicsHost_Point.cpp
 ../../../Source/Controls/GuiButtonControls.cpp
 ../../../Source/Controls/GuiContainerControls.cpp
 ../../../Source/Controls/GuiDateTimeControls.cpp
