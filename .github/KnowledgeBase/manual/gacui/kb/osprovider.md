@@ -2,6 +2,8 @@
 
 OS provider is the key to make GacUI cross-platform.
 
+Touch acquisition is implemented by the Windows provider and the GacJS browser renderer. The native wGac (Wayland) and iGac (macOS) providers do not support touch input; implementing the shared point interfaces or displaying the Touching samples does not establish native touch support. GacJS touch works independently of those native providers, including browsers on Linux and macOS with WebAssembly or HTTP transport. The GacUI graphics host recognizes the [built-in gestures](../.././gacui/components/compositions/events.md) from point input; [GuiScrollView](../.././gacui/components/controls/container/scrollcontainer.md) consumes the scrolling gesture.
+
 If you want to port GacUI to a new platform, this is what you should do:
 
 ## Implement INativeWindowService and INativeWindow
