@@ -462,6 +462,10 @@ When data changes:
 
 `GuiListControl` extends `GuiScrollView`.
 
+### Touch Input
+
+Lists inherit default point acceptance and one-finger locked-axis scrolling from `GuiScrollView` in `<GacUI repo>/Source/Controls/GuiContainerControls.cpp`. The owning view consumes scrolling only when its axis scrollbar is visible and visually enabled; clamped boundaries do not hand capture to a parent. Tap/long-press input can use the host's deferred left/right-click fallback. Pinch zoom, rotation, inertia and swipe-to-delete are not default list behaviors. The FullControlTest TouchingList page implements swipe-to-delete itself. Selectable/editable document content retains mouse-based text selection unless explicitly accepted by a custom handler. See [Point Input, Capture and Predefined Gestures](./KB_GacUI_Design_PointInput.md) for the gesture contract and Windows/GacJS versus native wGac/iGac support.
+
 ### Size Calculation
 
 - `QueryFullSize()`: Returns `itemArranger->GetTotalSize()` as `fullSize`

@@ -361,4 +361,4 @@ On reconnection (`OnControllerConnect`), all existing images are re-registered w
 
 ## Point input
 
-Core validates explicit Started/action/End records, allocates local lifetime sequence IDs shared with Core automation, and owns acceptance plus first-contact-only typed mouse fallback. Final Up waits for explicit End. Disconnect cancels input and releases fallback capture. See [Point Input, Capture and Remote Forwarding](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.
+Core validates explicit Started/action/End records, allocates local lifetime sequence IDs shared with Core automation, and owns acceptance plus first-contact-only typed mouse fallback. Final Up waits for explicit End. Disconnect cancels input and releases fallback capture. See [Point Input, Capture and Predefined Gestures](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.

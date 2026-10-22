@@ -252,4 +252,4 @@ This comprehensive initialization system enables GacUI to provide consistent, hi
 
 ## Point input
 
-Windows touch acquisition and remote renderer ownership use the window-owned native point state, with acceptance latched for the entire overlapping-contact sequence. Other providers need explicit acquisition support. See [Point Input, Capture and Remote Forwarding](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.
+Windows Direct2D/GDI applications and native remote renderers acquire touch through the window-owned native point state, with acceptance latched for the entire overlapping-contact sequence. GacJS also supports touch with WebAssembly and HTTP cores, including in browsers on Linux/macOS. The native wGac (Wayland/Linux) and iGac (Cocoa/macOS) providers do not support touch input; shared interfaces and synthetic Core input do not supply native acquisition. See [Point Input, Capture and Predefined Gestures](./KB_GacUI_Design_PointInput.md) for built-in gestures, scroll-view behavior, cancellation and verification boundaries.

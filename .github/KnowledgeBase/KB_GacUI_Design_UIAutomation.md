@@ -107,4 +107,4 @@ Related design: [lists](./KB_GacUI_Design_ListControlArchitecture.md), [hosted w
 
 ## Point input
 
-Typed !PointDown/Update/Up/Enter/Leave and !PointCancel automation is available on Windows native/hosted/renderer services and the remote Core. These listener injections do not prove hardware acquisition or OS compatibility-mouse suppression. See [Point Input, Capture and Remote Forwarding](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.
+Typed !PointDown/Update/Up/Enter/Leave and !PointCancel automation is available on Windows native/hosted/renderer services and the remote Core. These listener injections do not prove hardware acquisition or OS compatibility-mouse suppression. See [Point Input, Capture and Predefined Gestures](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.

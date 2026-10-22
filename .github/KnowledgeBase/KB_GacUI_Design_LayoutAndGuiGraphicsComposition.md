@@ -233,4 +233,4 @@ The GacUI layout engine employs a clean separation between invalidation, measure
 
 ## Point input
 
-Point input has one captured composition and three event surfaces: pointSequenceStarted, unified pointAction, and pointSequenceEnded. Its borrowed sparse point list is rebased for each receiver and cleared after End. See [Point Input, Capture and Remote Forwarding](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.
+Point input has one captured composition and four events: `pointSequenceStarted`, unified `pointAction`, `pointGesture` and `pointSequenceEnded`. Started queries the hit composition and ancestors; the remaining events go only to the accepted composition. Fixed built-in recognizers provide deferred clicks, locked-axis scrolling and selected translation/rotation/scaling. The borrowed sparse point list is rebased for each receiver and cleared after End. See [Point Input, Capture and Predefined Gestures](./KB_GacUI_Design_PointInput.md) for selection, typed payloads, cancellation, callback lifetime and automation examples.

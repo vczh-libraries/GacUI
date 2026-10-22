@@ -323,4 +323,4 @@ Remote mode (`SetupRemoteNativeController`) always uses hosted mode:
 
 ## Point input
 
-Hosted point routing captures one logical window for the whole sequence. Positions and contact rectangles follow the hosted offset and DPI conversion; the primary hint never retargets the sequence. See [Point Input, Capture and Remote Forwarding](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.
+Hosted point routing captures one logical window for the whole sequence. Positions and contact rectangles follow the hosted offset and DPI conversion; the primary hint never retargets the sequence. See [Point Input, Capture and Predefined Gestures](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.
