@@ -149,6 +149,8 @@ public:
 
 The server bridge performs the protocol callback setup and channel handshake. It assigns each accepted participant a positive client id and records which channel names that participant supports. Connection-admission callbacks receive the producer's existing `Ptr`; the channel bridge retains accepted network connections, and `localClient` carries the owning local-client reference when it is non-null.
 
+`IChannelServer<TPackage>::OnClientConnected` decides admission before the client's channels are registered. Start application messages or signal another thread to use the client from `OnClientReady` instead. This callback runs outside the connection lock, after the network client's assigned-id confirmation has been sent or the local client's `OnConnected` has returned. The default implementation is empty. Rejected connections and admission interrupted by shutdown or a fatal broadcast do not become ready.
+
 A network channel client derives from `NetworkProtocolChannelClient<TPackage, TSerialization>`, declares its supported names, and wraps a Socket HTTP protocol client:
 
 ```C++

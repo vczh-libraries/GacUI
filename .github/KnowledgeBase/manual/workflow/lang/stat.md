@@ -16,13 +16,13 @@ When **condition** is a readonly variable instead of an expression: **var VAR: T
 
 ## switch-case
 
-For any statement like: **switch (expression) { case VALUE1: { S1 } case VALUE1: { S1 } ... default: { S } }**:
+For any statement like: **switch (expression) { case VALUE1: { S1 } case VALUE2: { S2 } ... default: { S } }**:
 
 When **expression == VALUE1** is **true**, it executes **S1**.
 
 When **expression == VALUE2** is **true**, it executes **S2**.
 
-When any values fail, it executes **S**.
+When no case matches, it executes **S**.
 
 There can be any number of **case** branches.
 
@@ -52,7 +52,7 @@ When it is false, it stops.
 
 **break;** stops the most inner **for** or **while** statement.
 
-**break;** stops the current iteration of the most inner **for** or **while** statement and starts a new iteration.
+**continue;** stops the current iteration of the most inner **for** or **while** statement and starts a new iteration.
 
 **return;** stops the current function. If the function returns anything other than **void**, an expression is needed before **;** to be the return value.
 
@@ -64,9 +64,11 @@ See [Allocating (class)](../.././workflow/lang/class_new.md).
 
 ## raise
 
-**raise OBJECT;** raises an expression.
+**raise OBJECT;** raises an exception.
 
 **OBJECT** must be **string** or **system::Exception^**.
+
+Inside a **catch** block, **raise;** rethrows the caught exception.
 
 ## try-catch-finally
 

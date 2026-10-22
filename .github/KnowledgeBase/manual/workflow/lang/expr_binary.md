@@ -4,6 +4,8 @@
 
 Here assume **A** is the left operand, and **B** is the right operand.
 
+[Variant comparisons](../.././workflow/lang/variant.md) are an exception to the common-type rules below. They compare active payloads directly with a partial ordering, including mixed variant and nonvariant operands. Arithmetic and logical operations on a variant require extracting an option first. [Variant collection membership](../.././workflow/lang/variant.md) with **in** or **not in** requires a typed enumerable, list or array whose element type is the exact same ordered variant type. Dictionaries are unsupported.
+
 When type of **A** can be implicitly converted to type of **B**, **A** will be cast to type of **B** before being applied to this operator.
 
 When type of **B** can be implicitly converted to type of **A**, **B** will be cast to type of **A** before being applied to this operator.
@@ -94,6 +96,14 @@ When type of converted operands are:
 
 - Get the remainder from A / B.
 
+### A shl B
+
+Shift the bits of integer **A** left by **B** positions. For example, **3 shl 2** returns **12**. Both operands must be integers; the result type follows the integer conversion rules above.
+
+### A shr B
+
+Shift the bits of integer **A** right by **B** positions. For example, **12 shr 2** returns **3**. Both operands must be integers; the result type follows the integer conversion rules above.
+
 ### A (\<, \>, \<=, \>=, ==, !=) B
 
 - Compare two values, returns **true** when the specified order is correct.
@@ -109,8 +119,8 @@ When type of converted operands are:
 - bit-wise **and** on integers.
 
 For any **A and B** that is performed on two **bool** expressions:
-- When running Workflow script directly, B will be executed when A is **false**.
-- When running generated C++ code, B not will be executed when A is **false**.
+- When running Workflow script directly, B is evaluated even when A is **false**.
+- When running generated C++ code, B is skipped when A is **false**.
 
 ### A or B
 
@@ -118,6 +128,6 @@ For any **A and B** that is performed on two **bool** expressions:
 - bit-wise **or** on integers.
 
 For any **A or B** that is performed on two **bool** expressions:
-- When running Workflow script directly, B will be executed when A is **true**.
-- When running generated C++ code, B not will be executed when A is **true**.
+- When running Workflow script directly, B is evaluated even when A is **true**.
+- When running generated C++ code, B is skipped when A is **true**.
 

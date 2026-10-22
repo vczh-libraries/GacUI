@@ -157,13 +157,15 @@ Both methods could appear together.
 
 When **return** is called, **ReturnAndExit** will be called, and the coroutine stops immediately.
 
-## Define the $ expression
+## Define the $.NAME expression
 
-If you want to suppor the **$** expression, you are required to add this method to your coroutine provider:
+**$.NAME** accesses a member of the coroutine's context. Add this static method to the coroutine provider:
 ```
-static QueryContext(internalState: InternalState*): Something { /* ... */ }
+static func QueryContext(internalState: InternalState*): Context^ { /* ... */ }
 ```
- and the return value from **$** becomes **Something**.
+ The compiler passes the current internal-state object to **QueryContext**, then accesses **NAME** on its result. **$.Method(arguments)** calls a method on that context.
+
+This expression is only available inside a coroutine function with a **${ ... }** or **$Provider { ... }** body. It does not pause the coroutine. Bare **$** is not an expression. For example, **$.IsCancelled()** queries the context of an [async coroutine](../.././workflow/lang/coroutine_async.md).
 
 ## Example
 

@@ -1,6 +1,6 @@
 # Module
 
-Any Workflow script file should be a module, written as:
+A Workflow script file begins with a module header:
 ```
 module NAME;
 
@@ -9,6 +9,8 @@ using presentation::compositions::Gui*Composition;
 
 /* ... */
 ```
+
+**unit NAME;** is also accepted as a header, followed by the same imports and declarations. The current compiler handles its declarations in the same way as a **module**.
 
 The module name does not matter, but when multiple files are given to the compiler to build an assembly, module names in this assembly are require to be unique.
 

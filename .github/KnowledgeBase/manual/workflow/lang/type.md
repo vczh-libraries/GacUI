@@ -24,7 +24,7 @@ var y: (func():string){} = null;
 
 Here is all keyword for primitive types supported by Workflow script. Not all primitive types have a keyword, like **system::DateTime**, the only way to use it is to write **system::DateTime**, or shorten the name using a **using declaration**.
 - **void**: **system::Void**. It can only appear at the function return type, indicating that this function do not have a return value.
-- **object**: **system::Object**. Values of all types can be implicitly converted to **object**. A value of **object** can be explicitly converted to any type, conversion failure results in throwing an exception. **null** is also a valid value for **object**, casting **null** to an optional type results in **null**, casting **null** to any other type results in throwing an exception.
+- **object**: **system::Object**. Nonvariant values can be implicitly converted to **object**. Use [variant in VALUE](../.././workflow/lang/variant.md) to extract a variant's active payload as **object**. **cast object** accepts only a declared **object** option and never boxes a complete variant. A value of **object** can be explicitly converted to a nonvariant type, conversion failure results in throwing an exception. Conversion to a variant requires an exact **object** option and selects that option. **null** is also a valid value for **object**, casting **null** to an optional type results in **null**, casting **null** to any other type results in throwing an exception.
 - **interface**: **system::Interface**. This is a reference type, the base type for all interfaces. it means that **interface*** and **interface^** are valid types, but **interface** itself is not.
 - **int**: When the compiler is running in an x86 process, it is **system::Int32**. When the compiler is running in an x64 process, it is **system::Int64**.
 - **uint**: When the compiler is running in an x86 process, it is **system::UInt32**. When the compiler is running in an x64 process, it is **system::UInt64**.
@@ -86,6 +86,10 @@ Value of any valid type could be implicitly converted to its optional type.
 Value of an optional types could be implicitly converted to its containing type.
 
 An optional type **A?** can be implicitly or explicitly converted to **B?**, when **A** can be implicitly or explicitly converted to **B**.
+
+## Variant types
+
+**variant\<A, B, ...\>** stores one of at least two declared options. Option order is part of the type, and conversions are explicit. See [Variants](../.././workflow/lang/variant.md) for valid options, exact casts, defaults, null handling and comparison.
 
 ## Function types
 
@@ -222,8 +226,36 @@ var c = range (1, 5]; /* {2 3 4 5} of int{}     */
 var d = range [1, 5]; /* {1 2 3 4 5} of int{}   */
 ```
 
-- Round parenthesis means the value on that side is included.
-- Square parenthesis means the value on that side is not included.
+- A round parenthesis excludes the value on that side.
+- A square bracket includes the value on that side.
+
+### Collection membership
+
+**ITEM in COLLECTION** returns **true** when an equal item is found. **ITEM not in COLLECTION** returns the opposite result. The collection can be a list, read-only list, observable list, array supplied by C++, or enumerable. A dictionary itself is not accepted.
+```
+var values = {1 2 3};
+var found = 2 in values;       /* true */
+var missing = 4 not in values; /* true */
+```
+ Both operands are evaluated once. For an empty collection, **in** returns **false** and **not in** returns **true**.
+
+The item type and the collection's element type must be the same, or one must implicitly convert to the other. An untyped collection has element type **object**. A [variant item](../.././workflow/lang/variant.md) therefore requires a typed collection with exactly the same ordered variant type. An option value, a reordered variant, or a variant with only some common options does not satisfy this rule.
+
+Variant membership compares active payloads using the variant **==** rules. Equal numeric payloads can match even when different numeric options are active. NaN does not match any item, including itself.
+```
+var integer = 7 of variant<int, double>;
+var real = 7.0 of variant<int, double>;
+var values : variant<int, double>[] = {integer};
+var found = real in values; /* true */
+```
+ Collection methods such as **Contains** and **IndexOf** take **object** arguments. They do not accept a variant directly because variants do not implicitly convert to **object**. Use **ITEM in COLLECTION** to search a typed variant collection. Extracting the payload with **variant in ITEM** does not supply the variant value stored in that collection.
+
+A direct range expression tests its bounds:
+```
+var included = 1 in range [1, 5); /* true */
+var excluded = 5 not in range [1, 5); /* true */
+```
+ Round parentheses exclude an endpoint; square brackets include it. A variant item is not accepted with a direct range expression. Extract a suitable numeric option before testing a range.
 
 ### Iterating over lists
 
@@ -247,7 +279,7 @@ func main(): string
 {
     var xs = {1 2 3 4 5};
     var sum = 0;
-    for (x in revsersed xs)
+    for (x in reversed xs)
     {
         sum = sum + x;
     }

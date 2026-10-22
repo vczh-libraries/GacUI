@@ -8,7 +8,7 @@ An instruction could have two types of arguments:
 - **Embedded arguments**: They are generated at compile time and are saved in fields of **vl::workflow::runtime::WfInstruction**.
 - **Stack arguments**: They are stored in the stack at runtime, most of them will be consumed and removed from the stack after executing the instruction. Argument schema of each instructions are defined by static methods of **vl::workflow::runtime::WfInstruction**.
 
-When an instruction is named after, for example, **ConvertToType(flag, type)**, it means the name of the instruction is **WfInsCode::ConvertToType**, and embedded arguments are stored in field **flagParameter** and **typeParameter**.
+When an instruction is named after, for example, **ConvertToType(flag, typeDescriptor)**, it means the name of the instruction is **WfInsCode::ConvertToType**, and embedded arguments are stored in fields **flagParameter** and **typeDescriptorParameter**. A **type** argument is a **WfInsType**; a **typeInfo** argument stores a complete **ITypeInfo**.
 
 ## Stack Operations
 
@@ -81,7 +81,7 @@ Stack pattern before:
 Stack pattern after:
 ```
 --> top
-(int) value of the variable
+value of the variable
 ```
 
 Push the value of the local variable of the specified index to the stack. Local variables are stored in the current stack frame.
@@ -136,6 +136,7 @@ Push the **IMethodInfo*** object to the stack.
 Stack pattern before:
 ```
 --> top
+value of the object
 ```
 
 Stack pattern after:
@@ -144,7 +145,7 @@ Stack pattern after:
 closure of the IMethodInfo* object
 ```
 
-Push the closure of the **IMethodInfo*** object to the stack. It is created by calling **IMethodInfo::CreateFunctionProxy**, this function returns a function object that can be invoked.
+Pop the object and push a callable closure of the specified method bound to that object. The closure is created by **IMethodInfo::CreateFunctionProxy**.
 
 ### LoadClosureContext
 
@@ -159,7 +160,7 @@ Stack pattern after:
 (Ptr<WfRuntimeVariableContext>)
 ```
 
-Push the closure context of the current stack frame to the stack. Local variables are stored in the current stack frame.
+Push the closure context of the current stack frame to the stack. This context stores captured variables.
 
 ### StoreLocalVar(index)
 
@@ -206,22 +207,24 @@ Stack pattern after:
 
 Pop a value from the stack to update a specified global variable.
 
-### Duplicate
+### Duplicate(count)
 
 Stack pattern before:
 ```
 --> top
-value
+... count values
+value to copy
 ```
 
 Stack pattern after:
 ```
 --> top
-value
-value
+copied value
+... count values
+value to copy
 ```
 
-Duplicate the top value in the stack.
+Push a copy of the value **count** positions below the top. **Duplicate(0)** duplicates the top value. Existing values remain on the stack.
 
 ### Pop
 
@@ -313,17 +316,17 @@ Push a new trap frame with the entry instruction to the **catch** handler. **Uni
 
 ### UninstallTry(count)
 
-Pop a new trap frame. Keep the specified number of stack values right after this trap frame. This happens when no exception occurs while evaluating the left operand of the **??** operator, the value of the left operand becomes the value of the whole expression, which should be kept in the stack.
+Pop the top trap frame. Keep the specified number of stack values right after this trap frame. This happens when no exception occurs while evaluating the left operand of the **??** operator, the value of the left operand becomes the value of the whole expression, which should be kept in the stack.
 
 ### RaiseException
 
-Raise an exception.
+Pop an exception value and raise it. The value can be a string, a **WfRuntimeExceptionInfo**, or an **IValueException**.
 
 When an exception occurs, all stack frames and stack values that are pushed after the top trap frame will be removed, and jump to the specified instruction of the top trap frame. If there is no trap frame, the script ends with this exception.
 
 ## Object Creating Operations
 
-### CreateArray(count)
+### NewArray(count)
 
 Stack pattern before:
 ```
@@ -336,12 +339,30 @@ item-n
 Stack pattern after:
 ```
 --> top
-(Ptr<IValueList>) value of created array
+(Ptr<IValueArray>) value of created array
 ```
 
 Pop the specified number of values from the stack, push the created array containing these values in popping order.
 
-### CreateObservableList(count)
+### NewList(count)
+
+Stack pattern before:
+```
+--> top
+item-1
+...
+item-n
+```
+
+Stack pattern after:
+```
+--> top
+(Ptr<IValueList>) value of created list
+```
+
+Pop the specified number of values from the stack, push the created list containing these values in popping order.
+
+### NewObservableList(count)
 
 Stack pattern before:
 ```
@@ -359,7 +380,7 @@ Stack pattern after:
 
 Pop the specified number of values from the stack, push the created observable list containing these values in popping order.
 
-### CreateMap(count)
+### NewDictionary(count)
 
 Stack pattern before:
 ```
@@ -374,10 +395,10 @@ key-n
 Stack pattern after:
 ```
 --> top
-(Ptr<IValueDictionary>) value of created map
+(Ptr<IValueDictionary>) value of created dictionary
 ```
 
-Pop the specified number of value-key-pair from the stack, push the created observable map. A pair is two values on the stack instead of being a pair object. The order of keys in the map depends on value of keys.
+Pop **count** stack values as value-key pairs and push the created dictionary. Each pair occupies two stack values, so **count** is twice the number of entries.
 
 ### CreateClosureContext(count)
 
@@ -433,11 +454,11 @@ Stack pattern after:
 value of created interface
 ```
 
-Pop the specified number of function-method-pair from the stack. Push the created interface to the stack. A pair is two values on the stack instead of being a pair object, declaring that which method is implemented by which global function.
+Pop **count** stack values as function-method pairs, then pop the closure context. Push the created interface to the stack. Each pair occupies two stack values and identifies the global function implementing a method. A null method identifies the destructor function.
 
-The **methodParamter** of the instruction is the constructor of the interface. Such interface must be registered using one of the **BEGIN_INTERFACE_PROXY_*** macro. Please check out class Description`missing document: /vlppreflection/ref/VL__REFLECTION__DESCRIPTION.html` for more details.
+The **methodParameter** of the instruction is the constructor of the interface. Such interface must be registered using one of the **BEGIN_INTERFACE_PROXY_*** macro. Please check out [Registration Workflow](.././vlppreflection/registration-macros.md) for more details.
 
-### CreateRange
+### CreateRange(type)
 
 Stack pattern before:
 ```
@@ -452,9 +473,9 @@ Stack pattern after:
 (Ptr<IValueEnumerable>) value of created range
 ```
 
-Pop the value of ending and beginning in order, push the created range, which is a enumerable collection, including the value of beginning but excluding the value of ending. Each value is one greater than the previous one in this collection.
+Pop the value of ending and beginning in order, push the created range, which is a enumerable collection, including both endpoints. Each value is one greater than the previous one in this collection. **type** specifies the integer type of both endpoints. The compiler adjusts the endpoints for open ranges before executing this instruction.
 
-### CreateStruct(flag, type)
+### CreateStruct(flag, typeDescriptor)
 
 Stack pattern before:
 ```
@@ -482,11 +503,11 @@ Stack pattern after:
 --> top
 ```
 
-Pop a value from the stack and delete it. If the value is not a raw pointer, then it is just popped but not deleted. Otherwise, Value::DeleteRawPtr`missing document: /vlppreflection/ref/VL__REFLECTION__DESCRIPTION__VALUE__DELETERAWPTR@BOOL().html` is called.
+Pop a value from the stack and delete it. If the value is not a raw pointer, then it is just popped but not deleted. Otherwise, **Value::DeleteRawPtr** is called.
 
 ## Type Operations
 
-### ConvertToType(flag, type)
+### ConvertToType(flag, typeDescriptor)
 
 Stack pattern before:
 ```
@@ -502,7 +523,7 @@ value of converted
 
 Pop a value from the stack and push the converted value to the stack. This instruction performs a [strong casting](.././workflow/lang/expr.md) on a value. Exception occurs if the conversion fails.
 
-### TryConvertToType(flag, type)
+### TryConvertToType(flag, typeDescriptor)
 
 Stack pattern before:
 ```
@@ -516,9 +537,9 @@ Stack pattern after:
 value of converted
 ```
 
-Pop a value from the stack and push the converted value to the stack. This instruction performs a [strong casting](.././workflow/lang/expr.md) on a value. **null** will be pushed to the stack if the conversion fails.
+Pop a value from the stack and push the converted value to the stack. This instruction attempts the same conversion as **ConvertToType**. **null** will be pushed to the stack if the conversion fails.
 
-### TestType(flag, type)
+### TestType(flag, typeDescriptor)
 
 Stack pattern before:
 ```
@@ -549,6 +570,32 @@ Stack pattern after:
 ```
 
 Pop a value from the stack and get its type descriptor. For **null**, its type descriptor is also **null**.
+
+## Variant Operations
+
+Each instruction pops one operand and pushes one result when it succeeds:
+```
+before              after
+--> top             --> top
+operand             result
+```
+ A variant box stores the active option's declared **ITypeInfo** and its payload. These instructions implement [variant conversions and extraction](.././workflow/lang/variant.md).
+
+### VBox(typeInfo)
+
+Wrap the operand in a variant box and push it. **typeInfo** is the declared active option type, not the complete variant type. The compiler has already checked that the operand matches this option.
+
+### VUnbox
+
+Pop a variant box and push its active payload without checking its option type. This implements **variant in VALUE**, whose result type is **object**. It removes exactly one box; a null payload remains null.
+
+### VCast(typeInfo)
+
+Pop a variant box and check its active option against the target **typeInfo**. If the target is a variant containing that exact option, push the existing box. Otherwise, if the target exactly matches the active option, push its payload. A mismatch raises an exception.
+
+### VTryCast(typeInfo)
+
+Apply the option check of **VCast**, but push null on a mismatch. A nullable target **T?** also accepts an active **T** option. The compiler uses this instruction for weak casts from variants to pointer or nullable option types.
 
 ## Reflection Operations
 
@@ -589,8 +636,8 @@ Pop a value from the stack as the object, pop a value as the new value of the pr
 Stack pattern before:
 ```
 --> top
-value of the object
 value of the property
+value of the object
 ```
 
 Stack pattern after:
@@ -599,7 +646,7 @@ Stack pattern after:
 value of the object
 ```
 
-Pop a value from the stack as the object, pop a value as the new value of the property update the value of the specified property of this object. Unlike **SetProperty(property)**, the value of the object will be pushed back to the stack after executing this instruction.
+Pop the new property value, then pop the object and update its specified property. Unlike **SetProperty(property)**, the value of the object will be pushed back to the stack after executing this instruction.
 
 ### InvokeProxy(count)
 
@@ -740,7 +787,7 @@ Stack pattern after:
 (bool) value of testing result
 ```
 
-Pop the set and the value from the stack, test if the element is in the set. **true** will be pushed to the stack if the testing succeeds.
+Pop the set and the value from the stack, enumerate the set and compare each item with the element using **Value** equality. Push **true** if a matching item is found, otherwise **false**. **not in** negates this result with **OpNot(Bool)**.
 
 ## Comparison Operations
 
@@ -759,45 +806,70 @@ Stack pattern after:
 
 ### CompareLiteral(type)
 
-Compare booleans, numbers or strings.
+Compare booleans, numbers or strings of the specified type. Null sorts before a nonnull value.
 
-Push **-1** to the stack if the left operand is smaller. Push **1** to the stack if the left operand is larger. Push **0** to the stack if operands are equal to each other.
+Push **-1** to the stack if the left operand is smaller. Push **1** to the stack if the left operand is larger. Otherwise push **0**, including when neither floating-point comparison succeeds because an operand is NaN.
 
 ### CompareReference
 
-Compare two pointers.
+Compare pointer identity. Operands are raw pointers, shared pointers or null.
 
-Push **true** to the stack if operands are equal to each other. Push **false** to the stack if operands are not equal to each other, or any of them is not a pointer.
+Push **true** to the stack if operands are equal to each other. Otherwise push **false**. Two null values are equal.
 
 ### CompareValue
 
-Compare two values.
+Compare two values using **Value** equality. For variant operands, the compiler emits **VUnbox** first to compare their active payloads.
 
-Push **true** to the stack if operands are equal to each other. Push **true** to the stack if operands are not equal to each other.
+Push **true** to the stack if operands are equal to each other. Push **false** to the stack if operands are not equal to each other or are unordered. **!=** negates this result with **OpNot(Bool)**.
+
+### CompareValueLT
+
+Pop the right and left values and push the result of **left \< right** using **Value** partial ordering. For variant operands, the compiler emits **VUnbox** first to compare their active payloads. Unordered values produce false.
+
+### CompareValueGT
+
+Like **CompareValueLT**, but push the result of **left \> right**. Unordered values produce false.
+
+### CompareValueLE
+
+Like **CompareValueLT**, but push the result of **left \<= right**. Unordered values produce false.
+
+### CompareValueGE
+
+Like **CompareValueLT**, but push the result of **left \>= right**. Unordered values produce false.
+
+## Comparison Result Tests
+
+These instructions consume one integer result from **CompareLiteral** and push a boolean:
+```
+before              after
+--> top             --> top
+comparison-result   bool
+```
 
 ### OpLT
 
-This instruction executes **left \< right**.
+Push whether the comparison result is less than zero.
 
 ### OpGT
 
-This instruction executes **left \> right**.
+Push whether the comparison result is greater than zero.
 
 ### OpLE
 
-This instruction executes **left \<= right**.
+Push whether the comparison result is less than or equal to zero.
 
 ### OpGE
 
-This instruction executes **left \>= right**.
+Push whether the comparison result is greater than or equal to zero.
 
 ### OpEQ
 
-This instruction executes **left == right**.
+Push whether the comparison result is zero.
 
 ### OpNE
 
-This instruction executes **left != right**.
+Push whether the comparison result is not zero.
 
 ## Unary Operations
 

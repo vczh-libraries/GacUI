@@ -13,6 +13,7 @@ The reusable JSON RPC setup lives in `<Workflow repo>/Source/Library/RpcJson`. U
 - Register local services with `IRpcLifecycle::RegisterLocalService(typeId, service)` before lifecycle initialization. Remote services are discovered through service declaration messages and can be requested by type name after initialization.
 - Use `RpcJsonDispatcherClientForTaskQueue` for endpoint-side channel IO when a single `TaskQueue` should process incoming RPC requests. Keep it generic and let an app-specific setup function receive `RpcJsonDispatcherClient*` plus the assigned `clientId`, construct the generated dispatcher/lifecycle objects, and call the public `SetRpcObjects` operation.
 - Use `RpcJsonDispatcherServerForTaskQueue` for the transport coordinator. It is not a service owner; it tracks connected client ids, forwards broadcast requests, caches service declarations, and consolidates broadcast responses.
+- Register an endpoint with the coordinator from the channel server's `OnClientReady` callback. `OnClientConnected` only decides admission; scheduling login messages there can race channel registration and the assigned-id confirmation.
 - Pass required remote service type names to `WaitForServer` or `ConnectLocalServer` so client initialization waits until those services have been declared.
 - Call `FinalizeRpc()` on endpoint dispatchers before shutting down the transport or unloading generated Workflow context.
 
