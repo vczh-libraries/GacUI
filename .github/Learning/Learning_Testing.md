@@ -4,16 +4,17 @@
 
 - Keep test log paths stable during refactors [13]
 - Verify RVM requester/host lifetimes across every transport [12]
+- Validate GacJS through browser UI interactions [11]
 - Remote protocol frames: actions must change UI; organize frames carefully [9]
-- Validate GacJS through browser UI interactions [9]
 - Stress remote core/renderer transport and terminal flows [8]
 - Don’t schedule redundant idle frames [7]
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
+- Keep FullControlTest UIA checks synchronized with showcase changes [5]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
 - Verify GacJS HTTP fatal errors through browser UI [4]
 - Verify `/IO` synchronous errors and queued success separately [4]
-- Keep FullControlTest UIA checks synchronized with showcase changes [4]
+- Use remote-protocol snapshots only for useful rendering [4]
 - Caret navigation tests: type markers to expose caret [3]
 - Avoid duplicate tests across related categories [3]
 - Validate imported dependency APIs with GacUI build and unit test [3]
@@ -22,7 +23,8 @@
 - Compare TUI control regressions with the GUI showcase [3]
 - Prefer automation geometry before screenshots for layout verification [3]
 - Verify GitView diffs against real repository states [3]
-- Use remote-protocol snapshots only for useful rendering [3]
+- Exercise actual showcase XML in generated and interpreted consumers [3]
+- Remote-debugging guides own complete Cartesian test matrices [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -36,7 +38,6 @@
 - Unit-test renderer `CaretLineLast` should treat CRLF as newline [2]
 - Verify remoting imports with both HTTP and named-pipe flows [2]
 - Verify `GacUICompiler` determinism with repeated no-change runs [2]
-- Remote-debugging guides own complete Cartesian test matrices [2]
 - Verify palette refresh through retained state and actual host rendering [2]
 - Verify compiler releases through every tutorial architecture output [2]
 - Treat file-dialog snapshots as scheduling-sensitive contracts [2]
@@ -92,7 +93,8 @@
 - Cover every XML assignment route when batching loader validation [1]
 - Keep optimized native compile checks for Wasm demos [1]
 - Keep UiaList verification drivers in PowerShell [1]
-- Exercise actual showcase XML in generated and interpreted consumers [1]
+- Verify transient row presentation before asynchronous layout settles [1]
+- Scope native-touch exclusions to the actual provider [1]
 
 # Refinements
 
@@ -425,9 +427,13 @@ Run the complete platform-supported matrix with fresh Core/host processes for ea
 
 Playwright WebKit is not the installed Safari application. Actual Safari remains a separate manual check and must not be reported as verified from a WebKit run.
 
+For touch acquisition, inject input through the browser renderer and observe its outgoing point events and resulting UI. Core-only injection bypasses browser acquisition and forwarding; native automation, renderer IO, browser input emulation and physical hardware establish different coverage. Check that the outer page stays stationary and touch release does not create duplicate compatibility mouse activation.
+
 For WasmFCT, WasmRPT and WasmRVMT, verify both Exit and Force Exit followed by Reload. Require application and palette state to reset, a newly created view-model host, and working input after restart; canceled Exit must leave Reload disabled. Observe that worker targets exist during operation and disappear after completion or page closure, using a bounded condition wait rather than a fixed sleep or an unrealistically short polling deadline.
 
 After Wasm packaging changes, rebuild and deploy `WasmFCT`, `WasmRPT` and `WasmRVMT`, then verify their browser entry pages in Chromium and Firefox. Check the distinct application-host and adjacent pthread worker requests, successful worker module imports, input/rendering, Unicode RPC, normal shutdown, Force Exit and fresh Reload state. Verify actual worker disappearance with an authoritative browser observation; a cached `Page.workers` list after page closure may retain stale entries. Match Unicode injection to the renderer's keyboard-event path and report browser-harness or platform gaps without adding product workarounds merely to satisfy the harness. Also exercise a pthread-enabled library suite through the shared generated `app.sh`/`app.html` launcher.
+
+For public demo updates, verify the actual published launcher, route and service-worker flow after final staging, using fresh and previously visited browser contexts. Development-site success alone does not cover missing public raw-painter installation or packaging. Check observable rendering and interaction, artifact identity, worker loading and teardown through the public entry link as well as the prepared local deployment.
 
 ## Browser E2E tests must handle localized dialogs and host fixtures
 
@@ -503,7 +509,9 @@ After moving reusable automation endpoint code or changing its shared-project ow
 
 Put each renderer's complete application-by-transport Cartesian product in an early `Test Matrix` section after the background introduction. The native and GacJS setup guides must enumerate their own platform-supported targets and required companion processes instead of delegating the matrix to another job or presenting dimensions as alternatives.
 
-Keep responsibilities separated: renderer guides own the supported matrix and setup commands, while `REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md` owns feature operations, error handling, and observable pass/fail behavior. Update the SOP when an operation is missing instead of duplicating those steps in every setup guide.
+Keep responsibilities separated: renderer guides own the supported matrix and setup commands, while `<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md` owns feature operations, error handling, and observable pass/fail behavior. Update the SOP when an operation is missing instead of duplicating those steps in every setup guide.
+
+Keep FullControlTest feature operations under `/FCT` and RemoteProtocolTest/RemoteViewModelTest operations under their respective applications. Honor explicit page-scope exclusions rather than expanding a focused update to every showcase page. Distinguish HTTP/native renderer replacement, which retains a live Core, from Wasm shutdown and page Reload, which create a new application.
 
 Recreate the native and GacJS test-matrix cards from their guide templates before a full verification run. Keep every row even when some rows are explicitly excluded, leaving excluded results blank, and update each row immediately when it starts, succeeds, fails, or is fixed. Run each included row with fresh processes and commit the cards only after the complete matrix is finished.
 
@@ -604,3 +612,11 @@ Initialize snapshot-visible dates explicitly before attaching or rendering a dat
 ## Exercise actual showcase XML in generated and interpreted consumers
 
 Link the actual affected FullControlTest XML into a fast resource fixture instead of recreating its handlers in a simplified test. Run the failing interaction through interpreted Workflow as well as generated C++; metadata generation and native-only success do not prove the same script path works. For touch completion, reproduce the extra-contact reset followed by End before fixing the optional-target access. When a test depends on window movement, assert that the selected host window actually moved before interpreting unchanged coordinates as evidence.
+
+## Verify transient row presentation before asynchronous layout settles
+
+A virtualized row's default presentation must be correct immediately when realized and recycled, not only after an idle frame. Check that closed rows expose no reveal background during rapid scrolling, cancellation and reset. Verify the measured reveal limit before the first swipe as well as partial/full/reset frames; hiding the measuring content can defer its size until interaction. Extend the actual-resource regression in `<GacUI repo>/Test/GacUISrc/UnitTest/TestControls_PointScrolling.cpp` so simplified fixtures or settled-only observations cannot conceal the flash.
+
+## Scope native-touch exclusions to the actual provider
+
+wGac and iGac native providers do not support touch, so their native touch-specific checks remain excluded with the reason recorded. This exclusion does not apply to GacJS or WebAssembly running on Linux/macOS. Continue applicable raw rendering and mouse/keyboard checks, and do not claim native touch support from synthetic Core injection. Keep this applicability explicit in `<GacUI repo>/.github/Jobs/job.rpXPlat.prompt.md` and its test cards.

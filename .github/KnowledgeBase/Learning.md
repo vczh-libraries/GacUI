@@ -2,15 +2,15 @@
 
 # Orders
 
-- Verify generated artifacts with downstream consumer checks [32]
-- Keep design documentation aligned with code after refactoring [31]
-- Proactively remove code made redundant by refactoring [30]
-- Process staged tasks one by one with verification [25]
+- Keep design documentation aligned with code after refactoring [33]
+- Verify generated artifacts with downstream consumer checks [33]
+- Proactively remove code made redundant by refactoring [32]
+- Process staged tasks one by one with verification [26]
 - Port fixes from imports to source repositories [23]
-- Extract abstractions only for real shared behavior [21]
+- Extract abstractions only for real shared behavior [22]
 - Verify and localize portability on every target OS [20]
 - Crash early instead of adding error-tolerance fallbacks [16]
-- Fix behavior at the owning state instead of patching symptoms [14]
+- Fix behavior at the owning state instead of patching symptoms [15]
 - Validate expectations against implementation and existing tests [12]
 - Make `Stop()` drain asynchronous work before returning [8]
 - Do not assume async callback owners are heap allocated [5]
@@ -30,6 +30,8 @@
 - Prefer raw pointers unless shared ownership is required [2]
 - Start async callbacks after most-derived construction [2]
 - Sort serialization metadata by deterministic keys, not pointer addresses [2]
+- Derive behavior thresholds from named constants [2]
+- Reuse existing library algorithms before writing local equivalents [2]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
 - Use named sentinel constants instead of raw values [1]
@@ -61,9 +63,10 @@
 - Minimize browser fixture manifests and audit consumed inputs [1]
 - Preserve compiler-generated modules during packaging [1]
 - Validate complete deployment inputs before writing outputs [1]
-- Reuse existing library algorithms before writing local equivalents [1]
-- Derive behavior thresholds from named constants [1]
 - Guard optional Workflow values with explicit conditionals [1]
+- Keep compiler-proven checks out of runtime execution [1]
+- Preserve ordinary conversion behavior when adding type-specific semantics [1]
+- Exercise each distinct semantic and runtime failure independently [1]
 
 # Refinements
 
@@ -157,7 +160,7 @@ If `Stop()` is called from the object's own active callback, publish terminal st
 
 ## Port fixes from imports to source repositories
 
-Do not treat files copied into `<downstream repo>/Import` or generated release files as the source of truth. When a fix affects imported `Vlpp` files, make the upstream change in `Vlpp`, regenerate its release output, and then copy the generated files downstream. When a `<any repo>/.github` instruction or script fix is needed, port it through `<Tools repo>/Copilot`.
+Do not treat files copied into `<downstream repo>/Import` or generated release files as the source of truth. When a fix affects imported `Vlpp` files, make the upstream change in `Vlpp`, regenerate its release output, and then copy the generated files downstream. Shared copied `.github` instructions and scripts remain canonical in `<Tools repo>/Copilot`; GacUI job documents are owned by `<GacUI repo>/.github/Jobs`. Maintain those jobs there and do not recreate `<Tools repo>/Copilot/Jobs`.
 
 When a downstream repo such as `GacUI` exposes a bug in imported `VlppOS` inter-process code, fix and verify it in `VlppOS`, regenerate `<VlppOS repo>/Release`, and then import the generated release files downstream.
 
@@ -303,6 +306,8 @@ After refreshing shared release imports, rebuild every requested browser-compati
 
 Include the optimized amalgamated downstream application when verifying conversion or boundary fixes. Inlining and optimization can expose aliasing defects that the upstream source-project suite does not reproduce; inspect values before and after the suspected boundary and confirm the repaired generated release in the actual consumer.
 
+For a packaged application, verify the final deployment through its own launcher and route after all builds and staging finish. A development launcher can install dependencies that the public launcher omits. Compare deployed artifacts with the final verified inputs, and repeat deployment verification if a later build replaces the staged output.
+
 ## `vl::regex` separator regex: `L"[\\/\\\\]+"`
 
 In `vl::regex::Regex`, both `/` and `\\` are escaping characters, and incorrect escaping inside `[]` can throw errors like `Illegal character set definition.`
@@ -374,6 +379,8 @@ When a defect or user correction exposes misleading authoring guidance, correct 
 Document new command-line switches alongside the application's existing arguments, including which process or backend the switch selects. Do not leave working options discoverable only from implementation or task logs.
 
 Before deleting completed task specifications, move enduring API and design guidance into maintained documents and remove links to the temporary specifications. The maintained documentation and published examples must remain understandable without the deleted task history.
+
+Audit language reference indexes against the authoritative lexer, grammar, diagnostic definitions and instruction inventory. Keyword entries should link enough pages to discover every syntax role, rather than every occurrence. Error indexes should cover every code and message template with representative examples; instruction entries should use current names and concise, precise semantics.
 
 ## Fix behavior at the owning state instead of patching symptoms
 
@@ -503,6 +510,8 @@ Validate every required source artifact and destination prerequisite across the 
 
 Use the established library implementation when its contract matches the problem. For dependency ordering, prefer `collections::PartialOrderingProcessor` to a tool-local graph algorithm. Keep only the input mapping and reporting that the application actually needs.
 
+For compiler and reflection extensions, reuse established AST visitors, type-identity helpers, parameter-boxing adapters and ownership conventions. Follow the neighboring implementation pattern instead of building a parallel mechanism whose behavior can diverge at less obvious boundaries.
+
 ## Derive behavior thresholds from named constants
 
 Express a derived threshold in terms of its named source constant instead of repeating a raw value. For a squared distance comparison, use the named radius multiplied by itself with sufficiently wide arithmetic. Audit related uses together so changing the documented threshold cannot leave another branch on the old literal.
@@ -510,3 +519,15 @@ Express a derived threshold in terms of its named source constant instead of rep
 ## Guard optional Workflow values with explicit conditionals
 
 Do not use a boolean expression as the only null guard before reading a Workflow object's property. Interpreted Workflow can evaluate both operands, so put the dereference inside an explicit conditional after checking the optional value. Verify the same authored resource through generated C++ and interpreted Workflow; passing only the generated consumer can hide this difference.
+
+## Keep compiler-proven checks out of runtime execution
+
+When semantic analysis establishes a type or operand invariant, encode the known information in generated instructions and helpers instead of repeating the same validation at runtime. Retain runtime checks for facts that remain dynamic, such as the active variant option. Follow existing build-mode guarantees rather than adding unreachable defensive branches.
+
+## Preserve ordinary conversion behavior when adding type-specific semantics
+
+Implement a new type's distinct conversion rules through dedicated lowering and helpers, making only narrowly required changes to existing instructions. Capture ordinary conversion behavior before the extension, including existing backend differences, and preserve it unless the task explicitly changes that contract. Successful null extraction must be determined by the new operation's semantics, not an unrelated non-null check.
+
+## Exercise each distinct semantic and runtime failure independently
+
+Map each new rejection or runtime-failure branch to a reachable assertion and its expected outcome. A fixture that stops at its first diagnostic does not cover later failures. Keep parser, semantic, runtime and generator failures distinct; a crash or earlier unrelated diagnostic is not evidence that the intended rejection works. Include corresponding successful controls.

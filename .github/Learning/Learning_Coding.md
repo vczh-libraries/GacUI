@@ -8,15 +8,17 @@
 - Stop remoting transports before stack channel wrappers destruct [6]
 - `ViewModelReadyChannel` is the post-route RPC registration barrier [6]
 - Cache renderer packages until main-thread invoker exists [5]
+- Preserve the established handler-lifetime rule for point dispatch [5]
 - Renderer channel dispatch belongs in async renderer layer [4]
 - Treat a fatal local channel error as a complete disconnect signal [4]
 - Remote core accepts replacement renderers by detaching stale renderer [4]
 - `RemotingTest_Core /RVMT` gates singleton channels by startup phase [4]
 - RVM accepted-host loss poisons the requester dispatcher outside locks [4]
-- Preserve the established handler-lifetime rule for point dispatch [4]
+- Keep item templates focused on rendering [4]
 - Automation `/IO` parses synchronously and queues parsed commands [3]
 - `CppTest_Rvm` is a GUI app and stays console-free [3]
 - Omit redundant EazyLayout sample properties and wrappers [3]
+- Keep point state in a graphics-host helper [3]
 - `vl::collections::ObservableList<T>` element access and replacement [2]
 - Extract helpers to remove duplicated conversion blocks [2]
 - Place helpers in the primary-responsibility namespace [2]
@@ -33,8 +35,8 @@
 - Keep GitView commit metadata in the status panel [2]
 - Apply EazyLayout configuration only through BuildLayout [2]
 - Separate raw painters from remote collection attachment [2]
-- Keep item templates focused on rendering [2]
-- Keep point state in a graphics-host helper [2]
+- Keep raw point lifecycle independent of gesture recognition [2]
+- Expose supported variant fields directly in reflection [2]
 - Nest EazyLayout descriptor groups under one owning layout [1]
 - Use /AsPort for automation with default 8888 [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
@@ -111,8 +113,7 @@
 - Share typed point fallback while Core owns remote acceptance [1]
 - Preserve Started inheritance and separate handled from acceptance [1]
 - Recompute point coordinates using current native conversion [1]
-- Keep raw point lifecycle independent of gesture recognition [1]
-- Expose typed gesture variants through a read-only reflected value [1]
+- Keep custom showcase rows themed and varied [1]
 
 # Refinements
 
@@ -121,6 +122,12 @@
 Control and item templates render data and visual state; the owning window implements selection and menu actions. Reuse the list's selected index and the item template's existing index instead of adding duplicate global selection or index fields. A local observable selected flag can drive menu decoration without moving application logic into the template. Keep a sample's image inventory in its own image-folder resource, following neighboring samples.
 
 For a virtualized swipe-to-delete list, the list owns gesture handling and data mutation while row templates only present reveal state. Queue removal with `InvokeInMainThread` using the underlying item identity, not a cached composition or index. Resolve membership again when the callback executes so Clear, Add or virtualization cannot redirect deletion; reset transient presentation on cancellation or removal.
+
+Transient reveal distance and its measured maximum belong to the realized item template, with the closed state initialized to zero. The list retains item identity and reacquires the current template through the arranger before updating presentation. Keep the closed foreground directly aligned to its stable slot; do not rely on delayed CachedBounds bindings to conceal an already-visible reveal background.
+
+## Keep custom showcase rows themed and varied
+
+Use the installed DarkSkin color package for custom row normal, selected and disabled states instead of hard-coded white/black styling. Generate sample lorem-ipsum text with the integrated `Sys::LoremIpsumSentence` API so rows contain varied content. Put shared interaction instructions beside the relevant toolbar controls instead of repeating them in every row, as in `<GacUI repo>/Test/Resources/App/FullControlTest/TouchingListTabPage.xml`.
 
 ## Initialize virtual responsive rows before attachment
 
@@ -643,6 +650,6 @@ Retain canonical native samples and derive current payload positions, contact bo
 
 Selecting a gesture does not replace raw point delivery. Preserve Action for contact bookkeeping and deliver one public End for success or cancellation, including after a recognizer stops offering updates. Keep capture and borrowed contacts alive through End, then clean up before synthesized mouse input. The base control accepts in Started; `GuiScrollView` consumes scrolling only in `OnPointGesture`. Samples may retain small raw handlers for markers, initial row identity and completion. Automatic eligible click recognizers replace the former End fallback opt-in; do not retain an obsolete control End hook just to request a click.
 
-## Expose typed gesture variants through a read-only reflected value
+## Expose supported variant fields directly in reflection
 
-Keep `GuiPointGestureEventArgs::gesture` strongly typed for native C++ and unregistered as a field. Expose its active registered payload through the class's `GetGesture()` as a read-only object-valued `Gesture` property for Workflow type checks and casts. Return a boxed copy and keep this path usable by generated C++ without reflection metadata. The final contract has exactly the scrolling and dragging/rotation alternatives, with no null gesture or setter; do not add generic Variant reflection or multiple nullable properties for this local bridge.
+Once generic variant reflection is supported, register `GuiPointGestureEventArgs::gesture` directly and remove the object-valued `Gesture`/`GetGesture()` workaround. The event arguments are declared in `<GacUI repo>/Source/Application/GraphicsCompositions/GuiGraphicsEventReceiver.h`. Preserve the native alternative order, use typed nullable extraction in Workflow, and distinguish extraction-copy semantics from whole-field assignment back to the native event argument. Keep examples and tests aligned with the field's current spelling and write access.
