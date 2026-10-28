@@ -239,8 +239,10 @@ injection; a remote image can be serialized to a core-local output stream.
 FullControlTest's four filename-taking persistence events use the authored
 `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.h/.cpp`.
 Generated entry points instantiate `AttachFctEvents` for both named editors; Host
-uses reflection event attachment. Shared functions depend only on public document
-viewer APIs. Private saves snapshot the selection, prepare clipboard content and
+uses reflection event attachment. A named Workflow editor is an aggregate: use
+`SafeAggregationCast<GuiInstanceRootObject>` and scoped `FindObjectByName` to reach
+its native viewer; a direct C++ cast of the Workflow raw object returns null.
+Shared functions depend only on public document viewer APIs. Private saves snapshot the selection, prepare clipboard content and
 serialize embedded images. RTF/HTML export uses the existing document serializers.
-The handler returns only after output close succeeds, preserving SaveDocument's
+The handler verifies the copied byte count and returns only after output close succeeds, preserving SaveDocument's
 synchronous modified-state contract.

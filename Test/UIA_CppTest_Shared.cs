@@ -2142,10 +2142,11 @@ public static class GacUIShowcaseTests
             container = bodies[0];
         }
         var tabs = Find(container, ControlType.Tab, TreeScope.Children);
-        foreach (var tab in tabs) foreach (var page in Find(tab, ControlType.TabItem, TreeScope.Children))
+        foreach (var tab in tabs) foreach (var initialPage in Find(tab, ControlType.TabItem, TreeScope.Children))
         {
-            Test("coverage / " + page.Current.Name);
-            Pattern<SelectionItemPattern>(page, SelectionItemPattern.Pattern).Select();
+            var name = initialPage.Current.Name;
+            Test("coverage / " + name);
+            var page = Page(tab, name);
             var seen = new HashSet<string>();
             foreach (AutomationElement element in page.FindAll(TreeScope.Descendants, Condition.TrueCondition))
             {
@@ -2923,6 +2924,11 @@ public static class GacUIShowcaseTests
             if (scenario == "All" || scenario == "Text") TextControls();
             if (scenario == "All" || scenario == "Refresh") RefreshLists();
             if (scenario == "All" || scenario == "Calendar") Calendars();
+            // The notification assertions above are complete. Later animation,
+            // resize and palette checks use current properties and snapshots;
+            // retaining subtree subscriptions makes their rebuilds cache every
+            // intermediate template and can starve layout on Debug builds.
+            if (scenario == "All") Automation.RemoveAllEventHandlers();
             if (scenario == "All" || scenario == "RawClock") RawClock(scenario == "All");
             if (scenario == "All" || scenario == "Touching") Touching(scenario == "All");
             if (scenario == "All" || scenario == "Layout" || scenario == "Responsive") ResponsiveLayout();
@@ -3024,6 +3030,13 @@ public static class GacUIShowcaseTests
         }
         catch (Exception error) { Console.Error.WriteLine(error.ToString()); throw; }
         finally { Automation.RemoveAllEventHandlers(); }
+        ControlsSnapshot();
+        root = AutomationElement.FromHandle(hwnd);
         Test("normal Window.Close"); Pattern<WindowPattern>(root, WindowPattern.Pattern).Close();
+        // Keep the out-of-process client alive until the queued Close executes.
+        Wait(() => {
+            try { using (var process = Process.GetProcessById(processId)) return process.HasExited; }
+            catch (ArgumentException) { return true; }
+        }, "owned application exits after Window.Close", 30000);
     }
 }

@@ -1,6 +1,7 @@
 #include "TestRemote.h"
 #include "TestControls.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
+#include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 #include "../Generated_FullControlTest/FullControlTestEventHandlers.h"
 
 namespace remote_startup_tests
@@ -427,11 +428,125 @@ namespace remote_startup_tests
 		void RunFixture() { Run(&remoteWindow); }
 		void StopFixture() { connectionStopped = true; }
 	};
+
+	class ShortTransferFileStream : public Object, public stream::IFileStreamImpl
+	{
+	public:
+		stream::MemoryStream buffer;
+		bool shortRead;
+		bool shortWrite;
+		bool closed = false;
+
+		ShortTransferFileStream(stream::FileStream::AccessRight access, bool _shortRead, bool _shortWrite)
+			: shortRead(_shortRead), shortWrite(_shortWrite)
+		{
+			if (access == stream::FileStream::ReadOnly)
+			{
+				vuint8_t bytes[] = { 1, 0, 2, 255 };
+				buffer.Write(bytes, sizeof(bytes));
+				buffer.SeekFromBegin(0);
+			}
+		}
+		bool Open() override { return true; }
+		void Close() override { closed = true; }
+		pos_t Position() const override { return buffer.Position(); }
+		pos_t Size() const override { return buffer.Size(); }
+		void Seek(pos_t offset) override { buffer.Seek(offset); }
+		void SeekFromBegin(pos_t offset) override { buffer.SeekFromBegin(offset); }
+		void SeekFromEnd(pos_t offset) override { buffer.SeekFromEnd(offset); }
+		vint Read(void* data, vint size) override
+		{
+			if (shortRead)
+			{
+				if (buffer.Position() >= 2) return 0;
+				if (size > 2 - buffer.Position()) size = (vint)(2 - buffer.Position());
+			}
+			return buffer.Read(data, size);
+		}
+		vint Write(void* data, vint size) override { return buffer.Write(data, shortWrite && size > 0 ? size - 1 : size); }
+		vint Peek(void* data, vint size) override { return buffer.Peek(data, size); }
+	};
+
+	class ShortTransferFileSystem : public feature_injection::FeatureImpl<filesystem::IFileSystemImpl>
+	{
+		filesystem::IFileSystemImpl* Predecessor() const { return const_cast<ShortTransferFileSystem*>(this)->Previous(); }
+	public:
+		bool shortRead = false;
+		bool shortWrite = false;
+		mutable Ptr<ShortTransferFileStream> last;
+		wchar_t GetPathDelimiter() const override { return Predecessor()->GetPathDelimiter(); }
+		const wchar_t* GetCompatibleDelimiters() const override { return Predecessor()->GetCompatibleDelimiters(); }
+		WString ConcatPath(const WString& path, const WString& relative) const override { return Predecessor()->ConcatPath(path, relative); }
+		void Initialize(WString& path) const override { Predecessor()->Initialize(path); }
+		bool IsFile(const WString& path) const override { return Predecessor()->IsFile(path); }
+		bool IsFolder(const WString& path) const override { return Predecessor()->IsFolder(path); }
+		bool IsRoot(const WString& path) const override { return Predecessor()->IsRoot(path); }
+		WString GetRelativePathFor(const WString& from, const WString& to) const override { return Predecessor()->GetRelativePathFor(from, to); }
+		filesystem::FileInfo GetFileInfo(const filesystem::FilePath& path) const override { return Predecessor()->GetFileInfo(path); }
+		bool FileCopy(const filesystem::FilePath& from, const filesystem::FilePath& to) const override { return Predecessor()->FileCopy(from, to); }
+		bool FileDelete(const filesystem::FilePath& path) const override { return Predecessor()->FileDelete(path); }
+		bool FileRename(const filesystem::FilePath& path, const WString& name) const override { return Predecessor()->FileRename(path, name); }
+		bool GetFolders(const filesystem::FilePath& path, List<filesystem::Folder>& items) const override { return Predecessor()->GetFolders(path, items); }
+		bool GetFiles(const filesystem::FilePath& path, List<filesystem::File>& items) const override { return Predecessor()->GetFiles(path, items); }
+		bool CreateFolder(const filesystem::FilePath& path) const override { return Predecessor()->CreateFolder(path); }
+		bool DeleteFolder(const filesystem::FilePath& path) const override { return Predecessor()->DeleteFolder(path); }
+		bool FolderRename(const filesystem::FilePath& path, const WString& name) const override { return Predecessor()->FolderRename(path, name); }
+		Ptr<stream::IFileStreamImpl> GetFileStreamImpl(const WString&, stream::FileStream::AccessRight access) const override
+		{
+			last = Ptr(new ShortTransferFileStream(access, shortRead, shortWrite));
+			return last;
+		}
+	};
+
+	class InjectionFileEvents : public GuiRemoteEventCombinator_PassingThrough
+	{
+	public:
+		InjectionFileResponse result;
+		vint responses = 0;
+		void RespondInjectionFileSystem(vint id, const InjectionFileResponse& arguments) override
+		{
+			TEST_ASSERT(id == 1);
+			result = arguments;
+			responses++;
+		}
+	};
 }
 using namespace remote_startup_tests;
 
 TEST_FILE
 {
+	TEST_CASE(L"Native renderer rejects incomplete file transfers")
+	{
+		ShortTransferFileSystem files;
+		filesystem::InjectFileSystemImpl(&files);
+		{
+			remote_renderer::GuiRemoteRendererSingle renderer(false);
+			InjectionFileEvents events;
+			renderer.Initialize(&events);
+			for (bool incomplete : { false, true })
+			{
+				files.shortRead = incomplete;
+				renderer.RequestInjectionFileSystem(1, { InjectionFileOperation::OpenRead, L"/memory", {}, {} });
+				TEST_ASSERT(events.result.success == !incomplete);
+				TEST_ASSERT(events.result.content->Size() == (incomplete ? 2 : 4));
+				TEST_ASSERT(files.last->closed);
+				files.shortWrite = incomplete;
+				auto content = Ptr(new stream::MemoryStream);
+				vuint8_t bytes[] = { 0, 1, 255, 2 };
+				content->Write(bytes, sizeof(bytes));
+				renderer.RequestInjectionFileSystem(1, { InjectionFileOperation::Commit, L"/memory", {}, content });
+				TEST_ASSERT(events.result.success == !incomplete);
+				TEST_ASSERT(files.last->buffer.Size() == (incomplete ? 3 : 4));
+				TEST_ASSERT(files.last->closed);
+				content = Ptr(new stream::MemoryStream);
+				renderer.RequestInjectionFileSystem(1, { InjectionFileOperation::Commit, L"/empty", {}, content });
+				TEST_ASSERT(events.result.success && files.last->closed && files.last->buffer.Size() == 0);
+			}
+			TEST_ASSERT(events.responses == 6);
+		}
+		filesystem::EjectFileSystemImpl(&files);
+	});
+
 	TEST_CASE(L"Older connect messages have no injection capabilities")
 	{
 		glr::json::Parser parser;

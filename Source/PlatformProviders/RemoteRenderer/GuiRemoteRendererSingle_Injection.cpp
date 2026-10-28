@@ -193,9 +193,10 @@ injections on the renderer. They never reach into an injection chain.
 				if (access == stream::FileStream::ReadOnly)
 				{
 					CopyStream(file, *result.content.Obj());
+					result.success = result.content->Size() == file.Size();
 				}
+				else result.success = true;
 				file.Close();
-				result.success = true;
 			}
 			break;
 		case InjectionFileOperation::Commit:
@@ -204,9 +205,8 @@ injections on the renderer. They never reach into an injection chain.
 				stream::FileStream file(arguments.path, stream::FileStream::WriteOnly);
 				if (!file.IsAvailable()) break;
 				arguments.content->SeekFromBegin(0);
-				CopyStream(*arguments.content.Obj(), file);
+				result.success = CopyStream(*arguments.content.Obj(), file) == arguments.content->Size();
 				file.Close();
-				result.success = true;
 			}
 			break;
 		default:
