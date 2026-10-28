@@ -51721,21 +51721,29 @@ DocumentModel::EditRangeOperations
 
 		Ptr<DocumentModel> DocumentModel::CopyDocument()
 		{
-			if (paragraphs.Count() == 0)
-			{
-				return CopyDocument({ 0,0 }, { 0,0 }, true);
-			}
-			else
+			TextPos end(0, 0);
+			if (paragraphs.Count() > 0)
 			{
 				// determine run ranges
 				RunRangeMap runRanges;
 				vint lastParagraphIndex = paragraphs.Count() - 1;
 				GetRunRange(paragraphs[lastParagraphIndex].Obj(), runRanges);
 
-				TextPos begin(0, 0);
-				TextPos end(lastParagraphIndex, runRanges[paragraphs[lastParagraphIndex].Obj()].end);
-				return CopyDocument(begin, end, true);
+				end = TextPos(lastParagraphIndex, runRanges[paragraphs[lastParagraphIndex].Obj()].end);
 			}
+
+			auto newDocument = CopyDocument(TextPos(0, 0), end, true);
+			// A complete document owns its unused styles too. Selection copies
+			// deliberately retain only referenced styles and their parents.
+			for (auto [name, style] : styles)
+			{
+				auto newStyle = Ptr(new DocumentStyle);
+				newStyle->parentStyleName = style->parentStyleName;
+				newStyle->styles = CopyStyle(style->styles);
+				newStyle->resolvedStyles = CopyStyle(style->resolvedStyles);
+				newDocument->styles.Set(name, newStyle);
+			}
+			return newDocument;
 		}
 
 		bool DocumentModel::CutParagraph(TextPos position)

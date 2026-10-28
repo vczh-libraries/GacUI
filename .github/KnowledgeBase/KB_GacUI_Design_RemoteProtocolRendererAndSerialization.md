@@ -242,7 +242,16 @@ Generated entry points instantiate `AttachFctEvents` for both named editors; Hos
 uses reflection event attachment. A named Workflow editor is an aggregate: use
 `SafeAggregationCast<GuiInstanceRootObject>` and scoped `FindObjectByName` to reach
 its native viewer; a direct C++ cast of the Workflow raw object returns null.
-Shared functions depend only on public document viewer APIs. Private saves snapshot the selection, prepare clipboard content and
-serialize embedded images. RTF/HTML export uses the existing document serializers.
+Shared functions depend only on public document viewer APIs. Private saves use a
+complete `DocumentModel::CopyDocument()`, prepare clipboard-compatible content and
+serialize embedded images. Full copies retain every style definition, including
+unused styles; range copies intentionally retain only referenced styles and their
+parents. Using a selection copy for file persistence loses the unused style catalog.
+RTF/HTML export uses the existing document serializers.
 The handler verifies the copied byte count and returns only after output close succeeds, preserving SaveDocument's
 synchronous modified-state contract.
+
+Private documents loaded by CppTest are assumed to have been saved by CppTest.
+Keep their complete style catalog through save and load, including styles not yet
+applied to any text. The ribbon uses those definitions directly without restoring
+missing built-ins or replacing loaded definitions when a gallery item is chosen.
