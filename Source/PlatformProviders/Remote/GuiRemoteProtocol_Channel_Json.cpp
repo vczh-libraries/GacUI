@@ -1,4 +1,5 @@
 #include "GuiRemoteProtocol_Channel_Json.h"
+#include "GuiRemoteProtocol_Channel_Async.h"
 
 namespace vl::presentation::remoteprotocol::channeling
 {
@@ -273,10 +274,13 @@ GuiRemoteProtocolCoreChannel
 		{
 			if (info.name == L"ControllerConnect")
 			{
+				detachedRendererClientId.store(-1);
 				SetRendererClientId(senderClientId);
 			}
-			else if (info.name == L"ControllerDisconnect" && GetRendererClientId() == senderClientId)
+			else if (info.name == L"ControllerDisconnect" &&
+				(GetRendererClientId() == senderClientId || (GetRendererClientId() == -1 && detachedRendererClientId.load() == senderClientId)))
 			{
+				detachedRendererClientId.store(-1);
 				SetRendererClientId(-1);
 			}
 			else if (GetRendererClientId() != senderClientId)
@@ -452,9 +456,16 @@ GuiRemoteProtocolCoreChannel
 
 	void GuiRemoteProtocolCoreChannel::DetachRenderer(vint clientId)
 	{
-		if (GetRendererClientId() == clientId)
+		auto expectedClientId = clientId;
+		if (rendererClientId.compare_exchange_strong(expectedClientId, -1))
 		{
-			SetRendererClientId(-1);
+			detachedRendererClientId.store(clientId);
+			if (auto asyncChannel = dynamic_cast<GuiRemoteProtocolAsyncJsonChannel*>(channel))
+			{
+				// Cancel a blocking submit on the transport thread, then deliver
+				// the controller event through the normal UI-thread event queue.
+				asyncChannel->NotifyRendererDisconnected(clientId);
+			}
 		}
 	}
 

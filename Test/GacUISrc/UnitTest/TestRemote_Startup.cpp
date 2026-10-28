@@ -501,6 +501,34 @@ TEST_FILE
 		TEST_ASSERT(protocol.commits == 0);
 	});
 
+	TEST_CASE(L"Stopping the UI loop releases a waiting filesystem worker")
+	{
+		InjectionWorkerProtocol protocol;
+		InjectionWorkerController controller(protocol.GetProtocol());
+		EventObject started;
+		EventObject completed;
+		TEST_ASSERT(started.CreateManualUnsignal(false));
+		TEST_ASSERT(completed.CreateManualUnsignal(false));
+		bool emptyRoot = false;
+		controller.AsyncService()->InvokeInMainThread(nullptr, [&]()
+		{
+			controller.AsyncService()->InvokeAsync([&]()
+			{
+				started.Signal();
+				List<filesystem::File> files;
+				emptyRoot = filesystem::Folder(filesystem::FilePath()).GetFiles(files) && files.Count() == 0;
+				completed.Signal();
+			});
+			TEST_ASSERT(started.WaitForTime(5000));
+			TEST_ASSERT(!completed.WaitForTime(100));
+			controller.StopFixture();
+		});
+		controller.RunFixture();
+		TEST_ASSERT(completed.WaitForTime(5000));
+		TEST_ASSERT(emptyRoot && protocol.fileRequests == 0);
+		controller.Finalize();
+	});
+
 	TEST_CATEGORY(L"Remote injection routing and portable values")
 	{
 		InjectionClock clock;

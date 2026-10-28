@@ -40,6 +40,14 @@ namespace remote_channel_server_tests
 			JsonChannelPack(info, ConvertCustomTypeToJson(WindowSizingConfig{}), package);
 			reader->OnRead(clientId, package);
 		}
+
+		void Connect(vint clientId)
+		{
+			Ptr<glr::json::JsonObject> package;
+			ChannelPackageInfo info{ ChannelPackageSemantic::Event, -1, L"ControllerConnect" };
+			JsonChannelPack(info, ConvertCustomTypeToJson(ControllerGlobalConfig{}), package);
+			reader->OnRead(clientId, package);
+		}
 	};
 
 	class TakeoverCoreChannel : public GuiRemoteProtocolCoreChannel
@@ -69,6 +77,9 @@ namespace remote_channel_server_tests
 	class TakeoverEvents : public GuiRemoteEventCombinator_PassingThrough
 	{
 	public:
+		vint disconnections = 0;
+		void OnControllerConnect(const ControllerGlobalConfig&) override {}
+		void OnControllerDisconnect() override { disconnections++; }
 		vint						responses = 0;
 
 		void RespondWindowGetBounds(vint, const WindowSizingConfig&) override
@@ -138,6 +149,40 @@ using namespace remote_channel_server_tests;
 
 TEST_FILE
 {
+	TEST_CASE(L"Transport loss cancels async responses and delivers disconnection on the event thread")
+	{
+		TakeoverJsonChannel channel;
+		GuiRemoteProtocolAsyncJsonChannel asyncChannel(&channel);
+		TakeoverCoreChannel core(&asyncChannel);
+		TakeoverEvents events;
+		core.Initialize(&events);
+		channel.Connect(17);
+		asyncChannel.GetRemoteEventProcessor()->ProcessRemoteEvents();
+		channel.duringBatch = [&]()
+		{
+			core.DetachRenderer(17);
+			channel.Respond(17, 42);
+			TEST_ASSERT(events.disconnections == 0);
+		};
+		core.RequestWindowGetBounds(42);
+		bool disconnected = false;
+		core.Submit(disconnected);
+		TEST_ASSERT(disconnected && events.responses == 0);
+		asyncChannel.GetRemoteEventProcessor()->ProcessRemoteEvents();
+		TEST_ASSERT(events.disconnections == 1);
+
+		core.Connect(18);
+		channel.Connect(18);
+		asyncChannel.GetRemoteEventProcessor()->ProcessRemoteEvents();
+		asyncChannel.NotifyRendererDisconnected(17);
+		channel.duringBatch = [&]() { channel.Respond(18, 43); };
+		core.RequestWindowGetBounds(43);
+		core.Submit(disconnected);
+		TEST_ASSERT(!disconnected && events.responses == 1);
+		asyncChannel.GetRemoteEventProcessor()->ProcessRemoteEvents();
+		TEST_ASSERT(events.disconnections == 1);
+	});
+
 	TEST_CASE(L"Renderer detachment during a batch cancels outstanding responses")
 	{
 		TakeoverJsonChannel channel;

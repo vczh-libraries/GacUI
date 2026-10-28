@@ -87,6 +87,7 @@ GuiRemoteProtocolAsyncJsonChannel
 		void												BatchWrite(bool& disconnected) override;
 
 		IGuiRemoteEventProcessor*							GetRemoteEventProcessor();
+		void												NotifyRendererDisconnected(vint clientId);
 	};
 }
 

@@ -98,6 +98,7 @@ GuiRemoteProtocolCoreChannel
 		IGuiRemoteEventProcessor*					eventProcessor = nullptr;
 		WString										executablePath;
 		atomic_vint									rendererClientId = -1;
+		atomic_vint									detachedRendererClientId = -1;
 		SpinLock									lockPackagesBeforeRenderer;
 		collections::List<JsonPackage>				packagesBeforeRenderer;
 
