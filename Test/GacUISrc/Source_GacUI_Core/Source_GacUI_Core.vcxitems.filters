@@ -192,6 +192,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteController.cpp">
       <Filter>PlatformProviders\Remote</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteControllerInjection.cpp">
+      <Filter>PlatformProviders\Remote</Filter>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteControllerSetup.cpp">
       <Filter>PlatformProviders\Remote</Filter>
     </ClCompile>
@@ -247,6 +250,9 @@
       <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle.cpp">
+      <Filter>PlatformProviders\RemoteRenderer\Single</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Injection.cpp">
       <Filter>PlatformProviders\RemoteRenderer\Single</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Controller.cpp">
@@ -357,6 +363,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteController.h">
       <Filter>PlatformProviders\Remote</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteControllerInjection.h">
+      <Filter>PlatformProviders\Remote</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteWindow.h">
       <Filter>PlatformProviders\Remote</Filter>
     </ClInclude>
@@ -429,6 +438,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_Controller.txt">
+      <Filter>PlatformProviders\Remote\Protocol</Filter>
+    </Text>
+    <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_Injection.txt">
       <Filter>PlatformProviders\Remote\Protocol</Filter>
     </Text>
     <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocols.txt">

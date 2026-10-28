@@ -54,7 +54,7 @@ void GacUIUnitTest_StartFast_WithResourceAsText(
 		)
 	{
 		{
-			vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig;
+			vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig{};
 #if defined VCZH_WCHAR_UTF16
 			globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF16;
 #elif defined VCZH_WCHAR_UTF32

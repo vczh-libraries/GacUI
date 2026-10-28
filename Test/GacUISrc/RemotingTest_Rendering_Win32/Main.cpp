@@ -27,7 +27,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	vint transport = -1; // 0 = Pipe, 1 = Http, 2 = MiniHTTP
 	for (int i = 1; i < argc; i++)
 	{
-		auto consumed = gacui_test::automationArguments.Consume(WString(argv[i]));
+		auto consumed = gacui_test::remoteInjectionArguments.Consume(WString(argv[i]));
+		if (consumed == 0) consumed = gacui_test::automationArguments.Consume(WString(argv[i]));
 		if (consumed < 0) { LocalFree(argv); return result; }
 		if (consumed > 0) continue;
 		vint currentTransport = -1;

@@ -33,11 +33,16 @@ GuiRemoteGraphicsImage
 	{
 		if (status == MetadataStatus::Retrived) return;
 		auto arguments = GenerateImageCreation();
+		// A rendering batch may already have queued creation without submitting
+		// it. An explicit metadata/export request must still carry image bytes.
+		arguments.imageData = binary;
+		arguments.imageDataOmitted = false;
+		auto connection = remote->connectionGeneration;
 
 		vint idImageCreated = remote->remoteMessages.RequestImageCreated(arguments);
 		bool disconnected = false;
 		remote->remoteMessages.Submit(disconnected);
-		if (disconnected) return;
+		if (disconnected || connection != remote->connectionGeneration) return;
 		auto imageMetadata = remote->remoteMessages.RetrieveImageCreated(idImageCreated);
 		UpdateFromImageMetadata(imageMetadata);
 	}
@@ -100,7 +105,7 @@ GuiRemoteGraphicsImage
 		{
 			if (frames.Count() > 0)
 			{
-				CHECK_ERROR(frames.Count() == imageMetadata.frames, L"New metadata should be identical to the last one.");
+				CHECK_ERROR(frames.Count() == imageMetadata.frames->Count(), L"New metadata should be identical to the last one.");
 				for (auto [imageFrameMetadata, index] : indexed(*imageMetadata.frames.Obj()))
 				{
 					CHECK_ERROR(frames[index]->size == imageFrameMetadata.size, L"New metadata should be identical to the last one.");
@@ -151,7 +156,20 @@ GuiRemoteGraphicsImage
 	void GuiRemoteGraphicsImage::SaveToStream(stream::IStream& imageStream, FormatType formatType)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteGraphicsImage::SaveToStream(IStream&, INativeImage::FormatType)#"
-		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"This function should not be called.");
+		CHECK_ERROR(remote && remote->controllerConnected, ERROR_MESSAGE_PREFIX L"Renderer is unavailable.");
+		auto connection = remote->connectionGeneration;
+		EnsureMetadata();
+		CHECK_ERROR(remote->controllerConnected && connection == remote->connectionGeneration && status == MetadataStatus::Retrived,
+			ERROR_MESSAGE_PREFIX L"Image creation was interrupted.");
+		auto requestId = remote->remoteMessages.RequestImageSave({ id, formatType });
+		bool disconnected = false;
+		remote->remoteMessages.Submit(disconnected);
+		CHECK_ERROR(!disconnected && remote->controllerConnected && connection == remote->connectionGeneration,
+			ERROR_MESSAGE_PREFIX L"Image export was interrupted.");
+		auto content = remote->remoteMessages.RetrieveImageSave(requestId);
+		CHECK_ERROR(content && content->Size() > 0, ERROR_MESSAGE_PREFIX L"Image encoding failed.");
+		content->SeekFromBegin(0);
+		CopyStream(*content.Obj(), imageStream);
 #undef ERROR_MESSAGE_PREFIX
 	}
 

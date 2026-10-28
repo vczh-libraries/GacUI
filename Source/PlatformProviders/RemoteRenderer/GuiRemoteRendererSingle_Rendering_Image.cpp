@@ -54,6 +54,17 @@ namespace vl::presentation::remote_renderer
 		availableImages.Remove(arguments);
 	}
 
+	void GuiRemoteRendererSingle::RequestImageSave(vint id, const remoteprotocol::ImageSaveRequest& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestImageSave()#"
+		if (!CanSendEvents()) return;
+		CHECK_ERROR(availableImages.Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image does not exist on this renderer.");
+		auto content = Ptr(new stream::MemoryStream);
+		availableImages[arguments.id]->SaveToStream(*content.Obj(), arguments.format);
+		if (CanSendEvents()) events->RespondImageSave(id, content);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_ImageFrame(const remoteprotocol::ElementDesc_ImageFrame& arguments)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererUpdateElement_ImageFrame(const arguments&)#"

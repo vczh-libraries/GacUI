@@ -197,7 +197,7 @@ GuiRemoteProtocolCoreChannel
 #define EVENT_REQ(NAME, REQUEST)\
 	void GuiRemoteProtocolCoreChannel::OnRead_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
-		REQUEST arguments;\
+		REQUEST arguments{};\
 		ConvertJsonToCustomType(jsonArguments, arguments);\
 		events->On ## NAME(arguments);\
 	}\
@@ -213,7 +213,7 @@ GuiRemoteProtocolCoreChannel
 #define MESSAGE_RES(NAME, RESPONSE)\
 	void GuiRemoteProtocolCoreChannel::OnRead_Response_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
-		RESPONSE arguments;\
+		RESPONSE arguments{};\
 		ConvertJsonToCustomType(jsonArguments, arguments);\
 		events->Respond ## NAME(id, arguments);\
 	}\
@@ -520,7 +520,7 @@ GuiRemoteProtocolRendererChannel
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
 	void GuiRemoteProtocolRendererChannel::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
-		REQUEST arguments;\
+		REQUEST arguments{};\
 		ConvertJsonToCustomType(jsonArguments, arguments);\
 		protocol->Request ## NAME(arguments);\
 	}\
@@ -528,7 +528,7 @@ GuiRemoteProtocolRendererChannel
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
 	void GuiRemoteProtocolRendererChannel::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
-		REQUEST arguments;\
+		REQUEST arguments{};\
 		ConvertJsonToCustomType(jsonArguments, arguments);\
 		protocol->Request ## NAME(id, arguments);\
 	}\

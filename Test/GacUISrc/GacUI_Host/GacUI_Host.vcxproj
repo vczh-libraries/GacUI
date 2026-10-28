@@ -171,8 +171,8 @@
     </ClCompile>
     <ClCompile Include="CompositionDumper.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="..\Generated_FullControlTest\FullControlTestPalette.cpp" />
-    <ClInclude Include="..\Generated_FullControlTest\FullControlTestPalette.h" />
+    <ClCompile Include="..\Generated_FullControlTest\FullControlTestEventHandlers.cpp" />
+    <ClInclude Include="..\Generated_FullControlTest\FullControlTestEventHandlers.h" />
     <ClCompile Include="TsfTestWindow.cpp" />
   </ItemGroup>
   <ItemGroup>

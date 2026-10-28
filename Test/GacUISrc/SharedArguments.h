@@ -56,5 +56,25 @@ namespace gacui_test
 	};
 
 	inline AutomationArguments automationArguments;
+
+	struct RemoteInjectionArguments
+	{
+		bool injectDateTime = false;
+		bool injectLocale = false;
+		bool injectFileSystem = false;
+
+		vl::vint Consume(const vl::WString& argument)
+		{
+			bool* option = argument == L"/remoteDT" ? &injectDateTime
+				: argument == L"/remoteLocale" ? &injectLocale
+				: argument == L"/remoteFS" ? &injectFileSystem : nullptr;
+			if (!option) return 0;
+			if (*option) return -1;
+			*option = true;
+			return 1;
+		}
+	};
+
+	inline RemoteInjectionArguments remoteInjectionArguments;
 }
 #endif

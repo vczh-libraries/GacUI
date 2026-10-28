@@ -15,6 +15,7 @@ Interfaces:
 #include "../../Utilities/SharedServices/GuiSharedAsyncService.h"
 #include "GuiRemoteWindow.h"
 #include "GuiRemoteGraphics.h"
+#include "GuiRemoteControllerInjection.h"
 
 namespace vl::presentation
 {
@@ -35,6 +36,11 @@ GuiRemoteController
 		friend class GuiRemoteEvents;
 		friend class GuiRemoteWindow;
 		friend class GuiRemoteGraphicsImage;
+		friend class GuiRemoteControllerInjectionState;
+		friend class GuiRemoteDateTimeInjection;
+		friend class GuiRemoteLocaleInjection;
+		friend class GuiRemoteFileSystemInjection;
+		friend class GuiRemoteFileStreamInjection;
 		friend class elements::GuiRemoteGraphicsRenderTarget;
 		friend class elements::GuiRemoteGraphicsResourceManager;
 		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
@@ -55,7 +61,13 @@ GuiRemoteController
 		bool											connectionForcedToStop = false;
 		bool											connectionStopped = false;
 
-		remoteprotocol::ControllerGlobalConfig			remoteGlobalConfig;
+		GuiRemoteControllerConfig						globalConfig;
+		Ptr<GuiRemoteControllerInjectionState>			injectionState;
+		Ptr<GuiRemoteDateTimeInjection>					dateTimeInjection;
+		Ptr<GuiRemoteLocaleInjection>						localeInjection;
+		Ptr<GuiRemoteFileSystemInjection>				fileSystemInjection;
+		vuint64_t										connectionGeneration = 0;
+		remoteprotocol::ControllerGlobalConfig			remoteGlobalConfig{};
 		remoteprotocol::FontConfig						remoteFontConfig;
 		remoteprotocol::ScreenConfig					remoteScreenConfig;
 
@@ -143,7 +155,7 @@ GuiRemoteController
 		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
 
 	public:
-		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol);
+		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol, const GuiRemoteControllerConfig& _globalConfig = {});
 		~GuiRemoteController();
 
 		void									Initialize();

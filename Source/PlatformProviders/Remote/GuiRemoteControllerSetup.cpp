@@ -11,9 +11,9 @@ SetupRemoteNativeController
 
 extern void GuiApplicationMain();
 
-int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol)
+int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol, const GuiRemoteControllerConfig& config)
 {
-	GuiRemoteController remoteController(protocol);
+	GuiRemoteController remoteController(protocol, config);
 	GuiHostedController hostedController(&remoteController);
 
 	GuiRemoteGraphicsResourceManager remoteResourceManager(&remoteController, &hostedController);

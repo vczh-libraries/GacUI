@@ -304,12 +304,17 @@ GuiRemoteController::INativeWindowService
 	{
 		CHECK_ERROR(window == &remoteWindow, L"vl::presentation::GuiRemoteController::Run(INativeWindow*)#GuiHostedController should call this function with the native window.");
 		applicationRunning = true;
+		SPIN_LOCK(injectionState->lockPending)
+		{
+			injectionState->acceptingWorkers = true;
+		}
 		if (controllerConnected)
 		{
 			remoteWindow.SubmitStateAfterControllerConnect();
 		}
 		window->Show();
 		while (RunOneCycle());
+		injectionState->Stop();
 		asyncService.ExecuteAsyncTasks();
 		applicationRunning = false;
 	}
@@ -339,6 +344,7 @@ GuiRemoteController (events)
 
 	void GuiRemoteController::OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& _globalConfig)
 	{
+		connectionGeneration++;
 		controllerConnected = true;
 		remoteGlobalConfig = _globalConfig;
 		UpdateGlobalShortcutKey();
@@ -357,6 +363,7 @@ GuiRemoteController (events)
 
 	void GuiRemoteController::OnControllerDisconnect()
 	{
+		connectionGeneration++;
 		controllerConnected = false;
 		remoteWindow.OnControllerDisconnect();
 		imageService.OnControllerDisconnect();
@@ -384,12 +391,14 @@ GuiRemoteController (events)
 GuiRemoteController
 ***********************************************************************/
 
-	GuiRemoteController::GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol)
+	GuiRemoteController::GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol, const GuiRemoteControllerConfig& _globalConfig)
 		: remoteProtocol(_remoteProtocol)
 		, remoteMessages(this)
 		, remoteEvents(this)
 		, remoteWindow(this)
 		, imageService(this)
+		, globalConfig(_globalConfig)
+		, injectionState(Ptr(new GuiRemoteControllerInjectionState(this)))
 	{
 #if defined VCZH_WCHAR_UTF16
 		remoteGlobalConfig.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF16;
@@ -397,10 +406,29 @@ GuiRemoteController
 		remoteGlobalConfig.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF32;
 #endif
 		remoteFontConfig.defaultFont.size = 12;
+		if (globalConfig.injectDateTime)
+		{
+			dateTimeInjection = Ptr(new GuiRemoteDateTimeInjection(this));
+			InjectDateTimeImpl(dateTimeInjection.Obj());
+		}
+		if (globalConfig.injectLocale)
+		{
+			localeInjection = Ptr(new GuiRemoteLocaleInjection(this));
+			InjectLocaleImpl(localeInjection.Obj());
+		}
+		if (globalConfig.injectFileSystem)
+		{
+			fileSystemInjection = Ptr(new GuiRemoteFileSystemInjection(this));
+			filesystem::InjectFileSystemImpl(fileSystemInjection.Obj());
+		}
 	}
 
 	GuiRemoteController::~GuiRemoteController()
 	{
+		injectionState->Stop();
+		if (fileSystemInjection) filesystem::EjectFileSystemImpl(fileSystemInjection.Obj());
+		if (localeInjection) EjectLocaleImpl(localeInjection.Obj());
+		if (dateTimeInjection) EjectDateTimeImpl(dateTimeInjection.Obj());
 	}
 
 	void GuiRemoteController::Initialize()
@@ -411,6 +439,7 @@ GuiRemoteController
 
 	void GuiRemoteController::Finalize()
 	{
+		injectionState->Stop();
 		imageService.Finalize();
 		remoteMessages.RequestControllerConnectionStopped();
 		bool disconnected = false;

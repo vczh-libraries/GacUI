@@ -110,6 +110,9 @@ struct ControllerGlobalConfig
 {
     var documentCaretFromEncoding : CharacterEncoding;
     var osSuperKeyName : string;
+    var injectDateTime : bool;
+    var injectLocale : bool;
+    var injectFileSystem : bool;
 }
 
 event ControllerConnect         { request: ControllerGlobalConfig; }

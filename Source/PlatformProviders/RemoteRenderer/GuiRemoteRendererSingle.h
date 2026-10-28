@@ -36,7 +36,16 @@ namespace vl::presentation::remote_renderer
 	{
 		friend class GuiRemoteDocumentParagraphElement;
 		friend class ::vl::presentation::AutomationServiceRenderer;
+	public:
+		// Native library renderers offer all capabilities unless explicitly disabled.
+		struct GlobalConfig
+		{
+			bool							injectDateTime = true;
+			bool							injectLocale = true;
+			bool							injectFileSystem = true;
+		};
 	protected:
+		GlobalConfig						globalConfig;
 		INativeWindow*							window = nullptr;
 		INativeScreen*							screen = nullptr;
 		IGuiRemoteProtocolEvents*				events = nullptr;
@@ -185,6 +194,7 @@ namespace vl::presentation::remote_renderer
 
 	public:
 		GuiRemoteRendererSingle(bool _enabledAutomation);
+		GuiRemoteRendererSingle(bool _enabledAutomation, const GlobalConfig& _globalConfig);
 		~GuiRemoteRendererSingle();
 
 		/// <summary>Raised on the UI thread after insertion and before the initial render-target assignment. Id and Data are initially empty.</summary>

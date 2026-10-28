@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -15,8 +15,8 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestPalette.h" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestPalette.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestEventHandlers.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestEventHandlers.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FullControlTestRawElement.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FullControlTestRawElement.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\FullControlTest.h">

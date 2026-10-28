@@ -43,8 +43,9 @@ int main(int argc, char* argv[])
 #else
 		auto argument = u8tow(U8String(reinterpret_cast<const char8_t*>(argv[i])));
 #endif
-		auto consumed = gacui_test::automationArguments.Consume(argument);
-		if (consumed < 0) { Console::WriteLine(L"Error: /AsPort requires one decimal port in 1..65535."); return result; }
+		auto consumed = gacui_test::remoteInjectionArguments.Consume(argument);
+		if (consumed == 0) consumed = gacui_test::automationArguments.Consume(argument);
+		if (consumed < 0) { Console::WriteLine(L"Error: invalid or duplicate option; /AsPort requires a decimal port in 1..65535."); return result; }
 		if (consumed > 0) continue;
 		if (ARGUMENT_COMPARE(argv[i], ARGUMENT_TEXT("/FCT")) == 0)
 		{

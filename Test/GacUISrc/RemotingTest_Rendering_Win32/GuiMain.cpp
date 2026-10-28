@@ -157,7 +157,8 @@ int StartClient(
 		WString::Unmanaged(L"ERROR from GacUI Core")
 		);
 	GuiRemoteProtocolAsyncJsonChannelRenderer asyncRendererChannel(channelClient.GetProtocolChannel());
-	GuiRemoteRendererSingle remoteRenderer(true);
+	auto&& injection = gacui_test::remoteInjectionArguments;
+	GuiRemoteRendererSingle remoteRenderer(true, { injection.injectDateTime, injection.injectLocale, injection.injectFileSystem });
 	auto rawClockAttachments = demo::AttachFullControlTestRawElements(remoteRenderer);
 	GuiRemoteProtocolRendererChannel rendererChannel(&asyncRendererChannel, &remoteRenderer);
 	channelClient.SetRenderer(&remoteRenderer);

@@ -1,7 +1,8 @@
 #include "DarkSkin.h"
 #include "RpMainWindow.h"
 #include "MainWindow.h"
-#include "../Generated_FullControlTest/FullControlTestPalette.h"
+#include "DocumentEditorBase.h"
+#include "../Generated_FullControlTest/FullControlTestEventHandlers.h"
 #include "RemoteViewModelTestIncludes.h"
 #include "../Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.h"
 #include "../../RemotingHelpers/Rvmt/ViewModelHostServer.h"
@@ -58,7 +59,7 @@ void GuiMain()
 	case 0:
 	{
 		auto fullControlTest = Ptr(new demo::MainWindow);
-		fullControlTest->PaletteSelected.Add(&demo::OnPaletteSelected);
+		demo::AttachFctEvents<demo::DocumentEditorBase>(fullControlTest.Obj());
 		window = fullControlTest;
 	}
 	}
@@ -226,7 +227,8 @@ int StartServer(
 			RemoteViewModelTestInitialize::InitializeRpc(rvmChannelServer->GetDispatcher(), requesterClientId);
 			context.viewModel = rvmChannelServer->RequestService(L"rvmt::IViewModel").template Cast<rvmt::IViewModel>();
 		}
-		SetupRemoteNativeController(&diffConverterProtocol);
+		auto&& injection = gacui_test::remoteInjectionArguments;
+		SetupRemoteNativeController(&diffConverterProtocol, { injection.injectDateTime, injection.injectLocale, injection.injectFileSystem });
 	}
 	catch (const Exception& ex)
 	{

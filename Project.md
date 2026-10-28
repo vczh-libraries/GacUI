@@ -191,9 +191,32 @@ TuiSkin follows the same ownership pattern. `Test/Resources/App/TuiSkin/TuiSkin.
 
 Both skin inventories and the direct configuration consumers (`UnitTest`, `CppTest_Tui`, the FullControlTest inventory and `GacUI_Host`) define `GACUI_SKIN_DEVELOPMENT` to select the matching `Generated_<Skin>/Source_x86` or `Source_x64` header. Linux development `vmake` inputs define the same macro. Without it, canonical config headers include the merged release `Source` header. CodePack ignores development branches and includes each `Config` folder in its own skin pair. The release workflow first packs current sources and builds/deploys GacGen and GacBuild, which do not depend on skins. It then regenerates both skins through native orchestration and packs the final release, preserving the config files throughout.
 
-`SetColorPackage` affects subsequent template construction. FullControlTest raises `PaletteSelected(int)` from its palette radios, following TuiControlTest. Its manually maintained `Generated_FullControlTest/FullControlTestPalette.h/.cpp` owns `demo::OnPaletteSelected`, which queues preset creation, installation and `GuiApplication::RefreshThemes()` together after input dispatch. Every showcase entry point attaches that shared handler. All presets are always available; DarkSkin has no selector callback, plugin or availability state. `GacUI_Host` loads the showcase from Workflow binary and uses native DarkSkin from `Lib_GacUI_App_Reflection`, attaching the same handler through reflection. DarkSkin document templates construct palette-based baseline overrides, retaining dark text defaults and document state across refresh.
+`SetColorPackage` affects subsequent template construction. FullControlTest raises `PaletteSelected(int)` from its palette radios, following TuiControlTest. Its manually maintained `Generated_FullControlTest/FullControlTestEventHandlers.h/.cpp` owns `demo::OnPaletteSelected`, which queues preset creation, installation and `GuiApplication::RefreshThemes()` together after input dispatch. Every showcase entry point attaches that shared handler. All presets are always available; DarkSkin has no selector callback, plugin or availability state. `GacUI_Host` loads the showcase from Workflow binary and uses native DarkSkin from `Lib_GacUI_App_Reflection`, attaching the same handler through reflection. DarkSkin document templates construct palette-based baseline overrides, retaining dark text defaults and document state across refresh.
 
 ## Debugging Remote Protocol Issues
+
+### Opt-in feature injection and document persistence
+
+`SetupRemoteNativeController` accepts `GuiRemoteControllerConfig`; its DateTime,
+Locale and filesystem flags default to false. `GuiRemoteRendererSingle::GlobalConfig`
+defaults to true for library consumers. The demo entry points explicitly start
+with all flags false. Pass `/remoteDT`, `/remoteLocale` and `/remoteFS` separately
+to both core and renderer to enable each feature. Renderer connection capabilities
+are reevaluated on replacement. DateTime/Locale fall back to the predecessor;
+an enabled but unavailable remote filesystem exposes an empty `/` root.
+
+The canonical renderer entry point is
+`<GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32/GuiMain.cpp`; wGac/iGac
+copy it and `SharedArguments.h` through their synchronization scripts. Their
+`test.sh --app:renderer` and `test_core.sh --app:fct --protocol:minihttp` forward
+the `-remoteDT`, `-remoteLocale` and `-remoteFS` options as slash switches in both foreground and `--unblock` modes.
+
+`<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.h/.cpp`
+is authored code. It attaches the palette handler and four persistence events to
+each editor's own viewer. Private `.bin` save, RTF and HTML export finish encoding
+and stream close synchronously. Host attaches the same handlers through reflection
+without linking generated FullControlTest classes. Private files embed their images;
+remote image encoding is available independently of filesystem injection.
 
 Use `REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md` for the shared end-to-end UI operations and
 observable results.

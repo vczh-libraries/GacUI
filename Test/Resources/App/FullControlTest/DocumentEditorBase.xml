@@ -72,33 +72,13 @@
             return toolstripContainer;
           }
           
-          @cpp:UserImpl
-          func LoadAsPrivateFormat(fileName: string): void
-          {
-            dialogNotImpl.Text = $"You want to load from \"$(fileName)\" as private format, but this function is not implemented in Workflow script.";
-            dialogNotImpl.ShowDialog();
-          }
+          event LoadAsPrivateFormat(string);
           
-          @cpp:UserImpl
-          func SaveAsPrivateFormat(fileName: string): void
-          {
-            dialogNotImpl.Text = $"You want to save to \"$(fileName)\" as private format, but this function is not implemented in Workflow script.";
-            dialogNotImpl.ShowDialog();
-          }
+          event SaveAsPrivateFormat(string);
           
-          @cpp:UserImpl
-          func SaveAsRTF(fileName: string): void
-          {
-            dialogNotImpl.Text = $"You want to save to \"$(fileName)\" as RTF, but this function is not implemented in Workflow script.";
-            dialogNotImpl.ShowDialog();
-          }
+          event SaveAsRTF(string);
           
-          @cpp:UserImpl
-          func SaveAsHTML(fileName: string): void
-          {
-            dialogNotImpl.Text = $"You want to save to \"$(fileName)\" as HTML, but this function is not implemented in Workflow script.";
-            dialogNotImpl.ShowDialog();
-          }
+          event SaveAsHTML(string);
           
           @cpp:Private
           func SaveDocument(): void
@@ -156,7 +136,6 @@
       <CustomControl ref.Name="self" Text="Document Editor">
         <att.HasEditableSelection-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.HasEditableSelection-bind>
         <MessageDialog ref.Name="dialogMessage" Title="You Clicked a Hyperlink!"/>
-        <MessageDialog ref.Name="dialogNotImpl" Title-bind="self.Text"/>
         <OpenFileDialog ref.Name="dialogOpen" Title="Select an Image" Filter="Image Files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp" EnabledPreview="true" Options="FileDialogFileMustExist|FileDialogDereferenceLinks"/>
         <OpenFileDialog ref.Name="dialogOpenDoc" Title="Load a GacUI Document" Filter="Private Format (*.bin)|*.bin" Options="FileDialogFileMustExist|FileDialogDereferenceLinks"/>
         <SaveFileDialog ref.Name="dialogSaveDoc" Title="Save a GacUI Document" Filter="Private Format (*.bin)|*.bin|RTF Document (*.rtf)|*.rtf|HTML Document (*.html)|*.html" Options="FileDialogPromptOverwriteFile"/>

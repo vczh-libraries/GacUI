@@ -167,6 +167,7 @@ namespace vl::presentation::remoteprotocol
 			ConvertJsonToCustomType(node, base64);
 
 			value = Ptr(new stream::MemoryStream);
+			if (base64.Length() == 0) return;
 
 			stream::MemoryWrapperStream base64WStringStream((void*)base64.Buffer(), base64.Length() * sizeof(wchar_t));
 			stream::UtfGeneralDecoder<wchar_t, char8_t> wcharToUtf8Decoder;

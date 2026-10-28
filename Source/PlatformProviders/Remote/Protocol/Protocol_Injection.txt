@@ -1,0 +1,116 @@
+struct InjectionDateTime
+{
+    var year : int;
+    var month : int;
+    var day : int;
+    var hour : int;
+    var minute : int;
+    var second : int;
+    var milliseconds : int;
+}
+
+message InjectionLocalToUtc { request: InjectionDateTime; response: InjectionDateTime; }
+message InjectionUtcToLocal { request: InjectionDateTime; response: InjectionDateTime; }
+
+enum InjectionLocaleOperation
+{
+    Invariant,
+    SystemDefault,
+    UserDefault,
+    Enumerate,
+    ShortDateFormats,
+    LongDateFormats,
+    YearMonthDateFormats,
+    LongTimeFormats,
+    ShortTimeFormats,
+    ShortDayOfWeekName,
+    LongDayOfWeekName,
+    ShortMonthName,
+    LongMonthName,
+    ToLower,
+    ToUpper,
+    ToLinguisticLower,
+    ToLinguisticUpper,
+}
+
+struct InjectionLocaleRequest
+{
+    var operation : InjectionLocaleOperation;
+    var localeName : string;
+    var text : string;
+    var index : int;
+}
+
+message InjectionLocale { request: InjectionLocaleRequest; response: string[]; }
+
+struct InjectionFileInfo
+{
+    var size : string;
+    var hardLinkCount : string;
+    var creationTime : InjectionDateTime?;
+    var lastAccessTime : InjectionDateTime?;
+    var lastModifiedTime : InjectionDateTime?;
+    var lastChangeTime : InjectionDateTime?;
+    var isDirectory : bool;
+    var isSymbolicLink : bool;
+    var isReparsePoint : bool;
+    var canRead : bool;
+    var canWrite : bool;
+    var canExecute : bool;
+    var isReadOnly : bool;
+    var isHidden : bool;
+    var isSystem : bool;
+    var isArchive : bool;
+    var isCompressed : bool;
+    var isEncrypted : bool;
+    var isSparse : bool;
+    var isTemporary : bool;
+    var isOffline : bool;
+    var isNotContentIndexed : bool;
+    var isImmutable : bool;
+    var isAppendOnly : bool;
+}
+
+enum InjectionFileOperation
+{
+    PathDelimiter,
+    CompatibleDelimiters,
+    Initialize,
+    Concat,
+    Relative,
+    IsRoot,
+    IsFile,
+    IsFolder,
+    Info,
+    Copy,
+    DeleteFile,
+    RenameFile,
+    Folders,
+    Files,
+    CreateFolder,
+    DeleteFolder,
+    RenameFolder,
+    OpenRead,
+    OpenWrite,
+    OpenReadWrite,
+    Commit,
+}
+
+struct InjectionFileRequest
+{
+    var operation : InjectionFileOperation;
+    var path : string;
+    var target : string;
+    var content : binary;
+}
+
+struct InjectionFileResponse
+{
+    var success : bool;
+    var text : string;
+    var paths : string[];
+    var info : InjectionFileInfo?;
+    var content : binary;
+}
+
+message InjectionFileSystem { request: InjectionFileRequest; response: InjectionFileResponse; }

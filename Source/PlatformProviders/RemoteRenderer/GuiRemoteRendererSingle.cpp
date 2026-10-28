@@ -105,7 +105,10 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::Opened()
 	{
 		if (!CanSendEvents()) return;
-		vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig;
+		vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig{};
+		globalConfig.injectDateTime = this->globalConfig.injectDateTime;
+		globalConfig.injectLocale = this->globalConfig.injectLocale;
+		globalConfig.injectFileSystem = this->globalConfig.injectFileSystem;
 		globalConfig.osSuperKeyName = GetCurrentController()->ResourceService()->GetOSSuperKeyName();
 #if defined VCZH_WCHAR_UTF16
 		globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF16;
@@ -201,7 +204,13 @@ namespace vl::presentation::remote_renderer
 	}
 
 	GuiRemoteRendererSingle::GuiRemoteRendererSingle(bool _enabledAutomation)
-		: enabledAutomation(_enabledAutomation)
+		: GuiRemoteRendererSingle(_enabledAutomation, GlobalConfig{})
+	{
+	}
+
+	GuiRemoteRendererSingle::GuiRemoteRendererSingle(bool _enabledAutomation, const GlobalConfig& _globalConfig)
+		: globalConfig(_globalConfig)
+		, enabledAutomation(_enabledAutomation)
 	{
 	}
 

@@ -40,8 +40,10 @@ Windows:
 #define VCZH_PRESENTATION_GACUI
 
 #include "GacUIReflectionHelper.h"
+#include "Resources/GuiDocumentClipboard.h"
 #include "PlatformProviders/TUI/TuiApplication.h"
 #include "GraphicsElement/TuiGraphicsElement.h"
+#include "PlatformProviders/Remote/GuiRemoteControllerInjection.h"
 
 #ifdef GAC_HEADER_USE_NAMESPACE
 
@@ -63,7 +65,7 @@ namespace vl::presentation
 {
 	class IGuiRemoteProtocol;
 }
-extern int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol);
+extern int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol, const vl::presentation::GuiRemoteControllerConfig& config = {});
 
 // Windows
 extern int SetupWindowsGDIRenderer();

@@ -1,4 +1,5 @@
 Protocol_Controller
+Protocol_Injection
 Protocol_MainWindow
 Protocol_IO
 Protocol_Renderer_BasicElements

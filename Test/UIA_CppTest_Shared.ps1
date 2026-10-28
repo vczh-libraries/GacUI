@@ -4,7 +4,7 @@ param(
     [ValidateSet('Win32','x64')][string]$Platform = 'x64',
     [int]$ClientProcessId = 0,
     [string]$BusyClick = '',
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching')][string]$Scenario = 'All',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence')][string]$Scenario = 'All',
     [switch]$HostedFixture,
     [switch]$GdiFixture,
     [switch]$Gdi,
@@ -23,6 +23,7 @@ if ($ClientProcessId) {
     Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions
     Add-Type -Path (Join-Path $PSScriptRoot 'UIA_CppTest_Shared.cs') -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase, System.Web.Extensions
     [GacUIShowcaseTests]::BusyCommand = $BusyClick
+    [GacUIShowcaseTests]::PersistenceOutput = Join-Path $PSScriptRoot 'Output/Injection'
     try { [GacUIShowcaseTests]::Run($ClientProcessId, ($Application -eq 'CppTest' -or $HostedFixture), $Scenario, $AsPort, $Application) }
     catch { [Console]::Error.WriteLine($_.Exception.ToString()); exit 1 }
     exit 0

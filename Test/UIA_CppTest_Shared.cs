@@ -118,6 +118,7 @@ public static class GacUIShowcaseTests
     static int selectionEvents;
     static int ownedProcess;
     public static string BusyCommand;
+    public static string PersistenceOutput;
     static bool isHosted;
     static bool isWorkflowBinary;
     // The Windows event IDs exist in UIAutomationTypes but its managed public
@@ -930,6 +931,124 @@ public static class GacUIShowcaseTests
         Page(Page(root, "Misc"), "Raw Clock");
         Page(Page(root, "Misc"), "Touching");
         TouchingState(0, state, "switching tabs retains rectangle transform");
+    }
+    static AutomationElement PersistenceCommand(AutomationElement page, bool ribbon, string command)
+    {
+        if (ribbon) Invoke(page, "  HOME  ");
+        else
+        {
+            Pattern<ExpandCollapsePattern>(Named(page, "File", ControlType.MenuItem), ExpandCollapsePattern.Pattern).Expand();
+            if (command != "Load as Private Format")
+                Pattern<ExpandCollapsePattern>(Named(page, "Save as", ControlType.MenuItem), ExpandCollapsePattern.Pattern).Expand();
+        }
+        AutomationElement item = null;
+        Wait(() => {
+            foreach (var window in OwnedWindows())
+            {
+                item = FindNamed(window, command, ControlType.MenuItem);
+                if (item != null && !item.Current.IsOffscreen) return true;
+            }
+            return false;
+        }, "persistence menu command: " + command);
+        Pattern<InvokePattern>(item, InvokePattern.Pattern).Invoke();
+        AutomationElement dialog = null;
+        string title = command == "Load as Private Format" ? "Load a GacUI Document" : "Save a GacUI Document";
+        Wait(() => {
+            foreach (var window in OwnedWindows())
+            {
+                if (window.Current.Name == title) { dialog = window; return true; }
+                dialog = FindNamed(window, title, ControlType.Window);
+                if (dialog != null && !dialog.Current.IsOffscreen) return true;
+            }
+            return false;
+        }, "persistence dialog: " + title);
+        return dialog;
+    }
+    static void PersistenceFile(AutomationElement page, bool ribbon, string command, string path, bool cancel)
+    {
+        var dialog = PersistenceCommand(page, ribbon, command);
+        if (!cancel)
+        {
+            var edit = FindNamed(dialog, "File name:", ControlType.Edit)
+                ?? FindNamed(dialog, "File Name:", ControlType.Edit);
+            if (edit == null)
+            {
+                var edits = Find(dialog, ControlType.Edit);
+                Check(edits.Count > 0, "filename edit exposed");
+                edit = edits[edits.Count - 1];
+            }
+            Pattern<ValuePattern>(edit, ValuePattern.Pattern).SetValue(path);
+        }
+        var button = cancel ? "Cancel" : command == "Load as Private Format" ? "Open" : "Save";
+        var confirm = FindNamed(dialog, button, ControlType.Button) ?? FindNamed(dialog, "OK", ControlType.Button);
+        Check(confirm != null, "file dialog confirmation button");
+        Pattern<InvokePattern>(confirm, InvokePattern.Pattern).Invoke();
+        Wait(() => { try { return dialog.Current.IsOffscreen; } catch (ElementNotAvailableException) { return true; } }, "file dialog completed");
+    }
+    static void DocumentPersistence()
+    {
+        Test("Document persistence / independent viewers, private round trip, RTF, HTML and cancellation");
+        string folder = System.IO.Path.Combine(PersistenceOutput, "UIA-" + ownedProcess);
+        System.IO.Directory.CreateDirectory(folder);
+        var paths = new string[2];
+        var contents = new[] { "Ribbon persistence Unicode \u4E2D\u6587", "Toolstrip independent document \u03C0" };
+        for (int pass = 0; pass < 2; pass++)
+        {
+            if (pass == 1)
+            {
+                ClickRenderedCaption("Window Manager");
+                ClickRenderedCaption("Aurora");
+            }
+            for (int index = 0; index < 2; index++)
+            {
+                bool ribbon = index == 0;
+                var page = Page(Page(root, "Control"), ribbon ? "Document Editor (Ribbon)" : "Document Editor (Toolstrip)");
+                var document = Find(page, ControlType.Document)[0];
+                var text = Pattern<TextPattern>(document, TextPattern.Pattern);
+                document.SetFocus();
+                text.DocumentRange.Select();
+                Input("!Type:" + contents[index]);
+                Wait(() => text.DocumentRange.GetText(-1) == contents[index], "seed independent editor " + index);
+                string stem = System.IO.Path.Combine(folder, "editor-" + index + "-" + pass);
+                paths[index] = stem + ".bin";
+                PersistenceFile(page, ribbon, "Save as Private Format", paths[index], false);
+                Check(System.IO.File.ReadAllBytes(paths[index]).Length > 0, "private bytes written before command returns");
+                PersistenceFile(page, ribbon, "Save as RTF", stem + ".rtf", false);
+                string rtf = System.IO.File.ReadAllText(stem + ".rtf");
+                Check(rtf.StartsWith("{\\rtf") && rtf.Contains(index == 0 ? "Ribbon" : "Toolstrip") && rtf.Contains("\\u"), "RTF has document content and Unicode");
+                PersistenceFile(page, ribbon, "Save as HTML", stem + ".html", false);
+                string html = System.IO.File.ReadAllText(stem + ".html", Encoding.UTF8);
+                Check(html.Contains(contents[index]) && html.Contains("<"), "HTML has Unicode content and markup");
+                document.SetFocus(); text.DocumentRange.Select(); Input("!Type:changed after save");
+                Wait(() => text.DocumentRange.GetText(-1) == "changed after save", "mutate editor before reload");
+                PersistenceFile(page, ribbon, "Load as Private Format", paths[index], false);
+                Wait(() => text.DocumentRange.GetText(-1) == contents[index], "private reload restores matching editor");
+                var original = System.IO.File.ReadAllBytes(paths[index]);
+                PersistenceFile(page, ribbon, "Save as Private Format", paths[index], true);
+                PersistenceFile(page, ribbon, "Load as Private Format", paths[index], true);
+                Check(text.DocumentRange.GetText(-1) == contents[index], "canceled dialogs preserve the document");
+                Check(Convert.ToBase64String(original) == Convert.ToBase64String(System.IO.File.ReadAllBytes(paths[index])), "canceled save preserves output bytes");
+            }
+            for (int index = 0; index < 2; index++)
+            {
+                var page = Page(Page(root, "Control"), index == 0 ? "Document Editor (Ribbon)" : "Document Editor (Toolstrip)");
+                PersistenceFile(page, index == 0, "Load as Private Format", paths[1 - index], false);
+                var text = Pattern<TextPattern>(Find(page, ControlType.Document)[0], TextPattern.Pattern);
+                Wait(() => text.DocumentRange.GetText(-1) == contents[1 - index], "cross-editor private file load");
+            }
+        }
+        Console.WriteLine("Persistence outputs: " + folder);
+        // Leave the showcase's original empty editors for later All scenarios.
+        for (int index = 0; index < 2; index++)
+        {
+            var page = Page(Page(root, "Control"), index == 0 ? "Document Editor (Ribbon)" : "Document Editor (Toolstrip)");
+            var document = Find(page, ControlType.Document)[0];
+            document.SetFocus();
+            var text = Pattern<TextPattern>(document, TextPattern.Pattern);
+            text.DocumentRange.Select();
+            Press("Backspace");
+            Wait(() => text.DocumentRange.GetText(-1) == "", "clear persistence test editor");
+        }
     }
     static void Calendars()
     {
@@ -2692,6 +2811,7 @@ public static class GacUIShowcaseTests
             if (scenario == "All" || scenario == "List") { TextLists(); ListViews(); Trees(); }
             if (scenario == "All" || scenario == "Grid") Grids();
             if (scenario == "All" || scenario == "Text") TextControls();
+            if (scenario == "All" || scenario == "Persistence") DocumentPersistence();
             if (scenario == "All" || scenario == "Refresh") RefreshLists();
             if (scenario == "All" || scenario == "Calendar") Calendars();
             if (scenario == "All" || scenario == "RawClock") RawClock(scenario == "All");

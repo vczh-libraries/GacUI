@@ -8,7 +8,7 @@
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #include "../SharedArguments.h"
 #include "DarkSkinReflection.h"
-#include "../Generated_FullControlTest/FullControlTestPalette.h"
+#include "../Generated_FullControlTest/FullControlTestEventHandlers.h"
 #include "../Generated_FullControlTest/FullControlTestRawElement.h"
 
 using namespace vl;
@@ -58,6 +58,16 @@ void GuiMain()
 	{
 		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 		BoxValue(window).AttachEvent(L"PaletteSelected", BoxParameter(Func<void(vint)>(&demo::OnPaletteSelected)));
+		for (auto name : { L"editorRibbon", L"editorToolstrip" })
+		{
+			auto editor = window->GetNamedObject(name);
+			auto root = dynamic_cast<GuiInstanceRootObject*>(editor.GetRawPtr());
+			auto viewer = dynamic_cast<GuiDocumentViewer*>(root->GetNamedObject(L"document").GetRawPtr());
+			editor.AttachEvent(L"LoadAsPrivateFormat", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName) { demo::LoadFctDocument(viewer, fileName); })));
+			editor.AttachEvent(L"SaveAsPrivateFormat", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName) { demo::SaveFctDocument(viewer, fileName); })));
+			editor.AttachEvent(L"SaveAsRTF", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName) { demo::ExportFctDocumentRtf(viewer, fileName); })));
+			editor.AttachEvent(L"SaveAsHTML", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName) { demo::ExportFctDocumentHtml(viewer, fileName); })));
+		}
 		auto rawClockAttachment = demo::AttachFullControlTestRawElement(UnboxValue<Ptr<GuiRawElementBase>>(BoxValue(window).GetProperty(L"ClockElement")));
 		auto touchingAttachment = demo::AttachFullControlTestTouchingElement(UnboxValue<Ptr<GuiRawElementBase>>(BoxValue(window).GetProperty(L"TouchingElement")));
 		window->ForceCalculateSizeImmediately();

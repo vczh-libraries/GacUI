@@ -17,10 +17,10 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Generated_FullControlTest\FullControlTestPalette.h">
+    <ClInclude Include="..\Generated_FullControlTest\FullControlTestEventHandlers.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClCompile Include="..\Generated_FullControlTest\FullControlTestPalette.cpp">
+    <ClCompile Include="..\Generated_FullControlTest\FullControlTestEventHandlers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">

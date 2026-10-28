@@ -7,7 +7,8 @@
 
 #if defined GACUI_WASM_FCT
 #include "MainWindow.h"
-#include "../../GacUISrc/Generated_FullControlTest/FullControlTestPalette.h"
+#include "DocumentEditorBase.h"
+#include "../../GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.h"
 #elif defined GACUI_WASM_RPT
 #include "RpMainWindow.h"
 #elif defined GACUI_WASM_RVMT
@@ -37,7 +38,7 @@ void GuiMain()
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
 #if defined GACUI_WASM_FCT
 	auto window = Ptr(new demo::MainWindow);
-	window->PaletteSelected.Add(&demo::OnPaletteSelected);
+	demo::AttachFctEvents<demo::DocumentEditorBase>(window.Obj());
 #elif defined GACUI_WASM_RPT
 	auto window = Ptr(new rptest::RpMainWindow);
 #elif defined GACUI_WASM_RVMT

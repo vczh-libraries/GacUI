@@ -5,7 +5,7 @@ using namespace gacui_unittest_template;
 
 void ConnectThemeTestProtocol(UnitTestRemoteProtocol* protocol)
 {
-	remoteprotocol::ControllerGlobalConfig config;
+	remoteprotocol::ControllerGlobalConfig config{};
 #if defined VCZH_WCHAR_UTF16
 	config.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF16;
 #else
