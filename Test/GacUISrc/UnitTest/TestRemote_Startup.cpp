@@ -123,6 +123,15 @@ TEST_FILE
 				TEST_ASSERT(fonts[2] == L"YetAnother");
 			});
 
+			TEST_CASE(L"Remote image export supports document persistence")
+			{
+				const vuint8_t input[] = { 1, 0, 2, 255 };
+				auto image = GetCurrentController()->ImageService()->CreateImageFromMemory((void*)input, sizeof(input));
+				stream::MemoryStream output;
+				image->SaveToStream(output, INativeImage::Png);
+				TEST_ASSERT(output.Size() > 0);
+			});
+
 			TEST_CASE(L"Assert screen config")
 			{
 				TEST_ASSERT(ss->GetScreenCount() == 1);
