@@ -418,6 +418,27 @@
                 "$ast": "PrimitiveType",
                 "type": "String"
             }
+        }, {
+            "$ast": "StructMember",
+            "name": "injectDateTime",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "injectLocale",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "injectFileSystem",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
         }],
         "type": "Struct"
     }, {
@@ -459,6 +480,561 @@
             "type": {
                 "$ast": "ReferenceType",
                 "name": "ScreenConfig"
+            }
+        }
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "InjectionDateTime",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "year",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "month",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "day",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "hour",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "minute",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "second",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "milliseconds",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "InjectionLocalToUtc",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "InjectionDateTime"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "InjectionDateTime"
+            }
+        }
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "InjectionUtcToLocal",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "InjectionDateTime"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "InjectionDateTime"
+            }
+        }
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [],
+        "name": "InjectionLocaleOperation",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "Invariant"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SystemDefault"
+        }, {
+            "$ast": "EnumMember",
+            "name": "UserDefault"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Enumerate"
+        }, {
+            "$ast": "EnumMember",
+            "name": "ShortDateFormats"
+        }, {
+            "$ast": "EnumMember",
+            "name": "LongDateFormats"
+        }, {
+            "$ast": "EnumMember",
+            "name": "YearMonthDateFormats"
+        }, {
+            "$ast": "EnumMember",
+            "name": "LongTimeFormats"
+        }, {
+            "$ast": "EnumMember",
+            "name": "ShortTimeFormats"
+        }, {
+            "$ast": "EnumMember",
+            "name": "ShortDayOfWeekName"
+        }, {
+            "$ast": "EnumMember",
+            "name": "LongDayOfWeekName"
+        }, {
+            "$ast": "EnumMember",
+            "name": "ShortMonthName"
+        }, {
+            "$ast": "EnumMember",
+            "name": "LongMonthName"
+        }, {
+            "$ast": "EnumMember",
+            "name": "ToLower"
+        }, {
+            "$ast": "EnumMember",
+            "name": "ToUpper"
+        }, {
+            "$ast": "EnumMember",
+            "name": "ToLinguisticLower"
+        }, {
+            "$ast": "EnumMember",
+            "name": "ToLinguisticUpper"
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "InjectionLocaleRequest",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "operation",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "InjectionLocaleOperation"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "localeName",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "text",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "index",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "InjectionLocale",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "InjectionLocaleRequest"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "String"
+                }
+            }
+        }
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "InjectionFileInfo",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "size",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "hardLinkCount",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "creationTime",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "InjectionDateTime"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "lastAccessTime",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "InjectionDateTime"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "lastModifiedTime",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "InjectionDateTime"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "lastChangeTime",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "InjectionDateTime"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isDirectory",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isSymbolicLink",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isReparsePoint",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "canRead",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "canWrite",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "canExecute",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isReadOnly",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isHidden",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isSystem",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isArchive",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isCompressed",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isEncrypted",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isSparse",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isTemporary",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isOffline",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isNotContentIndexed",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isImmutable",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isAppendOnly",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [],
+        "name": "InjectionFileOperation",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "PathDelimiter"
+        }, {
+            "$ast": "EnumMember",
+            "name": "CompatibleDelimiters"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Initialize"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Concat"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Relative"
+        }, {
+            "$ast": "EnumMember",
+            "name": "IsRoot"
+        }, {
+            "$ast": "EnumMember",
+            "name": "IsFile"
+        }, {
+            "$ast": "EnumMember",
+            "name": "IsFolder"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Info"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Copy"
+        }, {
+            "$ast": "EnumMember",
+            "name": "DeleteFile"
+        }, {
+            "$ast": "EnumMember",
+            "name": "RenameFile"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Folders"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Files"
+        }, {
+            "$ast": "EnumMember",
+            "name": "CreateFolder"
+        }, {
+            "$ast": "EnumMember",
+            "name": "DeleteFolder"
+        }, {
+            "$ast": "EnumMember",
+            "name": "RenameFolder"
+        }, {
+            "$ast": "EnumMember",
+            "name": "OpenRead"
+        }, {
+            "$ast": "EnumMember",
+            "name": "OpenWrite"
+        }, {
+            "$ast": "EnumMember",
+            "name": "OpenReadWrite"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Commit"
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "InjectionFileRequest",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "operation",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "InjectionFileOperation"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "path",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "target",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "content",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Binary"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "InjectionFileResponse",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "success",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "text",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "paths",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "String"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "info",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "InjectionFileInfo"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "content",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Binary"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "InjectionFileSystem",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "InjectionFileRequest"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "InjectionFileResponse"
             }
         }
     }, {
@@ -2321,6 +2897,44 @@
             }
         },
         "response": null
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ImageSaveRequest",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "format",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ImageFormatType"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "ImageSave",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ImageSaveRequest"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Binary"
+            }
+        }
     }, {
         "$ast": "StructDecl",
         "attributes": [],

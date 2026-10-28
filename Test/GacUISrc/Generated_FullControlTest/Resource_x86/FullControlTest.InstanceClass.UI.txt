@@ -14479,9 +14479,6 @@ namespace demo
         var dialogMessage : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
 
         @cpp:Protected
-        var dialogNotImpl : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
-
-        @cpp:Protected
         var dialogOpen : ::presentation::controls::GuiOpenFileDialog* = null of (::presentation::controls::GuiOpenFileDialog*);
 
         @cpp:Protected
@@ -14609,11 +14606,6 @@ namespace demo
             }
             {
                 self.AddComponent(dialogMessage);
-            }
-            (dialogNotImpl = new (::presentation::controls::GuiMessageDialog*)());
-            <this>.SetNamedObject("dialogNotImpl", dialogNotImpl);
-            {
-                self.AddComponent(dialogNotImpl);
             }
             (dialogOpen = new (::presentation::controls::GuiOpenFileDialog*)());
             <this>.SetNamedObject("dialogOpen", dialogOpen);
@@ -15017,79 +15009,6 @@ namespace demo
             }
             {
                 self.AddComponent(commandAlignRight);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::demo::DocumentEditorBase* = null of (::demo::DocumentEditorBase*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Text of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::demo::DocumentEditorBase*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.TextChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.TextChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::demo::DocumentEditorBase*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = dialogNotImpl.Title;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (dialogNotImpl.Title = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
             }
             {
                 (dialogQueryClose.Title = self.Text);
@@ -17788,33 +17707,13 @@ namespace demo
             return toolstripContainer;
         }
 
-        @cpp:UserImpl
-        func LoadAsPrivateFormat(fileName : string) : (void)
-        {
-            (dialogNotImpl.Text = (("You want to load from \"" & fileName) & "\" as private format, but this function is not implemented in Workflow script."));
-            dialogNotImpl.ShowDialog();
-        }
+        event LoadAsPrivateFormat(string);
 
-        @cpp:UserImpl
-        func SaveAsPrivateFormat(fileName : string) : (void)
-        {
-            (dialogNotImpl.Text = (("You want to save to \"" & fileName) & "\" as private format, but this function is not implemented in Workflow script."));
-            dialogNotImpl.ShowDialog();
-        }
+        event SaveAsPrivateFormat(string);
 
-        @cpp:UserImpl
-        func SaveAsRTF(fileName : string) : (void)
-        {
-            (dialogNotImpl.Text = (("You want to save to \"" & fileName) & "\" as RTF, but this function is not implemented in Workflow script."));
-            dialogNotImpl.ShowDialog();
-        }
+        event SaveAsRTF(string);
 
-        @cpp:UserImpl
-        func SaveAsHTML(fileName : string) : (void)
-        {
-            (dialogNotImpl.Text = (("You want to save to \"" & fileName) & "\" as HTML, but this function is not implemented in Workflow script."));
-            dialogNotImpl.ShowDialog();
-        }
+        event SaveAsHTML(string);
 
         @cpp:Private
         func SaveDocument() : (void)

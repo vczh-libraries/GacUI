@@ -1360,7 +1360,8 @@ IChannelServer
 		using ClientIdList = typename ClientChannelMap::KeyContainer;
 
 		/// <summary>
-		/// Called when any client connects to the server.
+		/// Called to accept or reject a client before its channels are ready.
+		/// Use <see cref="OnClientReady"/> to begin sending messages to an accepted client.
 		/// The server begins listening to client connections after <see cref="Start"/> is called.
 		/// No callback happens before <see cref="Start"/> or after <see cref="Stop"/> is called.
 		/// This function will be implemented by the user, the default implementation will return true.
@@ -1370,6 +1371,16 @@ IChannelServer
 		/// <param name="localClient">The local client. It is null for network clients.</param>
 		/// <returns>Returns "Reject" to disconnect the client immediatelly.</returns>
 		virtual WaitForClientResult			OnClientConnected(vint clientId, const typename IChannelClient<TPackage>::ChannelNameList& availableChannels, Ptr<IChannelClient<TPackage>> localClient) = 0;
+
+		/// <summary>
+		/// Called after an accepted client's channels are registered and its connection notification completes.
+		/// For network clients, the assigned client id has been sent before this callback.
+		/// For local clients, their OnConnected callback has returned before this callback.
+		/// The default implementation does nothing. This callback runs outside the server's connection lock.
+		/// </summary>
+		/// <param name="clientId">The client id.</param>
+		/// <param name="localClient">The local client. It is null for network clients.</param>
+		virtual void						OnClientReady(vint clientId, Ptr<IChannelClient<TPackage>> localClient) = 0;
 
 		/// <summary>
 		/// Start the server.
@@ -3772,11 +3783,13 @@ NetworkProtocolChannelServer
 					{
 						connection->connection->SendString(NetworkPackage::ToString(NetworkPackage::Create(assignedClientId, WString::Empty, WString::Empty)));
 						bool deliverFatalAfterConnected = false;
+						bool notifyReady = false;
 						WString fatalErrorAfterConnected;
 						{
 							SPIN_LOCK(lockConnections)
 							{
 								connection->readyForBroadcast = true;
+								notifyReady = !broadcastingError && !stopped && connections.Keys().Contains(assignedClientId);
 								if (broadcastingError)
 								{
 									deliverFatalAfterConnected = true;
@@ -3795,6 +3808,10 @@ NetworkProtocolChannelServer
 							}
 							Thread::Sleep(200);
 							connection->connection->Stop();
+						}
+						else if (notifyReady)
+						{
+							OnClientReady(assignedClientId, nullptr);
 						}
 					}
 					else
@@ -4033,6 +4050,11 @@ NetworkProtocolChannelServer
 			return WaitForClientResult::Accept;
 		}
 
+		void OnClientReady(vint clientId, Ptr<IChannelClient<TPackage>> localClient) override
+		{
+			// default implementation does nothing
+		}
+
 		void OnClientDisconnected(vint clientId) override
 		{
 			// default implementation does nothing
@@ -4182,11 +4204,13 @@ NetworkProtocolChannelServer
 				connectedException = std::current_exception();
 			}
 			bool deliverFatalAfterConnected = false;
+			bool notifyReady = false;
 			WString fatalErrorAfterConnected;
 			{
 				SPIN_LOCK(lockConnections)
 				{
 					localClientsAwaitingConnected.Remove(assignedClientId);
+					notifyReady = !broadcastingError && !stopped && localClients.Keys().Contains(assignedClientId);
 					if (broadcastingError)
 					{
 						deliverFatalAfterConnected = true;
@@ -4211,6 +4235,10 @@ NetworkProtocolChannelServer
 			if (connectedException)
 			{
 				std::rethrow_exception(connectedException);
+			}
+			if (notifyReady)
+			{
+				OnClientReady(assignedClientId, localClient);
 			}
 			return assignedClientId;
 		}
@@ -5761,6 +5789,8 @@ namespace vl
 		public:
 			/// <summary>Get the delimiter character used in a file path.</summary>
 			static wchar_t				GetPathDelimiter();
+			/// <summary>Get alternate delimiter characters normalized by the current file system.</summary>
+			static WString				GetCompatibleDelimiters();
 			/// <summary>Test whether a path is already in normalized absolute form, without resolving symbolic links.</summary>
 			/// <param name="path">The path to compare with its normalized full path.</param>
 			/// <returns>True when normalization does not change the path.</returns>

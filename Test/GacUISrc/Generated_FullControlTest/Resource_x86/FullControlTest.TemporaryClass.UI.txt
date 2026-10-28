@@ -1397,29 +1397,13 @@ namespace demo
             raise "Not Implemented";
         }
 
-        @cpp:UserImpl
-        func LoadAsPrivateFormat(fileName : string) : (void)
-        {
-            raise "Not Implemented";
-        }
+        event LoadAsPrivateFormat(string);
 
-        @cpp:UserImpl
-        func SaveAsPrivateFormat(fileName : string) : (void)
-        {
-            raise "Not Implemented";
-        }
+        event SaveAsPrivateFormat(string);
 
-        @cpp:UserImpl
-        func SaveAsRTF(fileName : string) : (void)
-        {
-            raise "Not Implemented";
-        }
+        event SaveAsRTF(string);
 
-        @cpp:UserImpl
-        func SaveAsHTML(fileName : string) : (void)
-        {
-            raise "Not Implemented";
-        }
+        event SaveAsHTML(string);
 
         @cpp:Private
         func SaveDocument() : (void)

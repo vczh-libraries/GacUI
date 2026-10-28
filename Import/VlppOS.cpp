@@ -505,6 +505,11 @@ FilePath
 			return GetFileSystemImpl()->GetPathDelimiter();
 		}
 
+		WString FilePath::GetCompatibleDelimiters()
+		{
+			return WString(GetFileSystemImpl()->GetCompatibleDelimiters());
+		}
+
 		void FilePath::Initialize()
 		{
 			GetFileSystemImpl()->Initialize(fullPath);

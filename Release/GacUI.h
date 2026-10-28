@@ -21095,6 +21095,11 @@ namespace vl::presentation::remoteprotocol
 	struct FontConfig;
 	struct ScreenConfig;
 	struct ControllerGlobalConfig;
+	struct InjectionDateTime;
+	struct InjectionLocaleRequest;
+	struct InjectionFileInfo;
+	struct InjectionFileRequest;
+	struct InjectionFileResponse;
 	struct WindowSizingConfig;
 	struct WindowShowing;
 	struct IOMouseInfoWithButton;
@@ -21114,6 +21119,7 @@ namespace vl::presentation::remoteprotocol
 	struct ImageCreation;
 	struct ImageFrameMetadata;
 	struct ImageMetadata;
+	struct ImageSaveRequest;
 	struct ElementDesc_ImageFrame;
 	struct DocumentTextRunProperty;
 	struct DocumentInlineObjectRunProperty;
@@ -21159,6 +21165,11 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::FontConfig> { static constexpr const wchar_t* Name = L"FontConfig"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ScreenConfig> { static constexpr const wchar_t* Name = L"ScreenConfig"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ControllerGlobalConfig> { static constexpr const wchar_t* Name = L"ControllerGlobalConfig"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionDateTime> { static constexpr const wchar_t* Name = L"InjectionDateTime"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionLocaleRequest> { static constexpr const wchar_t* Name = L"InjectionLocaleRequest"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionFileInfo> { static constexpr const wchar_t* Name = L"InjectionFileInfo"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionFileRequest> { static constexpr const wchar_t* Name = L"InjectionFileRequest"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionFileResponse> { static constexpr const wchar_t* Name = L"InjectionFileResponse"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowSizingConfig> { static constexpr const wchar_t* Name = L"WindowSizingConfig"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowShowing> { static constexpr const wchar_t* Name = L"WindowShowing"; };
 	template<> struct JsonNameHelper<::vl::presentation::NativeWindowMouseInfo> { static constexpr const wchar_t* Name = L"IOMouseInfo"; };
@@ -21182,6 +21193,7 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageCreation> { static constexpr const wchar_t* Name = L"ImageCreation"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageFrameMetadata> { static constexpr const wchar_t* Name = L"ImageFrameMetadata"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageMetadata> { static constexpr const wchar_t* Name = L"ImageMetadata"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageSaveRequest> { static constexpr const wchar_t* Name = L"ImageSaveRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_ImageFrame> { static constexpr const wchar_t* Name = L"ElementDesc_ImageFrame"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::DocumentTextRunProperty> { static constexpr const wchar_t* Name = L"DocumentTextRunProperty"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty> { static constexpr const wchar_t* Name = L"DocumentInlineObjectRunProperty"; };
@@ -21220,6 +21232,52 @@ namespace vl::presentation::remoteprotocol
 		UTF8,
 		UTF16,
 		UTF32,
+	};
+
+	enum class InjectionLocaleOperation
+	{
+		Invariant,
+		SystemDefault,
+		UserDefault,
+		Enumerate,
+		ShortDateFormats,
+		LongDateFormats,
+		YearMonthDateFormats,
+		LongTimeFormats,
+		ShortTimeFormats,
+		ShortDayOfWeekName,
+		LongDayOfWeekName,
+		ShortMonthName,
+		LongMonthName,
+		ToLower,
+		ToUpper,
+		ToLinguisticLower,
+		ToLinguisticUpper,
+	};
+
+	enum class InjectionFileOperation
+	{
+		PathDelimiter,
+		CompatibleDelimiters,
+		Initialize,
+		Concat,
+		Relative,
+		IsRoot,
+		IsFile,
+		IsFolder,
+		Info,
+		Copy,
+		DeleteFile,
+		RenameFile,
+		Folders,
+		Files,
+		CreateFolder,
+		DeleteFolder,
+		RenameFolder,
+		OpenRead,
+		OpenWrite,
+		OpenReadWrite,
+		Commit,
 	};
 
 	enum class ElementHorizontalAlignment
@@ -21315,6 +21373,73 @@ namespace vl::presentation::remoteprotocol
 	{
 		::vl::presentation::remoteprotocol::CharacterEncoding documentCaretFromEncoding;
 		::vl::WString osSuperKeyName;
+		bool injectDateTime;
+		bool injectLocale;
+		bool injectFileSystem;
+	};
+
+	struct InjectionDateTime
+	{
+		::vl::vint year;
+		::vl::vint month;
+		::vl::vint day;
+		::vl::vint hour;
+		::vl::vint minute;
+		::vl::vint second;
+		::vl::vint milliseconds;
+	};
+
+	struct InjectionLocaleRequest
+	{
+		::vl::presentation::remoteprotocol::InjectionLocaleOperation operation;
+		::vl::WString localeName;
+		::vl::WString text;
+		::vl::vint index;
+	};
+
+	struct InjectionFileInfo
+	{
+		::vl::WString size;
+		::vl::WString hardLinkCount;
+		::vl::Nullable<::vl::presentation::remoteprotocol::InjectionDateTime> creationTime;
+		::vl::Nullable<::vl::presentation::remoteprotocol::InjectionDateTime> lastAccessTime;
+		::vl::Nullable<::vl::presentation::remoteprotocol::InjectionDateTime> lastModifiedTime;
+		::vl::Nullable<::vl::presentation::remoteprotocol::InjectionDateTime> lastChangeTime;
+		bool isDirectory;
+		bool isSymbolicLink;
+		bool isReparsePoint;
+		bool canRead;
+		bool canWrite;
+		bool canExecute;
+		bool isReadOnly;
+		bool isHidden;
+		bool isSystem;
+		bool isArchive;
+		bool isCompressed;
+		bool isEncrypted;
+		bool isSparse;
+		bool isTemporary;
+		bool isOffline;
+		bool isNotContentIndexed;
+		bool isImmutable;
+		bool isAppendOnly;
+	};
+
+	struct InjectionFileRequest
+	{
+		::vl::presentation::remoteprotocol::InjectionFileOperation operation;
+		::vl::WString path;
+		::vl::WString target;
+		::vl::Ptr<::vl::stream::MemoryStream> content;
+	};
+
+	struct InjectionFileResponse
+	{
+		bool success;
+		::vl::WString text;
+		::vl::Ptr<::vl::collections::List<::vl::WString>> paths;
+		::vl::Nullable<::vl::presentation::remoteprotocol::InjectionFileInfo> info;
+		::vl::Ptr<::vl::stream::MemoryStream> content;
 	};
 
 	struct WindowSizingConfig
@@ -21473,6 +21598,12 @@ namespace vl::presentation::remoteprotocol
 		::vl::vint id;
 		::vl::presentation::INativeImage::FormatType format;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ImageFrameMetadata>> frames;
+	};
+
+	struct ImageSaveRequest
+	{
+		::vl::vint id;
+		::vl::presentation::INativeImage::FormatType format;
 	};
 
 	struct ElementDesc_ImageFrame
@@ -21694,6 +21825,8 @@ namespace vl::presentation::remoteprotocol
 	};
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::CharacterEncoding>(const ::vl::presentation::remoteprotocol::CharacterEncoding & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionLocaleOperation>(const ::vl::presentation::remoteprotocol::InjectionLocaleOperation & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileOperation>(const ::vl::presentation::remoteprotocol::InjectionFileOperation & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeCursor::SystemCursorType>(const ::vl::presentation::INativeCursor::SystemCursorType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState & value);
@@ -21722,6 +21855,11 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::FontConfig>(const ::vl::presentation::remoteprotocol::FontConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ScreenConfig>(const ::vl::presentation::remoteprotocol::ScreenConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ControllerGlobalConfig>(const ::vl::presentation::remoteprotocol::ControllerGlobalConfig & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionDateTime>(const ::vl::presentation::remoteprotocol::InjectionDateTime & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionLocaleRequest>(const ::vl::presentation::remoteprotocol::InjectionLocaleRequest & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileInfo>(const ::vl::presentation::remoteprotocol::InjectionFileInfo & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileRequest>(const ::vl::presentation::remoteprotocol::InjectionFileRequest & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileResponse>(const ::vl::presentation::remoteprotocol::InjectionFileResponse & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::WindowSizingConfig>(const ::vl::presentation::remoteprotocol::WindowSizingConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::WindowShowing>(const ::vl::presentation::remoteprotocol::WindowShowing & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowMouseInfo>(const ::vl::presentation::NativeWindowMouseInfo & value);
@@ -21745,6 +21883,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ImageCreation>(const ::vl::presentation::remoteprotocol::ImageCreation & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ImageFrameMetadata>(const ::vl::presentation::remoteprotocol::ImageFrameMetadata & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ImageMetadata>(const ::vl::presentation::remoteprotocol::ImageMetadata & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ImageSaveRequest>(const ::vl::presentation::remoteprotocol::ImageSaveRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_ImageFrame>(const ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentTextRunProperty>(const ::vl::presentation::remoteprotocol::DocumentTextRunProperty & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(const ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty & value);
@@ -21777,6 +21916,8 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::UnitTest_RenderingTrace>(const ::vl::presentation::remoteprotocol::UnitTest_RenderingTrace & value);
 
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::CharacterEncoding>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::CharacterEncoding& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionLocaleOperation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionLocaleOperation& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileOperation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileOperation& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindowListener::HitTestResult>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindowListener::HitTestResult& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeCursor::SystemCursorType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeCursor::SystemCursorType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value);
@@ -21805,6 +21946,11 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::FontConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::FontConfig& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ScreenConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ScreenConfig& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ControllerGlobalConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ControllerGlobalConfig& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionDateTime>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionDateTime& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionLocaleRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionLocaleRequest& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileInfo& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileRequest& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileResponse& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::WindowSizingConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::WindowSizingConfig& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::WindowShowing>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::WindowShowing& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowMouseInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowMouseInfo& value);
@@ -21828,6 +21974,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageCreation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ImageCreation& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageFrameMetadata>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ImageFrameMetadata& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageMetadata>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ImageMetadata& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageSaveRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ImageSaveRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_ImageFrame>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentTextRunProperty>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentTextRunProperty& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty& value);
@@ -21864,6 +22011,10 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ControllerGetScreenConfig, void, ::vl::presentation::remoteprotocol::ScreenConfig, NOREQ, RES, NODROP)\
 	HANDLER(ControllerConnectionEstablished, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(ControllerConnectionStopped, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(InjectionLocalToUtc, ::vl::presentation::remoteprotocol::InjectionDateTime, ::vl::presentation::remoteprotocol::InjectionDateTime, REQ, RES, NODROP)\
+	HANDLER(InjectionUtcToLocal, ::vl::presentation::remoteprotocol::InjectionDateTime, ::vl::presentation::remoteprotocol::InjectionDateTime, REQ, RES, NODROP)\
+	HANDLER(InjectionLocale, ::vl::presentation::remoteprotocol::InjectionLocaleRequest, ::vl::Ptr<::vl::collections::List<::vl::WString>>, REQ, RES, NODROP)\
+	HANDLER(InjectionFileSystem, ::vl::presentation::remoteprotocol::InjectionFileRequest, ::vl::presentation::remoteprotocol::InjectionFileResponse, REQ, RES, NODROP)\
 	HANDLER(WindowGetBounds, void, ::vl::presentation::remoteprotocol::WindowSizingConfig, NOREQ, RES, NODROP)\
 	HANDLER(WindowNotifySetTitle, ::vl::WString, void, REQ, NORES, DROPREP)\
 	HANDLER(WindowNotifySetEnabled, bool, void, REQ, NORES, DROPREP)\
@@ -21889,6 +22040,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(IOIsKeyToggled, ::vl::presentation::VKEY, bool, REQ, RES, NODROP)\
 	HANDLER(ImageCreated, ::vl::presentation::remoteprotocol::ImageCreation, ::vl::presentation::remoteprotocol::ImageMetadata, REQ, RES, NODROP)\
 	HANDLER(ImageDestroyed, ::vl::vint, void, REQ, NORES, NODROP)\
+	HANDLER(ImageSave, ::vl::presentation::remoteprotocol::ImageSaveRequest, ::vl::Ptr<::vl::stream::MemoryStream>, REQ, RES, NODROP)\
 	HANDLER(RendererUpdateElement_DocumentParagraph, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph, ::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetCaret, ::vl::presentation::remoteprotocol::GetCaretRequest, ::vl::presentation::remoteprotocol::GetCaretResponse, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetCaretBounds, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, ::vl::presentation::remoteprotocol::GetCaretBoundsResponse, REQ, RES, NODROP)\
@@ -21955,6 +22107,10 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageCreation)\
+	HANDLER(::vl::presentation::remoteprotocol::ImageSaveRequest)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionDateTime)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionFileRequest)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionLocaleRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::IsValidCaretRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::OpenCaretRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder)\
@@ -21964,11 +22120,15 @@ namespace vl::presentation::remoteprotocol
 
 #define GACUI_REMOTEPROTOCOL_MESSAGE_RESPONSE_TYPES(HANDLER)\
 	HANDLER(::vl::Nullable<::vl::presentation::remoteprotocol::DocumentRun>)\
+	HANDLER(::vl::Ptr<::vl::collections::List<::vl::WString>>)\
+	HANDLER(::vl::Ptr<::vl::stream::MemoryStream>)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementMeasurings)\
 	HANDLER(::vl::presentation::remoteprotocol::FontConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::GetCaretBoundsResponse)\
 	HANDLER(::vl::presentation::remoteprotocol::GetCaretResponse)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageMetadata)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionDateTime)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionFileResponse)\
 	HANDLER(::vl::presentation::remoteprotocol::ScreenConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowSizingConfig)\
@@ -23753,7 +23913,16 @@ namespace vl::presentation::remote_renderer
 	{
 		friend class GuiRemoteDocumentParagraphElement;
 		friend class ::vl::presentation::AutomationServiceRenderer;
+	public:
+		// Native library renderers offer all capabilities unless explicitly disabled.
+		struct GlobalConfig
+		{
+			bool							injectDateTime = true;
+			bool							injectLocale = true;
+			bool							injectFileSystem = true;
+		};
 	protected:
+		GlobalConfig						globalConfig;
 		INativeWindow*							window = nullptr;
 		INativeScreen*							screen = nullptr;
 		IGuiRemoteProtocolEvents*				events = nullptr;
@@ -23902,6 +24071,7 @@ namespace vl::presentation::remote_renderer
 
 	public:
 		GuiRemoteRendererSingle(bool _enabledAutomation);
+		GuiRemoteRendererSingle(bool _enabledAutomation, const GlobalConfig& _globalConfig);
 		~GuiRemoteRendererSingle();
 
 		/// <summary>Raised on the UI thread after insertion and before the initial render-target assignment. Id and Data are initially empty.</summary>
@@ -26064,179 +26234,6 @@ GuiRemoteWindow
 
 
 /***********************************************************************
-.\PLATFORMPROVIDERS\REMOTE\GUIREMOTECONTROLLER.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Remote Window
-
-Interfaces:
-  GuiRemoteController
-
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER
-#define VCZH_PRESENTATION_GUIREMOTECONTROLLER
-
-
-namespace vl::presentation
-{
-/***********************************************************************
-GuiRemoteController
-***********************************************************************/
-
-	class GuiRemoteController
-		: public Object
-		, public INativeController
-		, protected INativeResourceService
-		, protected INativeInputService
-		, protected INativeScreenService
-		, protected INativeScreen
-		, protected INativeWindowService
-	{
-		friend class GuiRemoteMessages;
-		friend class GuiRemoteEvents;
-		friend class GuiRemoteWindow;
-		friend class GuiRemoteGraphicsImage;
-		friend class elements::GuiRemoteGraphicsRenderTarget;
-		friend class elements::GuiRemoteGraphicsResourceManager;
-		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
-		using HotKeyEntry = Tuple<bool, bool, bool, bool, VKEY>;
-		using HotKeySet = collections::SortedList<HotKeyEntry>;
-		using HotKeyIds = collections::Dictionary<vint, HotKeyEntry>;
-	protected:
-		IGuiRemoteProtocol*								remoteProtocol = nullptr;
-		GuiRemoteMessages								remoteMessages;
-		GuiRemoteEvents									remoteEvents;
-		GuiRemoteWindow									remoteWindow;
-		elements::GuiRemoteGraphicsResourceManager*		resourceManager = nullptr;
-		SharedCallbackService							callbackService;
-		SharedAsyncService								asyncService;
-		GuiRemoteGraphicsImageService					imageService;
-		bool											applicationRunning = false;
-		bool											controllerConnected = false;
-		bool											connectionForcedToStop = false;
-		bool											connectionStopped = false;
-
-		remoteprotocol::ControllerGlobalConfig			remoteGlobalConfig;
-		remoteprotocol::FontConfig						remoteFontConfig;
-		remoteprotocol::ScreenConfig					remoteScreenConfig;
-
-		vint											usedHotKeys = (vint)NativeGlobalShortcutKeyResult::ValidIdBegins;
-		HotKeySet										hotKeySet;
-		HotKeyIds										hotKeyIds;
-
-		CursorMap										cursors;
-		bool											timerEnabled = false;
-		bool											windowCreated = false;
-		bool											windowDestroyed = false;
-
-		collections::Dictionary<VKEY, WString>			keyNames;
-		collections::Dictionary<WString, VKEY>			keyCodes;
-		bool											keyInitialized = false;
-
-		// =============================================================
-		// INativeResourceService
-		// =============================================================
-
-		INativeCursor*					GetSystemCursor(INativeCursor::SystemCursorType type) override;
-		INativeCursor*					GetDefaultSystemCursor() override;
-		FontProperties					GetDefaultFont() override;
-		void							SetDefaultFont(const FontProperties& value) override;
-		void							EnumerateFonts(collections::List<WString>& fonts) override;
-		WString							GetOSSuperKeyName() override;
-
-		// =============================================================
-		// INativeInputService
-		// =============================================================
-
-		void							StartTimer() override;
-		void							StopTimer() override;
-		bool							IsTimerEnabled() override;
-		bool							IsKeyPressing(VKEY code) override;
-		bool							IsKeyToggled(VKEY code) override;
-		void							EnsureKeyInitialized();
-		void							EnsureControllerConnected();
-		WString							GetKeyName(VKEY code) override;
-		VKEY							GetKey(const WString& name) override;
-		void							UpdateGlobalShortcutKey();
-		vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key) override;
-		bool							UnregisterGlobalShortcutKey(vint id) override;
-
-		// =============================================================
-		// INativeScreenService
-		// =============================================================
-
-		vint							GetScreenCount() override;
-		INativeScreen*					GetScreen(vint index) override;
-		INativeScreen*					GetScreen(INativeWindow* window) override;
-
-		// =============================================================
-		// INativeScreen
-		// =============================================================
-
-		NativeRect						GetBounds() override;
-		NativeRect						GetClientBounds() override;
-		WString							GetName() override;
-		bool							IsPrimary() override;
-		double							GetScalingX() override;
-		double							GetScalingY() override;
-
-		// =============================================================
-		// INativeWindowService
-		// =============================================================
-			
-		const NativeWindowFrameConfig&	GetMainWindowFrameConfig() override;
-		const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig() override;
-		INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
-		void							DestroyNativeWindow(INativeWindow* window) override;
-		INativeWindow*					GetMainWindow() override;
-		INativeWindow*					GetWindow(NativePoint location) override;
-		void							Run(INativeWindow* window) override;
-		bool							RunOneCycle() override;
-
-		// =============================================================
-		// Events
-		// =============================================================
-
-		void							OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& _globalConfig);
-		void							OnControllerDisconnect();
-		void							OnControllerRequestExit();
-		void							OnControllerForceExit();
-		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
-
-	public:
-		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol);
-		~GuiRemoteController();
-
-		void									Initialize();
-		void									Finalize();
-		remoteprotocol::ControllerGlobalConfig	GetGlobalConfig();
-
-		// =============================================================
-		// INativeController
-		// =============================================================
-
-		INativeCallbackService*			CallbackService() override;
-		INativeResourceService*			ResourceService() override;
-		INativeAsyncService*			AsyncService() override;
-		INativeClipboardService*		ClipboardService() override;
-		INativeImageService*			ImageService() override;
-		INativeInputService*			InputService() override;
-		INativeDialogService*			DialogService() override;
-		INativeAutomationService*		AutomationService() override;
-		WString							GetExecutablePath() override;
-			
-		INativeScreenService*			ScreenService() override;
-		INativeWindowService*			WindowService() override;
-	};
-}
-
-#endif
-
-
-/***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\TUIITEMTEMPLATES.H
 ***********************************************************************/
 #ifndef VCZH_PRESENTATION_CONTROLS_TUIITEMTEMPLATES
@@ -26989,6 +26986,256 @@ External Functions
 
 
 /***********************************************************************
+.\APPLICATION\GRAPHICSHOST\GUIGRAPHICSHOST_POINT.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Graphics Composition Host
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_POINT
+#define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_POINT
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace compositions
+		{
+			class GuiGraphicsHost;
+
+			class IGuiPointGesture : public virtual Interface
+			{
+			public:
+				virtual void								OnPointSequenceStarted(const NativeWindowPointInfo& info) = 0;
+				virtual void								OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType) = 0;
+				virtual void								OnPointSequenceEnded(const PointSequenceEndInfo& info) = 0;
+				virtual bool								IsGestureSelected() = 0;
+				virtual Nullable<NativeMouseButton>			GetFallbackClick() = 0;
+			};
+
+			class GuiPointActionManager : public Object
+			{
+			protected:
+				GuiGraphicsHost*							host;
+				GuiGraphicsComposition*						captureComposition = nullptr;
+				NativeWindowPointInfo						firstPoint;
+				NativePoint									firstPointScreen;
+				collections::List<Nullable<NativePoint>>	nativePoints;
+				collections::List<Nullable<Point>>			points;
+				collections::List<Ptr<IGuiPointGesture>>	gestures;
+				IGuiPointGesture*							selectedGesture = nullptr;
+				bool										ended = false;
+
+			public:
+				GuiPointActionManager(GuiGraphicsHost* _host);
+				void										OnPointSequenceStarted(const NativeWindowPointInfo& info, GuiGraphicsComposition* composition);
+				void										OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType);
+				bool										OnPointSequenceEnded(const PointSequenceEndInfo& info);
+
+				void										PointCapture(GuiGraphicsComposition* composition);
+				void										ResetPointCapture();
+				GuiGraphicsComposition*						GetPointCapture();
+
+				const collections::List<Nullable<NativePoint>>& GetNativePoints();
+				const collections::List<Nullable<Point>>&	GetPoints(GuiGraphicsComposition* relativeTo);
+				NativePoint									GetScreenPoint(const NativeWindowPointInfo& info);
+				Point										ConvertPoint(NativePoint screen, GuiGraphicsComposition* relativeTo);
+				WindowPointInfo								ConvertSample(const NativeWindowPointInfo& info, GuiGraphicsComposition* relativeTo);
+				NativeWindowPointInfo						GetFirstPoint();
+				Nullable<NativeMouseButton>					GetFallbackClick();
+			};
+		}
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTECONTROLLERINJECTION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote feature injection
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLERINJECTION
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLERINJECTION
+
+
+namespace vl::presentation
+{
+	class GuiRemoteController;
+
+	/// <summary>Opt-in renderer implementations of process-wide features.</summary>
+	struct GuiRemoteControllerConfig
+	{
+		bool									injectDateTime = false;
+		bool									injectLocale = false;
+		bool									injectFileSystem = false;
+	};
+
+	// Shared by the controller and its buffered streams. Requests execute on the
+	// core thread; pending workers are released when its event loop stops.
+	// Streams retain this state, never a dangling controller pointer.
+	class GuiRemoteControllerInjectionState : public Object
+	{
+		friend class GuiRemoteController;
+		struct Invocation : Object
+		{
+			Func<bool(GuiRemoteController*)>		proc;
+			EventObject							completed;
+			bool								result = false;
+			Invocation();
+		};
+
+		GuiRemoteController*					remote;
+		vint									mainThreadId;
+		// covers remote, acceptingWorkers and pending
+		SpinLock								lockPending;
+		bool									acceptingWorkers = false;
+		collections::List<Ptr<Invocation>>		pending;
+
+		void									Stop();
+	public:
+		GuiRemoteControllerInjectionState(GuiRemoteController* _remote);
+		bool									Execute(const Func<bool(GuiRemoteController*)>& proc);
+	};
+
+	// Only timezone conversions are remote. LocalTime uses the predecessor UTC
+	// clock and the selected conversion. Construction, arithmetic and fallback
+	// always use Previous(), preserving application injections.
+	class GuiRemoteDateTimeInjection : public feature_injection::FeatureImpl<IDateTimeImpl>
+	{
+		GuiRemoteController*					remote;
+		vuint64_t								Convert(vuint64_t value, bool toLocal, bool localTime = false);
+	public:
+		GuiRemoteDateTimeInjection(GuiRemoteController* _remote);
+		DateTime								FromDateTime(vint year, vint month, vint day, vint hour, vint minute, vint second, vint milliseconds) override;
+		DateTime								FromOSInternal(vuint64_t value) override;
+		vuint64_t								LocalTime() override;
+		vuint64_t								UtcTime() override;
+		vuint64_t								LocalToUtcTime(vuint64_t value) override;
+		vuint64_t								UtcToLocalTime(vuint64_t value) override;
+		vuint64_t								Forward(vuint64_t value, vuint64_t milliseconds) override;
+		vuint64_t								Backward(vuint64_t value, vuint64_t milliseconds) override;
+	};
+
+	// Defaults, enumeration, format lists, names and case mapping are remote.
+	// Formatting, comparisons and searches stay local through Previous().
+	// An unavailable renderer also delegates all operations to Previous().
+	class GuiRemoteLocaleInjection : public feature_injection::FeatureImpl<ILocaleImpl>
+	{
+		GuiRemoteController*					remote;
+		ILocaleImpl*							Predecessor() const;
+		Ptr<collections::List<WString>>			Query(remoteprotocol::InjectionLocaleOperation operation, const WString& localeName = L"", const WString& text = L"", vint index = 0) const;
+	public:
+		GuiRemoteLocaleInjection(GuiRemoteController* _remote);
+		Locale							Invariant() const override;
+		Locale							SystemDefault() const override;
+		Locale							UserDefault() const override;
+		void							Enumerate(collections::List<Locale>& locales) const override;
+		void							GetShortDateFormats(const WString& localeName, collections::List<WString>& formats) const override;
+		void							GetLongDateFormats(const WString& localeName, collections::List<WString>& formats) const override;
+		void							GetYearMonthDateFormats(const WString& localeName, collections::List<WString>& formats) const override;
+		void							GetLongTimeFormats(const WString& localeName, collections::List<WString>& formats) const override;
+		void							GetShortTimeFormats(const WString& localeName, collections::List<WString>& formats) const override;
+		WString							FormatDate(const WString& localeName, const WString& format, DateTime date) const override;
+		WString							FormatTime(const WString& localeName, const WString& format, DateTime time) const override;
+		WString							FormatNumber(const WString& localeName, const WString& number) const override;
+		WString							FormatCurrency(const WString& localeName, const WString& currency) const override;
+		WString							GetShortDayOfWeekName(const WString& localeName, vint dayOfWeek) const override;
+		WString							GetLongDayOfWeekName(const WString& localeName, vint dayOfWeek) const override;
+		WString							GetShortMonthName(const WString& localeName, vint month) const override;
+		WString							GetLongMonthName(const WString& localeName, vint month) const override;
+		WString							ToLower(const WString& localeName, const WString& str) const override;
+		WString							ToUpper(const WString& localeName, const WString& str) const override;
+		WString							ToLinguisticLower(const WString& localeName, const WString& str) const override;
+		WString							ToLinguisticUpper(const WString& localeName, const WString& str) const override;
+		vint							Compare(const WString& localeName, const WString& s1, const WString& s2, Locale::Normalization normalization) const override;
+		vint							CompareOrdinal(const WString& s1, const WString& s2) const override;
+		vint							CompareOrdinalIgnoreCase(const WString& s1, const WString& s2) const override;
+		collections::Pair<vint, vint>	FindFirst(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const override;
+		collections::Pair<vint, vint>	FindLast(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const override;
+		bool							StartsWith(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const override;
+		bool							EndsWith(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const override;
+	};
+
+	// All filesystem operations use renderer path rules and storage. Absence
+	// supplies an empty '/' root, lexical paths and normal unavailable results;
+	// it never delegates to the predecessor or accesses core storage.
+	class GuiRemoteFileSystemInjection : public feature_injection::FeatureImpl<filesystem::IFileSystemImpl>
+	{
+		GuiRemoteController*					remote;
+		mutable SpinLock						lockDelimiters;
+		mutable collections::SortedList<WString>	delimiters;
+		remoteprotocol::InjectionFileResponse	Query(remoteprotocol::InjectionFileOperation operation, const WString& path = L"", const WString& target = L"") const;
+	public:
+		GuiRemoteFileSystemInjection(GuiRemoteController* _remote);
+		wchar_t												GetPathDelimiter() const override;
+		const wchar_t*										GetCompatibleDelimiters() const override;
+		WString												ConcatPath(const WString& fullPath, const WString& relativePath) const override;
+		void												Initialize(WString& fullPath) const override;
+		bool												IsFile(const WString& fullPath) const override;
+		bool												IsFolder(const WString& fullPath) const override;
+		bool												IsRoot(const WString& fullPath) const override;
+		WString												GetRelativePathFor(const WString& fromPath, const WString& toPath) const override;
+		filesystem::FileInfo								GetFileInfo(const filesystem::FilePath& path) const override;
+		bool												FileCopy(const filesystem::FilePath& source, const filesystem::FilePath& destination) const override;
+		bool												FileDelete(const filesystem::FilePath& filePath) const override;
+		bool												FileRename(const filesystem::FilePath& filePath, const WString& newName) const override;
+		bool												GetFolders(const filesystem::FilePath& folderPath, collections::List<filesystem::Folder>& folders) const override;
+		bool												GetFiles(const filesystem::FilePath& folderPath, collections::List<filesystem::File>& files) const override;
+		bool												CreateFolder(const filesystem::FilePath& folderPath) const override;
+		bool												DeleteFolder(const filesystem::FilePath& folderPath) const override;
+		bool												FolderRename(const filesystem::FilePath& folderPath, const WString& newName) const override;
+		Ptr<stream::IFileStreamImpl>						GetFileStreamImpl(const WString& fileName, stream::FileStream::AccessRight accessRight) const override;
+	};
+
+	// ReadOnly snapshots the complete file; native WriteOnly and ReadWrite
+	// validate an actual native open (including native creation/truncation) and
+	// start empty. New buffered bytes become visible after successful Close;
+	// existing readers retain their snapshot. Close uploads once, including
+	// zero bytes. Every open stream, even ReadOnly, must close on its original
+	// live connection; disconnect/replacement/destruction of Core is an error.
+	class GuiRemoteFileStreamInjection : public Object, public stream::IFileStreamImpl
+	{
+		Ptr<GuiRemoteControllerInjectionState>	state;
+		WString									fileName;
+		stream::FileStream::AccessRight			access;
+		Ptr<stream::MemoryStream>				buffer;
+		vuint64_t								connection = 0;
+		bool									opened = false;
+	public:
+		GuiRemoteFileStreamInjection(Ptr<GuiRemoteControllerInjectionState> _state, const WString& _fileName, stream::FileStream::AccessRight _access);
+		~GuiRemoteFileStreamInjection();
+		bool									Open() override;
+		void									Close() override;
+		pos_t							Position() const override;
+		pos_t							Size() const override;
+		void									Seek(pos_t size) override;
+		void									SeekFromBegin(pos_t size) override;
+		void									SeekFromEnd(pos_t size) override;
+		vint									Read(void* data, vint size) override;
+		vint									Write(void* data, vint size) override;
+		vint									Peek(void* data, vint size) override;
+	};
+
+	extern remoteprotocol::InjectionDateTime		EncodeInjectionDateTime(DateTime value);
+	extern DateTime								DecodeInjectionDateTime(const remoteprotocol::InjectionDateTime& value);
+	extern remoteprotocol::InjectionFileInfo		EncodeInjectionFileInfo(const filesystem::FileInfo& value);
+	extern filesystem::FileInfo					DecodeInjectionFileInfo(const remoteprotocol::InjectionFileInfo& value);
+}
+
+#endif
+
+
+
+/***********************************************************************
 .\GACUI.H
 ***********************************************************************/
 /***********************************************************************
@@ -27053,7 +27300,7 @@ namespace vl::presentation
 {
 	class IGuiRemoteProtocol;
 }
-extern int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol);
+extern int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol, const vl::presentation::GuiRemoteControllerConfig& config = {});
 
 // Windows
 extern int SetupWindowsGDIRenderer();
@@ -27077,6 +27324,190 @@ namespace vl::presentation::elements::wgac
 // macOS
 extern int SetupOSXCoreGraphicsRenderer();
 extern int SetupOSXHostedCoreGraphicsRenderer();
+
+#endif
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTECONTROLLER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+Interfaces:
+  GuiRemoteController
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER
+
+
+namespace vl::presentation
+{
+/***********************************************************************
+GuiRemoteController
+***********************************************************************/
+
+	class GuiRemoteController
+		: public Object
+		, public INativeController
+		, protected INativeResourceService
+		, protected INativeInputService
+		, protected INativeScreenService
+		, protected INativeScreen
+		, protected INativeWindowService
+	{
+		friend class GuiRemoteMessages;
+		friend class GuiRemoteEvents;
+		friend class GuiRemoteWindow;
+		friend class GuiRemoteGraphicsImage;
+		friend class GuiRemoteControllerInjectionState;
+		friend class GuiRemoteDateTimeInjection;
+		friend class GuiRemoteLocaleInjection;
+		friend class GuiRemoteFileSystemInjection;
+		friend class GuiRemoteFileStreamInjection;
+		friend class elements::GuiRemoteGraphicsRenderTarget;
+		friend class elements::GuiRemoteGraphicsResourceManager;
+		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
+		using HotKeyEntry = Tuple<bool, bool, bool, bool, VKEY>;
+		using HotKeySet = collections::SortedList<HotKeyEntry>;
+		using HotKeyIds = collections::Dictionary<vint, HotKeyEntry>;
+	protected:
+		IGuiRemoteProtocol*								remoteProtocol = nullptr;
+		GuiRemoteMessages								remoteMessages;
+		GuiRemoteEvents									remoteEvents;
+		GuiRemoteWindow									remoteWindow;
+		elements::GuiRemoteGraphicsResourceManager*		resourceManager = nullptr;
+		SharedCallbackService							callbackService;
+		SharedAsyncService								asyncService;
+		GuiRemoteGraphicsImageService					imageService;
+		bool											applicationRunning = false;
+		bool											controllerConnected = false;
+		bool											connectionForcedToStop = false;
+		bool											connectionStopped = false;
+
+		GuiRemoteControllerConfig						globalConfig;
+		Ptr<GuiRemoteControllerInjectionState>			injectionState;
+		Ptr<GuiRemoteDateTimeInjection>					dateTimeInjection;
+		Ptr<GuiRemoteLocaleInjection>						localeInjection;
+		Ptr<GuiRemoteFileSystemInjection>				fileSystemInjection;
+		vuint64_t										connectionGeneration = 0;
+		remoteprotocol::ControllerGlobalConfig			remoteGlobalConfig{};
+		remoteprotocol::FontConfig						remoteFontConfig;
+		remoteprotocol::ScreenConfig					remoteScreenConfig;
+
+		vint											usedHotKeys = (vint)NativeGlobalShortcutKeyResult::ValidIdBegins;
+		HotKeySet										hotKeySet;
+		HotKeyIds										hotKeyIds;
+
+		CursorMap										cursors;
+		bool											timerEnabled = false;
+		bool											windowCreated = false;
+		bool											windowDestroyed = false;
+
+		collections::Dictionary<VKEY, WString>			keyNames;
+		collections::Dictionary<WString, VKEY>			keyCodes;
+		bool											keyInitialized = false;
+
+		// =============================================================
+		// INativeResourceService
+		// =============================================================
+
+		INativeCursor*					GetSystemCursor(INativeCursor::SystemCursorType type) override;
+		INativeCursor*					GetDefaultSystemCursor() override;
+		FontProperties					GetDefaultFont() override;
+		void							SetDefaultFont(const FontProperties& value) override;
+		void							EnumerateFonts(collections::List<WString>& fonts) override;
+		WString							GetOSSuperKeyName() override;
+
+		// =============================================================
+		// INativeInputService
+		// =============================================================
+
+		void							StartTimer() override;
+		void							StopTimer() override;
+		bool							IsTimerEnabled() override;
+		bool							IsKeyPressing(VKEY code) override;
+		bool							IsKeyToggled(VKEY code) override;
+		void							EnsureKeyInitialized();
+		void							EnsureControllerConnected();
+		WString							GetKeyName(VKEY code) override;
+		VKEY							GetKey(const WString& name) override;
+		void							UpdateGlobalShortcutKey();
+		vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, bool osSuper, VKEY key) override;
+		bool							UnregisterGlobalShortcutKey(vint id) override;
+
+		// =============================================================
+		// INativeScreenService
+		// =============================================================
+
+		vint							GetScreenCount() override;
+		INativeScreen*					GetScreen(vint index) override;
+		INativeScreen*					GetScreen(INativeWindow* window) override;
+
+		// =============================================================
+		// INativeScreen
+		// =============================================================
+
+		NativeRect						GetBounds() override;
+		NativeRect						GetClientBounds() override;
+		WString							GetName() override;
+		bool							IsPrimary() override;
+		double							GetScalingX() override;
+		double							GetScalingY() override;
+
+		// =============================================================
+		// INativeWindowService
+		// =============================================================
+			
+		const NativeWindowFrameConfig&	GetMainWindowFrameConfig() override;
+		const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig() override;
+		INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
+		void							DestroyNativeWindow(INativeWindow* window) override;
+		INativeWindow*					GetMainWindow() override;
+		INativeWindow*					GetWindow(NativePoint location) override;
+		void							Run(INativeWindow* window) override;
+		bool							RunOneCycle() override;
+
+		// =============================================================
+		// Events
+		// =============================================================
+
+		void							OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& _globalConfig);
+		void							OnControllerDisconnect();
+		void							OnControllerRequestExit();
+		void							OnControllerForceExit();
+		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
+
+	public:
+		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol, const GuiRemoteControllerConfig& _globalConfig = {});
+		~GuiRemoteController();
+
+		void									Initialize();
+		void									Finalize();
+		remoteprotocol::ControllerGlobalConfig	GetGlobalConfig();
+
+		// =============================================================
+		// INativeController
+		// =============================================================
+
+		INativeCallbackService*			CallbackService() override;
+		INativeResourceService*			ResourceService() override;
+		INativeAsyncService*			AsyncService() override;
+		INativeClipboardService*		ClipboardService() override;
+		INativeImageService*			ImageService() override;
+		INativeInputService*			InputService() override;
+		INativeDialogService*			DialogService() override;
+		INativeAutomationService*		AutomationService() override;
+		WString							GetExecutablePath() override;
+			
+		INativeScreenService*			ScreenService() override;
+		INativeWindowService*			WindowService() override;
+	};
+}
 
 #endif
 
@@ -33083,75 +33514,6 @@ https://github.com/vczh-libraries
 #ifndef VCZH_WORKFLOW_COMPILER_GENERATED_TUIFAKEDIALOGSERVICEUIINCLUDES
 #define VCZH_WORKFLOW_COMPILER_GENERATED_TUIFAKEDIALOGSERVICEUIINCLUDES
 
-
-#endif
-
-
-/***********************************************************************
-.\APPLICATION\GRAPHICSHOST\GUIGRAPHICSHOST_POINT.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Graphics Composition Host
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_POINT
-#define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_POINT
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace compositions
-		{
-			class GuiGraphicsHost;
-
-			class IGuiPointGesture : public virtual Interface
-			{
-			public:
-				virtual void								OnPointSequenceStarted(const NativeWindowPointInfo& info) = 0;
-				virtual void								OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType) = 0;
-				virtual void								OnPointSequenceEnded(const PointSequenceEndInfo& info) = 0;
-				virtual bool								IsGestureSelected() = 0;
-				virtual Nullable<NativeMouseButton>			GetFallbackClick() = 0;
-			};
-
-			class GuiPointActionManager : public Object
-			{
-			protected:
-				GuiGraphicsHost*							host;
-				GuiGraphicsComposition*						captureComposition = nullptr;
-				NativeWindowPointInfo						firstPoint;
-				NativePoint									firstPointScreen;
-				collections::List<Nullable<NativePoint>>	nativePoints;
-				collections::List<Nullable<Point>>			points;
-				collections::List<Ptr<IGuiPointGesture>>	gestures;
-				IGuiPointGesture*							selectedGesture = nullptr;
-				bool										ended = false;
-
-			public:
-				GuiPointActionManager(GuiGraphicsHost* _host);
-				void										OnPointSequenceStarted(const NativeWindowPointInfo& info, GuiGraphicsComposition* composition);
-				void										OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType);
-				bool										OnPointSequenceEnded(const PointSequenceEndInfo& info);
-
-				void										PointCapture(GuiGraphicsComposition* composition);
-				void										ResetPointCapture();
-				GuiGraphicsComposition*						GetPointCapture();
-
-				const collections::List<Nullable<NativePoint>>& GetNativePoints();
-				const collections::List<Nullable<Point>>&	GetPoints(GuiGraphicsComposition* relativeTo);
-				NativePoint									GetScreenPoint(const NativeWindowPointInfo& info);
-				Point										ConvertPoint(NativePoint screen, GuiGraphicsComposition* relativeTo);
-				WindowPointInfo								ConvertSample(const NativeWindowPointInfo& info, GuiGraphicsComposition* relativeTo);
-				NativeWindowPointInfo						GetFirstPoint();
-				Nullable<NativeMouseButton>					GetFallbackClick();
-			};
-		}
-	}
-}
 
 #endif
 

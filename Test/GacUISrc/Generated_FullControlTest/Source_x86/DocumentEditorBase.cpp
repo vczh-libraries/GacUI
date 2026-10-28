@@ -29,9 +29,6 @@ https://github.com/vczh-libraries
 #define GLOBAL_NAME ::vl_workflow_global::FullControlTest::Instance().
 #define GLOBAL_OBJ &::vl_workflow_global::FullControlTest::Instance()
 
-/* USER_CONTENT_BEGIN(custom global declarations) */
-/* USER_CONTENT_END() */
-
 /***********************************************************************
 Class (::demo::DocumentEditorBase)
 ***********************************************************************/
@@ -122,26 +119,6 @@ namespace demo
 		return static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->toolstripContainer);
 	}
 
-	void DocumentEditorBase::LoadAsPrivateFormat(const ::vl::WString& fileName)
-	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
-		throw ::vl::Exception(L"You should implement this function.");
-	}/* USER_CONTENT_END() */
-
-	void DocumentEditorBase::SaveAsPrivateFormat(const ::vl::WString& fileName)
-	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
-		throw ::vl::Exception(L"You should implement this function.");
-	}/* USER_CONTENT_END() */
-
-	void DocumentEditorBase::SaveAsRTF(const ::vl::WString& fileName)
-	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
-		throw ::vl::Exception(L"You should implement this function.");
-	}/* USER_CONTENT_END() */
-
-	void DocumentEditorBase::SaveAsHTML(const ::vl::WString& fileName)
-	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
-		throw ::vl::Exception(L"You should implement this function.");
-	}/* USER_CONTENT_END() */
-
 	void DocumentEditorBase::SaveDocument()
 	{
 		if (::vl::__vwsn::This(this->dialogSaveDoc)->ShowDialog())
@@ -150,16 +127,16 @@ namespace demo
 				auto __vwsn_switch_3 = ::vl::__vwsn::This(this->dialogSaveDoc)->GetFilterIndex();
 				if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(0)))
 				{
-					::vl::__vwsn::This(this->self)->SaveAsPrivateFormat(::vl::__vwsn::This(this->dialogSaveDoc)->GetFileName());
+					::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this->self)->SaveAsPrivateFormat)(::vl::__vwsn::This(this->dialogSaveDoc)->GetFileName());
 					::vl::__vwsn::This(this->document)->NotifyModificationSaved();
 				}
 				else if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(1)))
 				{
-					::vl::__vwsn::This(this->self)->SaveAsRTF(::vl::__vwsn::This(this->dialogSaveDoc)->GetFileName());
+					::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this->self)->SaveAsRTF)(::vl::__vwsn::This(this->dialogSaveDoc)->GetFileName());
 				}
 				else if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(2)))
 				{
-					::vl::__vwsn::This(this->self)->SaveAsHTML(::vl::__vwsn::This(this->dialogSaveDoc)->GetFileName());
+					::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this->self)->SaveAsHTML)(::vl::__vwsn::This(this->dialogSaveDoc)->GetFileName());
 				}
 			}
 		}
@@ -175,7 +152,7 @@ namespace demo
 				{
 					if (::vl::__vwsn::This(this->dialogSaveDocPrivate)->ShowDialog())
 					{
-						::vl::__vwsn::This(this->self)->SaveAsPrivateFormat(::vl::__vwsn::This(this->dialogSaveDocPrivate)->GetFileName());
+						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this->self)->SaveAsPrivateFormat)(::vl::__vwsn::This(this->dialogSaveDocPrivate)->GetFileName());
 						return false;
 					}
 					else
@@ -234,3 +211,18 @@ namespace demo
 #elif defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
+// UNUSED_USER_CONTENT:
+//	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
+//		throw ::vl::Exception(L"You should implement this function.");
+//	}/* USER_CONTENT_END() */
+//	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
+//		throw ::vl::Exception(L"You should implement this function.");
+//	}/* USER_CONTENT_END() */
+//	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
+//		throw ::vl::Exception(L"You should implement this function.");
+//	}/* USER_CONTENT_END() */
+//	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
+//		throw ::vl::Exception(L"You should implement this function.");
+//	}/* USER_CONTENT_END() */
+///* USER_CONTENT_BEGIN(custom global declarations) */
+///* USER_CONTENT_END() */

@@ -24,6 +24,7 @@
 ../../../Source/PlatformProviders/Hosted/GuiHostedWindowProxy_NonMain.cpp
 ../../../Source/PlatformProviders/Hosted/GuiHostedWindowProxy_Placeholder.cpp
 ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.cpp
+../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Injection.cpp
 ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Controller.cpp
 ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_IO.cpp
 ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_MainWindow.cpp
@@ -33,6 +34,7 @@
 ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Image.cpp
 ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Label.cpp
 ../../../Source/PlatformProviders/Remote/GuiRemoteController.cpp
+../../../Source/PlatformProviders/Remote/GuiRemoteControllerInjection.cpp
 ../../../Source/PlatformProviders/Remote/GuiRemoteControllerSetup.cpp
 ../../../Source/PlatformProviders/Remote/GuiRemoteEvents.cpp
 ../../../Source/PlatformProviders/Remote/GuiRemoteGraphics.cpp
@@ -190,7 +192,7 @@
 ../../GacUISrc/Generated_FullControlTest/Source_x64/FullControlTestReflection.cpp
 ../../GacUISrc/Generated_FullControlTest/Source_x64/FullControlTestResource.cpp
 ../../GacUISrc/Generated_FullControlTest/Source_x64/MainWindow.cpp
-../../GacUISrc/Generated_FullControlTest/FullControlTestPalette.cpp
+../../GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.cpp
 ../../../Source/Skins/DarkSkin/Config/DarkSkinConfig.cpp
 ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTest.cpp
 ../../GacUISrc/Generated_RemoteViewModelTest/Source_x64/RemoteViewModelTestReflection.cpp

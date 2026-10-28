@@ -24,6 +24,7 @@
 ../../../Source/PlatformProviders/Hosted/GuiHostedWindowProxy_NonMain.cpp
 ../../../Source/PlatformProviders/Hosted/GuiHostedWindowProxy_Placeholder.cpp
 ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.cpp
+../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Injection.cpp
 ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Controller.cpp
 ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_IO.cpp
 ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_MainWindow.cpp
@@ -33,6 +34,7 @@
 ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Image.cpp
 ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Label.cpp
 ../../../Source/PlatformProviders/Remote/GuiRemoteController.cpp
+../../../Source/PlatformProviders/Remote/GuiRemoteControllerInjection.cpp
 ../../../Source/PlatformProviders/Remote/GuiRemoteControllerSetup.cpp
 ../../../Source/PlatformProviders/Remote/GuiRemoteEvents.cpp
 ../../../Source/PlatformProviders/Remote/GuiRemoteGraphics.cpp
@@ -170,7 +172,7 @@
 ../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUIResource.cpp
 ../../../Source/Utilities/GuiUtilitiesRegistration.cpp
 ../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.cpp
-../../GacUISrc/Generated_FullControlTest/FullControlTestPalette.cpp
+../../GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.cpp
 ../Wasm/WasmApplication.cpp
 ../../RemotingHelpers/RemotingServer/Wasm/WasmNetworkProtocol.cpp
 ../../../Source/Skins/DarkSkin/Source/DarkSkinPartialClasses.cpp

@@ -171,3 +171,5 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Utilities\FakeServices\TuiDialogs\TuiFakeDialogService.cpp"
 #include "..\..\Source\GraphicsComposition\EazyLayout\GuiEasyLayout.cpp"
 #include "..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Point.cpp"
+#include "..\..\Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Injection.cpp"
+#include "..\..\Source\PlatformProviders\Remote\GuiRemoteControllerInjection.cpp"

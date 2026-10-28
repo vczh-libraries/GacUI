@@ -13,6 +13,11 @@ namespace vl::presentation::remoteprotocol
 	struct FontConfig;
 	struct ScreenConfig;
 	struct ControllerGlobalConfig;
+	struct InjectionDateTime;
+	struct InjectionLocaleRequest;
+	struct InjectionFileInfo;
+	struct InjectionFileRequest;
+	struct InjectionFileResponse;
 	struct WindowSizingConfig;
 	struct WindowShowing;
 	struct IOMouseInfoWithButton;
@@ -32,6 +37,7 @@ namespace vl::presentation::remoteprotocol
 	struct ImageCreation;
 	struct ImageFrameMetadata;
 	struct ImageMetadata;
+	struct ImageSaveRequest;
 	struct ElementDesc_ImageFrame;
 	struct DocumentTextRunProperty;
 	struct DocumentInlineObjectRunProperty;
@@ -77,6 +83,11 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::FontConfig> { static constexpr const wchar_t* Name = L"FontConfig"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ScreenConfig> { static constexpr const wchar_t* Name = L"ScreenConfig"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ControllerGlobalConfig> { static constexpr const wchar_t* Name = L"ControllerGlobalConfig"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionDateTime> { static constexpr const wchar_t* Name = L"InjectionDateTime"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionLocaleRequest> { static constexpr const wchar_t* Name = L"InjectionLocaleRequest"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionFileInfo> { static constexpr const wchar_t* Name = L"InjectionFileInfo"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionFileRequest> { static constexpr const wchar_t* Name = L"InjectionFileRequest"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::InjectionFileResponse> { static constexpr const wchar_t* Name = L"InjectionFileResponse"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowSizingConfig> { static constexpr const wchar_t* Name = L"WindowSizingConfig"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowShowing> { static constexpr const wchar_t* Name = L"WindowShowing"; };
 	template<> struct JsonNameHelper<::vl::presentation::NativeWindowMouseInfo> { static constexpr const wchar_t* Name = L"IOMouseInfo"; };
@@ -100,6 +111,7 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageCreation> { static constexpr const wchar_t* Name = L"ImageCreation"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageFrameMetadata> { static constexpr const wchar_t* Name = L"ImageFrameMetadata"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageMetadata> { static constexpr const wchar_t* Name = L"ImageMetadata"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageSaveRequest> { static constexpr const wchar_t* Name = L"ImageSaveRequest"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_ImageFrame> { static constexpr const wchar_t* Name = L"ElementDesc_ImageFrame"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::DocumentTextRunProperty> { static constexpr const wchar_t* Name = L"DocumentTextRunProperty"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty> { static constexpr const wchar_t* Name = L"DocumentInlineObjectRunProperty"; };
@@ -138,6 +150,52 @@ namespace vl::presentation::remoteprotocol
 		UTF8,
 		UTF16,
 		UTF32,
+	};
+
+	enum class InjectionLocaleOperation
+	{
+		Invariant,
+		SystemDefault,
+		UserDefault,
+		Enumerate,
+		ShortDateFormats,
+		LongDateFormats,
+		YearMonthDateFormats,
+		LongTimeFormats,
+		ShortTimeFormats,
+		ShortDayOfWeekName,
+		LongDayOfWeekName,
+		ShortMonthName,
+		LongMonthName,
+		ToLower,
+		ToUpper,
+		ToLinguisticLower,
+		ToLinguisticUpper,
+	};
+
+	enum class InjectionFileOperation
+	{
+		PathDelimiter,
+		CompatibleDelimiters,
+		Initialize,
+		Concat,
+		Relative,
+		IsRoot,
+		IsFile,
+		IsFolder,
+		Info,
+		Copy,
+		DeleteFile,
+		RenameFile,
+		Folders,
+		Files,
+		CreateFolder,
+		DeleteFolder,
+		RenameFolder,
+		OpenRead,
+		OpenWrite,
+		OpenReadWrite,
+		Commit,
 	};
 
 	enum class ElementHorizontalAlignment
@@ -233,6 +291,73 @@ namespace vl::presentation::remoteprotocol
 	{
 		::vl::presentation::remoteprotocol::CharacterEncoding documentCaretFromEncoding;
 		::vl::WString osSuperKeyName;
+		bool injectDateTime;
+		bool injectLocale;
+		bool injectFileSystem;
+	};
+
+	struct InjectionDateTime
+	{
+		::vl::vint year;
+		::vl::vint month;
+		::vl::vint day;
+		::vl::vint hour;
+		::vl::vint minute;
+		::vl::vint second;
+		::vl::vint milliseconds;
+	};
+
+	struct InjectionLocaleRequest
+	{
+		::vl::presentation::remoteprotocol::InjectionLocaleOperation operation;
+		::vl::WString localeName;
+		::vl::WString text;
+		::vl::vint index;
+	};
+
+	struct InjectionFileInfo
+	{
+		::vl::WString size;
+		::vl::WString hardLinkCount;
+		::vl::Nullable<::vl::presentation::remoteprotocol::InjectionDateTime> creationTime;
+		::vl::Nullable<::vl::presentation::remoteprotocol::InjectionDateTime> lastAccessTime;
+		::vl::Nullable<::vl::presentation::remoteprotocol::InjectionDateTime> lastModifiedTime;
+		::vl::Nullable<::vl::presentation::remoteprotocol::InjectionDateTime> lastChangeTime;
+		bool isDirectory;
+		bool isSymbolicLink;
+		bool isReparsePoint;
+		bool canRead;
+		bool canWrite;
+		bool canExecute;
+		bool isReadOnly;
+		bool isHidden;
+		bool isSystem;
+		bool isArchive;
+		bool isCompressed;
+		bool isEncrypted;
+		bool isSparse;
+		bool isTemporary;
+		bool isOffline;
+		bool isNotContentIndexed;
+		bool isImmutable;
+		bool isAppendOnly;
+	};
+
+	struct InjectionFileRequest
+	{
+		::vl::presentation::remoteprotocol::InjectionFileOperation operation;
+		::vl::WString path;
+		::vl::WString target;
+		::vl::Ptr<::vl::stream::MemoryStream> content;
+	};
+
+	struct InjectionFileResponse
+	{
+		bool success;
+		::vl::WString text;
+		::vl::Ptr<::vl::collections::List<::vl::WString>> paths;
+		::vl::Nullable<::vl::presentation::remoteprotocol::InjectionFileInfo> info;
+		::vl::Ptr<::vl::stream::MemoryStream> content;
 	};
 
 	struct WindowSizingConfig
@@ -391,6 +516,12 @@ namespace vl::presentation::remoteprotocol
 		::vl::vint id;
 		::vl::presentation::INativeImage::FormatType format;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ImageFrameMetadata>> frames;
+	};
+
+	struct ImageSaveRequest
+	{
+		::vl::vint id;
+		::vl::presentation::INativeImage::FormatType format;
 	};
 
 	struct ElementDesc_ImageFrame
@@ -612,6 +743,8 @@ namespace vl::presentation::remoteprotocol
 	};
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::CharacterEncoding>(const ::vl::presentation::remoteprotocol::CharacterEncoding & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionLocaleOperation>(const ::vl::presentation::remoteprotocol::InjectionLocaleOperation & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileOperation>(const ::vl::presentation::remoteprotocol::InjectionFileOperation & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeCursor::SystemCursorType>(const ::vl::presentation::INativeCursor::SystemCursorType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState & value);
@@ -640,6 +773,11 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::FontConfig>(const ::vl::presentation::remoteprotocol::FontConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ScreenConfig>(const ::vl::presentation::remoteprotocol::ScreenConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ControllerGlobalConfig>(const ::vl::presentation::remoteprotocol::ControllerGlobalConfig & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionDateTime>(const ::vl::presentation::remoteprotocol::InjectionDateTime & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionLocaleRequest>(const ::vl::presentation::remoteprotocol::InjectionLocaleRequest & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileInfo>(const ::vl::presentation::remoteprotocol::InjectionFileInfo & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileRequest>(const ::vl::presentation::remoteprotocol::InjectionFileRequest & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileResponse>(const ::vl::presentation::remoteprotocol::InjectionFileResponse & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::WindowSizingConfig>(const ::vl::presentation::remoteprotocol::WindowSizingConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::WindowShowing>(const ::vl::presentation::remoteprotocol::WindowShowing & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowMouseInfo>(const ::vl::presentation::NativeWindowMouseInfo & value);
@@ -663,6 +801,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ImageCreation>(const ::vl::presentation::remoteprotocol::ImageCreation & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ImageFrameMetadata>(const ::vl::presentation::remoteprotocol::ImageFrameMetadata & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ImageMetadata>(const ::vl::presentation::remoteprotocol::ImageMetadata & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ImageSaveRequest>(const ::vl::presentation::remoteprotocol::ImageSaveRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_ImageFrame>(const ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentTextRunProperty>(const ::vl::presentation::remoteprotocol::DocumentTextRunProperty & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(const ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty & value);
@@ -695,6 +834,8 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::UnitTest_RenderingTrace>(const ::vl::presentation::remoteprotocol::UnitTest_RenderingTrace & value);
 
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::CharacterEncoding>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::CharacterEncoding& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionLocaleOperation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionLocaleOperation& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileOperation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileOperation& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindowListener::HitTestResult>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindowListener::HitTestResult& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeCursor::SystemCursorType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeCursor::SystemCursorType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value);
@@ -723,6 +864,11 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::FontConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::FontConfig& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ScreenConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ScreenConfig& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ControllerGlobalConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ControllerGlobalConfig& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionDateTime>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionDateTime& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionLocaleRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionLocaleRequest& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileInfo& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileRequest& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileResponse& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::WindowSizingConfig>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::WindowSizingConfig& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::WindowShowing>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::WindowShowing& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowMouseInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowMouseInfo& value);
@@ -746,6 +892,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageCreation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ImageCreation& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageFrameMetadata>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ImageFrameMetadata& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageMetadata>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ImageMetadata& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageSaveRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ImageSaveRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_ImageFrame>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentTextRunProperty>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentTextRunProperty& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::DocumentInlineObjectRunProperty& value);
@@ -782,6 +929,10 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ControllerGetScreenConfig, void, ::vl::presentation::remoteprotocol::ScreenConfig, NOREQ, RES, NODROP)\
 	HANDLER(ControllerConnectionEstablished, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(ControllerConnectionStopped, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(InjectionLocalToUtc, ::vl::presentation::remoteprotocol::InjectionDateTime, ::vl::presentation::remoteprotocol::InjectionDateTime, REQ, RES, NODROP)\
+	HANDLER(InjectionUtcToLocal, ::vl::presentation::remoteprotocol::InjectionDateTime, ::vl::presentation::remoteprotocol::InjectionDateTime, REQ, RES, NODROP)\
+	HANDLER(InjectionLocale, ::vl::presentation::remoteprotocol::InjectionLocaleRequest, ::vl::Ptr<::vl::collections::List<::vl::WString>>, REQ, RES, NODROP)\
+	HANDLER(InjectionFileSystem, ::vl::presentation::remoteprotocol::InjectionFileRequest, ::vl::presentation::remoteprotocol::InjectionFileResponse, REQ, RES, NODROP)\
 	HANDLER(WindowGetBounds, void, ::vl::presentation::remoteprotocol::WindowSizingConfig, NOREQ, RES, NODROP)\
 	HANDLER(WindowNotifySetTitle, ::vl::WString, void, REQ, NORES, DROPREP)\
 	HANDLER(WindowNotifySetEnabled, bool, void, REQ, NORES, DROPREP)\
@@ -807,6 +958,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(IOIsKeyToggled, ::vl::presentation::VKEY, bool, REQ, RES, NODROP)\
 	HANDLER(ImageCreated, ::vl::presentation::remoteprotocol::ImageCreation, ::vl::presentation::remoteprotocol::ImageMetadata, REQ, RES, NODROP)\
 	HANDLER(ImageDestroyed, ::vl::vint, void, REQ, NORES, NODROP)\
+	HANDLER(ImageSave, ::vl::presentation::remoteprotocol::ImageSaveRequest, ::vl::Ptr<::vl::stream::MemoryStream>, REQ, RES, NODROP)\
 	HANDLER(RendererUpdateElement_DocumentParagraph, ::vl::presentation::remoteprotocol::ElementDesc_DocumentParagraph, ::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetCaret, ::vl::presentation::remoteprotocol::GetCaretRequest, ::vl::presentation::remoteprotocol::GetCaretResponse, REQ, RES, NODROP)\
 	HANDLER(DocumentParagraph_GetCaretBounds, ::vl::presentation::remoteprotocol::GetCaretBoundsRequest, ::vl::presentation::remoteprotocol::GetCaretBoundsResponse, REQ, RES, NODROP)\
@@ -873,6 +1025,10 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::remoteprotocol::GetInlineObjectFromPointRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::GetNearestCaretFromTextPosRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageCreation)\
+	HANDLER(::vl::presentation::remoteprotocol::ImageSaveRequest)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionDateTime)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionFileRequest)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionLocaleRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::IsValidCaretRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::OpenCaretRequest)\
 	HANDLER(::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder)\
@@ -882,11 +1038,15 @@ namespace vl::presentation::remoteprotocol
 
 #define GACUI_REMOTEPROTOCOL_MESSAGE_RESPONSE_TYPES(HANDLER)\
 	HANDLER(::vl::Nullable<::vl::presentation::remoteprotocol::DocumentRun>)\
+	HANDLER(::vl::Ptr<::vl::collections::List<::vl::WString>>)\
+	HANDLER(::vl::Ptr<::vl::stream::MemoryStream>)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementMeasurings)\
 	HANDLER(::vl::presentation::remoteprotocol::FontConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::GetCaretBoundsResponse)\
 	HANDLER(::vl::presentation::remoteprotocol::GetCaretResponse)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageMetadata)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionDateTime)\
+	HANDLER(::vl::presentation::remoteprotocol::InjectionFileResponse)\
 	HANDLER(::vl::presentation::remoteprotocol::ScreenConfig)\
 	HANDLER(::vl::presentation::remoteprotocol::UpdateElement_DocumentParagraphResponse)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowSizingConfig)\

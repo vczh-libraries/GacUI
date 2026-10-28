@@ -22,6 +22,68 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionLocaleOperation>(const ::vl::presentation::remoteprotocol::InjectionLocaleOperation & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionLocaleOperation>(const ::vl::presentation::remoteprotocol::InjectionLocaleOperation&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::Invariant: node->content.value = WString::Unmanaged(L"Invariant"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::SystemDefault: node->content.value = WString::Unmanaged(L"SystemDefault"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::UserDefault: node->content.value = WString::Unmanaged(L"UserDefault"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::Enumerate: node->content.value = WString::Unmanaged(L"Enumerate"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortDateFormats: node->content.value = WString::Unmanaged(L"ShortDateFormats"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongDateFormats: node->content.value = WString::Unmanaged(L"LongDateFormats"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::YearMonthDateFormats: node->content.value = WString::Unmanaged(L"YearMonthDateFormats"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongTimeFormats: node->content.value = WString::Unmanaged(L"LongTimeFormats"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortTimeFormats: node->content.value = WString::Unmanaged(L"ShortTimeFormats"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortDayOfWeekName: node->content.value = WString::Unmanaged(L"ShortDayOfWeekName"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongDayOfWeekName: node->content.value = WString::Unmanaged(L"LongDayOfWeekName"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortMonthName: node->content.value = WString::Unmanaged(L"ShortMonthName"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongMonthName: node->content.value = WString::Unmanaged(L"LongMonthName"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToLower: node->content.value = WString::Unmanaged(L"ToLower"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToUpper: node->content.value = WString::Unmanaged(L"ToUpper"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToLinguisticLower: node->content.value = WString::Unmanaged(L"ToLinguisticLower"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToLinguisticUpper: node->content.value = WString::Unmanaged(L"ToLinguisticUpper"); break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileOperation>(const ::vl::presentation::remoteprotocol::InjectionFileOperation & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileOperation>(const ::vl::presentation::remoteprotocol::InjectionFileOperation&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::PathDelimiter: node->content.value = WString::Unmanaged(L"PathDelimiter"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::CompatibleDelimiters: node->content.value = WString::Unmanaged(L"CompatibleDelimiters"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Initialize: node->content.value = WString::Unmanaged(L"Initialize"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Concat: node->content.value = WString::Unmanaged(L"Concat"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Relative: node->content.value = WString::Unmanaged(L"Relative"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::IsRoot: node->content.value = WString::Unmanaged(L"IsRoot"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::IsFile: node->content.value = WString::Unmanaged(L"IsFile"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::IsFolder: node->content.value = WString::Unmanaged(L"IsFolder"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Info: node->content.value = WString::Unmanaged(L"Info"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Copy: node->content.value = WString::Unmanaged(L"Copy"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::DeleteFile: node->content.value = WString::Unmanaged(L"DeleteFile"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::RenameFile: node->content.value = WString::Unmanaged(L"RenameFile"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Folders: node->content.value = WString::Unmanaged(L"Folders"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Files: node->content.value = WString::Unmanaged(L"Files"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::CreateFolder: node->content.value = WString::Unmanaged(L"CreateFolder"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::DeleteFolder: node->content.value = WString::Unmanaged(L"DeleteFolder"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::RenameFolder: node->content.value = WString::Unmanaged(L"RenameFolder"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::OpenRead: node->content.value = WString::Unmanaged(L"OpenRead"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::OpenWrite: node->content.value = WString::Unmanaged(L"OpenWrite"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::OpenReadWrite: node->content.value = WString::Unmanaged(L"OpenReadWrite"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Commit: node->content.value = WString::Unmanaged(L"Commit"); break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult & value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult&)#"
@@ -412,6 +474,83 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"documentCaretFromEncoding", value.documentCaretFromEncoding);
 		ConvertCustomTypeToJsonField(node, L"osSuperKeyName", value.osSuperKeyName);
+		ConvertCustomTypeToJsonField(node, L"injectDateTime", value.injectDateTime);
+		ConvertCustomTypeToJsonField(node, L"injectLocale", value.injectLocale);
+		ConvertCustomTypeToJsonField(node, L"injectFileSystem", value.injectFileSystem);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionDateTime>(const ::vl::presentation::remoteprotocol::InjectionDateTime & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"year", value.year);
+		ConvertCustomTypeToJsonField(node, L"month", value.month);
+		ConvertCustomTypeToJsonField(node, L"day", value.day);
+		ConvertCustomTypeToJsonField(node, L"hour", value.hour);
+		ConvertCustomTypeToJsonField(node, L"minute", value.minute);
+		ConvertCustomTypeToJsonField(node, L"second", value.second);
+		ConvertCustomTypeToJsonField(node, L"milliseconds", value.milliseconds);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionLocaleRequest>(const ::vl::presentation::remoteprotocol::InjectionLocaleRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"operation", value.operation);
+		ConvertCustomTypeToJsonField(node, L"localeName", value.localeName);
+		ConvertCustomTypeToJsonField(node, L"text", value.text);
+		ConvertCustomTypeToJsonField(node, L"index", value.index);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileInfo>(const ::vl::presentation::remoteprotocol::InjectionFileInfo & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"size", value.size);
+		ConvertCustomTypeToJsonField(node, L"hardLinkCount", value.hardLinkCount);
+		ConvertCustomTypeToJsonField(node, L"creationTime", value.creationTime);
+		ConvertCustomTypeToJsonField(node, L"lastAccessTime", value.lastAccessTime);
+		ConvertCustomTypeToJsonField(node, L"lastModifiedTime", value.lastModifiedTime);
+		ConvertCustomTypeToJsonField(node, L"lastChangeTime", value.lastChangeTime);
+		ConvertCustomTypeToJsonField(node, L"isDirectory", value.isDirectory);
+		ConvertCustomTypeToJsonField(node, L"isSymbolicLink", value.isSymbolicLink);
+		ConvertCustomTypeToJsonField(node, L"isReparsePoint", value.isReparsePoint);
+		ConvertCustomTypeToJsonField(node, L"canRead", value.canRead);
+		ConvertCustomTypeToJsonField(node, L"canWrite", value.canWrite);
+		ConvertCustomTypeToJsonField(node, L"canExecute", value.canExecute);
+		ConvertCustomTypeToJsonField(node, L"isReadOnly", value.isReadOnly);
+		ConvertCustomTypeToJsonField(node, L"isHidden", value.isHidden);
+		ConvertCustomTypeToJsonField(node, L"isSystem", value.isSystem);
+		ConvertCustomTypeToJsonField(node, L"isArchive", value.isArchive);
+		ConvertCustomTypeToJsonField(node, L"isCompressed", value.isCompressed);
+		ConvertCustomTypeToJsonField(node, L"isEncrypted", value.isEncrypted);
+		ConvertCustomTypeToJsonField(node, L"isSparse", value.isSparse);
+		ConvertCustomTypeToJsonField(node, L"isTemporary", value.isTemporary);
+		ConvertCustomTypeToJsonField(node, L"isOffline", value.isOffline);
+		ConvertCustomTypeToJsonField(node, L"isNotContentIndexed", value.isNotContentIndexed);
+		ConvertCustomTypeToJsonField(node, L"isImmutable", value.isImmutable);
+		ConvertCustomTypeToJsonField(node, L"isAppendOnly", value.isAppendOnly);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileRequest>(const ::vl::presentation::remoteprotocol::InjectionFileRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"operation", value.operation);
+		ConvertCustomTypeToJsonField(node, L"path", value.path);
+		ConvertCustomTypeToJsonField(node, L"target", value.target);
+		ConvertCustomTypeToJsonField(node, L"content", value.content);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileResponse>(const ::vl::presentation::remoteprotocol::InjectionFileResponse & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"success", value.success);
+		ConvertCustomTypeToJsonField(node, L"text", value.text);
+		ConvertCustomTypeToJsonField(node, L"paths", value.paths);
+		ConvertCustomTypeToJsonField(node, L"info", value.info);
+		ConvertCustomTypeToJsonField(node, L"content", value.content);
 		return node;
 	}
 
@@ -659,6 +798,14 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"format", value.format);
 		ConvertCustomTypeToJsonField(node, L"frames", value.frames);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ImageSaveRequest>(const ::vl::presentation::remoteprotocol::ImageSaveRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
+		ConvertCustomTypeToJsonField(node, L"format", value.format);
 		return node;
 	}
 
@@ -948,6 +1095,62 @@ namespace vl::presentation::remoteprotocol
 		if (jsonNode->content.value == L"UTF8") value = ::vl::presentation::remoteprotocol::CharacterEncoding::UTF8; else
 		if (jsonNode->content.value == L"UTF16") value = ::vl::presentation::remoteprotocol::CharacterEncoding::UTF16; else
 		if (jsonNode->content.value == L"UTF32") value = ::vl::presentation::remoteprotocol::CharacterEncoding::UTF32; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionLocaleOperation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionLocaleOperation& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionLocaleOperation>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionLocaleOperation&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"Invariant") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::Invariant; else
+		if (jsonNode->content.value == L"SystemDefault") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::SystemDefault; else
+		if (jsonNode->content.value == L"UserDefault") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::UserDefault; else
+		if (jsonNode->content.value == L"Enumerate") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::Enumerate; else
+		if (jsonNode->content.value == L"ShortDateFormats") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortDateFormats; else
+		if (jsonNode->content.value == L"LongDateFormats") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongDateFormats; else
+		if (jsonNode->content.value == L"YearMonthDateFormats") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::YearMonthDateFormats; else
+		if (jsonNode->content.value == L"LongTimeFormats") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongTimeFormats; else
+		if (jsonNode->content.value == L"ShortTimeFormats") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortTimeFormats; else
+		if (jsonNode->content.value == L"ShortDayOfWeekName") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortDayOfWeekName; else
+		if (jsonNode->content.value == L"LongDayOfWeekName") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongDayOfWeekName; else
+		if (jsonNode->content.value == L"ShortMonthName") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortMonthName; else
+		if (jsonNode->content.value == L"LongMonthName") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongMonthName; else
+		if (jsonNode->content.value == L"ToLower") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToLower; else
+		if (jsonNode->content.value == L"ToUpper") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToUpper; else
+		if (jsonNode->content.value == L"ToLinguisticLower") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToLinguisticLower; else
+		if (jsonNode->content.value == L"ToLinguisticUpper") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToLinguisticUpper; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileOperation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileOperation& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileOperation>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionFileOperation&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"PathDelimiter") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::PathDelimiter; else
+		if (jsonNode->content.value == L"CompatibleDelimiters") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::CompatibleDelimiters; else
+		if (jsonNode->content.value == L"Initialize") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Initialize; else
+		if (jsonNode->content.value == L"Concat") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Concat; else
+		if (jsonNode->content.value == L"Relative") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Relative; else
+		if (jsonNode->content.value == L"IsRoot") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::IsRoot; else
+		if (jsonNode->content.value == L"IsFile") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::IsFile; else
+		if (jsonNode->content.value == L"IsFolder") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::IsFolder; else
+		if (jsonNode->content.value == L"Info") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Info; else
+		if (jsonNode->content.value == L"Copy") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Copy; else
+		if (jsonNode->content.value == L"DeleteFile") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::DeleteFile; else
+		if (jsonNode->content.value == L"RenameFile") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::RenameFile; else
+		if (jsonNode->content.value == L"Folders") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Folders; else
+		if (jsonNode->content.value == L"Files") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Files; else
+		if (jsonNode->content.value == L"CreateFolder") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::CreateFolder; else
+		if (jsonNode->content.value == L"DeleteFolder") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::DeleteFolder; else
+		if (jsonNode->content.value == L"RenameFolder") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::RenameFolder; else
+		if (jsonNode->content.value == L"OpenRead") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::OpenRead; else
+		if (jsonNode->content.value == L"OpenWrite") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::OpenWrite; else
+		if (jsonNode->content.value == L"OpenReadWrite") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::OpenReadWrite; else
+		if (jsonNode->content.value == L"Commit") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Commit; else
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 #undef ERROR_MESSAGE_PREFIX
 	}
@@ -1364,6 +1567,113 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (field->name.value == L"documentCaretFromEncoding") ConvertJsonToCustomType(field->value, value.documentCaretFromEncoding); else
 			if (field->name.value == L"osSuperKeyName") ConvertJsonToCustomType(field->value, value.osSuperKeyName); else
+			if (field->name.value == L"injectDateTime") ConvertJsonToCustomType(field->value, value.injectDateTime); else
+			if (field->name.value == L"injectLocale") ConvertJsonToCustomType(field->value, value.injectLocale); else
+			if (field->name.value == L"injectFileSystem") ConvertJsonToCustomType(field->value, value.injectFileSystem); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionDateTime>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionDateTime& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionDateTime>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionDateTime&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"year") ConvertJsonToCustomType(field->value, value.year); else
+			if (field->name.value == L"month") ConvertJsonToCustomType(field->value, value.month); else
+			if (field->name.value == L"day") ConvertJsonToCustomType(field->value, value.day); else
+			if (field->name.value == L"hour") ConvertJsonToCustomType(field->value, value.hour); else
+			if (field->name.value == L"minute") ConvertJsonToCustomType(field->value, value.minute); else
+			if (field->name.value == L"second") ConvertJsonToCustomType(field->value, value.second); else
+			if (field->name.value == L"milliseconds") ConvertJsonToCustomType(field->value, value.milliseconds); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionLocaleRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionLocaleRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionLocaleRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionLocaleRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"operation") ConvertJsonToCustomType(field->value, value.operation); else
+			if (field->name.value == L"localeName") ConvertJsonToCustomType(field->value, value.localeName); else
+			if (field->name.value == L"text") ConvertJsonToCustomType(field->value, value.text); else
+			if (field->name.value == L"index") ConvertJsonToCustomType(field->value, value.index); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileInfo& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileInfo>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionFileInfo&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"size") ConvertJsonToCustomType(field->value, value.size); else
+			if (field->name.value == L"hardLinkCount") ConvertJsonToCustomType(field->value, value.hardLinkCount); else
+			if (field->name.value == L"creationTime") ConvertJsonToCustomType(field->value, value.creationTime); else
+			if (field->name.value == L"lastAccessTime") ConvertJsonToCustomType(field->value, value.lastAccessTime); else
+			if (field->name.value == L"lastModifiedTime") ConvertJsonToCustomType(field->value, value.lastModifiedTime); else
+			if (field->name.value == L"lastChangeTime") ConvertJsonToCustomType(field->value, value.lastChangeTime); else
+			if (field->name.value == L"isDirectory") ConvertJsonToCustomType(field->value, value.isDirectory); else
+			if (field->name.value == L"isSymbolicLink") ConvertJsonToCustomType(field->value, value.isSymbolicLink); else
+			if (field->name.value == L"isReparsePoint") ConvertJsonToCustomType(field->value, value.isReparsePoint); else
+			if (field->name.value == L"canRead") ConvertJsonToCustomType(field->value, value.canRead); else
+			if (field->name.value == L"canWrite") ConvertJsonToCustomType(field->value, value.canWrite); else
+			if (field->name.value == L"canExecute") ConvertJsonToCustomType(field->value, value.canExecute); else
+			if (field->name.value == L"isReadOnly") ConvertJsonToCustomType(field->value, value.isReadOnly); else
+			if (field->name.value == L"isHidden") ConvertJsonToCustomType(field->value, value.isHidden); else
+			if (field->name.value == L"isSystem") ConvertJsonToCustomType(field->value, value.isSystem); else
+			if (field->name.value == L"isArchive") ConvertJsonToCustomType(field->value, value.isArchive); else
+			if (field->name.value == L"isCompressed") ConvertJsonToCustomType(field->value, value.isCompressed); else
+			if (field->name.value == L"isEncrypted") ConvertJsonToCustomType(field->value, value.isEncrypted); else
+			if (field->name.value == L"isSparse") ConvertJsonToCustomType(field->value, value.isSparse); else
+			if (field->name.value == L"isTemporary") ConvertJsonToCustomType(field->value, value.isTemporary); else
+			if (field->name.value == L"isOffline") ConvertJsonToCustomType(field->value, value.isOffline); else
+			if (field->name.value == L"isNotContentIndexed") ConvertJsonToCustomType(field->value, value.isNotContentIndexed); else
+			if (field->name.value == L"isImmutable") ConvertJsonToCustomType(field->value, value.isImmutable); else
+			if (field->name.value == L"isAppendOnly") ConvertJsonToCustomType(field->value, value.isAppendOnly); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionFileRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"operation") ConvertJsonToCustomType(field->value, value.operation); else
+			if (field->name.value == L"path") ConvertJsonToCustomType(field->value, value.path); else
+			if (field->name.value == L"target") ConvertJsonToCustomType(field->value, value.target); else
+			if (field->name.value == L"content") ConvertJsonToCustomType(field->value, value.content); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileResponse& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileResponse>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionFileResponse&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"success") ConvertJsonToCustomType(field->value, value.success); else
+			if (field->name.value == L"text") ConvertJsonToCustomType(field->value, value.text); else
+			if (field->name.value == L"paths") ConvertJsonToCustomType(field->value, value.paths); else
+			if (field->name.value == L"info") ConvertJsonToCustomType(field->value, value.info); else
+			if (field->name.value == L"content") ConvertJsonToCustomType(field->value, value.content); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -1749,6 +2059,20 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"format") ConvertJsonToCustomType(field->value, value.format); else
 			if (field->name.value == L"frames") ConvertJsonToCustomType(field->value, value.frames); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageSaveRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ImageSaveRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageSaveRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ImageSaveRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
+			if (field->name.value == L"format") ConvertJsonToCustomType(field->value, value.format); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX

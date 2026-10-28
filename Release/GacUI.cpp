@@ -36596,12 +36596,17 @@ GuiRemoteController::INativeWindowService
 	{
 		CHECK_ERROR(window == &remoteWindow, L"vl::presentation::GuiRemoteController::Run(INativeWindow*)#GuiHostedController should call this function with the native window.");
 		applicationRunning = true;
+		SPIN_LOCK(injectionState->lockPending)
+		{
+			injectionState->acceptingWorkers = true;
+		}
 		if (controllerConnected)
 		{
 			remoteWindow.SubmitStateAfterControllerConnect();
 		}
 		window->Show();
 		while (RunOneCycle());
+		injectionState->Stop();
 		asyncService.ExecuteAsyncTasks();
 		applicationRunning = false;
 	}
@@ -36631,6 +36636,7 @@ GuiRemoteController (events)
 
 	void GuiRemoteController::OnControllerConnect(const remoteprotocol::ControllerGlobalConfig& _globalConfig)
 	{
+		connectionGeneration++;
 		controllerConnected = true;
 		remoteGlobalConfig = _globalConfig;
 		UpdateGlobalShortcutKey();
@@ -36649,6 +36655,7 @@ GuiRemoteController (events)
 
 	void GuiRemoteController::OnControllerDisconnect()
 	{
+		connectionGeneration++;
 		controllerConnected = false;
 		remoteWindow.OnControllerDisconnect();
 		imageService.OnControllerDisconnect();
@@ -36676,12 +36683,14 @@ GuiRemoteController (events)
 GuiRemoteController
 ***********************************************************************/
 
-	GuiRemoteController::GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol)
+	GuiRemoteController::GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol, const GuiRemoteControllerConfig& _globalConfig)
 		: remoteProtocol(_remoteProtocol)
 		, remoteMessages(this)
 		, remoteEvents(this)
 		, remoteWindow(this)
 		, imageService(this)
+		, globalConfig(_globalConfig)
+		, injectionState(Ptr(new GuiRemoteControllerInjectionState(this)))
 	{
 #if defined VCZH_WCHAR_UTF16
 		remoteGlobalConfig.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF16;
@@ -36689,10 +36698,29 @@ GuiRemoteController
 		remoteGlobalConfig.documentCaretFromEncoding = remoteprotocol::CharacterEncoding::UTF32;
 #endif
 		remoteFontConfig.defaultFont.size = 12;
+		if (globalConfig.injectDateTime)
+		{
+			dateTimeInjection = Ptr(new GuiRemoteDateTimeInjection(this));
+			InjectDateTimeImpl(dateTimeInjection.Obj());
+		}
+		if (globalConfig.injectLocale)
+		{
+			localeInjection = Ptr(new GuiRemoteLocaleInjection(this));
+			InjectLocaleImpl(localeInjection.Obj());
+		}
+		if (globalConfig.injectFileSystem)
+		{
+			fileSystemInjection = Ptr(new GuiRemoteFileSystemInjection(this));
+			filesystem::InjectFileSystemImpl(fileSystemInjection.Obj());
+		}
 	}
 
 	GuiRemoteController::~GuiRemoteController()
 	{
+		injectionState->Stop();
+		if (fileSystemInjection) filesystem::EjectFileSystemImpl(fileSystemInjection.Obj());
+		if (localeInjection) EjectLocaleImpl(localeInjection.Obj());
+		if (dateTimeInjection) EjectDateTimeImpl(dateTimeInjection.Obj());
 	}
 
 	void GuiRemoteController::Initialize()
@@ -36703,6 +36731,7 @@ GuiRemoteController
 
 	void GuiRemoteController::Finalize()
 	{
+		injectionState->Stop();
 		imageService.Finalize();
 		remoteMessages.RequestControllerConnectionStopped();
 		bool disconnected = false;
@@ -36793,9 +36822,9 @@ SetupRemoteNativeController
 
 extern void GuiApplicationMain();
 
-int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol)
+int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol, const GuiRemoteControllerConfig& config)
 {
-	GuiRemoteController remoteController(protocol);
+	GuiRemoteController remoteController(protocol, config);
 	GuiHostedController hostedController(&remoteController);
 
 	GuiRemoteGraphicsResourceManager remoteResourceManager(&remoteController, &hostedController);
@@ -39683,11 +39712,16 @@ GuiRemoteGraphicsImage
 	{
 		if (status == MetadataStatus::Retrived) return;
 		auto arguments = GenerateImageCreation();
+		// A rendering batch may already have queued creation without submitting
+		// it. An explicit metadata/export request must still carry image bytes.
+		arguments.imageData = binary;
+		arguments.imageDataOmitted = false;
+		auto connection = remote->connectionGeneration;
 
 		vint idImageCreated = remote->remoteMessages.RequestImageCreated(arguments);
 		bool disconnected = false;
 		remote->remoteMessages.Submit(disconnected);
-		if (disconnected) return;
+		if (disconnected || connection != remote->connectionGeneration) return;
 		auto imageMetadata = remote->remoteMessages.RetrieveImageCreated(idImageCreated);
 		UpdateFromImageMetadata(imageMetadata);
 	}
@@ -39750,7 +39784,7 @@ GuiRemoteGraphicsImage
 		{
 			if (frames.Count() > 0)
 			{
-				CHECK_ERROR(frames.Count() == imageMetadata.frames, L"New metadata should be identical to the last one.");
+				CHECK_ERROR(frames.Count() == imageMetadata.frames->Count(), L"New metadata should be identical to the last one.");
 				for (auto [imageFrameMetadata, index] : indexed(*imageMetadata.frames.Obj()))
 				{
 					CHECK_ERROR(frames[index]->size == imageFrameMetadata.size, L"New metadata should be identical to the last one.");
@@ -39801,7 +39835,20 @@ GuiRemoteGraphicsImage
 	void GuiRemoteGraphicsImage::SaveToStream(stream::IStream& imageStream, FormatType formatType)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteGraphicsImage::SaveToStream(IStream&, INativeImage::FormatType)#"
-		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"This function should not be called.");
+		CHECK_ERROR(remote && remote->controllerConnected, ERROR_MESSAGE_PREFIX L"Renderer is unavailable.");
+		auto connection = remote->connectionGeneration;
+		EnsureMetadata();
+		CHECK_ERROR(remote->controllerConnected && connection == remote->connectionGeneration && status == MetadataStatus::Retrived,
+			ERROR_MESSAGE_PREFIX L"Image creation was interrupted.");
+		auto requestId = remote->remoteMessages.RequestImageSave({ id, formatType });
+		bool disconnected = false;
+		remote->remoteMessages.Submit(disconnected);
+		CHECK_ERROR(!disconnected && remote->controllerConnected && connection == remote->connectionGeneration,
+			ERROR_MESSAGE_PREFIX L"Image export was interrupted.");
+		auto content = remote->remoteMessages.RetrieveImageSave(requestId);
+		CHECK_ERROR(content && content->Size() > 0, ERROR_MESSAGE_PREFIX L"Image encoding failed.");
+		content->SeekFromBegin(0);
+		CopyStream(*content.Obj(), imageStream);
 #undef ERROR_MESSAGE_PREFIX
 	}
 
@@ -39893,6 +39940,7 @@ GuiRemoteGraphicsImageService
 #undef ERROR_MESSAGE_PREFIX
 	}
 }
+
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOLSCHEMASHARED.CPP
@@ -40065,6 +40113,7 @@ namespace vl::presentation::remoteprotocol
 			ConvertJsonToCustomType(node, base64);
 
 			value = Ptr(new stream::MemoryStream);
+			if (base64.Length() == 0) return;
 
 			stream::MemoryWrapperStream base64WStringStream((void*)base64.Buffer(), base64.Length() * sizeof(wchar_t));
 			stream::UtfGeneralDecoder<wchar_t, char8_t> wcharToUtf8Decoder;
@@ -40876,7 +40925,7 @@ GuiRemoteProtocolCoreChannel
 #define EVENT_REQ(NAME, REQUEST)\
 	void GuiRemoteProtocolCoreChannel::OnRead_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
-		REQUEST arguments;\
+		REQUEST arguments{};\
 		ConvertJsonToCustomType(jsonArguments, arguments);\
 		events->On ## NAME(arguments);\
 	}\
@@ -40892,7 +40941,7 @@ GuiRemoteProtocolCoreChannel
 #define MESSAGE_RES(NAME, RESPONSE)\
 	void GuiRemoteProtocolCoreChannel::OnRead_Response_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
-		RESPONSE arguments;\
+		RESPONSE arguments{};\
 		ConvertJsonToCustomType(jsonArguments, arguments);\
 		events->Respond ## NAME(id, arguments);\
 	}\
@@ -41199,7 +41248,7 @@ GuiRemoteProtocolRendererChannel
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
 	void GuiRemoteProtocolRendererChannel::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
-		REQUEST arguments;\
+		REQUEST arguments{};\
 		ConvertJsonToCustomType(jsonArguments, arguments);\
 		protocol->Request ## NAME(arguments);\
 	}\
@@ -41207,7 +41256,7 @@ GuiRemoteProtocolRendererChannel
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
 	void GuiRemoteProtocolRendererChannel::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
 	{\
-		REQUEST arguments;\
+		REQUEST arguments{};\
 		ConvertJsonToCustomType(jsonArguments, arguments);\
 		protocol->Request ## NAME(id, arguments);\
 	}\
@@ -43307,6 +43356,68 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionLocaleOperation>(const ::vl::presentation::remoteprotocol::InjectionLocaleOperation & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionLocaleOperation>(const ::vl::presentation::remoteprotocol::InjectionLocaleOperation&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::Invariant: node->content.value = WString::Unmanaged(L"Invariant"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::SystemDefault: node->content.value = WString::Unmanaged(L"SystemDefault"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::UserDefault: node->content.value = WString::Unmanaged(L"UserDefault"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::Enumerate: node->content.value = WString::Unmanaged(L"Enumerate"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortDateFormats: node->content.value = WString::Unmanaged(L"ShortDateFormats"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongDateFormats: node->content.value = WString::Unmanaged(L"LongDateFormats"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::YearMonthDateFormats: node->content.value = WString::Unmanaged(L"YearMonthDateFormats"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongTimeFormats: node->content.value = WString::Unmanaged(L"LongTimeFormats"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortTimeFormats: node->content.value = WString::Unmanaged(L"ShortTimeFormats"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortDayOfWeekName: node->content.value = WString::Unmanaged(L"ShortDayOfWeekName"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongDayOfWeekName: node->content.value = WString::Unmanaged(L"LongDayOfWeekName"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortMonthName: node->content.value = WString::Unmanaged(L"ShortMonthName"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongMonthName: node->content.value = WString::Unmanaged(L"LongMonthName"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToLower: node->content.value = WString::Unmanaged(L"ToLower"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToUpper: node->content.value = WString::Unmanaged(L"ToUpper"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToLinguisticLower: node->content.value = WString::Unmanaged(L"ToLinguisticLower"); break;
+		case ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToLinguisticUpper: node->content.value = WString::Unmanaged(L"ToLinguisticUpper"); break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileOperation>(const ::vl::presentation::remoteprotocol::InjectionFileOperation & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileOperation>(const ::vl::presentation::remoteprotocol::InjectionFileOperation&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::PathDelimiter: node->content.value = WString::Unmanaged(L"PathDelimiter"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::CompatibleDelimiters: node->content.value = WString::Unmanaged(L"CompatibleDelimiters"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Initialize: node->content.value = WString::Unmanaged(L"Initialize"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Concat: node->content.value = WString::Unmanaged(L"Concat"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Relative: node->content.value = WString::Unmanaged(L"Relative"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::IsRoot: node->content.value = WString::Unmanaged(L"IsRoot"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::IsFile: node->content.value = WString::Unmanaged(L"IsFile"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::IsFolder: node->content.value = WString::Unmanaged(L"IsFolder"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Info: node->content.value = WString::Unmanaged(L"Info"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Copy: node->content.value = WString::Unmanaged(L"Copy"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::DeleteFile: node->content.value = WString::Unmanaged(L"DeleteFile"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::RenameFile: node->content.value = WString::Unmanaged(L"RenameFile"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Folders: node->content.value = WString::Unmanaged(L"Folders"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Files: node->content.value = WString::Unmanaged(L"Files"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::CreateFolder: node->content.value = WString::Unmanaged(L"CreateFolder"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::DeleteFolder: node->content.value = WString::Unmanaged(L"DeleteFolder"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::RenameFolder: node->content.value = WString::Unmanaged(L"RenameFolder"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::OpenRead: node->content.value = WString::Unmanaged(L"OpenRead"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::OpenWrite: node->content.value = WString::Unmanaged(L"OpenWrite"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::OpenReadWrite: node->content.value = WString::Unmanaged(L"OpenReadWrite"); break;
+		case ::vl::presentation::remoteprotocol::InjectionFileOperation::Commit: node->content.value = WString::Unmanaged(L"Commit"); break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult & value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult&)#"
@@ -43697,6 +43808,83 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"documentCaretFromEncoding", value.documentCaretFromEncoding);
 		ConvertCustomTypeToJsonField(node, L"osSuperKeyName", value.osSuperKeyName);
+		ConvertCustomTypeToJsonField(node, L"injectDateTime", value.injectDateTime);
+		ConvertCustomTypeToJsonField(node, L"injectLocale", value.injectLocale);
+		ConvertCustomTypeToJsonField(node, L"injectFileSystem", value.injectFileSystem);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionDateTime>(const ::vl::presentation::remoteprotocol::InjectionDateTime & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"year", value.year);
+		ConvertCustomTypeToJsonField(node, L"month", value.month);
+		ConvertCustomTypeToJsonField(node, L"day", value.day);
+		ConvertCustomTypeToJsonField(node, L"hour", value.hour);
+		ConvertCustomTypeToJsonField(node, L"minute", value.minute);
+		ConvertCustomTypeToJsonField(node, L"second", value.second);
+		ConvertCustomTypeToJsonField(node, L"milliseconds", value.milliseconds);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionLocaleRequest>(const ::vl::presentation::remoteprotocol::InjectionLocaleRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"operation", value.operation);
+		ConvertCustomTypeToJsonField(node, L"localeName", value.localeName);
+		ConvertCustomTypeToJsonField(node, L"text", value.text);
+		ConvertCustomTypeToJsonField(node, L"index", value.index);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileInfo>(const ::vl::presentation::remoteprotocol::InjectionFileInfo & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"size", value.size);
+		ConvertCustomTypeToJsonField(node, L"hardLinkCount", value.hardLinkCount);
+		ConvertCustomTypeToJsonField(node, L"creationTime", value.creationTime);
+		ConvertCustomTypeToJsonField(node, L"lastAccessTime", value.lastAccessTime);
+		ConvertCustomTypeToJsonField(node, L"lastModifiedTime", value.lastModifiedTime);
+		ConvertCustomTypeToJsonField(node, L"lastChangeTime", value.lastChangeTime);
+		ConvertCustomTypeToJsonField(node, L"isDirectory", value.isDirectory);
+		ConvertCustomTypeToJsonField(node, L"isSymbolicLink", value.isSymbolicLink);
+		ConvertCustomTypeToJsonField(node, L"isReparsePoint", value.isReparsePoint);
+		ConvertCustomTypeToJsonField(node, L"canRead", value.canRead);
+		ConvertCustomTypeToJsonField(node, L"canWrite", value.canWrite);
+		ConvertCustomTypeToJsonField(node, L"canExecute", value.canExecute);
+		ConvertCustomTypeToJsonField(node, L"isReadOnly", value.isReadOnly);
+		ConvertCustomTypeToJsonField(node, L"isHidden", value.isHidden);
+		ConvertCustomTypeToJsonField(node, L"isSystem", value.isSystem);
+		ConvertCustomTypeToJsonField(node, L"isArchive", value.isArchive);
+		ConvertCustomTypeToJsonField(node, L"isCompressed", value.isCompressed);
+		ConvertCustomTypeToJsonField(node, L"isEncrypted", value.isEncrypted);
+		ConvertCustomTypeToJsonField(node, L"isSparse", value.isSparse);
+		ConvertCustomTypeToJsonField(node, L"isTemporary", value.isTemporary);
+		ConvertCustomTypeToJsonField(node, L"isOffline", value.isOffline);
+		ConvertCustomTypeToJsonField(node, L"isNotContentIndexed", value.isNotContentIndexed);
+		ConvertCustomTypeToJsonField(node, L"isImmutable", value.isImmutable);
+		ConvertCustomTypeToJsonField(node, L"isAppendOnly", value.isAppendOnly);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileRequest>(const ::vl::presentation::remoteprotocol::InjectionFileRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"operation", value.operation);
+		ConvertCustomTypeToJsonField(node, L"path", value.path);
+		ConvertCustomTypeToJsonField(node, L"target", value.target);
+		ConvertCustomTypeToJsonField(node, L"content", value.content);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::InjectionFileResponse>(const ::vl::presentation::remoteprotocol::InjectionFileResponse & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"success", value.success);
+		ConvertCustomTypeToJsonField(node, L"text", value.text);
+		ConvertCustomTypeToJsonField(node, L"paths", value.paths);
+		ConvertCustomTypeToJsonField(node, L"info", value.info);
+		ConvertCustomTypeToJsonField(node, L"content", value.content);
 		return node;
 	}
 
@@ -43944,6 +44132,14 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"format", value.format);
 		ConvertCustomTypeToJsonField(node, L"frames", value.frames);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ImageSaveRequest>(const ::vl::presentation::remoteprotocol::ImageSaveRequest & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
+		ConvertCustomTypeToJsonField(node, L"format", value.format);
 		return node;
 	}
 
@@ -44233,6 +44429,62 @@ namespace vl::presentation::remoteprotocol
 		if (jsonNode->content.value == L"UTF8") value = ::vl::presentation::remoteprotocol::CharacterEncoding::UTF8; else
 		if (jsonNode->content.value == L"UTF16") value = ::vl::presentation::remoteprotocol::CharacterEncoding::UTF16; else
 		if (jsonNode->content.value == L"UTF32") value = ::vl::presentation::remoteprotocol::CharacterEncoding::UTF32; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionLocaleOperation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionLocaleOperation& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionLocaleOperation>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionLocaleOperation&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"Invariant") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::Invariant; else
+		if (jsonNode->content.value == L"SystemDefault") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::SystemDefault; else
+		if (jsonNode->content.value == L"UserDefault") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::UserDefault; else
+		if (jsonNode->content.value == L"Enumerate") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::Enumerate; else
+		if (jsonNode->content.value == L"ShortDateFormats") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortDateFormats; else
+		if (jsonNode->content.value == L"LongDateFormats") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongDateFormats; else
+		if (jsonNode->content.value == L"YearMonthDateFormats") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::YearMonthDateFormats; else
+		if (jsonNode->content.value == L"LongTimeFormats") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongTimeFormats; else
+		if (jsonNode->content.value == L"ShortTimeFormats") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortTimeFormats; else
+		if (jsonNode->content.value == L"ShortDayOfWeekName") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortDayOfWeekName; else
+		if (jsonNode->content.value == L"LongDayOfWeekName") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongDayOfWeekName; else
+		if (jsonNode->content.value == L"ShortMonthName") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ShortMonthName; else
+		if (jsonNode->content.value == L"LongMonthName") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::LongMonthName; else
+		if (jsonNode->content.value == L"ToLower") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToLower; else
+		if (jsonNode->content.value == L"ToUpper") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToUpper; else
+		if (jsonNode->content.value == L"ToLinguisticLower") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToLinguisticLower; else
+		if (jsonNode->content.value == L"ToLinguisticUpper") value = ::vl::presentation::remoteprotocol::InjectionLocaleOperation::ToLinguisticUpper; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileOperation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileOperation& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileOperation>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionFileOperation&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"PathDelimiter") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::PathDelimiter; else
+		if (jsonNode->content.value == L"CompatibleDelimiters") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::CompatibleDelimiters; else
+		if (jsonNode->content.value == L"Initialize") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Initialize; else
+		if (jsonNode->content.value == L"Concat") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Concat; else
+		if (jsonNode->content.value == L"Relative") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Relative; else
+		if (jsonNode->content.value == L"IsRoot") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::IsRoot; else
+		if (jsonNode->content.value == L"IsFile") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::IsFile; else
+		if (jsonNode->content.value == L"IsFolder") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::IsFolder; else
+		if (jsonNode->content.value == L"Info") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Info; else
+		if (jsonNode->content.value == L"Copy") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Copy; else
+		if (jsonNode->content.value == L"DeleteFile") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::DeleteFile; else
+		if (jsonNode->content.value == L"RenameFile") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::RenameFile; else
+		if (jsonNode->content.value == L"Folders") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Folders; else
+		if (jsonNode->content.value == L"Files") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Files; else
+		if (jsonNode->content.value == L"CreateFolder") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::CreateFolder; else
+		if (jsonNode->content.value == L"DeleteFolder") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::DeleteFolder; else
+		if (jsonNode->content.value == L"RenameFolder") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::RenameFolder; else
+		if (jsonNode->content.value == L"OpenRead") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::OpenRead; else
+		if (jsonNode->content.value == L"OpenWrite") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::OpenWrite; else
+		if (jsonNode->content.value == L"OpenReadWrite") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::OpenReadWrite; else
+		if (jsonNode->content.value == L"Commit") value = ::vl::presentation::remoteprotocol::InjectionFileOperation::Commit; else
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 #undef ERROR_MESSAGE_PREFIX
 	}
@@ -44649,6 +44901,113 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (field->name.value == L"documentCaretFromEncoding") ConvertJsonToCustomType(field->value, value.documentCaretFromEncoding); else
 			if (field->name.value == L"osSuperKeyName") ConvertJsonToCustomType(field->value, value.osSuperKeyName); else
+			if (field->name.value == L"injectDateTime") ConvertJsonToCustomType(field->value, value.injectDateTime); else
+			if (field->name.value == L"injectLocale") ConvertJsonToCustomType(field->value, value.injectLocale); else
+			if (field->name.value == L"injectFileSystem") ConvertJsonToCustomType(field->value, value.injectFileSystem); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionDateTime>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionDateTime& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionDateTime>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionDateTime&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"year") ConvertJsonToCustomType(field->value, value.year); else
+			if (field->name.value == L"month") ConvertJsonToCustomType(field->value, value.month); else
+			if (field->name.value == L"day") ConvertJsonToCustomType(field->value, value.day); else
+			if (field->name.value == L"hour") ConvertJsonToCustomType(field->value, value.hour); else
+			if (field->name.value == L"minute") ConvertJsonToCustomType(field->value, value.minute); else
+			if (field->name.value == L"second") ConvertJsonToCustomType(field->value, value.second); else
+			if (field->name.value == L"milliseconds") ConvertJsonToCustomType(field->value, value.milliseconds); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionLocaleRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionLocaleRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionLocaleRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionLocaleRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"operation") ConvertJsonToCustomType(field->value, value.operation); else
+			if (field->name.value == L"localeName") ConvertJsonToCustomType(field->value, value.localeName); else
+			if (field->name.value == L"text") ConvertJsonToCustomType(field->value, value.text); else
+			if (field->name.value == L"index") ConvertJsonToCustomType(field->value, value.index); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileInfo& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileInfo>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionFileInfo&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"size") ConvertJsonToCustomType(field->value, value.size); else
+			if (field->name.value == L"hardLinkCount") ConvertJsonToCustomType(field->value, value.hardLinkCount); else
+			if (field->name.value == L"creationTime") ConvertJsonToCustomType(field->value, value.creationTime); else
+			if (field->name.value == L"lastAccessTime") ConvertJsonToCustomType(field->value, value.lastAccessTime); else
+			if (field->name.value == L"lastModifiedTime") ConvertJsonToCustomType(field->value, value.lastModifiedTime); else
+			if (field->name.value == L"lastChangeTime") ConvertJsonToCustomType(field->value, value.lastChangeTime); else
+			if (field->name.value == L"isDirectory") ConvertJsonToCustomType(field->value, value.isDirectory); else
+			if (field->name.value == L"isSymbolicLink") ConvertJsonToCustomType(field->value, value.isSymbolicLink); else
+			if (field->name.value == L"isReparsePoint") ConvertJsonToCustomType(field->value, value.isReparsePoint); else
+			if (field->name.value == L"canRead") ConvertJsonToCustomType(field->value, value.canRead); else
+			if (field->name.value == L"canWrite") ConvertJsonToCustomType(field->value, value.canWrite); else
+			if (field->name.value == L"canExecute") ConvertJsonToCustomType(field->value, value.canExecute); else
+			if (field->name.value == L"isReadOnly") ConvertJsonToCustomType(field->value, value.isReadOnly); else
+			if (field->name.value == L"isHidden") ConvertJsonToCustomType(field->value, value.isHidden); else
+			if (field->name.value == L"isSystem") ConvertJsonToCustomType(field->value, value.isSystem); else
+			if (field->name.value == L"isArchive") ConvertJsonToCustomType(field->value, value.isArchive); else
+			if (field->name.value == L"isCompressed") ConvertJsonToCustomType(field->value, value.isCompressed); else
+			if (field->name.value == L"isEncrypted") ConvertJsonToCustomType(field->value, value.isEncrypted); else
+			if (field->name.value == L"isSparse") ConvertJsonToCustomType(field->value, value.isSparse); else
+			if (field->name.value == L"isTemporary") ConvertJsonToCustomType(field->value, value.isTemporary); else
+			if (field->name.value == L"isOffline") ConvertJsonToCustomType(field->value, value.isOffline); else
+			if (field->name.value == L"isNotContentIndexed") ConvertJsonToCustomType(field->value, value.isNotContentIndexed); else
+			if (field->name.value == L"isImmutable") ConvertJsonToCustomType(field->value, value.isImmutable); else
+			if (field->name.value == L"isAppendOnly") ConvertJsonToCustomType(field->value, value.isAppendOnly); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionFileRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"operation") ConvertJsonToCustomType(field->value, value.operation); else
+			if (field->name.value == L"path") ConvertJsonToCustomType(field->value, value.path); else
+			if (field->name.value == L"target") ConvertJsonToCustomType(field->value, value.target); else
+			if (field->name.value == L"content") ConvertJsonToCustomType(field->value, value.content); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileResponse>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::InjectionFileResponse& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::InjectionFileResponse>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::InjectionFileResponse&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"success") ConvertJsonToCustomType(field->value, value.success); else
+			if (field->name.value == L"text") ConvertJsonToCustomType(field->value, value.text); else
+			if (field->name.value == L"paths") ConvertJsonToCustomType(field->value, value.paths); else
+			if (field->name.value == L"info") ConvertJsonToCustomType(field->value, value.info); else
+			if (field->name.value == L"content") ConvertJsonToCustomType(field->value, value.content); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -45034,6 +45393,20 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"format") ConvertJsonToCustomType(field->value, value.format); else
 			if (field->name.value == L"frames") ConvertJsonToCustomType(field->value, value.frames); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageSaveRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ImageSaveRequest& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageSaveRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ImageSaveRequest&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
+			if (field->name.value == L"format") ConvertJsonToCustomType(field->value, value.format); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -45609,7 +45982,10 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::Opened()
 	{
 		if (!CanSendEvents()) return;
-		vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig;
+		vl::presentation::remoteprotocol::ControllerGlobalConfig globalConfig{};
+		globalConfig.injectDateTime = this->globalConfig.injectDateTime;
+		globalConfig.injectLocale = this->globalConfig.injectLocale;
+		globalConfig.injectFileSystem = this->globalConfig.injectFileSystem;
 		globalConfig.osSuperKeyName = GetCurrentController()->ResourceService()->GetOSSuperKeyName();
 #if defined VCZH_WCHAR_UTF16
 		globalConfig.documentCaretFromEncoding = vl::presentation::remoteprotocol::CharacterEncoding::UTF16;
@@ -45705,7 +46081,13 @@ namespace vl::presentation::remote_renderer
 	}
 
 	GuiRemoteRendererSingle::GuiRemoteRendererSingle(bool _enabledAutomation)
-		: enabledAutomation(_enabledAutomation)
+		: GuiRemoteRendererSingle(_enabledAutomation, GlobalConfig{})
+	{
+	}
+
+	GuiRemoteRendererSingle::GuiRemoteRendererSingle(bool _enabledAutomation, const GlobalConfig& _globalConfig)
+		: globalConfig(_globalConfig)
+		, enabledAutomation(_enabledAutomation)
 	{
 	}
 
@@ -47581,6 +47963,17 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::RequestImageDestroyed(const vint& arguments)
 	{
 		availableImages.Remove(arguments);
+	}
+
+	void GuiRemoteRendererSingle::RequestImageSave(vint id, const remoteprotocol::ImageSaveRequest& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestImageSave()#"
+		if (!CanSendEvents()) return;
+		CHECK_ERROR(availableImages.Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image does not exist on this renderer.");
+		auto content = Ptr(new stream::MemoryStream);
+		availableImages[arguments.id]->SaveToStream(*content.Obj(), arguments.format);
+		if (CanSendEvents()) events->RespondImageSave(id, content);
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_ImageFrame(const remoteprotocol::ElementDesc_ImageFrame& arguments)
@@ -78957,4 +79350,1004 @@ GuiPointActionManager
 		}
 	}
 }
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTERENDERER\GUIREMOTERENDERERSINGLE_INJECTION.CPP
+***********************************************************************/
+
+namespace vl::presentation::remote_renderer
+{
+	using namespace collections;
+	using namespace filesystem;
+	using namespace remoteprotocol;
+
+/***********************************************************************
+Renderer feature implementations use public APIs, including application
+injections on the renderer. They never reach into an injection chain.
+***********************************************************************/
+
+	void GuiRemoteRendererSingle::RequestInjectionLocalToUtc(vint id, const InjectionDateTime& arguments)
+	{
+		CHECK_ERROR(globalConfig.injectDateTime, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestInjectionLocalToUtc()#Capability is disabled.");
+		auto result = EncodeInjectionDateTime(DecodeInjectionDateTime(arguments).ToUtcTime());
+		if (CanSendEvents()) events->RespondInjectionLocalToUtc(id, result);
+	}
+
+	void GuiRemoteRendererSingle::RequestInjectionUtcToLocal(vint id, const InjectionDateTime& arguments)
+	{
+		CHECK_ERROR(globalConfig.injectDateTime, L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestInjectionUtcToLocal()#Capability is disabled.");
+		auto result = EncodeInjectionDateTime(DecodeInjectionDateTime(arguments).ToLocalTime());
+		if (CanSendEvents()) events->RespondInjectionUtcToLocal(id, result);
+	}
+
+	void GuiRemoteRendererSingle::RequestInjectionLocale(vint id, const InjectionLocaleRequest& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestInjectionLocale()#"
+		CHECK_ERROR(globalConfig.injectLocale, ERROR_MESSAGE_PREFIX L"Capability is disabled.");
+		auto result = Ptr(new List<WString>);
+		Locale locale(arguments.localeName);
+		switch (arguments.operation)
+		{
+		case InjectionLocaleOperation::Invariant:
+			result->Add(Locale::Invariant().GetName());
+			break;
+		case InjectionLocaleOperation::SystemDefault:
+			result->Add(Locale::SystemDefault().GetName());
+			break;
+		case InjectionLocaleOperation::UserDefault:
+			result->Add(Locale::UserDefault().GetName());
+			break;
+		case InjectionLocaleOperation::Enumerate:
+			{
+				List<Locale> locales;
+				Locale::Enumerate(locales);
+				for (auto locale : locales) result->Add(locale.GetName());
+			}
+			break;
+		case InjectionLocaleOperation::ShortDateFormats:
+			locale.GetShortDateFormats(*result.Obj());
+			break;
+		case InjectionLocaleOperation::LongDateFormats:
+			locale.GetLongDateFormats(*result.Obj());
+			break;
+		case InjectionLocaleOperation::YearMonthDateFormats:
+			locale.GetYearMonthDateFormats(*result.Obj());
+			break;
+		case InjectionLocaleOperation::LongTimeFormats:
+			locale.GetLongTimeFormats(*result.Obj());
+			break;
+		case InjectionLocaleOperation::ShortTimeFormats:
+			locale.GetShortTimeFormats(*result.Obj());
+			break;
+		case InjectionLocaleOperation::ShortDayOfWeekName:
+			result->Add(locale.GetShortDayOfWeekName(arguments.index));
+			break;
+		case InjectionLocaleOperation::LongDayOfWeekName:
+			result->Add(locale.GetLongDayOfWeekName(arguments.index));
+			break;
+		case InjectionLocaleOperation::ShortMonthName:
+			result->Add(locale.GetShortMonthName(arguments.index));
+			break;
+		case InjectionLocaleOperation::LongMonthName:
+			result->Add(locale.GetLongMonthName(arguments.index));
+			break;
+		case InjectionLocaleOperation::ToLower:
+			result->Add(locale.ToLower(arguments.text));
+			break;
+		case InjectionLocaleOperation::ToUpper:
+			result->Add(locale.ToUpper(arguments.text));
+			break;
+		case InjectionLocaleOperation::ToLinguisticLower:
+			result->Add(locale.ToLinguisticLower(arguments.text));
+			break;
+		case InjectionLocaleOperation::ToLinguisticUpper:
+			result->Add(locale.ToLinguisticUpper(arguments.text));
+			break;
+		default:
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unknown operation.");
+		}
+		if (CanSendEvents()) events->RespondInjectionLocale(id, result);
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteRendererSingle::RequestInjectionFileSystem(vint id, const InjectionFileRequest& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestInjectionFileSystem()#"
+		CHECK_ERROR(globalConfig.injectFileSystem, ERROR_MESSAGE_PREFIX L"Capability is disabled.");
+		InjectionFileResponse result{};
+		switch (arguments.operation)
+		{
+		case InjectionFileOperation::PathDelimiter:
+			result.success = true;
+			result.text = WString::FromChar(FilePath::GetPathDelimiter());
+			break;
+		case InjectionFileOperation::CompatibleDelimiters:
+			result.success = true;
+			result.text = FilePath::GetCompatibleDelimiters();
+			break;
+		case InjectionFileOperation::Initialize:
+			result.success = true;
+			result.text = FilePath(arguments.path).GetFullPath();
+			break;
+		case InjectionFileOperation::Concat:
+			result.success = true;
+			result.text = (FilePath(arguments.path) / arguments.target).GetFullPath();
+			break;
+		case InjectionFileOperation::Relative:
+			result.success = true;
+			result.text = FilePath(arguments.path).GetRelativePathFor(FilePath(arguments.target));
+			break;
+		case InjectionFileOperation::IsRoot:
+			result.success = FilePath(arguments.path).IsRoot();
+			break;
+		case InjectionFileOperation::IsFile:
+			result.success = FilePath(arguments.path).IsFile();
+			break;
+		case InjectionFileOperation::IsFolder:
+			result.success = FilePath(arguments.path).IsFolder();
+			break;
+		case InjectionFileOperation::Info:
+			{
+				FilePath path(arguments.path);
+				if (path.IsFile())
+				{
+					result.info = EncodeInjectionFileInfo(File(path).GetFileInfo());
+					result.success = true;
+				}
+				else if (path.IsFolder())
+				{
+					result.info = EncodeInjectionFileInfo(Folder(path).GetFileInfo());
+					result.success = true;
+				}
+			}
+			break;
+		case InjectionFileOperation::Copy:
+			result.success = File(FilePath(arguments.path)).CopyToFile(FilePath(arguments.target), false);
+			break;
+		case InjectionFileOperation::DeleteFile:
+			result.success = File(FilePath(arguments.path)).Delete();
+			break;
+		case InjectionFileOperation::RenameFile:
+			result.success = File(FilePath(arguments.path)).Rename(arguments.target);
+			break;
+		case InjectionFileOperation::CreateFolder:
+			result.success = Folder(FilePath(arguments.path)).Create(false);
+			break;
+		case InjectionFileOperation::DeleteFolder:
+			result.success = Folder(FilePath(arguments.path)).Delete(false);
+			break;
+		case InjectionFileOperation::RenameFolder:
+			result.success = Folder(FilePath(arguments.path)).Rename(arguments.target);
+			break;
+		case InjectionFileOperation::Folders:
+			{
+				List<Folder> entries;
+				result.success = Folder(FilePath(arguments.path)).GetFolders(entries);
+				result.paths = Ptr(new List<WString>);
+				for (auto&& entry : entries) result.paths->Add(entry.GetFilePath().GetFullPath());
+			}
+			break;
+		case InjectionFileOperation::Files:
+			{
+				List<File> entries;
+				result.success = Folder(FilePath(arguments.path)).GetFiles(entries);
+				result.paths = Ptr(new List<WString>);
+				for (auto&& entry : entries) result.paths->Add(entry.GetFilePath().GetFullPath());
+			}
+			break;
+		case InjectionFileOperation::OpenRead:
+		case InjectionFileOperation::OpenWrite:
+		case InjectionFileOperation::OpenReadWrite:
+			{
+				auto access = arguments.operation == InjectionFileOperation::OpenRead ? stream::FileStream::ReadOnly
+					: arguments.operation == InjectionFileOperation::OpenWrite ? stream::FileStream::WriteOnly : stream::FileStream::ReadWrite;
+				stream::FileStream file(arguments.path, access);
+				if (!file.IsAvailable()) break;
+				result.content = Ptr(new stream::MemoryStream);
+				if (access == stream::FileStream::ReadOnly)
+				{
+					CopyStream(file, *result.content.Obj());
+				}
+				file.Close();
+				result.success = true;
+			}
+			break;
+		case InjectionFileOperation::Commit:
+			{
+				CHECK_ERROR(arguments.content, ERROR_MESSAGE_PREFIX L"Missing file content.");
+				stream::FileStream file(arguments.path, stream::FileStream::WriteOnly);
+				if (!file.IsAvailable()) break;
+				arguments.content->SeekFromBegin(0);
+				CopyStream(*arguments.content.Obj(), file);
+				file.Close();
+				result.success = true;
+			}
+			break;
+		default:
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unknown operation.");
+		}
+		if (CanSendEvents()) events->RespondInjectionFileSystem(id, result);
+#undef ERROR_MESSAGE_PREFIX
+	}
+}
+
+
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTECONTROLLERINJECTION.CPP
+***********************************************************************/
+
+namespace vl::presentation
+{
+	using namespace collections;
+	using namespace filesystem;
+	using namespace remoteprotocol;
+
+/***********************************************************************
+Portable values
+***********************************************************************/
+
+	InjectionDateTime EncodeInjectionDateTime(DateTime value)
+	{
+		return { value.year, value.month, value.day, value.hour, value.minute, value.second, value.milliseconds };
+	}
+
+	DateTime DecodeInjectionDateTime(const InjectionDateTime& value)
+	{
+		return DateTime::FromDateTime(value.year, value.month, value.day, value.hour, value.minute, value.second, value.milliseconds);
+	}
+
+	InjectionFileInfo EncodeInjectionFileInfo(const FileInfo& value)
+	{
+		InjectionFileInfo result{};
+		result.size = u64tow(value.size);
+		result.hardLinkCount = u64tow(value.hardLinkCount);
+		if (value.creationTime) result.creationTime = EncodeInjectionDateTime(value.creationTime.Value());
+		if (value.lastAccessTime) result.lastAccessTime = EncodeInjectionDateTime(value.lastAccessTime.Value());
+		if (value.lastModifiedTime) result.lastModifiedTime = EncodeInjectionDateTime(value.lastModifiedTime.Value());
+		if (value.lastChangeTime) result.lastChangeTime = EncodeInjectionDateTime(value.lastChangeTime.Value());
+		result.isDirectory = value.isDirectory;
+		result.isSymbolicLink = value.isSymbolicLink;
+		result.isReparsePoint = value.isReparsePoint;
+		result.canRead = value.canRead;
+		result.canWrite = value.canWrite;
+		result.canExecute = value.canExecute;
+		result.isReadOnly = value.isReadOnly;
+		result.isHidden = value.isHidden;
+		result.isSystem = value.isSystem;
+		result.isArchive = value.isArchive;
+		result.isCompressed = value.isCompressed;
+		result.isEncrypted = value.isEncrypted;
+		result.isSparse = value.isSparse;
+		result.isTemporary = value.isTemporary;
+		result.isOffline = value.isOffline;
+		result.isNotContentIndexed = value.isNotContentIndexed;
+		result.isImmutable = value.isImmutable;
+		result.isAppendOnly = value.isAppendOnly;
+		return result;
+	}
+
+	FileInfo DecodeInjectionFileInfo(const InjectionFileInfo& value)
+	{
+		FileInfo result;
+		bool valid = false;
+		result.size = wtou64_test(value.size, valid);
+		CHECK_ERROR(valid, L"vl::presentation::DecodeInjectionFileInfo()#Invalid file size.");
+		result.hardLinkCount = wtou64_test(value.hardLinkCount, valid);
+		CHECK_ERROR(valid, L"vl::presentation::DecodeInjectionFileInfo()#Invalid link count.");
+		if (value.creationTime) result.creationTime = DecodeInjectionDateTime(value.creationTime.Value());
+		if (value.lastAccessTime) result.lastAccessTime = DecodeInjectionDateTime(value.lastAccessTime.Value());
+		if (value.lastModifiedTime) result.lastModifiedTime = DecodeInjectionDateTime(value.lastModifiedTime.Value());
+		if (value.lastChangeTime) result.lastChangeTime = DecodeInjectionDateTime(value.lastChangeTime.Value());
+		result.isDirectory = value.isDirectory;
+		result.isSymbolicLink = value.isSymbolicLink;
+		result.isReparsePoint = value.isReparsePoint;
+		result.canRead = value.canRead;
+		result.canWrite = value.canWrite;
+		result.canExecute = value.canExecute;
+		result.isReadOnly = value.isReadOnly;
+		result.isHidden = value.isHidden;
+		result.isSystem = value.isSystem;
+		result.isArchive = value.isArchive;
+		result.isCompressed = value.isCompressed;
+		result.isEncrypted = value.isEncrypted;
+		result.isSparse = value.isSparse;
+		result.isTemporary = value.isTemporary;
+		result.isOffline = value.isOffline;
+		result.isNotContentIndexed = value.isNotContentIndexed;
+		result.isImmutable = value.isImmutable;
+		result.isAppendOnly = value.isAppendOnly;
+		return result;
+	}
+
+/***********************************************************************
+GuiRemoteControllerInjectionState
+***********************************************************************/
+
+	GuiRemoteControllerInjectionState::Invocation::Invocation()
+	{
+		CHECK_ERROR(completed.CreateManualUnsignal(false), L"vl::presentation::GuiRemoteControllerInjectionState::Invocation()#Failed to create completion event.");
+	}
+
+	GuiRemoteControllerInjectionState::GuiRemoteControllerInjectionState(GuiRemoteController* _remote)
+		: remote(_remote)
+		, mainThreadId(Thread::GetCurrentThreadId())
+	{
+	}
+
+	bool GuiRemoteControllerInjectionState::Execute(const Func<bool(GuiRemoteController*)>& proc)
+	{
+		if (Thread::GetCurrentThreadId() == mainThreadId)
+		{
+			return remote && proc(remote);
+		}
+
+		auto invocation = Ptr(new Invocation);
+		invocation->proc = proc;
+		SPIN_LOCK(lockPending)
+		{
+			if (!remote || !acceptingWorkers) return false;
+			pending.Add(invocation);
+			auto self = remote->injectionState;
+			remote->asyncService.InvokeInMainThread(nullptr, [self, invocation]()
+			{
+				bool execute = false;
+				SPIN_LOCK(self->lockPending)
+				{
+					execute = self->pending.Remove(invocation.Obj());
+				}
+				if (!execute) return;
+				invocation->result = invocation->proc(self->remote);
+				invocation->proc = {};
+				invocation->completed.Signal();
+			});
+		}
+		invocation->completed.Wait();
+		return invocation->result;
+	}
+
+	void GuiRemoteControllerInjectionState::Stop()
+	{
+		List<Ptr<Invocation>> canceled;
+		SPIN_LOCK(lockPending)
+		{
+			acceptingWorkers = false;
+			remote = nullptr;
+			canceled = std::move(pending);
+		}
+		for (auto invocation : canceled)
+		{
+			invocation->proc = {};
+			invocation->completed.Signal();
+		}
+	}
+
+/***********************************************************************
+GuiRemoteDateTimeInjection
+***********************************************************************/
+
+	GuiRemoteDateTimeInjection::GuiRemoteDateTimeInjection(GuiRemoteController* _remote)
+		: remote(_remote)
+	{
+	}
+
+	vuint64_t GuiRemoteDateTimeInjection::Convert(vuint64_t value, bool toLocal, bool localTime)
+	{
+		auto input = EncodeInjectionDateTime(Previous()->FromOSInternal(value));
+		InjectionDateTime output{};
+		auto succeeded = remote->injectionState->Execute([&](GuiRemoteController* controller)
+		{
+			if (!controller->controllerConnected || !controller->remoteGlobalConfig.injectDateTime) return false;
+			auto connection = controller->connectionGeneration;
+			auto& messages = controller->remoteMessages;
+			auto id = toLocal ? messages.RequestInjectionUtcToLocal(input) : messages.RequestInjectionLocalToUtc(input);
+			bool disconnected = false;
+			messages.Submit(disconnected);
+			if (disconnected || connection != controller->connectionGeneration) return false;
+			output = toLocal ? messages.RetrieveInjectionUtcToLocal(id) : messages.RetrieveInjectionLocalToUtc(id);
+			return true;
+		});
+		if (!succeeded)
+		{
+			if (localTime) return Previous()->LocalTime();
+			return toLocal ? Previous()->UtcToLocalTime(value) : Previous()->LocalToUtcTime(value);
+		}
+		return Previous()->FromDateTime(output.year, output.month, output.day, output.hour, output.minute, output.second, output.milliseconds).osInternal;
+	}
+
+	DateTime GuiRemoteDateTimeInjection::FromDateTime(vint year, vint month, vint day, vint hour, vint minute, vint second, vint milliseconds)
+	{
+		return Previous()->FromDateTime(year, month, day, hour, minute, second, milliseconds);
+	}
+
+	DateTime GuiRemoteDateTimeInjection::FromOSInternal(vuint64_t value)
+	{
+		return Previous()->FromOSInternal(value);
+	}
+
+	vuint64_t GuiRemoteDateTimeInjection::LocalTime()
+	{
+		return Convert(Previous()->UtcTime(), true, true);
+	}
+
+	vuint64_t GuiRemoteDateTimeInjection::UtcTime()
+	{
+		return Previous()->UtcTime();
+	}
+
+	vuint64_t GuiRemoteDateTimeInjection::LocalToUtcTime(vuint64_t value)
+	{
+		return Convert(value, false);
+	}
+
+	vuint64_t GuiRemoteDateTimeInjection::UtcToLocalTime(vuint64_t value)
+	{
+		return Convert(value, true);
+	}
+
+	vuint64_t GuiRemoteDateTimeInjection::Forward(vuint64_t value, vuint64_t milliseconds)
+	{
+		return Previous()->Forward(value, milliseconds);
+	}
+
+	vuint64_t GuiRemoteDateTimeInjection::Backward(vuint64_t value, vuint64_t milliseconds)
+	{
+		return Previous()->Backward(value, milliseconds);
+	}
+
+/***********************************************************************
+GuiRemoteLocaleInjection
+***********************************************************************/
+
+	GuiRemoteLocaleInjection::GuiRemoteLocaleInjection(GuiRemoteController* _remote)
+		: remote(_remote)
+	{
+	}
+
+	ILocaleImpl* GuiRemoteLocaleInjection::Predecessor() const
+	{
+		return const_cast<GuiRemoteLocaleInjection*>(this)->Previous();
+	}
+
+	Ptr<List<WString>> GuiRemoteLocaleInjection::Query(InjectionLocaleOperation operation, const WString& localeName, const WString& text, vint index) const
+	{
+		Ptr<List<WString>> result;
+		remote->injectionState->Execute([&](GuiRemoteController* controller)
+		{
+			if (!controller->controllerConnected || !controller->remoteGlobalConfig.injectLocale) return false;
+			auto connection = controller->connectionGeneration;
+			auto& messages = controller->remoteMessages;
+			auto id = messages.RequestInjectionLocale({ operation, localeName, text, index });
+			bool disconnected = false;
+			messages.Submit(disconnected);
+			if (disconnected || connection != controller->connectionGeneration) return false;
+			result = messages.RetrieveInjectionLocale(id);
+			CHECK_ERROR(result, L"vl::presentation::GuiRemoteLocaleInjection::Query()#Missing locale response.");
+			return true;
+		});
+		return result;
+	}
+
+	Locale GuiRemoteLocaleInjection::Invariant() const
+	{
+		auto result = Query(InjectionLocaleOperation::Invariant);
+		return result ? Locale(result->Get(0)) : Predecessor()->Invariant();
+	}
+
+	Locale GuiRemoteLocaleInjection::SystemDefault() const
+	{
+		auto result = Query(InjectionLocaleOperation::SystemDefault);
+		return result ? Locale(result->Get(0)) : Predecessor()->SystemDefault();
+	}
+
+	Locale GuiRemoteLocaleInjection::UserDefault() const
+	{
+		auto result = Query(InjectionLocaleOperation::UserDefault);
+		return result ? Locale(result->Get(0)) : Predecessor()->UserDefault();
+	}
+
+	void GuiRemoteLocaleInjection::Enumerate(List<Locale>& locales) const
+	{
+		if (auto result = Query(InjectionLocaleOperation::Enumerate))
+		{
+			for (auto name : *result.Obj()) locales.Add(Locale(name));
+		}
+		else
+		{
+			Predecessor()->Enumerate(locales);
+		}
+	}
+
+	void GuiRemoteLocaleInjection::GetShortDateFormats(const WString& localeName, List<WString>& formats) const
+	{
+		if (auto result = Query(InjectionLocaleOperation::ShortDateFormats, localeName))
+		{
+			CopyFrom(formats, *result.Obj(), true);
+		}
+		else
+		{
+			Predecessor()->GetShortDateFormats(localeName, formats);
+		}
+	}
+
+	void GuiRemoteLocaleInjection::GetLongDateFormats(const WString& localeName, List<WString>& formats) const
+	{
+		if (auto result = Query(InjectionLocaleOperation::LongDateFormats, localeName))
+		{
+			CopyFrom(formats, *result.Obj(), true);
+		}
+		else
+		{
+			Predecessor()->GetLongDateFormats(localeName, formats);
+		}
+	}
+
+	void GuiRemoteLocaleInjection::GetYearMonthDateFormats(const WString& localeName, List<WString>& formats) const
+	{
+		if (auto result = Query(InjectionLocaleOperation::YearMonthDateFormats, localeName))
+		{
+			CopyFrom(formats, *result.Obj(), true);
+		}
+		else
+		{
+			Predecessor()->GetYearMonthDateFormats(localeName, formats);
+		}
+	}
+
+	void GuiRemoteLocaleInjection::GetLongTimeFormats(const WString& localeName, List<WString>& formats) const
+	{
+		if (auto result = Query(InjectionLocaleOperation::LongTimeFormats, localeName))
+		{
+			CopyFrom(formats, *result.Obj(), true);
+		}
+		else
+		{
+			Predecessor()->GetLongTimeFormats(localeName, formats);
+		}
+	}
+
+	void GuiRemoteLocaleInjection::GetShortTimeFormats(const WString& localeName, List<WString>& formats) const
+	{
+		if (auto result = Query(InjectionLocaleOperation::ShortTimeFormats, localeName))
+		{
+			CopyFrom(formats, *result.Obj(), true);
+		}
+		else
+		{
+			Predecessor()->GetShortTimeFormats(localeName, formats);
+		}
+	}
+
+	WString GuiRemoteLocaleInjection::GetShortDayOfWeekName(const WString& localeName, vint index) const
+	{
+		auto result = Query(InjectionLocaleOperation::ShortDayOfWeekName, localeName, L"", index);
+		return result ? result->Get(0) : Predecessor()->GetShortDayOfWeekName(localeName, index);
+	}
+
+	WString GuiRemoteLocaleInjection::GetLongDayOfWeekName(const WString& localeName, vint index) const
+	{
+		auto result = Query(InjectionLocaleOperation::LongDayOfWeekName, localeName, L"", index);
+		return result ? result->Get(0) : Predecessor()->GetLongDayOfWeekName(localeName, index);
+	}
+
+	WString GuiRemoteLocaleInjection::GetShortMonthName(const WString& localeName, vint index) const
+	{
+		auto result = Query(InjectionLocaleOperation::ShortMonthName, localeName, L"", index);
+		return result ? result->Get(0) : Predecessor()->GetShortMonthName(localeName, index);
+	}
+
+	WString GuiRemoteLocaleInjection::GetLongMonthName(const WString& localeName, vint index) const
+	{
+		auto result = Query(InjectionLocaleOperation::LongMonthName, localeName, L"", index);
+		return result ? result->Get(0) : Predecessor()->GetLongMonthName(localeName, index);
+	}
+
+	WString GuiRemoteLocaleInjection::ToLower(const WString& localeName, const WString& str) const
+	{
+		auto result = Query(InjectionLocaleOperation::ToLower, localeName, str);
+		return result ? result->Get(0) : Predecessor()->ToLower(localeName, str);
+	}
+
+	WString GuiRemoteLocaleInjection::ToUpper(const WString& localeName, const WString& str) const
+	{
+		auto result = Query(InjectionLocaleOperation::ToUpper, localeName, str);
+		return result ? result->Get(0) : Predecessor()->ToUpper(localeName, str);
+	}
+
+	WString GuiRemoteLocaleInjection::ToLinguisticLower(const WString& localeName, const WString& str) const
+	{
+		auto result = Query(InjectionLocaleOperation::ToLinguisticLower, localeName, str);
+		return result ? result->Get(0) : Predecessor()->ToLinguisticLower(localeName, str);
+	}
+
+	WString GuiRemoteLocaleInjection::ToLinguisticUpper(const WString& localeName, const WString& str) const
+	{
+		auto result = Query(InjectionLocaleOperation::ToLinguisticUpper, localeName, str);
+		return result ? result->Get(0) : Predecessor()->ToLinguisticUpper(localeName, str);
+	}
+
+	WString GuiRemoteLocaleInjection::FormatDate(const WString& localeName, const WString& format, DateTime date) const
+	{
+		return Predecessor()->FormatDate(localeName, format, date);
+	}
+
+	WString GuiRemoteLocaleInjection::FormatTime(const WString& localeName, const WString& format, DateTime time) const
+	{
+		return Predecessor()->FormatTime(localeName, format, time);
+	}
+
+	WString GuiRemoteLocaleInjection::FormatNumber(const WString& localeName, const WString& number) const
+	{
+		return Predecessor()->FormatNumber(localeName, number);
+	}
+
+	WString GuiRemoteLocaleInjection::FormatCurrency(const WString& localeName, const WString& currency) const
+	{
+		return Predecessor()->FormatCurrency(localeName, currency);
+	}
+
+	vint GuiRemoteLocaleInjection::Compare(const WString& localeName, const WString& s1, const WString& s2, Locale::Normalization normalization) const
+	{
+		return Predecessor()->Compare(localeName, s1, s2, normalization);
+	}
+
+	vint GuiRemoteLocaleInjection::CompareOrdinal(const WString& s1, const WString& s2) const
+	{
+		return Predecessor()->CompareOrdinal(s1, s2);
+	}
+
+	vint GuiRemoteLocaleInjection::CompareOrdinalIgnoreCase(const WString& s1, const WString& s2) const
+	{
+		return Predecessor()->CompareOrdinalIgnoreCase(s1, s2);
+	}
+
+	collections::Pair<vint, vint> GuiRemoteLocaleInjection::FindFirst(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const
+	{
+		return Predecessor()->FindFirst(localeName, text, find, normalization);
+	}
+
+	collections::Pair<vint, vint> GuiRemoteLocaleInjection::FindLast(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const
+	{
+		return Predecessor()->FindLast(localeName, text, find, normalization);
+	}
+
+	bool GuiRemoteLocaleInjection::StartsWith(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const
+	{
+		return Predecessor()->StartsWith(localeName, text, find, normalization);
+	}
+
+	bool GuiRemoteLocaleInjection::EndsWith(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const
+	{
+		return Predecessor()->EndsWith(localeName, text, find, normalization);
+	}
+
+/***********************************************************************
+Empty filesystem
+***********************************************************************/
+
+	WString NormalizeEmptyInjectionPath(const WString& path)
+	{
+		List<WString> components;
+		vint start = 0;
+		for (vint i = 0; i <= path.Length(); i++)
+		{
+			if (i != path.Length() && path[i] != L'/' && path[i] != L'\\') continue;
+			auto part = path.Sub(start, i - start);
+			start = i + 1;
+			if (part.Length() == 0 || part == L".") continue;
+			if (part == L"..")
+			{
+				if (components.Count() > 0) components.RemoveAt(components.Count() - 1);
+			}
+			else
+			{
+				components.Add(part);
+			}
+		}
+		WString result;
+		for (auto part : components) result += L"/" + part;
+		return result.Length() == 0 ? WString::Unmanaged(L"/") : result;
+	}
+
+	InjectionFileResponse EmptyInjectionFileResponse(InjectionFileOperation operation, const WString& path, const WString& target)
+	{
+		InjectionFileResponse result{};
+		switch (operation)
+		{
+		case InjectionFileOperation::PathDelimiter:
+			result.success = true;
+			result.text = L"/";
+			break;
+		case InjectionFileOperation::CompatibleDelimiters:
+			result.success = true;
+			result.text = L"\\";
+			break;
+		case InjectionFileOperation::Initialize:
+			result.success = true;
+			result.text = NormalizeEmptyInjectionPath(path);
+			break;
+		case InjectionFileOperation::Concat:
+			result.success = true;
+			result.text = NormalizeEmptyInjectionPath(target.Length() > 0 && (target[0] == L'/' || target[0] == L'\\') ? target : path + L"/" + target);
+			break;
+		case InjectionFileOperation::Relative:
+			{
+				auto from = NormalizeEmptyInjectionPath(path);
+				auto to = NormalizeEmptyInjectionPath(target);
+				vint common = 0;
+				for (vint i = 0; i < from.Length() && i < to.Length() && from[i] == to[i]; i++)
+				{
+					if (from[i] == L'/') common = i + 1;
+					if (i + 1 == from.Length() && (i + 1 == to.Length() || to[i + 1] == L'/')) common = i + 1;
+				}
+				result.success = true;
+				if (from == to) { result.text = L"."; break; }
+				auto remaining = from.Sub(common, from.Length() - common);
+				for (vint i = 0; i < remaining.Length(); i++)
+				{
+					if (i == 0 ? remaining[i] != L'/' : remaining[i - 1] == L'/') result.text += L"../";
+				}
+				if (common < to.Length() && to[common] == L'/') common++;
+				result.text += to.Sub(common, to.Length() - common);
+			}
+			break;
+		case InjectionFileOperation::IsRoot:
+		case InjectionFileOperation::IsFolder:
+			result.success = path == L"/" || path.Length() == 0;
+			break;
+		case InjectionFileOperation::Folders:
+		case InjectionFileOperation::Files:
+			result.success = path == L"/" || path.Length() == 0;
+			result.paths = Ptr(new List<WString>);
+			break;
+		default:
+			break;
+		}
+		return result;
+	}
+
+/***********************************************************************
+GuiRemoteFileSystemInjection
+***********************************************************************/
+
+	GuiRemoteFileSystemInjection::GuiRemoteFileSystemInjection(GuiRemoteController* _remote)
+		: remote(_remote)
+	{
+	}
+
+	InjectionFileResponse GuiRemoteFileSystemInjection::Query(InjectionFileOperation operation, const WString& path, const WString& target) const
+	{
+		InjectionFileResponse result{};
+		auto succeeded = remote->injectionState->Execute([&](GuiRemoteController* controller)
+		{
+			if (!controller->controllerConnected || !controller->remoteGlobalConfig.injectFileSystem) return false;
+			auto connection = controller->connectionGeneration;
+			auto& messages = controller->remoteMessages;
+			auto id = messages.RequestInjectionFileSystem({ operation, path, target, {} });
+			bool disconnected = false;
+			messages.Submit(disconnected);
+			if (disconnected || connection != controller->connectionGeneration) return false;
+			result = messages.RetrieveInjectionFileSystem(id);
+			return true;
+		});
+		return succeeded ? result : EmptyInjectionFileResponse(operation, path, target);
+	}
+
+	wchar_t GuiRemoteFileSystemInjection::GetPathDelimiter() const
+	{
+		auto result = Query(InjectionFileOperation::PathDelimiter);
+		CHECK_ERROR(result.success && result.text.Length() == 1, L"vl::presentation::GuiRemoteFileSystemInjection::GetPathDelimiter()#Invalid delimiter.");
+		return result.text[0];
+	}
+
+	const wchar_t* GuiRemoteFileSystemInjection::GetCompatibleDelimiters() const
+	{
+		auto result = Query(InjectionFileOperation::CompatibleDelimiters);
+		const wchar_t* value = nullptr;
+		SPIN_LOCK(lockDelimiters)
+		{
+			auto index = delimiters.IndexOf(result.text);
+			if (index == -1) index = delimiters.Add(result.text);
+			value = delimiters[index].Buffer();
+		}
+		return value;
+	}
+
+	WString GuiRemoteFileSystemInjection::ConcatPath(const WString& fullPath, const WString& relativePath) const
+	{
+		return Query(InjectionFileOperation::Concat, fullPath, relativePath).text;
+	}
+
+	void GuiRemoteFileSystemInjection::Initialize(WString& fullPath) const
+	{
+		fullPath = Query(InjectionFileOperation::Initialize, fullPath).text;
+	}
+
+	WString GuiRemoteFileSystemInjection::GetRelativePathFor(const WString& fromPath, const WString& toPath) const
+	{
+		return Query(InjectionFileOperation::Relative, fromPath, toPath).text;
+	}
+
+	FileInfo GuiRemoteFileSystemInjection::GetFileInfo(const FilePath& path) const
+	{
+		auto result = Query(InjectionFileOperation::Info, path.GetFullPath());
+		CHECK_ERROR(result.success && result.info, L"vl::presentation::GuiRemoteFileSystemInjection::GetFileInfo()#Entry is unavailable.");
+		return DecodeInjectionFileInfo(result.info.Value());
+	}
+
+	bool GuiRemoteFileSystemInjection::IsFile(const WString& fullPath) const
+	{
+		return Query(InjectionFileOperation::IsFile, fullPath).success;
+	}
+
+	bool GuiRemoteFileSystemInjection::IsFolder(const WString& fullPath) const
+	{
+		return Query(InjectionFileOperation::IsFolder, fullPath).success;
+	}
+
+	bool GuiRemoteFileSystemInjection::IsRoot(const WString& fullPath) const
+	{
+		return Query(InjectionFileOperation::IsRoot, fullPath).success;
+	}
+
+	bool GuiRemoteFileSystemInjection::FileDelete(const FilePath& path) const
+	{
+		return Query(InjectionFileOperation::DeleteFile, path.GetFullPath()).success;
+	}
+
+	bool GuiRemoteFileSystemInjection::CreateFolder(const FilePath& path) const
+	{
+		return Query(InjectionFileOperation::CreateFolder, path.GetFullPath()).success;
+	}
+
+	bool GuiRemoteFileSystemInjection::DeleteFolder(const FilePath& path) const
+	{
+		return Query(InjectionFileOperation::DeleteFolder, path.GetFullPath()).success;
+	}
+
+	bool GuiRemoteFileSystemInjection::FileRename(const FilePath& path, const WString& name) const
+	{
+		return Query(InjectionFileOperation::RenameFile, path.GetFullPath(), name).success;
+	}
+
+	bool GuiRemoteFileSystemInjection::FolderRename(const FilePath& path, const WString& name) const
+	{
+		return Query(InjectionFileOperation::RenameFolder, path.GetFullPath(), name).success;
+	}
+
+	bool GuiRemoteFileSystemInjection::FileCopy(const FilePath& source, const FilePath& destination) const
+	{
+		return Query(InjectionFileOperation::Copy, source.GetFullPath(), destination.GetFullPath()).success;
+	}
+
+	bool GuiRemoteFileSystemInjection::GetFolders(const FilePath& path, List<Folder>& items) const
+	{
+		auto result = Query(InjectionFileOperation::Folders, path.GetFullPath());
+		if (!result.success) return false;
+		for (auto name : *result.paths.Obj()) items.Add(Folder(FilePath(name)));
+		return true;
+	}
+
+	bool GuiRemoteFileSystemInjection::GetFiles(const FilePath& path, List<File>& items) const
+	{
+		auto result = Query(InjectionFileOperation::Files, path.GetFullPath());
+		if (!result.success) return false;
+		for (auto name : *result.paths.Obj()) items.Add(File(FilePath(name)));
+		return true;
+	}
+
+	Ptr<stream::IFileStreamImpl> GuiRemoteFileSystemInjection::GetFileStreamImpl(const WString& fileName, stream::FileStream::AccessRight accessRight) const
+	{
+		return Ptr(new GuiRemoteFileStreamInjection(remote->injectionState, fileName, accessRight));
+	}
+
+/***********************************************************************
+GuiRemoteFileStreamInjection
+***********************************************************************/
+
+	GuiRemoteFileStreamInjection::GuiRemoteFileStreamInjection(Ptr<GuiRemoteControllerInjectionState> _state, const WString& _fileName, stream::FileStream::AccessRight _access)
+		: state(_state)
+		, fileName(_fileName)
+		, access(_access)
+	{
+	}
+
+	GuiRemoteFileStreamInjection::~GuiRemoteFileStreamInjection()
+	{
+		Close();
+	}
+
+	bool GuiRemoteFileStreamInjection::Open()
+	{
+		CHECK_ERROR(!opened, L"vl::presentation::GuiRemoteFileStreamInjection::Open()#Stream is already open.");
+		opened = state->Execute([&](GuiRemoteController* controller)
+		{
+			if (!controller->controllerConnected || !controller->remoteGlobalConfig.injectFileSystem) return false;
+			connection = controller->connectionGeneration;
+			auto operation = access == stream::FileStream::ReadOnly ? InjectionFileOperation::OpenRead
+				: access == stream::FileStream::WriteOnly ? InjectionFileOperation::OpenWrite : InjectionFileOperation::OpenReadWrite;
+			auto& messages = controller->remoteMessages;
+			auto id = messages.RequestInjectionFileSystem({ operation, fileName, {}, {} });
+			bool disconnected = false;
+			messages.Submit(disconnected);
+			if (disconnected || connection != controller->connectionGeneration) return false;
+			auto result = messages.RetrieveInjectionFileSystem(id);
+			if (!result.success) return false;
+			CHECK_ERROR(result.content, L"vl::presentation::GuiRemoteFileStreamInjection::Open()#Missing file content.");
+			buffer = result.content;
+			buffer->SeekFromBegin(0);
+			return true;
+		});
+		return opened;
+	}
+
+	void GuiRemoteFileStreamInjection::Close()
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteFileStreamInjection::Close()#"
+		if (!opened) return;
+		opened = false;
+		auto succeeded = state->Execute([&](GuiRemoteController* controller)
+		{
+			if (!controller->controllerConnected || !controller->remoteGlobalConfig.injectFileSystem || connection != controller->connectionGeneration) return false;
+			if (access == stream::FileStream::ReadOnly) return true;
+			auto& messages = controller->remoteMessages;
+			auto id = messages.RequestInjectionFileSystem({ InjectionFileOperation::Commit, fileName, {}, buffer });
+			bool disconnected = false;
+			messages.Submit(disconnected);
+			if (disconnected || connection != controller->connectionGeneration) return false;
+			return messages.RetrieveInjectionFileSystem(id).success;
+		});
+		CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Original renderer is unavailable or file writeback failed.");
+		buffer->Close();
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	pos_t GuiRemoteFileStreamInjection::Position() const
+	{
+		return opened ? buffer->Position() : -1;
+	}
+
+	pos_t GuiRemoteFileStreamInjection::Size() const
+	{
+		return opened ? buffer->Size() : -1;
+	}
+
+	void GuiRemoteFileStreamInjection::Seek(pos_t size)
+	{
+		CHECK_ERROR(opened, L"vl::presentation::GuiRemoteFileStreamInjection::Seek()#Stream is closed.");
+		buffer->Seek(size);
+	}
+
+	void GuiRemoteFileStreamInjection::SeekFromBegin(pos_t size)
+	{
+		CHECK_ERROR(opened, L"vl::presentation::GuiRemoteFileStreamInjection::SeekFromBegin()#Stream is closed.");
+		buffer->SeekFromBegin(size);
+	}
+
+	void GuiRemoteFileStreamInjection::SeekFromEnd(pos_t size)
+	{
+		CHECK_ERROR(opened, L"vl::presentation::GuiRemoteFileStreamInjection::SeekFromEnd()#Stream is closed.");
+		buffer->SeekFromEnd(size);
+	}
+
+	vint GuiRemoteFileStreamInjection::Read(void* data, vint size)
+	{
+		CHECK_ERROR(opened && access != stream::FileStream::WriteOnly, L"vl::presentation::GuiRemoteFileStreamInjection::Read()#Stream is closed or access is denied.");
+		return buffer->Read(data, size);
+	}
+
+	vint GuiRemoteFileStreamInjection::Write(void* data, vint size)
+	{
+		CHECK_ERROR(opened && access != stream::FileStream::ReadOnly, L"vl::presentation::GuiRemoteFileStreamInjection::Write()#Stream is closed or access is denied.");
+		return buffer->Write(data, size);
+	}
+
+	vint GuiRemoteFileStreamInjection::Peek(void* data, vint size)
+	{
+		CHECK_ERROR(opened && access != stream::FileStream::WriteOnly, L"vl::presentation::GuiRemoteFileStreamInjection::Peek()#Stream is closed or access is denied.");
+		return buffer->Peek(data, size);
+	}
+}
+
 
