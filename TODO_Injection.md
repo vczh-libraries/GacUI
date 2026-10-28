@@ -42,6 +42,19 @@
     - `test.sh` in `wGac` and `iGac` needs to be updated to receive `-remoteDT`, `-remoteLocale` and `-remoteFS`.
   - Update `Project.md` and `(wGac|iGac)/AGENTS.md` to describe these new arguments, but no need to update any `GacUI/.github/Jobs`, they are not included in standard manual verification process.
   - Update KB pages in GacUI to simply introduce these new features.
+- Update to `FullControlTest`:
+  - There are two document test page, one is ribbon and another is toolstrip. Their save feature is not implemented.
+  - You are going to check out related tutorials in `Release` repo and copy their implementation.
+  - Features are in `DocumentEditorBase::(LoadAsPrivateFormat|SaveAsPrivateFormat|SaveAsRTF|SaveAsHTML)`.
+  - But you are not going to update generated files, instead you need to change the XML so that these 4 functions becomes 4 events:
+    - Event handlers are stored in `FullControlTestPalette.(h|cpp)`, rename this file to `FullControlTestEventHandlers.(h|cpp)` since it is no longer dedicated to palette.
+    - Both tabs need to subscribe 4 events.
+      - Although child controls are "protected", but each instance root (e.g. the main window) offers a way to request for a control by name, use that function to access both tabs with `dynamic_cast` to make events accessible.
+    - You can add a new function `demo::AttachFctEvents` to `FullControlTestEventHandlers.(h|cpp)` so that all main functions could call this function instead of subscribe 9 events everywhere.
+      - Except `GacUI_Host` project as reflection specific code is needed, manually subscribe events there.
+  - At the end, you need to create a document with rich content, including headers, different font/size/color, paragraph alignment, images, and save a private format file to `GacUI/Test/TestDocument.*` (I forget the extension name, it is hardcoded in `FullControlTest`).
+    - You can insert `Gaclib.png` and `Video.png` to the document, images will be saved inside the private format, loading the private format won't need original images to exist.
+    - This file could be then used in verification, for example, the fake file system implementation has a copy of this file, and see if it could be loaded to the document editor.
 - Before running `RemotingTest_Win32_Renderer` to verify, local changes are recommended to push first, in order to verify:
   - You can change `GuiRemoteProtocolSingle` to offer fake implementation, for example, a different locale and format list, a different time zone, a fake file system, and see if they correctly affects dedicated pages in `FullControlTest`. Since local changes are already pushed, you can easily identify code that offers fake implementations and revert them once they are no longer needed. DO NOT check in fake implementations, they are meant to be discarded after finishing this task.
   - You need to turn options in core/renderer on and off and make sure core picks the right implementation.
