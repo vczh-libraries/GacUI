@@ -40252,13 +40252,14 @@ GuiRemoteProtocolAsyncJsonChannel
 		{
 		case ChannelPackageSemantic::Event:
 			{
-				if (info.name == L"ControllerConnect")
+				if (info.name == L"ControllerConnect" || info.name == L"ControllerDisconnect")
 				{
 					SPIN_LOCK(lockConnection)
 					{
+						if (info.name == L"ControllerDisconnect" && (senderClientId != connectionClientId || !connectionAvailable)) return;
 						connectionCounter++;
 						connectionClientId = senderClientId;
-						connectionAvailable = true;
+						connectionAvailable = info.name == L"ControllerConnect";
 					}
 
 					SPIN_LOCK(lockResponses)
@@ -40282,6 +40283,10 @@ GuiRemoteProtocolAsyncJsonChannel
 			break;
 		case ChannelPackageSemantic::Response:
 			{
+				SPIN_LOCK(lockConnection)
+				{
+					if (!connectionAvailable || senderClientId != connectionClientId) return;
+				}
 				ReceivedPackage receivedPackage;
 				receivedPackage.senderClientId = senderClientId;
 				receivedPackage.package = package;
@@ -40411,10 +40416,16 @@ GuiRemoteProtocolAsyncJsonChannel
 		{
 			CHECK_ERROR(!pendingRequest, ERROR_MESSAGE_PREFIX L"Only one pending request group is expected.");
 			pendingRequest = requestGroup;
+			// A disconnect can arrive before this waiter is registered.
+			SPIN_LOCK(lockConnection)
+			{
+				disconnected = currentConnectionCounter != connectionCounter || !connectionAvailable;
+			}
 		}
 
 		for (auto&& queuedPackage : packages)
 		{
+			if (disconnected) break;
 			if (queuedPackage.receiverClientId)
 			{
 				channel->SendToClient(queuedPackage.receiverClientId.Value(), queuedPackage.package);
@@ -40431,7 +40442,7 @@ GuiRemoteProtocolAsyncJsonChannel
 				}
 			}
 		}
-		channel->BatchWrite(disconnected);
+		if (!disconnected) channel->BatchWrite(disconnected);
 
 		if (disconnected || requestGroup->requestIds.Count() == 0)
 		{
@@ -40472,6 +40483,14 @@ GuiRemoteProtocolAsyncJsonChannel
 	IGuiRemoteEventProcessor* GuiRemoteProtocolAsyncJsonChannel::GetRemoteEventProcessor()
 	{
 		return this;
+	}
+
+	void GuiRemoteProtocolAsyncJsonChannel::NotifyRendererDisconnected(vint clientId)
+	{
+		Ptr<glr::json::JsonObject> package;
+		ChannelPackageInfo info{ ChannelPackageSemantic::Event, -1, L"ControllerDisconnect" };
+		JsonChannelPack(info, {}, package);
+		OnRead(clientId, package);
 	}
 }
 
@@ -41001,10 +41020,13 @@ GuiRemoteProtocolCoreChannel
 		{
 			if (info.name == L"ControllerConnect")
 			{
+				detachedRendererClientId.store(-1);
 				SetRendererClientId(senderClientId);
 			}
-			else if (info.name == L"ControllerDisconnect" && GetRendererClientId() == senderClientId)
+			else if (info.name == L"ControllerDisconnect" &&
+				(GetRendererClientId() == senderClientId || (GetRendererClientId() == -1 && detachedRendererClientId.load() == senderClientId)))
 			{
+				detachedRendererClientId.store(-1);
 				SetRendererClientId(-1);
 			}
 			else if (GetRendererClientId() != senderClientId)
@@ -41180,9 +41202,16 @@ GuiRemoteProtocolCoreChannel
 
 	void GuiRemoteProtocolCoreChannel::DetachRenderer(vint clientId)
 	{
-		if (GetRendererClientId() == clientId)
+		auto expectedClientId = clientId;
+		if (rendererClientId.compare_exchange_strong(expectedClientId, -1))
 		{
-			SetRendererClientId(-1);
+			detachedRendererClientId.store(clientId);
+			if (auto asyncChannel = dynamic_cast<GuiRemoteProtocolAsyncJsonChannel*>(channel))
+			{
+				// Cancel a blocking submit on the transport thread, then deliver
+				// the controller event through the normal UI-thread event queue.
+				asyncChannel->NotifyRendererDisconnected(clientId);
+			}
 		}
 	}
 

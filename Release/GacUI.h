@@ -23177,6 +23177,7 @@ GuiRemoteProtocolCoreChannel
 		IGuiRemoteEventProcessor*					eventProcessor = nullptr;
 		WString										executablePath;
 		atomic_vint									rendererClientId = -1;
+		atomic_vint									detachedRendererClientId = -1;
 		SpinLock									lockPackagesBeforeRenderer;
 		collections::List<JsonPackage>				packagesBeforeRenderer;
 
@@ -23393,6 +23394,7 @@ GuiRemoteProtocolAsyncJsonChannel
 		void												BatchWrite(bool& disconnected) override;
 
 		IGuiRemoteEventProcessor*							GetRemoteEventProcessor();
+		void												NotifyRendererDisconnected(vint clientId);
 	};
 }
 
