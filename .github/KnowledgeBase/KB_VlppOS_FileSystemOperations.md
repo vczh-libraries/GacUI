@@ -6,7 +6,7 @@ Cross-platform file and directory manipulation with path handling and content ac
 
 `FilePath` is a string representation of file path.
 
-- Use `GetPathDelimiter` to get the platform path delimiter.
+- Use `GetPathDelimiter` and `GetCompatibleDelimiters` to query the current filesystem's primary and alternate separators, including application injections.
 - Use `operator/`, `GetName`, `GetFolder`, `GetFullPath` and `GetRelativePathFor` for path manipulation. On POSIX, joining an absolute right-hand path replaces the base folder; relative paths still resolve from the base.
 - Use `IsFile`, `IsFolder` and `IsRoot` to tell the object represented by the path.
 - Use `FilePath::IsAbsolutePath(path)` to compare a string with `FilePath(path).GetFullPath()`. This tests normalized absolute form, without requiring existence or resolving symbolic links. An absolute path containing alternate separators, trailing delimiters or dot segments can fail this comparison. The platform's virtual root representation follows the same equality rule.

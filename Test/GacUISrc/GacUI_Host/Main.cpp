@@ -61,8 +61,8 @@ void GuiMain()
 		for (auto name : { L"editorRibbon", L"editorToolstrip" })
 		{
 			auto editor = window->GetNamedObject(name);
-			auto root = dynamic_cast<GuiInstanceRootObject*>(editor.GetRawPtr());
-			auto viewer = dynamic_cast<GuiDocumentViewer*>(root->GetNamedObject(L"document").GetRawPtr());
+			auto root = editor.GetRawPtr()->SafeAggregationCast<GuiInstanceRootObject>();
+			auto viewer = FindObjectByName<GuiDocumentViewer>(root, L"document");
 			editor.AttachEvent(L"LoadAsPrivateFormat", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName) { demo::LoadFctDocument(viewer, fileName); })));
 			editor.AttachEvent(L"SaveAsPrivateFormat", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName) { demo::SaveFctDocument(viewer, fileName); })));
 			editor.AttachEvent(L"SaveAsRTF", BoxParameter(Func<void(const WString&)>([viewer](const WString& fileName) { demo::ExportFctDocumentRtf(viewer, fileName); })));

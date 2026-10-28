@@ -28,7 +28,7 @@ namespace demo
 		stream::FileStream file(fileName, stream::FileStream::WriteOnly);
 		CHECK_ERROR(file.IsAvailable(), L"demo::WriteFctDocument()#Cannot open output.");
 		content.SeekFromBegin(0);
-		CopyStream(content, file);
+		CHECK_ERROR(CopyStream(content, file) == content.Size(), L"demo::WriteFctDocument()#Incomplete document write.");
 		file.Close();
 	}
 

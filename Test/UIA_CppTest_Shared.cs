@@ -58,6 +58,8 @@ public static class GacUIShowcaseTests
     }
     delegate bool EnumProc(IntPtr hwnd, IntPtr parameter);
     [DllImport("user32.dll")] static extern bool EnumWindows(EnumProc callback, IntPtr parameter);
+    [DllImport("user32.dll")] static extern bool EnumChildWindows(IntPtr parent, EnumProc callback, IntPtr parameter);
+    [DllImport("user32.dll")] static extern int GetDlgCtrlID(IntPtr hwnd);
     [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint process);
     [DllImport("user32.dll", CharSet=CharSet.Unicode)] static extern int GetClassName(IntPtr hwnd, StringBuilder text, int count);
     [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr hwnd);
@@ -934,22 +936,42 @@ public static class GacUIShowcaseTests
     }
     static AutomationElement PersistenceCommand(AutomationElement page, bool ribbon, string command)
     {
-        if (ribbon) Invoke(page, "  HOME  ");
-        else
-        {
-            Pattern<ExpandCollapsePattern>(Named(page, "File", ControlType.MenuItem), ExpandCollapsePattern.Pattern).Expand();
-            if (command != "Load as Private Format")
-                Pattern<ExpandCollapsePattern>(Named(page, "Save as", ControlType.MenuItem), ExpandCollapsePattern.Pattern).Expand();
-        }
-        AutomationElement item = null;
-        Wait(() => {
-            foreach (var window in OwnedWindows())
+        Action openMenu = () => {
+            if (ribbon) Invoke(page, "  HOME  ");
+            else
             {
-                item = FindNamed(window, command, ControlType.MenuItem);
-                if (item != null && !item.Current.IsOffscreen) return true;
+                Pattern<ExpandCollapsePattern>(Named(page, "File", ControlType.MenuItem), ExpandCollapsePattern.Pattern).Expand();
+                if (command != "Load as Private Format")
+                    Pattern<ExpandCollapsePattern>(Named(page, "Save as", ControlType.MenuItem), ExpandCollapsePattern.Pattern).Expand();
+            }
+        };
+        openMenu();
+        AutomationElement item = null;
+        // Search popup windows first. Walking the rebuilt showcase's complete
+        // provider tree can outlast the timeout before reaching its popup.
+        var retryMenu = Stopwatch.StartNew();
+        Wait(() => {
+            ControlsSnapshot();
+            var windows = OwnedWindows();
+            windows.Sort((a, b) => Automation.Compare(a, root).CompareTo(Automation.Compare(b, root)));
+            foreach (var window in windows)
+            {
+                foreach (var candidate in Find(window, ControlType.MenuItem))
+                {
+                    if (candidate.Current.Name == command && !candidate.Current.IsOffscreen)
+                    {
+                        item = candidate;
+                        return true;
+                    }
+                }
+            }
+            if (retryMenu.ElapsedMilliseconds >= 500)
+            {
+                openMenu();
+                retryMenu.Restart();
             }
             return false;
-        }, "persistence menu command: " + command);
+        }, "persistence menu command: " + command, 30000);
         Pattern<InvokePattern>(item, InvokePattern.Pattern).Invoke();
         AutomationElement dialog = null;
         string title = command == "Load as Private Format" ? "Load a GacUI Document" : "Save a GacUI Document";
@@ -964,13 +986,32 @@ public static class GacUIShowcaseTests
         }, "persistence dialog: " + title);
         return dialog;
     }
+    static AutomationElement NativeFileDialogControl(AutomationElement dialog, string controlClass, int controlId)
+    {
+        if (dialog.Current.FrameworkId == "GacUI") return null;
+        var hwnd = new IntPtr(dialog.Current.NativeWindowHandle);
+        uint process; GetWindowThreadProcessId(hwnd, out process);
+        var name = new StringBuilder(256); GetClassName(hwnd, name, name.Capacity);
+        Check(process == ownedProcess && name.ToString() == "#32770", "owned native file dialog");
+        IntPtr found = IntPtr.Zero;
+        EnumChildWindows(hwnd, (child, parameter) => {
+            GetClassName(child, name, name.Capacity);
+            if (GetDlgCtrlID(child) == controlId && name.ToString() == controlClass && IsWindowVisible(child)) found = child;
+            return true;
+        }, IntPtr.Zero);
+        if (found == IntPtr.Zero) return null;
+        Console.WriteLine("NOTE native dialog footer omitted from UIA descendants; querying its owned " + controlClass + " HWND directly");
+        return AutomationElement.FromHandle(found);
+    }
     static void PersistenceFile(AutomationElement page, bool ribbon, string command, string path, bool cancel)
     {
         var dialog = PersistenceCommand(page, ribbon, command);
+        Console.WriteLine("Persistence command: " + command + (cancel ? " / cancel" : " / " + path));
         if (!cancel)
         {
             var edit = FindNamed(dialog, "File name:", ControlType.Edit)
-                ?? FindNamed(dialog, "File Name:", ControlType.Edit);
+                ?? FindNamed(dialog, "File Name:", ControlType.Edit)
+                ?? NativeFileDialogControl(dialog, "Edit", 1148);
             if (edit == null)
             {
                 var edits = Find(dialog, ControlType.Edit);
@@ -980,12 +1021,78 @@ public static class GacUIShowcaseTests
             Pattern<ValuePattern>(edit, ValuePattern.Pattern).SetValue(path);
         }
         var button = cancel ? "Cancel" : command == "Load as Private Format" ? "Open" : "Save";
-        var confirm = FindNamed(dialog, button, ControlType.Button) ?? FindNamed(dialog, "OK", ControlType.Button);
-        Check(confirm != null, "file dialog confirmation button");
-        Pattern<InvokePattern>(confirm, InvokePattern.Pattern).Invoke();
+        AutomationElement confirm = null;
+        Wait(() =>
+        {
+            confirm = FindNamed(dialog, button, ControlType.Button) ?? FindNamed(dialog, "OK", ControlType.Button);
+            if (confirm != null) return confirm.Current.IsEnabled;
+            foreach (var candidate in Find(dialog, ControlType.Button))
+            {
+                if (candidate.Current.AutomationId == (cancel ? "2" : "1")) confirm = candidate;
+            }
+            if (confirm == null) confirm = NativeFileDialogControl(dialog, "Button", cancel ? 2 : 1);
+            if (confirm == null)
+            {
+                // The fake dialog localizes its two action buttons independently
+                // of the operating system. FileDialog.xml orders OK then Cancel.
+                var actions = Find(dialog, ControlType.Button).FindAll(candidate => candidate.Current.FrameworkId == "GacUI" && candidate.Current.Name.Length > 0);
+                if (actions.Count == 2) confirm = actions[cancel ? 1 : 0];
+            }
+            return confirm != null && confirm.Current.IsEnabled;
+        }, "file dialog confirmation button");
+        bool nativeClick = false;
+        object invoke;
+        if (!confirm.TryGetCurrentPattern(InvokePattern.Pattern, out invoke))
+        {
+            Check(confirm.Current.FrameworkId != "GacUI", "GacUI file confirmation exposes Invoke");
+            nativeClick = true;
+        }
+        try { if (!nativeClick) ((InvokePattern)invoke).Invoke(); }
+        catch (InvalidOperationException error)
+        {
+            if (confirm.Current.FrameworkId == "GacUI" || error.StackTrace == null || !error.StackTrace.Contains("SendInput")) throw;
+            nativeClick = true;
+        }
+        if (nativeClick)
+        {
+            var handle = new IntPtr(confirm.Current.NativeWindowHandle);
+            uint process; GetWindowThreadProcessId(handle, out process);
+            var className = new StringBuilder(256); GetClassName(handle, className, className.Capacity);
+            Check(process == ownedProcess && className.ToString() == "Button", "owned native file dialog button");
+            Console.WriteLine("NOTE native file-dialog Invoke unavailable; using owned button BM_CLICK");
+            Check(PostMessage(handle, 0x00F5, IntPtr.Zero, IntPtr.Zero), "native file confirmation accepted");
+        }
         Wait(() => { try { return dialog.Current.IsOffscreen; } catch (ElementNotAvailableException) { return true; } }, "file dialog completed");
+        // The native dialog disappears before its caller resumes and dispatches
+        // the document event. A UI-thread snapshot waits for that handler too.
+        ControlsSnapshot();
     }
-    static void DocumentPersistence()
+    static void PersistencePalette(IntPtr hwnd, string name)
+    {
+        var manager = Page(root, "Window Manager");
+        var palette = Named(manager, name, ControlType.RadioButton);
+        var selection = Pattern<SelectionItemPattern>(palette, SelectionItemPattern.Pattern);
+        if (selection.Current.IsSelected) return;
+        selection.Select();
+        Wait(() => {
+            try { var caption = palette.Current.Name; return false; }
+            catch (ElementNotAvailableException) { return true; }
+        }, "persistence palette replaced", 30000);
+        // Retired providers can still have queued event-cache work. Allow
+        // it to drain before requesting the rebuilt tree and layout.
+        Thread.Sleep(2000);
+        Wait(() => {
+            root = AutomationElement.FromHandle(hwnd);
+            return FindNamed(root, "Control", ControlType.TabItem) != null;
+        }, "palette rebuilt Control tab", 30000);
+        var bounds = root.Current.BoundingRectangle;
+        var transform = Pattern<TransformPattern>(root, TransformPattern.Pattern);
+        transform.Resize(bounds.Width + 1, bounds.Height + 1);
+        ControlsSnapshot();
+        transform.Resize(bounds.Width, bounds.Height);
+        ControlsSnapshot();
+    }
+    static void DocumentPersistence(IntPtr hwnd)
     {
         Test("Document persistence / independent viewers, private round trip, RTF, HTML and cancellation");
         string folder = System.IO.Path.Combine(PersistenceOutput, "UIA-" + ownedProcess);
@@ -994,11 +1101,7 @@ public static class GacUIShowcaseTests
         var contents = new[] { "Ribbon persistence Unicode \u4E2D\u6587", "Toolstrip independent document \u03C0" };
         for (int pass = 0; pass < 2; pass++)
         {
-            if (pass == 1)
-            {
-                ClickRenderedCaption("Window Manager");
-                ClickRenderedCaption("Aurora");
-            }
+            if (pass == 1) PersistencePalette(hwnd, "Aurora");
             for (int index = 0; index < 2; index++)
             {
                 bool ribbon = index == 0;
@@ -1015,10 +1118,12 @@ public static class GacUIShowcaseTests
                 Check(System.IO.File.ReadAllBytes(paths[index]).Length > 0, "private bytes written before command returns");
                 PersistenceFile(page, ribbon, "Save as RTF", stem + ".rtf", false);
                 string rtf = System.IO.File.ReadAllText(stem + ".rtf");
-                Check(rtf.StartsWith("{\\rtf") && rtf.Contains(index == 0 ? "Ribbon" : "Toolstrip") && rtf.Contains("\\u"), "RTF has document content and Unicode");
+                var encodedText = new StringBuilder();
+                foreach (char character in contents[index]) encodedText.Append("\\u").Append((int)character);
+                Check(rtf.StartsWith("{\\rtf") && rtf.Contains(encodedText.ToString()), "RTF has document content and Unicode");
                 PersistenceFile(page, ribbon, "Save as HTML", stem + ".html", false);
                 string html = System.IO.File.ReadAllText(stem + ".html", Encoding.UTF8);
-                Check(html.Contains(contents[index]) && html.Contains("<"), "HTML has Unicode content and markup");
+                Check(System.Net.WebUtility.HtmlDecode(html).Replace('\u00a0', ' ').Contains(contents[index]) && html.Contains("<"), "HTML has Unicode content and markup");
                 document.SetFocus(); text.DocumentRange.Select(); Input("!Type:changed after save");
                 Wait(() => text.DocumentRange.GetText(-1) == "changed after save", "mutate editor before reload");
                 PersistenceFile(page, ribbon, "Load as Private Format", paths[index], false);
@@ -1049,6 +1154,7 @@ public static class GacUIShowcaseTests
             Press("Backspace");
             Wait(() => text.DocumentRange.GetText(-1) == "", "clear persistence test editor");
         }
+        PersistencePalette(hwnd, "Default");
     }
     static void Calendars()
     {
@@ -2795,7 +2901,11 @@ public static class GacUIShowcaseTests
         }
         // Isolate idle timing from UIA event-cache work that can block behind the busy UI thread.
         if (scenario == "Review2") BusyIdleContract();
-        if (scenario != "RawClock" && scenario != "Touching")
+        // Persistence checks use synchronous patterns and output bytes. Run its
+        // template replacement before broad notification subscriptions; those
+        // exercise event contracts separately and cache the entire rebuilt tree.
+        if (scenario == "All" || scenario == "Persistence") DocumentPersistence(hwnd);
+        if (scenario != "RawClock" && scenario != "Touching" && scenario != "Persistence")
         {
             Automation.AddStructureChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref structureEvents));
             Automation.AddAutomationPropertyChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref propertyEvents), AutomationElement.NameProperty, SelectionItemPattern.IsSelectedProperty, TogglePattern.ToggleStateProperty);
@@ -2811,7 +2921,6 @@ public static class GacUIShowcaseTests
             if (scenario == "All" || scenario == "List") { TextLists(); ListViews(); Trees(); }
             if (scenario == "All" || scenario == "Grid") Grids();
             if (scenario == "All" || scenario == "Text") TextControls();
-            if (scenario == "All" || scenario == "Persistence") DocumentPersistence();
             if (scenario == "All" || scenario == "Refresh") RefreshLists();
             if (scenario == "All" || scenario == "Calendar") Calendars();
             if (scenario == "All" || scenario == "RawClock") RawClock(scenario == "All");

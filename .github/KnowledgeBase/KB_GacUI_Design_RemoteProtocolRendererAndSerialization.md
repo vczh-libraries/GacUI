@@ -219,3 +219,28 @@ Events flow in the reverse direction through the same stack.
 ## Point input
 
 Windows native remote renderers accept touch locally and forward ordered point records without mouse coalescing. Native wGac/iGac renderers do not acquire touch. GacJS supports browser touch with both HTTP and WebAssembly cores, including browsers on Linux/macOS: acquisition uses stable target capture and descendant touch-action policy, and both transports share the schema and renderer code. Unsigned 64-bit point identities/timestamps are canonical decimal strings. Core owns recognition and `GuiScrollView` behavior; renderers do not recognize separate gestures. See [Point Input, Capture and Predefined Gestures](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime and automation examples.
+
+## Feature capabilities and encoded image output
+
+`GuiRemoteRendererSingle::GlobalConfig` defaults its DateTime, Locale and filesystem
+capabilities to true for native library consumers. Demo launchers explicitly pass
+all false unless `/remoteDT`, `/remoteLocale` or `/remoteFS` is supplied. Both ends
+must enable a feature. The Windows canonical renderer GuiMain and SharedArguments
+are synchronized into wGac/iGac; their launch scripts forward the exact switches
+in foreground and background modes. GacJS support is separate and is not implied.
+
+`ImageSave` requests encoded bytes for an existing image ID and requested format.
+The native renderer calls `INativeImage::SaveToStream`, so a JPEG source can become
+the PNG data required by RTF. Core ensures metadata/creation on the current
+renderer, checks disconnect and generation before retrieving the response, and
+rejects missing/empty encoded output. Image export does not depend on filesystem
+injection; a remote image can be serialized to a core-local output stream.
+
+FullControlTest's four filename-taking persistence events use the authored
+`<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.h/.cpp`.
+Generated entry points instantiate `AttachFctEvents` for both named editors; Host
+uses reflection event attachment. Shared functions depend only on public document
+viewer APIs. Private saves snapshot the selection, prepare clipboard content and
+serialize embedded images. RTF/HTML export uses the existing document serializers.
+The handler returns only after output close succeeds, preserving SaveDocument's
+synchronous modified-state contract.

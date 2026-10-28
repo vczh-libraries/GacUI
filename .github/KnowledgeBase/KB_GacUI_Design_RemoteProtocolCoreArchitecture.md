@@ -336,6 +336,16 @@ The core-side stack uses:
 1. `GuiRemoteProtocolCoreChannel` to implement `IGuiRemoteProtocol` over an `IJsonChannel`, pack requests/events with `JsonChannelPack`, dispatch responses/events by protocol name, queue packages until a renderer client is known, and detach stale renderer clients.
 2. `GuiRemoteProtocolAsyncJsonChannel` when core/channel separation is needed. It wraps an `IJsonChannel`, queues outgoing packages, queues received events for `ProcessRemoteEvents()`, stores responses by request id, and uses `connectionCounter` plus `PendingRequestGroup` to keep blocking `Submit()` calls consistent across disconnects.
 
+Transport detachment must reach the async channel immediately, even while the UI
+thread is blocked in `Submit()`. `GuiRemoteProtocolCoreChannel::DetachRenderer`
+notifies the async channel to invalidate the connection generation and signal its
+pending response group; the corresponding controller event remains queued for the
+UI thread. Registering a waiter rechecks the generation, closing the race where
+detachment occurs just before registration. Responses from a detached client are
+ignored, and a delayed disconnect cannot detach its replacement. This cancellation
+depends on a transport disconnect notification; it does not add a heartbeat or
+detect an unreported peer failure.
+
 The renderer-side stack uses:
 1. `GuiRemoteProtocolAsyncJsonChannelRenderer` when network packages can arrive before the native GacUI window is ready. It queues received packages until `SetInvokeInMainThread(...)` installs an `IGuiRemoteProtocolAsyncRendererInvoker`, then drains them on the renderer UI thread. Calling `Detach()` clears the reader, increments `messageVersion`, and prevents callbacks queued before detachment from running after a later reader installation.
 2. `GuiRemoteProtocolRendererChannel` to bridge the renderer JSON channel to a concrete renderer `IGuiRemoteProtocol` implementation and to serialize renderer events/responses back to `GacUIRemoteProtocolCoreClientId`. Construct it with the renderer-side `IJsonChannel` and the `IGuiRemoteProtocol`.
@@ -362,3 +372,44 @@ On reconnection (`OnControllerConnect`), all existing images are re-registered w
 ## Point input
 
 Core validates explicit Started/action/End records, allocates local lifetime sequence IDs shared with Core automation, and owns acceptance plus first-contact-only typed mouse fallback. Final Up waits for explicit End. Disconnect cancels input and releases fallback capture. See [Point Input, Capture and Predefined Gestures](./KB_GacUI_Design_PointInput.md) for payloads, cancellation, callback lifetime, exact command grammar, and endpoint examples.
+
+## Optional DateTime, Locale and filesystem injection
+
+`SetupRemoteNativeController(protocol, config)` accepts a `GuiRemoteControllerConfig`
+with three flags defaulting to false. The controller installs each requested
+`FeatureImpl` once and ejects it explicitly on destruction. The active renderer's
+`ControllerGlobalConfig` advertises the independent capabilities, defaulting to
+false at construction/deserialization sites. Every request checks the current
+connection and capability; replacement increments the connection generation.
+
+DateTime retains the predecessor's UTC clock, construction and arithmetic. Remote
+local time converts that UTC value using renderer timezone rules. Both conversion
+directions exchange calendar fields, including milliseconds, never `osInternal`
+or `osMilliseconds`. Locale remotes defaults, enumeration, format lists, names
+and case mapping; formatting, comparison and search stay with the predecessor.
+Missing support, disconnect and canceled requests use the predecessor for these
+two features. Cached application values are not rewritten on connection changes.
+
+An enabled filesystem never falls back to core storage. Before connection or
+without renderer support it exposes an empty `/` root, lexical path operations,
+empty successful root enumeration and ordinary failure for unavailable entries.
+Metadata access on missing entries keeps the assertion contract. Native renderer
+handlers use public FilePath/File/Folder/FileStream APIs, including metadata-
+preserving file copy. File sizes and link counts use decimal strings; optional UTC
+timestamps use the portable calendar representation. Whole-file content uses the
+existing binary/Base64 stream serializer, including a non-null zero-length stream
+for a successful empty file.
+
+Buffered readers snapshot the file. Native WriteOnly/ReadWrite validate an actual
+open with native creation/truncation and start empty. Buffered writes become
+visible at successful Close; existing readers keep their snapshots. Writable
+close uploads once, including zero bytes; read-only close never uploads. Any
+still-open stream must close on the connection that opened it. Disconnect,
+replacement or destruction is an intentional close failure, including read-only
+streams and destructor close. Streams retain shared dispatch state rather than a
+raw controller pointer. Worker operations marshal to the UI pump; before the pump
+or after it stops they use the feature's fallback. Shutdown releases queued waiters.
+
+The protocol schema is `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_Injection.txt`.
+The controller wrappers and their lifetime state are in
+`<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteControllerInjection.h/.cpp`.
