@@ -217,6 +217,7 @@ each editor's own viewer. Private `.bin` save, RTF and HTML export finish encodi
 and stream close synchronously. Host attaches the same handlers through reflection
 without linking generated FullControlTest classes. Private files embed their images;
 remote image encoding is available independently of filesystem injection.
+Private saves retain the complete style catalog, including unused definitions.
 
 Use `REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md` for the shared end-to-end UI operations and
 observable results.

@@ -128,7 +128,13 @@ try {
         $lines | Select-Object -Skip $lastCount | Write-Host
         $lastCount = $lines.Count
         if ($client.WaitForExit(500)) { break }
-        Assert-Target
+        # Window.Close can finish before the client's final exit check returns.
+        # Keep both exit codes authoritative instead of rejecting that ordering.
+        if ($owned.HasExited) {
+            if (!$client.WaitForExit(30000)) { throw 'Target exited before the UIA client completed.' }
+            break
+        }
+        if ([ShowcaseWindows]::Crashed($owned.Id)) { throw "Target PID $($owned.Id) has a blocking native runtime error dialog." }
     } while ([DateTime]::UtcNow -lt $deadline)
     if (!$client.HasExited) { $client.Kill(); throw 'MTA UIA test deadline exceeded.' }
     Get-Content (Join-Path $env:TEMP "$Application-uia.stdout.txt") | Select-Object -Skip $lastCount | Write-Host

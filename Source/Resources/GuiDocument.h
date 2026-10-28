@@ -338,7 +338,7 @@ Rich Content Document (model)
 		public:
 			/// <summary>All paragraphs.</summary>
 			ParagraphList							paragraphs;
-			/// <summary>All available styles. These will not be persistant.</summary>
+			/// <summary>All available styles. Named styles and theme overrides are serialized with the document.</summary>
 			StyleMap								styles;
 			
 			DocumentModel();
@@ -357,7 +357,9 @@ Rich Content Document (model)
 			void									ConvertToText(stream::TextWriter& writer, bool forCaret, const WString& paragraphDelimiter);
 			
 			bool									CheckEditRange(TextPos begin, TextPos end, RunRangeMap& relatedRanges);
+			/// <summary>Copies a selection with its referenced styles and their parents.</summary>
 			Ptr<DocumentModel>						CopyDocument(TextPos begin, TextPos end, bool deepCopy);
+			/// <summary>Deep-copies the complete document, including unused style definitions.</summary>
 			Ptr<DocumentModel>						CopyDocument();
 			bool									CutParagraph(TextPos position);
 			bool									CutEditRange(TextPos begin, TextPos end);

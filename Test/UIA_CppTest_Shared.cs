@@ -1092,6 +1092,97 @@ public static class GacUIShowcaseTests
         transform.Resize(bounds.Width, bounds.Height);
         ControlsSnapshot();
     }
+    static void DocumentStyles(IntPtr hwnd, string folder)
+    {
+        Test("Document styles / fixture load, all built-ins, unused definitions and palette replacement");
+        var names = new[] { "Header 1", "Header 2", "Header 3", "Strong", "Quote", "Emphasis", "Intense Emphasis", "Deleted" };
+        var factors = new[] { 2.0, 1.6, 1.3, 1.0, 1.0, 1.0, 1.0, 1.0 };
+        Action<string, string> checkCatalog = (xml, context) => {
+            foreach (string name in names) Check(xml.Contains("<Style name=\"" + name + "\""), context + " contains " + name);
+        };
+        PersistencePalette(hwnd, "Default");
+        var page = Page(Page(root, "Control"), "Document Editor (Ribbon)");
+        var document = Find(page, ControlType.Document)[0];
+        var text = Pattern<TextPattern>(document, TextPattern.Pattern);
+        double baseSize = Convert.ToDouble(text.DocumentRange.GetAttributeValue(TextPattern.FontSizeAttribute));
+        var originalBounds = root.Current.BoundingRectangle;
+        Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(1400, 900);
+        string fixture = System.IO.Path.GetFullPath(System.IO.Path.Combine(PersistenceOutput, "..", "..", "TestDocument.bin"));
+        string title = "GacUI Remote Document \u2014 \u4e2d\u6587 \u03c0";
+        for (int pass = 0; pass < 2; pass++)
+        {
+            if (pass == 1) PersistencePalette(hwnd, "Aurora");
+            page = Page(Page(root, "Control"), "Document Editor (Ribbon)");
+            PersistenceFile(page, true, "Load as Private Format", fixture, false);
+            document = Find(page, ControlType.Document)[0];
+            text = Pattern<TextPattern>(document, TextPattern.Pattern);
+            Wait(() => text.DocumentRange.GetText(-1).Contains(title), "rich fixture loaded for gallery styles");
+            foreach (string sample in new[] { title, "Self-contained persistence fixture", "Private save preserves text", "Right aligned / Consolas / orange italic", "Gaclib embedded image:", "Video embedded image:" })
+            {
+                var sampleRange = text.DocumentRange.FindText(sample, false, false);
+                Check(sampleRange != null, "fixture paragraph is present: " + sample);
+                int color = Convert.ToInt32(sampleRange.GetAttributeValue(TextPattern.ForegroundColorAttribute));
+                int brightness = (color & 255) * 299 + ((color >> 8) & 255) * 587 + ((color >> 16) & 255) * 114;
+                Check(brightness >= 160000, "fixture text is bright on the dark editor background");
+            }
+            string saved = System.IO.Path.Combine(folder, "style-catalog-" + pass + ".bin");
+            PersistenceFile(page, true, "Save as Private Format", saved, false);
+            checkCatalog(Encoding.UTF8.GetString(System.IO.File.ReadAllBytes(saved)), "private save before using gallery styles");
+            // Verify file definitions in the toolstrip editor, which does not
+            // install ribbon defaults and therefore cannot hide a missing catalog.
+            var toolstrip = Page(Page(root, "Control"), "Document Editor (Toolstrip)");
+            PersistenceFile(toolstrip, false, "Load as Private Format", saved, false);
+            bool foundCatalog = false;
+            foreach (var node in SnapshotNodes(ControlsSnapshot()))
+            {
+                object xml;
+                if (!node.TryGetValue("elementDocument", out xml) || !((string)xml).Contains(title)) continue;
+                checkCatalog((string)xml, "toolstrip loaded catalog");
+                foundCatalog = true;
+            }
+            Check(foundCatalog, "loaded document catalog exposed");
+            page = Page(Page(root, "Control"), "Document Editor (Ribbon)");
+            document = Find(page, ControlType.Document)[0];
+            text = Pattern<TextPattern>(document, TextPattern.Pattern);
+            var styleLists = Find(page, ControlType.List).FindAll(candidate => Items(candidate).Count == names.Length);
+            Check(styleLists.Count == 1, "one gallery exposes all eight built-in styles");
+            for (int index = 0; index < names.Length; index++)
+            {
+                var range = text.DocumentRange.FindText(title, false, false);
+                Check(range != null, "fixture heading remains available");
+                range.Select();
+                var item = Items(styleLists[0])[index];
+                if (pass == 0)
+                {
+                    Pattern<ScrollItemPattern>(item, ScrollItemPattern.Pattern).ScrollIntoView();
+                    ControlsSnapshot();
+                    ClickRenderedCaption(names[index]);
+                }
+                else Pattern<SelectionItemPattern>(item, SelectionItemPattern.Pattern).Select();
+                double expectedSize = Math.Floor(baseSize / 0.75 * factors[index]) * 0.75;
+                int expectedColor = index < 2 ? 0x0080FF : index == 6 ? 0xFF8080 : 0xFFFFFF;
+                int expectedWeight = index == 3 ? 700 : 400;
+                bool expectedItalic = index >= 4 && index <= 6;
+                bool expectedUnderline = index == 5 || index == 6;
+                Wait(() => Math.Abs(Convert.ToDouble(range.GetAttributeValue(TextPattern.FontSizeAttribute)) - expectedSize) < 0.01
+                    && Convert.ToInt32(range.GetAttributeValue(TextPattern.ForegroundColorAttribute)) == expectedColor
+                    && Convert.ToInt32(range.GetAttributeValue(TextPattern.FontWeightAttribute)) == expectedWeight
+                    && Convert.ToBoolean(range.GetAttributeValue(TextPattern.IsItalicAttribute)) == expectedItalic
+                    && (Convert.ToInt32(range.GetAttributeValue(TextPattern.UnderlineStyleAttribute)) != 0) == expectedUnderline
+                    && (Convert.ToInt32(range.GetAttributeValue(TextPattern.StrikethroughStyleAttribute)) != 0) == (index == 7),
+                    names[index] + " applies its dedicated font, color and decorations");
+                Check(text.GetSelection()[0].GetText(-1) == title, "gallery applies to the selected heading");
+                Console.WriteLine("PASS style " + names[index] + " / " + (pass == 0 ? "automation pointer" : "UIA SelectionItem"));
+            }
+            string styled = System.IO.Path.Combine(folder, "styled-document-" + pass + ".bin");
+            PersistenceFile(page, true, "Save as Private Format", styled, false);
+            PersistenceFile(page, true, "Load as Private Format", styled, false);
+            checkCatalog(Encoding.UTF8.GetString(System.IO.File.ReadAllBytes(styled)), "styled private file");
+            var reloaded = text.DocumentRange.FindText(title, false, false);
+            Check(Convert.ToInt32(reloaded.GetAttributeValue(TextPattern.StrikethroughStyleAttribute)) != 0, "applied style survives private reload");
+        }
+        Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(originalBounds.Width, originalBounds.Height);
+    }
     static void DocumentPersistence(IntPtr hwnd)
     {
         Test("Document persistence / independent viewers, private round trip, RTF, HTML and cancellation");
@@ -1142,6 +1233,7 @@ public static class GacUIShowcaseTests
                 Wait(() => text.DocumentRange.GetText(-1) == contents[1 - index], "cross-editor private file load");
             }
         }
+        DocumentStyles(hwnd, folder);
         Console.WriteLine("Persistence outputs: " + folder);
         // Leave the showcase's original empty editors for later All scenarios.
         for (int index = 0; index < 2; index++)

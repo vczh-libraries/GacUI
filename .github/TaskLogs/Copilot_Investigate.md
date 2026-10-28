@@ -189,6 +189,10 @@ Good point. If the document is saved by CppTest, those built-in styles are suppo
 
 by the way, the editor background is dark gray, so when update TestDocument.bin, make sure all text colors are bright, making it easier for me to read.
 
+## UPDATE
+
+I have not carefully read your change yet but it seems a little bit complex. I am going to redeclare the goal: private document format saved by CppTest should have styles copied in it, but you can always assume file loaded is saved from CppTest, that is, no need to take any special action when the file does not have those built-in styles.
+
 # TEST [CONFIRMED]
 
 The initial Debug x64 build succeeded with zero warnings/errors. The ordinary `TestRemote_Startup.cpp` case `Remote image export supports document persistence` reproduced the `SaveToStream` assertion, `This function should not be called`, without issuing a renderer request. This established the missing image-export path needed by document persistence.
@@ -200,7 +204,7 @@ The continuation reproduces in CppTest using the committed fixture: after select
 # PROPOSALS
 
 - No.1 Controller-owned injection chain with connection-bound protocol operations [CONFIRMED]
-- No.2 Preserve document style catalogs and restore ribbon styles after replacement
+- No.2 Preserve complete document style catalogs [CONFIRMED]
 
 ## No.1 Controller-owned injection chain with connection-bound protocol operations
 
@@ -253,12 +257,39 @@ Final evidence is retained locally under `<GacUI repo>/Test/Output/Injection/`: 
 
 Final review found no stale `FullControlTestPalette` references or temporary injection providers in native entry points. Platform shell syntax, parser/argument forwarding, synchronization and generated imports were checked; wGac/iGac native execution remains excluded as requested. GacJS was not changed. The implementation, fixture, generated artifacts and knowledge updates were committed and pushed in GacUI, VlppOS, wGac, iGac and Tools.
 
-## No.2 Preserve document style catalogs and restore ribbon styles after replacement
+## No.2 Preserve complete document style catalogs
 
-Make the parameterless full-document copy retain every style definition through independent deep copies; keep selection-range copying limited to referenced styles and their parents. Private document save should serialize a complete document copy instead of a selection copy. This also lets SetDocument retain unused styles already present in a file.
+Make the parameterless full-document copy retain every style definition through independent deep copies; keep selection-range copying limited to referenced styles and their parents. Private save serializes a complete document copy. SetDocument consequently retains the unused styles already present in a CppTest file.
 
-The ribbon should add missing built-in definitions whenever its document changes, preserving loaded definitions until the user explicitly chooses a gallery item. Applying a gallery item should install that item's canonical definition into the current document before clearing direct formatting and applying its name. Header 1 retains its defined double-size orange appearance; bold remains the separate Strong style. Update the rich fixture with bright blue, purple, neutral, orange and teal text and include the complete built-in catalog.
+The user's clarified contract assumes every loaded file was saved by CppTest. The ribbon's existing initialization and style-application behavior remain unchanged: no missing-style restoration or replacement of loaded definitions is needed. Update the rich fixture using CppTest's initial built-in catalog and bright blue, purple, near-white, orange and teal text.
 
 ### CODE CHANGE
 
-Planned: full-copy implementation and API comments; shared private-save handler; authored ribbon resource and owned generated outputs; ordinary copy/persistence regressions; UIA checks for all built-in styles and unused-style persistence; regenerated bright fixture. Verify CppTest through automation and UIA, reflection consumers after resource generation, configured ordinary tests and metadata. Platform resources/imports will be synchronized through their existing workflows; native wGac/iGac execution remains excluded.
+- The parameterless `DocumentModel::CopyDocument` deep-copies the complete style catalog, including unused definitions. Range copies retain only referenced styles and their parents. API comments distinguish those contracts.
+- Private save uses the full-copy API instead of SelectAll/GetSelectionModel and preserves the current selection.
+- Ordinary tests cover nonempty and empty full copies, independent style properties, unused parent chains, serialization and the actual shared save/load handlers. Shared UIA checks cover all eight gallery styles after fixture load and palette replacement, unused definitions in saved bytes and the toolstrip editor, and bright colors in every fixture paragraph.
+- The fixture generator retains CppTest's initial style catalog while replacing its paragraph content, saves through the real handler, and verifies text properties, alignment and two decoded embedded images after loading into the toolstrip editor.
+
+- The UIA launcher allows normal application exit to precede the client's final exit check, while still requiring successful client and application exit codes. This fixes a race observed after all persistence/style assertions had passed.
+
+### CONFIRMED
+
+The original file had no named style definitions. Applying Header 1 cleared direct formatting and applied a name with no definition, so the text resolved to the default appearance. Full-document loading and private saving both used range-copy behavior that discarded unused definitions. Retaining the complete catalog in full copies and private saves fixes the problem under the clarified CppTest-file contract. The ribbon and its generated resources are unchanged.
+
+| Verification | Result |
+| --- | --- |
+| Final Debug Win32 and x64 solution builds | Zero warnings and errors; temporary fixture entry point removed and both binaries rebuilt |
+| x64 ordinary tests | 461/461 cases, 17/17 files; clean Debug leak output |
+| Win32 ordinary tests | 441/441 cases, 15/15 files; clean Debug leak output |
+| Metadata sequence | Win32 Metadata_Generate, x64 build, x64 Metadata_Generate and Metadata_Test passed |
+| CppTest fixture generation | Real private save/load retained all eight definitions, six bright paragraphs, font properties, alignment and two decoded embedded images; RTF/HTML export passed; normal exit |
+| CppTest persistence/style client | 706 assertions passed, including all eight styles through automation clicks and UIA selection after palette replacement |
+| CppTest window lifecycle with corrected launcher | 110 assertions passed; successful application/client exit and endpoint release |
+
+The style checks verify exact sizes, colors, weight, italic, underline and strikethrough properties. Header 1 is double-sized and orange. Saving before using any gallery item preserves every definition, and loading that file into the toolstrip editor proves the catalog comes from the file. Applied formatting survives another private save/load. Every fixture paragraph uses a bright color on the dark editor background.
+
+The first persistence run completed all 706 assertions and requested normal Window.Close before its launcher reported the exit-order race. Its complete client log is preserved separately. The corrected launcher passed the window-lifecycle scenario, including both successful exit codes. A temporary fixture helper initially skipped the hosted event loop; CDB located the resulting shutdown fault, the helper was corrected to run and close normally, and the final entry point was restored byte-for-byte and rebuilt.
+
+The 60 changed Win32 compiler-log snapshots contained only reordered lines and were restored after multiset comparison; there are no rendering snapshot changes. CodePack refreshed the two public GacUI release files, the platform import scripts reproduced them, and the shared save handler was copied to wGac/iGac. No platform resource changes remain. Native wGac/iGac execution remains excluded as requested.
+
+Evidence is under `<GacUI repo>/Test/Output/Injection/`: `style-unit-x64.log`, `style-unit-win32.log`, `style-build-clean-win32.log`, `style-build-x64.log`, `style-metadata-win32.log`, `style-metadata-x64.log`, `style-metadata-test.log`, `style-fixture.log`, `fixture-result.txt`, `style-uia-cpptest-client.log` and `style-uia-shutdown.log`.

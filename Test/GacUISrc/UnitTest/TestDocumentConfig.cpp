@@ -44,6 +44,39 @@ TEST_FILE
 		});
 	};
 
+	TEST_CASE(L"Full document copies preserve unused style definitions independently")
+	{
+		for (bool empty : { false, true })
+		{
+			auto model = LoadDoc(LR"XML(<Doc><Content><p><div style="Used">Text</div></p></Content><Styles><Style name="Parent"><color>#FF8000</color><size>2x</size></Style><Style name="Used" parent="Parent"><b>true</b></Style><Style name="Unused" parent="Parent"><i>true</i></Style></Styles></Doc>)XML");
+			if (empty) model->paragraphs.Clear();
+			auto copied = model->CopyDocument();
+			TEST_ASSERT(copied->paragraphs.Count() == model->paragraphs.Count());
+			TEST_ASSERT(copied->styles.Count() == model->styles.Count());
+			TEST_ASSERT(SaveDoc(copied) == SaveDoc(model));
+			for (auto [name, style] : model->styles)
+			{
+				auto clonedStyle = copied->styles[name];
+				TEST_ASSERT(clonedStyle != style && clonedStyle->styles != style->styles);
+				TEST_ASSERT(clonedStyle->parentStyleName == style->parentStyleName);
+			}
+			TEST_ASSERT(copied->styles[L"Unused"]->styles->italic.Value());
+			TEST_ASSERT(copied->styles[L"Parent"]->styles->size.Value() == DocumentFontSize(2, true));
+			model->styles[L"Parent"]->styles->color = Color(0, 0, 0);
+			TEST_ASSERT(copied->styles[L"Parent"]->styles->color.Value() == Color(255, 128, 0));
+			auto reloaded = LoadDoc(SaveDoc(copied));
+			TEST_ASSERT(reloaded->styles.Keys().Contains(L"Unused"));
+			TEST_ASSERT(reloaded->styles[L"Unused"]->parentStyleName == L"Parent");
+			if (!empty)
+			{
+				auto selection = copied->CopyDocument(TextPos(0, 0), TextPos(0, 4), true);
+				TEST_ASSERT(selection->styles.Keys().Contains(L"Used"));
+				TEST_ASSERT(selection->styles.Keys().Contains(L"Parent"));
+				TEST_ASSERT(!selection->styles.Keys().Contains(L"Unused"));
+			}
+		}
+	});
+
 	TEST_CASE(L"Test Simple DocumentModel Serialization")
 	{
 		auto inputXml1 = LR"XML(

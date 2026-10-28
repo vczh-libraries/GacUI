@@ -34,8 +34,7 @@ namespace demo
 
 	void SaveFctDocument(GuiDocumentViewer* viewer, const WString& fileName)
 	{
-		viewer->SelectAll();
-		auto model = viewer->GetSelectionModel();
+		auto model = viewer->GetDocument()->CopyDocument();
 		ModifyDocumentForClipboard(model);
 		stream::MemoryStream content;
 		SaveDocumentToClipboardStream(model, content);

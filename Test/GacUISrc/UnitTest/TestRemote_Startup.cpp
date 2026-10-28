@@ -914,7 +914,14 @@ TEST_FILE
 				PersistenceWindow window;
 				demo::AttachFctEvents<PersistenceEditor>(&window);
 				auto original = PersistenceDocument(L"Ribbon \x4e2d\x6587", true);
+				auto unusedStyle = Ptr(new DocumentStyle);
+				unusedStyle->parentStyleName = L"#Context";
+				unusedStyle->styles = Ptr(new DocumentStyleProperties);
+				unusedStyle->styles->size = DocumentFontSize(2, true);
+				unusedStyle->styles->color = Color(255, 128, 0);
+				original->styles.Add(L"Unused title", unusedStyle);
 				window.ribbon->viewer->SetDocument(original);
+				TEST_ASSERT(window.ribbon->viewer->GetDocument()->styles.Keys().Contains(L"Unused title"));
 				window.toolstrip->viewer->SetDocument(PersistenceDocument(L"Toolstrip \x03c0", false));
 				window.ribbon->SaveAsPrivateFormat(L"/ribbon.bin");
 				window.toolstrip->SaveAsPrivateFormat(L"/toolstrip.bin");
@@ -924,6 +931,10 @@ TEST_FILE
 				window.toolstrip->LoadAsPrivateFormat(L"/ribbon.bin");
 				window.ribbon->LoadAsPrivateFormat(L"/toolstrip.bin");
 				auto loaded = window.toolstrip->viewer->GetDocument();
+				TEST_ASSERT(loaded->styles.Keys().Contains(L"Unused title"));
+				TEST_ASSERT(loaded->styles[L"Unused title"]->parentStyleName == L"#Context");
+				TEST_ASSERT(loaded->styles[L"Unused title"]->styles->size.Value() == DocumentFontSize(2, true));
+				TEST_ASSERT(loaded->styles[L"Unused title"]->styles->color.Value() == Color(255, 128, 0));
 				TEST_ASSERT(loaded->paragraphs.Count() == 2 && loaded->paragraphs[0]->GetTextForReading() == L"Ribbon \x4e2d\x6587");
 				TEST_ASSERT(window.ribbon->viewer->GetDocument()->paragraphs[0]->GetTextForReading() == L"Toolstrip \x03c0");
 				auto style = loaded->SummarizeStyle(TextPos(0, 0), TextPos(0, 2));
