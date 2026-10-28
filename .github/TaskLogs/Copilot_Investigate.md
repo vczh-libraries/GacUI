@@ -175,15 +175,32 @@
 
 No unresolved review comments. The missing details above have reasonable resolutions based on the existing APIs and repository conventions.
 
+# UPDATES
+
+## UPDATE
+
+I found one bug, you can use `CppTest` to repro it. Load the [TestDocument.bin](Test/TestDocument.bin) from the `Load Private Format` menu, and select the first line, and then click the "Header 1" from the ribbon, it switches back to no-format style (visually, I don't know what actually changed). Figure out what happens and make it work. By working I mean clicking "Header 1" or any built-in style should apply the selected text with expected/dedicated style properties, for example, "Header 1" is big and orange and maybe bold.
+
+## UPDATE
+
+Good point. If the document is saved by CppTest, those built-in styles are supposed to be brought into the file as well.
+
+## UPDATE
+
+by the way, the editor background is dark gray, so when update TestDocument.bin, make sure all text colors are bright, making it easier for me to read.
+
 # TEST [CONFIRMED]
 
 The initial Debug x64 build succeeded with zero warnings/errors. The ordinary `TestRemote_Startup.cpp` case `Remote image export supports document persistence` reproduced the `SaveToStream` assertion, `This function should not be called`, without issuing a renderer request. This established the missing image-export path needed by document persistence.
 
 Success requires the capability/fallback matrix, predecessor restoration, portable time and metadata values, complete filesystem and buffered-stream contracts, cancellation and worker dispatch, and document event routing to pass ordinary tests with clean Debug leak output. It also requires generated metadata, both native UIA All suites, persistence in the reflection variants, an isolated rich fixture round trip, Windows transport transitions, and removal of temporary renderer overrides. Transport notification limits and excluded platform runtime coverage are recorded explicitly below.
 
+The continuation reproduces in CppTest using the committed fixture: after selecting the first paragraph and clicking Header 1, the model contains a Header 1 style reference with an empty serialized Styles section. UIA reports 9-point white regular text. Built-in definitions were installed only into the initial document, and both full-document copying and the private-save selection path discard unused definitions. Regression coverage will distinguish full copies from selection copies, inspect unused styles in saved bytes, apply all eight gallery styles after load/reload and palette refresh, and verify a bright fixture with embedded images.
+
 # PROPOSALS
 
 - No.1 Controller-owned injection chain with connection-bound protocol operations [CONFIRMED]
+- No.2 Preserve document style catalogs and restore ribbon styles after replacement
 
 ## No.1 Controller-owned injection chain with connection-bound protocol operations
 
@@ -235,3 +252,13 @@ All final UIA logs contain no FAIL or UNVERIFIED result. The persistence checks 
 Final evidence is retained locally under `<GacUI repo>/Test/Output/Injection/`: `unit-transfer-check-x64.log`, `unit-transfer-check-win32.log`, `uia-cpptest-final.log`, `uia-metaonly-final.log`, `uia-reflection-final.log`, `uia-host-final.log`, `remote-matrix.log`, `remote-pipe.log`, `remote-local-output.log`, `remote-disabled-filesystem.log`, `remote-http-server-disconnect.log`, `remote-minihttp-server-disconnect.log` and `public-smoke-final.log`. Metadata driver and release-generation logs are in the same ignored output folder.
 
 Final review found no stale `FullControlTestPalette` references or temporary injection providers in native entry points. Platform shell syntax, parser/argument forwarding, synchronization and generated imports were checked; wGac/iGac native execution remains excluded as requested. GacJS was not changed. The implementation, fixture, generated artifacts and knowledge updates were committed and pushed in GacUI, VlppOS, wGac, iGac and Tools.
+
+## No.2 Preserve document style catalogs and restore ribbon styles after replacement
+
+Make the parameterless full-document copy retain every style definition through independent deep copies; keep selection-range copying limited to referenced styles and their parents. Private document save should serialize a complete document copy instead of a selection copy. This also lets SetDocument retain unused styles already present in a file.
+
+The ribbon should add missing built-in definitions whenever its document changes, preserving loaded definitions until the user explicitly chooses a gallery item. Applying a gallery item should install that item's canonical definition into the current document before clearing direct formatting and applying its name. Header 1 retains its defined double-size orange appearance; bold remains the separate Strong style. Update the rich fixture with bright blue, purple, neutral, orange and teal text and include the complete built-in catalog.
+
+### CODE CHANGE
+
+Planned: full-copy implementation and API comments; shared private-save handler; authored ribbon resource and owned generated outputs; ordinary copy/persistence regressions; UIA checks for all built-in styles and unused-style persistence; regenerated bright fixture. Verify CppTest through automation and UIA, reflection consumers after resource generation, configured ordinary tests and metadata. Platform resources/imports will be synchronized through their existing workflows; native wGac/iGac execution remains excluded.
