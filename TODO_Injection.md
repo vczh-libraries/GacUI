@@ -1,0 +1,49 @@
+- DateTime/Locale/FileSystem in remote protocol
+  - When starting GacUI on core side, `SetupRemoteNativeController` accepts an optional struct with 3 options default to false:
+    - `injectDateTime`, allowing remote renderer to implement date time.
+    - `injectLocale`, allowing remote renderer to implement locale.
+    - `injectFileSystem`, allowing remote renderer to implement file system.
+    - For each `inject*` is true, an implementation is immediately injected by `GuiRemoteController`. In each injection, it either connects remote side implementation or fallbacks to local implementation via `Get(DateTime|Locale)Injection`.
+      - `GuiRemoteControllerInjection.(h|cpp)` stores all injections, `GuiRemoteController` friends all injection classes and send `this` to their constructors, so that injections could use remote protocl or check if the connection still active.
+      - In header file on top of each class, a comment block is required to describe which functions are remote and which functions are local, and other important design decision.
+  - `Protocol_Injection.txt` will be created for injection related remote protocol requjests, this file should also be added to `Source_GacUI_Core.vcxitems`.
+  - DateTime defines client side time zone, by offering utc<->local conversion functions, core side still querying utc at core side.
+    - When allowing injection:
+      - Remote renderer does not implement it, switch to default implementation.
+      - Remote renderer disconnects, switch to default implementation.
+    - To keep a good performance, `IDateTimeImpl`'s `LocalToUtcTime`, `UtcToLocalTime` are implemented via remote protocol, `LocalTime` uses `UtcTime` and `UtcToLocalTime`, other functions redirects to `GetDateTimeInjection`.
+  - Locale defines client side default language (font list already implemented), by offering local names and format lists.
+    - When allowing injection:
+      - Remote renderer does not implement it, switch to default implementation.
+      - Remote renderer disconnects, switch to default implementation.
+    - To keep a good performance, `ILocaleImpl`'s `Format*`, `Compare*`, `Find*`, `*With` redirects to `GetLocaleInjection`. Other functions are implemented via remote protocol.
+  - FileSystem, by offering a replacement file system.
+    - When allowing injection:
+      - Remote renderer does not implement it, switch to empty implementation.
+      - Remote renderer disconnects, switch to empty implementation.
+      - Empty implementation means a read only file system with nothing.
+    - When core side needs to read a file, remote protocol sends the complete content to the core side at once, no streaming is implemented.
+    - When core side needs to write a file, remote protocol receives the complete content from the core side at once, no streaming is implemented.
+      - `FileSystem::Close` or its destructor will triggers `IFileSystemImpl` with complete file content prepared.
+      - When remote protocol disconnects, all active `IFileStreamImpl` stays available, as it is implemented by having a `MemoryStream` inside for buffering. `IFileStreamImpl::Close` would `CHECK_ERROR` to make sure the remote protocol connection still available.
+  - `ControllerGlobalConfig` for `ControllerConnect` needs 3 explicit options:
+    - `injectDateTime`, remote renderer implements date time.
+    - `injectLocale`, remote renderer implements locale.
+    - `injectFileSystem`, remote renderer implements file system.
+    - Only when each `inject*` at core and renderer are true, core will redirect implementation to renderer via remote protocol.
+  - In `GuiRemoteProtocolSingle`:
+    - Constructor requires an optional `GuiRemoteProtocolSingle::GlobalConfig` parameter, has all `inject*` field default to `true`, it will be copied to a field called `globalConfig`.
+      - In `GuiRemoteRendererSingle::Opened`, `ControllerGlobalConfig` copies `inject*` from `globalConfig` field.
+    - When implementing date time, locale and file system:
+      - It should respond remote protocol by calling `DateTime`, `Locale`, `filesystem::*`, `FileStream`.
+      - It should not respond remote protocol by calling `GetFileSystemInjection`, `GetLocaleInjection`, `GetDateTimeInjection`.
+  - `RemotingTest_Core` has optional `/remoteDT`, `/remoteLocale` and `/remoteFS` argument, when any is used, `inject*` becomes true.
+  - `RemotingTest_Win32_Renderer` has optional `/remoteDT`, `/remoteLocale` and `/remoteFS` argument, when any is used, `inject*` becomes true.
+    - `test.sh` in `wGac` and `iGac` needs to be updated to receive `-remoteDT`, `-remoteLocale` and `-remoteFS`.
+  - Update `Project.md` and `(wGac|iGac)/AGENTS.md` to describe these new arguments, but no need to update any `GacUI/.github/Jobs`, they are not included in standard manual verification process.
+  - Update KB pages in GacUI to simply introduce these new features.
+- Before running `RemotingTest_Win32_Renderer` to verify, local changes are recommended to push first, in order to verify:
+  - You can change `GuiRemoteProtocolSingle` to offer fake implementation, for example, a different locale and format list, a different time zone, a fake file system, and see if they correctly affects dedicated pages in `FullControlTest`. Since local changes are already pushed, you can easily identify code that offers fake implementations and revert them once they are no longer needed. DO NOT check in fake implementations, they are meant to be discarded after finishing this task.
+  - You need to turn options in core/renderer on and off and make sure core picks the right implementation.
+  - When a renderer disconnects, you can still use core side automation service to read the UI and see if fallback works.
+- GacJS is not included in this task. wGac and iGac verification is not included in this task.
