@@ -351,6 +351,8 @@
     <ClCompile Include="TestRemote_Raw.cpp" />
     <ClCompile Include="TestRawElement_Windows.cpp" />
     <ClCompile Include="..\Generated_FullControlTest\FullControlTestRawElement.cpp" />
+    <ClCompile Include="..\Generated_FullControlTest\FullControlTestEventHandlers.cpp" />
+    <ClInclude Include="..\Generated_FullControlTest\FullControlTestEventHandlers.h" />
     <ClInclude Include="..\Generated_FullControlTest\FullControlTestRawElement.h" />
   </ItemGroup>
 </Project>

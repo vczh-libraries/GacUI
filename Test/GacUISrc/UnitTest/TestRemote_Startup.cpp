@@ -1,5 +1,7 @@
 #include "TestRemote.h"
+#include "TestControls.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
+#include "../Generated_FullControlTest/FullControlTestEventHandlers.h"
 
 namespace remote_startup_tests
 {
@@ -150,6 +152,19 @@ namespace remote_startup_tests
 		bool cancelNext = false;
 		bool cancelPending = false;
 		Dictionary<WString, Ptr<stream::MemoryStream>> files;
+		List<WString> folders;
+
+		InjectionProtocol()
+		{
+			folders.Add(L"/renderer");
+			files.Add(L"/renderer/entry", Ptr(new stream::MemoryStream));
+		}
+
+		WString Parent(const WString& path)
+		{
+			for (vint i = path.Length() - 1; i >= 0; i--) if (path[i] == L'/') return path.Left(i);
+			return L"";
+		}
 
 		bool Cancel()
 		{
@@ -221,13 +236,47 @@ namespace remote_startup_tests
 				break;
 			case InjectionFileOperation::Concat: result.text = arguments.path + L"/" + arguments.target; break;
 			case InjectionFileOperation::Relative: result.text = L"renderer-relative"; break;
-			case InjectionFileOperation::IsRoot:
-			case InjectionFileOperation::IsFolder: result.success = arguments.path == L"/renderer"; break;
+			case InjectionFileOperation::IsRoot: result.success = arguments.path == L"/renderer"; break;
+			case InjectionFileOperation::IsFolder: result.success = folders.Contains(arguments.path); break;
 			case InjectionFileOperation::IsFile: result.success = files.Keys().Contains(arguments.path); break;
 			case InjectionFileOperation::Folders:
 			case InjectionFileOperation::Files:
 				result.paths = Ptr(new List<WString>);
-				result.paths->Add(L"/renderer/entry");
+				result.success = folders.Contains(arguments.path);
+				if (arguments.operation == InjectionFileOperation::Folders)
+				{
+					for (auto path : folders) if (Parent(path) == arguments.path) result.paths->Add(path);
+				}
+				else
+				{
+					for (auto path : files.Keys()) if (Parent(path) == arguments.path) result.paths->Add(path);
+				}
+				break;
+			case InjectionFileOperation::CreateFolder:
+				result.success = folders.Contains(Parent(arguments.path)) && !folders.Contains(arguments.path);
+				if (result.success) folders.Add(arguments.path);
+				break;
+			case InjectionFileOperation::DeleteFolder:
+				result.success = folders.Remove(arguments.path);
+				break;
+			case InjectionFileOperation::RenameFolder:
+				result.success = folders.Remove(arguments.path);
+				if (result.success) folders.Add(Parent(arguments.path) + L"/" + arguments.target);
+				break;
+			case InjectionFileOperation::DeleteFile:
+				result.success = files.Remove(arguments.path);
+				break;
+			case InjectionFileOperation::RenameFile:
+			case InjectionFileOperation::Copy:
+				result.success = files.Keys().Contains(arguments.path);
+				if (result.success)
+				{
+					auto copy = Ptr(new stream::MemoryStream);
+					files[arguments.path]->SeekFromBegin(0);
+					CopyStream(*files[arguments.path].Obj(), *copy.Obj());
+					files.Set(arguments.operation == InjectionFileOperation::Copy ? arguments.target : Parent(arguments.path) + L"/" + arguments.target, copy);
+					if (arguments.operation == InjectionFileOperation::RenameFile) files.Remove(arguments.path);
+				}
 				break;
 			case InjectionFileOperation::Info:
 				{
@@ -247,18 +296,97 @@ namespace remote_startup_tests
 				break;
 			case InjectionFileOperation::OpenWrite:
 			case InjectionFileOperation::OpenReadWrite:
-				if (arguments.path == L"/denied") { result.success = false; break; }
+				if (arguments.path == L"/denied" || (Parent(arguments.path).Length() > 0 && !folders.Contains(Parent(arguments.path)))) { result.success = false; break; }
 				result.content = Ptr(new stream::MemoryStream);
 				break;
 			case InjectionFileOperation::Commit:
 				commits++;
 				files.Set(arguments.path, arguments.content);
 				break;
-			default: break;
+			default: CHECK_FAIL(L"Unexpected filesystem test operation.");
 			}
 			events->RespondInjectionFileSystem(id, result);
 		}
 	};
+
+	class PersistenceProtocol : public InjectionProtocol
+	{
+	public:
+		List<INativeImage::FormatType> savedFormats;
+
+		void RequestImageSave(vint id, const ImageSaveRequest& arguments) override
+		{
+			savedFormats.Add(arguments.format);
+			// Transport tests use deterministic bytes; the native fixture verifies codecs.
+			auto content = Ptr(new stream::MemoryStream);
+			vuint8_t bytes[] = { 0, 255, 137, 42, 0, 1 };
+			content->Write(bytes, sizeof(bytes));
+			events->RespondImageSave(id, content);
+		}
+	};
+
+	class PersistenceEditor : public controls::GuiCustomControl
+	{
+	public:
+		Event<void(WString)> LoadAsPrivateFormat, SaveAsPrivateFormat, SaveAsRTF, SaveAsHTML;
+		controls::GuiDocumentViewer* viewer;
+
+		PersistenceEditor()
+			: GuiCustomControl(theme::ThemeName::CustomControl)
+		{
+			viewer = new controls::GuiDocumentViewer(theme::ThemeName::DocumentViewer);
+			GetContainerComposition()->AddChild(viewer->GetBoundsComposition());
+			SetNamedObject(L"document", reflection::description::Value::From(viewer));
+		}
+	};
+
+	class PersistenceWindow : public controls::GuiCustomControl
+	{
+	public:
+		Event<void(vint)> PaletteSelected;
+		PersistenceEditor* ribbon;
+		PersistenceEditor* toolstrip;
+
+		PersistenceWindow()
+			: GuiCustomControl(theme::ThemeName::CustomControl)
+		{
+			ribbon = new PersistenceEditor;
+			toolstrip = new PersistenceEditor;
+			GetContainerComposition()->AddChild(ribbon->GetBoundsComposition());
+			GetContainerComposition()->AddChild(toolstrip->GetBoundsComposition());
+			SetNamedObject(L"editorRibbon", reflection::description::Value::From(ribbon));
+			SetNamedObject(L"editorToolstrip", reflection::description::Value::From(toolstrip));
+		}
+	};
+
+	Ptr<DocumentModel> PersistenceDocument(const WString& text, bool withImage)
+	{
+		auto model = Ptr(new DocumentModel);
+		auto paragraph = Ptr(new DocumentParagraphRun);
+		paragraph->alignment = Alignment::Right;
+		auto style = Ptr(new DocumentStylePropertiesRun);
+		style->style = Ptr(new DocumentStyleProperties);
+		style->style->face = L"Consolas";
+		style->style->size = DocumentFontSize(24, false);
+		style->style->color = Color(21, 80, 134);
+		style->style->bold = true;
+		auto run = Ptr(new DocumentTextRun);
+		run->text = text;
+		style->runs.Add(run);
+		paragraph->runs.Add(style);
+		model->paragraphs.Add(paragraph);
+		if (withImage)
+		{
+			auto image = Ptr(new DocumentImageRun);
+			vuint8_t bytes[] = { 1, 2, 3 };
+			image->image = GetCurrentController()->ImageService()->CreateImageFromMemory(bytes, sizeof(bytes));
+			image->source = L"original-image.jpg";
+			auto imageParagraph = Ptr(new DocumentParagraphRun);
+			imageParagraph->runs.Add(image);
+			model->paragraphs.Add(imageParagraph);
+		}
+		return model;
+	}
 
 	// This fixture runs the real controller pump without a graphical window.
 	// Only the protocol handshake/window notifications are irrelevant here.
@@ -487,6 +615,61 @@ TEST_FILE
 		EjectDateTimeImpl(&clock);
 	});
 
+	TEST_CASE(L"Filesystem paths, nested directories, mutations and copy route to the renderer")
+	{
+		InjectionProtocol protocol;
+		JsonProtocol json(protocol.GetProtocol());
+		SetGuiMainProxy([&]()
+		{
+			using namespace filesystem;
+			TEST_ASSERT(FilePath(L"a/../b\\c").GetFullPath() == L"/b/c");
+			TEST_ASSERT(FilePath(L"/a").GetRelativePathFor(FilePath(L"/b/c")) == L"../b/c");
+			TEST_ASSERT(!Folder(FilePath(L"/unavailable")).Create(false));
+			TEST_ERROR(File(FilePath(L"/unavailable")).GetFileInfo());
+			auto config = MakeGlobalConfig();
+			config.injectFileSystem = true;
+			protocol.GetEvents()->OnControllerConnect(config);
+			TEST_ASSERT(FilePath::GetPathDelimiter() == L'/' && FilePath::GetCompatibleDelimiters() == L"");
+			FilePath root;
+			auto child = root / L"nested";
+			auto leaf = child / L"leaf";
+			TEST_ASSERT(leaf.GetFullPath() == L"/renderer/nested/leaf");
+			TEST_ASSERT(root.GetRelativePathFor(leaf) == L"renderer-relative");
+			TEST_ASSERT(!Folder(leaf).Create(false));
+			TEST_ASSERT(Folder(leaf).Create(true));
+			TEST_ASSERT(Folder(child).Exists() && Folder(leaf).Exists());
+			List<Folder> folders;
+			TEST_ASSERT(Folder(child).GetFolders(folders) && folders.Count() == 1 && folders[0].GetFilePath() == leaf);
+			auto source = leaf / L"source";
+			{
+				stream::FileStream file(source.GetFullPath(), stream::FileStream::WriteOnly);
+				vuint8_t bytes[] = { 0, 255, 10, 128 };
+				TEST_ASSERT(file.IsAvailable() && file.Write(bytes, sizeof(bytes)) == sizeof(bytes));
+			}
+			auto destination = child / L"copy";
+			TEST_ASSERT(File(source).CopyToFile(destination, false));
+			TEST_ASSERT(protocol.files[destination.GetFullPath()]->Size() == 4);
+			TEST_ASSERT(File(destination).GetFileInfo().lastModifiedTime.Value().milliseconds == 789);
+			TEST_ASSERT(File(destination).Rename(L"renamed"));
+			TEST_ASSERT(!File(destination).Exists() && File(child / L"renamed").Exists());
+			TEST_ASSERT(File(child / L"renamed").Delete());
+			TEST_ASSERT(!File(child / L"renamed").Delete());
+			TEST_ASSERT(File(source).Delete());
+			TEST_ASSERT(Folder(leaf).Rename(L"renamed-leaf"));
+			TEST_ASSERT(!Folder(leaf).Exists() && Folder(child / L"renamed-leaf").Exists());
+			TEST_ASSERT(Folder(child / L"renamed-leaf").Delete(false));
+			TEST_ASSERT(Folder(child).Delete(false));
+			stream::FileStream missingParent(L"/renderer/missing/child", stream::FileStream::WriteOnly);
+			TEST_ASSERT(!missingParent.IsAvailable());
+			protocol.GetEvents()->OnControllerDisconnect();
+			TEST_ASSERT(!File(source).Exists() && !File(source).Delete());
+			TEST_ASSERT(!Folder(child).Create(false));
+			protocol.GetEvents()->OnControllerForceExit();
+		});
+		SetupRemoteNativeController(&json, { false, false, true });
+		SetGuiMainProxy({});
+	});
+
 	TEST_CATEGORY(L"Remote buffered stream semantics")
 	{
 		InjectionProtocol protocol;
@@ -568,6 +751,52 @@ TEST_FILE
 				TEST_ERROR(write.Close());
 				TEST_ASSERT(protocol.commits == 2);
 			});
+			protocol.GetEvents()->OnControllerForceExit();
+		});
+		SetupRemoteNativeController(&json, { false, false, true });
+		SetGuiMainProxy({});
+	});
+
+	TEST_CASE(L"Document handlers retain independent viewers, styles and embedded images")
+	{
+		PersistenceProtocol protocol;
+		JsonProtocol json(protocol.GetProtocol());
+		SetGuiMainProxy([&]()
+		{
+			theme::RegisterTheme(Ptr(new darkskin::Theme));
+			auto config = MakeGlobalConfig();
+			config.injectFileSystem = true;
+			protocol.GetEvents()->OnControllerConnect(config);
+			{
+				PersistenceWindow window;
+				demo::AttachFctEvents<PersistenceEditor>(&window);
+				auto original = PersistenceDocument(L"Ribbon \x4e2d\x6587", true);
+				window.ribbon->viewer->SetDocument(original);
+				window.toolstrip->viewer->SetDocument(PersistenceDocument(L"Toolstrip \x03c0", false));
+				window.ribbon->SaveAsPrivateFormat(L"/ribbon.bin");
+				window.toolstrip->SaveAsPrivateFormat(L"/toolstrip.bin");
+				TEST_ASSERT(protocol.commits == 2 && protocol.savedFormats.Count() == 1);
+				TEST_ASSERT(protocol.savedFormats[0] == INativeImage::Jpeg);
+				TEST_ASSERT(original->paragraphs[1]->runs[0].Cast<DocumentImageRun>()->source == L"original-image.jpg");
+				window.toolstrip->LoadAsPrivateFormat(L"/ribbon.bin");
+				window.ribbon->LoadAsPrivateFormat(L"/toolstrip.bin");
+				auto loaded = window.toolstrip->viewer->GetDocument();
+				TEST_ASSERT(loaded->paragraphs.Count() == 2 && loaded->paragraphs[0]->GetTextForReading() == L"Ribbon \x4e2d\x6587");
+				TEST_ASSERT(window.ribbon->viewer->GetDocument()->paragraphs[0]->GetTextForReading() == L"Toolstrip \x03c0");
+				auto style = loaded->SummarizeStyle(TextPos(0, 0), TextPos(0, 2));
+				TEST_ASSERT(style->face.Value() == L"Consolas" && style->size.Value() == DocumentFontSize(24, false));
+				TEST_ASSERT(style->bold.Value() && style->color.Value() == Color(21, 80, 134));
+				TEST_ASSERT(loaded->paragraphs[0]->alignment.Value() == Alignment::Right);
+				auto image = loaded->paragraphs[1]->runs[0].Cast<DocumentImageRun>();
+				TEST_ASSERT(image && image->image && INVLOC.StartsWith(image->source, L"res://Image_", Locale::None));
+				window.toolstrip->SaveAsRTF(L"/ribbon.rtf");
+				window.toolstrip->SaveAsHTML(L"/ribbon.html");
+				TEST_ASSERT(protocol.commits == 4 && protocol.savedFormats.Count() == 3);
+				TEST_ASSERT(protocol.savedFormats[1] == INativeImage::Png);
+				TEST_ASSERT(protocol.files[L"/ribbon.rtf"]->Size() > 100 && protocol.files[L"/ribbon.html"]->Size() > 100);
+				TEST_ERROR(window.ribbon->LoadAsPrivateFormat(L"/missing"));
+				TEST_ASSERT(window.ribbon->viewer->GetDocument()->paragraphs[0]->GetTextForReading() == L"Toolstrip \x03c0");
+			}
 			protocol.GetEvents()->OnControllerForceExit();
 		});
 		SetupRemoteNativeController(&json, { false, false, true });
