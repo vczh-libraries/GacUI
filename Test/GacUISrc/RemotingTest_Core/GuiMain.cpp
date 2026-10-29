@@ -9,7 +9,7 @@
 #include "../../../Source/Utilities/AutomationService/MiniHttpAutomationService.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
 #include <VlppOS.h>
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #endif
@@ -69,7 +69,7 @@ void GuiMain()
 	RemoteProtocolAutomationService automationService;
 	GetNativeServiceSubstitution()->Substitute(&automationService, false);
 	Ptr<async_tcp_socket::IAsyncSocketServer> separateAutomationSocket;
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 	if (!currentGuiContext->miniHttpSocketServer)
 	{
 		windows::StartWindowsHttpAutomationService(
@@ -108,7 +108,7 @@ void GuiMain()
 		uiException = std::current_exception();
 	}
 
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 	if (!currentGuiContext->miniHttpSocketServer)
 	{
 		windows::StopWindowsHttpAutomationService();
@@ -174,6 +174,15 @@ int StartServer(
 	)
 {
 	channelServer.Start();
+#if defined VCZH_MSVC
+	if constexpr (std::is_base_of_v<windows_http::HttpServer, TChannelServer>)
+	{
+		if (channelServer.GetLocalhostOnly())
+		{
+			console::Console::WriteLine(L"HTTP protocol server listens to localhost only on port " + itow(RemotingHttpPort) + L".");
+		}
+	}
+#endif
 
 	auto coreClient = Ptr(new GuiRemoteProtocolLocalChannelClient(jsonParser));
 	auto coreClientId = channelServer.ConnectLocalClient(coreClient);
@@ -328,7 +337,7 @@ int StartServerHelper(
 	}
 }
 
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 int StartNamedPipeServer(vint index, const WString& cliPath)
 {
 	return StartServerHelper<named_pipe::NamedPipeServer>(

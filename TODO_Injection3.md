@@ -27,9 +27,9 @@ The slash options in the original task describe executable arguments. Use these 
 
 | Purpose | Wrapper option | Forwarded executable option |
 | --- | --- | --- |
-| DateTime injection | `-remoteDT` | `/remoteDT` |
-| Locale injection | `-remoteLocale` | `/remoteLocale` |
-| Filesystem injection | `-remoteFS` | `/remoteFS` |
+| DateTime injection | `--remoteDT` | `/remoteDT` |
+| Locale injection | `--remoteLocale` | `/remoteLocale` |
+| Filesystem injection | `--remoteFS` | `/remoteFS` |
 | Renderer destination | `--corehost:<host>` | `/corehost:<host>` |
 | Renderer automation port | `--port:8889` | `/port:8889` |
 
@@ -37,11 +37,11 @@ The slash options in the original task describe executable arguments. Use these 
 2. Start Core, then start the renderer in a second interactive session. An all-enabled local run is:
 
    ```bash
-   ./test_core.sh --app:fct --protocol:minihttp -remoteDT -remoteLocale -remoteFS
+   ./test_core.sh --app:fct --protocol:minihttp --remoteDT --remoteLocale --remoteFS
    ```
 
    ```bash
-   ./test.sh --app:renderer --corehost:localhost --port:8889 -remoteDT -remoteLocale -remoteFS
+   ./test.sh --app:renderer --corehost:localhost --port:8889 --remoteDT --remoteLocale --remoteFS
    ```
 
 3. Both wrappers support `--unblock`; verify foreground and background forwarding. `<platform repo>/test_core.sh` rebuilds the sibling GacUI Core on each invocation. `<platform repo>/test.sh` uses an already-built renderer, so rebuild it after changing instrumentation or imported sources.
@@ -114,3 +114,5 @@ Exercise all four flag combinations for each feature separately, then all three 
 ## REVIEW COMMENTS
 
 No unresolved review comments. The shared details and verification procedure resolve the identified gaps; the two platform subsections contain only platform-specific setup or build behavior.
+
+The launcher normalization to --remoteDT, --remoteLocale and --remoteFS must be present before iGac executes this task. Executable slash switches remain unchanged.

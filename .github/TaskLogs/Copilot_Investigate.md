@@ -97,6 +97,8 @@ Baseline VlppOS Debug x64 build passed with zero warnings/errors. The new real r
 # PROPOSALS
 
 - No.1 Retry only failed protocol URL registration with the equivalent localhost prefix
+- No.2 Normalize launcher injection switches to double dashes [CONFIRMED]
+- No.3 Implement grouped browser injections and HTTP entry configuration
 
 ## No.1 Retry only failed protocol URL registration with the equivalent localhost prefix
 
@@ -105,3 +107,32 @@ Keep explicit-prefix HttpServerApi construction unchanged. Add a protected fallb
 ### CODE CHANGE
 
 Add registration fallback and GetLocalhostOnly in VlppOS, deterministic registration and real transport coverage, then regenerate the library and import it into GacUI. Update Core and canonical transport documentation before downstream verification.
+### Verification progress
+
+VlppOS Debug x64 build passed with zero warnings/errors. All 322 cases in 16 files passed with no appended leak report. Actual unelevated wildcard error 5 followed by localhost success was observed, including a nested non-default endpoint and restart. A second simultaneous registration failed with wildcard error 5 and localhost error 183. Deterministic registration tests also cover wildcard success and explicit-prefix no-fallback behavior. No elevated wildcard runtime success is claimed.
+
+The downstream GacUI Debug x64 solution build passed with zero warnings/errors. The selected seven regression files passed all 235 cases, including the complete injection capability matrix, replacement/disconnection, stream ownership and document/image persistence tests. No appended Debug leak report was present.
+
+## No.2 Normalize launcher injection switches to double dashes
+
+### CODE CHANGE
+
+Update both launcher scripts in wGac/iGac, strip both leading dashes when forwarding slash switches, update only existing option descriptions and the iGac execution task. Preserve historical test commands with a future-spelling note. Runtime verification is excluded by the request.
+
+### CONFIRMED
+
+Both launchers and existing option descriptions now use double dashes, while native slash switches stay unchanged. Changes are committed and pushed in wGac and iGac. No launcher runtime verification was performed, as requested.
+
+## No.3 Implement grouped browser injections and HTTP entry configuration
+
+The old generated protocol lacks all injection operations and capabilities. Import and regenerate it through the existing root workflow. Put DateTime, Locale and OPFS algorithms in the three requested injections modules, with grouped forwarding methods in GacUIRendererImpl. Keep OPFS work in a per-renderer ordered queue; capture the response owner and suppress completion after stop. Ordinary OPFS failures produce protocol failure responses. DateTime exchanges calendar fields; Locale returns portable Core patterns and defines a finite browser candidate list explicitly. Add case-insensitive entry configuration, destination validation, and both-client forwarding, and implement image persistence independently.
+
+### CODE CHANGE
+
+Implement the three modules, connection capabilities, entry controls and tests for actual storage persistence, timezone conversions, locale queries, query reconstruction and connection ownership. Browser smoke and Core flag/lifecycle checks follow the prescribed build/test commands.
+
+### Verification progress
+
+The generated protocol now includes all injections and ImageSave, and represents nullable Binary without confusing null and empty content. The root GacJS build passed. Initial renderer tests passed 99 cases; other completed non-browser suites passed. The first root test run had browser timeouts under concurrent native compilation and a clock-pixel mismatch; isolated browser reruns are pending. Add explicit delayed-completion, capability-handshake and image-encoding checks before final verification.
+
+Temporary live probes may attach fresh API queries to a Core automation-triggered key to observe routing after disconnection, avoiding the localization page's cached date. Keep these probes out of commits, restore the real Core source afterwards, rebuild, and repeat a real-browser smoke check.

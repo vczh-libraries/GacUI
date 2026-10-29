@@ -288,7 +288,7 @@ Select the Windows named-pipe transport. Core and the renderer each require exac
 
 ### /Http
 
-Select the Windows HTTP transport on protocol port `8888`, exclusively with respect to the other transport selectors. The server registers `http://+:8888/GacUIRemoteProtocolHttp/` and requires the corresponding HTTP.sys URL-registration permission. Use `/MiniHttp` for a portable HTTP transport.
+Select the Windows HTTP transport on protocol port `8888`, exclusively with respect to the other transport selectors. The server first registers `http://+:8888/GacUIRemoteProtocolHttp/`, then retries `http://localhost:8888/GacUIRemoteProtocolHttp/` if registration fails. Core reports localhost-only operation when `HttpServer::GetLocalhostOnly()` is true, before waiting for an RVM host. Both prefixes require HTTP.sys URL-registration permission; dual failure reports both URLs and error codes, without elevation or URL reservations. Use `/MiniHttp` for a portable HTTP transport.
 
 ### /MiniHttp
 
@@ -436,9 +436,9 @@ The native GUI projects in this solution use Windows providers. wGac supplies Wa
 
 These replacement test apps are built without reflection; they do not provide separate metaonly, full-reflection or Workflow-binary variants corresponding to `CppTest_Metaonly`, `CppTest_Reflection` and `GacUI_Host`. `RemotingTest_Core` and `RemotingTest_RvmHost` use the portable projects under `<GacUI repo>/Test/Linux`.
 
-For a renderer, both test launchers accept `--corehost:<host>`, `--port:<1-65535>`, `-remoteDT`, `-remoteLocale` and `-remoteFS`. They forward `/MiniHttp`, `/corehost:<host>`, `/port:<port>` and the corresponding slash injection switches in foreground and `--unblock` modes. The renderer's local automation option is `/port`, default `8889`; Core continues to use `/AsPort`. `/corehost` is supported by these renderers and the portable network view-model host, so it is not Windows-specific. Shared argument semantics are described under [Maintaining Test Apps](#maintaining-test-apps).
+For a renderer, both test launchers accept `--corehost:<host>`, `--port:<1-65535>`, `--remoteDT`, `--remoteLocale` and `--remoteFS`. They forward `/MiniHttp`, `/corehost:<host>`, `/port:<port>` and the corresponding slash injection switches in foreground and `--unblock` modes. The renderer's local automation option is `/port`, default `8889`; Core continues to use `/AsPort`. `/corehost` is supported by these renderers and the portable network view-model host, so it is not Windows-specific. Shared argument semantics are described under [Maintaining Test Apps](#maintaining-test-apps).
 
-`<wGac repo>/test_core.sh` and `<iGac repo>/test_core.sh` launch the portable Core with `--app:fct`, `--app:rpt` or `--app:rvmt` and `--protocol:minihttp`. Their `-remoteDT`, `-remoteLocale` and `-remoteFS` options forward the matching slash switches to Core. For a stdio view-model host, use `--app:rvmt --protocol:minihttp --cli`.
+`<wGac repo>/test_core.sh` and `<iGac repo>/test_core.sh` launch the portable Core with `--app:fct`, `--app:rpt` or `--app:rvmt` and `--protocol:minihttp`. Their `--remoteDT`, `--remoteLocale` and `--remoteFS` options forward the matching slash switches to Core. For a stdio view-model host, use `--app:rvmt --protocol:minihttp --cli`.
 
 The `Test_CppTest_Rvm` replacements accept only `/MiniHttp`; their test launcher does not automatically start a host. Use the corresponding test-core launcher with `--app:cpptest_rvm --protocol:minihttp` to launch the requester and its network host together. That mode does not accept `--cli`. The portable Core's RemoteViewModelTest remains available for stdio-host testing.
 
