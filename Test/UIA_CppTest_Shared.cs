@@ -1092,6 +1092,51 @@ public static class GacUIShowcaseTests
         transform.Resize(bounds.Width, bounds.Height);
         ControlsSnapshot();
     }
+    static Dictionary<string, object> StylePopupSnapshot()
+    {
+        foreach (var node in SnapshotNodes(ControlsSnapshot()))
+        {
+            object composition;
+            if (node.TryGetValue("composition", out composition)
+                && SnapshotHas(composition, "elementText", "Headers")
+                && SnapshotHas(composition, "elementText", "Header 1")) return node;
+        }
+        return null;
+    }
+    static void ApplyPopupStyle(AutomationElement gallery, int index, string name, bool collapsed)
+    {
+        if (collapsed) ClickRenderedCaption("Style");
+        else Pattern<ExpandCollapsePattern>(gallery, ExpandCollapsePattern.Pattern).Expand();
+        Dictionary<string, object> snapshot = null;
+        Wait(() => { snapshot = StylePopupSnapshot(); return snapshot != null; }, "actual style popup opens");
+        Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000), "popup layout reaches idle");
+        AutomationElement popup = null;
+        Wait(() => { popup = Popup(ControlType.Menu); return popup != null; }, "UIA exposes the style popup");
+        var items = Find(popup, ControlType.CheckBox);
+        Check(items.Count == 8, "popup has eight separate style controls in two groups");
+        Pattern<ScrollItemPattern>(items[index], ScrollItemPattern.Pattern).ScrollIntoView();
+        // These selectable backgrounds currently expose Toggle, which changes
+        // only their highlight. Drive their real click path through automation IO.
+        var bounds = System.Windows.Rect.Empty;
+        Wait(() => {
+            snapshot = StylePopupSnapshot();
+            if (snapshot == null) return false;
+            foreach (var node in SnapshotNodes(snapshot["composition"]))
+            {
+                object caption;
+                if (!node.TryGetValue("elementText", out caption) || (string)caption != name) continue;
+                bounds = SnapshotBounds(node);
+                return bounds.Width > 0 && bounds.Height > 0 && SnapshotBounds(snapshot).Contains(bounds);
+            }
+            return false;
+        }, "popup item scrolled into view: " + name);
+        string endpoint = inputEndpoint;
+        object windowId;
+        if (snapshot.TryGetValue("windowId", out windowId)) endpoint += "/" + (string)windowId;
+        Input("!LeftClick:" + (int)(bounds.Left + bounds.Width / 2) + "," + (int)(bounds.Top + bounds.Height / 2), endpoint);
+        Wait(() => StylePopupSnapshot() == null, "popup application closes the menu");
+        Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000), "popup closure reaches idle");
+    }
     static void DocumentStyles(IntPtr hwnd, string folder)
     {
         Test("Document styles / fixture load, all built-ins, unused definitions and palette replacement");
@@ -1146,19 +1191,7 @@ public static class GacUIShowcaseTests
             text = Pattern<TextPattern>(document, TextPattern.Pattern);
             var styleLists = Find(page, ControlType.List).FindAll(candidate => Items(candidate).Count == names.Length);
             Check(styleLists.Count == 1, "one gallery exposes all eight built-in styles");
-            for (int index = 0; index < names.Length; index++)
-            {
-                var range = text.DocumentRange.FindText(title, false, false);
-                Check(range != null, "fixture heading remains available");
-                range.Select();
-                var item = Items(styleLists[0])[index];
-                if (pass == 0)
-                {
-                    Pattern<ScrollItemPattern>(item, ScrollItemPattern.Pattern).ScrollIntoView();
-                    ControlsSnapshot();
-                    ClickRenderedCaption(names[index]);
-                }
-                else Pattern<SelectionItemPattern>(item, SelectionItemPattern.Pattern).Select();
+            Action<int, TextPatternRange> checkStyle = (index, range) => {
                 double expectedSize = Math.Floor(baseSize / 0.75 * factors[index]) * 0.75;
                 int expectedColor = index < 2 ? 0x0080FF : index == 6 ? 0xFF8080 : 0xFFFFFF;
                 int expectedWeight = index == 3 ? 700 : 400;
@@ -1172,8 +1205,54 @@ public static class GacUIShowcaseTests
                     && (Convert.ToInt32(range.GetAttributeValue(TextPattern.StrikethroughStyleAttribute)) != 0) == (index == 7),
                     names[index] + " applies its dedicated font, color and decorations");
                 Check(text.GetSelection()[0].GetText(-1) == title, "gallery applies to the selected heading");
+            };
+            for (int index = 0; index < names.Length; index++)
+            {
+                var range = text.DocumentRange.FindText(title, false, false);
+                Check(range != null, "fixture heading remains available");
+                range.Select();
+                var item = Items(styleLists[0])[index];
+                if (pass == 0)
+                {
+                    Pattern<ScrollItemPattern>(item, ScrollItemPattern.Pattern).ScrollIntoView();
+                    ControlsSnapshot();
+                    ClickRenderedCaption(names[index]);
+                }
+                else Pattern<SelectionItemPattern>(item, SelectionItemPattern.Pattern).Select();
+                checkStyle(index, range);
                 Console.WriteLine("PASS style " + names[index] + " / " + (pass == 0 ? "automation pointer" : "UIA SelectionItem"));
             }
+            foreach (int width in new[] { 1400, 650, 1250 })
+            {
+                Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(width, 900);
+                ControlsSnapshot();
+                bool collapsed = width == 650;
+                AutomationElement gallery = null;
+                if (!collapsed)
+                {
+                    // Responsive template replacement retires old UIA providers.
+                    page = Page(Page(root, "Control"), "Document Editor (Ribbon)");
+                    styleLists = Find(page, ControlType.List).FindAll(candidate => Items(candidate).Count == names.Length);
+                    Check(styleLists.Count == 1, "resized ribbon exposes its inline gallery");
+                    gallery = TreeWalker.RawViewWalker.GetParent(styleLists[0]);
+                    object expand;
+                    while (!gallery.TryGetCurrentPattern(ExpandCollapsePattern.Pattern, out expand)) gallery = TreeWalker.RawViewWalker.GetParent(gallery);
+                }
+                for (int index = 0; index < names.Length; index++)
+                {
+                    var range = text.DocumentRange.FindText(title, false, false);
+                    range.Select();
+                    ApplyPopupStyle(gallery, index, names[index], collapsed);
+                    checkStyle(index, range);
+                    if (index == 0)
+                    {
+                        ApplyPopupStyle(gallery, index, names[index], collapsed);
+                        checkStyle(index, range);
+                    }
+                    Console.WriteLine("PASS popup style " + names[index] + " / width " + width + " / palette " + pass);
+                }
+            }
+            Console.WriteLine("LIMITATION popup backgrounds expose unnamed UIA Toggle controls without Invoke; UIA locates and scrolls them, automation IO applies them.");
             string styled = System.IO.Path.Combine(folder, "styled-document-" + pass + ".bin");
             PersistenceFile(page, true, "Save as Private Format", styled, false);
             PersistenceFile(page, true, "Load as Private Format", styled, false);
@@ -2998,7 +3077,13 @@ public static class GacUIShowcaseTests
         // template replacement before broad notification subscriptions; those
         // exercise event contracts separately and cache the entire rebuilt tree.
         if (scenario == "All" || scenario == "Persistence") DocumentPersistence(hwnd);
-        if (scenario != "RawClock" && scenario != "Touching" && scenario != "Persistence")
+        if (scenario == "DocumentStyles")
+        {
+            string folder = System.IO.Path.Combine(PersistenceOutput, "UIA-" + ownedProcess);
+            System.IO.Directory.CreateDirectory(folder);
+            DocumentStyles(hwnd, folder);
+        }
+        if (scenario != "RawClock" && scenario != "Touching" && scenario != "Persistence" && scenario != "DocumentStyles")
         {
             Automation.AddStructureChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref structureEvents));
             Automation.AddAutomationPropertyChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref propertyEvents), AutomationElement.NameProperty, SelectionItemPattern.IsSelectedProperty, TogglePattern.ToggleStateProperty);

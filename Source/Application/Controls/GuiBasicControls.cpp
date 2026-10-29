@@ -518,6 +518,14 @@ GuiControl
 
 				if (tooltipControl)
 				{
+					if (auto tooltipWindow = dynamic_cast<GuiTooltip*>(tooltipControl->GetRelatedControlHost()))
+					{
+						if (tooltipWindow->GetTemporaryContentControl() == tooltipControl)
+						{
+							tooltipWindow->SetTemporaryContentControl(nullptr);
+							tooltipWindow->Close();
+						}
+					}
 					// the only legal parent is the GuiApplication::sharedTooltipWindow
 					if (tooltipControl->GetBoundsComposition()->GetParent())
 					{

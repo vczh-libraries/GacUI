@@ -117,7 +117,7 @@ Reproduction confirmed for item 1: the unmodified implementation fails `selectio
 # PROPOSALS
 
 - No.1 Copy complete style catalogs in deep ranges and preserve style identity during reinsertion [CONFIRMED]
-- No.2 Route popup child clicks through explicit gallery application
+- No.2 Route popup child clicks through explicit gallery application [CONFIRMED]
 
 ## No.1 Copy complete style catalogs in deep ranges and preserve style identity during reinsertion
 
@@ -142,3 +142,15 @@ The new popup regression builds successfully but fails at its first popup click:
 ### CODE CHANGE
 
 Extend `<GacUI repo>/Test/GacUISrc/UnitTest/TestControls_Ribbon_Gallery.cpp` to use actual popup child controls and verify application counts before and after theme refresh. Implement the popup/application changes in `<GacUI repo>/Source/Controls/ToolstripPackage/GuiRibbonGalleryList.cpp`. Extend the existing showcase UIA style checks to exercise actual popup items in wide and collapsed layouts and inspect document formatting and preserved selection.
+
+The focused showcase driver reacquires providers after responsive template replacement and waits for the owning UI thread to become idle after popup opening/closure. Initial normal runs exited during palette replacement, while a debugger run completed all style assertions and returned zero at normal shutdown; investigate this timing-dependent difference before claiming showcase verification.
+
+CDB with the debugger heap disabled reproduces the access violation reported by Windows at `GuiControl::GetBoundsComposition`, called by `GuiPopup::CalculatePopupPosition` during hosted rendering. The popup is a `GuiTooltip`, and its type-3 position stores a freed template-owned ribbon control. `GuiControl` destruction removes and deletes its tooltip content without closing the shared tooltip or clearing that positioning reference. Before deleting tooltip content, detach it through its owning `GuiTooltip` and close that tooltip. Removing temporary content must invalidate the control-relative positioning immediately, since native window closure can be asynchronous. Extend the tooltip fixture to destroy an owner while its tooltip is visible, including pointer hover inside the tooltip, then reopen the surviving owner's tooltip. This is an ownership fix; idle waits cannot repair the freed pointer.
+
+### CONFIRMED
+
+The Debug x64 wrapper build completed with zero warnings and errors. The completed unit-test wrapper log reports 234/234 cases in seven files, with no appended memory-leak report: the four document/editor files from No.1, plus `TestControls_Ribbon_Gallery.cpp`, `TestApplication_Tooltip.cpp` and `TestApplication_Theme.cpp`. The gallery checks actual popup child clicks, exactly one application including repeated clicks, selection-only synchronization, dismissal, inline behavior, explicit `ApplyItem`, resizing and theme refresh. The tooltip regression verifies immediate detachment after owner deletion and successful reuse by another owner. Its four frames show the original tooltip, owner removal and the surviving tooltip. Nine incidental compiler logs differed only in ordering and were restored after sorted-content comparison.
+
+Both prescribed showcase wrappers passed with `-Scenario DocumentStyles -AsPort 8888 -SkipBuild` against this build: `UIA_CppTest.ps1` passed 1,125 assertions and `UIA_CppTest_Metaonly.ps1` passed 1,115. Each covered all eight styles in both groups, inline application, actual popup application at widths 1400, 650 and 1250, repeated application of the selected item, both Default and Aurora palettes, exact formatting and retained heading selection, complete saved catalogs, private reload, normal `Window.Close` and endpoint release. The formerly failing normal CppTest palette transition now passes. The temporary unavailable-provider retry was removed after fixing the actual dangling tooltip pointer; popup open/close idle barriers remain.
+
+The driver uses UIA to locate and scroll actual popup controls and automation IO to click their rendered captions. These popup backgrounds currently expose unnamed UIA Toggle controls without Invoke, so a Toggle-only application path is not claimed. No physical desktop mouse verification is claimed. No authored resource XML or reflection declarations changed, so metadata regeneration is not triggered. Authored changes and generated rendering snapshots are committed separately.

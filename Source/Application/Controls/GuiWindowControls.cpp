@@ -1494,6 +1494,11 @@ GuiPopup
 					temporaryContentControl=0;
 				}
 				temporaryContentControl=control;
+				if (!control)
+				{
+					// Closing a native popup is asynchronous; stop using its owner now.
+					popupType = -1;
+				}
 				if(control)
 				{
 					control->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));

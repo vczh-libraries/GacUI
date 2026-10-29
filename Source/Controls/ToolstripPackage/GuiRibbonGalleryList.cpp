@@ -425,13 +425,13 @@ GuiBindableRibbonGalleryList
 							}
 							backgroundButton->SetAutoFocus(false);
 							backgroundButton->SetAutoSelection(false);
+							backgroundButton->SetIgnoreChildControlMouseEvents(false);
 							backgroundButton->BeforeClicked.AttachLambda([=, this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 							{
 								auto groupIndex = groupStack->GetStackItems().IndexOf(dynamic_cast<GuiStackItemComposition*>(groupTemplate->GetParent()));
 								auto itemIndex = groupItemFlow->GetFlowItems().IndexOf(dynamic_cast<GuiFlowItemComposition*>(groupItemTemplate->GetParent()));
 								auto index = GalleryPosToIndex({ groupIndex,itemIndex });
-								itemList->SetSelected(index, true);
-								itemList->EnsureItemVisible(index);
+								ApplyItem(index);
 								subMenu->Close();
 							});
 							backgroundButton->GetBoundsComposition()->GetEventReceiver()->mouseEnter.AttachLambda([=, this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
@@ -670,6 +670,19 @@ GuiBindableRibbonGalleryList
 
 			void GuiBindableRibbonGalleryList::ApplyItem(vint index)
 			{
+				SelectItem(index);
+				if (0 <= index && index < joinedItemSource.Count())
+				{
+					GuiItemEventArgs itemAppliedArgs(boundsComposition);
+					itemAppliedArgs.itemIndex = index;
+					ItemApplied.Execute(itemAppliedArgs);
+				}
+			}
+
+			void GuiBindableRibbonGalleryList::SelectItem(vint index)
+			{
+				auto previousSkipItemAppliedEvent = skipItemAppliedEvent;
+				skipItemAppliedEvent = true;
 				if (index == -1)
 				{
 					itemList->ClearSelection();
@@ -679,13 +692,7 @@ GuiBindableRibbonGalleryList
 					itemList->SetSelected(index, true);
 					itemList->EnsureItemVisible(index);
 				}
-			}
-
-			void GuiBindableRibbonGalleryList::SelectItem(vint index)
-			{
-				skipItemAppliedEvent = true;
-				ApplyItem(index);
-				skipItemAppliedEvent = false;
+				skipItemAppliedEvent = previousSkipItemAppliedEvent;
 			}
 
 			vint GuiBindableRibbonGalleryList::GetVisibleItemCount()

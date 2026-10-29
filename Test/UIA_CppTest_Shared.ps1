@@ -4,7 +4,7 @@ param(
     [ValidateSet('Win32','x64')][string]$Platform = 'x64',
     [int]$ClientProcessId = 0,
     [string]$BusyClick = '',
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence')][string]$Scenario = 'All',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence','DocumentStyles')][string]$Scenario = 'All',
     [switch]$HostedFixture,
     [switch]$GdiFixture,
     [switch]$Gdi,
@@ -99,6 +99,7 @@ try {
         Start-Sleep -Milliseconds 100
     } while ([DateTime]::UtcNow -lt $deadline)
     if (!$owned) { throw 'Could not uniquely identify the launched process.' }
+    $ownedHandle = $owned.Handle
     $endpoint = "http://localhost:$AsPort/Automation/$Application"
     do {
         Assert-Target
@@ -131,7 +132,7 @@ try {
         # Window.Close can finish before the client's final exit check returns.
         # Keep both exit codes authoritative instead of rejecting that ordering.
         if ($owned.HasExited) {
-            if (!$client.WaitForExit(30000)) { throw 'Target exited before the UIA client completed.' }
+            if (!$client.WaitForExit(30000)) { throw "Target exited with code $($owned.ExitCode) before the UIA client completed." }
             break
         }
         if ([ShowcaseWindows]::Crashed($owned.Id)) { throw "Target PID $($owned.Id) has a blocking native runtime error dialog." }

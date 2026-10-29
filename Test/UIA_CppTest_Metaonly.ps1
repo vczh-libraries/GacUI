@@ -1,6 +1,6 @@
 param(
     [ValidateRange(1,65535)][int]$AsPort = 8890,
-    [ValidateSet('All','Layout','Responsive','ResponsiveWindow','RawClock','Touching','Persistence')][string]$Scenario = 'All',
+    [ValidateSet('All','Layout','Responsive','ResponsiveWindow','RawClock','Touching','Persistence','DocumentStyles')][string]$Scenario = 'All',
     [switch]$Gdi,
     [switch]$SkipBuild
 )

@@ -44,6 +44,51 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Tooltip")
 	{
+		TEST_CASE(L"DestroyVisibleTooltipOwner")
+		{
+			GuiTooltip* tooltipWindow = nullptr;
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto owner = FindObjectByName<GuiButton>(window, L"buttonTooltipA");
+					TEST_ASSERT(owner->DisplayTooltip(Point(0, 0)));
+					tooltipWindow = dynamic_cast<GuiTooltip*>(owner->GetTooltipControl()->GetRelatedControlHost());
+					TEST_ASSERT(tooltipWindow);
+				});
+				protocol->OnNextIdleFrame(L"Tooltip before owner deletion", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto owner = FindObjectByName<GuiButton>(window, L"buttonTooltipA");
+					protocol->MouseMove(protocol->LocationOf(owner->GetTooltipControl()));
+					SafeDeleteControl(owner);
+					TEST_ASSERT(tooltipWindow->GetTemporaryContentControl() == nullptr);
+					TEST_ASSERT(GetApplication()->GetTooltipOwner() == nullptr);
+					window->SetText(L"Tooltip owner removed");
+					GetApplication()->RefreshThemes();
+				});
+				protocol->OnNextIdleFrame(L"Tooltip closed after owner deletion", [&, protocol]()
+				{
+					TEST_ASSERT(!tooltipWindow->GetOpening());
+					auto window = GetApplication()->GetMainWindow();
+					auto owner = FindObjectByName<GuiButton>(window, L"buttonTooltipB");
+					TEST_ASSERT(owner->DisplayTooltip(Point(0, 0)));
+					TEST_ASSERT(GetApplication()->GetTooltipOwner() == owner);
+				});
+				protocol->OnNextIdleFrame(L"Surviving owner reuses tooltip", [&, protocol]()
+				{
+					TEST_ASSERT(tooltipWindow->GetOpening());
+					GetApplication()->GetMainWindow()->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Tooltip/DestroyVisibleTooltipOwner"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTooltipWindows
+			);
+		});
+
 		TEST_CASE(L"ShowTooltipAndWaitForClosing")
 		{
 			TooltipTimer timer;
