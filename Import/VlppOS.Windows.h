@@ -373,6 +373,7 @@ protected:
 
 	WString											urlPrefix;
 	bool											respondToOptions = false;
+	bool											usedFallbackUrlPrefix = false;
 
 	HANDLE											httpRequestQueue = INVALID_HANDLE_VALUE;
 	HTTP_SERVER_SESSION_ID							httpSessionId = HTTP_NULL_ID;
@@ -400,6 +401,7 @@ protected:
 	virtual void									OnHttpServerStopping();
 
 	static void										SendOptionsResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId);
+	HttpServerApi(const WString& _urlPrefix, bool _respondToOptions, const WString& fallbackUrlPrefix);
 
 public:
 	HttpServerApi(const WString& _urlPrefix, bool _respondToOptions);
@@ -525,6 +527,8 @@ HttpServer
 public:
 	HttpServer(const WString _baseUrl, vint port);
 	~HttpServer();
+	/// <summary>Whether URL registration selected localhost after the wildcard prefix failed.</summary>
+	bool											GetLocalhostOnly();
 	
 	WaitForClientResult								OnClientConnected(Ptr<INetworkProtocolConnection> connection) override;
 	void											Start() override;

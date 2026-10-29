@@ -5530,7 +5530,11 @@ HttpServer
 ***********************************************************************/
 
 HttpServer::HttpServer(const WString _baseUrl, vint port)
-	: HttpServerApi(WString::Unmanaged(L"http://+:") + itow(port) + _baseUrl + L"/", true)
+	: HttpServerApi(
+		WString::Unmanaged(L"http://+:") + itow(port) + _baseUrl + L"/",
+		true,
+		WString::Unmanaged(L"http://localhost:") + itow(port) + _baseUrl + L"/"
+		)
 	, baseUrl(_baseUrl)
 {
 	urlConnect = baseUrl + HttpServerUrl_Connect;
@@ -5541,6 +5545,11 @@ HttpServer::HttpServer(const WString _baseUrl, vint port)
 HttpServer::~HttpServer()
 {
 	Stop();
+}
+
+bool HttpServer::GetLocalhostOnly()
+{
+	return usedFallbackUrlPrefix;
 }
 
 WaitForClientResult HttpServer::OnClientConnected(Ptr<INetworkProtocolConnection> connection)
@@ -5986,6 +5995,29 @@ HttpServerApi
 ***********************************************************************/
 
 HttpServerApi::HttpServerApi(const WString& _urlPrefix, bool _respondToOptions)
+	: HttpServerApi(_urlPrefix, _respondToOptions, WString::Empty)
+{
+}
+
+bool RegisterHttpServerUrlPrefix(WString& prefix, const WString& fallback, const Func<ULONG(const WString&)>& registerUrl)
+{
+	auto result = registerUrl(prefix);
+	if (result == NO_ERROR) return false;
+	auto message = L"HttpAddUrlToUrlGroup failed with Windows error " + itow(result) + L" for " + prefix + L".";
+	if (fallback != WString::Empty)
+	{
+		auto fallbackResult = registerUrl(fallback);
+		if (fallbackResult == NO_ERROR)
+		{
+			prefix = fallback;
+			return true;
+		}
+		message += L" Fallback failed with Windows error " + itow(fallbackResult) + L" for " + fallback + L".";
+	}
+	throw Exception(message);
+}
+
+HttpServerApi::HttpServerApi(const WString& _urlPrefix, bool _respondToOptions, const WString& fallbackUrlPrefix)
 	: bufferRequest(HttpRequestBufferInitSize)
 	, urlPrefix(_urlPrefix)
 	, respondToOptions(_respondToOptions)
@@ -6022,16 +6054,18 @@ HttpServerApi::HttpServerApi(const WString& _urlPrefix, bool _respondToOptions)
 		0);
 	CHECK_ERROR(result == NO_ERROR, L"HttpCreateUrlGroup failed.");
 
-	result = HttpAddUrlToUrlGroup(
-		httpUrlGroupId,
-		urlPrefix.Buffer(),
-		0,
-		0);
-	if (result != NO_ERROR)
+	try
+	{
+		usedFallbackUrlPrefix = RegisterHttpServerUrlPrefix(urlPrefix, fallbackUrlPrefix, [this](const WString& prefix)
+		{
+			return HttpAddUrlToUrlGroup(httpUrlGroupId, prefix.Buffer(), 0, 0);
+		});
+	}
+	catch (...)
 	{
 		Stop();
 		CloseHandle(hEventRequest);
-		throw Exception(L"HttpAddUrlToUrlGroup failed with Windows error " + itow(result) + L" for " + urlPrefix + L".");
+		throw;
 	}
 
 	HTTP_BINDING_INFO bindingInfo;
