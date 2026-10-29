@@ -254,30 +254,94 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
+				auto applications = Ptr(new collections::List<vint>);
+				auto getGallery = []()
+				{
+					return FindObjectByName<GuiBindableRibbonGalleryList>(GetApplication()->GetMainWindow(), L"bindableGallery");
+				};
+				auto openPopup = [=]()
+				{
+					protocol->LClick(protocol->LocationOf(getGallery(), 1.0, 0.8, -10, 0));
+				};
+				auto clickPopupItem = [=]()
+				{
+					auto gallery = getGallery();
+					TEST_ASSERT(gallery->GetSubMenu()->GetOpening());
+					// The popup owns separate repeated items. Click their child label,
+					// which reproduces clicks originating inside a custom item template.
+					auto label = FindControlByText<GuiLabel>(gallery->GetSubMenu(), L"2");
+					protocol->LClick(protocol->LocationOf(label));
+				};
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					Value::From(window).Invoke(L"InitializeGallery", (Value_xs(), BoxValue<vint>(10)));
+					getGallery()->ItemApplied.AttachLambda([=](GuiGraphicsComposition*, GuiItemEventArgs& arguments)
+					{
+						applications->Add(arguments.itemIndex);
+						window->SetText(L"Applied " + itow(arguments.itemIndex + 1) + L" (" + itow(applications->Count()) + L")");
+					});
 				});
-				protocol->OnNextIdleFrame(L"10 Items", [=]()
+				for (vint pass = 0; pass < 2; pass++)
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto gallery = FindObjectByName<GuiBindableRibbonGalleryList>(window, L"bindableGallery");
-					auto location = protocol->LocationOf(gallery, 1.0, 0.8, -10, 0);
-					protocol->LClick(location);
-				});
-				protocol->OnNextIdleFrame(L"Click Dropdown", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto gallery = FindObjectByName<GuiBindableRibbonGalleryList>(window, L"bindableGallery");
-					auto listControl = gallery->GetListControlInDropdown();
-					LClickListItem(protocol, listControl, 1);
-				});
-				protocol->OnNextIdleFrame(L"Click Second Item", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					window->Hide();
-				});
+					vint initialCount = pass * 6;
+					protocol->OnNextIdleFrame(pass == 0 ? L"10 Items" : L"Refreshed Theme", [=]()
+					{
+						auto gallery = getGallery();
+						gallery->SelectItem(1);
+						gallery->SelectItem(1);
+						gallery->SelectItem(-1);
+						TEST_ASSERT(applications->Count() == initialCount);
+						openPopup();
+					});
+					protocol->OnNextIdleFrame(L"Opened Popup", [=]()
+					{
+						clickPopupItem();
+						TEST_ASSERT(applications->Count() == initialCount + 1 && applications->Get(initialCount) == 1);
+						TEST_ASSERT(getGallery()->GetSelectedIndex() == 1);
+						TEST_ASSERT(!getGallery()->GetSubMenu()->GetOpening());
+					});
+					protocol->OnNextIdleFrame(L"Applied Second Item", openPopup);
+					protocol->OnNextIdleFrame(L"Reopened Selected Item", [=]()
+					{
+						clickPopupItem();
+						TEST_ASSERT(applications->Count() == initialCount + 2 && applications->Get(initialCount + 1) == 1);
+					});
+					protocol->OnNextIdleFrame(L"Reapplied Second Item", openPopup);
+					protocol->OnNextIdleFrame(L"Popup Before Dismissal", [=]()
+					{
+						protocol->LClick(protocol->LocationOf(GetApplication()->GetMainWindow(), 0.5, 0.9));
+						TEST_ASSERT(!getGallery()->GetSubMenu()->GetOpening());
+						TEST_ASSERT(applications->Count() == initialCount + 2);
+					});
+					protocol->OnNextIdleFrame(L"Dismissed Without Applying", [=]()
+					{
+						auto gallery = getGallery();
+						// This compatibility accessor returns the inline list.
+						auto inlineList = gallery->GetListControlInDropdown();
+						LClickListItem(protocol, inlineList, 0);
+						TEST_ASSERT(applications->Count() == initialCount + 3);
+						LClickListItem(protocol, inlineList, 0);
+						TEST_ASSERT(applications->Count() == initialCount + 4);
+						gallery->ApplyItem(0);
+						TEST_ASSERT(applications->Count() == initialCount + 5);
+						gallery->SelectItem(2);
+						TEST_ASSERT(applications->Count() == initialCount + 5);
+						gallery->ApplyItem(2);
+						TEST_ASSERT(applications->Count() == initialCount + 6);
+						gallery->ApplyItem(-1);
+						TEST_ASSERT(applications->Count() == initialCount + 6 && gallery->GetSelectedIndex() == -1);
+					});
+					protocol->OnNextIdleFrame(L"Applied Inline And Explicit Items", [=]()
+					{
+						if (pass == 0)
+						{
+							GetApplication()->RefreshThemes();
+							GetApplication()->GetMainWindow()->SetClientSize(Size(600, 320));
+						}
+						else GetApplication()->GetMainWindow()->Hide();
+					});
+				}
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/Ribbon/GuiBindableRibbonGalleryList/Dropdown"),

@@ -107,16 +107,17 @@ No unresolved review comments. The implementation details and verification requi
 
 # TEST [CONFIRMED]
 
-Reproduction confirmed for item 1: the unmodified implementation fails `selection->styles.Keys().Contains(L"Unused")` in the Debug x64 wrapper run. The baseline solution build completed with zero warnings/errors. Items 2 and 3 remain pending reproduction and implementation verification.
+Reproduction confirmed for item 1: the unmodified implementation fails `selection->styles.Keys().Contains(L"Unused")` in the Debug x64 wrapper run. The baseline solution build completed with zero warnings/errors. For item 2, the hosted CppTest automation service reproduces the failure: type `Popup style sample`, select all 18 characters, open the collapsed Style gallery, and click the actual popup `Header 1` caption. The popup remains open and the document still contains an unstyled `nop` run with selection `(0,0)-(0,18)`. The popup button ignores mouse events originating from its child custom control. Its separate selection-based application path also omits an already-selected item. Item 3 remains pending reproduction and implementation verification.
 
 1. Extend ordinary document-copy tests for full, partial, empty-range and empty-document copies, style independence, shallow sharing, invalid ranges, insertion, serialization and repeated undo/redo.
-2. Exercise actual ribbon popup controls, event counts, selection preservation and formatting in gallery tests and both showcase UIA consumers.
+2. Exercise actual ribbon popup controls, event counts, selection preservation and formatting in gallery tests and both showcase UIA consumers. The extended gallery Dropdown case clicks a child label inside the popup, verifies one application per click including repeats, checks selection-only and explicit application APIs, verifies dismissal has no effect, retains inline-click coverage, and repeats after theme refresh and resizing.
 3. Verify host-aware transports upstream, synchronize generated imports, then exercise Windows renderer and RVM destinations and lifecycle; inspect Unix code and scripts without executing native platform tests.
 4. Cross-check documentation against implemented parsers and launchers and synchronize canonical knowledge.
 
 # PROPOSALS
 
 - No.1 Copy complete style catalogs in deep ranges and preserve style identity during reinsertion [CONFIRMED]
+- No.2 Route popup child clicks through explicit gallery application
 
 ## No.1 Copy complete style catalogs in deep ranges and preserve style identity during reinsertion
 
@@ -131,3 +132,13 @@ Implemented complete-catalog enumeration for deep copies, removed the redundant 
 ### CONFIRMED
 
 The Debug x64 solution build through `copilotBuild.ps1` completed with zero warnings and errors. The subsequent `copilotExecute.ps1 -Mode UnitTest -Executable UnitTest` run passed all 219 cases in the four selected files: `TestDocumentConfig.cpp`, `TestControls_Editor_Styles.cpp`, `TestControls_Editor_RichText.cpp` and `TestRemote_Startup.cpp`. The completed execution log ends with the passing summary and contains no appended memory-leak report. The formerly failing unused-style assertion passes, as do full/partial/zero-length/zero-paragraph copies, private serialization, shallow sharing, invalid ranges and conflicting-parent reinsertion. Fifty-seven generated compiler text logs differed only in line ordering; their sorted contents were verified identical and those incidental changes were restored. No rendering snapshots changed. This task changes no reflection declarations or authored resource XML, so the additional metadata-generation configurations are not triggered.
+
+## No.2 Route popup child clicks through explicit gallery application
+
+The popup consists of independent selectable buttons containing the supplied item template. Unlike inline list selection, their click handling currently ignores child-control mouse events. Enable those events on the popup background button and call `ApplyItem` from its application handler. Make `ApplyItem` perform selection-only synchronization first, then emit one application event for a valid item, even if already selected. Keep `SelectItem` free of application effects and preserve its previous suppression state during reentrant synchronization. Inline pointer/keyboard selection continues through its existing selection-change handler.
+
+The new popup regression builds successfully but fails at its first popup click: `applications->Count() == initialCount + 1 && applications->Get(initialCount) == 1`. This matches the CppTest automation-service reproduction. The original dropdown test clicked the compatibility accessor's inline list, bypassing the popup entirely.
+
+### CODE CHANGE
+
+Extend `<GacUI repo>/Test/GacUISrc/UnitTest/TestControls_Ribbon_Gallery.cpp` to use actual popup child controls and verify application counts before and after theme refresh. Implement the popup/application changes in `<GacUI repo>/Source/Controls/ToolstripPackage/GuiRibbonGalleryList.cpp`. Extend the existing showcase UIA style checks to exercise actual popup items in wide and collapsed layouts and inspect document formatting and preserved selection.
