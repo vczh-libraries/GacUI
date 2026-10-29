@@ -84,7 +84,102 @@
     [118, "SolidBackground"],
     [119, "SolidLabel"],
     [120, "SolidBackground"],
-    [121, "SolidLabel"]
+    [121, "SolidLabel"],
+    [122, "SolidBackground"],
+    [123, "SolidBorder"],
+    [124, "SolidBackground"],
+    [125, "SolidBorder"],
+    [126, "FocusRectangle"],
+    [127, "SolidLabel"],
+    [128, "Polygon"],
+    [129, "SolidBackground"],
+    [130, "SolidBorder"],
+    [131, "FocusRectangle"],
+    [132, "SolidLabel"],
+    [133, "Polygon"],
+    [134, "Polygon"],
+    [135, "SolidBackground"],
+    [136, "SolidBorder"],
+    [137, "FocusRectangle"],
+    [138, "SolidLabel"],
+    [139, "Polygon"],
+    [140, "ImageFrame"],
+    [141, "SolidLabel"],
+    [142, "SolidBackground"],
+    [143, "SolidBackground"],
+    [144, "SolidBorder"],
+    [145, "SolidBackground"],
+    [146, "FocusRectangle"],
+    [147, "SolidLabel"],
+    [148, "SolidBorder"],
+    [149, "SolidLabel"],
+    [150, "Polygon"],
+    [151, "SolidBackground"],
+    [152, "SolidBorder"],
+    [153, "Polygon"],
+    [154, "SolidBorder"],
+    [155, "Polygon"],
+    [156, "Polygon"],
+    [157, "SolidBackground"],
+    [158, "Polygon"],
+    [159, "SolidBackground"],
+    [160, "SolidBorder"],
+    [161, "SolidBackground"],
+    [162, "SolidBackground"],
+    [163, "SolidBackground"],
+    [164, "SolidBackground"],
+    [165, "SolidBorder"],
+    [166, "SolidBackground"],
+    [167, "SolidBorder"],
+    [168, "Polygon"],
+    [169, "Polygon"],
+    [170, "SolidBackground"],
+    [171, "SolidBackground"],
+    [172, "SolidBorder"],
+    [173, "Polygon"],
+    [174, "Polygon"],
+    [175, "SolidBackground"],
+    [176, "SolidLabel"],
+    [177, "SolidBackground"],
+    [179, "SolidBackground"],
+    [181, "SolidBackground"],
+    [183, "SolidBackground"],
+    [185, "SolidBackground"],
+    [187, "SolidBackground"],
+    [189, "SolidBackground"],
+    [191, "SolidBackground"],
+    [193, "SolidBackground"],
+    [195, "SolidBackground"],
+    [197, "SolidLabel"],
+    [198, "SolidLabel"],
+    [199, "SolidLabel"],
+    [200, "SolidLabel"],
+    [201, "SolidLabel"],
+    [202, "SolidLabel"],
+    [203, "SolidLabel"],
+    [204, "SolidLabel"],
+    [205, "SolidLabel"],
+    [206, "SolidLabel"],
+    [207, "SolidBackground"],
+    [208, "SolidLabel"],
+    [209, "SolidBackground"],
+    [210, "SolidLabel"],
+    [211, "SolidBackground"],
+    [212, "SolidLabel"],
+    [213, "SolidBackground"],
+    [214, "SolidLabel"],
+    [215, "SolidBackground"],
+    [216, "SolidLabel"],
+    [217, "SolidBackground"],
+    [218, "SolidLabel"],
+    [219, "SolidBackground"],
+    [220, "SolidLabel"],
+    [221, "SolidBackground"],
+    [222, "SolidLabel"],
+    [223, "SolidBackground"],
+    [224, "SolidLabel"],
+    [225, "SolidBackground"],
+    [226, "SolidLabel"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
@@ -145,7 +240,7 @@
     },
     {
       "frameId": 19,
-      "frameName": "Click Dropdown",
+      "frameName": "Opened Popup",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -172,7 +267,358 @@
     },
     {
       "frameId": 21,
-      "frameName": "Click Second Item",
+      "frameName": "Applied Second Item",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 23,
+      "frameName": "Reopened Selected Item",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 25,
+      "frameName": "Reapplied Second Item",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 27,
+      "frameName": "Popup Before Dismissal",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 29,
+      "frameName": "Dismissed Without Applying",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 31,
+      "frameName": "Applied Inline And Explicit Items",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 36,
+      "frameName": "Refreshed Theme",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 42,
+      "frameName": "Opened Popup",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 44,
+      "frameName": "Applied Second Item",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 46,
+      "frameName": "Reopened Selected Item",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 48,
+      "frameName": "Reapplied Second Item",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 50,
+      "frameName": "Popup Before Dismissal",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 52,
+      "frameName": "Dismissed Without Applying",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 54,
+      "frameName": "Applied Inline And Explicit Items",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},

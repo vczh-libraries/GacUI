@@ -1,6 +1,6 @@
 ﻿{
   "frameId": 21,
-  "frameName": "Click Second Item",
+  "frameName": "Applied Second Item",
   "windowSize": {
     "bounds": {
       "x1": {"value": 272},
@@ -295,8 +295,8 @@
           "ellipse": true,
           "multiline": false,
           "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-          "text": "GuiBindableRibbonGalleryList",
-          "measuringRequest": "FontHeight"
+          "text": "Applied 2 (1)",
+          "measuringRequest": null
         }
       ]
     ],
