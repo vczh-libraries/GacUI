@@ -1,6 +1,7 @@
 #include <Vlpp.h>
 #include <VlppOS.h>
 #include "../SharedArguments.h"
+#include <clocale>
 #ifdef VCZH_MSVC
 #include <crtdbg.h>
 #endif
@@ -29,6 +30,8 @@ int main(int argc, char* argv[])
 {
 #ifdef VCZH_MSVC
 	_set_abort_behavior(0, _WRITE_ABORT_MSG);
+#else
+	CHECK_ERROR(std::setlocale(LC_CTYPE, "") != nullptr, L"main()#Failed to initialize the character locale.");
 #endif
 	int result = 1;
 	vint index = -1; // 0 = FullControlTest (/FCT), 1 = RemoteProtocolTest (/RPT), 2 = RemoteViewModelTest (/RVMT)

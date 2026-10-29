@@ -416,6 +416,8 @@ Unlike Windows, building have to be done in each folder separately.
 
 The Unix unit-test entry point uses the environment locale for wide console output, including Unicode test names. Run it with an installed UTF-8 locale; on macOS, use `LC_ALL=en_US.UTF-8 ./Bin/UnitTest /C` if the inherited locale is unavailable.
 
+The portable `RemotingTest_Core` entry point initializes `LC_CTYPE` from the environment before using filesystem services. Use an installed UTF-8 locale for Core-local Unicode filenames, including when remote filesystem injection is disabled. This does not change the native en-US date/number formatting implementation.
+
 It is expected if `makefile` and `vmake.txt` is changed due to build any project, they should be included in the commit for manually updated files, do not revert them.
 
 ### Replacement test applications in wGac and iGac
