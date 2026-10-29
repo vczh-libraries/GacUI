@@ -116,7 +116,7 @@ Reproduction confirmed for item 1: the unmodified implementation fails `selectio
 
 # PROPOSALS
 
-- No.1 Copy complete style catalogs in deep ranges and preserve style identity during reinsertion
+- No.1 Copy complete style catalogs in deep ranges and preserve style identity during reinsertion [CONFIRMED]
 
 ## No.1 Copy complete style catalogs in deep ranges and preserve style identity during reinsertion
 
@@ -126,4 +126,8 @@ Insertion must compare the complete named-style ancestry before reusing an exist
 
 ### CODE CHANGE
 
-Pending implementation. Regression cases in `<GacUI repo>/Test/GacUISrc/UnitTest/TestDocumentConfig.cpp` cover complete and partial copies, empty ranges/documents, independent authored/resolved properties, baseline overrides, private serialization, shallow pointer sharing, invalid ranges and repeated insertion with conflicting ancestry. Extend ordinary editor integration coverage for selection and undo/redo.
+Implemented complete-catalog enumeration for deep copies, removed the redundant full-copy cloning pass, and documented the range contract. Insertion now compares named ancestry and reuses equivalent numbered aliases; destination baseline behavior is unchanged. Regression cases in `<GacUI repo>/Test/GacUISrc/UnitTest/TestDocumentConfig.cpp` cover complete and partial copies, empty ranges/documents, independent authored/resolved properties, baseline overrides, private serialization, shallow pointer sharing, invalid ranges and repeated insertion with conflicting ancestry. Ordinary editor integration coverage in `<GacUI repo>/Test/GacUISrc/UnitTest/TestRemote_Startup.cpp` checks selection copy/paste and five undo/redo cycles with stable style references, effective formatting and catalog size.
+
+### CONFIRMED
+
+The Debug x64 solution build through `copilotBuild.ps1` completed with zero warnings and errors. The subsequent `copilotExecute.ps1 -Mode UnitTest -Executable UnitTest` run passed all 219 cases in the four selected files: `TestDocumentConfig.cpp`, `TestControls_Editor_Styles.cpp`, `TestControls_Editor_RichText.cpp` and `TestRemote_Startup.cpp`. The completed execution log ends with the passing summary and contains no appended memory-leak report. The formerly failing unused-style assertion passes, as do full/partial/zero-length/zero-paragraph copies, private serialization, shallow sharing, invalid ranges and conflicting-parent reinsertion. Fifty-seven generated compiler text logs differed only in line ordering; their sorted contents were verified identical and those incidental changes were restored. No rendering snapshots changed. This task changes no reflection declarations or authored resource XML, so the additional metadata-generation configurations are not triggered.

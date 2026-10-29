@@ -83,9 +83,17 @@ DocumentModel::EditRangeOperations
 
 			// copy styles
 			List<WString> styleNames;
-			for (auto paragraph : newDocument->paragraphs)
+			if (deepCopy)
 			{
-				CollectStyleName(paragraph.Obj(), styleNames);
+				newDocument->styles.Clear();
+				CopyFrom(styleNames, styles.Keys());
+			}
+			else
+			{
+				for (auto paragraph : newDocument->paragraphs)
+				{
+					CollectStyleName(paragraph.Obj(), styleNames);
+				}
 			}
 
 			// TODO: (enumerable) foreach:alterable
@@ -135,18 +143,7 @@ DocumentModel::EditRangeOperations
 				end = TextPos(lastParagraphIndex, runRanges[paragraphs[lastParagraphIndex].Obj()].end);
 			}
 
-			auto newDocument = CopyDocument(TextPos(0, 0), end, true);
-			// A complete document owns its unused styles too. Selection copies
-			// deliberately retain only referenced styles and their parents.
-			for (auto [name, style] : styles)
-			{
-				auto newStyle = Ptr(new DocumentStyle);
-				newStyle->parentStyleName = style->parentStyleName;
-				newStyle->styles = CopyStyle(style->styles);
-				newStyle->resolvedStyles = CopyStyle(style->resolvedStyles);
-				newDocument->styles.Set(name, newStyle);
-			}
-			return newDocument;
+			return CopyDocument(TextPos(0, 0), end, true);
 		}
 
 		bool DocumentModel::CutParagraph(TextPos position)
@@ -248,6 +245,34 @@ DocumentModel::EditRun
 				model = replaceToModel->CopyDocument();
 			}
 
+			auto equivalentStyle = [&](WString existingName, WString incomingName)
+			{
+				List<Pair<WString, WString>> comparedNames;
+				while (true)
+				{
+					if (existingName.Length() == 0 || incomingName.Length() == 0
+						|| existingName[0] == L'#' || incomingName[0] == L'#')
+					{
+						// Insertion keeps the destination's baseline definitions.
+						return existingName == incomingName;
+					}
+					auto existingIndex = styles.Keys().IndexOf(existingName);
+					auto incomingIndex = model->styles.Keys().IndexOf(incomingName);
+					if (existingIndex == -1 || incomingIndex == -1)
+					{
+						return existingIndex == incomingIndex && existingName == incomingName;
+					}
+					Pair<WString, WString> names(existingName, incomingName);
+					if (comparedNames.Contains(names)) return true;
+					comparedNames.Add(names);
+					auto existingStyle = styles.Values()[existingIndex];
+					auto incomingStyle = model->styles.Values()[incomingIndex];
+					if (!CompareStyleProperties(existingStyle->styles, incomingStyle->styles)) return false;
+					existingName = existingStyle->parentStyleName;
+					incomingName = incomingStyle->parentStyleName;
+				}
+			};
+
 			// calculate new names for the model's styles to prevent conflicting
 			List<WString> oldNames, newNames;
 			CopyFrom(oldNames, model->styles.Keys());
@@ -258,10 +283,7 @@ DocumentModel::EditRun
 				WString name=newNames[i];
 				if((name.Length()==0 || name[0]!=L'#') && styles.Keys().Contains(name))
 				{
-					auto existingStyle = styles[name];
-					auto incomingStyle = model->styles[name];
-					if (existingStyle->parentStyleName == incomingStyle->parentStyleName
-						&& document_editor::CompareStyleProperties(existingStyle->styles, incomingStyle->styles))
+					if (equivalentStyle(name, name))
 					{
 						continue;
 					}
@@ -269,7 +291,8 @@ DocumentModel::EditRun
 					while(true)
 					{
 						WString newName=name+L"_"+itow(index++);
-						if(!styles.Keys().Contains(newName) && !model->styles.Keys().Contains(newName))
+						if (!model->styles.Keys().Contains(newName)
+							&& (!styles.Keys().Contains(newName) || equivalentStyle(newName, name)))
 						{
 							newNames[i]=newName;
 							break;
