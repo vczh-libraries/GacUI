@@ -37,6 +37,7 @@
 - Separate raw painters from remote collection attachment [2]
 - Keep raw point lifecycle independent of gesture recognition [2]
 - Expose supported variant fields directly in reflection [2]
+- Preserve complete style catalogs in private documents [2]
 - Nest EazyLayout descriptor groups under one owning layout [1]
 - Use /AsPort for automation with default 8888 [1]
 - Use channel `localClient` callbacks for remoting local-client detection [1]
@@ -114,6 +115,8 @@
 - Preserve Started inheritance and separate handled from acceptance [1]
 - Recompute point coordinates using current native conversion [1]
 - Keep custom showcase rows themed and varied [1]
+- Keep ribbon gallery application independent of selection changes [1]
+- Detach tooltip positioning before its owner is destroyed [1]
 
 # Refinements
 
@@ -520,7 +523,7 @@ In `vl::presentation::controls::GuiListControl::OnRenderTargetChanged` (`Source/
 
 DarkSkin and TuiSkin share the same ownership pattern: authored Workflow resources own the common palette initializer, complete default palette and one-time installed default. Native code in `Source/Skins/<Skin>/Config` supplies named accents through that initializer and forwards the default factory and setter to Workflow. `SetColorPackage` directly updates installed palette state; remove redundant `InstallColorPackage` wrappers and application startup default installation. Creating another theme or window must not reset the chosen palette. Keep internal palette-based document helpers that still have template callers, even when obsolete public wrappers or resource files are removed.
 
-Showcase selection stays outside reusable skins. FullControlTest raises `PaletteSelected(int)`, and each entry point attaches the shared native handler in `Test/GacUISrc/Generated_FullControlTest/FullControlTestPalette.h/.cpp`. Queue palette creation, installation and `GuiApplication::RefreshThemes()` together after input dispatch, capturing the selection by value. The Workflow-binary showcase attaches the same handler through reflection and uses native DarkSkin. Do not add selector plugins or availability policy to a skin.
+Showcase selection stays outside reusable skins. FullControlTest raises `PaletteSelected(int)`, and each entry point attaches the shared native handler in `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.h/.cpp`. Queue palette creation, installation and `GuiApplication::RefreshThemes()` together after input dispatch, capturing the selection by value. The Workflow-binary showcase attaches the same handler through reflection and uses native DarkSkin. Do not add selector plugins or availability policy to a skin.
 
 ## UiaList presents side-effect-free getters as readouts
 
@@ -653,3 +656,17 @@ Selecting a gesture does not replace raw point delivery. Preserve Action for con
 ## Expose supported variant fields directly in reflection
 
 Once generic variant reflection is supported, register `GuiPointGestureEventArgs::gesture` directly and remove the object-valued `Gesture`/`GetGesture()` workaround. The event arguments are declared in `<GacUI repo>/Source/Application/GraphicsCompositions/GuiGraphicsEventReceiver.h`. Preserve the native alternative order, use typed nullable extraction in Workflow, and distinguish extraction-copy semantics from whole-field assignment back to the native event argument. Keep examples and tests aligned with the field's current spelling and write access.
+
+## Preserve complete style catalogs in private documents
+
+FullControlTest private documents are assumed to have been saved by CppTest. Preserve every style definition through document copying, save and load, including unused built-ins, so applying a named gallery style after loading uses its saved definition. Do not add missing-style restoration or replace loaded definitions at application time. Keep the persistence logic in the authored `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.h/.cpp`.
+
+Keep complete-catalog cloning in the deep branch of `DocumentModel::CopyDocument(TextPos, TextPos, bool)` in `<GacUI repo>/Source/Resources/GuiDocument_Edit.cpp`; the parameterless overload delegates. Deep ranges retain all definitions with independent authored/resolved properties, while shallow ranges retain only referenced styles and their parents with shared objects. Reinsertion compares named ancestry and reuses equivalent aliases so repeated paste or undo/redo does not accumulate renamed definitions.
+
+## Keep ribbon gallery application independent of selection changes
+
+In `<GacUI repo>/Source/Controls/ToolstripPackage/GuiRibbonGalleryList.cpp`, keep `SelectItem` selection-only and let `ApplyItem` emit exactly one application for a valid item, even when already selected. Popup buttons must accept mouse events from their item-template children. Preserve suppression state during reentrant selection synchronization so highlighting or dismissal cannot apply a style.
+
+## Detach tooltip positioning before its owner is destroyed
+
+Before destroying a control's tooltip content, detach it through the owning `GuiTooltip` and clear control-relative popup positioning immediately. Native closure can finish asynchronously, so waiting for window closure cannot protect a reference to a destroyed template control. Verify owner deletion while the tooltip is visible and subsequent reuse by a surviving owner.

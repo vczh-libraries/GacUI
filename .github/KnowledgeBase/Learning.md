@@ -2,15 +2,15 @@
 
 # Orders
 
-- Keep design documentation aligned with code after refactoring [33]
+- Keep design documentation aligned with code after refactoring [34]
 - Verify generated artifacts with downstream consumer checks [33]
-- Proactively remove code made redundant by refactoring [32]
-- Process staged tasks one by one with verification [26]
+- Proactively remove code made redundant by refactoring [33]
+- Process staged tasks one by one with verification [28]
 - Port fixes from imports to source repositories [23]
 - Extract abstractions only for real shared behavior [22]
 - Verify and localize portability on every target OS [20]
 - Crash early instead of adding error-tolerance fallbacks [16]
-- Fix behavior at the owning state instead of patching symptoms [15]
+- Fix behavior at the owning state instead of patching symptoms [16]
 - Validate expectations against implementation and existing tests [12]
 - Make `Stop()` drain asynchronous work before returning [8]
 - Do not assume async callback owners are heap allocated [5]
@@ -101,6 +101,8 @@ When a task boundary says to commit and push, do that before starting the next t
 When requested for an XML refactor, commit the authored XML changes together first, then commit source, generated artifacts and other remaining changes separately. Honor that review boundary even when the XML commit depends on the following implementation commit.
 
 When the user requests a checkpoint commit before remaining tests finish, commit and push the current work first, then continue verification. Keep unfinished verification explicitly pending and record the completed results afterward; the checkpoint does not establish that an interrupted or still-running suite passed.
+
+When verification needs temporary provider overrides or diagnostic probes, establish the requested committed checkpoint first. Keep those probes and their generated derivatives out of final commits, restore the production implementation, rebuild it and repeat a real-provider smoke check.
 
 ## Use `ERROR_MESSAGE_PREFIX` for meaningful `CHECK_ERROR` / `CHECK_FAIL` messages
 
@@ -364,6 +366,8 @@ Audit actual consumers before retaining generated diagnostic files after an algo
 
 Consolidate shared helper compilation in the existing shared inventory after checking every consumer and portable extraction rule. Remove duplicate direct registrations from consumers that import it, while retaining direct registrations where that inventory is absent. An empty derived class is not automatically redundant: preserve it when its concrete identity selects a distinct factory or renderer registration.
 
+When several overloads need the same policy, implement it in the general overload and make convenience overloads delegate. Remove duplicated post-processing from the convenience path so copying or validation happens once for every caller.
+
 ## Keep design documentation aligned with code after refactoring
 
 When a refactoring changes architecture or behavior, update the corresponding design documents in the same task rather than deferring it. After a structural change, re-read the related documents and reconcile anything that became misaligned (for example, descriptions of a transport path that no longer exists). Treat documentation drift left by a previous refactoring as part of the current cleanup.
@@ -381,6 +385,8 @@ Document new command-line switches alongside the application's existing argument
 Before deleting completed task specifications, move enduring API and design guidance into maintained documents and remove links to the temporary specifications. The maintained documentation and published examples must remain understandable without the deleted task history.
 
 Audit language reference indexes against the authoritative lexer, grammar, diagnostic definitions and instruction inventory. Keyword entries should link enough pages to discover every syntax role, rather than every occurrence. Error indexes should cover every code and message template with representative examples; instruction entries should use current names and concise, precise semantics.
+
+When correcting command-line spelling, update parsing, help, forwarding and existing active descriptions together. Keep wrapper-option syntax distinct from the executable arguments it emits, and preserve historical executed commands with a note explaining the new spelling rather than rewriting earlier verification evidence.
 
 ## Fix behavior at the owning state instead of patching symptoms
 
@@ -401,6 +407,8 @@ When HTTP long-poll delivery needs a bounded acknowledgement, put the deadline o
 When a native window-style update changes keyboard focus or responder ownership as a side effect, preserve and restore the previous owner at the style-changing boundary. Restore focus only when the affected view already owned it; do not activate an inactive window or steal focus from another responder. Standalone startup may hide the problem by activating the window afterward, while an already-visible remote renderer receives no later activation to repair the lost state.
 
 When a compiler diagnostic lacks a source location, repair the argument or syntax metadata where the position should be produced. Do not make a downstream loader guess a location that the common compilation pipeline already knows.
+
+When an application guarantees that loaded data comes from its own save path, preserve required metadata in copying and serialization instead of reconstructing missing metadata at use sites. Keep the fix within that stated input contract rather than adding compatibility repair for files the application does not need to accept.
 
 ## Treat environment correlation as evidence, not a cause
 

@@ -4,13 +4,13 @@
 
 - Keep test log paths stable during refactors [13]
 - Verify RVM requester/host lifetimes across every transport [12]
-- Validate GacJS through browser UI interactions [11]
+- Validate GacJS through browser UI interactions [12]
 - Remote protocol frames: actions must change UI; organize frames carefully [9]
 - Stress remote core/renderer transport and terminal flows [8]
 - Don’t schedule redundant idle frames [7]
 - Preserve existing idle-frame titles when requested [6]
 - Seed key-behavior tests via `protocol->TypeString` [6]
-- Keep FullControlTest UIA checks synchronized with showcase changes [5]
+- Keep FullControlTest UIA checks synchronized with showcase changes [6]
 - Add new unit test files to `UnitTest.vcxproj` and `.filters` [4]
 - Verify GacJS HTTP fatal errors through browser UI [4]
 - Verify `/IO` synchronous errors and queued success separately [4]
@@ -25,6 +25,7 @@
 - Verify GitView diffs against real repository states [3]
 - Exercise actual showcase XML in generated and interpreted consumers [3]
 - Remote-debugging guides own complete Cartesian test matrices [3]
+- Verify injection routing with fresh distinguishable calls [3]
 - Account for eager child preparation in item-provider tests [2]
 - Isolate callbacks per test case (fresh log + callback) [2]
 - Prefer comments that name the exercised interface [2]
@@ -95,6 +96,7 @@
 - Keep UiaList verification drivers in PowerShell [1]
 - Verify transient row presentation before asynchronous layout settles [1]
 - Scope native-touch exclusions to the actual provider [1]
+- Keep rich document fixtures readable and self-contained [1]
 
 # Refinements
 
@@ -435,6 +437,8 @@ After Wasm packaging changes, rebuild and deploy `WasmFCT`, `WasmRPT` and `WasmR
 
 For public demo updates, verify the actual published launcher, route and service-worker flow after final staging, using fresh and previously visited browser contexts. Development-site success alone does not cover missing public raw-painter installation or packaging. Check observable rendering and interaction, artifact identity, worker loading and teardown through the public entry link as well as the prepared local deployment.
 
+For final TouchingList geometry checks after row deletion, wait for the expected measured browser position; DOM removal does not establish completed asynchronous layout. Preserve item-identity assertions and the documented half-pixel translation tolerance instead of relaxing them to hide scheduling. When checking disabled providers, inspect the actual handshake fields and request traffic through persistence and Reload cycles rather than relying only on source initialization.
+
 ## Browser E2E tests must handle localized dialogs and host fixtures
 
 Browser-driven GacJS tests should not assert English-only native dialog text when the same flow can run on zh-CN or en-US machines. Use locale-tolerant matching for expected dialog captions and make sure file/image dialog fixtures exist before launching the test.
@@ -577,6 +581,8 @@ For permanent ViewSizes levels, extend the same four array-length cases to direc
 
 For point/gesture changes, use the focused Touching scenario to cover Touching, TouchingList, list scrolling and text selection, including selection after template replacement. Exercise generated native, interpreted Workflow, renderer-side IO and browser acquisition separately where requested. Keep raw lifecycle and identity-safe deferred-removal assertions alongside rendered reveal/reset results. Report synthetic automation, browser pixels and physical hardware as distinct evidence.
 
+For ribbon gallery regressions, locate the actual popup children; `GetListControlInDropdown()` returns the inline list and does not prove popup behavior. Exercise child-caption clicks, an already-selected item, both groups, wide and collapsed layouts, reopening and theme refresh. Require one application per click, retained document selection and exact effective formatting, while selection synchronization and dismissal apply nothing.
+
 ## Verify GitView diffs against real repository states
 
 Use disposable repositories to distinguish staged, working-tree and historical contents in GitView tests. Assert exact source rows, line numbers, colors and context boundaries, including blank lines, large line numbers, missing final newlines, patch-like source text, BOMs and binary files. Construct binary fixtures as bytes and inspect them when Git classifies them unexpectedly; a text writer can invalidate a NUL-based fixture. Complement model assertions with terminal input/output checks of compact layout, splitter movement, scrolling, status wrapping and retained commit details.
@@ -620,3 +626,11 @@ A virtualized row's default presentation must be correct immediately when realiz
 ## Scope native-touch exclusions to the actual provider
 
 wGac and iGac native providers do not support touch, so their native touch-specific checks remain excluded with the reason recorded. This exclusion does not apply to GacJS or WebAssembly running on Linux/macOS. Continue applicable raw rendering and mouse/keyboard checks, and do not claim native touch support from synthetic Core injection. Keep this applicability explicit in `<GacUI repo>/.github/Jobs/job.rpXPlat.prompt.md` and its test cards.
+
+## Keep rich document fixtures readable and self-contained
+
+Use bright text colors against the dark editor background in `<GacUI repo>/Test/TestDocument.bin`. Verify effective heading, font, color and paragraph styles after private save/load, including built-in styles that were unused when saved. Reload through both editors with the original image files unavailable to prove embedded images and saved style definitions are sufficient.
+
+## Verify injection routing with fresh distinguishable calls
+
+Use distinguishable predecessor and renderer providers, fresh API queries and actual request evidence when checking remote injection routing. Cached localization labels or matching native and renderer values do not prove the selected route. Check feature combinations, observed disconnection and replacement; remove temporary providers, rebuild production and repeat a real-provider smoke check.
