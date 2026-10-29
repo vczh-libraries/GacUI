@@ -96,9 +96,9 @@ Baseline VlppOS Debug x64 build passed with zero warnings/errors. The new real r
 
 # PROPOSALS
 
-- No.1 Retry only failed protocol URL registration with the equivalent localhost prefix
+- No.1 Retry only failed protocol URL registration with the equivalent localhost prefix [CONFIRMED]
 - No.2 Normalize launcher injection switches to double dashes [CONFIRMED]
-- No.3 Implement grouped browser injections and HTTP entry configuration
+- No.3 Implement grouped browser injections and HTTP entry configuration [CONFIRMED]
 
 ## No.1 Retry only failed protocol URL registration with the equivalent localhost prefix
 
@@ -133,6 +133,34 @@ Implement the three modules, connection capabilities, entry controls and tests f
 
 ### Verification progress
 
-The generated protocol now includes all injections and ImageSave, and represents nullable Binary without confusing null and empty content. The root GacJS build passed. Initial renderer tests passed 99 cases; other completed non-browser suites passed. The first root test run had browser timeouts under concurrent native compilation and a clock-pixel mismatch; isolated browser reruns are pending. Add explicit delayed-completion, capability-handshake and image-encoding checks before final verification.
+The generated protocol now includes all injections and ImageSave, and represents nullable Binary without confusing null and empty content. The root GacJS build passed. Initial renderer tests passed 99 cases; other completed non-browser suites passed. The first root test run had browser timeouts under concurrent native compilation and a clock-pixel mismatch; the isolated rerun passed after the REFRESH fix. Delayed-completion, capability-handshake and image-encoding checks were added and passed in final verification.
 
 Temporary live probes may attach fresh API queries to a Core automation-triggered key to observe routing after disconnection, avoiding the localization page's cached date. Keep these probes out of commits, restore the real Core source afterwards, rebuild, and repeat a real-browser smoke check.
+
+Live Chromium verification (America/New_York, tr-TR, origin port 8896) distinguished browser providers from native Core (Pacific time, user zh-CN). Core/renderer off/on combinations for each feature and the combined all-enabled case passed. Fresh conversion queries covered winter/summer offsets, date rollover, both directions and millisecond round trips. Locale queries covered defaults, enumeration, five format lists, day/month names and four case conversions. Actual protocol requests confirmed dispatch. OPFS marker visibility distinguished browser storage from Core storage. Replacement with capabilities off/on reevaluated routing; after transport loss, independent automation on port 8891 observed native DateTime/Locale and empty filesystem, and reconnection restored browser providers. Normal exit and listener restart succeeded.
+
+The first disconnect probe used an overly short automation request timeout. CDB traced its abort to the existing Windows automation SendResponseUtf8 failure after the diagnostic client cancelled a queued tree response. The rerun with a 120-second request timeout passed. This unrelated cancellation behavior was not changed. A separate old-stream-after-replacement probe observed the expected nonzero Core exit (3). All temporary native probe code has been removed; the real GacUI solution rebuilt with zero warnings/errors.
+
+The isolated browser suite passed all 38 cases, including 25 RawBrowser cases, actual OPFS operations/persistence, delayed response ownership, image encoding and entry controls. Repeated REFRESH exposed same-URL navigation with a fragment: the button now explicitly reloads when the rebuilt URL is unchanged. A subsequent full GacJS build passed. Windows UIA found no top-level Core elements; browser DOM and Core HTTP automation are used for the actual UI checks.
+
+With the real rebuilt Core, both Ribbon and Toolstrip document editors loaded the 117713-byte TestDocument.bin from the same-origin OPFS, accepted distinct typed markers, saved private files (117897/117933 bytes), and reloaded them with embedded image rendering. RTF and HTML exports from both editors contain the edited text and two embedded images each, verified after decoding RTF Unicode escapes and parsing HTML. The saved files survived REFRESH, and the Toolstrip file reloaded afterward. No corresponding files appeared in Core storage, and the native fixture stayed unchanged. FCT exited normally. Unelevated RPT HTTP startup also displayed the fallback notice; clicking Click Me changed the label to You have clicked, and the standard exit confirmation was accepted.
+
+A real RVMT session with corehost=127.0.0.1 and MiniHTTP made both browser clients connect to the selected destination on port 8888. Typing Injection4 produced Hello, Injection4 through the browser-owned host. REFRESH unloaded that host; its replacement could not take over the accepted host, and the next Core RPC-triggering edit exited Core with code 3, as required. No heartbeat or recovery mechanism was added.
+
+Restarting RVMT after browser-host REFRESH restored real calls (Hello, Restarted). The HTTP renderer plus Core-launched native CLI host also produced Hello, HttpCLI and exited with code 0, reaping its child. Its Debug dump reported three allocations. CDB confirmed these were still-live values at the early dump site: main's cliPath buffer/counter and the function-static stdio process-creation lock. The lock's atexit destructor ran after the dump; its internalData matched the reported 40-byte allocation and became freed-heap bytes afterward. These are dump-timing artifacts, not retained protocol connections. The CLI path leaves scope after the dump. This pre-existing diagnostic placement was not changed.
+
+The serial root run passed 211 unit tests and 59 of 61 live tests. Both Touching transport cases failed the same existing 0.005-pixel post-rebase position assertion (observed error about 0.35 logical pixel). The gesture API and implementation explicitly round translation to logical pixels while carrying a transformed residual in [-0.5, 0.5); the equivalent Wasm test already uses half-pixel precision. Update the HTTP test to that documented bound for both coordinates and retain strict rotation/scale checks after the pure translation. This corrects the assertion to the contract without changing input processing or hiding a gesture discontinuity. Rebuild and rerun the focused transport cases, then the prescribed tests.
+
+### CONFIRMED
+
+All three proposals implement complementary parts of this request and are retained together. DateTime, Locale and OPFS implementations live in the requested injectDateTime.ts, injectLocale.ts and injectFileSystem.ts modules; GacUIRendererImpl forwards the four request handlers from its Injections group. HTTP fallback, launcher spelling, generated protocol/imports and documentation are complete.
+
+Final validation:
+
+- VlppOS: Debug x64 wrapper build, 322/322 tests in 16 files; actual unelevated localhost fallback, constructor diagnostics, custom endpoint and restart.
+- GacUI: Debug x64 wrapper build with zero warnings/errors; 235/235 selected tests in seven files. The final real Core was rebuilt after removing the temporary probe. FCT document UI, RPT interaction, RVMT network and CLI host startup/shutdown, renderer capability changes and stream ownership were exercised.
+- GacJS: root import/codegen/build completed. The serial root test run passed all 211 unit tests and 59/61 E2E tests. The two touch failures were assertion precision mismatches against the documented gesture contract; after updating only the tests and their description, the entry rebuild and both focused HTTP/MiniHTTP tests passed (2/2). This yields all 61 live cases passing across the full run and focused rerun; the full root command was not repeated after that test-only correction. Direct CppTest_Rvm tests passed both network transports and the native CLI host, including its two built-in RPC calls and child reaping.
+- Live browser checks covered the requested routing combinations, New York winter/summer conversions, Turkish locale queries, all OPFS operation/stream contracts, persisted document edits and embedded-image exports, selected host routing, REFRESH, renderer loss/replacement and the required browser-host Core restart.
+- Temporary Core probes were removed, temporary browser helpers/logs were moved outside the repository, and original Core debugger arguments were restored. No fake provider or diagnostic probe is committed.
+
+Coverage limits: actual Linux/macOS Wasm demo execution was unavailable on this Windows host. The six portable Wasm channel tests and nine Wasm page-composition tests passed; those are not presented as real Wasm runtime coverage. Launcher runtime verification was intentionally omitted as requested. Wildcard registration success was tested deterministically; the real account exercised wildcard denial followed by localhost success. Windows UIA exposed no Core top-level elements, so the browser interactions and HTTP automation provide the UI evidence.
