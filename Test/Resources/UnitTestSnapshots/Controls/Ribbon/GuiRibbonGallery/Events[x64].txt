@@ -28,15 +28,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
-
-        @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
         var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
 
         @cpp:Protected
@@ -47,6 +38,15 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var gallery : ::presentation::controls::GuiRibbonGallery* = null of (::presentation::controls::GuiRibbonGallery*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -71,9 +71,6 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("group1", group1);
             }
             {
-                (group1.Expandable = true);
-            }
-            {
                 (gallery = new (::presentation::controls::GuiRibbonGallery*)(::presentation::theme::ThemeName::RibbonGallery));
                 <this>.SetNamedObject("gallery", gallery);
             }
@@ -84,6 +81,9 @@ namespace gacuisrc_unittest
             {
                 var <collection> = group1.Items;
                 <collection>.Add(gallery);
+            }
+            {
+                (group1.Expandable = true);
             }
             {
                 (group1.Text = "Gallery");
@@ -111,6 +111,9 @@ namespace gacuisrc_unittest
                 self.AddChild(tab);
             }
             {
+                (group1.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
+            }
+            {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     (self.Text = "RequestedScrollUp");
@@ -130,9 +133,6 @@ namespace gacuisrc_unittest
                     (self.Text = "RequestedDropdown");
                 };
                 attach(gallery.RequestedDropdown, <event-handler>);
-            }
-            {
-                (group1.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
             }
         }
 
