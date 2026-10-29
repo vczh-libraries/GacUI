@@ -37,6 +37,7 @@ struct CoreGuiContext
 	Ptr<rvmt::IViewModel>								viewModel;
 	Ptr<async_tcp_socket::IAsyncSocketServer>			miniHttpSocketServer;
 	Func<void(const WString&)>							broadcastFatalError;
+	Func<void()>											stopRvmServer;
 };
 
 CoreGuiContext* currentGuiContext = nullptr;
@@ -125,6 +126,13 @@ void GuiMain()
 	{
 		std::rethrow_exception(uiException);
 	}
+	if (currentGuiContext->stopRvmServer)
+	{
+		window = nullptr;
+		currentGuiContext->viewModel = nullptr;
+		// Finish RPC before GuiApplicationInitialize finalizes the shared HTTP listener.
+		currentGuiContext->stopRvmServer();
+	}
 }
 
 template<typename TChannelServer>
@@ -204,8 +212,25 @@ int StartServer(
 		mainWindowConstructorIndex,
 		nullptr,
 		miniHttpSocketServer,
-		broadcastFatalError
+		broadcastFatalError,
+		{}
 		};
+	bool serversStopped = false;
+	auto stopServers = [&]()
+	{
+		if (serversStopped) return;
+		channelServer.ClearCoreChannels();
+		if constexpr (!std::is_same_v<TRvmChannelServer, void> && !std::is_same_v<TChannelServer, TRvmChannelServer>)
+		{
+			rvmChannelServer->Stop();
+		}
+		channelServer.Stop();
+		serversStopped = true;
+	};
+	if constexpr (!std::is_same_v<TRvmChannelServer, void>)
+	{
+		context.stopRvmServer = stopServers;
+	}
 	CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
 	currentGuiContext = &context;
 	try
@@ -241,13 +266,7 @@ int StartServer(
 		broadcastFatalError(WString::Unmanaged(ex.Description()));
 	}
 	currentGuiContext = nullptr;
-
-	channelServer.ClearCoreChannels();
-	if constexpr (!std::is_same_v<TRvmChannelServer, void> && !std::is_same_v<TChannelServer, TRvmChannelServer>)
-	{
-		rvmChannelServer->Stop();
-	}
-	channelServer.Stop();
+	stopServers();
 	return result;
 }
 

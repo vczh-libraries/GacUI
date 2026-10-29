@@ -48,6 +48,7 @@ struct RvmGuiContext
 {
 	Ptr<rvmt::IViewModel>							viewModel;
 	Ptr<async_tcp_socket::IAsyncSocketServer>		miniHttpSocketServer;
+	Func<void()>								stopServer;
 };
 
 RvmGuiContext* currentGuiContext = nullptr;
@@ -58,9 +59,9 @@ void GuiMain()
 	CHECK_ERROR(currentGuiContext->viewModel, L"GuiMain()#The rvmt::IViewModel proxy is null.");
 
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
-	rvmt::MainWindow window(currentGuiContext->viewModel);
-	window.ForceCalculateSizeImmediately();
-	window.MoveToScreenCenter();
+	auto window = Ptr(new rvmt::MainWindow(currentGuiContext->viewModel));
+	window->ForceCalculateSizeImmediately();
+	window->MoveToScreenCenter();
 
 #if defined VCZH_MSVC
 	windows::SetWindowDefaultIcon(MAINICON);
@@ -93,7 +94,7 @@ void GuiMain()
 			);
 	}
 
-	GetApplication()->Run(&window);
+	GetApplication()->Run(window.Obj());
 #if defined VCZH_MSVC
 	if (!currentGuiContext->miniHttpSocketServer)
 	{
@@ -107,6 +108,9 @@ void GuiMain()
 	}
 	automationService.Stop();
 	GetNativeServiceSubstitution()->Unsubstitute(&automationService);
+	window = nullptr;
+	// Finish RPC before GuiApplicationInitialize finalizes the shared HTTP listener.
+	currentGuiContext->stopServer();
 }
 
 template<typename TServerBase>
@@ -129,7 +133,18 @@ int StartServer(
 	auto secondViewModel = server.RequestService(L"rvmt::IViewModel").template Cast<rvmt::IViewModel>();
 	CHECK_ERROR(viewModel->Translate(L"First") == L"Hello, First!", L"StartServer(...)#The first rvmt::IViewModel proxy returned an unexpected response.");
 	CHECK_ERROR(secondViewModel->Translate(L"Second") == L"Hello, Second!", L"StartServer(...)#The second rvmt::IViewModel proxy returned an unexpected response.");
-	RvmGuiContext context{ viewModel, miniHttpSocketServer };
+	RvmGuiContext context{ viewModel, miniHttpSocketServer, {} };
+	bool serverStopped = false;
+	auto stopServer = [&]()
+	{
+		if (serverStopped) return;
+		context.viewModel = nullptr;
+		secondViewModel = nullptr;
+		viewModel = nullptr;
+		server.Stop();
+		serverStopped = true;
+	};
+	context.stopServer = stopServer;
 	CHECK_ERROR(!currentGuiContext, L"StartServer(...)#The GUI context has already been bound.");
 	currentGuiContext = &context;
 #if defined VCZH_MSVC
@@ -140,7 +155,7 @@ int StartServer(
 	auto result = SetupOSXHostedCoreGraphicsRenderer();
 #endif
 	currentGuiContext = nullptr;
-	server.Stop();
+	stopServer();
 	return result;
 }
 

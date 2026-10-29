@@ -328,6 +328,8 @@ Enable renderer-provided filesystem services by passing `/remoteFS` once to both
 
 Test apps include `CppTest*`, `GacUI_Host` and `RemotingTest*`; they are demos and do not require production-level quality. Let unexpected exceptions crash the app so failures in `<GacUI repo>/Source` remain visible. Keep test apps simple without unnecessary recovery.
 
+Remote-view-model requesters finish normal shutdown inside `GuiMain`: destroy the window, release service proxies and stop the RPC server while the host transport is available. `GuiApplicationInitialize` subsequently finalizes global storage, including the shared MiniHTTP listener. Keep unexpected host loss fatal as specified by the debugging SOP.
+
 `<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md` defines their expected connection/disconnection behavior. Test apps running FullControlTest should follow its "Complete Control Showcase (`/FCT`)" section; apps running TuiControlTest should follow `<GacUI repo>/.github/Jobs/DebugTuiControlTestSop.md`.
 
 ## Windows Specific
