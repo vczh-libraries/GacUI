@@ -110,7 +110,11 @@ vint WasmMain()
 		NotifyWasmApplication(L"ready");
 #endif
 		NotifyWasmApplication(L"renderer-ready");
-		SetupRemoteNativeController(&protocol);
+		GuiRemoteControllerConfig config;
+		config.injectDateTime = false;
+		config.injectLocale = false;
+		config.injectFileSystem = false;
+		SetupRemoteNativeController(&protocol, config);
 #if defined GACUI_WASM_RVMT
 		wasmViewModel = nullptr;
 #endif
