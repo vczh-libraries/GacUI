@@ -2,294 +2,128 @@
 
 # PROBLEM DESCRIPTION
 
-- DateTime/Locale/FileSystem in remote protocol
-  - When starting GacUI on core side, `SetupRemoteNativeController` accepts an optional struct with 3 options default to false:
-    - `injectDateTime`, allowing remote renderer to implement date time.
-    - `injectLocale`, allowing remote renderer to implement locale.
-    - `injectFileSystem`, allowing remote renderer to implement file system.
-    - For each `inject*` is true, an implementation is immediately injected by `GuiRemoteController`. In each injection, it either connects remote side implementation or fallbacks to local implementation via `Get(DateTime|Locale)Injection`.
-      - `GuiRemoteControllerInjection.(h|cpp)` stores all injections, `GuiRemoteController` friends all injection classes and send `this` to their constructors, so that injections could use remote protocl or check if the connection still active.
-      - In header file on top of each class, a comment block is required to describe which functions are remote and which functions are local, and other important design decision.
-  - `Protocol_Injection.txt` will be created for injection related remote protocol requjests, this file should also be added to `Source_GacUI_Core.vcxitems`.
-  - DateTime defines client side time zone, by offering utc<->local conversion functions, core side still querying utc at core side.
-    - When allowing injection:
-      - Remote renderer does not implement it, switch to default implementation.
-      - Remote renderer disconnects, switch to default implementation.
-    - To keep a good performance, `IDateTimeImpl`'s `LocalToUtcTime`, `UtcToLocalTime` are implemented via remote protocol, `LocalTime` uses `UtcTime` and `UtcToLocalTime`, other functions redirects to `GetDateTimeInjection`.
-  - Locale defines client side default language (font list already implemented), by offering local names and format lists.
-    - When allowing injection:
-      - Remote renderer does not implement it, switch to default implementation.
-      - Remote renderer disconnects, switch to default implementation.
-    - To keep a good performance, `ILocaleImpl`'s `Format*`, `Compare*`, `Find*`, `*With` redirects to `GetLocaleInjection`. Other functions are implemented via remote protocol.
-  - FileSystem, by offering a replacement file system.
-    - When allowing injection:
-      - Remote renderer does not implement it, switch to empty implementation.
-      - Remote renderer disconnects, switch to empty implementation.
-      - Empty implementation means a read only file system with nothing.
-    - When core side needs to read a file, remote protocol sends the complete content to the core side at once, no streaming is implemented.
-    - When core side needs to write a file, remote protocol receives the complete content from the core side at once, no streaming is implemented.
-      - `FileSystem::Close` or its destructor will triggers `IFileSystemImpl` with complete file content prepared.
-      - When remote protocol disconnects, all active `IFileStreamImpl` stays available, as it is implemented by having a `MemoryStream` inside for buffering. `IFileStreamImpl::Close` would `CHECK_ERROR` to make sure the remote protocol connection still available.
-  - `ControllerGlobalConfig` for `ControllerConnect` needs 3 explicit options:
-    - `injectDateTime`, remote renderer implements date time.
-    - `injectLocale`, remote renderer implements locale.
-    - `injectFileSystem`, remote renderer implements file system.
-    - Only when each `inject*` at core and renderer are true, core will redirect implementation to renderer via remote protocol.
-  - In `GuiRemoteProtocolSingle`:
-    - Constructor requires an optional `GuiRemoteProtocolSingle::GlobalConfig` parameter, has all `inject*` field default to `true`, it will be copied to a field called `globalConfig`.
-      - In `GuiRemoteRendererSingle::Opened`, `ControllerGlobalConfig` copies `inject*` from `globalConfig` field.
-    - When implementing date time, locale and file system:
-      - It should respond remote protocol by calling `DateTime`, `Locale`, `filesystem::*`, `FileStream`.
-      - It should not respond remote protocol by calling `GetFileSystemInjection`, `GetLocaleInjection`, `GetDateTimeInjection`.
-  - `RemotingTest_Core` has optional `/remoteDT`, `/remoteLocale` and `/remoteFS` argument, when any is used, `inject*` becomes true.
-  - `RemotingTest_Win32_Renderer` has optional `/remoteDT`, `/remoteLocale` and `/remoteFS` argument, when any is used, `inject*` becomes true.
-    - `test.sh` in `wGac` and `iGac` needs to be updated to receive `-remoteDT`, `-remoteLocale` and `-remoteFS`.
-  - Update `Project.md` and `(wGac|iGac)/AGENTS.md` to describe these new arguments, but no need to update any `GacUI/.github/Jobs`, they are not included in standard manual verification process.
-  - Update KB pages in GacUI to simply introduce these new features.
-- Update to `FullControlTest`:
-  - There are two document test page, one is ribbon and another is toolstrip. Their save feature is not implemented.
-  - You are going to check out related tutorials in `Release` repo and copy their implementation.
-  - Features are in `DocumentEditorBase::(LoadAsPrivateFormat|SaveAsPrivateFormat|SaveAsRTF|SaveAsHTML)`.
-  - But you are not going to update generated files, instead you need to change the XML so that these 4 functions becomes 4 events:
-    - Event handlers are stored in `FullControlTestPalette.(h|cpp)`, rename this file to `FullControlTestEventHandlers.(h|cpp)` since it is no longer dedicated to palette.
-    - Both tabs need to subscribe 4 events.
-      - Although child controls are "protected", but each instance root (e.g. the main window) offers a way to request for a control by name, use that function to access both tabs with `dynamic_cast` to make events accessible.
-    - You can add a new function `demo::AttachFctEvents` to `FullControlTestEventHandlers.(h|cpp)` so that all main functions could call this function instead of subscribe 9 events everywhere.
-      - Except `GacUI_Host` project as reflection specific code is needed, manually subscribe events there.
-  - At the end, you need to create a document with rich content, including headers, different font/size/color, paragraph alignment, images, and save a private format file to `GacUI/Test/TestDocument.*` (I forget the extension name, it is hardcoded in `FullControlTest`).
-    - You can insert `Gaclib.png` and `Video.png` to the document, images will be saved inside the private format, loading the private format won't need original images to exist.
-    - This file could be then used in verification, for example, the fake file system implementation has a copy of this file, and see if it could be loaded to the document editor.
-- Before running `RemotingTest_Win32_Renderer` to verify, local changes are recommended to push first, in order to verify:
-  - You can change `GuiRemoteProtocolSingle` to offer fake implementation, for example, a different locale and format list, a different time zone, a fake file system, and see if they correctly affects dedicated pages in `FullControlTest`. Since local changes are already pushed, you can easily identify code that offers fake implementations and revert them once they are no longer needed. DO NOT check in fake implementations, they are meant to be discarded after finishing this task.
-  - You need to turn options in core/renderer on and off and make sure core picks the right implementation.
-  - When a renderer disconnects, you can still use core side automation service to read the UI and see if fallback works.
-- GacJS is not included in this task. wGac and iGac verification is not included in this task.
+This is a continuation of the previous work:
+- TODO_Injection.md
 
-## DETAILS
+1. Previous work also fixes a bug when saved private document format doesn not contain styles, but there is one thing to improve:
+The full style copy is done in `DocumentModel::CopyDocument()`, but I think we should move the work into `DocumentModel::CopyDocument(TextPos, TextPos, deepCopy)`.
+Currently `DocumentModel::CopyDocument(TextPos, TextPos, deepCopy)` only copies used styles, but I would like when `deepCopy` is true it copies all styles just like how `DocumentModel::CopyDocument()` is doing.
+So that the simple `CopyDocument` could just delegate the work to the complex one.
 
-### Existing names and integration points
+### DETAILS
 
-- The existing renderer class is `GuiRemoteRendererSingle`, declared in `<GacUI repo>/Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h`. References above to `GuiRemoteProtocolSingle` mean this class, including the new nested `GlobalConfig`. Preserve the existing `enabledAutomation` constructor argument when adding the optional configuration.
-- The Windows renderer project is `RemotingTest_Rendering_Win32`, under `<GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32`. The close/destructor operation described above belongs to `vl::stream::FileStream`, not `FileSystem`.
-- Add `Protocol_Injection` to `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocols.txt`. `<GacUI repo>/Test/GacUISrc/Metadata_UpdateProtocol/Main.cpp` reads this manifest explicitly; registering the new file in the project alone does not include it in generation.
-- Register the injection header/source, renderer implementation sources and protocol file in the owning project inventories and applicable filters. Run `Metadata_UpdateProtocol` to regenerate the protocol schema, metadata and generated methods; do not edit generated outputs manually. Update handwritten protocol implementations and test doubles affected by the generated interfaces.
-- The relevant design guidance is in `<GacUI repo>/.github/KnowledgeBase/KB_GacUI_Design_RemoteProtocolCoreArchitecture.md`, `<GacUI repo>/.github/KnowledgeBase/KB_GacUI_Design_RemoteProtocolRendererAndSerialization.md`, and `<GacUI repo>/.github/KnowledgeBase/KB_Vlpp_Design_ImplementingInjectableFeature.md`. DateTime, locale, filesystem and stream contracts are documented in the corresponding Vlpp/VlppOS API pages linked from the knowledge-base index.
+- Implement the style-copy policy in `<GacUI repo>/Source/Resources/GuiDocument_Edit.cpp`: a deep range copy owns a complete style catalog, including unused definitions, parent names, authored properties and resolved properties. Clone each definition once. Keep paragraph slicing and invalid-range behavior unchanged, including the existing empty-document case.
+- Keep `deepCopy=false` limited to styles referenced by the copied content and their transitive parents, sharing the original style objects. The parameterless overload should only determine the full range and delegate to the deep range overload. Update the range-overload contract in `<GacUI repo>/Source/Resources/GuiDocument.h` and obsolete comments about selection copies excluding unused styles.
+- This intentionally changes the deep-range expectation in `<GacUI repo>/Test/GacUISrc/UnitTest/TestDocumentConfig.cpp`, which currently requires the `Unused` style to be absent. Deep range copies also feed selection copying and undo/redo in `<GacUI repo>/Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.cpp`; account for style merging and renaming when these copies are inserted again.
 
-### Configuration and fallback
+### VERIFICATION
 
-- Keep the library renderer configuration defaults `true`, as requested. Each renderer demo must explicitly initialize all three flags to `false`, then enable only the command-line switches present. Core configuration defaults remain `false`. This makes omission of a demo switch actually disable that capability.
-- Store core preferences separately from the renderer's advertised capabilities. Re-evaluate each feature independently on every connection, including renderer replacement. The effective behavior is:
+1. Extend the ordinary document tests for full, partial, zero-length and zero-paragraph deep copies. Check unused styles, parent chains and baseline overrides, and mutate both authored and resolved properties in a copy to prove independence. Separately verify shallow-copy filtering and pointer sharing, and retain invalid-range assertions.
+2. Exercise selection copy/paste and repeated undo/redo. Verify text, effective formatting and style references remain correct without unnecessary accumulation of renamed style definitions. Save and reload a private document containing unused styles and verify the complete catalog survives.
+3. Build and run the affected GacUI tests using the repository wrappers and required configurations. Use ordinary tests for model assertions; any rendering snapshot must show useful document output. These checks belong to implementation, not this task review.
 
-| Core option | Renderer connected and advertising the option | DateTime / Locale | FileSystem |
-| --- | --- | --- | --- |
-| false | either | Previous implementation; no wrapper installed | Previous implementation; no wrapper installed |
-| true | false | Previous implementation | Empty read-only implementation |
-| true | true | Requested remote/local method split | Renderer filesystem |
+2. Using `CppTest` and switch to the ribbon document tab, after selecting a piece of text you can change its style, e.g., "Header 1".
+In the style dropdown, if you select any item in the ribbon directly, it works fine.
+But when you open the dropdown, or when the window does not have enough space and you can only use the dropdown, select a style item in the dropdown does not respond.
+Figure it out and fix the issue.
 
-- Before the first connection, use the same fallback as after disconnection. Do not issue a synchronous injection request while the renderer is absent or does not advertise that feature.
-- Initialize all three new `ControllerGlobalConfig` capability fields at every construction site, including unit-test/custom renderer configurations. Generated structs currently have no member initializers, and assigning only the old fields would leave the new booleans indeterminate. Test renderers advertise `false` unless a case implements the feature. Received messages that omit these fields must also leave them `false`. Keep this distinct from the native renderer's default configuration. Verify deserialization of a connect message lacking the new fields; updating GacJS or promising compatibility between a new renderer and an older core is outside this task.
-- Add the exact slash switches to the native parsers in `<wGac repo>/RemotingTest_Rendering_Wayland/Main.cpp` and `<iGac repo>/RemotingTest_Rendering_macOS/Main.cpp`, and pass the configuration through to renderer construction. The shell scripts alone cannot enable a feature that the executable rejects.
-- In `<wGac repo>/test.sh` and `<iGac repo>/test.sh`, forward the requested single-dash options to the corresponding slash switches in both foreground and `--unblock` renderer launch paths. Keep them renderer-specific and preserve existing transport/port handling. Their renderer `GuiMain.cpp` is copied from the Windows renderer by each repository's `syncProj.sh`; update the canonical source and use that synchronization workflow. Native execution in those repositories remains excluded.
+### DETAILS
 
-### Injection lifetime, dispatch and connection changes
+- `<GacUI repo>/Test/Resources/App/FullControlTest/DocumentEditorRibbon.xml` already applies styles from `ItemApplied`. Trace the actual popup buttons, selection synchronization and event dispatch in `<GacUI repo>/Source/Controls/ToolstripPackage/GuiRibbonGalleryList.cpp` before choosing the fix. Preserve the distinction between selection-only `SelectItem` and effect-applying `ApplyItem`; a user application must work even when that gallery item is already selected.
+- The existing dropdown case in `<GacUI repo>/Test/GacUISrc/UnitTest/TestControls_Ribbon_Gallery.cpp` uses `GetListControlInDropdown()`, whose implementation returns the inline list. The popup is built from separate repeated group/item compositions. Existing `DocumentStyles` UIA assertions also exercise inline items, so neither proves that popup selection works.
 
-- Derive wrappers from the existing `feature_injection::FeatureImpl<T>` mechanism and delegate local/fallback methods through `Previous()`. `GetDateTimeInjection().Get()` and `GetLocaleInjection().Get()` return the active wrapper after injection, so calling them from that wrapper would recurse. The predecessor may itself be an application or unit-test injection; do not replace it with a direct OS lookup.
-- Let the controller own its wrappers, install each enabled wrapper once, and explicitly eject it before destruction. Connection changes select the route within a wrapper rather than modifying the global injection chain. Preserve the prior chain after controller teardown and repeated setup/teardown.
-- Synchronous remote work must run on the core UI thread. This cannot become a restriction that rejects all worker-thread callers: `FileDialogTaskQueue` in `<GacUI repo>/Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp` already enumerates folders/files through `InvokeAsync`. Execute directly on the UI thread; otherwise marshal through the controller's async service and wait for completion. Recheck connection/capability inside the dispatched operation. Do not hold locks across that wait or let workers modify `GuiRemoteMessages`.
-- Account for startup before an event loop is available and teardown after it stops: fallback must remain usable, and outstanding dispatched calls must finish or be released before the controller/injections are destroyed. A buffered stream must never dereference a destroyed controller. Keep injection/ejection outside concurrent feature use.
-- Reuse `GuiRemoteMessages` request/submit/retrieve and the existing channel cancellation mechanism. `GuiRemoteProtocolFilter::Submit` rejects recursive submission, and the async channel allows only one pending request group. Core-side serialization and path/conversion helpers must not recursively call the remote wrapper they are implementing.
-- Check the `disconnected` result before retrieving any response. A connection can disappear during a request even after the initial capability check. DateTime/Locale then use their predecessor; filesystem queries use the empty behavior, while an attempted stream commit fails as required. Do not retry a mutation on a replacement renderer.
-- Bind each opened remote stream to its original connection identity, not merely to a boolean saying some renderer is connected. Replacement invalidates its right to write back, even when the replacement advertises filesystem support. Reconnect must not reuse stale capability-dependent results or deliver an old response to a new request.
+### VERIFICATION
 
-### DateTime and Locale contracts
+1. In `CppTest`, select recognizable document text and click actual popup items in both a wide ribbon and a narrow layout where only the dropdown is available. Cover both style groups, multiple styles, an already-selected gallery item, reopening and resizing. Check the resulting document formatting and preserved text selection; an updated gallery highlight alone is insufficient.
+2. Add focused gallery coverage proving each popup application raises `ItemApplied` exactly once, while programmatic selection synchronization and popup dismissal do not apply anything. Retain inline selection as a regression case and repeat after theme refresh.
+3. Extend the existing gallery tests and `<GacUI repo>/Test/UIA_CppTest_Shared.cs` assertions to target actual popup controls. Run the affected unit tests and both `<GacUI repo>/Test/UIA_CppTest.ps1` and `<GacUI repo>/Test/UIA_CppTest_Metaonly.ps1` as applicable. Use automation service first for investigation, then UIA; record unavailable desktop-only coverage explicitly.
+4. If authored XML changes, run the required GacUI compiler and metadata generation/test sequence from `<GacUI repo>/Project.md`, rebuild consumers and run both showcase UIA wrappers. Do not edit generated C++ to repair the behavior.
 
-- Date/time values on the wire must be portable. Windows and Unix use different `DateTime::osInternal` epochs/units; do not send an opaque value from one platform and interpret it as native on the other. Use calendar fields or an explicitly portable representation, reconstruct with the destination's public `DateTime` API, and return values in the core's representation. Preserve milliseconds and apply the renderer's timezone rules for the requested date, including daylight-saving transitions, rather than caching one current offset.
-- Keep `UtcTime`, construction and arithmetic on the predecessor. Implement `LocalTime` from the core's UTC clock and the selected UTC-to-local conversion; it must not substitute the renderer's clock.
-- The remote part of `ILocaleImpl` includes `Invariant`, `SystemDefault`, `UserDefault`, locale enumeration, the date/time format lists, day/month names, and `ToLower`, `ToUpper`, `ToLinguisticLower`, `ToLinguisticUpper`. The requested local part includes all `Format*`, `Compare*`, `Find*`, `StartsWith` and `EndsWith` methods. Preserve list ordering and the locale name supplied to each operation. This split does not promise that the core formatter supports every locale available on a different renderer OS.
-- The renderer implements these operations through the public `DateTime`, `Locale`, filesystem and stream APIs, as requested. Core fallback uses the predecessor. Keep these two delegation rules distinct in the required class comments.
-- Switching injections changes subsequent API calls. It does not rewrite previously constructed `DateTime`, `Locale` or `FilePath` values, or silently replace an application-selected locale. `GuiApplication` captures `Locale::UserDefault()` in its constructor, and FullControlTest captures other values; verification must make fresh calls when checking a transition.
+3. Support `RemotingTest_Win32_Renderer /corehost:localhost`, so that it could connects to other computer.
+Fix `test.sh` in `wGac` and `iGac` to support it, but skip verification as you are on Windows.
 
-### Filesystem and buffered streams
+First you need to fix VlppOS. There are `AsyncSocketClient` in `AsyncSocket.(Windows|macOS|Linux).h` with the same layout.
+The current constructor connects a socket server in localhost.
+You are going to add another constructor with an extra `WString host`.
+The host could be IPv4 address, IPv6 address or a name that needs to look up via DNS (e.g. `getaddrinfo` but you must choose the best way per OS).
+You may or may not need to parse the IPv4/6 address by yourself, use OS provided ways when possible.
+Therefore `SocketHttpClientApi` could actually connects to other computer.
+When such API change is ready, you can then fix all test apps when using `/corehost` with `/MiniHttp`.
 
-- Cover the entire `IFileSystemImpl` contract in `<GacUI repo>/Import/VlppOS.h`: path delimiter, initialization, joining and relative paths; file/folder queries and mutations; enumeration; `GetFileInfo`; `FileCopy`; and stream creation. Paths must use the renderer's rules while connected. Do not normalize a renderer path using the core OS or accidentally access core storage while implementing an injected method.
-- The empty implementation needs a usable virtual root and deterministic structural path operations. Root enumeration succeeds with empty lists; ordinary files/folders do not exist; mutation/open operations fail using their normal return contracts. Define its root/delimiter behavior before first connection and after loss of a renderer, without falling through to the core filesystem. Previously created paths must not gain access to core storage through fallback.
-- `FileStream` immediately calls `GetFileStreamImpl(...)->Open()`. An unavailable filesystem must return a non-null stream implementation whose `Open()` fails, not a null pointer. Keep ordinary missing-file/access failures as false/unavailable results; preserve the existing assertion contract for metadata queries on nonexistent entries.
-- Preserve all `FileInfo` fields, including optional UTC timestamps and flags. Use portable timestamp serialization here too, and do not truncate file sizes or counts in the protocol representation. Implement renderer-side copy through the public metadata-preserving `File::CopyToFile` contract rather than replacing it with text or plain byte copying.
-- Whole-file payloads are bytes, not `WString` text. Reuse the existing `Ptr<stream::MemoryStream>` protocol serialization, which encodes binary content with Base64, and distinguish a successful empty file from a failed open/read. Keep encoding/BOM handling in the existing higher-level APIs.
-- Preserve the current native `FileStream` access-mode behavior unless implementation reveals a contract that needs a further review: `ReadOnly` snapshots the complete file; `WriteOnly` and native `ReadWrite` start empty because the native implementation opens them with truncation. The OPFS implementation preserves existing bytes for `ReadWrite`, so it is not a drop-in behavioral reference. Document the selected native behavior in the buffered implementation's class comment.
-- Validate opening and access rights before reporting an available stream. The remote design defers persistence to close; specify that buffered writes become visible to newly opened readers after a successful close, while already opened readers retain their snapshot. Test creation, truncation and errors at the appropriate open/commit boundary.
-- Delegate local read/write/seek/peek/position/size operations to the buffer while enforcing the original access rights. Writable close uploads the complete buffer once, including an empty buffer that creates/truncates a file. Read-only close never uploads. Explicit close followed by destruction must not upload twice; closing an already closed stream is harmless. Check writeback success rather than silently losing the buffered data.
-- Preserve the requested failure on closing a still-open remote stream after its connection is lost, including read-only streams; buffer availability does not grant permission to close against a different renderer. Destruction invokes the same close path, so test this intentional failure separately from ordinary successful shutdown. No streaming, retry-on-reconnect or shutdown acknowledgement is introduced.
+You still need to make it work for `/Http` and `/Pipe`.
+`windows_http::HttpClient` should already support this feature.
+`named_pipe::NamedPipeClient` needs to add another constructor, with an extra `WString host`. And then you can pass "." or "host" to `ClientCreatePipe to construct the actual pipe url.
 
-### FullControlTest document persistence
+Both added `WString host` should be the first argument.
 
-- The private format extension is `.bin`, from the dialogs in `<GacUI repo>/Test/Resources/App/FullControlTest/DocumentEditorBase.xml`. The requested committed fixture is `<GacUI repo>/Test/TestDocument.bin`. Use `<Release repo>/Tutorial/GacUI_Controls/DocumentEditor/UI/Source/DocumentEditorBase.cpp` as the implementation reference; the APIs are declared in `<GacUI repo>/Source/Resources/GuiDocumentClipboard.h`.
-- Replace the four `@cpp:UserImpl` methods with public filename-taking events in the authored XML, preserving their names and the existing invocation sites. Remove their placeholder bodies and the unused `dialogNotImpl`. Regenerate both architectures and reflection metadata rather than editing generated methods or registrations.
-- Use `GuiInstanceRootObject::GetNamedObject`, declared in `<GacUI repo>/Source/Application/Controls/GuiInstanceRootObject.h`, to find `editorRibbon` and `editorToolstrip` from the main window. Obtain their raw objects and use `dynamic_cast` to the generated editor type as requested. Look up each editor's own `document` viewer within that editor's instance scope. Each event subscription must use its corresponding viewer, so the two tabs can hold and save independent documents.
-- Attach once per main-window instance: four events per editor plus `PaletteSelected`. Keep the existing deferred palette/theme refresh behavior, but perform document load/save synchronously on the UI thread. `SaveDocument()` marks the document saved immediately after the private-save event returns, so serialization and stream close, including remote writeback, must finish before returning. RTF/HTML export must retain the current behavior of leaving the private document modified. `CancelWindowClose()` has the same synchronous-save assumption, but FullControlTest currently does not call it; adding a new main-window close-confirmation flow is outside this change.
-- Keep the shared persistence implementations independent of generated FullControlTest types: take the public `GuiDocumentViewer*` and filename. `GacUI_Host` compiles this helper source but loads the UI from Workflow binary, so putting generated editor casts in the common `.cpp` would introduce generated-class RTTI/link dependencies. A suitable arrangement is a header template for `demo::AttachFctEvents`, parameterized by the generated editor type and instantiated only by generated-code entry points. `GacUI_Host` uses named object values and reflection `AttachEvent` for all nine subscriptions, calling the same native persistence functions. No reflection-mode conditional is needed in the shared handlers.
-- Follow the tutorial's full-document snapshot approach (`SelectAll` and `GetSelectionModel`) before serializing. For private files, call `ModifyDocumentForClipboard` and `SaveDocumentToClipboardStream`; load with `LoadDocumentFromClipboardStream` and then `SetDocument`. For RTF, use `SaveDocumentToRtf`; for HTML, write the header/content/footer byte strings from `SaveDocumentToHtmlUtf8` in order. Do not serialize the live model directly: clipboard preparation removes embedded-control runs, and private serialization rewrites image source names.
-- Check stream availability, write completion and the loaded model using the repository's fail-fast conventions. A failed load must not pass null to `SetDocument`, which clears undo/modified state and replaces the current document. A failed write or disconnected commit must not return as though the save succeeded. Canceled dialogs do not invoke persistence handlers.
-- Remote image persistence is required supporting work. `GuiRemoteGraphicsImage::SaveToStream` in `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteGraphics_ImageService.cpp` currently always fails, while all three document exporters call it for image runs. Extend the existing image protocol in `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_Renderer_ImageFrame.txt` to request encoded bytes for an image ID and target format, and implement the native renderer response using `INativeImage::SaveToStream`. Ensure the image exists on the current renderer, respect request cancellation before retrieving/writing a response, and fail an interrupted export rather than emitting missing image data. RTF specifically requests PNG, so retained original bytes are only a valid shortcut when their encoding matches the requested format. This image operation must also work when remote filesystem injection is disabled and the output file belongs to the core filesystem.
-- Rename the manually maintained `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestPalette.h` and `.cpp` to `FullControlTestEventHandlers.h` and `.cpp`; despite their parent folder name, these two files are authored sources. Update includes, project/filter entries, the separate `GacUI_Host` inventory, native entry points and documentation references. Also update the Linux core and WasmFCT source inventories and the shared Wasm entry point within GacUI, plus wGac/iGac synchronization scripts and native FullControlTest callers. Their runtime exclusions and the GacJS exclusion remain in place; the rename must not leave consumers pointing at nonexistent files.
-- Build the rich fixture with the completed editor/serializer, including recognizable heading text, varied font face/size/color, multiple paragraph alignments and both images. Existing image inputs are `<GacUI repo>/Test/Resources/App/Gaclib.png` and `<GacUI repo>/Test/Resources/App/FullControlTest/ResponsiveImages/Video.png`. The ribbon's Header 1/2/3 styles provide heading examples. Private serialization embeds image bytes and uses internal `res://Image_n` references; commit the `.bin` fixture without machine-specific external image dependencies. Use separate output files for mutation tests so the committed fixture remains stable.
+`/corehost` should be optional, when it is not used, it means `/corehost:localhost`.
 
-## VERIFICATION
+During verification, you may need to pay attention if `/Http` and `/MiniHttp` accepts connections other than "localhost". You should verify if it accept "127.0.0.1" and the machine name, by not performing any constraint on the host name.
+And then you can start core and native renderer, see if using `/corehost:127.0.0.1` and `/corehost:machine name` work or not.
 
-### Generation, build and regression checks
+### DETAILS
 
-1. Use the repository build/execute wrappers from `<GacUI repo>/Test/GacUISrc` according to `<GacUI repo>/Project.md`. Run `Metadata_UpdateProtocol` after schema/manifest changes and rebuild Debug x64. Inspect the generated injection methods, capability fields and metadata; verify all new source files are compiled through their owning inventories.
-2. Run ordinary `UnitTest` coverage for the core injection contracts, serialization, startup and async connection behavior. Keep existing relevant file filters and ensure new tests actually run. Check the final test summary and Debug memory-leak output. Use the non-rendering protocol helpers where appropriate; do not create empty or meaningless rendering snapshots for API assertions.
-3. The required FullControlTest XML changes make `GacUI_Compiler` generation, the Win32/x64 `Metadata_Generate` sequence, x64 `Metadata_Test`, and updates/runs of both FullControlTest UIA verification wrappers mandatory, as described in `<GacUI repo>/Project.md`. Confirm the four events replace the former generated methods and reflection registrations. Rebuild all affected entry points, including `GacUI_Host`, after regenerating.
-4. Keep authored changes, generated outputs and any changed snapshots in their required separate commits. Update the requested project/platform documentation and relevant KB pages through the established shared-guidance workflow. Do not modify standard remote-protocol verification jobs or add GacJS work. Record wGac/iGac source synchronization and option forwarding as static inspection, not runtime verification.
+- The actual Windows project name is `RemotingTest_Rendering_Win32`. Its entry points are `<GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32/Main.cpp` and `<GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32/GuiMain.cpp`; use that name in commands and documentation.
+- Define `/corehost:<host>` as one optional, case-sensitive destination option, defaulting to `localhost`. Reject empty and duplicate options before starting transports. Consume only the fixed prefix so IPv6 colons remain part of the value. Accept a hostname or address, not a URL, path or separate port; the TCP protocol port remains 8888 and `/AsPort` still controls local automation. Use an unbracketed IPv6 address at the socket boundary and bracket it when constructing an HTTP authority.
+- Apply the option to native renderers and the network modes of `RemotingTest_RvmHost`. Its parser in `<GacUI repo>/Test/GacUISrc/RemotingTest_RvmHost/Main.cpp` currently permits only one argument. Reject an explicitly supplied `/corehost` with its local `/Cli` mode. `RemotingTest_Core` and `CppTest_Rvm` host the network servers and do not need a destination-host option; their locally launched stdio host remains local.
+- In `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.Windows.h`, `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.Linux.h` and `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.macOS.h`, add the host-first constructors and retain the existing constructors as local defaults. Add a matching host-first `CreateDefaultAsyncSocketClient` overload in `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.h` and its platform implementations. `CreateSameEndpointClient()` must preserve the host, port and backend, including when called after the original client stops: the MiniHTTP protocol obtains its additional physical connections through that method.
+- Use native address resolution/connection facilities for IPv4, IPv6 and DNS, trying usable address candidates while preserving the existing bounded retry, cancellation, callback and terminal-state contracts. The Windows implementation also binds its local client address to IPv4 loopback; update its source binding and address-family handling so a remote destination is actually reachable.
+- Remove the loopback-only hostname restrictions consistently from `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpClient.cpp`, `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpClientApi.cpp` and `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpServerApi.cpp`. Pass the requested host to both the socket and HTTP layers. Preserve HTTP/1.1 structural validation, including a single valid `Host`, correct port and bracketed IPv6 authority; accepting arbitrary valid hostnames does not mean accepting malformed requests.
+- The current native socket servers bind IPv4 loopback only. Make the protocol listeners reachable through the machine's network interfaces and supported address families. Windows HTTP also registers only a localhost URL in `<VlppOS repo>/Source/InterProcess/Windows/HttpServer.Windows.cpp`; update protocol registration so requests addressed to the machine name or IP reach the server. Keep protocol endpoint selection distinct from automation-port selection.
+- The HTTP assumption above needs correction: `windows_http::HttpClientApi` accepts a host, but `windows_http::HttpClient` constructs it with `localhost` in `<VlppOS repo>/Source/InterProcess/Windows/HttpClient.Windows.cpp`. Add host forwarding to the protocol client while retaining its existing local overload.
+- In `<VlppOS repo>/Source/InterProcess/Windows/NamedPipe.Windows.cpp`, add the host-first client overload and preserve the old local pipe behavior. Treat the default `localhost` as the local `.` endpoint and retain explicit remote machine names when constructing the UNC pipe path. The server currently specifies `PIPE_REJECT_REMOTE_CLIENTS`; adjust that restriction as part of making remote `/Pipe` work. IPv6 socket support does not imply that raw IPv6 text is a valid Windows UNC server name.
+- Add `--corehost:<host>` to `<wGac repo>/test.sh` and `<iGac repo>/test.sh` for `--app:renderer`, forwarding one quoted `/corehost:<host>` argument in both foreground and `--unblock` branches. Their `--port` remains the renderer automation port. Also update `<wGac repo>/RemotingTest_Rendering_Wayland/Main.cpp` and `<iGac repo>/RemotingTest_Rendering_macOS/Main.cpp`, which currently reject unknown arguments.
+- Keep shared host parsing and renderer composition canonical in `<GacUI repo>/Test/GacUISrc/SharedArguments.h` and `<GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32/GuiMain.cpp`. Both `<wGac repo>/syncProj.sh` and `<iGac repo>/syncProj.sh` copy those files, but do not copy the platform entry points listed above; synchronize the shared files and maintain the platform parsers separately. The local Core/requester launchers do not need a remote destination option. Expose optional `-CoreHost` through `<GacUI repo>/Test/StartRendrerer.ps1` without changing its existing filename or defaults.
+- Implement upstream changes in VlppOS source and publish them through the existing release/import synchronization workflow before rebuilding consumers. Do not hand-edit `<GacUI repo>/Import` or the platform repositories' generated imports. Keep the existing shutdown/disconnection behavior; no new recovery protocol is needed.
 
-### Deterministic API and protocol coverage
+### VERIFICATION
 
-1. For each feature, exercise all four core/renderer flag combinations in the table, plus no renderer yet, disconnect, reconnect with changed capabilities, and replacement while the old renderer is still active. Cover individual flags and all three together. Assert remote request counts as well as returned values so identical local/remote environments cannot hide incorrect routing.
-2. Install distinguishable predecessor implementations and verify local methods/fallback delegate to them without recursion. Check repeated controller setup/teardown restores the prior chain. Cover a connect message with omitted capability fields and cancellation between request submission and response retrieval.
-3. DateTime: use a known core UTC clock and a different renderer timezone/clock; verify local time uses only the core clock. Cover both conversion directions, milliseconds, day/month/year rollover and dates with different daylight-saving offsets. Test portable serialization independently of the Windows-only end-to-end run.
-4. Locale: distinguish renderer defaults, enumeration, format lists, day/month names and case conversions from the predecessor; verify formatting, comparison, searching and prefix/suffix operations remain local. Test fallback with fresh calls rather than previously cached locale objects or labels.
-5. Filesystem: verify renderer path rules, root enumeration, nested directories, metadata/copy results and ordinary error returns. Cover empty files, embedded NUL/arbitrary binary bytes, a payload larger than a transport read buffer, each access mode, seek/peek/position/size, denied opens, missing parents, zero-write close, destructor writeback and explicit-close idempotence. Confirm no core-side file is read or changed when remote filesystem injection is enabled but unavailable.
-6. Keep a stream open across disconnect and verify buffered operations still work. Separately verify the specified close/destructor failure and rejection of writeback after a replacement connects. Disconnect during a pending read/query/commit; ensure waiters terminate and no response is retrieved after cancellation. Exercise worker-thread folder enumeration concurrently with normal UI work, and shut down with a dispatched operation pending to expose deadlocks or lifetime errors.
+1. Extend `<VlppOS repo>/Test/Source/TestInterProcess_AsyncSocket.cpp` for old/default construction, explicit localhost, IPv4, IPv6, DNS, endpoint-preserving clones, address-candidate fallback, failed resolution and cancellation during connect/retry. Verify failures finish through the established status/callback paths without hanging. Use controlled local endpoints instead of requiring public Internet access.
+2. Update `<VlppOS repo>/Test/Source/TestInterProcess_AsyncSocket_MiniHttpApi.cpp`, including the case that currently requires `example.com` rejection. Test valid DNS/IPv6 Host serialization and dispatch, plus malformed, duplicate and wrong-port Host rejection. Extend `<VlppOS repo>/Test/Source/TestInterProcess.cpp` to prove every MiniHTTP connection uses the requested endpoint and to cover the HTTP/pipe host overloads and old local overloads.
+3. Verify argument ordering with the transport, `/AsPort` and injection flags, plus empty/duplicate host rejection. Cover the renderer and network RVM host; preserve `/Cli` behavior and reject its incompatible host option before starting it.
+4. On Windows, run Core `/FCT` and the native renderer using each of `/Http`, `/MiniHttp` and `/Pipe`. Cover omitted host, explicit `localhost`, `127.0.0.1` and the actual machine name. For TCP also exercise the machine's non-loopback address and IPv6 where available. Use Core `/AsPort:8888` and renderer `/AsPort:8889`, and run transports sequentially because their protocol endpoints are fixed.
+5. Check rendered UI and bidirectional traffic through Core `Controls`, renderer `Dom` and IO operations on both sides. Exercise an editor operation, renderer replacement and Core shutdown to verify normal lifecycle behavior. Also connect a network `RemotingTest_RvmHost` to Core `/RVMT` and to `CppTest_Rvm` with an explicit destination, and verify a real view-model call.
+6. A machine-name connection on the same computer does not prove remote-machine access. When another Windows computer is available, repeat a TCP and named-pipe smoke check across machines; otherwise record that coverage as unavailable. Distinguish actual environment failures from code failures instead of treating a local connection as remote verification.
+7. Use each repository's prescribed build/test wrappers. Inspect all three native backend changes, but skip wGac/iGac build and runtime verification as requested on Windows. Record Windows results separately from unexecuted Linux/macOS coverage.
 
-### Windows end-to-end verification
+4. Introduce this new parameter in `Project.md`, and `AGENTS.md` in `wGac` and `iGac`, as well as their `README.md` if `test.sh` is already explained there.
 
-1. Establish a clean committed/pushed implementation checkpoint before temporary renderer overrides. Use distinguishable timezone, locale lists/formats and filesystem contents, recording expected values before each run. Keep these temporary overrides out of commits; permanent unit-test fixtures belong only in test code.
-2. Launch `RemotingTest_Core` with `/FCT` and the Windows renderer with a matching transport. Use core `/AsPort:8888` and renderer `/AsPort:8889`; retain the fixed protocol endpoint rules. Perform the complete flag/fallback matrix on one transport and a focused all-enabled/disconnect/reconnect smoke check on the other supported Windows transports (`/Pipe`, `/Http`, `/MiniHttp`).
-3. Inspect core `Controls` and renderer `Dom`, and exercise IO through both endpoints. Use the DatePicker and Localization pages for calendar names/formats and the fake Open/Save FileDialog pages for directory browsing. The standalone file-dialog page returns selected paths; use the newly implemented document-editor commands for actual content-transfer checks as detailed below, alongside the API tests above.
-4. Make fresh queries for every transition. `<GacUI repo>/Test/Resources/App/FullControlTest/LocalizedStringsTabPage.xml` captures local time once, `<GacUI repo>/Test/Resources/App/FullControlTest/LocalizedComponents.xml` hardcodes two locales, and `GuiApplication` captures the default locale. Recreate/requery appropriate controls or provide a focused query action that displays newly obtained results; merely reading the unchanged UI is insufficient. Verify locale enumeration directly as well.
-5. Disconnect the renderer while leaving the core running. Through core automation, trigger fresh DateTime/Locale queries and reopen/refresh filesystem browsing, then assert predecessor results or empty listings. Reconnect with different flags/values and repeat, checking that the core remains responsive and uses the new capabilities. Include a fake file-dialog enumeration in progress during loss of the renderer.
-6. Remove only the temporary renderer overrides, rebuild, and run a final smoke check against the public native implementations. Review the final diff before committing/pushing the completed implementation. Record any unavailable Windows UI coverage explicitly; wGac/iGac runtime verification and GacJS remain excluded.
+### DETAILS
 
-### FullControlTest persistence and fixture verification
+- Update `<GacUI repo>/Project.md`, `<wGac repo>/AGENTS.md` and `<iGac repo>/AGENTS.md` with the destination option, local default, supported client modes, platform-specific transport availability and examples separating protocol port from automation port.
+- Both platform READMEs already describe their launchers. Update `<wGac repo>/README.md`, its required Chinese counterpart `<wGac repo>/README_CN.md`, and `<iGac repo>/readme.md` using that file's actual casing. Include foreground and `--unblock` examples and the Windows `-CoreHost` launcher option in the GacUI guidance.
+- Refresh the affected canonical knowledge-base guidance under `<Tools repo>/Copilot/KnowledgeBase` and synchronize it through the established workflow: the MiniHTTP API and channel guidance currently describe loopback-only transports, while the renderer/persistence guidance describes all range copies as retaining only used styles. Update stale transport descriptions in `<GacUI repo>/Test/RemotingHelpers/README.md` as well.
 
-1. Exercise all four commands through both the ribbon and toolstrip UI, first with different recognizable content in each tab. Verify one operation per invocation and that each handler acts on the correct editor. Repeat after palette/theme refresh to catch duplicate subscriptions. Cover generated no-reflection, metadata-only and full-reflection applications, plus `GacUI_Host` with its reflection-only event attachment.
-2. Save private files, change the current editor contents, and reload. Compare text and paragraph order, effective heading/font/size/color styles, paragraph alignment and images. Load the ribbon's saved document into the toolstrip editor and vice versa. Confirm private save clears modified state only after successful persistence, whereas RTF/HTML export preserves it. Cancel both open and save dialogs and verify neither the document nor an existing output file changes.
-3. Inspect exported RTF/HTML for representative Unicode text, formatting and image payloads supported by the existing serializers; file existence alone is insufficient. Cover a non-PNG image as well as the PNG fixture images to prove the remote RTF path actually produces PNG data. Exercise remote image export both with renderer-backed file output and with core-local file output, before an image is first rendered and after renderer replacement. The current `EnsureMetadata()` returns silently on disconnect, so explicitly test that this path cannot be mistaken for successful image creation/export. Use deterministic protocol responses in ordinary tests and real native codecs in the Windows end-to-end checks.
-4. Create and commit `<GacUI repo>/Test/TestDocument.bin`, then reload it in a fresh process with only that fixture available in the fake renderer filesystem. Make the original image paths unavailable in that isolated filesystem without deleting repository assets. Verify both embedded images still decode and render, so neither prior caches nor access to the core's image files can conceal missing embedded data.
-5. Enable `/remoteFS` at both ends, load the fixture, edit it, save to a distinct renderer-side destination, complete close/writeback, then reopen and compare rich content. Verify the destination bytes are on the renderer and no same-named core file was touched. Repeat the applicable disabled-capability and disconnected cases from the filesystem matrix; do not interpret an unavailable open/save or failed image export as success. Test cancellation during image encoding and during file commit separately.
-6. Extend `<GacUI repo>/Test/UIA_CppTest.ps1`, `<GacUI repo>/Test/UIA_CppTest_Metaonly.ps1` and their shared assertions with actual load/save/export/cancel operations for both editors, plus output-content checks. Retain current editing, formatting, resize and palette assertions. Use automation for the remote pair and verify the corresponding local controls through UIA; a remote renderer does not transport a semantic UIA tree.
-7. Search all affected inventories, includes and synchronization scripts for stale `FullControlTestPalette` references. Verify regenerated sources and metadata have the expected event signatures, Host has no generated FullControlTest link dependency, and the committed fixture is present. Use ordinary unit tests for serializer/event-routing/image-protocol assertions; any added rendering snapshot must capture useful rich-document output.
+### VERIFICATION
+
+1. Cross-check documentation examples against the actual parsers and launchers, including optional defaults, IPv6 syntax, accepted modes and distinct automation ports. Check both shell execution branches and platform entry points by inspection without claiming native platform verification.
+2. Review generated release/import changes separately from authored files, and keep snapshot changes in their dedicated commit when implementation produces any. Do not include temporary host overrides or machine-specific paths in committed guidance.
+
+5. `GacJS` it out of scope.
 
 ## REVIEW COMMENTS
 
-No unresolved review comments. The missing details above have reasonable resolutions based on the existing APIs and repository conventions.
-
-# UPDATES
-
-## UPDATE
-
-I found one bug, you can use `CppTest` to repro it. Load the [TestDocument.bin](Test/TestDocument.bin) from the `Load Private Format` menu, and select the first line, and then click the "Header 1" from the ribbon, it switches back to no-format style (visually, I don't know what actually changed). Figure out what happens and make it work. By working I mean clicking "Header 1" or any built-in style should apply the selected text with expected/dedicated style properties, for example, "Header 1" is big and orange and maybe bold.
-
-## UPDATE
-
-Good point. If the document is saved by CppTest, those built-in styles are supposed to be brought into the file as well.
-
-## UPDATE
-
-by the way, the editor background is dark gray, so when update TestDocument.bin, make sure all text colors are bright, making it easier for me to read.
-
-## UPDATE
-
-I have not carefully read your change yet but it seems a little bit complex. I am going to redeclare the goal: private document format saved by CppTest should have styles copied in it, but you can always assume file loaded is saved from CppTest, that is, no need to take any special action when the file does not have those built-in styles.
+No unresolved review comments. The implementation details and verification requirements above resolve the identified gaps using the existing APIs and repository conventions.
 
 # TEST [CONFIRMED]
 
-The initial Debug x64 build succeeded with zero warnings/errors. The ordinary `TestRemote_Startup.cpp` case `Remote image export supports document persistence` reproduced the `SaveToStream` assertion, `This function should not be called`, without issuing a renderer request. This established the missing image-export path needed by document persistence.
+Reproduction confirmed for item 1: the unmodified implementation fails `selection->styles.Keys().Contains(L"Unused")` in the Debug x64 wrapper run. The baseline solution build completed with zero warnings/errors. Items 2 and 3 remain pending reproduction and implementation verification.
 
-Success requires the capability/fallback matrix, predecessor restoration, portable time and metadata values, complete filesystem and buffered-stream contracts, cancellation and worker dispatch, and document event routing to pass ordinary tests with clean Debug leak output. It also requires generated metadata, both native UIA All suites, persistence in the reflection variants, an isolated rich fixture round trip, Windows transport transitions, and removal of temporary renderer overrides. Transport notification limits and excluded platform runtime coverage are recorded explicitly below.
-
-The continuation reproduces in CppTest using the committed fixture: after selecting the first paragraph and clicking Header 1, the model contains a Header 1 style reference with an empty serialized Styles section. UIA reports 9-point white regular text. Built-in definitions were installed only into the initial document, and both full-document copying and the private-save selection path discard unused definitions. Regression coverage will distinguish full copies from selection copies, inspect unused styles in saved bytes, apply all eight gallery styles after load/reload and palette refresh, and verify a bright fixture with embedded images.
+1. Extend ordinary document-copy tests for full, partial, empty-range and empty-document copies, style independence, shallow sharing, invalid ranges, insertion, serialization and repeated undo/redo.
+2. Exercise actual ribbon popup controls, event counts, selection preservation and formatting in gallery tests and both showcase UIA consumers.
+3. Verify host-aware transports upstream, synchronize generated imports, then exercise Windows renderer and RVM destinations and lifecycle; inspect Unix code and scripts without executing native platform tests.
+4. Cross-check documentation against implemented parsers and launchers and synchronize canonical knowledge.
 
 # PROPOSALS
 
-- No.1 Controller-owned injection chain with connection-bound protocol operations [CONFIRMED]
-- No.2 Preserve complete document style catalogs [CONFIRMED]
+- No.1 Copy complete style catalogs in deep ranges and preserve style identity during reinsertion
 
-## No.1 Controller-owned injection chain with connection-bound protocol operations
+## No.1 Copy complete style catalogs in deep ranges and preserve style identity during reinsertion
 
-Install each enabled wrapper once, delegate DateTime/Locale local methods through its predecessor, and select remote routing from the current renderer capabilities. Exchange calendar fields instead of OS timestamps. Use shared dispatch state to marshal worker calls, release queued work at shutdown, and invalidate buffered streams when their original connection ends. An unavailable remote filesystem exposes a deterministic empty virtual root. Renderer handlers use public APIs, and buffered writeback completes synchronously before a document save returns.
+Move complete-catalog cloning into the deep branch of `DocumentModel::CopyDocument(TextPos, TextPos, bool)` in `<GacUI repo>/Source/Resources/GuiDocument_Edit.cpp`; the parameterless overload determines its endpoint and delegates. Retain paragraph slicing, invalid-range returns and the existing zero-paragraph equal-position case. Shallow copies retain their existing referenced-style/parent traversal.
 
-Replace the four document placeholder methods with events, attach each editor to its own viewer, and keep shared persistence independent of generated classes. Encode exported images through the renderer independently of the selected filesystem. Regenerate owned outputs and verify the rich fixture, UIA interactions and transport matrix.
-
-### CODE CHANGE
-
-- Added `Protocol_Injection` and registered its schema, generated interfaces and source inventories. Core configuration defaults to disabled; native renderer library capabilities default to enabled. Demo arguments independently opt in to `/remoteDT`, `/remoteLocale` and `/remoteFS`. Older connect messages without the capability fields deserialize them as false.
-- Added controller-owned DateTime, Locale and FileSystem wrappers in `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteControllerInjection.h/.cpp`. Class comments describe remote/local routing, fallback, worker dispatch and buffered stream behavior. DateTime keeps the core UTC clock and predecessor construction/arithmetic; Locale preserves the requested remote/local method split. Controller teardown restores the prior injection chain.
-- Implemented all filesystem operations using renderer path rules, portable optional UTC metadata and decimal representations of 64-bit values. Empty byte payloads deserialize as available empty streams. Unavailable filesystems never fall through to core storage. Read-only streams hold snapshots; native write/read-write opens validate access and truncate, and writable close uploads once, including empty files. Every open stream remains bound to its original connection, including the specified close/destructor failure after disconnection.
-- Implemented native handlers through public DateTime, Locale, FilePath, File, Folder and FileStream APIs. Added the public `FilePath::GetCompatibleDelimiters` accessor in VlppOS. Renderer read/commit responses reject incomplete transfers; ordinary tests force short reads/writes and verify successful empty commits and stream closure.
-- Fixed asynchronous channel detachment to cancel waiters, deliver disconnection on the event thread, reject stale responses and close the waiter-registration race. Shared injection state releases pending workers when the UI loop stops and avoids dereferencing a destroyed controller.
-- Implemented renderer image encoding for remote `SaveToStream`, including conversion to PNG for RTF, connection/cancellation checks, frame-count metadata revalidation and creation bytes before first paint. Shared document writes check the actual copied byte count before closing.
-- Converted the four FullControlTest persistence methods into filename-bearing events, renamed the shared helper to `FullControlTestEventHandlers`, and attached each editor once through `AttachFctEvents`. Host uses reflection event attachment and `SafeAggregationCast<GuiInstanceRootObject>` to resolve its Workflow aggregate's native viewer without a generated-class dependency. Added `<GacUI repo>/Test/TestDocument.bin`, containing six rich paragraphs and two embedded images.
-- Extended shared UIA verification with both editors' private round trips, cross-editor loading, RTF/HTML content, canceled dialogs and palette refresh. The harness waits for completed document operations and retired providers, retries only idempotent menu expansion, scopes notification subscriptions to their assertions, uses rebuild-aware tab selection, and waits for normal process exit after Window.Close. Existing editing, formatting, resize, notification and palette assertions remain.
-- Regenerated protocol/resource bindings, metadata and release sources using their owning generators. Updated source inventories, native platform parsers, foreground/background launcher forwarding, project documentation and canonical Tools knowledge pages, then synchronized platform sources/imports and repository knowledge copies. Generated changes were committed separately from authored changes. Temporary verification providers, query buttons and debugger probes were removed from native entry points.
-
-### CONFIRMED
-
-Final verification passed with the retained implementation:
-
-| Verification | Result |
-| --- | --- |
-| GacUI Debug x64 and Win32 full solution builds | Zero warnings and errors |
-| GacUI x64 ordinary tests | 272/272 cases, 14/14 files; clean Debug leak output |
-| GacUI Win32 ordinary tests | 252/252 cases, 12/12 files; clean Debug leak output |
-| VlppOS Debug x64 | Zero warnings/errors; 311/311 cases, 16/16 files; clean leak output |
-| Protocol/resource generation | Metadata_UpdateProtocol and GacUI_Compiler completed successfully |
-| Required metadata sequence | Win32 Metadata_Generate, x64 rebuild, x64 Metadata_Generate and Metadata_Test completed successfully |
-| CppTest UIA All | 15,464 assertions; normal shutdown and endpoint release |
-| CppTest_Metaonly UIA All | 15,430 assertions; normal shutdown and endpoint release |
-| CppTest_Reflection Persistence | 363 assertions; normal shutdown and endpoint release |
-| GacUI_Host Persistence | 363 assertions; normal shutdown and endpoint release |
-| Pipe capability matrix | All 64 core/renderer flag combinations, queried through both automation endpoints: 128 passing checks |
-| Clean public-native final smoke | Rich fixture load, styled RTF with two PNG payloads, native filesystem dialogs, both automation endpoints and DatePicker passed |
-
-The matrix confirms independent feature selection, including core-disabled features, renderer-disabled features and unavailable filesystem behavior. Distinguishable temporary core clocks and renderer timezones/locales demonstrated that LocalTime uses the core UTC clock with renderer conversion, while fresh fallback calls use the predecessor. Reconnection selected the new renderer values. DatePicker rebuilding displayed renderer month names; Localization refresh used renderer date formats while retaining its captured timestamp and predecessor formatting behavior.
-
-The isolated renderer filesystem loaded the committed fixture with its original image paths unavailable. Core Controls exposed all six rich paragraphs and both internal image references; renderer Dom exposed both image frames. Load, edit, private save/reopen and styled HTML/RTF export succeeded. Native JPEG-to-PNG conversion passed before first painting and after renderer replacement, with both renderer-backed and core-local file output. Disabled filesystem capability reported unavailable persistence and an empty root. The final clean native pair repeated fixture loading and verified two PNG payloads in its RTF output after all temporary overrides were removed.
-
-CDB confirmed pending file-dialog enumeration reached the renderer through public `Folder::GetFiles`. Killing the pipe renderer there released the core operation; fresh queries returned predecessor time/locale, persistence became unavailable, and a reopened dialog listed `/` with no files. A separate UI-loop shutdown check observed a queued injection call and waiting worker, then completed after continuation. The disposable destructor probe reached the required failed close through `FileStream::~FileStream`; ordinary tests cover explicit close, replacement rejection, worker cancellation, stale responses and surviving stream state.
-
-HTTP and MiniHTTP all-enabled queries, persistence, server-initiated disconnection through the public channel-server API, fallback and replacement all passed. Arbitrary abrupt HTTP peer loss has a remaining transport detection limitation: one HTTP hard-kill run passed, but another HTTP run and MiniHTTP hard-kill runs timed out. CDB showed the raw HTTP server retaining its logical client with an idle pending poll, no outgoing messages or acknowledgement timeout, and no disconnect callback. Injection cancellation works once disconnection is delivered; these runs do not establish reliable silent-peer-loss detection. No heartbeat or shutdown acknowledgement was added, consistent with repository guidance.
-
-All final UIA logs contain no FAIL or UNVERIFIED result. The persistence checks cover both editors before and after palette refresh, output contents, private modified-state reset, export state preservation and cancellation. Host's aggregation correction passed the same scenario. The two full All suites additionally retain the existing control coverage and notification checks, and both close normally with their automation endpoints released.
-
-Final evidence is retained locally under `<GacUI repo>/Test/Output/Injection/`: `unit-transfer-check-x64.log`, `unit-transfer-check-win32.log`, `uia-cpptest-final.log`, `uia-metaonly-final.log`, `uia-reflection-final.log`, `uia-host-final.log`, `remote-matrix.log`, `remote-pipe.log`, `remote-local-output.log`, `remote-disabled-filesystem.log`, `remote-http-server-disconnect.log`, `remote-minihttp-server-disconnect.log` and `public-smoke-final.log`. Metadata driver and release-generation logs are in the same ignored output folder.
-
-Final review found no stale `FullControlTestPalette` references or temporary injection providers in native entry points. Platform shell syntax, parser/argument forwarding, synchronization and generated imports were checked; wGac/iGac native execution remains excluded as requested. GacJS was not changed. The implementation, fixture, generated artifacts and knowledge updates were committed and pushed in GacUI, VlppOS, wGac, iGac and Tools.
-
-## No.2 Preserve complete document style catalogs
-
-Make the parameterless full-document copy retain every style definition through independent deep copies; keep selection-range copying limited to referenced styles and their parents. Private save serializes a complete document copy. SetDocument consequently retains the unused styles already present in a CppTest file.
-
-The user's clarified contract assumes every loaded file was saved by CppTest. The ribbon's existing initialization and style-application behavior remain unchanged: no missing-style restoration or replacement of loaded definitions is needed. Update the rich fixture using CppTest's initial built-in catalog and bright blue, purple, near-white, orange and teal text.
+Insertion must compare the complete named-style ancestry before reusing an existing definition. A child with the same authored properties but a differently defined parent is a conflict too. Reuse an equivalent previously renamed definition when pasting the same source again, while keeping source definitions and parent references intact.
 
 ### CODE CHANGE
 
-- The parameterless `DocumentModel::CopyDocument` deep-copies the complete style catalog, including unused definitions. Range copies retain only referenced styles and their parents. API comments distinguish those contracts.
-- Private save uses the full-copy API instead of SelectAll/GetSelectionModel and preserves the current selection.
-- Ordinary tests cover nonempty and empty full copies, independent style properties, unused parent chains, serialization and the actual shared save/load handlers. Shared UIA checks cover all eight gallery styles after fixture load and palette replacement, unused definitions in saved bytes and the toolstrip editor, and bright colors in every fixture paragraph.
-- The fixture generator retains CppTest's initial style catalog while replacing its paragraph content, saves through the real handler, and verifies text properties, alignment and two decoded embedded images after loading into the toolstrip editor.
-
-- The UIA launcher allows normal application exit to precede the client's final exit check, while still requiring successful client and application exit codes. This fixes a race observed after all persistence/style assertions had passed.
-
-### CONFIRMED
-
-The original file had no named style definitions. Applying Header 1 cleared direct formatting and applied a name with no definition, so the text resolved to the default appearance. Full-document loading and private saving both used range-copy behavior that discarded unused definitions. Retaining the complete catalog in full copies and private saves fixes the problem under the clarified CppTest-file contract. The ribbon and its generated resources are unchanged.
-
-| Verification | Result |
-| --- | --- |
-| Final Debug Win32 and x64 solution builds | Zero warnings and errors; temporary fixture entry point removed and both binaries rebuilt |
-| x64 ordinary tests | 461/461 cases, 17/17 files; clean Debug leak output |
-| Win32 ordinary tests | 441/441 cases, 15/15 files; clean Debug leak output |
-| Metadata sequence | Win32 Metadata_Generate, x64 build, x64 Metadata_Generate and Metadata_Test passed |
-| CppTest fixture generation | Real private save/load retained all eight definitions, six bright paragraphs, font properties, alignment and two decoded embedded images; RTF/HTML export passed; normal exit |
-| CppTest persistence/style client | 706 assertions passed, including all eight styles through automation clicks and UIA selection after palette replacement |
-| CppTest window lifecycle with corrected launcher | 110 assertions passed; successful application/client exit and endpoint release |
-
-The style checks verify exact sizes, colors, weight, italic, underline and strikethrough properties. Header 1 is double-sized and orange. Saving before using any gallery item preserves every definition, and loading that file into the toolstrip editor proves the catalog comes from the file. Applied formatting survives another private save/load. Every fixture paragraph uses a bright color on the dark editor background.
-
-The first persistence run completed all 706 assertions and requested normal Window.Close before its launcher reported the exit-order race. Its complete client log is preserved separately. The corrected launcher passed the window-lifecycle scenario, including both successful exit codes. A temporary fixture helper initially skipped the hosted event loop; CDB located the resulting shutdown fault, the helper was corrected to run and close normally, and the final entry point was restored byte-for-byte and rebuilt.
-
-The 60 changed Win32 compiler-log snapshots contained only reordered lines and were restored after multiset comparison; there are no rendering snapshot changes. CodePack refreshed the two public GacUI release files, the platform import scripts reproduced them, and the shared save handler was copied to wGac/iGac. No platform resource changes remain. Native wGac/iGac execution remains excluded as requested.
-
-Evidence is under `<GacUI repo>/Test/Output/Injection/`: `style-unit-x64.log`, `style-unit-win32.log`, `style-build-clean-win32.log`, `style-build-x64.log`, `style-metadata-win32.log`, `style-metadata-x64.log`, `style-metadata-test.log`, `style-fixture.log`, `fixture-result.txt`, `style-uia-cpptest-client.log` and `style-uia-shutdown.log`.
+Pending implementation. Regression cases in `<GacUI repo>/Test/GacUISrc/UnitTest/TestDocumentConfig.cpp` cover complete and partial copies, empty ranges/documents, independent authored/resolved properties, baseline overrides, private serialization, shallow pointer sharing, invalid ranges and repeated insertion with conflicting ancestry. Extend ordinary editor integration coverage for selection and undo/redo.

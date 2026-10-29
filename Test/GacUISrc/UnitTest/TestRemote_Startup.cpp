@@ -957,6 +957,60 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
+	TEST_CASE(L"Selection copies retain unused styles through repeated paste undo and redo")
+	{
+		PersistenceProtocol protocol;
+		JsonProtocol json(protocol.GetProtocol());
+		SetGuiMainProxy([&]()
+		{
+			theme::RegisterTheme(Ptr(new darkskin::Theme));
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
+			{
+				PersistenceWindow window;
+				auto viewer = window.ribbon->viewer;
+				auto original = PersistenceDocument(L"Text", false);
+				original->ClearStyle(TextPos(0, 0), TextPos(0, 4));
+				for (auto name : { L"Title", L"Unused" })
+				{
+					auto style = Ptr(new DocumentStyle);
+					style->styles = Ptr(new DocumentStyleProperties);
+					style->styles->color = Color(255, 128, 0);
+					style->styles->bold = true;
+					original->styles.Add(name, style);
+				}
+				original->EditStyleName(TextPos(0, 0), TextPos(0, 4), L"Title");
+				viewer->SetDocument(original);
+				viewer->SetEditMode(controls::GuiDocumentEditMode::Editable);
+				auto count = viewer->GetDocument()->styles.Count();
+				viewer->SetCaret(TextPos(0, 0), TextPos(0, 2));
+				auto selection = viewer->GetSelectionModel();
+				TEST_ASSERT(selection->GetTextForReading(L"|") == L"Te");
+				TEST_ASSERT(selection->styles.Count() == count);
+				TEST_ASSERT(selection->styles[L"Unused"] != viewer->GetDocument()->styles[L"Unused"]);
+				viewer->SetCaret(TextPos(0, 4), TextPos(0, 4));
+				viewer->SetSelectionModel(selection);
+				for (vint i = 0; i < 5; i++)
+				{
+					auto document = viewer->GetDocument();
+					TEST_ASSERT(document->GetTextForReading(L"|") == L"TextTe");
+					TEST_ASSERT(document->styles.Count() == count);
+					TEST_ASSERT(document->SummarizeStyleName(TextPos(0, 0), TextPos(0, 6)).Value() == L"Title");
+					auto style = document->SummarizeStyle(TextPos(0, 0), TextPos(0, 6));
+					TEST_ASSERT(style->bold.Value() && style->color.Value() == Color(255, 128, 0));
+					TEST_ASSERT(viewer->Undo());
+					TEST_ASSERT(document->GetTextForReading(L"|") == L"Text");
+					TEST_ASSERT(document->styles.Count() == count);
+					TEST_ASSERT(viewer->Redo());
+				}
+				TEST_ASSERT(viewer->Undo());
+				TEST_ASSERT(!viewer->CanUndo());
+			}
+			protocol.GetEvents()->OnControllerForceExit();
+		});
+		SetupRemoteNativeController(&json);
+		SetGuiMainProxy({});
+	});
+
 	TEST_CASE(L"Image export creates before rendering, recreates after replacement and rejects cancellation")
 	{
 		InjectionProtocol protocol;

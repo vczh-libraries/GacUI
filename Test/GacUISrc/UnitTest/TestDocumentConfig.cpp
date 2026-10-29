@@ -1,4 +1,6 @@
 #include "../../../Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.h"
+#include "../../../Source/Resources/GuiDocumentClipboard.h"
+#include "../../../Source/Resources/GuiDocumentEditor.h"
 
 using namespace vl;
 using namespace vl::collections;
@@ -72,8 +74,98 @@ TEST_FILE
 				auto selection = copied->CopyDocument(TextPos(0, 0), TextPos(0, 4), true);
 				TEST_ASSERT(selection->styles.Keys().Contains(L"Used"));
 				TEST_ASSERT(selection->styles.Keys().Contains(L"Parent"));
-				TEST_ASSERT(!selection->styles.Keys().Contains(L"Unused"));
+				TEST_ASSERT(selection->styles.Keys().Contains(L"Unused"));
 			}
+		}
+	});
+
+	TEST_CASE(L"Deep ranges own the entire catalog and independent authored and resolved properties")
+	{
+		for (vint range = 0; range < 4; range++)
+		{
+			auto model = LoadDoc(LR"XML(<Doc><Content><p><div style="Used">Text</div></p><p>Second</p></Content><Styles><Style name="#Default-Override"><face>Consolas</face><color>#ABCDEF</color></Style><Style name="Ancestor"><color>#FF8000</color></Style><Style name="Parent" parent="Ancestor"><size>2x</size></Style><Style name="Used" parent="Parent"><b>true</b></Style><Style name="Unused" parent="Parent"><i>true</i></Style></Styles></Doc>)XML");
+			for (auto style : model->styles.Values())
+			{
+				style->resolvedStyles = document_editor::CopyStyle(style->styles);
+				style->resolvedStyles->underline = true;
+			}
+			if (range == 3) model->paragraphs.Clear();
+			auto begin = range == 1 ? TextPos(0, 1) : TextPos(0, 0);
+			auto end = range == 0 ? TextPos(1, 6) : range == 1 ? TextPos(1, 3) : begin;
+			auto copied = model->CopyDocument(begin, end, true);
+			TEST_ASSERT(copied && copied->styles.Count() == model->styles.Count());
+			TEST_ASSERT(copied->paragraphs.Count() == (range < 2 ? 2 : range == 2 ? 1 : 0));
+			TEST_ASSERT(copied->GetTextForReading(L"|") == (range == 0 ? L"Text|Second" : range == 1 ? L"ext|Sec" : L""));
+			for (auto [name, style] : model->styles)
+			{
+				auto clone = copied->styles[name];
+				TEST_ASSERT(clone != style && clone->styles != style->styles && clone->resolvedStyles != style->resolvedStyles);
+				TEST_ASSERT(clone->parentStyleName == style->parentStyleName);
+				TEST_ASSERT(document_editor::CompareStyleProperties(clone->styles, style->styles));
+				TEST_ASSERT(document_editor::CompareStyleProperties(clone->resolvedStyles, style->resolvedStyles));
+				clone->styles->strikeline = true;
+				clone->resolvedStyles->underline = false;
+				TEST_ASSERT(!style->styles->strikeline || !style->styles->strikeline.Value());
+				TEST_ASSERT(style->resolvedStyles->underline.Value());
+			}
+			TEST_ASSERT(copied->styles[L"#Default"]->styles->color.Value() == Color(171, 205, 239));
+			TEST_ASSERT(copied->styles[L"Unused"]->parentStyleName == L"Parent");
+			TEST_ASSERT(copied->styles[L"Parent"]->parentStyleName == L"Ancestor");
+			if (range == 0 || range == 3) TEST_ASSERT(SaveDoc(model->CopyDocument()) == SaveDoc(model));
+
+			stream::MemoryStream stream;
+			SaveDocumentToClipboardStream(copied, stream);
+			stream.SeekFromBegin(0);
+			auto reloaded = LoadDocumentFromClipboardStream(stream);
+			TEST_ASSERT(reloaded && SaveDoc(reloaded) == SaveDoc(copied));
+		}
+	});
+
+	TEST_CASE(L"Shallow ranges filter styles and share referenced definitions and transitive parents")
+	{
+		auto model = LoadDoc(LR"XML(<Doc><Content><p><div style="Used">Text</div></p></Content><Styles><Style name="Ancestor"><color>#FF8000</color></Style><Style name="Parent" parent="Ancestor"><size>2x</size></Style><Style name="Used" parent="Parent"><b>true</b></Style><Style name="Unused"><i>true</i></Style></Styles></Doc>)XML");
+		auto copied = model->CopyDocument(TextPos(0, 1), TextPos(0, 3), false);
+		TEST_ASSERT(copied->GetTextForReading(L"|") == L"ex");
+		TEST_ASSERT(!copied->styles.Keys().Contains(L"Unused"));
+		for (auto name : { L"Used", L"Parent", L"Ancestor" })
+		{
+			TEST_ASSERT(copied->styles[name] == model->styles[name]);
+		}
+		copied->styles[L"Used"]->styles->bold = false;
+		TEST_ASSERT(!model->styles[L"Used"]->styles->bold.Value());
+		for (bool deepCopy : { false, true })
+		{
+			TEST_ASSERT(!model->CopyDocument(TextPos(0, 3), TextPos(0, 1), deepCopy));
+			TEST_ASSERT(!model->CopyDocument(TextPos(-1, 0), TextPos(0, 1), deepCopy));
+			TEST_ASSERT(!model->CopyDocument(TextPos(0, 0), TextPos(1, 0), deepCopy));
+			TEST_ASSERT(!model->CopyDocument(TextPos(0, -1), TextPos(0, 1), deepCopy));
+			TEST_ASSERT(!model->CopyDocument(TextPos(0, 0), TextPos(0, 5), deepCopy));
+			model->paragraphs.Clear();
+			TEST_ASSERT(model->CopyDocument(TextPos(7, 3), TextPos(7, 3), deepCopy));
+			TEST_ASSERT(!model->CopyDocument(TextPos(0, 0), TextPos(0, 1), deepCopy));
+			auto paragraph = Ptr(new DocumentParagraphRun);
+			auto text = Ptr(new DocumentTextRun);
+			text->text = L"Text";
+			paragraph->runs.Add(text);
+			model->paragraphs.Add(paragraph);
+		}
+	});
+
+	TEST_CASE(L"Repeated insertion preserves conflicting ancestry without accumulating style aliases")
+	{
+		auto target = LoadDoc(LR"XML(<Doc><Content><p><div style="Child">Old</div></p></Content><Styles><Style name="Parent"><color>#FF0000</color></Style><Style name="Child" parent="Parent"><b>true</b></Style></Styles></Doc>)XML");
+		auto source = LoadDoc(LR"XML(<Doc><Content><p><div style="Child">New</div></p></Content><Styles><Style name="Parent"><color>#0000FF</color></Style><Style name="Child" parent="Parent"><b>true</b></Style><Style name="Unused"><i>true</i></Style></Styles></Doc>)XML");
+		auto initialCount = target->styles.Count();
+		for (vint i = 0; i < 4; i++)
+		{
+			TEST_ASSERT(target->EditRun(TextPos(0, 3), TextPos(0, i == 0 ? 3 : 6), source, true) == 1);
+			TEST_ASSERT(target->GetTextForReading(L"|") == L"OldNew");
+			TEST_ASSERT(target->styles.Count() == initialCount + 3);
+			TEST_ASSERT(target->SummarizeStyle(TextPos(0, 0), TextPos(0, 3))->color.Value() == Color(255, 0, 0));
+			TEST_ASSERT(target->SummarizeStyle(TextPos(0, 3), TextPos(0, 6))->color.Value() == Color(0, 0, 255));
+			TEST_ASSERT(target->SummarizeStyleName(TextPos(0, 3), TextPos(0, 6)).Value() == L"Child_2");
+			TEST_ASSERT(target->styles[L"Child_2"]->parentStyleName == L"Parent_2");
+			TEST_ASSERT(source->styles[L"Child"]->parentStyleName == L"Parent");
 		}
 	});
 
