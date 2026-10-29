@@ -7618,6 +7618,8 @@ namespace vl::inter_process::async_tcp_socket
 		WString								GetRelativePath();
 		WString								GetQuery();
 		bool								TryGetBodyUtf8(WString& body);
+		/// <summary>Replace the callback for cancellation before a response is accepted. If already cancelled, invoke it immediately; after response acceptance or API shutdown, do nothing. Response completion uses the callback passed to Respond instead.</summary>
+		void								SetCancellationCallback(Func<void()> callback);
 
 		bool								Respond(
 			Ptr<HttpResponse> response,
