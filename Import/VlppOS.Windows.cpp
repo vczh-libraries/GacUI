@@ -1759,6 +1759,7 @@ TestEncoding
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET.WINDOWS.CPP
 ***********************************************************************/
+#include <WS2tcpip.h>
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -2089,7 +2090,11 @@ ConnectionState
 		EventObject						eventCallbacksDrained;
 
 		bool							clientMode = false;
+		WString							clientHost;
 		vint							clientPort = 0;
+		List<SOCKADDR_STORAGE>			clientAddresses;
+		HANDLE							clientResolveCancel = nullptr;
+		ULONGLONG						clientConnectDeadline = 0;
 		ClientStatus						clientStatus = ClientStatus::Ready;
 		EventObject						eventWaitForServer;
 		PTP_TIMER						clientRetryTimer = nullptr;
@@ -2192,6 +2197,7 @@ ConnectionState
 		void QueueTerminal(DWORD error, bool reportError);
 		void DeliverTerminal(DWORD error, bool reportError);
 		void StartConnectAttempt();
+		void ResolveServer();
 		void CompleteConnect(SOCKET operationSocket, vint generation, DWORD error);
 		void QueueConnectFailure(DWORD error);
 		void DeliverConnectFailure(DWORD error, bool fatal);
@@ -2200,13 +2206,26 @@ ConnectionState
 		static VOID CALLBACK RetryTimerCallback(PTP_CALLBACK_INSTANCE, PVOID context, PTP_TIMER)
 		{
 			auto self = (ConnectionState*)context;
+			CS_LOCK(self->lockState)
+			{
+				if (self->stopping || self->clientStatus != ClientStatus::WaitingForServer) return;
+				if (self->socket != INVALID_SOCKET)
+				{
+					if (GetTickCount64() >= self->clientConnectDeadline)
+					{
+						CancelIoEx((HANDLE)self->socket, nullptr);
+					}
+					return;
+				}
+			}
 			self->StartConnectAttempt();
 		}
 
 	public:
-		ConnectionState(IocpRuntime* _runtime, bool _clientMode, vint _clientPort)
+		ConnectionState(IocpRuntime* _runtime, const WString& _clientHost, vint _clientPort)
 			: runtime(_runtime)
-			, clientMode(_clientMode)
+			, clientMode(true)
+			, clientHost(_clientHost)
 			, clientPort(_clientPort)
 		{
 			CHECK_ERROR(eventIoDrained.CreateManualUnsignal(true), L"IAsyncSocket failed to create its I/O drain event.");
@@ -2731,6 +2750,63 @@ ConnectionState
 		Stop();
 	}
 
+	void ConnectionState::ResolveServer()
+	{
+		OVERLAPPED overlapped = {};
+		overlapped.hEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+		CHECK_ERROR(overlapped.hEvent != nullptr, L"AsyncSocketClient failed to create its resolution event.");
+		ADDRINFOEXW hints = {};
+		hints.ai_family = AF_UNSPEC;
+		hints.ai_socktype = SOCK_STREAM;
+		hints.ai_protocol = IPPROTO_TCP;
+		ADDRINFOEXW* addresses = nullptr;
+		timeval timeout = {};
+		timeout.tv_sec = AsyncSocketClientResolveTimeout / 1000;
+		auto service = itow(clientPort);
+		INT error = WSA_E_CANCELLED;
+		CS_LOCK(lockState)
+		{
+			if (!stopping)
+			{
+				error = GetAddrInfoExW(clientHost.Buffer(), service.Buffer(), NS_DNS, nullptr, &hints, &addresses, &timeout, &overlapped, nullptr, &clientResolveCancel);
+			}
+		}
+		if (error == WSA_IO_PENDING)
+		{
+			WaitForSingleObject(overlapped.hEvent, INFINITE);
+			error = GetAddrInfoExOverlappedResult(&overlapped);
+		}
+		CS_LOCK(lockState)
+		{
+			clientResolveCancel = nullptr;
+			if (!stopping && error == ERROR_SUCCESS)
+			{
+				for (auto address = addresses; address; address = address->ai_next)
+				{
+					if ((address->ai_family == AF_INET || address->ai_family == AF_INET6) && address->ai_addrlen <= sizeof(SOCKADDR_STORAGE))
+					{
+						SOCKADDR_STORAGE copied = {};
+						memcpy(&copied, address->ai_addr, address->ai_addrlen);
+						clientAddresses.Add(copied);
+					}
+				}
+				if (clientAddresses.Count() == 0) error = WSAHOST_NOT_FOUND;
+			}
+			if (error != ERROR_SUCCESS) clientAttempts = AsyncSocketClientRetryCount;
+		}
+		if (addresses) FreeAddrInfoExW(addresses);
+		CloseHandle(overlapped.hEvent);
+		EndPending();
+		if (error == ERROR_SUCCESS)
+		{
+			StartConnectAttempt();
+		}
+		else
+		{
+			QueueConnectFailure(error);
+		}
+	}
+
 	void ConnectionState::StartConnectAttempt()
 	{
 		auto retainedState = Retain();
@@ -2739,24 +2815,23 @@ ConnectionState
 		DWORD immediateError = ERROR_SUCCESS;
 
 		lockState.Enter();
-		if (!clientMode || stopping || clientStatus != ClientStatus::WaitingForServer)
+		if (!clientMode || stopping || clientStatus != ClientStatus::WaitingForServer || socket != INVALID_SOCKET)
 		{
 			lockState.Leave();
 			return;
 		}
-		clientAttempts++;
+		auto remoteAddress = clientAddresses[clientAttempts++ % clientAddresses.Count()];
+		auto addressSize = remoteAddress.ss_family == AF_INET ? sizeof(SOCKADDR_IN) : sizeof(SOCKADDR_IN6);
 
-		createdSocket = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
+		createdSocket = WSASocketW(remoteAddress.ss_family, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
 		if (createdSocket == INVALID_SOCKET)
 		{
 			immediateError = WSAGetLastError();
 		}
 
-		SOCKADDR_IN localAddress = {};
-		localAddress.sin_family = AF_INET;
-		localAddress.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-		localAddress.sin_port = 0;
-		if (immediateError == ERROR_SUCCESS && bind(createdSocket, (SOCKADDR*)&localAddress, sizeof(localAddress)) == SOCKET_ERROR)
+		SOCKADDR_STORAGE localAddress = {};
+		localAddress.ss_family = remoteAddress.ss_family;
+		if (immediateError == ERROR_SUCCESS && bind(createdSocket, (SOCKADDR*)&localAddress, (int)addressSize) == SOCKET_ERROR)
 		{
 			immediateError = WSAGetLastError();
 		}
@@ -2791,14 +2866,10 @@ ConnectionState
 			operation = new ConnectOperation(retainedState, createdSocket, generation);
 			BeginPendingLocked();
 
-			SOCKADDR_IN remoteAddress = {};
-			remoteAddress.sin_family = AF_INET;
-			remoteAddress.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-			remoteAddress.sin_port = htons((u_short)clientPort);
 			auto result = connectEx(
 				createdSocket,
 				(SOCKADDR*)&remoteAddress,
-				sizeof(remoteAddress),
+				(int)addressSize,
 				nullptr,
 				0,
 				nullptr,
@@ -2813,6 +2884,14 @@ ConnectionState
 					socket = INVALID_SOCKET;
 					EndPendingLocked();
 				}
+			}
+			if (immediateError == ERROR_SUCCESS)
+			{
+				clientConnectDeadline = GetTickCount64() + AsyncSocketClientConnectTimeout;
+				LARGE_INTEGER dueTime;
+				dueTime.QuadPart = -(LONGLONG)AsyncSocketClientConnectTimeout * 10000;
+				FILETIME fileTime{ dueTime.LowPart, (DWORD)dueTime.HighPart };
+				SetThreadpoolTimer(clientRetryTimer, &fileTime, 0, 0);
 			}
 		}
 		lockState.Leave();
@@ -2843,6 +2922,7 @@ ConnectionState
 		lockState.Enter();
 		if (!stopping && clientStatus == ClientStatus::WaitingForServer && socket == operationSocket && clientGeneration == generation)
 		{
+			SetThreadpoolTimer(clientRetryTimer, nullptr, 0, 0);
 			if (error == ERROR_SUCCESS)
 			{
 				connected = true;
@@ -2955,17 +3035,19 @@ ConnectionState
 
 	void ConnectionState::WaitForServer()
 	{
+		auto retainedState = Retain();
 		bool begin = false;
 		CS_LOCK(lockState)
 		{
 			if (clientMode && clientStatus == ClientStatus::Ready && !stopping)
 			{
 				clientStatus = ClientStatus::WaitingForServer;
+				BeginPendingLocked();
 				begin = true;
 			}
 		}
 		CHECK_ERROR(begin, L"IAsyncSocketClient::WaitForServer can only be called once while the client is ready.");
-		StartConnectAttempt();
+		ResolveServer();
 		eventWaitForServer.Wait();
 	}
 
@@ -2996,6 +3078,7 @@ ConnectionState
 				socket = INVALID_SOCKET;
 				if (clientMode)
 				{
+					if (clientResolveCancel) GetAddrInfoExCancel(&clientResolveCancel);
 					clientStatus = ClientStatus::Disconnected;
 					timer = clientRetryTimer;
 				}
@@ -3080,7 +3163,7 @@ AsyncSocketServer::Impl
 		public:
 			Impl*							server = nullptr;
 			SOCKET							acceptedSocket = INVALID_SOCKET;
-			BYTE							addresses[(sizeof(SOCKADDR_IN) + 16) * 2];
+			BYTE							addresses[(sizeof(SOCKADDR_STORAGE) + 16) * 2];
 
 			AcceptOperation(Impl* _server, SOCKET _acceptedSocket)
 				: server(_server)
@@ -3114,6 +3197,7 @@ AsyncSocketServer::Impl
 		bool							unexpectedStopQueued = false;
 		bool							unexpectedStopNotified = false;
 		SOCKET							listener = INVALID_SOCKET;
+		int								listenerFamily = AF_INET6;
 		LPFN_ACCEPTEX						acceptEx = nullptr;
 		bool							acceptPending = false;
 		vint							pendingAccepts = 0;
@@ -3180,7 +3264,7 @@ AsyncSocketServer::Impl
 				lockState.Leave();
 				return false;
 			}
-			acceptedSocket = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
+			acceptedSocket = WSASocketW(listenerFamily, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
 			if (acceptedSocket == INVALID_SOCKET)
 			{
 				immediateError = WSAGetLastError();
@@ -3196,8 +3280,8 @@ AsyncSocketServer::Impl
 					acceptedSocket,
 					operation->addresses,
 					0,
-					sizeof(SOCKADDR_IN) + 16,
-					sizeof(SOCKADDR_IN) + 16,
+					sizeof(SOCKADDR_STORAGE) + 16,
+					sizeof(SOCKADDR_STORAGE) + 16,
 					&received,
 					&operation->native.overlapped
 				);
@@ -3406,7 +3490,18 @@ AsyncSocketServer::Impl
 			}
 			CHECK_ERROR(begin, L"AsyncSocketServer::Start can only be called once.");
 			StartScope startScope(this);
-			SOCKET createdListener = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
+			SOCKET createdListener = WSASocketW(AF_INET6, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
+			DWORD ipv6Only = 0;
+			if (createdListener != INVALID_SOCKET && setsockopt(createdListener, IPPROTO_IPV6, IPV6_V6ONLY, (CHAR*)&ipv6Only, sizeof(ipv6Only)) == SOCKET_ERROR)
+			{
+				closesocket(createdListener);
+				createdListener = INVALID_SOCKET;
+			}
+			if (createdListener == INVALID_SOCKET)
+			{
+				listenerFamily = AF_INET;
+				createdListener = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
+			}
 			if (createdListener == INVALID_SOCKET)
 			{
 				throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::Other, L"AsyncSocketServer failed to create its listener socket.");
@@ -3419,11 +3514,18 @@ AsyncSocketServer::Impl
 				throw AsyncSocketServerStartException(AsyncSocketServerStartFailure::Other, L"AsyncSocketServer failed to apply SO_EXCLUSIVEADDRUSE.");
 			}
 
-			SOCKADDR_IN address = {};
-			address.sin_family = AF_INET;
-			address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-			address.sin_port = htons((u_short)port);
-			if (bind(createdListener, (SOCKADDR*)&address, sizeof(address)) == SOCKET_ERROR)
+			SOCKADDR_STORAGE address = {};
+			address.ss_family = (ADDRESS_FAMILY)listenerFamily;
+			if (listenerFamily == AF_INET6)
+			{
+				((SOCKADDR_IN6*)&address)->sin6_port = htons((u_short)port);
+			}
+			else
+			{
+				((SOCKADDR_IN*)&address)->sin_port = htons((u_short)port);
+			}
+			auto addressSize = listenerFamily == AF_INET6 ? sizeof(SOCKADDR_IN6) : sizeof(SOCKADDR_IN);
+			if (bind(createdListener, (SOCKADDR*)&address, (int)addressSize) == SOCKET_ERROR)
 			{
 				auto error = WSAGetLastError();
 				closesocket(createdListener);
@@ -3616,6 +3718,7 @@ AsyncSocketClient::Impl
 	class AsyncSocketClient::Impl : public Object
 	{
 	private:
+		WString								host;
 		vint								port = 0;
 		Ptr<IocpRuntime>						runtime;
 		Ptr<ConnectionState>				state;
@@ -3624,10 +3727,11 @@ AsyncSocketClient::Impl
 		bool							stopped = false;
 
 	public:
-		Impl(vint _port)
-			: port(_port)
+		Impl(const WString& _host, vint _port)
+			: host(_host)
+			, port(_port)
 			, runtime(Ptr(new IocpRuntime))
-			, state(Ptr(new ConnectionState(runtime.Obj(), true, _port)))
+			, state(Ptr(new ConnectionState(runtime.Obj(), _host, _port)))
 			, connection(Ptr(new AsyncSocketConnection(state)))
 		{
 		}
@@ -3635,6 +3739,11 @@ AsyncSocketClient::Impl
 		~Impl()
 		{
 			Stop();
+		}
+
+		const WString& GetHost()
+		{
+			return host;
 		}
 
 		vint GetPort()
@@ -3682,9 +3791,15 @@ AsyncSocketClient
 ***********************************************************************/
 
 	AsyncSocketClient::AsyncSocketClient(vint port)
+		: AsyncSocketClient(L"localhost", port)
 	{
+	}
+
+	AsyncSocketClient::AsyncSocketClient(const WString& host, vint port)
+	{
+		CHECK_ERROR(IsValidSocketHost(host), L"AsyncSocketClient requires a hostname or an unbracketed IP address.");
 		CHECK_ERROR(1 <= port && port <= 65535, L"AsyncSocketClient requires a port in 1..65535.");
-		impl = new Impl(port);
+		impl = new Impl(host, port);
 	}
 
 	AsyncSocketClient::~AsyncSocketClient()
@@ -3699,7 +3814,7 @@ AsyncSocketClient
 
 	Ptr<IAsyncSocketClient> AsyncSocketClient::CreateSameEndpointClient()
 	{
-		return Ptr(new AsyncSocketClient(GetPort()));
+		return Ptr(new AsyncSocketClient(impl->GetHost(), GetPort()));
 	}
 
 	IAsyncSocketConnection* AsyncSocketClient::GetConnection()
@@ -3721,6 +3836,12 @@ AsyncSocketClient
 
 namespace vl::inter_process::async_tcp_socket
 {
+	bool IsSocketIpv6Address(const WString& host)
+	{
+		IN6_ADDR address = {};
+		return InetPtonW(AF_INET6, host.Buffer(), &address) == 1;
+	}
+
 	Ptr<IAsyncSocketServer> CreateDefaultAsyncSocketServer(vint port)
 	{
 		return Ptr(new windows_socket::AsyncSocketServer(port));
@@ -3729,6 +3850,11 @@ namespace vl::inter_process::async_tcp_socket
 	Ptr<IAsyncSocketClient> CreateDefaultAsyncSocketClient(vint port)
 	{
 		return Ptr(new windows_socket::AsyncSocketClient(port));
+	}
+
+	Ptr<IAsyncSocketClient> CreateDefaultAsyncSocketClient(const WString& host, vint port)
+	{
+		return Ptr(new windows_socket::AsyncSocketClient(host, port));
 	}
 }
 
@@ -4192,12 +4318,17 @@ HttpClient
 ***********************************************************************/
 
 HttpClient::HttpClient(const WString _baseUrl, vint port)
+	: HttpClient(L"localhost", _baseUrl, port)
+{
+}
+
+HttpClient::HttpClient(const WString& host, const WString _baseUrl, vint port)
 	: baseUrl(_baseUrl)
 {
 	CHECK_ERROR(eventWaitForServer.CreateAutoUnsignal(false), L"HttpClient initialization failed on eventWaitForServer.CreateAutoUnsignal.");
 	CHECK_ERROR(eventResponseUploadsCompleted.CreateManualUnsignal(true), L"HttpClient initialization failed on eventResponseUploadsCompleted.CreateManualUnsignal.");
 
-	httpClientApi = Ptr(new HttpClientApi(L"localhost", port));
+	httpClientApi = Ptr(new HttpClientApi(host, port));
 	urlConnect = baseUrl + HttpServerUrl_Connect;
 }
 
@@ -4652,12 +4783,18 @@ HttpClientApi::HttpClientApi(const WString& _server, vint _port)
 	WinHttpSetOption(httpSession, WINHTTP_OPTION_IPV6_FAST_FALLBACK, &ipv6FastFallback, sizeof(ipv6FastFallback));
 #endif
 
+	auto connectionHost = server.IndexOf(L':') != -1 && server[0] != L'[' ? L"[" + server + L"]" : server;
 	httpConnection = WinHttpConnect(
 		httpSession,
-		server.Buffer(),
+		connectionHost.Buffer(),
 		(INTERNET_PORT)port,
 		0);
-	CHECK_ERROR(httpConnection != NULL, L"WinHttpConnect failed.");
+	if (!httpConnection)
+	{
+		auto error = GetLastError();
+		WinHttpCloseHandle(httpSession);
+		throw Exception(L"WinHttpConnect failed with Windows error " + itow(error) + L" for " + connectionHost + L".");
+	}
 }
 
 HttpClientApi::~HttpClientApi()
@@ -5393,7 +5530,7 @@ HttpServer
 ***********************************************************************/
 
 HttpServer::HttpServer(const WString _baseUrl, vint port)
-	: HttpServerApi(WString::Unmanaged(L"http://localhost:") + itow(port) + _baseUrl + L"/", true)
+	: HttpServerApi(WString::Unmanaged(L"http://+:") + itow(port) + _baseUrl + L"/", true)
 	, baseUrl(_baseUrl)
 {
 	urlConnect = baseUrl + HttpServerUrl_Connect;
@@ -5890,7 +6027,12 @@ HttpServerApi::HttpServerApi(const WString& _urlPrefix, bool _respondToOptions)
 		urlPrefix.Buffer(),
 		0,
 		0);
-	CHECK_ERROR(result == NO_ERROR, L"HttpAddUrlToUrlGroup failed.");
+	if (result != NO_ERROR)
+	{
+		Stop();
+		CloseHandle(hEventRequest);
+		throw Exception(L"HttpAddUrlToUrlGroup failed with Windows error " + itow(result) + L" for " + urlPrefix + L".");
+	}
 
 	HTTP_BINDING_INFO bindingInfo;
 	ZeroMemory(&bindingInfo, sizeof(bindingInfo));
@@ -6481,7 +6623,7 @@ HANDLE NamedPipeServer::ServerCreatePipe(const WString& pipeName)
 	HANDLE hPipe = CreateNamedPipe(
 		(L"\\\\.\\pipe\\" + pipeName).Buffer(),
 		PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,
-		PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS,
+		PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE,
 		PIPE_UNLIMITED_INSTANCES,
 		65536,
 		65536,
@@ -6746,9 +6888,15 @@ bool NamedPipeServer::IsStopped()
 NamedPipeClient
 ***********************************************************************/
 
-HANDLE NamedPipeClient::ClientCreatePipe(const WString& pipeName)
+HANDLE NamedPipeClient::ClientCreatePipe(const WString& host, const WString& pipeName)
 {
-	auto fullPipeName = L"\\\\.\\pipe\\" + pipeName;
+	CHECK_ERROR(host.Length() > 0, L"NamedPipeClient requires a server name.");
+	for (vint i = 0; i < host.Length(); i++)
+	{
+		CHECK_ERROR(host[i] > L' ' && host[i] != L'/' && host[i] != L'\\' && host[i] != L':' && host[i] != L'[' && host[i] != L']', L"NamedPipeClient requires a UNC server name, not a URL or a raw IPv6 address.");
+	}
+	auto server = _wcsicmp(host.Buffer(), L"localhost") == 0 ? WString::Unmanaged(L".") : host;
+	auto fullPipeName = L"\\\\" + server + L"\\pipe\\" + pipeName;
 	auto start = GetTickCount64();
 	while (true)
 	{
@@ -6780,7 +6928,12 @@ HANDLE NamedPipeClient::ClientCreatePipe(const WString& pipeName)
 }
 
 NamedPipeClient::NamedPipeClient(const WString& _pipeName)
-	: NamedPipeConnection(ClientCreatePipe(_pipeName))
+	: NamedPipeClient(L"localhost", _pipeName)
+{
+}
+
+NamedPipeClient::NamedPipeClient(const WString& host, const WString& _pipeName)
+	: NamedPipeConnection(ClientCreatePipe(host, _pipeName))
 {
 }
 

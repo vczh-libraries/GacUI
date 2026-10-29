@@ -11936,7 +11936,11 @@ Rich Content Document (model)
 			void									ConvertToText(stream::TextWriter& writer, bool forCaret, const WString& paragraphDelimiter);
 			
 			bool									CheckEditRange(TextPos begin, TextPos end, RunRangeMap& relatedRanges);
-			/// <summary>Copies a selection with its referenced styles and their parents.</summary>
+			/// <summary>Copies a range. Deep copies independently clone every style definition, including unused definitions and resolved properties. Shallow copies share referenced style definitions and their transitive parents.</summary>
+			/// <param name="begin">The inclusive start of the range.</param>
+			/// <param name="end">The exclusive end of the range.</param>
+			/// <param name="deepCopy">Whether to clone runs and the complete style catalog.</param>
+			/// <returns>The copied document, or null for an invalid range. An empty document accepts any equal start and end positions.</returns>
 			Ptr<DocumentModel>						CopyDocument(TextPos begin, TextPos end, bool deepCopy);
 			/// <summary>Deep-copies the complete document, including unused style definitions.</summary>
 			Ptr<DocumentModel>						CopyDocument();

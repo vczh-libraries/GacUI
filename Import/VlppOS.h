@@ -1826,14 +1826,14 @@ namespace vl::inter_process::async_tcp_socket
 		virtual void							Stop() = 0;
 	};
 
-	/// <summary>An asynchronous TCP client for the local machine.</summary>
+	/// <summary>An asynchronous TCP client for a hostname, IPv4 or IPv6 destination.</summary>
 	class IAsyncSocketClient : public virtual Interface
 	{
 	public:
-		/// <summary>Returns the immutable loopback port selected during construction.</summary>
+		/// <summary>Returns the immutable destination port selected during construction.</summary>
 		virtual vint							GetPort() = 0;
 		/// <summary>Creates a fresh independent client with the same transport configuration and endpoint.</summary>
-		/// <remarks>The returned client must be distinct, report the same port, and have <see cref="ClientStatus::Ready"/> status. This operation remains available while the source client is active or stopped.</remarks>
+		/// <remarks>The returned client must be distinct, preserve the hostname/address, port and native backend, and have <see cref="ClientStatus::Ready"/> status. This operation remains available while the source client is active or stopped.</remarks>
 		virtual Ptr<IAsyncSocketClient>			CreateSameEndpointClient() = 0;
 		virtual IAsyncSocketConnection*			GetConnection() = 0;
 		virtual void							WaitForServer() = 0;
@@ -1866,11 +1866,11 @@ namespace vl::inter_process::async_tcp_socket
 		virtual void							OnServerStopped();
 	};
 
-	/// <summary>An asynchronous TCP server for the local machine.</summary>
+	/// <summary>An asynchronous TCP server listening on the machine's network interfaces.</summary>
 	class IAsyncSocketServer : public virtual Interface
 	{
 	public:
-		/// <summary>Returns the immutable loopback port selected during construction.</summary>
+		/// <summary>Returns the immutable listening port selected during construction.</summary>
 		virtual vint							GetPort() = 0;
 		virtual void							Start(IAsyncSocketServerCallback* callback) = 0;
 		virtual void							Stop() = 0;
@@ -1881,9 +1881,17 @@ namespace vl::inter_process::async_tcp_socket
 	// a fresh native socket and is followed by an asynchronous millisecond delay.
 	constexpr vint AsyncSocketClientRetryCount = 50;
 	constexpr vint AsyncSocketClientRetryDelay = 100;
+	constexpr vint AsyncSocketClientConnectTimeout = 1000;
+	constexpr vint AsyncSocketClientResolveTimeout = 5000;
+
+	/// <summary>Validates a DNS hostname or an unbracketed IPv4/IPv6 address, without resolving it. URLs, paths and separate ports are rejected.</summary>
+	extern bool								IsValidSocketHost(const WString& host);
+	/// <summary>Formats a validated host and port as an HTTP authority, bracketing IPv6 addresses.</summary>
+	extern WString							CreateSocketHttpAuthority(const WString& host, vint port);
 
 	extern Ptr<IAsyncSocketServer>			CreateDefaultAsyncSocketServer(vint port);
 	extern Ptr<IAsyncSocketClient>			CreateDefaultAsyncSocketClient(vint port);
+	extern Ptr<IAsyncSocketClient>			CreateDefaultAsyncSocketClient(const WString& host, vint port);
 
 /***********************************************************************
 NetworkProtocolConnection

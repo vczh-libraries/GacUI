@@ -55,6 +55,7 @@ namespace vl::inter_process::async_tcp_socket::windows_socket
 
 	public:
 		AsyncSocketClient(vint port);
+		AsyncSocketClient(const WString& host, vint port);
 		~AsyncSocketClient();
 
 		vint								GetPort() override;
@@ -317,6 +318,7 @@ HttpClient
 
 public:
 	HttpClient(const WString _baseUrl, vint port);
+	HttpClient(const WString& host, const WString _baseUrl, vint port);
 	~HttpClient();
 
 	void											InstallCallback(INetworkProtocolCallback* _callback) override;
@@ -681,11 +683,12 @@ public:
 class NamedPipeClient : public NamedPipeConnection, public virtual INetworkProtocolClient
 {
 protected:
-	static HANDLE									ClientCreatePipe(const WString& pipeName);
+	static HANDLE									ClientCreatePipe(const WString& host, const WString& pipeName);
 	ClientStatus									status = ClientStatus::Ready;
 
 public:
 	NamedPipeClient(const WString& _pipeName);
+	NamedPipeClient(const WString& host, const WString& _pipeName);
 	~NamedPipeClient();
 
 	INetworkProtocolConnection*						GetConnection() override;
