@@ -1,707 +1,1058 @@
 .PHONY: all clean pre-build
 .DEFAULT_GOAL := all
+
 CPP_TARGET=./Bin/UnitTest
 CPP_OBJECTS=./Obj/Vlpp.o ./Obj/Vlpp.Linux.o ./Obj/VlppGlrParser.o ./Obj/VlppOS.o ./Obj/VlppOS.Linux.o ./Obj/VlppReflection.o ./Obj/VlppRegex.o ./Obj/VlppWorkflowLibrary.o ./Obj/VlppWorkflowCompiler.o ./Obj/VlppWorkflowRuntime.o ./Obj/GuiGraphicsDocumentElement.o ./Obj/GuiGraphicsDocumentRenderer_GuiDocumentImageCache.o ./Obj/GuiGraphicsDocumentRenderer_SetPropertiesVisitor.o ./Obj/GuiGraphicsDocumentRenderer_GuiDocumentParagraphCache.o ./Obj/GuiGraphicsDocumentRenderer_GuiDocumentElementRenderer.o ./Obj/GuiGraphicsElement.o ./Obj/GuiGraphicsElementInterfaces.o ./Obj/GuiGraphicsResourceManager.o ./Obj/GuiNativeWindow.o ./Obj/GacGenController.o ./Obj/GuiHostedApplication.o ./Obj/GuiHostedController.o ./Obj/GuiHostedGraphics.o ./Obj/GuiHostedWindow.o ./Obj/GuiHostedWindowProxy_Main.o ./Obj/GuiHostedWindowProxy_NonMain.o ./Obj/GuiHostedWindowProxy_Placeholder.o ./Obj/GuiRemoteRendererSingle.o ./Obj/GuiRemoteRendererSingle_Injection.o ./Obj/GuiRemoteRendererSingle_Controller.o ./Obj/GuiRemoteRendererSingle_IO.o ./Obj/GuiRemoteRendererSingle_MainWindow.o ./Obj/GuiRemoteRendererSingle_Rendering.o ./Obj/GuiRemoteRendererSingle_Rendering_Document.o ./Obj/GuiRemoteRendererSingle_Rendering_Elements.o ./Obj/GuiRemoteRendererSingle_Rendering_Image.o ./Obj/GuiRemoteRendererSingle_Rendering_Label.o ./Obj/GuiRemoteController.o ./Obj/GuiRemoteControllerInjection.o ./Obj/GuiRemoteControllerSetup.o ./Obj/GuiRemoteEvents.o ./Obj/GuiRemoteGraphics.o ./Obj/GuiRemoteGraphics_BasicElements.o ./Obj/GuiRemoteGraphics_Document.o ./Obj/GuiRemoteGraphics_Document_Helpers.o ./Obj/GuiRemoteGraphics_ImageService.o ./Obj/GuiRemoteProtocolSchemaShared.o ./Obj/GuiRemoteProtocol_Channel_Async.o ./Obj/GuiRemoteProtocol_Channel_AsyncRenderer.o ./Obj/GuiRemoteProtocol_Channel_Json.o ./Obj/GuiRemoteProtocol_DomDiff.o ./Obj/GuiRemoteProtocol_Filter.o ./Obj/GuiRemoteProtocol_FilterVerifier.o ./Obj/GuiRemoteWindow.o ./Obj/GuiRemoteProtocolSchema_BuildFrame.o ./Obj/GuiRemoteProtocolSchema_CopyDom.o ./Obj/GuiRemoteProtocolSchema_DiffFrame.o ./Obj/GuiRemoteProtocolSchema.o ./Obj/GuiDocument.o ./Obj/GuiDocumentClipboard_Document.o ./Obj/GuiDocumentClipboard_HtmlFormat.o ./Obj/GuiDocumentClipboard_RichTextFormat.o ./Obj/GuiDocumentEditor_AddContainer.o ./Obj/GuiDocumentEditor_ClearUnnecessaryRun.o ./Obj/GuiDocumentEditor_CloneRun.o ./Obj/GuiDocumentEditor_CollectStyle.o ./Obj/GuiDocumentEditor_CutRun.o ./Obj/GuiDocumentEditor_GetRunRange.o ./Obj/GuiDocumentEditor_LocateHyperlink.o ./Obj/GuiDocumentEditor_LocateStyle.o ./Obj/GuiDocumentEditor_RemoveContainer.o ./Obj/GuiDocumentEditor_RemoveRun.o ./Obj/GuiDocumentEditor_ReplaceStyleName.o ./Obj/GuiDocumentEditor_SummerizeStyle.o ./Obj/GuiDocument_Edit.o ./Obj/GuiDocument_Load.o ./Obj/GuiDocument_Save.o ./Obj/GuiParserManager.o ./Obj/GuiPluginManager.o ./Obj/GuiResource.o ./Obj/GuiResourceManager.o ./Obj/GuiResourceTypeResolvers.o ./Obj/MiniHttpAutomationService.o ./Obj/GuiSharedAsyncService.o ./Obj/GuiSharedAutomationService.o ./Obj/GuiSharedCallbackService.o ./Obj/TuiApplication.o ./Obj/TuiController.o ./Obj/TuiGraphics.o ./Obj/TuiGraphicsRenderers.o ./Obj/TuiTextLayout.o ./Obj/TuiWindow.o ./Obj/TuiGraphicsElement.o ./Obj/GuiApplication.o ./Obj/GuiBasicControls.o ./Obj/GuiInstanceRootObject.o ./Obj/GuiLabelControls.o ./Obj/GuiThemeManager.o ./Obj/GuiWindowControls.o ./Obj/GuiGraphicsBoundsComposition.o ./Obj/GuiGraphicsComposition.o ./Obj/GuiGraphicsComposition_Helpers.o ./Obj/GuiGraphicsComposition_Layout.o ./Obj/GuiGraphicsEventReceiver.o ./Obj/GuiGraphicsWindowComposition.o ./Obj/GuiGraphicsHost.o ./Obj/GuiGraphicsHost_Alt.o ./Obj/GuiGraphicsHost_ShortcutKey.o ./Obj/GuiGraphicsHost_Tab.o ./Obj/GuiGraphicsHost_Point.o ./Obj/GuiButtonControls.o ./Obj/GuiContainerControls.o ./Obj/GuiDateTimeControls.o ./Obj/GuiDialogs.o ./Obj/GuiScrollControls.o ./Obj/DataSourceImpl_IItemProvider_ItemProviderBase.o ./Obj/DataSourceImpl_IItemProvider_NodeItemProvider.o ./Obj/DataSourceImpl_INodeProvider_MemoryNodeProvider.o ./Obj/GuiBindableDataGrid.o ./Obj/GuiBindableListControls.o ./Obj/GuiComboControls.o ./Obj/GuiDataGridControls.o ./Obj/GuiDataGridExtensions.o ./Obj/GuiListControlItemArrangers.o ./Obj/GuiListControls.o ./Obj/GuiListViewControls.o ./Obj/ItemProvider_Binding.o ./Obj/ItemTemplate_IListViewItemView.o ./Obj/GuiTextListControls.o ./Obj/GuiTreeViewControls.o ./Obj/ItemProvider_IListViewItemView.o ./Obj/ItemProvider_ITextItemView.o ./Obj/ItemProvider_ITreeViewItemView.o ./Obj/ItemTemplate_ITextItemView.o ./Obj/ItemTemplate_ITreeViewItemView.o ./Obj/GuiAnimation.o ./Obj/GuiCommonTemplates.o ./Obj/GuiControlTemplates.o ./Obj/GuiThemeStyleFactory.o ./Obj/GuiTextUndoRedo.o ./Obj/GuiDocumentCommonInterface.o ./Obj/GuiDocumentConfig.o ./Obj/GuiDocumentViewer.o ./Obj/GuiMenuControls.o ./Obj/GuiRibbonControls.o ./Obj/GuiRibbonGalleryList.o ./Obj/GuiRibbonImpl.o ./Obj/GuiToolstripCommand.o ./Obj/GuiToolstripMenu.o ./Obj/GacUIReflectionHelper.o ./Obj/GuiGraphicsAxis.o ./Obj/GuiGraphicsFlowComposition.o ./Obj/GuiGraphicsRepeatComposition.o ./Obj/GuiGraphicsRepeatComposition_NonVirtial.o ./Obj/GuiGraphicsRepeatComposition_Virtual.o ./Obj/GuiGraphicsResponsiveComposition.o ./Obj/GuiGraphicsSharedSizeComposition.o ./Obj/GuiGraphicsSpecializedComposition.o ./Obj/GuiGraphicsStackComposition.o ./Obj/GuiGraphicsTableComposition.o ./Obj/GuiEasyLayout.o ./Obj/TuiItemTemplates.o ./Obj/GuiInstanceCompiledWorkflow.o ./Obj/GuiReflectionBasic.o ./Obj/GuiReflectionCompositions.o ./Obj/GuiReflectionControls.o ./Obj/GuiReflectionElements.o ./Obj/GuiReflectionEvents.o ./Obj/GuiReflectionPlugin.o ./Obj/GuiReflectionTemplates.o ./Obj/GuiFakeClipboardService.o ./Obj/GuiFakeDialogServiceBase.o ./Obj/GuiFakeDialogServiceBase_ColorDialog.o ./Obj/GuiFakeDialogServiceBase_FileDialog.o ./Obj/GuiFakeDialogServiceBase_FontDialog.o ./Obj/GuiFakeDialogServiceBase_MessageBox.o ./Obj/GuiFakeDialogService.o ./Obj/TuiFakeDialogService.o ./Obj/GuiFakeDialogServiceUI.o ./Obj/TuiFakeDialogServiceUI.o ./Obj/GuiFakeDialogServiceUIResource.o ./Obj/TuiFakeDialogServiceUIResource.o ./Obj/GuiUtilitiesRegistration.o ./Obj/GuiSharedAutomationService_Controls.o ./Obj/GuiFakeDialogServiceUIReflection.o ./Obj/TuiFakeDialogServiceUIReflection.o ./Obj/GuiCppGen.o ./Obj/GuiInstanceAnimation.o ./Obj/GuiInstanceLoader.o ./Obj/GuiInstanceLoader_PredefinedInstanceBinders.o ./Obj/GuiInstanceLoader_PredefinedInstanceDeserializers.o ./Obj/GuiInstanceLoader_PredefinedTypeResolvers.o ./Obj/GuiInstanceLocalizedStrings.o ./Obj/GuiInstanceRepresentation.o ./Obj/GuiInstanceSharedScript.o ./Obj/GuiInstanceLoader_Compositions.o ./Obj/GuiInstanceLoader_EasyLayout.o ./Obj/GuiInstanceLoader_Document.o ./Obj/GuiInstanceLoader_List.o ./Obj/GuiInstanceLoader_Plugin.o ./Obj/GuiInstanceLoader_Templates.o ./Obj/GuiInstanceLoader_Toolstrip.o ./Obj/GuiInstanceQueryAst.o ./Obj/GuiInstanceQueryParser.o ./Obj/GuiInstanceQuery_Assembler.o ./Obj/GuiInstanceQuery_Lexer.o ./Obj/GuiInstanceQuery.o ./Obj/GuiInstanceLoader_WorkflowCodegen.o ./Obj/GuiInstanceLoader_WorkflowCollectReferences.o ./Obj/GuiInstanceLoader_WorkflowGenerateBindings.o ./Obj/GuiInstanceLoader_WorkflowGenerateCreating.o ./Obj/GuiInstanceLoader_WorkflowInstallBindings.o ./Obj/GuiInstanceLoader_WorkflowModule.o ./Obj/GuiInstanceLoader_WorkflowParser.o ./Obj/GuiInstanceLoader_WorkflowScriptPosition.o ./Obj/GuiRemoteProtocolAst.o ./Obj/GuiRemoteProtocolAst_Json.o ./Obj/GuiRemoteProtocolParser.o ./Obj/GuiRemoteProtocol_Assembler.o ./Obj/GuiRemoteProtocol_Lexer.o ./Obj/GuiRemoteProtocolCompiler.o ./Obj/GuiUnitTestProtocol_Rendering_Document.o ./Obj/GuiUnitTestProtocol_Rendering.o ./Obj/GuiUnitTestProtocol_Shared.o ./Obj/GuiUnitTestUtilities.o ./Obj/DarkSkinConfig.o ./Obj/TuiSkinConfig.o ./Obj/Main.o ./Obj/TestTuiProvider.o ./Obj/TestAutomationService.o ./Obj/TestApplication_Dialog_Color.o ./Obj/TestApplication_Dialog_File.o ./Obj/TestApplication_Dialog_Font.o ./Obj/TestApplication_Dialog_Message.o ./Obj/TestApplication_Tab.o ./Obj/TestApplication_Theme.o ./Obj/TestApplication_Tooltip.o ./Obj/TestApplication_Windows.o ./Obj/TestCompositions_AllNested.o ./Obj/TestCompositions_Bounds.o ./Obj/TestCompositions_Flow.o ./Obj/TestCompositions_Responsive.o ./Obj/TestCompositions_SharedSize.o ./Obj/TestCompositions_Specialized.o ./Obj/TestCompositions_Stack.o ./Obj/TestCompositions_EasyLayout.o ./Obj/TestCompositions_EazyLayoutFailures.o ./Obj/TestCompositions_Table.o ./Obj/TestCompositions_VirtualRepeat.o ./Obj/TestControls_Basic_GuiButton.o ./Obj/TestControls_Basic_GuiScrollContainer.o ./Obj/TestControls_Basic_GuiScroll_ProgressBar.o ./Obj/TestControls_Basic_GuiScroll_Scroll.o ./Obj/TestControls_Basic_GuiScroll_Tracker.o ./Obj/TestControls_Basic_GuiTab.o ./Obj/TestControls_CoreApplication_GuiControl.o ./Obj/TestControls_CoreApplication_GuiLabel.o ./Obj/TestControls_CoreApplication_GuiWindow.o ./Obj/TestControls_EasyLayout.o ./Obj/TestControls_Editor.o ./Obj/TestControls_Editor_Key.o ./Obj/TestControls_Editor_RichText.o ./Obj/TestControls_Editor_InlineObject.o ./Obj/TestControls_Editor_Styles.o ./Obj/TestControls_Editor_Key_Multiline.o ./Obj/TestControls_Editor_Key_Paragraph.o ./Obj/TestControls_Editor_Key_Shared.o ./Obj/TestControls_Editor_Key_Singleline.o ./Obj/TestControls_Editor_Regression.o ./Obj/TestControls_PointScrolling.o ./Obj/TestControls_List_DataGrid_Binding.o ./Obj/TestControls_List_DataGrid_CellEditor.o ./Obj/TestControls_List_DataGrid_CellVisualizer.o ./Obj/TestControls_List_DataGrid_ColumnApi.o ./Obj/TestControls_List_DataGrid_ColumnUI.o ./Obj/TestControls_List_DataGrid_Properties.o ./Obj/TestControls_List_GuiListControl.o ./Obj/TestControls_List_GuiListControl_Template.o ./Obj/TestControls_List_GuiListItemTemplate.o ./Obj/TestControls_List_GuiListItemTemplate_Template.o ./Obj/TestControls_List_GuiSelectableListControl.o ./Obj/TestControls_List_GuiSelectableListControl_Template.o ./Obj/TestControls_List_GuiVirtualListView.o ./Obj/TestControls_List_GuiVirtualListView_Template.o ./Obj/TestControls_List_GuiVirtualTextList.o ./Obj/TestControls_List_GuiVirtualTextList_Template.o ./Obj/TestControls_List_GuiVirtualTreeListControl.o ./Obj/TestControls_List_GuiVirtualTreeListControl_Template.o ./Obj/TestControls_List_GuiVirtualTreeView.o ./Obj/TestControls_List_GuiVirtualTreeView_Template.o ./Obj/TestControls_Ribbon_Gallery.o ./Obj/TestControls_Ribbon_GuiRibbonButtons.o ./Obj/TestControls_Ribbon_GuiRibbonGroup.o ./Obj/TestControls_Ribbon_GuiRibbonTab.o ./Obj/TestControls_Toolstrip_Combo_GuiComboBoxListControl.o ./Obj/TestControls_Toolstrip_Combo_GuiComboBoxListControl_Template.o ./Obj/TestControls_Toolstrip_Combo_GuiDatePicker.o ./Obj/TestControls_Toolstrip_Combo_GuiDateComboBox.o ./Obj/TestControls_Toolstrip_GuiToolstripMenu.o ./Obj/TestControls_Toolstrip_GuiToolstripMenuBar.o ./Obj/TestControls_Toolstrip_GuiToolstripMenuBar_Cascade.o ./Obj/TestControls_Toolstrip_GuiToolstripToolBar.o ./Obj/TestDocumentConfig.o ./Obj/TestFileSystemMock.o ./Obj/TestHostedWindowManager.o ./Obj/TestPtrDescriptableObject.o ./Obj/TestQueryParser.o ./Obj/TestReflectionTypeList.o ./Obj/TestRemote_GraphicsHost_HitTest.o ./Obj/TestRemote_GraphicsHost_Key.o ./Obj/TestRemote_GraphicsHost_KeyAlt.o ./Obj/TestRemote_GraphicsHost_KeyShortcut.o ./Obj/TestRemote_GraphicsHost_KeyTab.o ./Obj/TestRemote_GraphicsHost_Mouse.o ./Obj/TestRemote_GraphicsHost_Shared.o ./Obj/TestRemote_GraphicsHost_Startup.o ./Obj/TestRemote_EmptyWindow.o ./Obj/TestRemote_Caret.o ./Obj/TestRemote_DocumentRunManagement.o ./Obj/TestRemote_AsyncRendererChannel.o ./Obj/TestRemote_ChannelServer.o ./Obj/TestRemote_RenderingDom.o ./Obj/TestRemote_Startup.o ./Obj/TestRemote_UnitTestFramework.o ./Obj/TestRemote_UnitTestFramework_Async.o ./Obj/TestResource.o ./Obj/TestResource_Rpc.o ./Obj/TestItemProviders_TextItemProvider.o ./Obj/TestItemProviders_TextItemBindableProvider.o ./Obj/TestItemProviders_ListViewItemProvider.o ./Obj/TestItemProviders_ListViewItemBindableProvider.o ./Obj/TestItemProviders_TreeViewItemRootProvider.o ./Obj/TestItemProviders_TreeViewItemBindableRootProvider.o ./Obj/TestItemProviders_NodeItemProvider.o ./Obj/TestItemProviders.o ./Obj/DarkSkin.Linux.o ./Obj/DarkSkinResource.Linux.o ./Obj/DarkSkinReflection.Linux.o ./Obj/TuiSkin.Linux.o ./Obj/TuiSkinResource.Linux.o ./Obj/TuiSkinReflection.Linux.o ./Obj/TestRemote_Raw.o ./Obj/TestRawElement_Windows.o ./Obj/FullControlTestEventHandlers.o
+
 CPP_WASM_PTHREAD_POOL_SIZE=32
 CPP_COMPILE_OPTIONS=-DGACUI_SKIN_DEVELOPMENT -I ../../../Import -I ../../../Source
 include $(VCPROOT)/vl/makefile-cpp
+
 pre-build:
 	if ! [ -d ./Bin ]; then mkdir ./Bin; fi
 	if ! [ -d ./Obj ]; then mkdir ./Obj; fi
 	if ! [ -d ./Coverage ]; then mkdir ./Coverage; fi
+
 clean:
 	if [ -d ./Bin ]; then rm -r ./Bin; fi
 	if [ -d ./Obj ]; then rm -r ./Obj; fi
 	if [ -d ./Coverage ]; then rm -r ./Coverage; fi
+
 all:pre-build ./Bin/UnitTest
+
 $(CPP_TARGET) $(CPP_OBJECTS): | pre-build
+
 $(CPP_TARGET):$(CPP_OBJECTS)
 	$(CPP_LINK)
+
 ./Obj/Vlpp.o: ../../../Import/Vlpp.cpp
 	$(CPP_COMPILE)
+
 ./Obj/Vlpp.Linux.o: ../../../Import/Vlpp.Linux.cpp
 	$(CPP_COMPILE)
+
 ./Obj/VlppGlrParser.o: ../../../Import/VlppGlrParser.cpp
 	$(CPP_COMPILE)
+
 ./Obj/VlppOS.o: ../../../Import/VlppOS.cpp
 	$(CPP_COMPILE)
+
 ./Obj/VlppOS.Linux.o: ../../../Import/VlppOS.Linux.cpp
 	$(CPP_COMPILE)
+
 ./Obj/VlppReflection.o: ../../../Import/VlppReflection.cpp
 	$(CPP_COMPILE)
+
 ./Obj/VlppRegex.o: ../../../Import/VlppRegex.cpp
 	$(CPP_COMPILE)
+
 ./Obj/VlppWorkflowLibrary.o: ../../../Import/VlppWorkflowLibrary.cpp
 	$(CPP_COMPILE)
+
 ./Obj/VlppWorkflowCompiler.o: ../../../Import/VlppWorkflowCompiler.cpp
 	$(CPP_COMPILE)
+
 ./Obj/VlppWorkflowRuntime.o: ../../../Import/VlppWorkflowRuntime.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsDocumentElement.o: ../../../Source/GraphicsElement/GuiGraphicsDocumentElement.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsDocumentRenderer_GuiDocumentImageCache.o: ../../../Source/GraphicsElement/GuiGraphicsDocumentRenderer_GuiDocumentImageCache.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsDocumentRenderer_SetPropertiesVisitor.o: ../../../Source/GraphicsElement/GuiGraphicsDocumentRenderer_SetPropertiesVisitor.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsDocumentRenderer_GuiDocumentParagraphCache.o: ../../../Source/GraphicsElement/GuiGraphicsDocumentRenderer_GuiDocumentParagraphCache.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsDocumentRenderer_GuiDocumentElementRenderer.o: ../../../Source/GraphicsElement/GuiGraphicsDocumentRenderer_GuiDocumentElementRenderer.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsElement.o: ../../../Source/GraphicsElement/GuiGraphicsElement.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsElementInterfaces.o: ../../../Source/GraphicsElement/GuiGraphicsElementInterfaces.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsResourceManager.o: ../../../Source/GraphicsElement/GuiGraphicsResourceManager.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiNativeWindow.o: ../../../Source/NativeWindow/GuiNativeWindow.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GacGenController.o: ../../../Source/PlatformProviders/GacGen/GacGenController.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiHostedApplication.o: ../../../Source/PlatformProviders/Hosted/GuiHostedApplication.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiHostedController.o: ../../../Source/PlatformProviders/Hosted/GuiHostedController.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiHostedGraphics.o: ../../../Source/PlatformProviders/Hosted/GuiHostedGraphics.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiHostedWindow.o: ../../../Source/PlatformProviders/Hosted/GuiHostedWindow.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiHostedWindowProxy_Main.o: ../../../Source/PlatformProviders/Hosted/GuiHostedWindowProxy_Main.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiHostedWindowProxy_NonMain.o: ../../../Source/PlatformProviders/Hosted/GuiHostedWindowProxy_NonMain.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiHostedWindowProxy_Placeholder.o: ../../../Source/PlatformProviders/Hosted/GuiHostedWindowProxy_Placeholder.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteRendererSingle.o: ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteRendererSingle_Injection.o: ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Injection.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteRendererSingle_Controller.o: ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Controller.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteRendererSingle_IO.o: ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_IO.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteRendererSingle_MainWindow.o: ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_MainWindow.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteRendererSingle_Rendering.o: ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteRendererSingle_Rendering_Document.o: ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Document.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteRendererSingle_Rendering_Elements.o: ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Elements.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteRendererSingle_Rendering_Image.o: ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Image.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteRendererSingle_Rendering_Label.o: ../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle_Rendering_Label.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteController.o: ../../../Source/PlatformProviders/Remote/GuiRemoteController.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteControllerInjection.o: ../../../Source/PlatformProviders/Remote/GuiRemoteControllerInjection.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteControllerSetup.o: ../../../Source/PlatformProviders/Remote/GuiRemoteControllerSetup.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteEvents.o: ../../../Source/PlatformProviders/Remote/GuiRemoteEvents.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteGraphics.o: ../../../Source/PlatformProviders/Remote/GuiRemoteGraphics.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteGraphics_BasicElements.o: ../../../Source/PlatformProviders/Remote/GuiRemoteGraphics_BasicElements.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteGraphics_Document.o: ../../../Source/PlatformProviders/Remote/GuiRemoteGraphics_Document.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteGraphics_Document_Helpers.o: ../../../Source/PlatformProviders/Remote/GuiRemoteGraphics_Document_Helpers.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteGraphics_ImageService.o: ../../../Source/PlatformProviders/Remote/GuiRemoteGraphics_ImageService.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocolSchemaShared.o: ../../../Source/PlatformProviders/Remote/GuiRemoteProtocolSchemaShared.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocol_Channel_Async.o: ../../../Source/PlatformProviders/Remote/GuiRemoteProtocol_Channel_Async.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocol_Channel_AsyncRenderer.o: ../../../Source/PlatformProviders/Remote/GuiRemoteProtocol_Channel_AsyncRenderer.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocol_Channel_Json.o: ../../../Source/PlatformProviders/Remote/GuiRemoteProtocol_Channel_Json.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocol_DomDiff.o: ../../../Source/PlatformProviders/Remote/GuiRemoteProtocol_DomDiff.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocol_Filter.o: ../../../Source/PlatformProviders/Remote/GuiRemoteProtocol_Filter.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocol_FilterVerifier.o: ../../../Source/PlatformProviders/Remote/GuiRemoteProtocol_FilterVerifier.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteWindow.o: ../../../Source/PlatformProviders/Remote/GuiRemoteWindow.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocolSchema_BuildFrame.o: ../../../Source/PlatformProviders/Remote/Protocol/FrameOperations/GuiRemoteProtocolSchema_BuildFrame.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocolSchema_CopyDom.o: ../../../Source/PlatformProviders/Remote/Protocol/FrameOperations/GuiRemoteProtocolSchema_CopyDom.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocolSchema_DiffFrame.o: ../../../Source/PlatformProviders/Remote/Protocol/FrameOperations/GuiRemoteProtocolSchema_DiffFrame.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocolSchema.o: ../../../Source/PlatformProviders/Remote/Protocol/Generated/GuiRemoteProtocolSchema.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocument.o: ../../../Source/Resources/GuiDocument.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentClipboard_Document.o: ../../../Source/Resources/GuiDocumentClipboard_Document.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentClipboard_HtmlFormat.o: ../../../Source/Resources/GuiDocumentClipboard_HtmlFormat.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentClipboard_RichTextFormat.o: ../../../Source/Resources/GuiDocumentClipboard_RichTextFormat.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentEditor_AddContainer.o: ../../../Source/Resources/GuiDocumentEditor_AddContainer.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentEditor_ClearUnnecessaryRun.o: ../../../Source/Resources/GuiDocumentEditor_ClearUnnecessaryRun.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentEditor_CloneRun.o: ../../../Source/Resources/GuiDocumentEditor_CloneRun.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentEditor_CollectStyle.o: ../../../Source/Resources/GuiDocumentEditor_CollectStyle.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentEditor_CutRun.o: ../../../Source/Resources/GuiDocumentEditor_CutRun.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentEditor_GetRunRange.o: ../../../Source/Resources/GuiDocumentEditor_GetRunRange.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentEditor_LocateHyperlink.o: ../../../Source/Resources/GuiDocumentEditor_LocateHyperlink.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentEditor_LocateStyle.o: ../../../Source/Resources/GuiDocumentEditor_LocateStyle.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentEditor_RemoveContainer.o: ../../../Source/Resources/GuiDocumentEditor_RemoveContainer.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentEditor_RemoveRun.o: ../../../Source/Resources/GuiDocumentEditor_RemoveRun.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentEditor_ReplaceStyleName.o: ../../../Source/Resources/GuiDocumentEditor_ReplaceStyleName.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentEditor_SummerizeStyle.o: ../../../Source/Resources/GuiDocumentEditor_SummerizeStyle.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocument_Edit.o: ../../../Source/Resources/GuiDocument_Edit.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocument_Load.o: ../../../Source/Resources/GuiDocument_Load.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocument_Save.o: ../../../Source/Resources/GuiDocument_Save.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiParserManager.o: ../../../Source/Resources/GuiParserManager.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiPluginManager.o: ../../../Source/Resources/GuiPluginManager.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiResource.o: ../../../Source/Resources/GuiResource.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiResourceManager.o: ../../../Source/Resources/GuiResourceManager.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiResourceTypeResolvers.o: ../../../Source/Resources/GuiResourceTypeResolvers.cpp
 	$(CPP_COMPILE)
+
 ./Obj/MiniHttpAutomationService.o: ../../../Source/Utilities/AutomationService/MiniHttpAutomationService.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiSharedAsyncService.o: ../../../Source/Utilities/SharedServices/GuiSharedAsyncService.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiSharedAutomationService.o: ../../../Source/Utilities/SharedServices/GuiSharedAutomationService.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiSharedCallbackService.o: ../../../Source/Utilities/SharedServices/GuiSharedCallbackService.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiApplication.o: ../../../Source/PlatformProviders/TUI/TuiApplication.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiController.o: ../../../Source/PlatformProviders/TUI/TuiController.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiGraphics.o: ../../../Source/PlatformProviders/TUI/TuiGraphics.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiGraphicsRenderers.o: ../../../Source/PlatformProviders/TUI/TuiGraphicsRenderers.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiTextLayout.o: ../../../Source/PlatformProviders/TUI/TuiTextLayout.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiWindow.o: ../../../Source/PlatformProviders/TUI/TuiWindow.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiGraphicsElement.o: ../../../Source/GraphicsElement/TuiGraphicsElement.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiApplication.o: ../../../Source/Application/Controls/GuiApplication.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiBasicControls.o: ../../../Source/Application/Controls/GuiBasicControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceRootObject.o: ../../../Source/Application/Controls/GuiInstanceRootObject.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiLabelControls.o: ../../../Source/Application/Controls/GuiLabelControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiThemeManager.o: ../../../Source/Application/Controls/GuiThemeManager.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiWindowControls.o: ../../../Source/Application/Controls/GuiWindowControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsBoundsComposition.o: ../../../Source/Application/GraphicsCompositions/GuiGraphicsBoundsComposition.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsComposition.o: ../../../Source/Application/GraphicsCompositions/GuiGraphicsComposition.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsComposition_Helpers.o: ../../../Source/Application/GraphicsCompositions/GuiGraphicsComposition_Helpers.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsComposition_Layout.o: ../../../Source/Application/GraphicsCompositions/GuiGraphicsComposition_Layout.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsEventReceiver.o: ../../../Source/Application/GraphicsCompositions/GuiGraphicsEventReceiver.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsWindowComposition.o: ../../../Source/Application/GraphicsCompositions/GuiGraphicsWindowComposition.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsHost.o: ../../../Source/Application/GraphicsHost/GuiGraphicsHost.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsHost_Alt.o: ../../../Source/Application/GraphicsHost/GuiGraphicsHost_Alt.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsHost_ShortcutKey.o: ../../../Source/Application/GraphicsHost/GuiGraphicsHost_ShortcutKey.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsHost_Tab.o: ../../../Source/Application/GraphicsHost/GuiGraphicsHost_Tab.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsHost_Point.o: ../../../Source/Application/GraphicsHost/GuiGraphicsHost_Point.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiButtonControls.o: ../../../Source/Controls/GuiButtonControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiContainerControls.o: ../../../Source/Controls/GuiContainerControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDateTimeControls.o: ../../../Source/Controls/GuiDateTimeControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDialogs.o: ../../../Source/Controls/GuiDialogs.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiScrollControls.o: ../../../Source/Controls/GuiScrollControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/DataSourceImpl_IItemProvider_ItemProviderBase.o: ../../../Source/Controls/ListControlPackage/DataSourceImpl_IItemProvider_ItemProviderBase.cpp
 	$(CPP_COMPILE)
+
 ./Obj/DataSourceImpl_IItemProvider_NodeItemProvider.o: ../../../Source/Controls/ListControlPackage/DataSourceImpl_IItemProvider_NodeItemProvider.cpp
 	$(CPP_COMPILE)
+
 ./Obj/DataSourceImpl_INodeProvider_MemoryNodeProvider.o: ../../../Source/Controls/ListControlPackage/DataSourceImpl_INodeProvider_MemoryNodeProvider.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiBindableDataGrid.o: ../../../Source/Controls/ListControlPackage/GuiBindableDataGrid.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiBindableListControls.o: ../../../Source/Controls/ListControlPackage/GuiBindableListControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiComboControls.o: ../../../Source/Controls/ListControlPackage/GuiComboControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDataGridControls.o: ../../../Source/Controls/ListControlPackage/GuiDataGridControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDataGridExtensions.o: ../../../Source/Controls/ListControlPackage/GuiDataGridExtensions.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiListControlItemArrangers.o: ../../../Source/Controls/ListControlPackage/GuiListControlItemArrangers.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiListControls.o: ../../../Source/Controls/ListControlPackage/GuiListControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiListViewControls.o: ../../../Source/Controls/ListControlPackage/GuiListViewControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/ItemProvider_Binding.o: ../../../Source/Controls/ListControlPackage/ItemProvider_Binding.cpp
 	$(CPP_COMPILE)
+
 ./Obj/ItemTemplate_IListViewItemView.o: ../../../Source/Controls/ListControlPackage/ItemTemplate_IListViewItemView.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiTextListControls.o: ../../../Source/Controls/ListControlPackage/GuiTextListControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiTreeViewControls.o: ../../../Source/Controls/ListControlPackage/GuiTreeViewControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/ItemProvider_IListViewItemView.o: ../../../Source/Controls/ListControlPackage/ItemProvider_IListViewItemView.cpp
 	$(CPP_COMPILE)
+
 ./Obj/ItemProvider_ITextItemView.o: ../../../Source/Controls/ListControlPackage/ItemProvider_ITextItemView.cpp
 	$(CPP_COMPILE)
+
 ./Obj/ItemProvider_ITreeViewItemView.o: ../../../Source/Controls/ListControlPackage/ItemProvider_ITreeViewItemView.cpp
 	$(CPP_COMPILE)
+
 ./Obj/ItemTemplate_ITextItemView.o: ../../../Source/Controls/ListControlPackage/ItemTemplate_ITextItemView.cpp
 	$(CPP_COMPILE)
+
 ./Obj/ItemTemplate_ITreeViewItemView.o: ../../../Source/Controls/ListControlPackage/ItemTemplate_ITreeViewItemView.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiAnimation.o: ../../../Source/Controls/Templates/GuiAnimation.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiCommonTemplates.o: ../../../Source/Controls/Templates/GuiCommonTemplates.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiControlTemplates.o: ../../../Source/Controls/Templates/GuiControlTemplates.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiThemeStyleFactory.o: ../../../Source/Controls/Templates/GuiThemeStyleFactory.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiTextUndoRedo.o: ../../../Source/Controls/TextEditorPackage/EditorCallback/GuiTextUndoRedo.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentCommonInterface.o: ../../../Source/Controls/TextEditorPackage/GuiDocumentCommonInterface.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentConfig.o: ../../../Source/Controls/TextEditorPackage/GuiDocumentConfig.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiDocumentViewer.o: ../../../Source/Controls/TextEditorPackage/GuiDocumentViewer.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiMenuControls.o: ../../../Source/Controls/ToolstripPackage/GuiMenuControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRibbonControls.o: ../../../Source/Controls/ToolstripPackage/GuiRibbonControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRibbonGalleryList.o: ../../../Source/Controls/ToolstripPackage/GuiRibbonGalleryList.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRibbonImpl.o: ../../../Source/Controls/ToolstripPackage/GuiRibbonImpl.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiToolstripCommand.o: ../../../Source/Controls/ToolstripPackage/GuiToolstripCommand.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiToolstripMenu.o: ../../../Source/Controls/ToolstripPackage/GuiToolstripMenu.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GacUIReflectionHelper.o: ../../../Source/GacUIReflectionHelper.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsAxis.o: ../../../Source/GraphicsComposition/GuiGraphicsAxis.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsFlowComposition.o: ../../../Source/GraphicsComposition/GuiGraphicsFlowComposition.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsRepeatComposition.o: ../../../Source/GraphicsComposition/GuiGraphicsRepeatComposition.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsRepeatComposition_NonVirtial.o: ../../../Source/GraphicsComposition/GuiGraphicsRepeatComposition_NonVirtial.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsRepeatComposition_Virtual.o: ../../../Source/GraphicsComposition/GuiGraphicsRepeatComposition_Virtual.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsResponsiveComposition.o: ../../../Source/GraphicsComposition/GuiGraphicsResponsiveComposition.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsSharedSizeComposition.o: ../../../Source/GraphicsComposition/GuiGraphicsSharedSizeComposition.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsSpecializedComposition.o: ../../../Source/GraphicsComposition/GuiGraphicsSpecializedComposition.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsStackComposition.o: ../../../Source/GraphicsComposition/GuiGraphicsStackComposition.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiGraphicsTableComposition.o: ../../../Source/GraphicsComposition/GuiGraphicsTableComposition.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiEasyLayout.o: ../../../Source/GraphicsComposition/EazyLayout/GuiEasyLayout.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiItemTemplates.o: ../../../Source/Controls/ListControlPackage/TuiItemTemplates.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceCompiledWorkflow.o: ../../../Source/Reflection/GuiInstanceCompiledWorkflow.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiReflectionBasic.o: ../../../Source/Reflection/TypeDescriptors/GuiReflectionBasic.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiReflectionCompositions.o: ../../../Source/Reflection/TypeDescriptors/GuiReflectionCompositions.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiReflectionControls.o: ../../../Source/Reflection/TypeDescriptors/GuiReflectionControls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiReflectionElements.o: ../../../Source/Reflection/TypeDescriptors/GuiReflectionElements.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiReflectionEvents.o: ../../../Source/Reflection/TypeDescriptors/GuiReflectionEvents.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiReflectionPlugin.o: ../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiReflectionTemplates.o: ../../../Source/Reflection/TypeDescriptors/GuiReflectionTemplates.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiFakeClipboardService.o: ../../../Source/Utilities/FakeServices/GuiFakeClipboardService.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiFakeDialogServiceBase.o: ../../../Source/Utilities/FakeServices/GuiFakeDialogServiceBase.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiFakeDialogServiceBase_ColorDialog.o: ../../../Source/Utilities/FakeServices/GuiFakeDialogServiceBase_ColorDialog.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiFakeDialogServiceBase_FileDialog.o: ../../../Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FileDialog.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiFakeDialogServiceBase_FontDialog.o: ../../../Source/Utilities/FakeServices/GuiFakeDialogServiceBase_FontDialog.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiFakeDialogServiceBase_MessageBox.o: ../../../Source/Utilities/FakeServices/GuiFakeDialogServiceBase_MessageBox.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiFakeDialogService.o: ../../../Source/Utilities/FakeServices/Dialogs/GuiFakeDialogService.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiFakeDialogService.o: ../../../Source/Utilities/FakeServices/TuiDialogs/TuiFakeDialogService.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiFakeDialogServiceUI.o: ../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiFakeDialogServiceUI.o: ../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUI.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiFakeDialogServiceUIResource.o: ../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIResource.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiFakeDialogServiceUIResource.o: ../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUIResource.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiUtilitiesRegistration.o: ../../../Source/Utilities/GuiUtilitiesRegistration.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiSharedAutomationService_Controls.o: ../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiFakeDialogServiceUIReflection.o: ../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiFakeDialogServiceUIReflection.o: ../../../Source/Utilities/FakeServices/TuiDialogs/Source/TuiFakeDialogServiceUIReflection.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiCppGen.o: ../../../Source/Compiler/GuiCppGen.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceAnimation.o: ../../../Source/Compiler/GuiInstanceAnimation.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader.o: ../../../Source/Compiler/GuiInstanceLoader.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_PredefinedInstanceBinders.o: ../../../Source/Compiler/GuiInstanceLoader_PredefinedInstanceBinders.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_PredefinedInstanceDeserializers.o: ../../../Source/Compiler/GuiInstanceLoader_PredefinedInstanceDeserializers.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_PredefinedTypeResolvers.o: ../../../Source/Compiler/GuiInstanceLoader_PredefinedTypeResolvers.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLocalizedStrings.o: ../../../Source/Compiler/GuiInstanceLocalizedStrings.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceRepresentation.o: ../../../Source/Compiler/GuiInstanceRepresentation.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceSharedScript.o: ../../../Source/Compiler/GuiInstanceSharedScript.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_Compositions.o: ../../../Source/Compiler/InstanceLoaders/GuiInstanceLoader_Compositions.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_EasyLayout.o: ../../../Source/Compiler/InstanceLoaders/GuiInstanceLoader_EasyLayout.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_Document.o: ../../../Source/Compiler/InstanceLoaders/GuiInstanceLoader_Document.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_List.o: ../../../Source/Compiler/InstanceLoaders/GuiInstanceLoader_List.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_Plugin.o: ../../../Source/Compiler/InstanceLoaders/GuiInstanceLoader_Plugin.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_Templates.o: ../../../Source/Compiler/InstanceLoaders/GuiInstanceLoader_Templates.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_Toolstrip.o: ../../../Source/Compiler/InstanceLoaders/GuiInstanceLoader_Toolstrip.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceQueryAst.o: ../../../Source/Compiler/InstanceQuery/Generated/GuiInstanceQueryAst.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceQueryParser.o: ../../../Source/Compiler/InstanceQuery/Generated/GuiInstanceQueryParser.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceQuery_Assembler.o: ../../../Source/Compiler/InstanceQuery/Generated/GuiInstanceQuery_Assembler.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceQuery_Lexer.o: ../../../Source/Compiler/InstanceQuery/Generated/GuiInstanceQuery_Lexer.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceQuery.o: ../../../Source/Compiler/InstanceQuery/GuiInstanceQuery.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_WorkflowCodegen.o: ../../../Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_WorkflowCollectReferences.o: ../../../Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowCollectReferences.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_WorkflowGenerateBindings.o: ../../../Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowGenerateBindings.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_WorkflowGenerateCreating.o: ../../../Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowGenerateCreating.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_WorkflowInstallBindings.o: ../../../Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowInstallBindings.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_WorkflowModule.o: ../../../Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowModule.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_WorkflowParser.o: ../../../Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowParser.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiInstanceLoader_WorkflowScriptPosition.o: ../../../Source/Compiler/WorkflowCodegen/GuiInstanceLoader_WorkflowScriptPosition.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocolAst.o: ../../../Source/Compiler/RemoteProtocol/Generated/GuiRemoteProtocolAst.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocolAst_Json.o: ../../../Source/Compiler/RemoteProtocol/Generated/GuiRemoteProtocolAst_Json.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocolParser.o: ../../../Source/Compiler/RemoteProtocol/Generated/GuiRemoteProtocolParser.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocol_Assembler.o: ../../../Source/Compiler/RemoteProtocol/Generated/GuiRemoteProtocol_Assembler.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocol_Lexer.o: ../../../Source/Compiler/RemoteProtocol/Generated/GuiRemoteProtocol_Lexer.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiRemoteProtocolCompiler.o: ../../../Source/Compiler/RemoteProtocol/GuiRemoteProtocolCompiler.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiUnitTestProtocol_Rendering_Document.o: ../../../Source/UnitTestUtilities/GuiUnitTestProtocol_Rendering_Document.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiUnitTestProtocol_Rendering.o: ../../../Source/UnitTestUtilities/GuiUnitTestProtocol_Rendering.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiUnitTestProtocol_Shared.o: ../../../Source/UnitTestUtilities/GuiUnitTestProtocol_Shared.cpp
 	$(CPP_COMPILE)
+
 ./Obj/GuiUnitTestUtilities.o: ../../../Source/UnitTestUtilities/GuiUnitTestUtilities.cpp
 	$(CPP_COMPILE)
+
 ./Obj/DarkSkinConfig.o: ../../../Source/Skins/DarkSkin/Config/DarkSkinConfig.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiSkinConfig.o: ../../../Source/Skins/TuiSkin/Config/TuiSkinConfig.cpp
 	$(CPP_COMPILE)
+
 ./Obj/Main.o: ../../GacUISrc/UnitTest/Main.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestTuiProvider.o: ../../GacUISrc/UnitTest/TestTuiProvider.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestAutomationService.o: ../../GacUISrc/UnitTest/TestAutomationService.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestApplication_Dialog_Color.o: ../../GacUISrc/UnitTest/TestApplication_Dialog_Color.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestApplication_Dialog_File.o: ../../GacUISrc/UnitTest/TestApplication_Dialog_File.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestApplication_Dialog_Font.o: ../../GacUISrc/UnitTest/TestApplication_Dialog_Font.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestApplication_Dialog_Message.o: ../../GacUISrc/UnitTest/TestApplication_Dialog_Message.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestApplication_Tab.o: ../../GacUISrc/UnitTest/TestApplication_Tab.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestApplication_Theme.o: ../../GacUISrc/UnitTest/TestApplication_Theme.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestApplication_Tooltip.o: ../../GacUISrc/UnitTest/TestApplication_Tooltip.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestApplication_Windows.o: ../../GacUISrc/UnitTest/TestApplication_Windows.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestCompositions_AllNested.o: ../../GacUISrc/UnitTest/TestCompositions_AllNested.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestCompositions_Bounds.o: ../../GacUISrc/UnitTest/TestCompositions_Bounds.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestCompositions_Flow.o: ../../GacUISrc/UnitTest/TestCompositions_Flow.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestCompositions_Responsive.o: ../../GacUISrc/UnitTest/TestCompositions_Responsive.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestCompositions_SharedSize.o: ../../GacUISrc/UnitTest/TestCompositions_SharedSize.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestCompositions_Specialized.o: ../../GacUISrc/UnitTest/TestCompositions_Specialized.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestCompositions_Stack.o: ../../GacUISrc/UnitTest/TestCompositions_Stack.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestCompositions_EasyLayout.o: ../../GacUISrc/UnitTest/TestCompositions_EasyLayout.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestCompositions_EazyLayoutFailures.o: ../../GacUISrc/UnitTest/TestCompositions_EazyLayoutFailures.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestCompositions_Table.o: ../../GacUISrc/UnitTest/TestCompositions_Table.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestCompositions_VirtualRepeat.o: ../../GacUISrc/UnitTest/TestCompositions_VirtualRepeat.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Basic_GuiButton.o: ../../GacUISrc/UnitTest/TestControls_Basic_GuiButton.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Basic_GuiScrollContainer.o: ../../GacUISrc/UnitTest/TestControls_Basic_GuiScrollContainer.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Basic_GuiScroll_ProgressBar.o: ../../GacUISrc/UnitTest/TestControls_Basic_GuiScroll_ProgressBar.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Basic_GuiScroll_Scroll.o: ../../GacUISrc/UnitTest/TestControls_Basic_GuiScroll_Scroll.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Basic_GuiScroll_Tracker.o: ../../GacUISrc/UnitTest/TestControls_Basic_GuiScroll_Tracker.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Basic_GuiTab.o: ../../GacUISrc/UnitTest/TestControls_Basic_GuiTab.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_CoreApplication_GuiControl.o: ../../GacUISrc/UnitTest/TestControls_CoreApplication_GuiControl.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_CoreApplication_GuiLabel.o: ../../GacUISrc/UnitTest/TestControls_CoreApplication_GuiLabel.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_CoreApplication_GuiWindow.o: ../../GacUISrc/UnitTest/TestControls_CoreApplication_GuiWindow.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_EasyLayout.o: ../../GacUISrc/UnitTest/TestControls_EasyLayout.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Editor.o: ../../GacUISrc/UnitTest/TestControls_Editor.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Editor_Key.o: ../../GacUISrc/UnitTest/TestControls_Editor_Key.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Editor_RichText.o: ../../GacUISrc/UnitTest/TestControls_Editor_RichText.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Editor_InlineObject.o: ../../GacUISrc/UnitTest/TestControls_Editor_InlineObject.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Editor_Styles.o: ../../GacUISrc/UnitTest/TestControls_Editor_Styles.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Editor_Key_Multiline.o: ../../GacUISrc/UnitTest/TestControls_Editor_Key_Multiline.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Editor_Key_Paragraph.o: ../../GacUISrc/UnitTest/TestControls_Editor_Key_Paragraph.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Editor_Key_Shared.o: ../../GacUISrc/UnitTest/TestControls_Editor_Key_Shared.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Editor_Key_Singleline.o: ../../GacUISrc/UnitTest/TestControls_Editor_Key_Singleline.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Editor_Regression.o: ../../GacUISrc/UnitTest/TestControls_Editor_Regression.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_PointScrolling.o: ../../GacUISrc/UnitTest/TestControls_PointScrolling.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_DataGrid_Binding.o: ../../GacUISrc/UnitTest/TestControls_List_DataGrid_Binding.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_DataGrid_CellEditor.o: ../../GacUISrc/UnitTest/TestControls_List_DataGrid_CellEditor.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_DataGrid_CellVisualizer.o: ../../GacUISrc/UnitTest/TestControls_List_DataGrid_CellVisualizer.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_DataGrid_ColumnApi.o: ../../GacUISrc/UnitTest/TestControls_List_DataGrid_ColumnApi.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_DataGrid_ColumnUI.o: ../../GacUISrc/UnitTest/TestControls_List_DataGrid_ColumnUI.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_DataGrid_Properties.o: ../../GacUISrc/UnitTest/TestControls_List_DataGrid_Properties.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiListControl.o: ../../GacUISrc/UnitTest/TestControls_List_GuiListControl.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiListControl_Template.o: ../../GacUISrc/UnitTest/TestControls_List_GuiListControl_Template.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiListItemTemplate.o: ../../GacUISrc/UnitTest/TestControls_List_GuiListItemTemplate.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiListItemTemplate_Template.o: ../../GacUISrc/UnitTest/TestControls_List_GuiListItemTemplate_Template.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiSelectableListControl.o: ../../GacUISrc/UnitTest/TestControls_List_GuiSelectableListControl.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiSelectableListControl_Template.o: ../../GacUISrc/UnitTest/TestControls_List_GuiSelectableListControl_Template.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiVirtualListView.o: ../../GacUISrc/UnitTest/TestControls_List_GuiVirtualListView.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiVirtualListView_Template.o: ../../GacUISrc/UnitTest/TestControls_List_GuiVirtualListView_Template.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiVirtualTextList.o: ../../GacUISrc/UnitTest/TestControls_List_GuiVirtualTextList.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiVirtualTextList_Template.o: ../../GacUISrc/UnitTest/TestControls_List_GuiVirtualTextList_Template.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiVirtualTreeListControl.o: ../../GacUISrc/UnitTest/TestControls_List_GuiVirtualTreeListControl.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiVirtualTreeListControl_Template.o: ../../GacUISrc/UnitTest/TestControls_List_GuiVirtualTreeListControl_Template.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiVirtualTreeView.o: ../../GacUISrc/UnitTest/TestControls_List_GuiVirtualTreeView.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_List_GuiVirtualTreeView_Template.o: ../../GacUISrc/UnitTest/TestControls_List_GuiVirtualTreeView_Template.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Ribbon_Gallery.o: ../../GacUISrc/UnitTest/TestControls_Ribbon_Gallery.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Ribbon_GuiRibbonButtons.o: ../../GacUISrc/UnitTest/TestControls_Ribbon_GuiRibbonButtons.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Ribbon_GuiRibbonGroup.o: ../../GacUISrc/UnitTest/TestControls_Ribbon_GuiRibbonGroup.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Ribbon_GuiRibbonTab.o: ../../GacUISrc/UnitTest/TestControls_Ribbon_GuiRibbonTab.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Toolstrip_Combo_GuiComboBoxListControl.o: ../../GacUISrc/UnitTest/TestControls_Toolstrip_Combo_GuiComboBoxListControl.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Toolstrip_Combo_GuiComboBoxListControl_Template.o: ../../GacUISrc/UnitTest/TestControls_Toolstrip_Combo_GuiComboBoxListControl_Template.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Toolstrip_Combo_GuiDatePicker.o: ../../GacUISrc/UnitTest/TestControls_Toolstrip_Combo_GuiDatePicker.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Toolstrip_Combo_GuiDateComboBox.o: ../../GacUISrc/UnitTest/TestControls_Toolstrip_Combo_GuiDateComboBox.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Toolstrip_GuiToolstripMenu.o: ../../GacUISrc/UnitTest/TestControls_Toolstrip_GuiToolstripMenu.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Toolstrip_GuiToolstripMenuBar.o: ../../GacUISrc/UnitTest/TestControls_Toolstrip_GuiToolstripMenuBar.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Toolstrip_GuiToolstripMenuBar_Cascade.o: ../../GacUISrc/UnitTest/TestControls_Toolstrip_GuiToolstripMenuBar_Cascade.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestControls_Toolstrip_GuiToolstripToolBar.o: ../../GacUISrc/UnitTest/TestControls_Toolstrip_GuiToolstripToolBar.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestDocumentConfig.o: ../../GacUISrc/UnitTest/TestDocumentConfig.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestFileSystemMock.o: ../../GacUISrc/UnitTest/TestFileSystemMock.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestHostedWindowManager.o: ../../GacUISrc/UnitTest/TestHostedWindowManager.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestPtrDescriptableObject.o: ../../GacUISrc/UnitTest/TestPtrDescriptableObject.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestQueryParser.o: ../../GacUISrc/UnitTest/TestQueryParser.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestReflectionTypeList.o: ../../GacUISrc/UnitTest/TestReflectionTypeList.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_GraphicsHost_HitTest.o: ../../GacUISrc/UnitTest/TestRemote_GraphicsHost_HitTest.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_GraphicsHost_Key.o: ../../GacUISrc/UnitTest/TestRemote_GraphicsHost_Key.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_GraphicsHost_KeyAlt.o: ../../GacUISrc/UnitTest/TestRemote_GraphicsHost_KeyAlt.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_GraphicsHost_KeyShortcut.o: ../../GacUISrc/UnitTest/TestRemote_GraphicsHost_KeyShortcut.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_GraphicsHost_KeyTab.o: ../../GacUISrc/UnitTest/TestRemote_GraphicsHost_KeyTab.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_GraphicsHost_Mouse.o: ../../GacUISrc/UnitTest/TestRemote_GraphicsHost_Mouse.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_GraphicsHost_Shared.o: ../../GacUISrc/UnitTest/TestRemote_GraphicsHost_Shared.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_GraphicsHost_Startup.o: ../../GacUISrc/UnitTest/TestRemote_GraphicsHost_Startup.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_EmptyWindow.o: ../../GacUISrc/UnitTest/TestRemote_EmptyWindow.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_Caret.o: ../../GacUISrc/UnitTest/TestRemote_Caret.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_DocumentRunManagement.o: ../../GacUISrc/UnitTest/TestRemote_DocumentRunManagement.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_AsyncRendererChannel.o: ../../GacUISrc/UnitTest/TestRemote_AsyncRendererChannel.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_ChannelServer.o: ../../GacUISrc/UnitTest/TestRemote_ChannelServer.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_RenderingDom.o: ../../GacUISrc/UnitTest/TestRemote_RenderingDom.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_Startup.o: ../../GacUISrc/UnitTest/TestRemote_Startup.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_UnitTestFramework.o: ../../GacUISrc/UnitTest/TestRemote_UnitTestFramework.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_UnitTestFramework_Async.o: ../../GacUISrc/UnitTest/TestRemote_UnitTestFramework_Async.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestResource.o: ../../GacUISrc/UnitTest/TestResource.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestResource_Rpc.o: ../../GacUISrc/UnitTest/TestResource_Rpc.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestItemProviders_TextItemProvider.o: ../../GacUISrc/UnitTest/TestItemProviders_TextItemProvider.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestItemProviders_TextItemBindableProvider.o: ../../GacUISrc/UnitTest/TestItemProviders_TextItemBindableProvider.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestItemProviders_ListViewItemProvider.o: ../../GacUISrc/UnitTest/TestItemProviders_ListViewItemProvider.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestItemProviders_ListViewItemBindableProvider.o: ../../GacUISrc/UnitTest/TestItemProviders_ListViewItemBindableProvider.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestItemProviders_TreeViewItemRootProvider.o: ../../GacUISrc/UnitTest/TestItemProviders_TreeViewItemRootProvider.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestItemProviders_TreeViewItemBindableRootProvider.o: ../../GacUISrc/UnitTest/TestItemProviders_TreeViewItemBindableRootProvider.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestItemProviders_NodeItemProvider.o: ../../GacUISrc/UnitTest/TestItemProviders_NodeItemProvider.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestItemProviders.o: ../../GacUISrc/UnitTest/TestItemProviders.cpp
 	$(CPP_COMPILE)
+
 ./Obj/DarkSkin.Linux.o: DarkSkin.Linux.cpp
 	$(CPP_COMPILE)
+
 ./Obj/DarkSkinResource.Linux.o: DarkSkinResource.Linux.cpp
 	$(CPP_COMPILE)
+
 ./Obj/DarkSkinReflection.Linux.o: DarkSkinReflection.Linux.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiSkin.Linux.o: TuiSkin.Linux.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiSkinResource.Linux.o: TuiSkinResource.Linux.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TuiSkinReflection.Linux.o: TuiSkinReflection.Linux.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRemote_Raw.o: ../../GacUISrc/UnitTest/TestRemote_Raw.cpp
 	$(CPP_COMPILE)
+
 ./Obj/TestRawElement_Windows.o: ../../GacUISrc/UnitTest/TestRawElement_Windows.cpp
 	$(CPP_COMPILE)
+
 ./Obj/FullControlTestEventHandlers.o: ../../GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.cpp
 	$(CPP_COMPILE)
