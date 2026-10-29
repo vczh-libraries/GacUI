@@ -118,6 +118,7 @@ Reproduction confirmed for item 1: the unmodified implementation fails `selectio
 
 - No.1 Copy complete style catalogs in deep ranges and preserve style identity during reinsertion [CONFIRMED]
 - No.2 Route popup child clicks through explicit gallery application [CONFIRMED]
+- No.3 Preserve destination hosts through native transports, HTTP authorities and application launchers
 
 ## No.1 Copy complete style catalogs in deep ranges and preserve style identity during reinsertion
 
@@ -154,3 +155,15 @@ The Debug x64 wrapper build completed with zero warnings and errors. The complet
 Both prescribed showcase wrappers passed with `-Scenario DocumentStyles -AsPort 8888 -SkipBuild` against this build: `UIA_CppTest.ps1` passed 1,125 assertions and `UIA_CppTest_Metaonly.ps1` passed 1,115. Each covered all eight styles in both groups, inline application, actual popup application at widths 1400, 650 and 1250, repeated application of the selected item, both Default and Aurora palettes, exact formatting and retained heading selection, complete saved catalogs, private reload, normal `Window.Close` and endpoint release. The formerly failing normal CppTest palette transition now passes. The temporary unavailable-provider retry was removed after fixing the actual dangling tooltip pointer; popup open/close idle barriers remain.
 
 The driver uses UIA to locate and scroll actual popup controls and automation IO to click their rendered captions. These popup backgrounds currently expose unnamed UIA Toggle controls without Invoke, so a Toggle-only application path is not claimed. No physical desktop mouse verification is claimed. No authored resource XML or reflection declarations changed, so metadata regeneration is not triggered. Authored changes and generated rendering snapshots are committed separately.
+
+## No.3 Preserve destination hosts through native transports, HTTP authorities and application launchers
+
+Retain immutable host and port in each native client and copy both into independent clients, including after stopping. Keep the existing port-only overloads as `localhost` defaults. Resolve IPv4, IPv6 and DNS through native facilities, rotate usable candidates across the bounded connection attempts, and cancel outstanding resolution/connection work during Stop. On Windows use cancellable asynchronous `GetAddrInfoExW` and family-specific wildcard source binding before `ConnectEx`; give pending connection attempts a deadline. On Linux retain resolution-request ownership through native asynchronous resolution completion and integrate connection deadlines with the existing io_uring cancellation/drain machinery. On macOS use Network.framework hostname endpoints and its connection timeout. Listen on supported network families and wildcard interfaces rather than loopback.
+
+Share host validation and HTTP authority construction across MiniHTTP request creation and dispatch. Preserve single-Host, port, bracketed IPv6 and request framing checks while accepting valid DNS destinations. Forward the host through Windows HTTP protocol clients; register the protocol server wildcard URL. Preserve named-pipe local defaults, retain explicit machine names in UNC paths, and allow remote clients at the server.
+
+Keep `/corehost:<host>` parsing canonical in the shared GacUI arguments. Reject empty/duplicate/malformed destinations before transport startup and reject the option in local RVM `/Cli` mode. Forward it through native renderers, network RVM hosts and the Windows/platform launchers. Synchronize upstream release/imports and canonical renderer files before consumer builds. Verify upstream behavior, then Windows applications and lifecycle; inspect Linux/macOS code and scripts without claiming runtime coverage.
+
+### CODE CHANGE
+
+Pending implementation and verification. The constructor reproduction is committed separately in VlppOS; this proposal records the transport, validation and launcher changes before implementation.
