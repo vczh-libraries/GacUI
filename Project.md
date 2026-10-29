@@ -200,16 +200,15 @@ Both skin inventories and the direct configuration consumers (`UnitTest`, `CppTe
 `SetupRemoteNativeController` accepts `GuiRemoteControllerConfig`; its DateTime,
 Locale and filesystem flags default to false. `GuiRemoteRendererSingle::GlobalConfig`
 defaults to true for library consumers. The demo entry points explicitly start
-with all flags false. Pass `/remoteDT`, `/remoteLocale` and `/remoteFS` separately
-to both core and renderer to enable each feature. Renderer connection capabilities
+with all flags false; see the `/remoteDT`, `/remoteLocale` and `/remoteFS` sections
+under [Maintaining Test Apps](#maintaining-test-apps). Renderer connection capabilities
 are reevaluated on replacement. DateTime/Locale fall back to the predecessor;
 an enabled but unavailable remote filesystem exposes an empty `/` root.
 
 The canonical renderer entry point is
 `<GacUI repo>/Test/GacUISrc/RemotingTest_Rendering_Win32/GuiMain.cpp`; wGac/iGac
-copy it and `SharedArguments.h` through their synchronization scripts. Their
-`test.sh --app:renderer` and `test_core.sh --app:fct --protocol:minihttp` forward
-the `-remoteDT`, `-remoteLocale` and `-remoteFS` options as slash switches in both foreground and `--unblock` modes.
+copy it and `<GacUI repo>/Test/GacUISrc/SharedArguments.h` through their synchronization
+scripts. See [Linux/macOS Specific](#linuxmacos-specific) for their replacement projects and launchers.
 
 `<GacUI repo>/Test/GacUISrc/Generated_FullControlTest/FullControlTestEventHandlers.h/.cpp`
 is authored code. It attaches the palette handler and four persistence events to
@@ -241,12 +240,95 @@ By careful tell if a bug repro in some or all three ways, you can easily narrow 
 
 ## Maintaining Test Apps
 
-Test apps means `CppTest*` and `RemotingTest*`, they are demos and do not require production level quality.
-No need to gracefully handle any exception, actually we need them to just crash when anything unexpected thing happens, that's how we know anything in `REPO-ROOT/Source` is going wrong.
-`REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md` defines the expected behavior of these test apps apon connection/disconnection.
-Any test app starting a `FullControlTest` is recommended to be tested following the "## Complete Control Showcase (`/FCT`)" section of `REPO-ROOT/.github/Jobs/DebugRemoteProtocolSop.md`.
-Any test app starting a `TuiControlTest` is recommended to be tested following  `REPO-ROOT/.github/Jobs/DebugTuiControlTestSop.md`.
-Keep test apps simple without introducing unnecessary "gracefully recovering".
+| Test app | `/AsPort` | `/Gdi` | `/FCT` | `/RPT` | `/RVMT` | `/Pipe` | `/Http` | `/MiniHttp` | `/Cli` | `/corehost` | `/remoteDT` | `/remoteLocale` | `/remoteFS` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `CppTest` | ✓ | ✓ | | | | | | | | | | | |
+| `CppTest_Metaonly` | ✓ | ✓ | | | | | | | | | | | |
+| `CppTest_Reflection` | ✓ | ✓ | | | | | | | | | | | |
+| `CppTest_Tui` | | | | | | | | | | | | | |
+| `GacUI_Host` | ✓ | ✓ | | | | | | | | | | | |
+| `CppTest_Rvm` | ✓ | | | | | ✓ | ✓ | ✓ | ✓ | | | | |
+| `RemotingTest_Core` | ✓ | | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ |
+| `RemotingTest_Rendering_Win32` | ✓ | ✓ | | | | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ | ✓ |
+| `RemotingTest_RvmHost` | | | | | | ✓ | ✓ | ✓ | ✓ | ✓ | | | |
+
+✓ means the argument has a supported effect in that application; blank cells do not imply that every parser rejects the argument. Argument spelling is case-sensitive. The table describes the projects in this solution; platform restrictions and the wGac/iGac replacements are listed under [Linux/macOS Specific](#linuxmacos-specific).
+
+### /AsPort
+
+Use `/AsPort:<decimal-port>` once to select the local automation HTTP port, in `1..65535`; the default is `8888`. Empty, invalid, duplicate and out-of-range values fail before listeners start. Assign distinct ports to independent automation endpoints, such as Core on `8888` and its renderer on `8889`. This option does not change the remote-protocol TCP port (`8888`), named-pipe endpoint or stdio transport; multiple protocol servers still cannot own the same fixed transport endpoint.
+
+Automation URLs use `http://localhost:<AsPort>/Automation/<PROJECT-NAME>/...`, except that `RemotingTest_Rendering_Win32` uses the name `RemotingTest_Rendering_Native`. Core exposes a window-control tree; the renderer exposes a DOM tree. `CppTest_Rvm` uses its own project name and has no separate renderer. `Playground` and `UiaListApp` also accept this option; UiaList's endpoint is Debug-only. `CppTest_Tui` and `RemotingTest_RvmHost` have no automation endpoint.
+
+On Windows, standalone GUI apps use `StartWindowsHttpAutomationService`, as do the remoting apps in `/Pipe` and `/Http` modes and `CppTest_Rvm` in `/Cli` mode. In `/MiniHttp` mode, Core and `CppTest_Rvm` share their protocol socket when automation uses `8888`; another automation port creates a separately owned MiniHTTP socket, stopped with the automation endpoint while preserving protocol shutdown order. The renderer always owns a separate automation socket and still connects to protocol port `8888`.
+
+See `<GacUI repo>/.github/Guidelines/Running-GacUI.md` for the automation contract and execution procedure.
+
+### /Gdi
+
+Use the exact `/Gdi` switch once to select GDI instead of the default Direct2D renderer on Windows. It can be combined with `/AsPort`. For remote FullControlTest, run Core with `/FCT /Pipe /AsPort:8888` and the renderer with `/Pipe /Gdi /AsPort:8889`. The renderer attaches the clock painter when it receives an element whose ID is `FullControlTest.Clock`. Core has no native drawing backend, and `CppTest_Rvm` always uses hosted Direct2D, so `/Gdi` has no effect in either application.
+
+### /FCT
+
+Select FullControlTest in `RemotingTest_Core`. This is also the default if no application selector is supplied. `/FCT`, `/RPT` and `/RVMT` are mutually exclusive and cannot be repeated. Core requires one renderer transport: `/Pipe`, `/Http` or `/MiniHttp`. For example, `/FCT /MiniHttp /AsPort:8888` starts the showcase Core for a MiniHTTP renderer.
+
+### /RPT
+
+Select RemoteProtocolTest in `RemotingTest_Core`, together with one renderer transport. It is mutually exclusive with `/FCT` and `/RVMT`.
+
+### /RVMT
+
+Select RemoteViewModelTest in `RemotingTest_Core`, together with one renderer transport. It is mutually exclusive with `/FCT` and `/RPT`. The view-model host connection is independent of the renderer connection: use the same network transport for both, or add `/Cli:<path>` for an automatically launched stdio host.
+
+Without `/Cli`, start Core first, then `RemotingTest_RvmHost` with the same transport selector, then the renderer after Core automation contains `Remote View Model Test`. RVM RPC uses the exact logical channels `ViewModelChannel` and `ViewModelReadyChannel`; renderers use `GacUIRemoteProtocol`. A requester terminates with an error if its view-model host disconnects while the application is running.
+
+### /Pipe
+
+Select the Windows named-pipe transport. Core and the renderer each require exactly one of `/Pipe`, `/Http` or `/MiniHttp`. `CppTest_Rvm` and `RemotingTest_RvmHost` also accept a network selector, with `/Cli` as an alternative described below. A network host must use the same transport as its requester. Named-pipe access is subject to Windows permissions and SMB availability; destinations may be UNC server names or IPv4 addresses, but not raw IPv6.
+
+### /Http
+
+Select the Windows HTTP transport on protocol port `8888`, exclusively with respect to the other transport selectors. The server registers `http://+:8888/GacUIRemoteProtocolHttp/` and requires the corresponding HTTP.sys URL-registration permission. Use `/MiniHttp` for a portable HTTP transport.
+
+### /MiniHttp
+
+Select the portable socket-based HTTP transport on protocol port `8888`, exclusively with respect to the other network transport selectors. It works on Windows, Linux and macOS, including the wGac/iGac renderer replacements. Native TCP listeners use wildcard interfaces and supported address families; same-machine hostname/IP tests do not establish access from another computer. Automation socket sharing is described under `/AsPort`.
+
+### /Cli
+
+Use `/Cli:<nonempty-host-path>` in a requester to launch `RemotingTest_RvmHost` automatically with the exact `/Cli` switch. Do not start that host manually.
+
+- `RemotingTest_Core` requires explicit `/RVMT` and one renderer transport in addition to `/Cli:<path>`. It starts a renderer-only network server and a host-only stdio server, then stops the host server before the renderer server.
+- `CppTest_Rvm` accepts exactly one of `/Pipe`, `/Http`, `/MiniHttp` or `/Cli:<path>`. Its network modes wait for a manually started host. Here `/Cli` is itself the exclusive RVM transport; this application never uses a separate renderer.
+- `RemotingTest_RvmHost` accepts bare `/Cli` instead of a network selector. Stdin/stdout are reserved for framed protocol traffic and the ordinary startup banner is suppressed. Explicit `/corehost` is invalid in this local mode.
+
+A process launcher may pass `/Cli:<path>` or the single literal argument `/Cli:"<path>"`. Requesters remove exactly one balanced quote pair and reject empty, duplicate or unmatched quoted values. The path names one executable, never a command plus arguments. Linux/macOS stdio support comes from the imported `<GacUI repo>/Import/VlppOS.Linux.cpp`.
+
+### /corehost
+
+Use `/corehost:<host>` once in a native renderer or network `RemotingTest_RvmHost` to select the destination, defaulting to `localhost`. Place it before or after the transport selector; renderer arguments also compose with automation and injection options. Core and `CppTest_Rvm` host the servers and do not accept this option.
+
+Supply an ASCII DNS hostname, IPv4 address or IPv6 address, without a URL, path or separate port. Empty, duplicate and malformed values fail before transports start. IPv6 colons remain part of the host; one surrounding bracket pair is accepted and removed before socket construction, then restored for HTTP authorities. `/Pipe` does not support IPv6.
+
+The destination does not change protocol port `8888` or the local automation port. For example, run Core with `/FCT /MiniHttp /AsPort:8888`, then a Windows renderer with `/MiniHttp /corehost:::1 /AsPort:8889`. A network view-model host can use `/MiniHttp /corehost:core.example.com` to connect to Core or `CppTest_Rvm`. The wGac/iGac renderers support `/corehost` too; see their launcher and port spellings under [Linux/macOS Specific](#linuxmacos-specific).
+
+### /remoteDT
+
+Enable renderer-provided DateTime services by passing `/remoteDT` once to both Core and the renderer. The test apps default to disabled and reject duplicate switches. If the connected renderer does not provide the capability, DateTime uses the predecessor service; capabilities are reevaluated when the renderer is replaced.
+
+### /remoteLocale
+
+Enable renderer-provided Locale services by passing `/remoteLocale` once to both Core and the renderer. It is independently disabled by default and rejects duplicates. If the renderer cannot provide the capability, Locale uses the predecessor service; capabilities are reevaluated on renderer replacement.
+
+### /remoteFS
+
+Enable renderer-provided filesystem services by passing `/remoteFS` once to both Core and the renderer. It is independently disabled by default and rejects duplicates. An enabled but unavailable remote filesystem exposes an empty `/` root. Remote image encoding is available independently of filesystem injection. All three injection arguments also work with the wGac/iGac renderers.
+
+### Maintenance expectations
+
+Test apps include `CppTest*`, `GacUI_Host` and `RemotingTest*`; they are demos and do not require production-level quality. Let unexpected exceptions crash the app so failures in `<GacUI repo>/Source` remain visible. Keep test apps simple without unnecessary recovery.
+
+`<GacUI repo>/.github/Jobs/DebugRemoteProtocolSop.md` defines their expected connection/disconnection behavior. Test apps running FullControlTest should follow its "Complete Control Showcase (`/FCT`)" section; apps running TuiControlTest should follow `<GacUI repo>/.github/Jobs/DebugTuiControlTestSop.md`.
 
 ## Windows Specific
 
@@ -263,66 +345,42 @@ Use Windows with the UIAutomationClient/UIAutomationTypes assemblies, an out-of-
 
 `Tools/UiaList` is the native UIA inspector. Read `Tools/UiaList/AGENTS.md` and `Tools/UiaList/Verification/README.md`, build its separate solution with the repository wrapper, and use `Tools/UiaList/Verification/Inspector.ps1` for geometry-based inspection. Its automation endpoint is Debug-only: run with `/AsPort:8891` and use `http://localhost:8891/Automation/UiaListApp/Controls` and `/IO` beside CppTest on 8888 and CppTest_Metaonly on 8890. The verification fixture and `Smoke.ps1 -GetterRegression` check explicit refresh, cached presentation, edits/readback and asynchronous generations. Use UiaList's preview and Nodes view to review showcase changes; preview clicks select cached nodes without sending target input.
 
-### Application automation
+### Test applications and automation
 
-Automation HTTP service for GUI applications are available for Windows:
+Windows test applications include:
 - `CppTest`                       : Run FullControlTest in hosted mode, built without reflection (`VCZH_DEBUG_NO_REFLECTION`).
 - `CppTest_Tui`                   : Run TuiControlTest in Windows Terminal using TuiSkin and the hosted TUI provider, built without reflection. It has no automation endpoint. Follow [DebugTuiControlTestSop.md](.github/Jobs/DebugTuiControlTestSop.md).
-- `CppTest_Rvm`                   : Run RemoteViewModelTest in hosted mode after acquiring its service from `RemotingTest_RvmHost`; `/Cli:<path>` auto-launches that host with `/Cli`.
+- `CppTest_Rvm`                   : Run RemoteViewModelTest in hosted mode after acquiring its service from `RemotingTest_RvmHost`.
 - `CppTest_Metaonly`              : Run FullControlTest, built with metaonly reflection (`VCZH_DEBUG_METAONLY_REFLECTION`).
 - `CppTest_Reflection`            : Run FullControlTest, built with full reflection.
 - `GacUI_Host`                    : Run FullControlTest, by loading Workflow binary assembly instead of generated C++ code.
 - `Playground`                    : Run `REPO-ROOT/Test/GacUISrc/Playground/Resources/Resource*.xml`, resource file to load specified, main window specified in `OpenMainWindow` function.
-- `RemotingTest_Core`             : Run FullControlTest, RemoteProtocolTest, or RemoteViewModelTest with renderer traffic hosted by HTTP, MiniHTTP, or NamedPipe; `/RVMT` may independently use `/Cli:<path>` for its host.
+- `RemotingTest_Core`             : Run FullControlTest, RemoteProtocolTest, or RemoteViewModelTest with a separate renderer.
 - `RemotingTest_Rendering_Win32`  : Renderer of `RemotingTest_Core`.
-- `RemotingTest_RvmHost`          : Provide the remote view-model service used by `CppTest_Rvm` and `RemotingTest_Core /RVMT`, including the stdio `/Cli` mode.
+- `RemotingTest_RvmHost`          : Provide the remote view-model service used by `CppTest_Rvm` and Core's RemoteViewModelTest.
 
-After building Debug x64, use the repository-relative launchers under `Test`:
+After building Debug x64, use the launchers under `<GacUI repo>/Test`:
 
-- `StartCore.ps1 -App cpptest_rvm|fct|rpt|rvmt -Protocol http|pipe|minihttp [-Cli] [-AsPort <1-65535>]` starts `CppTest_Rvm` or `RemotingTest_Core`. `-Cli` is valid only for `cpptest_rvm` and `rvmt`; without it, those two app modes start their required `RemotingTest_RvmHost` manually one second after the requester/Core. The automation port defaults to 8888.
-- `StartRendrerer.ps1 -Protocol http|pipe|minihttp [-CoreHost <host>] [-AsPort <1-65535>]` starts `RemotingTest_Rendering_Win32` with an explicit `/AsPort:8889` by default, allowing it to run beside Core. The executable itself defaults to 8888. The file name intentionally preserves the requested `Rendrerer` spelling.
+- `<GacUI repo>/Test/StartCore.ps1 -App cpptest_rvm|fct|rpt|rvmt -Protocol http|pipe|minihttp [-Cli] [-AsPort <1-65535>]` starts `CppTest_Rvm` or `RemotingTest_Core`. `-Cli` is valid only for `cpptest_rvm` and `rvmt`; without it, those two app modes start their required `RemotingTest_RvmHost` manually one second after the requester/Core. The automation port defaults to 8888.
+- `<GacUI repo>/Test/StartRendrerer.ps1 -Protocol http|pipe|minihttp [-CoreHost <host>] [-AsPort <1-65535>]` starts `RemotingTest_Rendering_Win32` with automation port 8889 by default, allowing it to run beside Core. The file name intentionally preserves the requested `Rendrerer` spelling.
 - Both launchers use `<GacUI repo>/Test/GacUISrc/x64/Debug` and return their `System.Diagnostics.Process` objects for inspection or cleanup. The renderer launcher starts without opening a console window.
-
-
-Native renderers and network `RemotingTest_RvmHost` accept one case-sensitive `/corehost:<host>`, defaulting to `localhost`. Place it before or after the transport. Renderer arguments also compose with automation and injection options. Empty, duplicate and malformed values fail before transports start. Supply an ASCII DNS hostname, IPv4 address or IPv6 address, without a URL, path or separate port. IPv6 colons remain part of the host; one surrounding bracket pair is accepted and removed before socket construction, then restored for HTTP authorities. Windows `/Pipe` accepts UNC server names or IPv4 addresses, not raw IPv6. Windows clients support `/Pipe`, `/Http` and `/MiniHttp`; wGac/iGac renderers support `/MiniHttp`.
-
-The option selects a destination only: TCP protocol port remains 8888, while `/AsPort` selects local automation. For example, start Core with `/FCT /MiniHttp /AsPort:8888`, then use `StartRendrerer.ps1 -Protocol minihttp -CoreHost core.example.com -AsPort 8889`, or pass `/MiniHttp /corehost:::1 /AsPort:8889` directly to `RemotingTest_Rendering_Win32`. The launcher keeps its existing filename and local defaults. Core and CppTest_Rvm host the servers and do not accept `/corehost`. A manually started `RemotingTest_RvmHost /MiniHttp /corehost:core.example.com` connects to either server; explicit `/corehost` is rejected with local `/Cli` mode.
-
-Native TCP listeners use wildcard interfaces and supported address families. Windows HTTP protocol registration uses `http://+:8888/GacUIRemoteProtocolHttp/` and requires the corresponding HTTP.sys URL-registration permission. Named-pipe access remains subject to Windows permissions and SMB availability. Same-machine hostname/IP tests do not establish access from another computer.
 
 FullControlTest means `Generated_FullControlTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/FullControlTest/Resource.xml`.
 TuiControlTest means `Generated_TuiControlTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/TuiControlTest/Resource.xml`. Its skin is `Generated_TuiSkin.vcxitems`, which compiles the canonical, manually maintained `Source/Skins/TuiSkin/Config/TuiSkinConfig.h/.cpp` exactly once for each consumer. GacUI_Compiler also generates `Source/Utilities/FakeServices/TuiDialogs/Source`; run the same metadata generation steps after these resource changes. The release pipeline mirrors TuiSkin XML into `Source/Skins/TuiSkin`, generates its `Source` folder, preserves its canonical `Config` folder, and publishes `TuiSkin`/`TuiSkinReflection`. Configuration must not be recreated under `Generated_TuiSkin` or the release-generated `Source` folder.
 RemoteProtocolTest means `Generated_RemoteProtocolTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteProtocolTest/Resource.xml`.
 RemoteViewModelTest means `Generated_RemoteViewModelTest.vcxitems`, generated from `REPO-ROOT/Test/Resources/App/RemoteViewModelTest/Resource.xml`.
 When `FakeDialogService` is used, all system dialogs are replaced by `REPO-ROOT/Source/Utilities/FakeServices/Dialogs/Resource.xml`.
-For the non-remoting projects above, the automation endpoint is `http://localhost:8888/Automation/<PROJECT-NAME>/...` and is hosted by `StartWindowsHttpAutomationService`.
-- `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `GacUI_Host`, and `RemotingTest_Rendering_Win32` accept the exact `/Gdi` switch to use GDI instead of the default Direct2D renderer. It may appear once and can be combined with `/AsPort`; duplicate `/Gdi` switches are rejected. For remote FullControlTest, run Core with `/FCT /Pipe /AsPort:8888` and the renderer with `/Pipe /Gdi /AsPort:8889`. `/FCT` selects the application on Core; `/Gdi` selects the native drawing backend on the renderer. The renderer attaches the clock painter when it receives an element whose ID is `FullControlTest.Clock`.
-- `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`, `GacUI_Host`, `Playground`, `CppTest_Rvm`, `RemotingTest_Core`, `RemotingTest_Rendering_Win32`, and `UiaListApp` accept one `/AsPort:<decimal port>` in 1..65535, default 8888. Invalid, empty, duplicate, and out-of-range values fail before starting listeners. UiaList exposes its endpoint only in Debug. Assign distinct ports to run independent automation endpoints simultaneously; for example CppTest 8888, CppTest_Metaonly 8890, and UiaListApp 8891.
-- The remote protocol port is always 8888 for `/Http` and `/MiniHttp`, regardless of `/AsPort`. Named pipe and stdio endpoints are unchanged. Multiple protocol servers still cannot own the same fixed transport endpoint.
-- Checkout `REPO-ROOT/.github/Guidelines/Running-GacUI.md` for details.
+
+See [Maintaining Test Apps](#maintaining-test-apps) for argument usage, automation URLs and transport selection.
 
 Each application owns its automation stack directly. It constructs the concrete service matching its setup (`WindowsAutomationService`, `WindowsAutomationServiceHosted`, `WindowsAutomationServiceRenderer`, `RemoteProtocolAutomationService`, or a platform renderer service), substitutes it, starts the selected Windows HTTP or MiniHTTP endpoint, runs the application, then stops the endpoint and service before unsubstituting it. Both endpoint implementations expose the same `Controls`, `Dom`, and `IO` contract.
 
-Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` expose automation in `/Http`, `/Pipe`, and `/MiniHttp` modes:
-- `RemotingTest_Core` exposes the UI as a window-control tree at `http://localhost:8888/Automation/RemotingTest_Core/...`.
-- `RemotingTest_Rendering_Win32` exposes the UI as a DOM tree at `http://localhost:<renderer-port>/Automation/RemotingTest_Rendering_Native/...`. Pass `/AsPort:<renderer-port>` to select the automation port; omitting it selects 8888. Paired examples must explicitly use `/AsPort:8889` or another free port.
-- `/Http` and `/Pipe` use `StartWindowsHttpAutomationService`.
-- In `/MiniHttp` mode, Core and CppTest_Rvm share their protocol socket when `/AsPort:8888` is selected. Another automation port creates a separately owned MiniHTTP socket, stopped with the automation endpoint while preserving protocol shutdown order. The renderer always owns a separate automation socket. Its protocol client still connects to port 8888.
-- Both support IO operations:
-  - When performing IO via the renderer, remote protocol events pass the IO operations to the core.
-  - When performing IO via the core, the renderer only receives UI updates and redraws.
-  - Core and renderer should synchronize to the same UI state afterwards.
-  - Performing IO through either the renderer or the core should result in the same UI state.
+Both `RemotingTest_Core` and `RemotingTest_Rendering_Win32` support automation IO operations:
 
-RVM RPC uses the exact logical channels `ViewModelChannel` and `ViewModelReadyChannel`; renderers use `GacUIRemoteProtocol`. Core-to-renderer transport and Core-to-host mode are separate dimensions:
-
-- Without `/Cli`, `RemotingTest_Core /RVMT` and its manually started `RemotingTest_RvmHost` share the selected `/Pipe`, `/Http`, or `/MiniHttp` server. Start Core, then the host with the same selector, then start the renderer after Core automation contains `Remote View Model Test`.
-- With `/Cli:<nonempty-host-path>`, Core still requires `/RVMT` and one renderer transport. It starts a renderer-only server plus a host-only stdio server, quotes the path, and auto-launches `RemotingTest_RvmHost /Cli`; do not start that host manually. Stop order is host server first, renderer server second.
-- A process launcher may pass `/Cli:<path>` directly or pass the single literal argument `/Cli:"<path>"`. `RemotingTest_Core` and `CppTest_Rvm` remove exactly one balanced quote pair around the path and reject empty or unmatched quoted values; the path remains one executable, never a command plus arguments.
-- `CppTest_Rvm` accepts exactly one of `/Pipe`, `/Http`, `/MiniHttp`, or `/Cli:<nonempty-host-path>`. The first three wait for a manually started host using the same selector. `/Cli` auto-launches the host and is itself the exclusive RVM transport. This variant never uses a renderer.
-- `RemotingTest_RvmHost` accepts exact `/Cli` in addition to its network selectors. In stdio mode, stdin/stdout are reserved for framed protocol traffic and the ordinary startup banner is suppressed.
-- A requester terminates with an error if `RemotingTest_RvmHost` disconnects while the application is running.
-- `CppTest_Rvm` exposes automation at `http://localhost:<AsPort>/Automation/CppTest_Rvm/...`. `/Pipe`, `/Http`, and `/Cli` use the Windows HTTP endpoint; `/MiniHttp` shares the protocol socket only when the selected automation port is 8888.
+- When performing IO via the renderer, remote protocol events pass the IO operations to the core.
+- When performing IO via the core, the renderer only receives UI updates and redraws.
+- Core and renderer should synchronize to the same UI state afterwards.
+- Performing IO through either the renderer or the core should result in the same UI state.
 
 `Playground` is for adhoc testing:
 - Playground is for trying UI from XML. All UI, including controls, layout, document content and interaction behavior, must be implemented in XML resources and their Workflow scripts, not constructed in C++. C++ may provide native interop hooks that the scripts call.
@@ -358,9 +416,37 @@ Unlike Windows, building have to be done in each folder separately.
 
 The Unix unit-test entry point uses the environment locale for wide console output, including Unicode test names. Run it with an installed UTF-8 locale; on macOS, use `LC_ALL=en_US.UTF-8 ./Bin/UnitTest /C` if the inherited locale is unavailable.
 
-`CppTest_Rvm` is Windows-only in this solution. The portable RVM demo is `RemotingTest_Core /RVMT` with `/MiniHttp` for renderers; its host is either manually started with `/MiniHttp` or auto-launched with `/Cli:<path>`. Linux/macOS stdio code is supplied by the imported `VlppOS.Linux.cpp`.
-
 It is expected if `makefile` and `vmake.txt` is changed due to build any project, they should be included in the commit for manually updated files, do not revert them.
+
+### Replacement test applications in wGac and iGac
+
+The native GUI projects in this solution use Windows providers. wGac supplies Wayland replacements and iGac supplies macOS replacements; their supported launcher arguments are documented in `<wGac repo>/test.sh` and `<iGac repo>/test.sh`.
+
+| Application or role in this solution | wGac replacement | iGac replacement | Arguments to the repository's test.sh |
+| --- | --- | --- | --- |
+| Hosted FullControlTest (`CppTest`) | `Test_FullControlTest` | `Test_FullControlTest` | `--app:fct --hosted` |
+| FullControlTest with native windows | `Test_FullControlTest` | `Test_FullControlTest` | `--app:fct` |
+| `CppTest_Tui` | `Test_TuiControlTest` | `Test_TuiControlTest` | `--app:tui` |
+| `CppTest_Rvm` | `Test_CppTest_Rvm` | `Test_CppTest_Rvm` | `--app:rvmt` |
+| `RemotingTest_Rendering_Win32` | `RemotingTest_Rendering_Wayland` | `RemotingTest_Rendering_macOS` | `--app:renderer` |
+
+These replacement test apps are built without reflection; they do not provide separate metaonly, full-reflection or Workflow-binary variants corresponding to `CppTest_Metaonly`, `CppTest_Reflection` and `GacUI_Host`. `RemotingTest_Core` and `RemotingTest_RvmHost` use the portable projects under `<GacUI repo>/Test/Linux`.
+
+For a renderer, both test launchers accept `--corehost:<host>`, `--port:<1-65535>`, `-remoteDT`, `-remoteLocale` and `-remoteFS`. They forward `/MiniHttp`, `/corehost:<host>`, `/port:<port>` and the corresponding slash injection switches in foreground and `--unblock` modes. The renderer's local automation option is `/port`, default `8889`; Core continues to use `/AsPort`. `/corehost` is supported by these renderers and the portable network view-model host, so it is not Windows-specific. Shared argument semantics are described under [Maintaining Test Apps](#maintaining-test-apps).
+
+`<wGac repo>/test_core.sh` and `<iGac repo>/test_core.sh` launch the portable Core with `--app:fct`, `--app:rpt` or `--app:rvmt` and `--protocol:minihttp`. Their `-remoteDT`, `-remoteLocale` and `-remoteFS` options forward the matching slash switches to Core. For a stdio view-model host, use `--app:rvmt --protocol:minihttp --cli`.
+
+The `Test_CppTest_Rvm` replacements accept only `/MiniHttp`; their test launcher does not automatically start a host. Use the corresponding test-core launcher with `--app:cpptest_rvm --protocol:minihttp` to launch the requester and its network host together. That mode does not accept `--cli`. The portable Core's RemoteViewModelTest remains available for stdio-host testing.
+
+### Windows-only arguments
+
+The following arguments from the test-app table do not work on Linux/macOS:
+
+- `/Gdi`: selects the Windows GDI drawing backend.
+- `/Pipe`: selects the Windows named-pipe transport.
+- `/Http`: selects the Windows HTTP transport, including HTTP.sys on the server.
+
+Use `/MiniHttp` for network transport on Linux/macOS. The application-specific differences in the replacement projects are listed above; `/AsPort`, `/Cli`, `/corehost` and the remote-injection switches are not inherently Windows-only.
 
 ## WebAssembly
 
