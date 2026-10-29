@@ -2,10 +2,11 @@
 #include "../Generated_RemoteViewModelTest/RemoteViewModelTestInitialize.h"
 #include "RemoteViewModelTestRpc.h"
 #include <VlppOS.h>
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
 #include <crtdbg.h>
 #endif
+#include "../SharedArguments.h"
 
 using namespace vl;
 using namespace vl::collections;
@@ -66,34 +67,47 @@ void GuiMain()
 
 int main(int argc, char* argv[])
 {
-	if (argc != 2)
+	gacui_test::CoreHostArguments coreHost;
+	WString transport;
+	for (int i = 1; i < argc; i++)
 	{
-		return 1;
+		auto argument = u8tow(U8String::Unmanaged((const char8_t*)argv[i]));
+		auto consumed = coreHost.Consume(argument);
+		if (consumed < 0) return 1;
+		if (consumed > 0) continue;
+		if (transport.Length() != 0) return 1;
+		bool supported = argument == L"/MiniHttp" || argument == L"/Cli";
+#if defined VCZH_MSVC
+		supported |= argument == L"/Pipe" || argument == L"/Http";
+#endif
+		if (!supported) return 1;
+		transport = argument;
 	}
+	if (transport.Length() == 0 || (transport == L"/Cli" && coreHost.specified)) return 1;
 
 	int result = 1;
 
-#ifdef VCZH_MSVC
-	if (strcmp(argv[1], "/Pipe") == 0)
+#if defined VCZH_MSVC
+	if (transport == L"/Pipe")
 	{
-		result = RunHost(Ptr(new named_pipe::NamedPipeClient(WString::Unmanaged(RemotingNamedPipeName))));
+		if (coreHost.host.IndexOf(L':') != -1) return 1;
+		result = RunHost(Ptr(new named_pipe::NamedPipeClient(coreHost.host, WString::Unmanaged(RemotingNamedPipeName))));
 	}
-	else if (strcmp(argv[1], "/Http") == 0)
+	else if (transport == L"/Http")
 	{
-		result = RunHost(Ptr(new windows_http::HttpClient(WString::Unmanaged(RemotingHttpBaseUrl), RemotingHttpPort)));
+		result = RunHost(Ptr(new windows_http::HttpClient(coreHost.host, WString::Unmanaged(RemotingHttpBaseUrl), RemotingHttpPort)));
 	}
-	else
 #endif
-	if (strcmp(argv[1], "/MiniHttp") == 0)
+	if (transport == L"/MiniHttp")
 	{
-		auto socketClient = async_tcp_socket::CreateDefaultAsyncSocketClient(RemotingHttpPort);
+		auto socketClient = async_tcp_socket::CreateDefaultAsyncSocketClient(coreHost.host, RemotingHttpPort);
 		result = RunHost(Ptr(new async_tcp_socket::SocketHttpClient(
 			socketClient,
-			WString::Unmanaged(L"localhost"),
+			coreHost.host,
 			WString::Unmanaged(RemotingHttpBaseUrl)
 			)));
 	}
-	else if (strcmp(argv[1], "/Cli") == 0)
+	else if (transport == L"/Cli")
 	{
 		result = RunHost(Ptr(new StdioRedirectionClient), false);
 	}

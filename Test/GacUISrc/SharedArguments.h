@@ -1,8 +1,8 @@
 #ifndef GACUI_TEST_AUTOMATIONARGUMENTS
 #define GACUI_TEST_AUTOMATIONARGUMENTS
 
-#include <Vlpp.h>
-#ifdef VCZH_MSVC
+#include <VlppOS.h>
+#if defined VCZH_MSVC
 #include <Windows.h>
 #include <Shellapi.h>
 #pragma comment(lib, "Shell32.lib")
@@ -41,7 +41,7 @@ namespace gacui_test
 			return 1;
 		}
 
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 		bool ParseWindowsCommandLine()
 		{
 			int count = 0;
@@ -56,6 +56,32 @@ namespace gacui_test
 	};
 
 	inline AutomationArguments automationArguments;
+
+#if defined VCZH_MSVC || defined VCZH_GCC
+	struct CoreHostArguments
+	{
+		bool specified = false;
+		vl::WString host = vl::WString::Unmanaged(L"localhost");
+
+		// Consume the fixed prefix only: the remaining colons belong to IPv6.
+		vl::vint Consume(const vl::WString& argument)
+		{
+			if (argument.Length() < 9 || argument.Left(9) != L"/corehost") return 0;
+			if (specified || argument.Length() <= 10 || argument[9] != L':') return -1;
+			auto value = argument.Right(argument.Length() - 10);
+			if (value.Length() >= 2 && value[0] == L'[' && value[value.Length() - 1] == L']')
+			{
+				value = value.Sub(1, value.Length() - 2);
+				if (value.IndexOf(L':') == -1) return -1;
+			}
+			if (!vl::inter_process::async_tcp_socket::IsValidSocketHost(value)) return -1;
+			host = value;
+			specified = true;
+			return 1;
+		}
+	};
+
+#endif
 
 	struct RemoteInjectionArguments
 	{

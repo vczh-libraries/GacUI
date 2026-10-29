@@ -285,7 +285,7 @@ server.Start();
 server.Stop();
 ```
 
-The common `CreateDefaultAsyncSocketServer` and `CreateDefaultAsyncSocketClient` factories select the compiled native loopback backend:
+The common `CreateDefaultAsyncSocketServer` and `CreateDefaultAsyncSocketClient` factories select the compiled native TCP backend:
 
 | Platform guard | Native server | Native client |
 | --- | --- | --- |
@@ -293,14 +293,20 @@ The common `CreateDefaultAsyncSocketServer` and `CreateDefaultAsyncSocketClient`
 | `VCZH_GCC && VCZH_APPLE` | `async_tcp_socket::macos_socket::AsyncSocketServer` | `async_tcp_socket::macos_socket::AsyncSocketClient` |
 | `VCZH_GCC && !VCZH_APPLE` | `async_tcp_socket::linux_socket::AsyncSocketServer` | `async_tcp_socket::linux_socket::AsyncSocketClient` |
 
-Use `<VlppOS repo>/Release/VlppOS.Windows.h` on Windows; Winsock initialization and `Ws2_32.lib` linkage are internal. Use `<VlppOS repo>/Release/VlppOS.Linux.h` on Linux and link `liburing`. Use the same `<VlppOS repo>/Release/VlppOS.Linux.h` umbrella on macOS; custom builds must enable Clang Blocks and link CoreFoundation and Network.framework. The repository projects and build scripts already supply these platform settings.
+Use `<VlppOS repo>/Release/VlppOS.Windows.h` on Windows; Winsock initialization and `Ws2_32.lib` linkage are internal. Use `<VlppOS repo>/Release/VlppOS.Linux.h` on Linux and link `liburing` and `libanl`. Use the same `<VlppOS repo>/Release/VlppOS.Linux.h` umbrella on macOS; custom builds must enable Clang Blocks and link CoreFoundation and Network.framework. The repository projects and build scripts already supply these platform settings.
 
-`SocketHttpServer` reads its port from and starts only the injected listener; it never selects or creates another server. `SocketHttpClient` takes only the injected client, reads its port, uses that exact object for the first physical lane, and obtains additional lanes through `client->CreateSameEndpointClient()`. `WaitForServer` blocks while establishing the logical connection and returns after connection or after the client reaches a terminal stopped state, so call it on a thread that may block. Both sides use IPv4 loopback; the explicit client server name is `localhost` (case-insensitive) or `127.0.0.1`.
+`SocketHttpServer` reads its port from and starts only the injected listener; it never selects or creates another server. `SocketHttpClient` takes only the injected client, reads its port, uses that exact object for the first physical lane, and obtains additional lanes through `client->CreateSameEndpointClient()`. `WaitForServer` blocks while establishing the logical connection and returns after connection or after the client reaches a terminal stopped state, so call it on a thread that may block. Servers listen on wildcard interfaces. Construct the socket with CreateDefaultAsyncSocketClient(host, port) and pass the same host to SocketHttpClient; IPv4, unbracketed IPv6 and ASCII DNS names are supported. The port-only overload retains the localhost default. The HTTP layer adds IPv6 authority brackets and retains Host structure and port checks.
 
-`IAsyncSocketClient::CreateSameEndpointClient()` must return a distinct fresh non-null client in `ClientStatus::Ready` with the same immutable endpoint and `GetPort()` value, even while the source client is active or stopped. This capability keeps transport creation behind the injected abstraction while preserving the simultaneous receive long-poll lane, control/send lane, and terminal-lane recovery.
+`IAsyncSocketClient::CreateSameEndpointClient()` must return a distinct fresh non-null client in `ClientStatus::Ready` with the same immutable host, backend and `GetPort()` value, even while the source client is active or stopped. This capability keeps transport creation behind the injected abstraction while preserving the simultaneous receive long-poll lane, control/send lane, and terminal-lane recovery.
 
 `urlPrefix` is empty for the origin root or an ASCII origin-form prefix such as `/example`. Both adapters remove trailing slashes, so `/` becomes the origin root. A nonempty normalized prefix must start with `/` and must not contain a query, fragment, backslash, NUL, malformed escape, or encoded path separator. Server and client must use the same normalized prefix, and their injected sockets must report the same port.
 
 The portable `HttpRequestClient` treats a 404 response as `HttpResponseFailure::NotFound`, reports a terminal physical-lane error, and stops that socket. `SocketHttpClientApi` exposes this as `SocketHttpClientErrorCode::ResponseNotFound`. The logical `SocketHttpClient` does not inherit that physical fatal classification: it reports the endpoint failure as nonfatal and applies the endpoint's normal retry policy. `/Connect` and `/Response` retry up to their normal attempt limit, replacing a failed physical lane when needed; `/Request` replaces its receive lane and continues polling. If a connected `NetworkProtocolChannelClient` owns the callback, its promotion response stops the logical client after the first reported failure instead.
 
 For the lower socket, HTTP request and Mini HTTP API startup rules on each platform, see [Inter-Process Async-Socket-Based Mini HTTP API](./KB_VlppOS_InterProcessAsyncSocketBasedMiniHttpApi.md).
+
+## Explicit destination hosts
+
+On Windows, `windows_http::HttpClient(host, baseUrl, port)` forwards the host to WinHTTP and brackets IPv6 at that boundary. Its old `(baseUrl, port)` overload defaults to localhost. Protocol servers register `http://+:port/baseUrl/`; the process must have the corresponding HTTP.sys URL-registration permission. An access-denied registration is an environment failure, not a reason to silently switch back to localhost.
+
+`named_pipe::NamedPipeClient(host, pipeName)` maps localhost (case-insensitively) to the local `.` UNC endpoint and preserves explicit remote server names. Its old one-argument overload remains local. The server accepts remote clients subject to Windows pipe permissions and SMB availability; raw IPv6 text is not a UNC server name.

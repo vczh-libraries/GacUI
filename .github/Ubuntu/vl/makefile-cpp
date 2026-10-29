@@ -23,7 +23,7 @@ ifeq ($(CPP_PLATFORM_NAME),Darwin)
 CPP_PLATFORM_COMPILE_OPTIONS=-fblocks
 CPP_PLATFORM_LINK_OPTIONS+=-framework CoreFoundation -framework Network
 else ifeq ($(CPP_PLATFORM_NAME),Linux)
-CPP_PLATFORM_LINK_OPTIONS+=-luring
+CPP_PLATFORM_LINK_OPTIONS+=-luring -lanl
 endif
 
 ifeq ($(CPP_COMPILER),GCC)

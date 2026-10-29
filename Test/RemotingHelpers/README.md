@@ -29,11 +29,18 @@ The templates accept any server implementing `vl::inter_process::INetworkProtoco
 
 | Test transport | Typical use |
 | --- | --- |
-| `vl::inter_process::named_pipe::NamedPipeServer` and `NamedPipeClient` | Simple Windows-only local processes. |
+| `vl::inter_process::named_pipe::NamedPipeServer` and `NamedPipeClient` | Windows processes using local or remote UNC pipe endpoints. |
 | `vl::inter_process::windows_http::HttpServer` and `HttpClient` | Windows HTTP.sys/WinHTTP testing. |
-| `vl::inter_process::async_tcp_socket::SocketHttpServer` and `SocketHttpClient` | Portable loopback Mini HTTP testing on Windows, Linux, and macOS. |
+| `vl::inter_process::async_tcp_socket::SocketHttpServer` and `SocketHttpClient` | Portable IPv4/IPv6/DNS Mini HTTP testing on Windows, Linux, and macOS. |
 | `vl::inter_process::stdio_redirection::StdioRedirectionServer` and `StdioRedirectionClient` | A parent requester that launches one remote view-model host as a child and reserves stdin/stdout for framed protocol traffic. |
 | Your own `INetworkProtocol*` implementation | The production replacement. The helper and JSON channel layers above it do not need to change. |
+
+
+Native clients retain host, port and backend when creating additional physical lanes, including after Stop. Use `CreateDefaultAsyncSocketClient(host, port)` and pass the same host to `SocketHttpClient`; the old port-only constructor defaults to localhost. Native socket listeners use wildcard interfaces. HTTP authorities bracket IPv6 and retain single-Host, syntax and port validation.
+
+Windows adds `windows_http::HttpClient(host, baseUrl, port)` and `named_pipe::NamedPipeClient(host, pipeName)`, retaining their local overloads. HTTP protocol servers register a wildcard URL and require its HTTP.sys registration permission. Named pipes map localhost to `.` and retain remote UNC server names; Windows permissions and SMB still govern remote access. Raw IPv6 is not a UNC server name.
+
+The native renderer and network RVM host demos accept optional `/corehost:<host>` (default localhost). The RVM host rejects an explicit destination with `/Cli`; requester/Core servers need no destination option. TCP protocol port 8888 remains independent of local automation ports. Windows offers Pipe/Http/MiniHttp, while native wGac/iGac renderers use MiniHttp.
 
 # Remote Protocol Core
 

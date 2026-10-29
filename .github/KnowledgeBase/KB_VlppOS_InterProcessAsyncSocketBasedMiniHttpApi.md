@@ -6,7 +6,7 @@ The bundled async-socket, HTTP request and Mini HTTP APIs described here, includ
 
 ## Purpose and Layered Organization
 
-The types in `vl::inter_process::async_tcp_socket` form a portable, loopback-only stack for asynchronous TCP bytes and HTTP/1.1 request/response work. Applications can enter at the layer matching the abstraction they need:
+The types in `vl::inter_process::async_tcp_socket` form a portable TCP stack for asynchronous TCP bytes and HTTP/1.1 request/response work. Applications can enter at the layer matching the abstraction they need:
 
 | Layer | Main types | Responsibility |
 | --- | --- | --- |
@@ -22,17 +22,17 @@ The lower layers do not perform URL routing or application policy. The Mini HTTP
 
 - Use `IAsyncSocket*` when the application owns its byte framing and protocol state machine.
 - Use `HttpRequestServer`, `HttpRequestClient` and `IHttpRequestConnection` when the application needs complete, binary-safe HTTP/1.1 message objects and controls each connection directly.
-- Use `SocketHttpServerApi` and `SocketHttpClientApi` when the application needs a small loopback HTTP service with prefix routing, normalized responses and queued asynchronous queries.
+- Use `SocketHttpServerApi` and `SocketHttpClientApi` when the application needs a small HTTP test service with prefix routing, normalized responses and queued asynchronous queries.
 - Use `SocketHttpServer` / `SocketHttpClient` or the channel bridge when the application needs asynchronous `WString` messages or typed named channels instead of request/response semantics.
 
 ## Platform Backends and Startup
 
-All native implementations bind and connect to numeric IPv4 loopback. The public port constructor does not accept a remote host.
+Native servers listen on wildcard interfaces with IPv4/IPv6 support. Each native client retains its host, port and backend. The existing port-only constructor delegates to localhost; the host-first constructor and CreateDefaultAsyncSocketClient(host, port) accept an IPv4 address, an unbracketed IPv6 address or an ASCII DNS hostname, without a URL, path or port. IsValidSocketHost validates this syntax through native IPv6 parsing; CreateSocketHttpAuthority brackets IPv6 when adding the HTTP port.
 
 | Platform | Native types | Definition | Build dependency |
 | --- | --- | --- | --- |
 | Windows | `windows_socket::AsyncSocketServer`, `windows_socket::AsyncSocketClient` | `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.Windows.h` | Winsock; the implementation links `Ws2_32.lib` and manages `WSAStartup` internally |
-| Linux | `linux_socket::AsyncSocketServer`, `linux_socket::AsyncSocketClient` | `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.Linux.h` | `liburing` and `-luring` |
+| Linux | `linux_socket::AsyncSocketServer`, `linux_socket::AsyncSocketClient` | `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.Linux.h` | `liburing`, glibc asynchronous name resolution, and `-luring -lanl` |
 | macOS | `macos_socket::AsyncSocketServer`, `macos_socket::AsyncSocketClient` | `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.macOS.h` | Clang Blocks, CoreFoundation and Network.framework |
 
 The repository build scripts already supply these dependencies. A custom build must preserve the same link and compile options.
@@ -44,11 +44,14 @@ auto socketServer = CreateDefaultAsyncSocketServer(port);
 auto socketClient = CreateDefaultAsyncSocketClient(port);
 ```
 
-The released platform umbrella is `<VlppOS repo>/Release/VlppOS.Windows.h` on Windows and `<VlppOS repo>/Release/VlppOS.Linux.h` on Linux and macOS. Each compiled platform translation unit defines the same two factories. Higher HTTP layers never select a backend internally: inject the returned server or client at the composition boundary. `SocketHttpClient` takes only one client pointer, uses that exact object for its first physical lane, and obtains the additional independent lanes required by the logical protocol through `IAsyncSocketClient::CreateSameEndpointClient()`.
+The released platform umbrella is `<VlppOS repo>/Release/VlppOS.Windows.h` on Windows and `<VlppOS repo>/Release/VlppOS.Linux.h` on Linux and macOS. Each compiled platform translation unit defines the same factories and client overloads. Higher HTTP layers never select a backend internally: inject the returned server or client at the composition boundary. `SocketHttpClient` takes only one client pointer, uses that exact object for its first physical lane, and obtains the additional independent lanes required by the logical protocol through `IAsyncSocketClient::CreateSameEndpointClient()`.
+
+
+Windows resolves with cancellable GetAddrInfoExW and tries family-specific ConnectEx candidates with wildcard source binding. Linux uses getaddrinfo_a and io_uring connect/deadline cancellation; an uncancellable NSS request retains only its own native result storage until notification, never application callbacks or the socket runtime. macOS delegates address selection to Network.framework and drains its dispatch deadline with native cancellation. Resolution/startup deadlines and per-attempt connection deadlines bound failed destinations; the existing retry count/delay and terminal callback ordering remain in force. Stop cancels pending work and prevents later application callbacks.
 
 ## Async Socket API
 
-The async socket interfaces are defined in `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.h`. `IAsyncSocketServer::GetPort()` and `IAsyncSocketClient::GetPort()` return the immutable loopback port selected during construction, so higher adapters do not accept a duplicate port argument. `IAsyncSocketClient::CreateSameEndpointClient()` returns a distinct fresh `Ready` client with the same transport configuration and port; it is the transport-preserving way for a multi-lane adapter to acquire another physical connection without accepting a separate factory.
+The async socket interfaces are defined in `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket.h`. `IAsyncSocketServer::GetPort()` and `IAsyncSocketClient::GetPort()` return the immutable port selected during construction, so higher adapters do not accept a duplicate port argument. `IAsyncSocketClient::CreateSameEndpointClient()` returns a distinct fresh `Ready` client with the same host, port and native backend, including after the source stops; it is the transport-preserving way for a multi-lane adapter to acquire another physical connection without accepting a separate factory.
 
 ### Connections and Callbacks
 
@@ -160,7 +163,7 @@ auto nativeServer = CreateDefaultAsyncSocketServer(port);
 RequestServer server(nativeServer); // Derives from HttpRequestServer.
 server.Start();
 
-auto nativeClient = CreateDefaultAsyncSocketClient(port);
+auto nativeClient = CreateDefaultAsyncSocketClient(L"localhost", port);
 HttpRequestClient client(nativeClient);
 auto connection = client.GetConnection();
 connection->InstallCallback(&clientCallback);
@@ -200,7 +203,7 @@ Construct a derived server with `SocketHttpServerApi(socketServer, urlPrefix, re
 - Every request is dispatched to the longest matching active prefix, including later requests on a persistent connection.
 - A duplicate normalized prefix sharing the same socket server is rejected.
 
-Before routing, the dispatcher requires HTTP/1.1 and exactly one valid `Host` whose name is `localhost` or `127.0.0.1` and whose port matches the injected listener. `SocketHttpClientApi` supplies this field automatically; a manually constructed lower-layer request must supply it. The dispatcher accepts `GET`, `HEAD`, `POST` and `OPTIONS`. Unsupported methods and malformed requests receive automatic responses. When `respondToOptions` is true, supported browser preflight requests are answered before application dispatch.
+Before routing, the dispatcher requires HTTP/1.1 and exactly one structurally valid `Host`. Arbitrary valid DNS names and IPv4 addresses are accepted; IPv6 must be bracketed in the HTTP authority. Malformed or duplicate authorities receive 400, and a valid authority with a different port does not match the listener route (404). `SocketHttpClientApi` supplies this field automatically; a manually constructed lower-layer request must supply it. The dispatcher accepts `GET`, `HEAD`, `POST` and `OPTIONS`. Unsupported methods and malformed requests receive automatic responses. When `respondToOptions` is true, supported browser preflight requests are answered before application dispatch.
 
 ### Handling a Request
 
@@ -264,7 +267,7 @@ The portable file-serving example is `<VlppOS repo>/Test/UnitTest/MiniHttpServer
 
 ## Mini HTTP Client API
 
-`SocketHttpClientApi`, defined in `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpClientApi.h`, owns one `HttpRequestClient` and one physical persistent connection. Inject an `IAsyncSocketClient` and the loopback server name; the client supplies its locked-in port. This keeps socket selection and endpoint ownership outside the HTTP API.
+`SocketHttpClientApi`, defined in `<VlppOS repo>/Source/InterProcess/AsyncSocket/AsyncSocket_HttpClientApi.h`, owns one `HttpRequestClient` and one physical persistent connection. Inject an `IAsyncSocketClient` and the same destination hostname/address used to construct it; the client supplies its locked-in port. This keeps socket selection and endpoint ownership outside the HTTP API.
 
 ```C++
 auto nativeClient = CreateDefaultAsyncSocketClient(8888);
@@ -321,7 +324,7 @@ client->Stop();
 These convenient values differ from the lower binary-oriented message types:
 
 - `windows_http::HttpRequest` has method, target query, flat body bytes, content type, accept values, cookie, extra headers and timeout fields.
-- `SocketHttpClientApi` combines the constructor server and `client->GetPort()` into the `Host` authority, adds `Accept-Encoding: identity`, then maps the flat request to `async_tcp_socket::HttpRequest`.
+- `SocketHttpClientApi` combines the constructor server and `client->GetPort()` into the `Host` authority, adding brackets for IPv6, adds `Accept-Encoding: identity`, then maps the flat request to `async_tcp_socket::HttpRequest`.
 - TLS, credentials and `keepAliveOnStop` are rejected. A caller-provided `Host` must match the authority formed from the constructor server and injected-client port, and response compression other than identity is unsupported.
 - The injected socket owns connection and send timing. Only `receiveTimeout` controls the response deadline for an accepted HTTP exchange.
 - `windows_http::HttpResponse` contains status, a flattened body, the first content type and the first returned cookie.

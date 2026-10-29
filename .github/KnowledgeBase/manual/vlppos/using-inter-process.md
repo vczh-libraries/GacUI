@@ -209,7 +209,7 @@ server->Start();
 
 ## Portable Async-Socket Implementations
 
-The types in **vl::inter_process::async_tcp_socket** form a portable, loopback-only stack for asynchronous TCP bytes, HTTP/1.1 requests and Mini HTTP services. Platform-neutral factories select **windows_socket::AsyncSocketServer** and **AsyncSocketClient**, **linux_socket::AsyncSocketServer** and **AsyncSocketClient**, or **macos_socket::AsyncSocketServer** and **AsyncSocketClient** at the application composition boundary.
+The types in **vl::inter_process::async_tcp_socket** form a portable IPv4/IPv6/DNS TCP stack for asynchronous TCP bytes, HTTP/1.1 requests and Mini HTTP services. Platform-neutral factories select **windows_socket::AsyncSocketServer** and **AsyncSocketClient**, **linux_socket::AsyncSocketServer** and **AsyncSocketClient**, or **macos_socket::AsyncSocketServer** and **AsyncSocketClient** at the application composition boundary.
 
 ### Direct Length-Framed Transport
 
@@ -217,7 +217,7 @@ Use **async_tcp_socket::NetworkProtocolServer\<TAsyncSocketServer\>** and **asyn
 
 These templates construct their socket backend from forwarded constructor arguments, so choose the concrete type for the target: **windows_socket::AsyncSocketServer** and **AsyncSocketClient**, **linux_socket::AsyncSocketServer** and **AsyncSocketClient**, or **macos_socket::AsyncSocketServer** and **AsyncSocketClient**, and pass the port to the protocol adapter. They do not accept an injected **Ptr\<IAsyncSocketServer\>** or **Ptr\<IAsyncSocketClient\>**.
 
-**IAsyncSocketServer**, **IAsyncSocketClient**, **IAsyncSocketConnection** and **IAsyncSocketCallback** expose the underlying ordered full-duplex byte streams. The interface-returning **CreateDefaultAsyncSocketServer(port)** and **CreateDefaultAsyncSocketClient(port)** factories are for code that consumes these socket interfaces, including the injected **SocketHttpServer** and **SocketHttpClient** dependencies below. Each socket exposes its immutable loopback port through **GetPort**, and **IAsyncSocketClient::CreateSameEndpointClient** creates a fresh client for another physical lane on the same endpoint.
+**IAsyncSocketServer**, **IAsyncSocketClient**, **IAsyncSocketConnection** and **IAsyncSocketCallback** expose the underlying ordered full-duplex byte streams. The interface-returning **CreateDefaultAsyncSocketServer(port)** and **CreateDefaultAsyncSocketClient(port)** factories are for code that consumes these socket interfaces, including the injected **SocketHttpServer** and **SocketHttpClient** dependencies below. Each socket exposes its immutable port through **GetPort**, and **IAsyncSocketClient::CreateSameEndpointClient** creates a fresh client for another physical lane on the same endpoint.
 
 ### HTTP-Compatible Socket Transport
 
@@ -237,7 +237,7 @@ SocketHttpClient(
     );
 ```
 
-The server adapter uses the injected listener and never creates another one. The client uses the injected client for its first physical lane and calls **CreateSameEndpointClient** for the additional lanes required by full-duplex polling and recovery. The server name must select loopback, and the URL prefix is empty for the origin root or begins with **/**.
+The server adapter uses the injected listener and never creates another one. The client uses the injected client for its first physical lane and calls **CreateSameEndpointClient** for the additional lanes required by full-duplex polling and recovery. Use **CreateDefaultAsyncSocketClient(host, port)** and pass the same host to the HTTP adapter; clones preserve host, port and backend even after Stop. The port-only overload defaults to localhost. The server listens on wildcard interfaces, and the URL prefix is empty for the origin root or begins with **/**.
 
 The adapter uses the same **/VlppInterProcess/Connect**, **/VlppInterProcess/Request/{token}** and **/VlppInterProcess/Response/{token}** routes as **windows_http::HttpServer** and **windows_http::HttpClient**. The protocol has no message-level delivery acknowledgement, deduplication, heartbeat or disconnect route, so it must not be treated as exactly-once delivery.
 
@@ -247,7 +247,7 @@ The adapter uses the same **/VlppInterProcess/Connect**, **/VlppInterProcess/Req
 
 **async_tcp_socket::SocketHttpServerApi**, **SocketHttpRequestContext** and **SocketHttpClientApi** add prefix dispatch and request/response conveniences. A server API receives **(socketServer, urlPrefix)**, and multiple APIs share one listener only when they receive the exact same server object. Override **OnHttpRequestReceived**, inspect the relative path, query or UTF-8 body, and complete the one-shot context with **Respond**, **RespondStatus**, **RespondBytes**, **RespondUtf8** or **Cancel**. A client API receives **(socketClient, server)** and queues asynchronous **HttpQuery** calls.
 
-**SocketHttpClientApi** uses the **windows_http::HttpRequest**, **HttpResponse** and **HttpError** value types, but those types are platform-neutral and using them here does not invoke WinHTTP. The TCP, HTTP and Mini HTTP implementations in this section are local test, validation and demonstration infrastructure rather than a production web stack.
+**SocketHttpClientApi** uses the **windows_http::HttpRequest**, **HttpResponse** and **HttpError** value types, but those types are platform-neutral and using them here does not invoke WinHTTP. The TCP, HTTP and Mini HTTP implementations in this section are test, validation and demonstration infrastructure rather than a production web stack.
 
 ## Windows Implementations
 

@@ -22,9 +22,9 @@
 #if defined VCZH_MSVC
 #include <VlppOS.Windows.h>
 #include "FullControlTestRawElementRemote.h"
-#include "../SharedArguments.h"
 #include "../../../Source/Utilities/AutomationService/Windows/WindowsAutomationService.Windows.h"
 #endif
+#include "../SharedArguments.h"
 
 using namespace vl;
 using namespace vl::presentation;
@@ -185,19 +185,20 @@ int StartClient(
 }
 
 #if defined VCZH_MSVC
-int StartNamedPipeClient(vint automationHttpPort)
+int StartNamedPipeClient(const WString& coreHost, vint automationHttpPort)
 {
 	return StartClient(
-		Ptr(new inter_process::named_pipe::NamedPipeClient(WString::Unmanaged(GacUIRemoteProtocolNamedPipeName))),
+		Ptr(new inter_process::named_pipe::NamedPipeClient(coreHost, WString::Unmanaged(GacUIRemoteProtocolNamedPipeName))),
 		nullptr,
 		automationHttpPort
 		);
 }
 
-int StartHttpClient(vint automationHttpPort)
+int StartHttpClient(const WString& coreHost, vint automationHttpPort)
 {
 	return StartClient(
 		Ptr(new inter_process::windows_http::HttpClient(
+			coreHost,
 			WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl),
 			GacUIRemoteProtocolHttpPort
 			)),
@@ -207,14 +208,14 @@ int StartHttpClient(vint automationHttpPort)
 }
 #endif
 
-int StartMiniHttpClient(vint automationHttpPort)
+int StartMiniHttpClient(const WString& coreHost, vint automationHttpPort)
 {
 	auto socketServer = inter_process::async_tcp_socket::CreateDefaultAsyncSocketServer(automationHttpPort);
-	auto socketClient = inter_process::async_tcp_socket::CreateDefaultAsyncSocketClient(GacUIRemoteProtocolHttpPort);
+	auto socketClient = inter_process::async_tcp_socket::CreateDefaultAsyncSocketClient(coreHost, GacUIRemoteProtocolHttpPort);
 	return StartClient(
 		Ptr(new inter_process::async_tcp_socket::SocketHttpClient(
 			socketClient,
-			WString::Unmanaged(L"localhost"),
+			coreHost,
 			WString::Unmanaged(GacUIRemoteProtocolHttpBaseUrl)
 		)),
 		socketServer,

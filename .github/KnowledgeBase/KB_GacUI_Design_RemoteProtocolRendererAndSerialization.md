@@ -244,9 +244,11 @@ uses reflection event attachment. A named Workflow editor is an aggregate: use
 its native viewer; a direct C++ cast of the Workflow raw object returns null.
 Shared functions depend only on public document viewer APIs. Private saves use a
 complete `DocumentModel::CopyDocument()`, prepare clipboard-compatible content and
-serialize embedded images. Full copies retain every style definition, including
-unused styles; range copies intentionally retain only referenced styles and their
-parents. Using a selection copy for file persistence loses the unused style catalog.
+serialize embedded images. Deep range copies retain every style definition, including unused definitions, parent
+names and independent authored/resolved properties. The full overload delegates to
+that policy. Shallow range copies alone filter referenced styles and transitive parents,
+sharing their objects. Reinsertion compares authored ancestry and reuses equivalent
+renamed definitions, keeping repeated copy/paste and undo/redo catalogs stable.
 RTF/HTML export uses the existing document serializers.
 The handler verifies the copied byte count and returns only after output close succeeds, preserving SaveDocument's
 synchronous modified-state contract.
@@ -255,3 +257,9 @@ Private documents loaded by CppTest are assumed to have been saved by CppTest.
 Keep their complete style catalog through save and load, including styles not yet
 applied to any text. The ribbon uses those definitions directly without restoring
 missing built-ins or replacing loaded definitions when a gallery item is chosen.
+
+## Native destination selection
+
+The canonical parser is `<GacUI repo>/Test/GacUISrc/SharedArguments.h`. Native renderers and network `RemotingTest_RvmHost` accept one case-sensitive `/corehost:<host>`, default localhost. It accepts a DNS hostname, IPv4 or IPv6 address, strips one IPv6 bracket pair, and rejects empty, duplicate, URL/path/port values before transport startup. Only the fixed prefix is consumed, preserving IPv6 colons. Explicit `/corehost` is incompatible with the RVM host's local `/Cli` mode. Windows supports `/Pipe`, `/Http` and `/MiniHttp`; the portable renderers support `/MiniHttp`. Pipe destinations must be UNC server names or IPv4 addresses.
+
+Core and CppTest_Rvm are servers and have no destination option. Protocol TCP port 8888 is independent of local `/AsPort`. `<GacUI repo>/Test/StartRendrerer.ps1 -Protocol minihttp -CoreHost core.example.com -AsPort 8889` selects the destination and local automation separately. `<wGac repo>/test.sh` and `<iGac repo>/test.sh` accept `--corehost:<host>` only with `--app:renderer`; both launch branches forward one quoted argument. Their `--port` selects renderer automation (default 8889). Shared parsing and GuiMain are synchronized from GacUI; platform Main.cpp files remain separately maintained.

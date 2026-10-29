@@ -10,9 +10,9 @@
 using namespace vl;
 using namespace vl::presentation;
 
-extern int StartNamedPipeClient(vint automationHttpPort);
-extern int StartHttpClient(vint automationHttpPort);
-extern int StartMiniHttpClient(vint automationHttpPort);
+extern int StartNamedPipeClient(const WString& coreHost, vint automationHttpPort);
+extern int StartHttpClient(const WString& coreHost, vint automationHttpPort);
+extern int StartMiniHttpClient(const WString& coreHost, vint automationHttpPort);
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
@@ -25,9 +25,11 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	}
 
 	vint transport = -1; // 0 = Pipe, 1 = Http, 2 = MiniHTTP
+	gacui_test::CoreHostArguments coreHost;
 	for (int i = 1; i < argc; i++)
 	{
 		auto consumed = gacui_test::remoteInjectionArguments.Consume(WString(argv[i]));
+		if (consumed == 0) consumed = coreHost.Consume(WString(argv[i]));
 		if (consumed == 0) consumed = gacui_test::automationArguments.Consume(WString(argv[i]));
 		if (consumed < 0) { LocalFree(argv); return result; }
 		if (consumed > 0) continue;
@@ -62,15 +64,16 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	if (transport == 0)
 	{
-		result = StartNamedPipeClient(automationHttpPort);
+		if (coreHost.host.IndexOf(L':') != -1) return result;
+		result = StartNamedPipeClient(coreHost.host, automationHttpPort);
 	}
 	else if (transport == 1)
 	{
-		result = StartHttpClient(automationHttpPort);
+		result = StartHttpClient(coreHost.host, automationHttpPort);
 	}
 	else if (transport == 2)
 	{
-		result = StartMiniHttpClient(automationHttpPort);
+		result = StartMiniHttpClient(coreHost.host, automationHttpPort);
 	}
 	else
 	{

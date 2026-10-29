@@ -1,3 +1,7 @@
+#include "../SharedArguments.h"
+#if defined VCZH_MSVC
+#undef DeleteFile
+#endif
 #include "TestRemote.h"
 #include "TestControls.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
@@ -515,6 +519,52 @@ using namespace remote_startup_tests;
 
 TEST_FILE
 {
+#if defined VCZH_MSVC || defined VCZH_GCC
+	TEST_CASE(L"Remote destination parsing preserves IPv6 and composes with automation and injection options")
+	{
+		gacui_test::CoreHostArguments defaults;
+		TEST_ASSERT(defaults.host == L"localhost" && !defaults.specified);
+		const WString hosts[] = { L"localhost", L"127.0.0.1", L"::1", L"[::1]", L"renderer.example.com" };
+		for (auto&& host : hosts)
+		{
+			for (vint hostPosition = 0; hostPosition < 4; hostPosition++)
+			{
+				gacui_test::CoreHostArguments destination;
+				gacui_test::AutomationArguments automation;
+				gacui_test::RemoteInjectionArguments injection;
+				List<WString> arguments;
+				arguments.Add(L"/MiniHttp");
+				arguments.Add(L"/AsPort:8889");
+				arguments.Add(L"/remoteFS");
+				arguments.Insert(hostPosition, L"/corehost:" + host);
+				vint transports = 0;
+				for (auto&& argument : arguments)
+				{
+					auto consumed = destination.Consume(argument);
+					if (consumed == 0) consumed = automation.Consume(argument);
+					if (consumed == 0) consumed = injection.Consume(argument);
+					TEST_ASSERT(consumed >= 0);
+					if (consumed == 0)
+					{
+						TEST_ASSERT(argument == L"/MiniHttp");
+						transports++;
+					}
+				}
+				TEST_ASSERT(destination.host == (host == L"[::1]" ? WString::Unmanaged(L"::1") : host));
+				TEST_ASSERT(destination.specified && automation.port == 8889 && injection.injectFileSystem && transports == 1);
+				TEST_ASSERT(destination.Consume(L"/corehost:localhost") == -1);
+			}
+		}
+		const WString invalid[] = { L"/corehost", L"/corehost:", L"/corehost:http://localhost", L"/corehost:localhost:8888", L"/corehost:localhost/path", L"/corehost:[::1]:8888", L"/corehost:[localhost]", L"/corehost:two hosts", L"/corehost:::g" };
+		for (auto&& argument : invalid)
+		{
+			gacui_test::CoreHostArguments destination;
+			TEST_ASSERT(destination.Consume(argument) == -1);
+		}
+		TEST_ASSERT(defaults.Consume(L"/CoreHost:localhost") == 0);
+	});
+#endif
+
 	TEST_CASE(L"Native renderer rejects incomplete file transfers")
 	{
 		ShortTransferFileSystem files;
