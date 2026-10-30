@@ -169,6 +169,101 @@ TEST_FILE
 	{
 		TestResponsiveGroupViewSizes(4);
 	});
+	TEST_CASE(L"Responsive view restores reparented content after refreshing a collapsed ancestor")
+	{
+		auto container = new GuiResponsiveContainerComposition;
+		auto group = new GuiResponsiveGroupComposition;
+		auto outerStack = new GuiResponsiveStackComposition;
+		auto view = new GuiResponsiveViewComposition;
+		auto innerStack = new GuiResponsiveStackComposition;
+		auto collapsed = new GuiResponsiveFixedComposition;
+		auto content = new GuiBoundsComposition;
+		auto fake = new FakeResponsiveComposition;
+		auto popup = new GuiBoundsComposition;
+		group->SetDirection(ResponsiveDirection::Horizontal);
+		outerStack->SetDirection(ResponsiveDirection::Horizontal);
+		view->SetDirection(ResponsiveDirection::Horizontal);
+		innerStack->SetDirection(ResponsiveDirection::Horizontal);
+		content->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+		content->AddChild(fake);
+		innerStack->AddChild(content);
+		collapsed->SetPreferredMinSize(Size(5, 5));
+		view->GetViews().Add(innerStack);
+		view->GetViews().Add(collapsed);
+		outerStack->AddChild(view);
+		group->AddChild(outerStack);
+		container->SetResponsiveTarget(group);
+		view->BeforeSwitchingView.AttachLambda([&](auto sender, auto& arguments)
+		{
+			if (arguments.itemIndex == 0)
+			{
+				while (innerStack->LevelDown());
+				popup->RemoveChild(content);
+				innerStack->AddChild(content);
+			}
+			else
+			{
+				while (innerStack->LevelUp());
+				innerStack->RemoveChild(content);
+				popup->AddChild(content);
+			}
+		});
+
+		auto assertLevels = [&]()
+		{
+			TEST_ASSERT(outerStack->GetLevelCount() == view->GetLevelCount());
+			TEST_ASSERT(group->GetLevelCount() == view->GetLevelCount());
+			TEST_ASSERT(outerStack->GetCurrentLevel() == view->GetCurrentLevel());
+			TEST_ASSERT(group->GetCurrentLevel() == view->GetCurrentLevel());
+			TEST_ASSERT(group->GetCurrentLevel() < group->GetLevelCount());
+		};
+		auto respond = [&](vint width, bool expanded)
+		{
+			container->SetExpectedBounds(Rect({ 0,0 }, { width,100 }));
+			container->ForceCalculateSizeImmediately();
+			assertLevels();
+			if (expanded)
+			{
+				TEST_ASSERT(view->GetCurrentView() == innerStack);
+				TEST_ASSERT(content->GetParent() == innerStack);
+				TEST_ASSERT(fake->GetCurrentLevel() == fake->GetLevelCount() - 1);
+				TEST_ASSERT(fake->GetCachedBounds().GetSize() == Size(30, 30));
+			}
+			else
+			{
+				TEST_ASSERT(view->GetCurrentView() == collapsed);
+				TEST_ASSERT(content->GetParent() == popup);
+			}
+		};
+
+		respond(100, true);
+		for (vint i = 0; i < 3; i++)
+		{
+			TEST_ASSERT(group->LevelDown());
+		}
+		TEST_ASSERT(!group->LevelDown());
+		TEST_ASSERT(view->GetCurrentView() == collapsed);
+		TEST_ASSERT(content->GetParent() == popup);
+
+		// Refreshing a template temporarily detaches and reinserts its retained content.
+		outerStack->RemoveChild(view);
+		outerStack->AddChild(view);
+		assertLevels();
+		TEST_ASSERT(group->GetCurrentLevel() == 0);
+		TEST_ASSERT(group->LevelUp());
+		assertLevels();
+		TEST_ASSERT(view->GetCurrentView() == innerStack);
+		TEST_ASSERT(content->GetParent() == innerStack);
+		TEST_ASSERT(!group->LevelUp());
+
+		for (vint repeat = 0; repeat < 2; repeat++)
+		{
+			respond(5, false);
+			respond(100, true);
+		}
+		SafeDeleteComposition(container);
+		SafeDeleteComposition(popup);
+	});
 	TEST_CATEGORY(L"Test <ResponsiveShared> with common <Bounds> operations")
 	{
 		TestBoundsWithTrivialChildren<GuiResponsiveSharedComposition>(
