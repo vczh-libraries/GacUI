@@ -1399,7 +1399,6 @@ namespace tuidemo
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
 		::vl::presentation::controls::GuiMessageDialog* dialogMessage;
-		::vl::presentation::controls::GuiMessageDialog* dialogNotImpl;
 		::vl::presentation::controls::GuiOpenFileDialog* dialogOpen;
 		::vl::presentation::controls::GuiOpenFileDialog* dialogOpenDoc;
 		::vl::presentation::controls::GuiSaveFileDialog* dialogSaveDoc;
@@ -1437,6 +1436,7 @@ namespace tuidemo
 		::vl::presentation::controls::GuiToolstripCommand* commandAlignLeft;
 		::vl::presentation::controls::GuiToolstripCommand* commandAlignCenter;
 		::vl::presentation::controls::GuiToolstripCommand* commandAlignRight;
+		::vl::presentation::controls::GuiMessageDialog* dialogNotImpl;
 		void __vwsn_tuidemo_TuiDocumentEditorBase_Initialize(::tuidemo::TuiDocumentEditorBase* __vwsn_this_);
 	public:
 		TuiDocumentEditorBaseConstructor();

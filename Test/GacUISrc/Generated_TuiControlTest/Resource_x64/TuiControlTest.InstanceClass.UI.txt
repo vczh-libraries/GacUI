@@ -19919,9 +19919,6 @@ namespace tuidemo
         var dialogMessage : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
 
         @cpp:Protected
-        var dialogNotImpl : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
-
-        @cpp:Protected
         var dialogOpen : ::presentation::controls::GuiOpenFileDialog* = null of (::presentation::controls::GuiOpenFileDialog*);
 
         @cpp:Protected
@@ -20031,6 +20028,9 @@ namespace tuidemo
 
         @cpp:Protected
         var commandAlignRight : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var dialogNotImpl : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
 
         @cpp:Protected
         func <tuidemo-TuiDocumentEditorBase>Initialize(<this> : ::tuidemo::TuiDocumentEditorBase*) : (::system::Void)

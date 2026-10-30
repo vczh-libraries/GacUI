@@ -212,15 +212,19 @@ namespace demo
 #pragma GCC diagnostic pop
 #endif
 // UNUSED_USER_CONTENT:
+//	void DocumentEditorBase::LoadAsPrivateFormat(const ::vl::WString& fileName)
 //	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
 //		throw ::vl::Exception(L"You should implement this function.");
 //	}/* USER_CONTENT_END() */
+//	void DocumentEditorBase::SaveAsHTML(const ::vl::WString& fileName)
 //	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
 //		throw ::vl::Exception(L"You should implement this function.");
 //	}/* USER_CONTENT_END() */
+//	void DocumentEditorBase::SaveAsPrivateFormat(const ::vl::WString& fileName)
 //	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
 //		throw ::vl::Exception(L"You should implement this function.");
 //	}/* USER_CONTENT_END() */
+//	void DocumentEditorBase::SaveAsRTF(const ::vl::WString& fileName)
 //	{/* USER_CONTENT_BEGIN(::demo::DocumentEditorBase) */
 //		throw ::vl::Exception(L"You should implement this function.");
 //	}/* USER_CONTENT_END() */
