@@ -27883,7 +27883,9 @@ GuiResponsiveStackComposition
 					}
 				}
 
-				if (!CalculateCurrentLevel()) return false;
+				auto x = CalculateLevelCount();
+				auto y = CalculateCurrentLevel();
+				if (!x && !y) return false;
 				InvokeOnCompositionStateChanged();
 				return true;
 			}
@@ -28041,7 +28043,9 @@ GuiResponsiveGroupComposition
 					}
 				}
 
-				if (!CalculateCurrentLevel()) return false;
+				auto x = CalculateLevelCount();
+				auto y = CalculateCurrentLevel();
+				if (!x && !y) return false;
 				InvokeOnCompositionStateChanged();
 				return true;
 			}
@@ -28065,7 +28069,9 @@ GuiResponsiveGroupComposition
 					}
 				}
 
-				if (!CalculateCurrentLevel()) return false;
+				auto x = CalculateLevelCount();
+				auto y = CalculateCurrentLevel();
+				if (!x && !y) return false;
 				InvokeOnCompositionStateChanged();
 				return true;
 			}
