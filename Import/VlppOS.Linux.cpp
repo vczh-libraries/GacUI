@@ -1596,14 +1596,17 @@ TestEncoding
 /***********************************************************************
 .\INTERPROCESS\ASYNCSOCKET\ASYNCSOCKET.LINUX.CPP
 ***********************************************************************/
+#if defined VCZH_GCC
+// CodePack deduplicates these headers with the macOS backend.
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#endif
 #if defined VCZH_GCC && !defined VCZH_APPLE
 
 #include <liburing.h>
-#include <arpa/inet.h>
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
-#include <netinet/in.h>
 #include <netdb.h>
 #include <signal.h>
 #include <sys/socket.h>
