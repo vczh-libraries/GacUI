@@ -1674,6 +1674,8 @@ class presentation::compositions::GuiPointSequenceEndedEventArgs : presentation:
 
 class presentation::compositions::GuiPointSequenceStartedEventArgs : presentation::compositions::GuiPointEventArgs {
     property acceptedComposition : presentation::compositions::GuiGraphicsComposition*;
+    property generateLeftButtonClick : system::Boolean;
+    property generateRightButtonClick : system::Boolean;
 
 }
 
