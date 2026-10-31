@@ -96,3 +96,15 @@ No unresolved review comments. The implementation choices and verification requi
 - Debug x64 solution build passed with zero warnings and errors. The new HideTooltipWindowOwner protocol case fails at the owner WindowClosed callback: closed == 1 is false. The hovered tooltip has not sent its closure notification before its secondary owner closes. The main window is still alive.
 
 # PROPOSALS
+
+- No.1 Latch Started options and dismiss explicitly owned popups at accepted lifecycle boundaries
+
+## No.1 Latch Started options and dismiss explicitly owned popups at accepted lifecycle boundaries
+
+Use the completed Started query to initialize internal recognizers with dedicated event arguments relative to the accepted composition. Keep canonical native screen samples in the manager, including the current sample independently of the sparse contact list, so final Up and current DPI/layout reprojection retain existing behavior. Only the respective click candidate uses its flag; recognizer priority and raw event ordering remain unchanged.
+
+Reuse native parent relationships and the application's existing opening-popup list. Record the explicitly resolved owner on each popup, clearing it on close, destruction and unowned show. Dismiss matching popups recursively from the accepted AfterClosing path before WindowReadyToClose, and before native detachment or owner destruction. Popup closure uses ordinary notifications, including menu service cleanup and tooltip content detachment. Windows popup dismissal must complete synchronously, while normal window close requests keep their posted-message behavior. Audit the existing Windows popup traversal for mutations caused by synchronous closure. No second ownership registry, polling, or modal-chain repurposing is needed.
+
+### CODE CHANGE
+
+Planned: add reflected Started flags; adapt internal recognizers/manager; extend protocol and reflection tests; add shared popup lifecycle cleanup and synchronous native popup closure; update canonical point guidance and synchronize it. Verify the detailed matrix in the task before confirming this proposal.
