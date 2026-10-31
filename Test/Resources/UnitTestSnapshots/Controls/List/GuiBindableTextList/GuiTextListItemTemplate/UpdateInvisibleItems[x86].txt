@@ -406,10 +406,10 @@ namespace gacuisrc_unittest
                 (<precompile>4.Ellipse = true);
             }
             {
-                (<precompile>4.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>4.HorizontalAlignment = Left of (::presentation::Alignment));
             }
             {
-                (<precompile>4.HorizontalAlignment = Left of (::presentation::Alignment));
+                (<precompile>4.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>3.OwnedElement = <precompile>4);
@@ -833,18 +833,18 @@ namespace gacuisrc_unittest
                 });
             }
             {
+                (list.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (TextItem^) <item>);
+                    return item.Text;
+                });
+            }
+            {
                 (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
                 {
                     {
                         return new (::gacuisrc_unittest::ItemTemplate*)();
                     }
-                });
-            }
-            {
-                (list.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (TextItem^) <item>);
-                    return item.Text;
                 });
             }
             {
