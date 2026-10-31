@@ -44,6 +44,61 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Tooltip")
 	{
+		for (auto closeOwner : { false,true })
+		TEST_CASE(closeOwner ? L"CloseTooltipWindowOwner" : L"HideTooltipWindowOwner")
+		{
+			GuiWindow* ownerWindow = nullptr;
+			GuiTooltip* tooltipWindow = nullptr;
+			vint closed = 0;
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [&]()
+				{
+					ownerWindow = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::MainWindow"));
+					ownerWindow->SetText(L"Tooltip owner");
+					ownerWindow->SetClientSize({ {240},{160} });
+					ownerWindow->SetLocation({ {100},{80} });
+					ownerWindow->Show();
+				});
+				protocol->OnNextIdleFrame(L"Secondary owner visible", [&]()
+				{
+					auto owner = FindObjectByName<GuiButton>(ownerWindow, L"buttonTooltipA");
+					TEST_ASSERT(owner->DisplayTooltip(Point(0, 0)));
+					tooltipWindow = dynamic_cast<GuiTooltip*>(owner->GetTooltipControl()->GetRelatedControlHost());
+					TEST_ASSERT(tooltipWindow);
+					tooltipWindow->WindowClosed.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&)
+					{
+						TEST_ASSERT(closed++ == 0);
+					});
+					ownerWindow->WindowClosed.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&)
+					{
+						TEST_ASSERT(closed == 1);
+						TEST_ASSERT(!tooltipWindow->GetOpening());
+						TEST_ASSERT(!tooltipWindow->GetTemporaryContentControl());
+						TEST_ASSERT(!GetApplication()->GetTooltipOwner());
+						closed++;
+					});
+				});
+				protocol->OnNextIdleFrame(L"Tooltip visible over secondary owner", [&, protocol]()
+				{
+					protocol->MouseMove(protocol->LocationOf(tooltipWindow->GetTemporaryContentControl()));
+					if (closeOwner) ownerWindow->Close();
+					else ownerWindow->Hide();
+				});
+				protocol->OnNextIdleFrame(L"Main window survives owner and tooltip", [&]()
+				{
+					TEST_ASSERT(closed == 2);
+					SafeDeleteControl(ownerWindow);
+					GetApplication()->GetMainWindow()->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				closeOwner ? L"Application/Tooltip/CloseWindowOwner" : L"Application/Tooltip/HideWindowOwner",
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTooltipWindows
+			);
+		});
+
 		TEST_CASE(L"DestroyVisibleTooltipOwner")
 		{
 			GuiTooltip* tooltipWindow = nullptr;
