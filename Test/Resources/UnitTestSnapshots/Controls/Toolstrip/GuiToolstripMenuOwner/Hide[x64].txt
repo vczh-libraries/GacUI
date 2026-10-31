@@ -1,0 +1,666 @@
+﻿================================(1/2)================================
+module <constructor>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MainWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::controls::GuiToolstripGroupContainer* = null of (::presentation::controls::GuiToolstripGroupContainer*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::controls::GuiToolstripGroup* = null of (::presentation::controls::GuiToolstripGroup*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::controls::GuiToolstripToolBar* = null of (::presentation::controls::GuiToolstripToolBar*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::controls::GuiToolstripGroupContainer* = null of (::presentation::controls::GuiToolstripGroupContainer*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::controls::GuiToolstripGroup* = null of (::presentation::controls::GuiToolstripGroup*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::controls::GuiToolstripGroup* = null of (::presentation::controls::GuiToolstripGroup*);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::controls::GuiToolstripGroup* = null of (::presentation::controls::GuiToolstripGroup*);
+
+        @cpp:Protected
+        var <precompile>8 : ::presentation::controls::GuiToolstripGroup* = null of (::presentation::controls::GuiToolstripGroup*);
+
+        @cpp:Protected
+        var <precompile>9 : ::presentation::controls::GuiToolstripGroup* = null of (::presentation::controls::GuiToolstripGroup*);
+
+        @cpp:Protected
+        var button : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var commandLinkRtf : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var commandLinkHtml : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var commandPrivate : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var commandAlignLeft : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var commandAlignCenter : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var commandAlignRight : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var commandUndo : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var commandRedo : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var commandCut : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var commandCopy : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var commandPaste : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var commandDelete : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var menu : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
+
+        @cpp:Protected
+        var buttonLink : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonLinkRtf : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonLinkHtml : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonPrivate : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonAlignLeft : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonAlignCenter : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonAlignRight : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonUndo : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonRedo : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonCut : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonCopy : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonPaste : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonDelete : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>10 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
+            }
+            {
+                (self.Text = "GuiToolstripMenuBar");
+            }
+            (commandLinkRtf = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandLinkRtf", commandLinkRtf);
+            {
+                (commandLinkRtf.Text = "Rtf");
+            }
+            {
+                self.AddComponent(commandLinkRtf);
+            }
+            (commandLinkHtml = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandLinkHtml", commandLinkHtml);
+            {
+                (commandLinkHtml.Text = "Html");
+            }
+            {
+                self.AddComponent(commandLinkHtml);
+            }
+            (commandPrivate = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandPrivate", commandPrivate);
+            {
+                (commandPrivate.Text = "Private Format");
+            }
+            {
+                self.AddComponent(commandPrivate);
+            }
+            (commandAlignLeft = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandAlignLeft", commandAlignLeft);
+            {
+                (commandAlignLeft.ShortcutBuilder = "Ctrl+L");
+            }
+            {
+                (commandAlignLeft.Text = "Left");
+            }
+            {
+                self.AddComponent(commandAlignLeft);
+            }
+            (commandAlignCenter = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandAlignCenter", commandAlignCenter);
+            {
+                (commandAlignCenter.ShortcutBuilder = "Ctrl+C");
+            }
+            {
+                (commandAlignCenter.Text = "Center");
+            }
+            {
+                self.AddComponent(commandAlignCenter);
+            }
+            (commandAlignRight = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandAlignRight", commandAlignRight);
+            {
+                (commandAlignRight.ShortcutBuilder = "Ctrl+R");
+            }
+            {
+                (commandAlignRight.Text = "Right Format");
+            }
+            {
+                self.AddComponent(commandAlignRight);
+            }
+            (commandUndo = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandUndo", commandUndo);
+            {
+                (commandUndo.Text = "Undo");
+            }
+            {
+                self.AddComponent(commandUndo);
+            }
+            (commandRedo = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandRedo", commandRedo);
+            {
+                (commandRedo.Text = "Redo");
+            }
+            {
+                self.AddComponent(commandRedo);
+            }
+            (commandCut = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandCut", commandCut);
+            {
+                (commandCut.Enabled = false);
+            }
+            {
+                (commandCut.Text = "Cut");
+            }
+            {
+                self.AddComponent(commandCut);
+            }
+            (commandCopy = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandCopy", commandCopy);
+            {
+                (commandCopy.Enabled = false);
+            }
+            {
+                (commandCopy.Text = "Copy");
+            }
+            {
+                self.AddComponent(commandCopy);
+            }
+            (commandPaste = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandPaste", commandPaste);
+            {
+                (commandPaste.Enabled = false);
+            }
+            {
+                (commandPaste.Text = "Paste");
+            }
+            {
+                self.AddComponent(commandPaste);
+            }
+            (commandDelete = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandDelete", commandDelete);
+            {
+                (commandDelete.Enabled = false);
+            }
+            {
+                (commandDelete.Text = "Delete");
+            }
+            {
+                self.AddComponent(commandDelete);
+            }
+            {
+                (menu = new (::presentation::controls::GuiToolstripMenu*)(::presentation::theme::ThemeName::Menu, null));
+                <this>.SetNamedObject("menu", menu);
+            }
+            {
+                (<precompile>0 = new (::presentation::controls::GuiToolstripGroupContainer*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (<precompile>1 = new (::presentation::controls::GuiToolstripGroup*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (<precompile>2 = new (::presentation::controls::GuiToolstripToolBar*)(::presentation::theme::ThemeName::ToolstripToolBarInMenu));
+            }
+            {
+                (<precompile>3 = new (::presentation::controls::GuiToolstripGroupContainer*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (<precompile>4 = new (::presentation::controls::GuiToolstripGroup*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (buttonLink = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripDropdownButton));
+                <this>.SetNamedObject("buttonLink", buttonLink);
+            }
+            {
+                (buttonLink.Alt = "L");
+            }
+            (<precompile>5 = buttonLink.EnsureToolstripSubMenu());
+            {
+                (buttonLinkRtf = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+                <this>.SetNamedObject("buttonLinkRtf", buttonLinkRtf);
+            }
+            {
+                (buttonLinkRtf.Alt = "R");
+            }
+            {
+                <precompile>5.ToolstripItems.Add(buttonLinkRtf);
+            }
+            {
+                (buttonLinkHtml = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+                <this>.SetNamedObject("buttonLinkHtml", buttonLinkHtml);
+            }
+            {
+                (buttonLinkHtml.Alt = "H");
+            }
+            {
+                <precompile>5.ToolstripItems.Add(buttonLinkHtml);
+            }
+            {
+                (buttonPrivate = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+                <this>.SetNamedObject("buttonPrivate", buttonPrivate);
+            }
+            {
+                (buttonPrivate.Alt = "P");
+            }
+            {
+                <precompile>5.ToolstripItems.Add(buttonPrivate);
+            }
+            {
+                <precompile>4.ToolstripItems.Add(buttonLink);
+            }
+            {
+                <precompile>3.ToolstripItems.Add(<precompile>4);
+            }
+            {
+                (<precompile>6 = new (::presentation::controls::GuiToolstripGroup*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (buttonAlignLeft = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripButton));
+                <this>.SetNamedObject("buttonAlignLeft", buttonAlignLeft);
+            }
+            {
+                (buttonAlignLeft.Alt = "L");
+            }
+            {
+                <precompile>6.ToolstripItems.Add(buttonAlignLeft);
+            }
+            {
+                (buttonAlignCenter = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripButton));
+                <this>.SetNamedObject("buttonAlignCenter", buttonAlignCenter);
+            }
+            {
+                (buttonAlignCenter.Alt = "C");
+            }
+            {
+                <precompile>6.ToolstripItems.Add(buttonAlignCenter);
+            }
+            {
+                (buttonAlignRight = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripButton));
+                <this>.SetNamedObject("buttonAlignRight", buttonAlignRight);
+            }
+            {
+                (buttonAlignRight.Alt = "R");
+            }
+            {
+                <precompile>6.ToolstripItems.Add(buttonAlignRight);
+            }
+            {
+                <precompile>3.ToolstripItems.Add(<precompile>6);
+            }
+            {
+                <precompile>2.ToolstripItems.Add(<precompile>3);
+            }
+            {
+                <precompile>1.ToolstripItems.Add(<precompile>2);
+            }
+            {
+                <precompile>0.ToolstripItems.Add(<precompile>1);
+            }
+            {
+                (<precompile>7 = new (::presentation::controls::GuiToolstripGroup*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (buttonUndo = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+                <this>.SetNamedObject("buttonUndo", buttonUndo);
+            }
+            {
+                (buttonUndo.Alt = "U");
+            }
+            {
+                <precompile>7.ToolstripItems.Add(buttonUndo);
+            }
+            {
+                (buttonRedo = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+                <this>.SetNamedObject("buttonRedo", buttonRedo);
+            }
+            {
+                (buttonRedo.Alt = "R");
+            }
+            {
+                <precompile>7.ToolstripItems.Add(buttonRedo);
+            }
+            {
+                <precompile>0.ToolstripItems.Add(<precompile>7);
+            }
+            {
+                (<precompile>8 = new (::presentation::controls::GuiToolstripGroup*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (buttonCut = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+                <this>.SetNamedObject("buttonCut", buttonCut);
+            }
+            {
+                (buttonCut.Alt = "X");
+            }
+            {
+                <precompile>8.ToolstripItems.Add(buttonCut);
+            }
+            {
+                (buttonCopy = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+                <this>.SetNamedObject("buttonCopy", buttonCopy);
+            }
+            {
+                (buttonCopy.Alt = "C");
+            }
+            {
+                <precompile>8.ToolstripItems.Add(buttonCopy);
+            }
+            {
+                (buttonPaste = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+                <this>.SetNamedObject("buttonPaste", buttonPaste);
+            }
+            {
+                (buttonPaste.Alt = "V");
+            }
+            {
+                <precompile>8.ToolstripItems.Add(buttonPaste);
+            }
+            {
+                <precompile>0.ToolstripItems.Add(<precompile>8);
+            }
+            {
+                (<precompile>9 = new (::presentation::controls::GuiToolstripGroup*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (buttonDelete = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+                <this>.SetNamedObject("buttonDelete", buttonDelete);
+            }
+            {
+                (buttonDelete.Alt = "D");
+            }
+            {
+                <precompile>9.ToolstripItems.Add(buttonDelete);
+            }
+            {
+                <precompile>0.ToolstripItems.Add(<precompile>9);
+            }
+            {
+                menu.ToolstripItems.Add(<precompile>0);
+            }
+            {
+                self.AddControlHostComponent(menu);
+            }
+            {
+                (button = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("button", button);
+            }
+            (<precompile>10 = button.BoundsComposition);
+            {
+                (<precompile>10.AlignmentToParent = {left : 10; top : 10; right : (-1); bottom : (-1);} of (::presentation::Margin));
+            }
+            {
+                (button.Text = "Show Menu");
+            }
+            {
+                self.AddChild(button);
+            }
+            {
+                (commandLinkRtf.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolstripImages/Rtf", true)));
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Rtf");
+                };
+                attach(commandLinkRtf.Executed, <event-handler>);
+            }
+            {
+                (commandLinkHtml.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolstripImages/Html", true)));
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Html");
+                };
+                attach(commandLinkHtml.Executed, <event-handler>);
+            }
+            {
+                (commandPrivate.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolstripImages/Private", true)));
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Private Format");
+                };
+                attach(commandPrivate.Executed, <event-handler>);
+            }
+            {
+                (commandAlignLeft.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolstripImages/AlignLeft", true)));
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Left");
+                };
+                attach(commandAlignLeft.Executed, <event-handler>);
+            }
+            {
+                (commandAlignCenter.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolstripImages/AlignCenter", true)));
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Center");
+                };
+                attach(commandAlignCenter.Executed, <event-handler>);
+            }
+            {
+                (commandAlignRight.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolstripImages/AlignRight", true)));
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Right");
+                };
+                attach(commandAlignRight.Executed, <event-handler>);
+            }
+            {
+                (commandUndo.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolstripImages/Undo", true)));
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Undo");
+                };
+                attach(commandUndo.Executed, <event-handler>);
+            }
+            {
+                (commandRedo.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolstripImages/Redo", true)));
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Redo");
+                };
+                attach(commandRedo.Executed, <event-handler>);
+            }
+            {
+                (commandCut.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolstripImages/Cut", true)));
+            }
+            {
+                (commandCopy.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolstripImages/Copy", true)));
+            }
+            {
+                (commandPaste.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolstripImages/Paste", true)));
+            }
+            {
+                (commandDelete.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolstripImages/Delete", true)));
+            }
+            {
+                (buttonLinkRtf.Command = commandLinkRtf);
+            }
+            {
+                (buttonLinkHtml.Command = commandLinkHtml);
+            }
+            {
+                (buttonPrivate.Command = commandPrivate);
+            }
+            {
+                (buttonLink.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolstripImages/Link", true)));
+            }
+            {
+                (buttonAlignLeft.Command = commandAlignLeft);
+            }
+            {
+                (buttonAlignCenter.Command = commandAlignCenter);
+            }
+            {
+                (buttonAlignRight.Command = commandAlignRight);
+            }
+            {
+                (buttonUndo.Command = commandUndo);
+            }
+            {
+                (buttonRedo.Command = commandRedo);
+            }
+            {
+                (buttonCut.Command = commandCut);
+            }
+            {
+                (buttonCopy.Command = commandCopy);
+            }
+            {
+                (buttonPaste.Command = commandPaste);
+            }
+            {
+                (buttonDelete.Command = commandDelete);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    menu.ShowPopup(button, true);
+                };
+                attach(button.Clicked, <event-handler>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/2)================================
+module <instance>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MainWindow")
+    @cpp:Friend(typeof(MainWindowConstructor))
+    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MainWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+

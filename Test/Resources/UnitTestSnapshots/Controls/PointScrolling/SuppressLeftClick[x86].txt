@@ -1,0 +1,195 @@
+﻿================================(1/2)================================
+module <constructor>gacuisrc_unittest::ClickWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class ClickWindowConstructor
+    {
+        @cpp:Protected
+        var <precompile>0 : ::gacuisrc_unittest::ClickWindow* = null of (::gacuisrc_unittest::ClickWindow*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var target : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var rightResult : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var disableLeft : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var disableRight : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-ClickWindow>Initialize(<this> : ::gacuisrc_unittest::ClickWindow*) : (::system::Void)
+        {
+            (<precompile>0 = <this>);
+            {
+                (<precompile>0.ClientSize = {x : 360; y : 200;} of (::presentation::Size));
+            }
+            {
+                (<precompile>0.Text = "Deferred point clicks");
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiStackComposition*)());
+            {
+                (<precompile>1.Padding = 8 of (::system::Int32));
+            }
+            {
+                (<precompile>1.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+            }
+            {
+                (<precompile>1.AlignmentToParent = {left : 8; top : 8; right : 8; bottom : 8;} of (::presentation::Margin));
+            }
+            (<precompile>2 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (target = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("target", target);
+            }
+            {
+                (target.Text = "Tap activation");
+            }
+            {
+                <precompile>2.AddChild(target.BoundsComposition);
+            }
+            {
+                <precompile>1.AddChild(<precompile>2);
+            }
+            (<precompile>3 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (rightResult = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("rightResult", rightResult);
+            }
+            {
+                (rightResult.Text = "Right activation");
+            }
+            {
+                <precompile>3.AddChild(rightResult.BoundsComposition);
+            }
+            {
+                <precompile>1.AddChild(<precompile>3);
+            }
+            (<precompile>4 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (disableLeft = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("disableLeft", disableLeft);
+            }
+            {
+                (disableLeft.Text = "Suppress left click");
+            }
+            {
+                <precompile>4.AddChild(disableLeft.BoundsComposition);
+            }
+            {
+                <precompile>1.AddChild(<precompile>4);
+            }
+            (<precompile>5 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (disableRight = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("disableRight", disableRight);
+            }
+            {
+                (disableRight.Text = "Suppress right click");
+            }
+            {
+                <precompile>5.AddChild(disableRight.BoundsComposition);
+            }
+            {
+                <precompile>1.AddChild(<precompile>5);
+            }
+            {
+                <precompile>0.ContainerComposition.AddChild(<precompile>1);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceStartedEventArgs*) : (::system::Void)
+                {
+                    (arguments.generateLeftButtonClick = (!disableLeft.Selected));
+                    (arguments.generateRightButtonClick = (!disableRight.Selected));
+                };
+                attach(<precompile>1.pointSequenceStarted, <event-handler>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/2)================================
+module <instance>gacuisrc_unittest::ClickWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::elements::*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("ClickWindow")
+    @cpp:Friend(typeof(ClickWindowConstructor))
+    class ClickWindow : ::presentation::controls::GuiWindow, ClickWindowConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::ClickWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-ClickWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+

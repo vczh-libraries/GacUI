@@ -40,9 +40,6 @@ namespace gacuisrc_unittest
         var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var button : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
         var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
 
         @cpp:Protected
@@ -53,6 +50,9 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var tabPageContainer : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
+
+        @cpp:Protected
+        var button : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -75,9 +75,6 @@ namespace gacuisrc_unittest
             {
                 (group1 = new (::presentation::controls::GuiRibbonGroup*)(::presentation::theme::ThemeName::RibbonGroup));
                 <this>.SetNamedObject("group1", group1);
-            }
-            {
-                (group1.Expandable = true);
             }
             {
                 (gallery = new (::presentation::controls::GuiRibbonGallery*)(::presentation::theme::ThemeName::RibbonGallery));
@@ -106,6 +103,9 @@ namespace gacuisrc_unittest
                 <collection>.Add(gallery);
             }
             {
+                (group1.Expandable = true);
+            }
+            {
                 (group1.Text = "Gallery");
             }
             {
@@ -131,14 +131,14 @@ namespace gacuisrc_unittest
                 self.AddChild(tab);
             }
             {
+                (group1.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
+            }
+            {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     (self.Text = "Clicked!");
                 };
                 attach(button.Clicked, <event-handler>);
-            }
-            {
-                (group1.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
             }
         }
 

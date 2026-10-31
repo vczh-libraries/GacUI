@@ -46,13 +46,13 @@ namespace gacuisrc_unittest
         var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var editor : ::presentation::controls::GuiMultilineTextBox* = null of (::presentation::controls::GuiMultilineTextBox*);
+        var list : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
 
         @cpp:Protected
         var outer : ::presentation::controls::GuiScrollContainer* = null of (::presentation::controls::GuiScrollContainer*);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
+        var editor : ::presentation::controls::GuiMultilineTextBox* = null of (::presentation::controls::GuiMultilineTextBox*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -112,13 +112,13 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("outer", outer);
             }
             {
+                (outer.VerticalAlwaysVisible = false);
+            }
+            {
                 (outer.ExtendToFullHeight = true);
             }
             {
                 (outer.ExtendToFullWidth = true);
-            }
-            {
-                (outer.VerticalAlwaysVisible = false);
             }
             {
                 (outer.HorizontalAlwaysVisible = false);
@@ -236,10 +236,10 @@ namespace gacuisrc_unittest
         {
             (self = <this>);
             {
-                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (self.PreferredMinSize = {x : 650; y : 28;} of (::presentation::Size));
             }
             {
-                (self.PreferredMinSize = {x : 650; y : 28;} of (::presentation::Size));
+                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (<precompile>0 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
