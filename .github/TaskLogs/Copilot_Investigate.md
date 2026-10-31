@@ -97,9 +97,9 @@ No unresolved review comments. The implementation choices and verification requi
 
 # PROPOSALS
 
-- No.1 Latch Started options and dismiss explicitly owned popups at accepted lifecycle boundaries
+- No.1 Latch Started options and dismiss explicitly owned popups at accepted lifecycle boundaries [CONFIRMED]
 
-## No.1 Latch Started options and dismiss explicitly owned popups at accepted lifecycle boundaries
+## No.1 Latch Started options and dismiss explicitly owned popups at accepted lifecycle boundaries [CONFIRMED]
 
 Use the completed Started query to initialize internal recognizers with dedicated event arguments relative to the accepted composition. Keep canonical native screen samples in the manager, including the current sample independently of the sparse contact list, so final Up and current DPI/layout reprojection retain existing behavior. Only the respective click candidate uses its flag; recognizer priority and raw event ordering remain unchanged.
 
@@ -107,4 +107,25 @@ Reuse native parent relationships and the application's existing opening-popup l
 
 ### CODE CHANGE
 
-Planned: add reflected Started flags; adapt internal recognizers/manager; extend protocol and reflection tests; add shared popup lifecycle cleanup and synchronous native popup closure; update canonical point guidance and synchronize it. Verify the detailed matrix in the task before confirming this proposal.
+Implemented: add reflected Started flags; pass dedicated arguments to recognizers after the completed Started query; retain native screen samples independently of logical event coordinates and contact slots. Add protocol and reflection tests for both suppression flags and the existing raw-input/capture contract.
+
+Use the existing opening-popup list and each popup's native parent, with one boolean distinguishing explicitly owned shows from hosted structural parenting. Dismiss descendants from accepted close and destruction/detachment hooks. Complete Windows popup Hide synchronously, snapshot native child traversal with disposal flags, and clear popup positioning and tooltip content before public closure callbacks. Normal/modal window requests retain their existing behavior.
+
+Add secondary-owner tooltip, ordinary/nested popup, context menu and menu-bar cascade scenarios, including canceled close, modal completion, reassignment, unowned reuse and destruction. Keep the native/hosted Playground fixture in XML/Workflow for manual verification. Move context-menu lifetime snapshots to the sibling GuiToolstripMenuOwner directory: the original GuiToolstripMenu snapshot writer removes non-frame files from its own frame directory.
+
+Updated canonical point-input and owner-lifetime guidance and propagated it through instruction synchronization. Generated metadata and unit-test snapshots are retained separately from authored changes.
+
+### CONFIRMED
+
+Owner dismissal is mandatory once the owner has accepted closing. A per-popup transient owner-dismissal flag is set before Hide and cleared before public Closed; the popup BeforeClosing override runs normal subscribers but clears cancellation for this path. Cancellation subscribers on both ordinary and nested test popups prove they cannot outlive an accepted owner close. Independent popup closes remain cancellable.
+
+- Debug x64 solution build passed with zero warnings/errors. The ten selected test files passed all 158 cases, with no Debug leak dump. The existing point-coordinate, final-Up, cancellation, fallback and physical-mouse regressions are included.
+- Ordinary Windows Playground checks passed all nine combinations of tooltip, ordinary popup and cascading menu with owner Hide, Close and native WM_CLOSE. Automation Controls confirmed visible setup and surviving main-window-only results; callback-time Workflow assertions required child closure and tooltip detachment before owner WindowReadyToClose. UIA Invoke avoided outside-click dismissal. Tooltip hover used automation MouseMove on the tooltip window.
+- Hosted Playground checks passed the same nine combinations, using UIA Window.Close for the logical owner's close-request path. Both applications exited normally with code zero after UIA closed the main window. Native desktop coordinate input was unavailable in the locked session; automation, UIA and native messages remained functional.
+- Snapshot render-tree inspection confirms tooltip/owner labels disappear while main-window labels remain; nested/owned popup labels disappear while the unrelated main-window popup remains; menu cascade items disappear, then ALT shortcut labels and the executed command appear after reuse. Point snapshots add the expected target/right/suppression checkmarks and return to the initial unchecked state after fresh defaults.
+- After adding mandatory dismissal, the final Debug Win32 solution build passed with zero warnings/errors and Metadata_Generate exited zero. Repeated all eighteen native/hosted checks using the final Win32 Playground, now with a popup WindowClosing handler that always requests cancellation. All passed and both application wrappers exited zero. Instruction synchronization copied the canonical guidance from the Tools repository.
+- The final Debug Win32 affected-file run passed 10/10 files and 158/158 cases with no Debug leak dump, including independent popup cancellation and mandatory dismissal of both popup levels. The renamed context-menu snapshots retain their JSON, command, diff and architecture files; render-tree inspection confirms cascade dismissal and normal command execution after reuse.
+- The final Debug x64 solution build passed with zero warnings/errors. Metadata_Generate x64 and Metadata_Test x64 both exited zero, validating the core and complete metadata for both architectures after the prescribed Win32-then-x64 generation order.
+- The final Debug x64 affected-file run passed 10/10 files and 158/158 cases with no Debug leak dump. Both architectures include the point, reflection, tooltip, window, menu, theme, gallery and remote-startup filters. Final snapshot outputs contain both architecture logs and the complete new context-menu cases. No shared hosted-window-manager or GacUI_Compiler input change was needed.
+
+This is the only proposal and it is retained as the final implementation. Code review and git diff whitespace checks passed; the tests establish callback-time ordering as well as rendered results.
