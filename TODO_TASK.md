@@ -6,8 +6,4 @@ If event subscriber doesn't explicitly set them to false, the left/right button 
 The other two functions also receive dedicated event args to keep them aligned, also making `IGuiPointGesture::OnPointAction` no need to have two arguments.
 Add two remote protocol based unit test to verify each.
 
-Add a momentum scrolling gesture, it works like the current scrolling gesture which starts after a certain distance but:
-- It is momentum scrolling, so its `OnPointSequenceStarted` should `RaiseGesture` and when it is not selected the following actions will not execute.
-- 
-
 Also address a bug. When a tooltip is displaying and its parent window is hidden or closed, the tooltip should be closed first. It applies to all popup showing when the parent window/control is specified, it trackes when the specified window or the window of the specified control.
