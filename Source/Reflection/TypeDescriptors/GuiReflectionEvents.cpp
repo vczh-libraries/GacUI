@@ -131,6 +131,8 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiPointSequenceStartedEventArgs)
 				CLASS_MEMBER_BASE(GuiPointEventArgs)
 				CLASS_MEMBER_FIELD(acceptedComposition)
+				CLASS_MEMBER_FIELD(generateLeftButtonClick)
+				CLASS_MEMBER_FIELD(generateRightButtonClick)
 			END_CLASS_MEMBER(GuiPointSequenceStartedEventArgs)
 
 			BEGIN_CLASS_MEMBER(GuiPointSequenceEndedEventArgs)

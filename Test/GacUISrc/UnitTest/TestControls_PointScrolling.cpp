@@ -50,6 +50,137 @@ void AssertTouchingListNoRed(GuiGraphicsComposition* composition)
 
 TEST_FILE
 {
+	for (auto suppressLeft : { true,false })
+	TEST_CASE(suppressLeft ? L"Started suppresses deferred left clicks" : L"Started suppresses deferred right clicks")
+	{
+		const auto resource = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::ClickWindow">
+      <Window Text="Deferred point clicks" ClientSize="x:360 y:200">
+        <Stack Direction="Vertical" Padding="8" AlignmentToParent="left:8 top:8 right:8 bottom:8">
+          <ev.pointSequenceStarted-eval><![CDATA[{
+            arguments.generateLeftButtonClick = not disableLeft.Selected;
+            arguments.generateRightButtonClick = not disableRight.Selected;
+          }]]></ev.pointSequenceStarted-eval>
+          <StackItem><CheckBox ref.Name="target" Text="Tap activation"/></StackItem>
+          <StackItem><CheckBox ref.Name="rightResult" Text="Right activation"/></StackItem>
+          <StackItem><CheckBox ref.Name="disableLeft" Text="Suppress left click"/></StackItem>
+          <StackItem><CheckBox ref.Name="disableRight" Text="Suppress right click"/></StackItem>
+        </Stack>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+		vint leftDown = 0, leftUp = 0, rightDown = 0, rightUp = 0, actions = 0, ends = 0, clicks = 0;
+		Ptr<PointProtocolInput> input;
+		GuiSelectableButton* target = nullptr;
+		GuiSelectableButton* rightResult = nullptr;
+		GuiSelectableButton* disableLeft = nullptr;
+		GuiSelectableButton* disableRight = nullptr;
+		GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			input = Ptr(new PointProtocolInput(protocol->GetEvents(), false));
+			auto sequence = [&, protocol](vuint64_t duration, vint left, vint right)
+			{
+				auto ld = leftDown, lu = leftUp, rd = rightDown, ru = rightUp, a = actions, e = ends, c = clicks;
+				auto location = protocol->LocationOf(target);
+				input->Start(location);
+				TEST_ASSERT(target->GetPointEventComposition() == target->GetBoundsComposition());
+				input->Up(0, location);
+				input->End(duration);
+				TEST_ASSERT(leftDown == ld + left && leftUp == lu + left);
+				TEST_ASSERT(rightDown == rd + right && rightUp == ru + right);
+				TEST_ASSERT(clicks == c + left && actions == a + 2 && ends == e + 1);
+				TEST_ASSERT(!target->GetPointEventComposition());
+			};
+			protocol->OnNextIdleFrame(L"Ready", [&, sequence]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				target = FindObjectByName<GuiSelectableButton>(window, L"target");
+				rightResult = FindObjectByName<GuiSelectableButton>(window, L"rightResult");
+				disableLeft = FindObjectByName<GuiSelectableButton>(window, L"disableLeft");
+				disableRight = FindObjectByName<GuiSelectableButton>(window, L"disableRight");
+				auto receiver = target->GetBoundsComposition()->GetEventReceiver();
+				receiver->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& arguments)
+				{
+					TEST_ASSERT(arguments.generateLeftButtonClick && arguments.generateRightButtonClick);
+					arguments.acceptedComposition = sender;
+					arguments.handled = true;
+				});
+				receiver->pointAction.AttachLambda([&](GuiGraphicsComposition*, GuiPointEventArgs& arguments)
+				{
+					actions++;
+					arguments.handled = true;
+				});
+				receiver->pointSequenceEnded.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& arguments)
+				{
+					TEST_ASSERT(target->GetPointEventComposition() == target->GetBoundsComposition());
+					TEST_ASSERT(arguments.points.Count() == 1 && !arguments.points[0]);
+					ends++;
+					arguments.handled = true;
+				});
+				receiver->mouseDown.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				{
+					TEST_ASSERT(!target->GetPointEventComposition());
+					if (arguments.button == NativeMouseButton::Left) leftDown++;
+					if (arguments.button == NativeMouseButton::Right) rightDown++;
+				});
+				receiver->mouseUp.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				{
+					if (arguments.button == NativeMouseButton::Left) leftUp++;
+					if (arguments.button == NativeMouseButton::Right)
+					{
+						rightUp++;
+						rightResult->SetSelected(!rightResult->GetSelected());
+					}
+				});
+				target->Clicked.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { clicks++; });
+				sequence(suppressLeft ? 0 : 500000, suppressLeft ? 1 : 0, suppressLeft ? 0 : 1);
+			});
+			protocol->OnNextIdleFrame(L"Default gesture activates", [&, sequence]()
+			{
+				disableLeft->SetSelected(suppressLeft);
+				disableRight->SetSelected(!suppressLeft);
+				if (suppressLeft)
+				{
+					sequence(0, 0, 0);
+					TEST_ASSERT(target->GetSelected());
+					sequence(500000, 0, 1);
+				}
+				else
+				{
+					sequence(500000, 1, 0);
+					TEST_ASSERT(target->GetSelected());
+				}
+			});
+			protocol->OnNextIdleFrame(L"Only enabled recognizer activates", [&, sequence]()
+			{
+				disableLeft->SetSelected(true);
+				disableRight->SetSelected(true);
+				sequence(0, 0, 0);
+				sequence(500000, 0, 0);
+				TEST_ASSERT(target->GetSelected() && rightResult->GetSelected());
+			});
+			protocol->OnNextIdleFrame(L"Both click recognizers disabled", [&, sequence]()
+			{
+				disableLeft->SetSelected(false);
+				disableRight->SetSelected(false);
+				sequence(0, 1, 0);
+				sequence(500000, 0, 1);
+				TEST_ASSERT(!target->GetSelected() && !rightResult->GetSelected());
+			});
+			protocol->OnNextIdleFrame(L"Fresh defaults activate both clicks again", []()
+			{
+				GetApplication()->GetMainWindow()->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			suppressLeft ? L"Controls/PointScrolling/SuppressLeftClick" : L"Controls/PointScrolling/SuppressRightClick",
+			WString::Unmanaged(L"gacuisrc_unittest::ClickWindow"), resource);
+	});
+
 	TEST_CASE(L"TouchingList XML uses identity-based deferred removal")
 	{
 		auto manager = GetGlobalTypeManager();

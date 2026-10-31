@@ -72,6 +72,74 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	for (auto closeOwner : { false,true })
+	TEST_CASE(closeOwner ? L"Close context menu owner" : L"Hide context menu owner")
+	{
+		GuiWindow* owner = nullptr;
+		vint closed = 0;
+		bool verify = true;
+		GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [&]()
+			{
+				GetApplication()->GetMainWindow()->SetClientSize(Size(640, 480));
+				owner = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::MainWindow"));
+				owner->SetLocation({ {70},{60} });
+				owner->Show();
+				auto menu = FindObjectByName<GuiToolstripMenu>(owner, L"menu");
+				auto sub = FindObjectByName<GuiToolstripButton>(owner, L"buttonLink");
+				sub->GetSubMenu()->WindowClosed.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { if (verify) TEST_ASSERT(closed++ == 0); });
+				menu->WindowClosed.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { if (verify) TEST_ASSERT(closed++ == 1); });
+				owner->WindowReadyToClose.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&)
+				{
+					if (!verify) return;
+					auto menu = FindObjectByName<GuiToolstripMenu>(owner, L"menu");
+					auto sub = FindObjectByName<GuiToolstripButton>(owner, L"buttonLink");
+					TEST_ASSERT(closed == 2 && !menu->GetOpening() && !sub->GetSubMenuOpening());
+					TEST_ASSERT(!sub->GetSubMenu()->GetOpening());
+					TEST_ASSERT(!dynamic_cast<IGuiMenuService*>(menu->QueryService(IGuiMenuService::Identifier))->GetOpeningMenu());
+					TEST_ASSERT(owner->GetText() == L"GuiToolstripMenuBar");
+				});
+			});
+			protocol->OnNextIdleFrame(L"Secondary context menu owner", [&, protocol]()
+			{
+				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiControl>(owner, L"button")));
+			});
+			protocol->OnNextIdleFrame(L"Context menu visible", [&, protocol]()
+			{
+				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiControl>(owner, L"buttonLink")));
+			});
+			protocol->OnNextIdleFrame(L"Context menu and submenu visible", [&]()
+			{
+				TEST_ASSERT(FindObjectByName<GuiToolstripButton>(owner, L"buttonLink")->GetSubMenuOpening());
+				if (closeOwner) owner->Close(); else owner->Hide();
+			});
+			protocol->OnNextIdleFrame(L"Main survives context menu owner", [&]()
+			{
+				TEST_ASSERT(closed == 2 && !owner->GetOpening());
+				verify = false;
+				owner->Show();
+			});
+			protocol->OnNextIdleFrame(L"Owner reopened", [&, protocol]()
+			{
+				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiControl>(owner, L"button")));
+			});
+			protocol->OnNextIdleFrame(L"Context menu reopened", [&, protocol]()
+			{
+				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiControl>(owner, L"buttonUndo")));
+				TEST_ASSERT(owner->GetText() == L"Undo");
+			});
+			protocol->OnNextIdleFrame(L"Reopened context command executes", [&]()
+			{
+				SafeDeleteControl(owner);
+				GetApplication()->GetMainWindow()->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			closeOwner ? L"Controls/Toolstrip/GuiToolstripMenuOwner/Close" : L"Controls/Toolstrip/GuiToolstripMenuOwner/Hide",
+			WString::Unmanaged(L"gacuisrc_unittest::MainWindow"), resourceToolBar);
+	});
+
 	TEST_CASE(L"GuiToolstripMenu")
 	{
 		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)

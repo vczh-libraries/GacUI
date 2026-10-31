@@ -187,6 +187,7 @@ GuiControlHost
 
 			void GuiControlHost::AfterClosing()
 			{
+				GetApplication()->CloseOwnedPopups(GetNativeWindow());
 				WindowReadyToClose.Execute(GetNotifyEventArguments());
 			}
 
@@ -197,6 +198,7 @@ GuiControlHost
 
 			void GuiControlHost::Destroying()
 			{
+				GetApplication()->CloseOwnedPopups(GetNativeWindow());
 				WindowDestroying.Execute(GetNotifyEventArguments());
 				calledDestroyed = true;
 				if (deleteWhenDestroyed)
@@ -297,6 +299,7 @@ GuiControlHost
 				auto previousNativeWindow = host->GetNativeWindow();
 				if(previousNativeWindow)
 				{
+					GetApplication()->CloseOwnedPopups(previousNativeWindow);
 					host->GetNativeWindow()->UninstallListener(this);
 				}
 				if (window)
@@ -951,6 +954,7 @@ GuiWindow
 
 			GuiWindow::~GuiWindow()
 			{
+				GetApplication()->CloseOwnedPopups(GetNativeWindow());
 				FinalizeAggregation();
 				GetApplication()->UnregisterWindow(this);
 				INativeWindow* window=host->GetNativeWindow();
@@ -1191,14 +1195,23 @@ GuiPopup
 				GetApplication()->RegisterPopupOpened(this);
 			}
 
-			void GuiPopup::PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiPopup::BeforeClosing(bool& cancel)
+			{
+				GuiWindow::BeforeClosing(cancel);
+				if (closingForOwner) cancel = false;
+			}
+
+			void GuiPopup::Closed()
 			{
 				popupType = -1;
+				hasPopupOwner = false;
+				closingForOwner = false;
 				GetApplication()->RegisterPopupClosed(this);
 				if(auto window = GetNativeWindow())
 				{
 					window->SetParent(nullptr);
 				}
+				GuiWindow::Closed();
 			}
 
 			void GuiPopup::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
@@ -1326,9 +1339,10 @@ GuiPopup
 				case 4: controlWindow = popupInfo._4.controlWindow; break;
 				}
 
+				hasPopupOwner = controlWindow != nullptr;
+				window->SetParent(controlWindow);
 				if (controlWindow)
 				{
-					window->SetParent(controlWindow);
 					SetTopMost(controlWindow->GetTopMost());
 				}
 				else
@@ -1351,7 +1365,6 @@ GuiPopup
 				SetShowInTaskBar(false);
 
 				WindowOpened.AttachMethod(this, &GuiPopup::PopupOpened);
-				WindowClosed.AttachMethod(this, &GuiPopup::PopupClosed);
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiPopup::OnKeyDown);
 			}
 
@@ -1450,9 +1463,10 @@ GuiPopup
 			{
 			}
 
-			void GuiTooltip::TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiTooltip::Closed()
 			{
 				SetTemporaryContentControl(0);
+				GuiPopup::Closed();
 			}
 
 			GuiTooltip::GuiTooltip(theme::ThemeName themeName)
@@ -1463,7 +1477,6 @@ GuiPopup
 				GetCurrentController()->CallbackService()->InstallListener(this);
 
 				WindowOpened.AttachMethod(this, &GuiTooltip::TooltipOpened);
-				WindowClosed.AttachMethod(this, &GuiTooltip::TooltipClosed);
 			}
 
 			GuiTooltip::~GuiTooltip()

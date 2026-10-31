@@ -60,6 +60,78 @@ TEST_FILE
 
 	TEST_CATEGORY(L"GuiToolstripMenuBar/Cascade")
 	{
+		for (auto closeOwner : { false,true })
+		TEST_CASE(closeOwner ? L"Close cascading menu owner" : L"Hide cascading menu owner")
+		{
+			GuiWindow* owner = nullptr;
+			vint closed = 0;
+			bool verify = true;
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [&]()
+				{
+					GetApplication()->GetMainWindow()->SetClientSize(Size(640, 480));
+					owner = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::MainWindow"));
+					owner->SetLocation({ {70},{60} });
+					owner->Show();
+					auto top = FindObjectByName<GuiToolstripButton>(owner, L"menuFile");
+					auto sub = FindObjectByName<GuiToolstripButton>(owner, L"menuFileNew");
+					sub->GetSubMenu()->WindowClosed.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { if (verify) TEST_ASSERT(closed++ == 0); });
+					top->GetSubMenu()->WindowClosed.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { if (verify) TEST_ASSERT(closed++ == 1); });
+					owner->WindowReadyToClose.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&)
+					{
+						if (!verify) return;
+						auto top = FindObjectByName<GuiToolstripButton>(owner, L"menuFile");
+						auto sub = FindObjectByName<GuiToolstripButton>(owner, L"menuFileNew");
+						TEST_ASSERT(closed == 2);
+						TEST_ASSERT(!top->GetSubMenuOpening() && !sub->GetSubMenuOpening());
+						TEST_ASSERT(!top->GetSubMenu()->GetOpening() && !sub->GetSubMenu()->GetOpening());
+						TEST_ASSERT(!dynamic_cast<IGuiMenuService*>(top->GetSubMenu()->QueryService(IGuiMenuService::Identifier))->GetOpeningMenu());
+						TEST_ASSERT(owner->GetText() == L"GuiToolstripMenuBar");
+					});
+				});
+				protocol->OnNextIdleFrame(L"Secondary menu owner visible", [&, protocol]()
+				{
+					protocol->LClick(protocol->LocationOf(FindObjectByName<GuiToolstripButton>(owner, L"menuFile")));
+				});
+				protocol->OnNextIdleFrame(L"Top menu visible", [&, protocol]()
+				{
+					protocol->MouseMove(protocol->LocationOf(FindObjectByName<GuiToolstripButton>(owner, L"menuFileNew")));
+				});
+				protocol->OnNextIdleFrame(L"Cascading submenu visible", [&]()
+				{
+					TEST_ASSERT(FindObjectByName<GuiToolstripButton>(owner, L"menuFileNew")->GetSubMenuOpening());
+					if (closeOwner) owner->Close(); else owner->Hide();
+				});
+				protocol->OnNextIdleFrame(L"Main survives owner and menu cascade", [&]()
+				{
+					TEST_ASSERT(closed == 2 && !owner->GetOpening());
+					verify = false;
+					owner->Show();
+				});
+				protocol->OnNextIdleFrame(L"Owner reopened", [&, protocol]()
+				{
+					protocol->KeyPress(VKEY::KEY_MENU);
+					protocol->KeyPress(VKEY::KEY_F);
+					protocol->KeyPress(VKEY::KEY_N);
+				});
+				protocol->OnNextIdleFrame(L"ALT reopens menu cascade", [&, protocol]()
+				{
+					TEST_ASSERT(FindObjectByName<GuiToolstripButton>(owner, L"menuFileNew")->GetSubMenuOpening());
+					protocol->KeyPress(VKEY::KEY_P);
+					TEST_ASSERT(owner->GetText() == L"Plain Text");
+				});
+				protocol->OnNextIdleFrame(L"Reopened command executes normally", [&]()
+				{
+					SafeDeleteControl(owner);
+					GetApplication()->GetMainWindow()->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				closeOwner ? L"Controls/Toolstrip/GuiToolstripMenuBar/Cascade/CloseOwner" : L"Controls/Toolstrip/GuiToolstripMenuBar/Cascade/HideOwner",
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"), resourceMenuCascade);
+		});
+
 		TEST_CASE(L"DisplaySubMenu")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)

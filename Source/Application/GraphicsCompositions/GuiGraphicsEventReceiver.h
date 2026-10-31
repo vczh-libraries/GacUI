@@ -410,6 +410,10 @@ Predefined Point Events
 			{
 				/// <summary>Select the composition that will receive this sequence's actions and End, or leave null to decline.</summary>
 				GuiGraphicsComposition*						acceptedComposition = nullptr;
+				/// <summary>Allow an eligible accepted sequence to generate a deferred left click.</summary>
+				bool										generateLeftButtonClick = true;
+				/// <summary>Allow an eligible accepted long press to generate a deferred right click.</summary>
+				bool										generateRightButtonClick = true;
 
 				GuiPointSequenceStartedEventArgs(const collections::List<Nullable<Point>>& points);
 				GuiPointSequenceStartedEventArgs(GuiGraphicsComposition* composition, const collections::List<Nullable<Point>>& points);

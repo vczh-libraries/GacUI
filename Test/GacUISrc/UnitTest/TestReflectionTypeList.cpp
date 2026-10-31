@@ -149,6 +149,8 @@ TEST_FILE
 			points.Add({});
 			GuiPointSequenceStartedEventArgs started(points);
 			GuiPointSequenceStartedEventArgs sourcedStarted(&composition, points);
+			TEST_ASSERT(started.generateLeftButtonClick && started.generateRightButtonClick);
+			TEST_ASSERT(sourcedStarted.generateLeftButtonClick && sourcedStarted.generateRightButtonClick);
 			TEST_ASSERT(started.eventType == GuiPointEventsType::Started);
 			TEST_ASSERT(sourcedStarted.eventType == GuiPointEventsType::Started);
 			TEST_ASSERT(sourcedStarted.compositionSource == &composition);
@@ -158,6 +160,13 @@ TEST_FILE
 			TEST_ASSERT(&started.GetPoints() == &points);
 			TEST_ASSERT(&sourcedStarted.GetPoints() == &points);
 			auto boxedStarted = BoxValue(&sourcedStarted);
+			for (auto name : { L"generateLeftButtonClick",L"generateRightButtonClick" })
+			{
+				TEST_ASSERT(UnboxValue<bool>(boxedStarted.GetProperty(name)));
+				boxedStarted.SetProperty(name, BoxValue(false));
+				TEST_ASSERT(!UnboxValue<bool>(boxedStarted.GetProperty(name)));
+			}
+			TEST_ASSERT(!sourcedStarted.generateLeftButtonClick && !sourcedStarted.generateRightButtonClick);
 			TEST_ASSERT(UnboxValue<GuiPointEventArgs*>(boxedStarted) == &sourcedStarted);
 			TEST_ASSERT(UnboxValue<GuiPointEventsType>(boxedStarted.GetProperty(L"eventType")) == GuiPointEventsType::Started);
 			TEST_ASSERT(UnboxValue<GuiGraphicsComposition*>(boxedStarted.GetProperty(L"eventSource")) == &composition);

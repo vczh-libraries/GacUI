@@ -333,7 +333,7 @@ GuiGraphicsHost
 					composition = composition->GetParent();
 				}
 				accept = arguments.acceptedComposition != nullptr;
-				if (accept) pointActionManager->OnPointSequenceStarted(firstPoint, arguments.acceptedComposition);
+				if (accept) pointActionManager->OnPointSequenceStarted(firstPoint, arguments);
 			}
 
 			void GuiGraphicsHost::PointDown(const NativeWindowPointInfo& info)

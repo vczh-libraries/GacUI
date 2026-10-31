@@ -20,9 +20,9 @@ namespace vl
 			class IGuiPointGesture : public virtual Interface
 			{
 			public:
-				virtual void								OnPointSequenceStarted(const NativeWindowPointInfo& info) = 0;
-				virtual void								OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType) = 0;
-				virtual void								OnPointSequenceEnded(const PointSequenceEndInfo& info) = 0;
+				virtual void								OnPointSequenceStarted(const GuiPointSequenceStartedEventArgs& arguments) = 0;
+				virtual void								OnPointAction(const GuiPointEventArgs& arguments) = 0;
+				virtual void								OnPointSequenceEnded(const GuiPointSequenceEndedEventArgs& arguments) = 0;
 				virtual bool								IsGestureSelected() = 0;
 				virtual Nullable<NativeMouseButton>			GetFallbackClick() = 0;
 			};
@@ -34,6 +34,7 @@ namespace vl
 				GuiGraphicsComposition*						captureComposition = nullptr;
 				NativeWindowPointInfo						firstPoint;
 				NativePoint									firstPointScreen;
+				NativePoint									currentPointScreen;
 				collections::List<Nullable<NativePoint>>	nativePoints;
 				collections::List<Nullable<Point>>			points;
 				collections::List<Ptr<IGuiPointGesture>>	gestures;
@@ -42,7 +43,7 @@ namespace vl
 
 			public:
 				GuiPointActionManager(GuiGraphicsHost* _host);
-				void										OnPointSequenceStarted(const NativeWindowPointInfo& info, GuiGraphicsComposition* composition);
+				void										OnPointSequenceStarted(const NativeWindowPointInfo& info, const GuiPointSequenceStartedEventArgs& query);
 				void										OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType);
 				bool										OnPointSequenceEnded(const PointSequenceEndInfo& info);
 
@@ -53,6 +54,7 @@ namespace vl
 				const collections::List<Nullable<NativePoint>>& GetNativePoints();
 				const collections::List<Nullable<Point>>&	GetPoints(GuiGraphicsComposition* relativeTo);
 				NativePoint									GetScreenPoint(const NativeWindowPointInfo& info);
+				NativePoint									GetCurrentScreenPoint();
 				Point										ConvertPoint(NativePoint screen, GuiGraphicsComposition* relativeTo);
 				WindowPointInfo								ConvertSample(const NativeWindowPointInfo& info, GuiGraphicsComposition* relativeTo);
 				NativeWindowPointInfo						GetFirstPoint();

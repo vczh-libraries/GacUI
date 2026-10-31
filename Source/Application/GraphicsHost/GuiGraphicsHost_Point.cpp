@@ -45,7 +45,7 @@ Predefined Gestures
 				GuiPointGestureBase(GuiPointActionManager* _manager) : manager(_manager) {}
 				bool IsGestureSelected()override { return selected; }
 				Nullable<NativeMouseButton> GetFallbackClick()override { return {}; }
-				void OnPointSequenceEnded(const PointSequenceEndInfo&)override {}
+				void OnPointSequenceEnded(const GuiPointSequenceEndedEventArgs&)override {}
 			};
 
 			namespace predefined_gestures
@@ -64,28 +64,28 @@ Predefined Gestures
 					RightClickGesture(GuiPointActionManager* manager, vuint64_t duration = 500000)
 						:GuiPointGestureBase(manager), minimumDuration(duration) {}
 
-					void OnPointSequenceStarted(const NativeWindowPointInfo& info)override
+					void OnPointSequenceStarted(const GuiPointSequenceStartedEventArgs& info)override
 					{
 						selected = false;
-						first = manager->GetScreenPoint(info);
+						first = manager->GetCurrentScreenPoint();
 						timestamp = info.timestamp;
 						downCount = 0;
-						eligible = true;
+						eligible = minimumDuration == 0 ? info.generateLeftButtonClick : info.generateRightButtonClick;
 						fallback.Reset();
 					}
 
-					void OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType)override
+					void OnPointAction(const GuiPointEventArgs& info)override
 					{
-						if (eventType == GuiPointEventsType::Down && ++downCount != 1) eligible = false;
+						if (info.eventType == GuiPointEventsType::Down && ++downCount != 1) eligible = false;
 						if (eligible && info.pointId == 0)
 						{
 							auto start = manager->ConvertPoint(first, nullptr);
-							auto current = manager->ConvertPoint(manager->GetScreenPoint(info), nullptr);
+							auto current = manager->ConvertPoint(manager->GetCurrentScreenPoint(), nullptr);
 							if (IsOutsideStaticPointRange(start, current)) eligible = false;
 						}
 					}
 
-					void OnPointSequenceEnded(const PointSequenceEndInfo& info)override
+					void OnPointSequenceEnded(const GuiPointSequenceEndedEventArgs& info)override
 					{
 						if (eligible && downCount == 1 && info.reason == PointSequenceEndReason::Succeeded
 							&& info.timestamp - timestamp >= minimumDuration)
@@ -113,19 +113,19 @@ Predefined Gestures
 				public:
 					ScrollingGesture(GuiPointActionManager* manager) : GuiPointGestureBase(manager) {}
 
-					void OnPointSequenceStarted(const NativeWindowPointInfo& info)override
+					void OnPointSequenceStarted(const GuiPointSequenceStartedEventArgs& info)override
 					{
 						selected = false;
-						previous = manager->GetScreenPoint(info);
+						previous = manager->GetCurrentScreenPoint();
 						axis = 0;
 						stopped = false;
 					}
 
-					void OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType)override
+					void OnPointAction(const GuiPointEventArgs& info)override
 					{
-						if (eventType == GuiPointEventsType::Down && info.pointId != 0) stopped = true;
+						if (info.eventType == GuiPointEventsType::Down && info.pointId != 0) stopped = true;
 						if (stopped || info.pointId != 0) return;
-						auto screen = manager->GetScreenPoint(info);
+						auto screen = manager->GetCurrentScreenPoint();
 						auto start = manager->ConvertPoint(previous, nullptr);
 						auto current = manager->ConvertPoint(screen, nullptr);
 						auto dx = (vint64_t)current.x - start.x;
@@ -208,7 +208,7 @@ Predefined Gestures
 				public:
 					DraggingAndRotationGesture(GuiPointActionManager* manager) : GuiPointGestureBase(manager) {}
 
-					void OnPointSequenceStarted(const NativeWindowPointInfo&)override
+					void OnPointSequenceStarted(const GuiPointSequenceStartedEventArgs&)override
 					{
 						selected = false;
 						residualX = residualY = 0;
@@ -216,15 +216,15 @@ Predefined Gestures
 						RaiseGesture(GuiPointGesture_DraggingAndRotation{});
 					}
 
-					void OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType)override
+					void OnPointAction(const GuiPointEventArgs& info)override
 					{
 						if (!selected) return;
 						auto&& current = manager->GetNativePoints();
-						if (eventType == GuiPointEventsType::Up)
+						if (info.eventType == GuiPointEventsType::Up)
 						{
 							List<Nullable<NativePoint>> finalSample;
 							CopyFrom(finalSample, current);
-							finalSample[info.pointId] = manager->GetScreenPoint(info);
+							finalSample[info.pointId] = manager->GetCurrentScreenPoint();
 							UpdateTransform(finalSample);
 							CopyFrom(baseline, current);
 						}
@@ -246,16 +246,22 @@ GuiPointActionManager
 				gestures.Add(Ptr(new predefined_gestures::DraggingAndRotationGesture(this)));
 			}
 
-			void GuiPointActionManager::OnPointSequenceStarted(const NativeWindowPointInfo& info, GuiGraphicsComposition* composition)
+			void GuiPointActionManager::OnPointSequenceStarted(const NativeWindowPointInfo& info, const GuiPointSequenceStartedEventArgs& query)
 			{
 				ResetPointCapture();
 				firstPoint = info;
 				firstPointScreen = GetScreenPoint(info);
+				currentPointScreen = firstPointScreen;
 				nativePoints.Add(firstPointScreen);
-				PointCapture(composition);
+				PointCapture(query.acceptedComposition);
+				GuiPointSequenceStartedEventArgs arguments(captureComposition, GetPoints(captureComposition));
+				static_cast<WindowPointInfo&>(arguments) = ConvertSample(info, captureComposition);
+				arguments.acceptedComposition = captureComposition;
+				arguments.generateLeftButtonClick = query.generateLeftButtonClick;
+				arguments.generateRightButtonClick = query.generateRightButtonClick;
 				for (auto gesture : gestures)
 				{
-					gesture->OnPointSequenceStarted(info);
+					gesture->OnPointSequenceStarted(arguments);
 					if (gesture->IsGestureSelected())
 					{
 						selectedGesture = gesture.Obj();
@@ -267,15 +273,16 @@ GuiPointActionManager
 			void GuiPointActionManager::OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType)
 			{
 				if (!captureComposition || ended || firstPoint.sequenceId != info.sequenceId) return;
+				currentPointScreen = GetScreenPoint(info);
 				while (nativePoints.Count() <= info.pointId) nativePoints.Add({});
-				nativePoints[info.pointId] = eventType == GuiPointEventsType::Up ? Nullable<NativePoint>() : Nullable<NativePoint>(GetScreenPoint(info));
+				nativePoints[info.pointId] = eventType == GuiPointEventsType::Up ? Nullable<NativePoint>() : Nullable<NativePoint>(currentPointScreen);
 				GuiPointEventArgs arguments(captureComposition, eventType, GetPoints(captureComposition));
 				static_cast<WindowPointInfo&>(arguments) = ConvertSample(info, captureComposition);
 				if (captureComposition->HasEventReceiver()) captureComposition->GetEventReceiver()->pointAction.Execute(arguments);
-				if (selectedGesture) selectedGesture->OnPointAction(info, eventType);
+				if (selectedGesture) selectedGesture->OnPointAction(arguments);
 				else for (auto gesture : gestures)
 				{
-					gesture->OnPointAction(info, eventType);
+					gesture->OnPointAction(arguments);
 					if (gesture->IsGestureSelected())
 					{
 						selectedGesture = gesture.Obj();
@@ -288,19 +295,19 @@ GuiPointActionManager
 			{
 				if (!captureComposition || ended || firstPoint.sequenceId != info.sequenceId) return false;
 				ended = true;
-				if (selectedGesture) selectedGesture->OnPointSequenceEnded(info);
+				GuiPointSequenceEndedEventArgs arguments(captureComposition, GetPoints(captureComposition));
+				static_cast<PointSequenceEndInfo&>(arguments) = info;
+				arguments.accepted = true;
+				if (selectedGesture) selectedGesture->OnPointSequenceEnded(arguments);
 				else for (auto gesture : gestures)
 				{
-					gesture->OnPointSequenceEnded(info);
+					gesture->OnPointSequenceEnded(arguments);
 					if (gesture->IsGestureSelected())
 					{
 						selectedGesture = gesture.Obj();
 						break;
 					}
 				}
-				GuiPointSequenceEndedEventArgs arguments(captureComposition, GetPoints(captureComposition));
-				static_cast<PointSequenceEndInfo&>(arguments) = info;
-				arguments.accepted = true;
 				if (captureComposition->HasEventReceiver()) captureComposition->GetEventReceiver()->pointSequenceEnded.Execute(arguments);
 				return true;
 			}
@@ -319,6 +326,7 @@ GuiPointActionManager
 				captureComposition = nullptr;
 				firstPoint = {};
 				firstPointScreen = {};
+				currentPointScreen = {};
 				nativePoints.Clear();
 				points.Clear();
 				selectedGesture = nullptr;
@@ -349,6 +357,11 @@ GuiPointActionManager
 			{
 				auto origin = host->GetNativeWindow()->GetClientBoundsInScreen().LeftTop();
 				return NativePoint(info.position.x + origin.x, info.position.y + origin.y);
+			}
+
+			NativePoint GuiPointActionManager::GetCurrentScreenPoint()
+			{
+				return currentPointScreen;
 			}
 
 			Point GuiPointActionManager::ConvertPoint(NativePoint screen, GuiGraphicsComposition* relativeTo)

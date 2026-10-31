@@ -1,0 +1,113 @@
+<Resource>
+  <Instance name="OwnerResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::PopupOwner">
+      <ref.Members><![CDATA[
+        var tooltip: GuiTooltip* = null;
+        var popup: GuiPopup* = null;
+        var kind: int = -1;
+        var closed: int = 0;
+        var commands: int = 0;
+        var outcome: string = "Ready";
+
+        func ShowTransient(value: int): void
+        {
+          kind = value;
+          closed = 0;
+          outcome = "Pending";
+          self.Show();
+          if (self.kind == 0)
+          {
+            tip.DisplayTooltip({x:0 y:40});
+            tooltip = cast GuiTooltip* tip.TooltipControl.RelatedControlHost;
+          }
+          if (self.kind == 1) { popup.ShowPopup(tip, {x:20 y:80} of Point); }
+          if (self.kind == 2)
+          {
+            menu.ShowPopup(tip, true);
+            cascade.SubMenuOpening = true;
+          }
+        }
+
+        func ReadResult(): string { return outcome; }
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        popup = new GuiPopup*(ThemeName::Window);
+        popup.ClientSize = {x:180 y:60};
+        var label = new GuiLabel*(ThemeName::Label);
+        label.Text = "Owned ordinary popup";
+        popup.ContainerComposition.AddChild(label.BoundsComposition);
+        attach(popup.WindowClosed, func(sender: GuiGraphicsComposition*, arguments: GuiEventArgs*): void { closed = closed + 1; });
+        attach(popup.WindowClosing, func(sender: GuiGraphicsComposition*, arguments: GuiRequestEventArgs*): void { arguments.cancel = true; });
+      }]]></ref.Ctor>
+      <ref.Dtor><![CDATA[{ delete popup; }]]></ref.Dtor>
+      <Window ref.Name="self" Text="Popup lifetime owner" ClientSize="x:300 y:240">
+        <ev.WindowReadyToClose-eval><![CDATA[{
+          if (self.kind == 0)
+          {
+            if (self.tooltip.GetOpening()) { raise "Tooltip still visible"; }
+            if (self.tooltip.TemporaryContentControl is not null) { raise "Tooltip content retained"; }
+            if (GuiApplication::GetApplication().TooltipOwner is not null) { raise "Tooltip owner retained"; }
+          }
+          if (self.kind == 1)
+          {
+            if (self.popup.GetOpening()) { raise "Popup still visible"; }
+            if (self.closed != 1) { raise "Popup completion order"; }
+          }
+          if (self.kind == 2)
+          {
+            if (menu.GetOpening()) { raise "Menu still visible"; }
+            if (cascade.SubMenuOpening) { raise "Submenu state retained"; }
+            if (self.closed != 2) { raise "Menu completion order"; }
+            if (self.commands != 0) { raise "Dismissal executed command"; }
+          }
+          self.outcome = "PASS " & (cast string self.kind);
+        }]]></ev.WindowReadyToClose-eval>
+        <Button ref.Name="tip" Text="Tooltip owner control">
+          <att.BoundsComposition-set ExpectedBounds="x1:20 y1:20 x2:260 y2:60"/>
+          <att.TooltipControl><Label Text="Hovered owned tooltip"/></att.TooltipControl>
+        </Button>
+        <ToolstripMenu ref.Name="menu">
+          <ev.WindowClosed-eval><![CDATA[{ if (self.closed != 1) { raise "Submenu must close first"; } self.closed = self.closed + 1; }]]></ev.WindowClosed-eval>
+          <MenuItemButton ref.Name="cascade" Text="Cascade">
+            <att.SubMenu-set>
+              <ev.WindowClosed-eval><![CDATA[{ if (self.closed != 0) { raise "Duplicate submenu close"; } self.closed = self.closed + 1; }]]></ev.WindowClosed-eval>
+              <MenuItemButton Text="Command" ev.Clicked-eval="self.commands = self.commands + 1;"/>
+            </att.SubMenu-set>
+          </MenuItemButton>
+        </ToolstripMenu>
+      </Window>
+    </Instance>
+  </Instance>
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
+      <ref.Members><![CDATA[
+        var child: demo::PopupOwner* = null;
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        child = new demo::PopupOwner*();
+        attach(child.WindowClosed, func(sender: GuiGraphicsComposition*, arguments: GuiEventArgs*): void { result.Text = child.ReadResult(); });
+      }]]></ref.Ctor>
+      <ref.Dtor><![CDATA[{ delete child; }]]></ref.Dtor>
+      <Window ref.Name="self" Text="Popup lifetime inspection" ClientSize="x:740 y:500">
+        <Button Text="Show tooltip" ev.Clicked-eval="self.child.ShowTransient(0);">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:10 x2:170 y2:45"/>
+        </Button>
+        <Button Text="Show popup" ev.Clicked-eval="self.child.ShowTransient(1);">
+          <att.BoundsComposition-set ExpectedBounds="x1:190 y1:10 x2:350 y2:45"/>
+        </Button>
+        <Button Text="Show menu" ev.Clicked-eval="self.child.ShowTransient(2);">
+          <att.BoundsComposition-set ExpectedBounds="x1:370 y1:10 x2:530 y2:45"/>
+        </Button>
+        <Button Text="Hide owner" ev.Clicked-eval="self.child.Hide();">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:65 x2:170 y2:100"/>
+        </Button>
+        <Button Text="Close owner" ev.Clicked-eval="self.child.Close();">
+          <att.BoundsComposition-set ExpectedBounds="x1:190 y1:65 x2:350 y2:100"/>
+        </Button>
+        <Label ref.Name="result" Text="Ready">
+          <att.BoundsComposition-set ExpectedBounds="x1:10 y1:120 x2:350 y2:150"/>
+        </Label>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>

@@ -310,7 +310,7 @@ void GuiMain()
 	LoadPlaygroundTypes();
 
 	List<WString> names;
-	names.Add(L"ResourcePointInput");
+	names.Add(L"ResourcePopupLifetime");
 
 	Group<WString, WString> deps;
 

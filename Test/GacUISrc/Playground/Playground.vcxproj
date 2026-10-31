@@ -192,6 +192,7 @@
     <Xml Include="Resources\ResourceRawElement.xml" />
     <Xml Include="Resources\ResourceUiaReview.xml" />
     <Xml Include="Resources\ResourcePointInput.xml" />
+    <Xml Include="Resources\ResourcePopupLifetime.xml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png" />

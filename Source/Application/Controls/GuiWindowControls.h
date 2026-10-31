@@ -454,6 +454,7 @@ Window
 			/// </summary>
 			class GuiPopup : public GuiWindow, public Description<GuiPopup>
 			{
+				friend class GuiApplication;
 			protected:
 				union PopupInfo
 				{
@@ -472,10 +473,13 @@ Window
 			protected:
 				vint									popupType = -1;
 				PopupInfo								popupInfo;
+				bool									hasPopupOwner = false;
+				bool									closingForOwner = false;
 
 				void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)override;
 				void									PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									BeforeClosing(bool& cancel)override;
+				void									Closed()override;
 				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 
 				static bool								IsClippedByScreen(NativeSize size, NativePoint location, INativeScreen* screen);
@@ -528,7 +532,7 @@ Window
 
 				void									GlobalTimer()override;
 				void									TooltipOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void									TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									Closed()override;
 
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>

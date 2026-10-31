@@ -98,6 +98,18 @@ In hosted mode, modal windows receive special handling in `GuiWindow::BeforeClos
 
 ## Cross-Platform Event Processing
 
+### Explicitly Owned Popups
+
+`GuiPopup::ShowPopup` resolves each control-relative owner to its native window. The native parent tree supplies the relationship; `hasPopupOwner` distinguishes an explicitly supplied owner from hosted main-window parenting. Reuse replaces this association, and the screen-position overload clears it. The application's existing `openingPopups` list supplies the popup inventory; modal records continue to represent only the modal chain.
+
+`GuiControlHost::AfterClosing` dismisses owned popups after cancellation is resolved and before `WindowReadyToClose`. Destruction and native-window detachment dismiss them before the relationship is lost. `GuiApplication::CloseOwnedPopups` rescans the existing list after each synchronous child hide, allowing callbacks to mutate it. A popup's own accepted-close hook closes its descendants first. Unrelated normal/modal windows and popups remain outside this traversal.
+
+Windows popup Hide sends `WM_CLOSE` synchronously; normal windows retain posted close requests. The native outside-click traversal snapshots children with disposal flags and closes descendants first, since synchronous callbacks can mutate or destroy children. Hosted and remote subwindows use the same application lifecycle hook before visibility changes or reparenting.
+
+`GuiPopup::Closed` invalidates positioning, clears ownership, removes the popup from the opening list and detaches its native parent before public closure notifications. `GuiTooltip::Closed` first detaches temporary content, bypassing hover-based delayed dismissal. Menu closure notifications release menu-service, submenu-button and ALT state through their normal paths; dismissal does not execute commands.
+
+Owner-driven dismissal sets `closingForOwner` before Hide. `GuiPopup::BeforeClosing` still invokes the normal closing subscribers but clears cancellation for this mandatory path; an independent popup close remains cancellable. `Closed` clears the transient flag before public notifications and subsequent reuse.
+
 ### Platform-Specific Message Handling
 
 Despite different underlying implementations, modal windows work consistently across all platforms:

@@ -145,6 +145,11 @@ GuiApplication
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiApplication::UnregisterWindow(GuiWindow*)#"
 				CHECK_ERROR(window->registeredInApplication, ERROR_MESSAGE_PREFIX L"The window has not been registered");
 				window->registeredInApplication = false;
+				if (sharedTooltipOwnerWindow == window)
+				{
+					sharedTooltipOwnerWindow = nullptr;
+					sharedTooltipOwner = nullptr;
+				}
 				if (auto nativeWindow = window->GetNativeWindow())
 				{
 					windowMap.Remove(nativeWindow);
@@ -184,6 +189,28 @@ GuiApplication
 			void GuiApplication::RegisterPopupClosed(GuiPopup* popup)
 			{
 				openingPopups.Remove(popup);
+			}
+
+			void GuiApplication::CloseOwnedPopups(INativeWindow* owner)
+			{
+				if (!owner) return;
+				while (true)
+				{
+					GuiPopup* child = nullptr;
+					for (auto popup : openingPopups)
+					{
+						if (popup->hasPopupOwner && popup->GetNativeWindow()->GetParent() == owner)
+						{
+							child = popup;
+							break;
+						}
+					}
+					if (!child) break;
+					// Consume the association before callbacks can mutate the popup list.
+					child->hasPopupOwner = false;
+					child->closingForOwner = true;
+					child->Hide();
+				}
 			}
 
 			void GuiApplication::TooltipMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)

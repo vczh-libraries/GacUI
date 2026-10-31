@@ -305,18 +305,22 @@ WindowsForm
 
 				static void ClosePopupsOf(WindowsForm* owner, SortedList<WindowsForm*>& exceptions)
 				{
-					// TODO: (enumerable) foreach
-					for (vint i = 0; i < owner->childWindows.Count(); i++)
+					List<Pair<WindowsForm*, Ptr<bool>>> children;
+					for (auto child : owner->childWindows)
 					{
-						auto popup = owner->childWindows[i];
-						if (popup->windowMode != Normal && popup->IsVisible())
+						children.Add({ child,child->flagDisposed });
+					}
+					for (auto [popup, disposed] : children)
+					{
+						if (*disposed.Obj()) continue;
+						ClosePopupsOf(popup, exceptions);
+						if (!*disposed.Obj() && popup->windowMode != Normal && popup->IsVisible())
 						{
 							if (!exceptions.Contains(popup))
 							{
 								popup->Hide(false);
 							}
 						}
-						ClosePopupsOf(popup, exceptions);
 					}
 				}
 
@@ -1726,7 +1730,14 @@ WindowsForm
 
 				void Hide(bool closeWindow)override
 				{
-					PostMessage(handle, WM_CLOSE, NULL, NULL);
+					if (windowMode == Normal)
+					{
+						PostMessage(handle, WM_CLOSE, NULL, NULL);
+					}
+					else if (IsVisible())
+					{
+						SendMessage(handle, WM_CLOSE, NULL, NULL);
+					}
 				}
 
 				bool IsVisible()override

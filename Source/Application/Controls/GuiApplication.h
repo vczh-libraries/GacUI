@@ -67,6 +67,7 @@ Application
 				void											NotifyNativeWindowChanged(GuiControlHost* controlHost, INativeWindow* previousNativeWindow);
 				void											RegisterPopupOpened(GuiPopup* popup);
 				void											RegisterPopupClosed(GuiPopup* popup);
+				void											CloseOwnedPopups(INativeWindow* owner);
 				void											TooltipMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											TooltipMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:

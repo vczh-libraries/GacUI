@@ -30,6 +30,172 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Windows")
 	{
+		for (auto closeOwner : { false,true })
+		TEST_CASE(closeOwner ? L"Close popup owner" : L"Hide popup owner")
+		{
+			GuiWindow* owner = nullptr;
+			GuiPopup* popup = nullptr;
+			GuiPopup* nested = nullptr;
+			GuiPopup* unrelated = nullptr;
+			vint order = 0;
+			bool cancel = false;
+			bool modalCompleted = false;
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				auto show = [&](vint mode)
+				{
+					order = 0;
+					if (mode == 3) owner->ShowModal(GetApplication()->GetMainWindow(), [&]() { modalCompleted = true; });
+					else owner->Show();
+					auto control = FindControlByText<GuiControl>(owner, L"This is SubWindow");
+					switch (mode)
+					{
+					case 0: popup->ShowPopup(control, Rect(0, 0, 100, 20), true); break;
+					case 1: popup->ShowPopup(control, Point(30, 30)); break;
+					case 2: popup->ShowPopup(control, false); break;
+					case 3: popup->ShowPopup(owner, Point(30, 50)); break;
+					}
+					nested->ShowPopup(popup, Point(30, 30));
+				};
+				protocol->OnNextIdleFrame(L"Ready", [&, show]()
+				{
+					owner = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+					owner->SetLocation({ {90},{70} });
+					auto createPopup = [](const WString& caption)
+					{
+						auto result = new GuiPopup(theme::ThemeName::Window);
+						auto label = new GuiLabel(theme::ThemeName::Label);
+						label->SetText(caption);
+						result->AddChild(label);
+						result->SetClientSize(Size(150, 45));
+						return result;
+					};
+					popup = createPopup(L"Owned popup");
+					nested = createPopup(L"Nested popup");
+					popup->WindowClosing.AttachLambda([](GuiGraphicsComposition*, GuiRequestEventArgs& arguments) { arguments.cancel = true; });
+					nested->WindowClosing.AttachLambda([](GuiGraphicsComposition*, GuiRequestEventArgs& arguments) { arguments.cancel = true; });
+					unrelated = createPopup(L"Main window popup");
+					unrelated->ShowPopup(GetApplication()->GetMainWindow(), Point(300, 250));
+					nested->WindowClosed.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { TEST_ASSERT(order++ == 0); });
+					popup->WindowClosed.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&)
+					{
+						TEST_ASSERT(order++ == 1 && !nested->GetOpening());
+					});
+					owner->WindowClosing.AttachLambda([&](GuiGraphicsComposition*, GuiRequestEventArgs& arguments) { arguments.cancel = cancel; });
+					owner->WindowReadyToClose.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&)
+					{
+						TEST_ASSERT(order == 2 && !popup->GetOpening() && !nested->GetOpening());
+						TEST_ASSERT(unrelated->GetOpening());
+					});
+					owner->WindowClosed.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { TEST_ASSERT(order++ == 2); });
+					show(0);
+				});
+				for (vint mode = 0; mode < 4; mode++)
+				{
+					protocol->OnNextIdleFrame(L"Owned and nested popups visible " + itow(mode), [&, mode]()
+					{
+						if (mode == 0)
+						{
+							cancel = true;
+							owner->Close();
+							TEST_ASSERT(owner->GetOpening() && popup->GetOpening() && nested->GetOpening() && order == 0);
+							cancel = false;
+							popup->Close();
+							TEST_ASSERT(popup->GetOpening() && nested->GetOpening() && order == 0);
+						}
+						if (closeOwner) owner->Close(); else owner->Hide();
+					});
+					protocol->OnNextIdleFrame(L"Only main owner popup survives " + itow(mode), [&, mode, show]()
+					{
+						TEST_ASSERT(order == 3 && !owner->GetOpening());
+						if (mode < 3) show(mode + 1);
+						else
+						{
+							TEST_ASSERT(modalCompleted && GetApplication()->GetMainWindow()->GetEnabled());
+							SafeDeleteControl(nested);
+							SafeDeleteControl(popup);
+							SafeDeleteControl(owner);
+							SafeDeleteControl(unrelated);
+							GetApplication()->GetMainWindow()->Hide();
+						}
+					});
+				}
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				closeOwner ? L"Application/Windows/ClosePopupOwner" : L"Application/Windows/HidePopupOwner",
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"), resourceEmptyWindows);
+		});
+
+		TEST_CASE(L"Popup owner reassignment and destruction")
+		{
+			GuiWindow* first = nullptr;
+			GuiWindow* second = nullptr;
+			GuiPopup* popup = nullptr;
+			vint closed = 0;
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [&]()
+				{
+					first = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+					second = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+					first->SetLocation({ {50},{40} });
+					second->SetLocation({ {230},{100} });
+					first->Show();
+					second->Show();
+					popup = new GuiPopup(theme::ThemeName::Window);
+					auto label = new GuiLabel(theme::ThemeName::Label);
+					label->SetText(L"Reused popup");
+					popup->AddChild(label);
+					popup->SetClientSize(Size(150, 45));
+					popup->WindowClosed.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { closed++; });
+					popup->ShowPopup(first, Point(20, 40));
+				});
+				protocol->OnNextIdleFrame(L"Popup owned by first window", [&]()
+				{
+					popup->ShowPopup(second, Point(20, 40));
+					first->Close();
+					TEST_ASSERT(popup->GetOpening() && closed == 0);
+				});
+				protocol->OnNextIdleFrame(L"Popup follows second window", [&]()
+				{
+					popup->ShowPopup(NativePoint({300}, {220}));
+					second->Hide();
+					TEST_ASSERT(popup->GetOpening() && closed == 0);
+				});
+				protocol->OnNextIdleFrame(L"Unowned popup survives former owners", [&]()
+				{
+					first->Show();
+					popup->ShowPopup(first, Point(20, 40));
+				});
+				protocol->OnNextIdleFrame(L"Popup reassigned before owner destruction", [&]()
+				{
+					delete first;
+					first = nullptr;
+					TEST_ASSERT(!popup->GetOpening() && closed == 1);
+				});
+				protocol->OnNextIdleFrame(L"Destroyed owner leaves no popup", [&]()
+				{
+					second->Show();
+					popup->ShowPopup(second, Point(20, 40));
+				});
+				protocol->OnNextIdleFrame(L"Popup reused after owner destruction", [&]()
+				{
+					delete popup;
+					popup = nullptr;
+					second->Close();
+				});
+				protocol->OnNextIdleFrame(L"Popup deleted before its former owner", [&]()
+				{
+					TEST_ASSERT(!second->GetOpening() && closed == 1);
+					SafeDeleteControl(second);
+					GetApplication()->GetMainWindow()->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Windows/PopupOwnerReuse"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"), resourceEmptyWindows);
+		});
+
 		TEST_CASE(L"Composition updates report completed direct mutations")
 		{
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
