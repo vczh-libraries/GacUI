@@ -134,6 +134,12 @@ Extracted payloads are copies. Apply manipulation in the order `p' = scale * R(r
 
 An accepted sequence with an eligible click and no selected scrolling or manipulation gesture automatically produces a deferred mouse click. It uses the original contact position with current layout after point cleanup. Cancellation, any additional contact, or movement outside the click radius prevents this fallback; returning inside the radius does not restore it. End `handled` does not veto the click.
 
+`GuiPointSequenceStartedEventArgs::generateLeftButtonClick` and `generateRightButtonClick` both default to `true`. Configure them during Started; the completed query's values apply to that sequence only. With both enabled, eligible short taps generate left clicks and eligible presses of at least 500 milliseconds generate right clicks. Left-only permits both short and long presses to generate left clicks. Right-only suppresses short taps. Disabling both suppresses both deferred clicks.
+
+These flags do not change physical mouse input or rejected-sequence mouse compatibility. Movement beyond the click radius, multiple contacts, cancellation and selected scrolling or manipulation still disqualify deferred clicks.
+
+The optional [MomentumScrolling component](../../.././gacui/components/components/momentumscrolling.md) continues scrolling gestures after successful End. Its events target the control's persistent bounds with capture already cleared; it does not start another native sequence.
+
 A rejected sequence uses mouse compatibility immediately, so ordinary controls and text selection can keep their existing mouse behavior. For remote input, only the original first contact drives that stream; later contacts never replace it. See [GuiScrollView touch behavior](../../.././gacui/components/controls/container/scrollcontainer.md) for scrolling, nested controls, selectable text and gestures that scroll views do not consume.
 
 The [Touching sample](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Windows/Touching) applies manipulation to a custom-drawn rectangle. [TouchingList](https://github.com/vczh-libraries/Release/tree/master/Tutorial/GacUI_Windows/TouchingList) adds application-specific horizontal swipe-to-delete behavior while retaining built-in vertical scrolling. Swipe-to-delete is not a default behavior of list controls.

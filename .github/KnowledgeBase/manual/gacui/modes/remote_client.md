@@ -64,9 +64,17 @@ int StartNamedPipeRemoteRenderer()
 
 GuiRemoteProtocolAsyncJsonChannelRenderer queues messages from the channel and runs them on the UI thread through IGuiRemoteProtocolAsyncRendererInvoker. GuiRemoteProtocolRendererChannel converts JSON channel packages to calls on GuiRemoteRendererSingle, and converts renderer events back to JSON packages for the core client id.
 
-The portable **/MiniHttp** path creates a destination-aware TCP client with **vl::inter_process::async_tcp_socket::CreateDefaultAsyncSocketClient(host, port)**, wraps it in **vl::inter_process::async_tcp_socket::SocketHttpClient(socketClient, host, urlPrefix)**, and passes that object to **GuiRemoteProtocolChannelClient**. Native renderers accept optional **/corehost:host**, default localhost; TCP port 8888 remains separate from the local automation port. Windows supports Pipe/Http/MiniHttp, while wGac/iGac use MiniHttp.
+The portable **/MiniHttp** path creates a default loopback TCP client with **vl::inter_process::async_tcp_socket::CreateDefaultAsyncSocketClient(port)**, wraps it in **vl::inter_process::async_tcp_socket::SocketHttpClient(socketClient, L"localhost", urlPrefix)**, and passes that object to **GuiRemoteProtocolChannelClient**. The renderer application shown by the linked test remains Win32 even though the VlppOS transport itself is available on Windows, Linux and macOS.
 
 For application-defined drawing, use [<Raw/>](../.././gacui/components/elements/home.md). `GuiRemoteRendererSingle` creates the active platform's native raw element and exposes `GetRawElements()`, `RawElementInstalled`, `RawElementUninstalled` and `RawElementChanged` so renderer code can attach its drawing callbacks. The protocol carries application ID and data strings; each renderer implements the drawing locally.
 
 Override GuiRemoteProtocolChannelClient::OnReadError, OnLocalError, or OnDisconnected when the renderer should show a fatal error dialog or call GuiRemoteRendererSingle::ForceExitByFatelError. See [RemotingTest_Rendering_Win32](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Rendering_Win32) for the complete named-pipe (**/Pipe**), Windows HTTP.sys/WinHTTP (**/Http**) and portable Mini HTTP (**/MiniHttp**) implementations.
+
+## Advertised service capabilities
+
+`ControllerGlobalConfig::injectDateTime` advertises local timezone conversion; `ControllerGlobalConfig::injectLocale` advertises locale information; `ControllerGlobalConfig::injectFileSystem` advertises filesystem access. These capabilities are independent and require the matching [Core configuration](../.././gacui/modes/remote_core.md) flag for remote use.
+
+The native renderer's `GuiRemoteRendererSingle::GlobalConfig` initializes all three capabilities to `true`. The demo applications explicitly disable them unless the respective `/remoteDT`, `/remoteLocale` or `/remoteFS` option is supplied. A default protocol `ControllerGlobalConfig` record alone does not enable them.
+
+When a capability is unavailable, Core DateTime and Locale use predecessor implementations. An enabled remote filesystem exposes an empty root. A native renderer can install its own underlying services with `vl::InjectDateTimeImpl`, `vl::InjectLocaleImpl` and `vl::filesystem::InjectFileSystemImpl`; this replacement is separate from capability advertisement.
 

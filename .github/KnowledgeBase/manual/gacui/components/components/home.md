@@ -3,6 +3,7 @@
 Components offer other features that are not involved in rendering.
 
 Here are all predefined components in GacUI:
+- [MomentumScrolling](../../.././gacui/components/components/momentumscrolling.md) continues point scrolling after release.
 - [GuiSelectableButton::MutexGroupController](../../.././gacui/components/controls/basic/selectableButton.md)
 - [<ToolstripCommand/>](../../.././gacui/components/controls/toolstrip/toolstripbutton.md)
 - **GuiDialogBase**

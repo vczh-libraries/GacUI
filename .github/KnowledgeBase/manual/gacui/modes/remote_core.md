@@ -92,3 +92,15 @@ GuiMain still creates and runs GacUI windows. If the UI throws while the remote 
 
 See [RemotingTest_Core](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Core) for the complete named-pipe (**/Pipe**), Windows HTTP.sys/WinHTTP (**/Http**) and portable Mini HTTP (**/MiniHttp**) implementations.
 
+## Optional renderer services
+
+Pass `GuiRemoteControllerConfig` to `SetupRemoteNativeController`. Its three independent flags default to `false`:
+
+- `injectDateTime` uses the renderer's local timezone conversions. UTC time, construction and arithmetic remain with the predecessor implementation.
+- `injectLocale` uses renderer locale defaults, enumeration and names; formatting and comparisons remain local.
+- `injectFileSystem` uses renderer filesystem operations. When enabled but unavailable, it exposes an empty root rather than the Core filesystem.
+
+Both Core and the renderer must enable the corresponding capability. DateTime and Locale fall back to predecessor implementations on missing support or disconnection. Capabilities are checked again when a renderer is replaced. See [renderer configuration](../.././gacui/modes/remote_client.md).
+
+Core and native renderers can independently replace their underlying process services with `vl::InjectDateTimeImpl`, `vl::InjectLocaleImpl` and `vl::filesystem::InjectFileSystemImpl`. Installing an underlying implementation does not enable remote injection or advertise a capability.
+
