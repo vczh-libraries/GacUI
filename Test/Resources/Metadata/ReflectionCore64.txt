@@ -2086,6 +2086,17 @@ enum presentation::compositions::KeyDirection {
     Up = 0,
 }
 
+class presentation::compositions::MomentumScrolling : presentation::controls::GuiComponent {
+    property Deceleration : system::Double { get:GetDeceleration set:SetDeceleration }
+
+    function AttachControl(control : presentation::controls::GuiControl*) : system::Void;
+    function DetachControl(control : presentation::controls::GuiControl*) : system::Void;
+    function GetDeceleration() : system::Double;
+    function SetDeceleration(value : system::Double) : system::Void;
+
+    constructor () : presentation::compositions::MomentumScrolling*;
+}
+
 @ValueType
 enum presentation::compositions::ResponsiveDirection {
     Both = 3,

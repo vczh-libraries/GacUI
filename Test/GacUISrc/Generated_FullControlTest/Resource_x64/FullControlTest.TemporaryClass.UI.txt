@@ -3374,6 +3374,8 @@ namespace demo
 
         var multipleContacts : bool = false;
 
+        var momentum : MomentumScrolling* = new (MomentumScrolling*)();
+
         func GetSwipeTemplate() : (TouchingListItemTemplate*)
         {
             raise "Not Implemented";

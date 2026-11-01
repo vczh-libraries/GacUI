@@ -6540,8 +6540,14 @@ Closures
 
 	void __vwsnf433_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->ResetSwipe();
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetItems().Obj())->Clear();
+		if (::vl::__vwsn::This(__vwsnthis_0->momentumOption)->GetSelected())
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->momentum)->AttachControl(static_cast<::vl::presentation::controls::GuiControl*>(__vwsnthis_0->list));
+		}
+		else
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->momentum)->DetachControl(static_cast<::vl::presentation::controls::GuiControl*>(__vwsnthis_0->list));
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -6553,7 +6559,8 @@ Closures
 
 	void __vwsnf434_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->AddItems();
+		::vl::__vwsn::This(__vwsnthis_0->self)->ResetSwipe();
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetItems().Obj())->Clear();
 	}
 
 	//-------------------------------------------------------------------
@@ -6563,9 +6570,9 @@ Closures
 	{
 	}
 
-	void __vwsnf435_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceStartedEventArgs* arguments) const
+	void __vwsnf435_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->BeginSwipe(arguments);
+		::vl::__vwsn::This(__vwsnthis_0->self)->AddItems();
 	}
 
 	//-------------------------------------------------------------------
@@ -6575,7 +6582,19 @@ Closures
 	{
 	}
 
-	void __vwsnf436_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointEventArgs* arguments) const
+	void __vwsnf436_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceStartedEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->BeginSwipe(arguments);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::__vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointEventArgs* arguments) const
 	{
 		if (((::vl::__vwsn::This(arguments)->eventType == ::vl::presentation::compositions::GuiPointEventsType::Down) && (::vl::__vwsn::This(arguments)->pointId != static_cast<::vl::vint64_t>(0L))))
 		{
@@ -6586,12 +6605,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::__vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::__vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointGestureEventArgs* arguments) const
+	void __vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointGestureEventArgs* arguments) const
 	{
 		if ((! ::vl::__vwsn::This(arguments)->handled))
 		{
@@ -6616,30 +6635,14 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::__vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::__vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(::demo::TouchingListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceEndedEventArgs* arguments) const
+	void __vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiPointSequenceEndedEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->EndSwipe(arguments);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf439_FullControlTest_demo_TouchingListTabPage_EndSwipe_::__vwsnf439_FullControlTest_demo_TouchingListTabPage_EndSwipe_(::vl::Ptr<::demo::TouchingListItem> __vwsnctor_target, ::demo::TouchingListTabPage* __vwsnctorthis_0)
-		:target(__vwsnctor_target)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf439_FullControlTest_demo_TouchingListTabPage_EndSwipe_::operator()() const
-	{
-		if (::vl::__vwsn::This(__vwsnthis_0->GetItems().Obj())->Contains(::vl::__vwsn::Box(this->target)))
-		{
-			::vl::__vwsn::This(__vwsnthis_0->GetItems().Obj())->Remove(::vl::__vwsn::Box(this->target));
-		}
 	}
 
 	//-------------------------------------------------------------------
@@ -6656,12 +6659,28 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf440_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::__vwsnf440_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf440_FullControlTest_demo_TouchingListTabPage_EndSwipe_::__vwsnf440_FullControlTest_demo_TouchingListTabPage_EndSwipe_(::vl::Ptr<::demo::TouchingListItem> __vwsnctor_target, ::demo::TouchingListTabPage* __vwsnctorthis_0)
+		:target(__vwsnctor_target)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf440_FullControlTest_demo_TouchingListTabPage_EndSwipe_::operator()() const
+	{
+		if (::vl::__vwsn::This(__vwsnthis_0->GetItems().Obj())->Contains(::vl::__vwsn::Box(this->target)))
+		{
+			::vl::__vwsn::This(__vwsnthis_0->GetItems().Obj())->Remove(::vl::__vwsn::Box(this->target));
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::__vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiTemplate* __vwsnf440_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiTemplate* __vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return !__vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiTabPage>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
@@ -6674,12 +6693,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::__vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::__vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->header)->GetItemSource();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueEnumerable>>(__vwsn_value_);
@@ -6692,20 +6711,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::__vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const
-	{
-		auto item = ::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::darkskin::TabHeaderTemplate>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->header)->GetStackItems()[::vl::__vwsn::This(arguments)->itemIndex])->Children()[static_cast<::vl::vint64_t>(0L)]));
-		::vl::__vwsn::This(item)->SetCommands(::vl::__vwsn::This(__vwsnthis_0->self)->GetCommands());
-		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateTabHeader();
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::__vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -6713,6 +6718,8 @@ Closures
 
 	void __vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const
 	{
+		auto item = ::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::darkskin::TabHeaderTemplate>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->header)->GetStackItems()[::vl::__vwsn::This(arguments)->itemIndex])->Children()[static_cast<::vl::vint64_t>(0L)]));
+		::vl::__vwsn::This(item)->SetCommands(::vl::__vwsn::This(__vwsnthis_0->self)->GetCommands());
 		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateTabHeader();
 	}
 
@@ -6723,7 +6730,19 @@ Closures
 	{
 	}
 
-	void __vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateTabHeader();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::__vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -6736,12 +6755,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::__vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::__vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetHighlighted();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -6754,12 +6773,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::__vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::__vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(::demo::VerticalTabTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateTabHeader();
 	}
@@ -38826,40 +38845,55 @@ Class (::demo::TouchingListTabPageConstructor)
 		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout()));
 		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout()));
 		{
-			(this->__vwsn_precompile_3 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			(this->momentumOption = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"momentumOption"), ::vl::__vwsn::Box(this->momentumOption));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetText(::vl::WString::Unmanaged(L"Clear"));
+			::vl::__vwsn::This(this->momentumOption)->SetSelected(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_3)->GetBoundsComposition()));
-		}
-		(this->__vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout()));
-		{
-			(this->__vwsn_precompile_5 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(this->momentumOption)->SetText(::vl::WString::Unmanaged(L"Momentum Scrolling"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetText(::vl::WString::Unmanaged(L"Add 5 Items"));
+			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->momentumOption)->GetBoundsComposition()));
+		}
+		(this->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout()));
+		{
+			(this->__vwsn_precompile_4 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_5)->GetBoundsComposition()));
-		}
-		(this->__vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout()));
-		{
-			(this->__vwsn_precompile_7 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetText(::vl::WString::Unmanaged(L"Clear"));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetText(::vl::WString::Unmanaged(L"Swipe left fully and release to delete."));
+			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_4)->GetBoundsComposition()));
+		}
+		(this->__vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout()));
+		{
+			(this->__vwsn_precompile_6 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_7)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetText(::vl::WString::Unmanaged(L"Add 5 Items"));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition()));
+		}
+		(this->__vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout()));
+		{
+			(this->__vwsn_precompile_8 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetText(::vl::WString::Unmanaged(L"Swipe left fully and release to delete."));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_8)->GetBoundsComposition()));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_2));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_4));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_6));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_3));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_5));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_1.Obj())->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_7));
 		}
-		(this->__vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout()));
+		(this->__vwsn_precompile_9 = ::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout>(new ::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout()));
 		{
 			(this->list = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"list"), ::vl::__vwsn::Box(this->list));
@@ -38873,40 +38907,44 @@ Class (::demo::TouchingListTabPageConstructor)
 		{
 			::vl::__vwsn::This(this->list)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf432_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(this)));
 		}
-		(this->__vwsn_precompile_9 = ::vl::__vwsn::This(this->list)->GetBoundsComposition());
+		(this->__vwsn_precompile_10 = ::vl::__vwsn::This(this->list)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_8.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->list)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_9.Obj())->SetComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->list)->GetBoundsComposition()));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_1));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_8));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetLayouts()).Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_9));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf433_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_3)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->momentumOption)->SelectedChanged, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf434_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_5)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_4)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf435_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_9)->GetEventReceiver()->pointSequenceStarted, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_6)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf436_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_9)->GetEventReceiver()->pointAction, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_10)->GetEventReceiver()->pointSequenceStarted, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf437_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_9)->GetEventReceiver()->pointGesture, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_10)->GetEventReceiver()->pointAction, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf438_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_9)->GetEventReceiver()->pointSequenceEnded, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_10)->GetEventReceiver()->pointGesture, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf439_FullControlTest_demo_TouchingListTabPageConstructor___vwsn_demo_TouchingListTabPage_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_10)->GetEventReceiver()->pointSequenceEnded, __vwsn_event_handler_);
 		}
 		{
 			::vl::__vwsn::This(this->list)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(this->self)->GetItems()));
@@ -38919,13 +38957,15 @@ Class (::demo::TouchingListTabPageConstructor)
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*>(nullptr))
 		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyTopLayout>())
 		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>())
-		, __vwsn_precompile_3(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
-		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>())
-		, __vwsn_precompile_5(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
-		, __vwsn_precompile_6(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout>())
-		, __vwsn_precompile_7(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
-		, __vwsn_precompile_8(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout>())
-		, __vwsn_precompile_9(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>())
+		, __vwsn_precompile_4(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_5(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyLeftLayout>())
+		, __vwsn_precompile_6(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_7(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout>())
+		, __vwsn_precompile_8(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_9(::vl::Ptr<::vl::presentation::compositions::eazy_layout::GuiEasyFillLayout>())
+		, __vwsn_precompile_10(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, momentumOption(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, list(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
 	{
 	}
@@ -39015,7 +39055,7 @@ Class (::demo::TouchingListTabPage)
 		this->ResetSwipe();
 		if (remove)
 		{
-			::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(::vl::__vwsn::This(this->list)->GetRelatedControlHost(), vl::Func(::vl_workflow_global::__vwsnf439_FullControlTest_demo_TouchingListTabPage_EndSwipe_(target, this)));
+			::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(::vl::__vwsn::This(this->list)->GetRelatedControlHost(), vl::Func(::vl_workflow_global::__vwsnf440_FullControlTest_demo_TouchingListTabPage_EndSwipe_(target, this)));
 		}
 	}
 
@@ -39025,6 +39065,7 @@ Class (::demo::TouchingListTabPage)
 		, serial(static_cast<::vl::vint64_t>(0L))
 		, swipeItem(::vl::Ptr<::demo::TouchingListItem>())
 		, multipleContacts(false)
+		, momentum(new ::vl::presentation::compositions::MomentumScrolling())
 	{
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"demo::TouchingListTabPage"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
@@ -39035,6 +39076,7 @@ Class (::demo::TouchingListTabPage)
 
 	void TouchingListTabPage::__vwsn_instance_ctor_()
 	{
+		::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->momentum));
 		::vl::__vwsn::This(this->self)->AddItems();
 	}
 
@@ -39648,7 +39690,7 @@ Class (::demo::VerticalTabTemplateConstructor)
 			::vl::__vwsn::This(this->header)->SetExtraMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(2L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->header)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf440_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this)));
+			::vl::__vwsn::This(this->header)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->header)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Vertical);
@@ -39720,20 +39762,20 @@ Class (::demo::VerticalTabTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc186_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf441_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf442_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->header)->ItemInserted, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf443_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->header)->ItemRemoved, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc187_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf444_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -39744,7 +39786,7 @@ Class (::demo::VerticalTabTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc188_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf445_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
@@ -39754,7 +39796,7 @@ Class (::demo::VerticalTabTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetAfterHeadersContainer(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->afterHeadersContainer));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf446_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf447_FullControlTest_demo_VerticalTabTemplateConstructor___vwsn_demo_VerticalTabTemplate_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->SelectedTabPageChanged, __vwsn_event_handler_);
 		}
 	}

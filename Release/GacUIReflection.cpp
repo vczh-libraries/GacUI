@@ -1166,6 +1166,14 @@ namespace vl
 Type Declaration (Extra)
 ***********************************************************************/
 
+			BEGIN_CLASS_MEMBER(MomentumScrolling)
+				CLASS_MEMBER_BASE(GuiComponent)
+				CLASS_MEMBER_CONSTRUCTOR(MomentumScrolling*(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(AttachControl, { L"control" })
+				CLASS_MEMBER_METHOD(DetachControl, { L"control" })
+				CLASS_MEMBER_PROPERTY_FAST(Deceleration)
+			END_CLASS_MEMBER(MomentumScrolling)
+
 			BEGIN_ENUM_ITEM(GuiEasyLayoutDirection)
 				ENUM_CLASS_ITEM(Inherited)
 				ENUM_CLASS_ITEM(Horizontal)
@@ -3728,6 +3736,8 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiPointSequenceStartedEventArgs)
 				CLASS_MEMBER_BASE(GuiPointEventArgs)
 				CLASS_MEMBER_FIELD(acceptedComposition)
+				CLASS_MEMBER_FIELD(generateLeftButtonClick)
+				CLASS_MEMBER_FIELD(generateRightButtonClick)
 			END_CLASS_MEMBER(GuiPointSequenceStartedEventArgs)
 
 			BEGIN_CLASS_MEMBER(GuiPointSequenceEndedEventArgs)

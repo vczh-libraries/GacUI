@@ -312,6 +312,11 @@ GuiApplication
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiApplication::UnregisterWindow(GuiWindow*)#"
 				CHECK_ERROR(window->registeredInApplication, ERROR_MESSAGE_PREFIX L"The window has not been registered");
 				window->registeredInApplication = false;
+				if (sharedTooltipOwnerWindow == window)
+				{
+					sharedTooltipOwnerWindow = nullptr;
+					sharedTooltipOwner = nullptr;
+				}
 				if (auto nativeWindow = window->GetNativeWindow())
 				{
 					windowMap.Remove(nativeWindow);
@@ -351,6 +356,28 @@ GuiApplication
 			void GuiApplication::RegisterPopupClosed(GuiPopup* popup)
 			{
 				openingPopups.Remove(popup);
+			}
+
+			void GuiApplication::CloseOwnedPopups(INativeWindow* owner)
+			{
+				if (!owner) return;
+				while (true)
+				{
+					GuiPopup* child = nullptr;
+					for (auto popup : openingPopups)
+					{
+						if (popup->hasPopupOwner && popup->GetNativeWindow()->GetParent() == owner)
+						{
+							child = popup;
+							break;
+						}
+					}
+					if (!child) break;
+					// Consume the association before callbacks can mutate the popup list.
+					child->hasPopupOwner = false;
+					child->closingForOwner = true;
+					child->Hide();
+				}
 			}
 
 			void GuiApplication::TooltipMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -2302,6 +2329,7 @@ GuiControlHost
 
 			void GuiControlHost::AfterClosing()
 			{
+				GetApplication()->CloseOwnedPopups(GetNativeWindow());
 				WindowReadyToClose.Execute(GetNotifyEventArguments());
 			}
 
@@ -2312,6 +2340,7 @@ GuiControlHost
 
 			void GuiControlHost::Destroying()
 			{
+				GetApplication()->CloseOwnedPopups(GetNativeWindow());
 				WindowDestroying.Execute(GetNotifyEventArguments());
 				calledDestroyed = true;
 				if (deleteWhenDestroyed)
@@ -2412,6 +2441,7 @@ GuiControlHost
 				auto previousNativeWindow = host->GetNativeWindow();
 				if(previousNativeWindow)
 				{
+					GetApplication()->CloseOwnedPopups(previousNativeWindow);
 					host->GetNativeWindow()->UninstallListener(this);
 				}
 				if (window)
@@ -3066,6 +3096,7 @@ GuiWindow
 
 			GuiWindow::~GuiWindow()
 			{
+				GetApplication()->CloseOwnedPopups(GetNativeWindow());
 				FinalizeAggregation();
 				GetApplication()->UnregisterWindow(this);
 				INativeWindow* window=host->GetNativeWindow();
@@ -3306,14 +3337,23 @@ GuiPopup
 				GetApplication()->RegisterPopupOpened(this);
 			}
 
-			void GuiPopup::PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiPopup::BeforeClosing(bool& cancel)
+			{
+				GuiWindow::BeforeClosing(cancel);
+				if (closingForOwner) cancel = false;
+			}
+
+			void GuiPopup::Closed()
 			{
 				popupType = -1;
+				hasPopupOwner = false;
+				closingForOwner = false;
 				GetApplication()->RegisterPopupClosed(this);
 				if(auto window = GetNativeWindow())
 				{
 					window->SetParent(nullptr);
 				}
+				GuiWindow::Closed();
 			}
 
 			void GuiPopup::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
@@ -3441,9 +3481,10 @@ GuiPopup
 				case 4: controlWindow = popupInfo._4.controlWindow; break;
 				}
 
+				hasPopupOwner = controlWindow != nullptr;
+				window->SetParent(controlWindow);
 				if (controlWindow)
 				{
-					window->SetParent(controlWindow);
 					SetTopMost(controlWindow->GetTopMost());
 				}
 				else
@@ -3466,7 +3507,6 @@ GuiPopup
 				SetShowInTaskBar(false);
 
 				WindowOpened.AttachMethod(this, &GuiPopup::PopupOpened);
-				WindowClosed.AttachMethod(this, &GuiPopup::PopupClosed);
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiPopup::OnKeyDown);
 			}
 
@@ -3565,9 +3605,10 @@ GuiPopup
 			{
 			}
 
-			void GuiTooltip::TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiTooltip::Closed()
 			{
 				SetTemporaryContentControl(0);
+				GuiPopup::Closed();
 			}
 
 			GuiTooltip::GuiTooltip(theme::ThemeName themeName)
@@ -3578,7 +3619,6 @@ GuiPopup
 				GetCurrentController()->CallbackService()->InstallListener(this);
 
 				WindowOpened.AttachMethod(this, &GuiTooltip::TooltipOpened);
-				WindowClosed.AttachMethod(this, &GuiTooltip::TooltipClosed);
 			}
 
 			GuiTooltip::~GuiTooltip()
@@ -5117,7 +5157,7 @@ GuiGraphicsHost
 					composition = composition->GetParent();
 				}
 				accept = arguments.acceptedComposition != nullptr;
-				if (accept) pointActionManager->OnPointSequenceStarted(firstPoint, arguments.acceptedComposition);
+				if (accept) pointActionManager->OnPointSequenceStarted(firstPoint, arguments);
 			}
 
 			void GuiGraphicsHost::PointDown(const NativeWindowPointInfo& info)
@@ -7338,7 +7378,10 @@ GuiScrollView
 
 			void GuiScrollView::OnPointGesture(GuiGraphicsComposition* sender, GuiPointGestureEventArgs& arguments)
 			{
-				if (arguments.handled || !GetVisuallyEnabled() || GetPointEventComposition() != boundsComposition) return;
+				if (arguments.handled || !GetVisuallyEnabled()) return;
+				if (arguments.compositionSource != boundsComposition || arguments.eventSource != boundsComposition) return;
+				auto capture = GetPointEventComposition();
+				if (capture && capture != boundsComposition) return;
 				if (auto scrolling = arguments.gesture.TryGet<GuiPointGesture_Scrolling>())
 				{
 					auto scroll = scrolling->isVertical ? GetVerticalScroll() : GetHorizontalScroll();
@@ -79039,6 +79082,284 @@ namespace vl
 			constexpr vint StaticPointRange = 8;
 
 /***********************************************************************
+MomentumScrollingState
+***********************************************************************/
+
+			class MomentumScrollingState : public Object, public controls::IGuiAnimation
+			{
+			public:
+				struct Sample
+				{
+					vuint64_t time;
+					double position;
+				};
+
+				MomentumScrolling* owner;
+				controls::GuiControl* control;
+				Ptr<controls::GuiDisposedFlag> disposed;
+				GuiGraphicsComposition* bounds;
+				GuiGraphicsHost* host = nullptr;
+				Ptr<IGuiGraphicsEventHandler> startedHandler, actionHandler, gestureHandler, endedHandler;
+				List<Sample> samples;
+				vuint64_t sequence = 0, started = 0, timestamp = 0, playbackStart = 0, version = 0;
+				double position = 0, velocity = 0, duration = 0, elapsed = 0, residue = 0;
+				vint boundary = 1;
+				bool vertical = false, scrolling = false, stopped = true, generating = false;
+
+				MomentumScrollingState(MomentumScrolling* _owner, controls::GuiControl* _control)
+					:owner(_owner), control(_control), disposed(_control->GetDisposedFlag()), bounds(_control->GetBoundsComposition())
+				{
+					auto receiver = bounds->GetEventReceiver();
+					startedHandler = receiver->pointSequenceStarted.AttachMethod(this, &MomentumScrollingState::OnStarted);
+					actionHandler = receiver->pointAction.AttachMethod(this, &MomentumScrollingState::OnAction);
+					gestureHandler = receiver->pointGesture.AttachMethod(this, &MomentumScrollingState::OnGesture);
+					endedHandler = receiver->pointSequenceEnded.AttachMethod(this, &MomentumScrollingState::OnEnded);
+				}
+
+				void Stop()
+				{
+					version++;
+					stopped = true;
+					sequence = 0;
+					samples.Clear();
+				}
+
+				void Detach()
+				{
+					Stop();
+					owner = nullptr;
+					if (!disposed->IsDisposed())
+					{
+						auto receiver = bounds->GetEventReceiver();
+						receiver->pointSequenceStarted.Detach(startedHandler);
+						receiver->pointAction.Detach(actionHandler);
+						receiver->pointGesture.Detach(gestureHandler);
+						receiver->pointSequenceEnded.Detach(endedHandler);
+					}
+				}
+
+				void Record(vuint64_t time)
+				{
+					if (samples.Count() && samples[samples.Count() - 1].time == time)
+					{
+						samples[samples.Count() - 1].position = position;
+					}
+					else
+					{
+						samples.Add({ time,position });
+					}
+					auto left = time > 500000 ? time - 500000 : 0;
+					while (samples.Count() > 1 && samples[1].time <= left) samples.RemoveAt(0);
+				}
+
+				void OnStarted(GuiGraphicsComposition*, GuiPointSequenceStartedEventArgs& arguments)
+				{
+					Stop();
+					if (!owner || disposed->IsDisposed()) return;
+					// A later Started handler can still accept this bounds. Rejected queries receive no actions.
+					if (arguments.acceptedComposition && arguments.acceptedComposition != bounds) return;
+					sequence = arguments.sequenceId;
+					started = timestamp = arguments.timestamp;
+					position = 0;
+					scrolling = false;
+					host = bounds->GetRelatedGraphicsHost();
+					Record(started);
+				}
+
+				void OnAction(GuiGraphicsComposition*, GuiPointEventArgs& arguments)
+				{
+					if (!sequence || arguments.sequenceId != sequence) return;
+					if (arguments.compositionSource != bounds || arguments.eventSource != bounds) return;
+					if (arguments.eventType == GuiPointEventsType::Down && arguments.pointId != 0)
+					{
+						Stop();
+						return;
+					}
+					timestamp = arguments.timestamp;
+				}
+
+				void OnGesture(GuiGraphicsComposition*, GuiPointGestureEventArgs& arguments)
+				{
+					if (!owner || disposed->IsDisposed() || generating || !sequence) return;
+					if (arguments.compositionSource != bounds || arguments.eventSource != bounds) return;
+					if (auto gesture = arguments.gesture.TryGet<GuiPointGesture_Scrolling>())
+					{
+						arguments.selected = true;
+						scrolling = true;
+						vertical = gesture->isVertical;
+						position += gesture->distance;
+						Record(timestamp);
+					}
+				}
+
+				void OnEnded(GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& arguments)
+				{
+					if (!owner || disposed->IsDisposed() || !sequence || arguments.sequenceId != sequence) return;
+					sequence = 0;
+					if (arguments.reason != PointSequenceEndReason::Succeeded || !scrolling || !owner->rootObject) return;
+					if (bounds->GetRelatedGraphicsHost() != host) return;
+					Record(arguments.timestamp);
+					auto left = arguments.timestamp - started > 500000 ? arguments.timestamp - 500000 : started;
+					if (left == arguments.timestamp || samples.Count() < 2) return;
+					auto first = samples[0];
+					auto next = samples[1];
+					auto initial = first.position + (next.position - first.position) * ((double)(left - first.time) / (next.time - first.time));
+					velocity = (position - initial) * 1000000 / (arguments.timestamp - left);
+					if (velocity == 0) return;
+					duration = std::abs(velocity) / 320 / owner->deceleration;
+					if (duration == 0) return;
+					stopped = false;
+					// Start also resets an animation still awaiting retirement from the previous sequence.
+					Start();
+					for (auto state : owner->states)
+					{
+						if (state.Obj() == this)
+						{
+							owner->rootObject->AddAnimation(state);
+							break;
+						}
+					}
+				}
+
+				void Start()override
+				{
+					if (stopped) return;
+					playbackStart = DateTime::UtcTime().osMilliseconds;
+					elapsed = residue = 0;
+					boundary = 1;
+				}
+
+				void Pause()override { Stop(); }
+				void Resume()override {}
+				bool GetStopped()override { return stopped; }
+
+				void Run()override
+				{
+					if (!owner) return;
+					if (disposed->IsDisposed())
+					{
+						owner->RetireDisposedControls();
+						return;
+					}
+					if (stopped) return;
+					if (bounds->GetRelatedGraphicsHost() != host)
+					{
+						Stop();
+						return;
+					}
+					auto now = DateTime::UtcTime().osMilliseconds;
+					auto time = (double)(now >= playbackStart ? now - playbackStart : 0) / 1000;
+					auto speed = std::abs(velocity);
+					auto playbackVersion = version;
+					while (!stopped)
+					{
+						auto end = std::min(boundary / 10.0, duration);
+						if (time < end) break;
+						auto distance = speed * (1 - (elapsed / duration + end / duration) / 2) * (end - elapsed);
+						residue += velocity < 0 ? -distance : distance;
+						auto rounded = std::round(residue);
+						// A carried half-pixel must not reverse direction on a zero-distance tail.
+						auto increment = (vint)(velocity < 0 ? std::min(0.0, rounded) : std::max(0.0, rounded));
+						residue -= increment;
+						elapsed = end;
+						boundary++;
+						if (end == duration) stopped = true;
+						if (increment != 0)
+						{
+							GuiPointGestureEventArgs arguments(bounds);
+							arguments.gesture = GuiPointGesture_Scrolling{ vertical,increment };
+							generating = true;
+							bounds->GetEventReceiver()->pointGesture.Execute(arguments);
+							generating = false;
+							if (!owner || disposed->IsDisposed() || version != playbackVersion) return;
+							if (bounds->GetRelatedGraphicsHost() != host) Stop();
+						}
+					}
+				}
+			};
+
+/***********************************************************************
+MomentumScrolling
+***********************************************************************/
+
+			MomentumScrolling::MomentumScrolling() {}
+
+			MomentumScrolling::~MomentumScrolling()
+			{
+				Detach(rootObject);
+			}
+
+			void MomentumScrolling::Attach(controls::GuiInstanceRootObject* value)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::compositions::MomentumScrolling::Attach#"
+				CHECK_ERROR(!rootObject, ERROR_MESSAGE_PREFIX L"The component already has an owner.");
+				rootObject = value;
+				RetireDisposedControls();
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void MomentumScrolling::Detach(controls::GuiInstanceRootObject*)
+			{
+				for (auto state : states) state->Detach();
+				states.Clear();
+				rootObject = nullptr;
+			}
+
+			void MomentumScrolling::EnvironmentChanged()
+			{
+				RetireDisposedControls();
+				for (auto state : states) state->Stop();
+			}
+
+			void MomentumScrolling::RetireDisposedControls()
+			{
+				for (vint i = states.Count() - 1; i >= 0; i--)
+				{
+					if (states[i]->disposed->IsDisposed())
+					{
+						states[i]->Detach();
+						states.RemoveAt(i);
+					}
+				}
+			}
+
+			void MomentumScrolling::AttachControl(controls::GuiControl* control)
+			{
+				RetireDisposedControls();
+				for (auto state : states) if (state->control == control) return;
+				states.Add(Ptr(new MomentumScrollingState(this, control)));
+			}
+
+			void MomentumScrolling::DetachControl(controls::GuiControl* control)
+			{
+				RetireDisposedControls();
+				for (auto [state, index] : indexed(states))
+				{
+					if (state->control == control)
+					{
+						state->Detach();
+						states.RemoveAt(index);
+						return;
+					}
+				}
+			}
+
+			double MomentumScrolling::GetDeceleration()
+			{
+				RetireDisposedControls();
+				return deceleration;
+			}
+
+			void MomentumScrolling::SetDeceleration(double value)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::compositions::MomentumScrolling::SetDeceleration#"
+				CHECK_ERROR(std::isfinite(value) && value > 0, ERROR_MESSAGE_PREFIX L"Deceleration must be finite and positive.");
+				RetireDisposedControls();
+				deceleration = value;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+/***********************************************************************
 Predefined Gestures
 ***********************************************************************/
 
@@ -79071,7 +79392,7 @@ Predefined Gestures
 				GuiPointGestureBase(GuiPointActionManager* _manager) : manager(_manager) {}
 				bool IsGestureSelected()override { return selected; }
 				Nullable<NativeMouseButton> GetFallbackClick()override { return {}; }
-				void OnPointSequenceEnded(const PointSequenceEndInfo&)override {}
+				void OnPointSequenceEnded(const GuiPointSequenceEndedEventArgs&)override {}
 			};
 
 			namespace predefined_gestures
@@ -79081,52 +79402,86 @@ Predefined Gestures
 				protected:
 					NativePoint first;
 					vuint64_t timestamp = 0;
-					vuint64_t minimumDuration;
 					vint downCount = 0;
 					bool eligible = false;
 					Nullable<NativeMouseButton> fallback;
 
 				public:
-					RightClickGesture(GuiPointActionManager* manager, vuint64_t duration = 500000)
-						:GuiPointGestureBase(manager), minimumDuration(duration) {}
+					RightClickGesture(GuiPointActionManager* manager) : GuiPointGestureBase(manager) {}
 
-					void OnPointSequenceStarted(const NativeWindowPointInfo& info)override
+					void OnPointSequenceStarted(const GuiPointSequenceStartedEventArgs& info)override
 					{
 						selected = false;
-						first = manager->GetScreenPoint(info);
+						first = manager->GetCurrentScreenPoint();
 						timestamp = info.timestamp;
 						downCount = 0;
-						eligible = true;
+						eligible = info.generateRightButtonClick;
 						fallback.Reset();
 					}
 
-					void OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType)override
+					void OnPointAction(const GuiPointEventArgs& info)override
 					{
-						if (eventType == GuiPointEventsType::Down && ++downCount != 1) eligible = false;
+						if (info.eventType == GuiPointEventsType::Down && ++downCount != 1) eligible = false;
 						if (eligible && info.pointId == 0)
 						{
 							auto start = manager->ConvertPoint(first, nullptr);
-							auto current = manager->ConvertPoint(manager->GetScreenPoint(info), nullptr);
+							auto current = manager->ConvertPoint(manager->GetCurrentScreenPoint(), nullptr);
 							if (IsOutsideStaticPointRange(start, current)) eligible = false;
 						}
 					}
 
-					void OnPointSequenceEnded(const PointSequenceEndInfo& info)override
+					void OnPointSequenceEnded(const GuiPointSequenceEndedEventArgs& info)override
 					{
 						if (eligible && downCount == 1 && info.reason == PointSequenceEndReason::Succeeded
-							&& info.timestamp - timestamp >= minimumDuration)
+							&& info.timestamp - timestamp >= 500000)
 						{
-							fallback = minimumDuration == 0 ? NativeMouseButton::Left : NativeMouseButton::Right;
+							fallback = NativeMouseButton::Right;
 						}
 					}
 
 					Nullable<NativeMouseButton> GetFallbackClick()override { return fallback; }
 				};
 
-				class LeftClickGesture : public RightClickGesture
+				class LeftClickGesture : public GuiPointGestureBase
 				{
+				protected:
+					NativePoint first;
+					vint downCount = 0;
+					bool eligible = false;
+					Nullable<NativeMouseButton> fallback;
+
 				public:
-					LeftClickGesture(GuiPointActionManager* manager) : RightClickGesture(manager, 0) {}
+					LeftClickGesture(GuiPointActionManager* manager) : GuiPointGestureBase(manager) {}
+
+					void OnPointSequenceStarted(const GuiPointSequenceStartedEventArgs& info)override
+					{
+						selected = false;
+						first = manager->GetCurrentScreenPoint();
+						downCount = 0;
+						eligible = info.generateLeftButtonClick;
+						fallback.Reset();
+					}
+
+					void OnPointAction(const GuiPointEventArgs& info)override
+					{
+						if (info.eventType == GuiPointEventsType::Down && ++downCount != 1) eligible = false;
+						if (eligible && info.pointId == 0)
+						{
+							auto start = manager->ConvertPoint(first, nullptr);
+							auto current = manager->ConvertPoint(manager->GetCurrentScreenPoint(), nullptr);
+							if (IsOutsideStaticPointRange(start, current)) eligible = false;
+						}
+					}
+
+					void OnPointSequenceEnded(const GuiPointSequenceEndedEventArgs& info)override
+					{
+						if (eligible && downCount == 1 && info.reason == PointSequenceEndReason::Succeeded)
+						{
+							fallback = NativeMouseButton::Left;
+						}
+					}
+
+					Nullable<NativeMouseButton> GetFallbackClick()override { return fallback; }
 				};
 
 				class ScrollingGesture : public GuiPointGestureBase
@@ -79139,19 +79494,19 @@ Predefined Gestures
 				public:
 					ScrollingGesture(GuiPointActionManager* manager) : GuiPointGestureBase(manager) {}
 
-					void OnPointSequenceStarted(const NativeWindowPointInfo& info)override
+					void OnPointSequenceStarted(const GuiPointSequenceStartedEventArgs& info)override
 					{
 						selected = false;
-						previous = manager->GetScreenPoint(info);
+						previous = manager->GetCurrentScreenPoint();
 						axis = 0;
 						stopped = false;
 					}
 
-					void OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType)override
+					void OnPointAction(const GuiPointEventArgs& info)override
 					{
-						if (eventType == GuiPointEventsType::Down && info.pointId != 0) stopped = true;
+						if (info.eventType == GuiPointEventsType::Down && info.pointId != 0) stopped = true;
 						if (stopped || info.pointId != 0) return;
-						auto screen = manager->GetScreenPoint(info);
+						auto screen = manager->GetCurrentScreenPoint();
 						auto start = manager->ConvertPoint(previous, nullptr);
 						auto current = manager->ConvertPoint(screen, nullptr);
 						auto dx = (vint64_t)current.x - start.x;
@@ -79234,7 +79589,7 @@ Predefined Gestures
 				public:
 					DraggingAndRotationGesture(GuiPointActionManager* manager) : GuiPointGestureBase(manager) {}
 
-					void OnPointSequenceStarted(const NativeWindowPointInfo&)override
+					void OnPointSequenceStarted(const GuiPointSequenceStartedEventArgs&)override
 					{
 						selected = false;
 						residualX = residualY = 0;
@@ -79242,15 +79597,15 @@ Predefined Gestures
 						RaiseGesture(GuiPointGesture_DraggingAndRotation{});
 					}
 
-					void OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType)override
+					void OnPointAction(const GuiPointEventArgs& info)override
 					{
 						if (!selected) return;
 						auto&& current = manager->GetNativePoints();
-						if (eventType == GuiPointEventsType::Up)
+						if (info.eventType == GuiPointEventsType::Up)
 						{
 							List<Nullable<NativePoint>> finalSample;
 							CopyFrom(finalSample, current);
-							finalSample[info.pointId] = manager->GetScreenPoint(info);
+							finalSample[info.pointId] = manager->GetCurrentScreenPoint();
 							UpdateTransform(finalSample);
 							CopyFrom(baseline, current);
 						}
@@ -79272,16 +79627,22 @@ GuiPointActionManager
 				gestures.Add(Ptr(new predefined_gestures::DraggingAndRotationGesture(this)));
 			}
 
-			void GuiPointActionManager::OnPointSequenceStarted(const NativeWindowPointInfo& info, GuiGraphicsComposition* composition)
+			void GuiPointActionManager::OnPointSequenceStarted(const NativeWindowPointInfo& info, const GuiPointSequenceStartedEventArgs& query)
 			{
 				ResetPointCapture();
 				firstPoint = info;
 				firstPointScreen = GetScreenPoint(info);
+				currentPointScreen = firstPointScreen;
 				nativePoints.Add(firstPointScreen);
-				PointCapture(composition);
+				PointCapture(query.acceptedComposition);
+				GuiPointSequenceStartedEventArgs arguments(captureComposition, GetPoints(captureComposition));
+				static_cast<WindowPointInfo&>(arguments) = ConvertSample(info, captureComposition);
+				arguments.acceptedComposition = captureComposition;
+				arguments.generateLeftButtonClick = query.generateLeftButtonClick;
+				arguments.generateRightButtonClick = query.generateRightButtonClick;
 				for (auto gesture : gestures)
 				{
-					gesture->OnPointSequenceStarted(info);
+					gesture->OnPointSequenceStarted(arguments);
 					if (gesture->IsGestureSelected())
 					{
 						selectedGesture = gesture.Obj();
@@ -79293,15 +79654,16 @@ GuiPointActionManager
 			void GuiPointActionManager::OnPointAction(const NativeWindowPointInfo& info, GuiPointEventsType eventType)
 			{
 				if (!captureComposition || ended || firstPoint.sequenceId != info.sequenceId) return;
+				currentPointScreen = GetScreenPoint(info);
 				while (nativePoints.Count() <= info.pointId) nativePoints.Add({});
-				nativePoints[info.pointId] = eventType == GuiPointEventsType::Up ? Nullable<NativePoint>() : Nullable<NativePoint>(GetScreenPoint(info));
+				nativePoints[info.pointId] = eventType == GuiPointEventsType::Up ? Nullable<NativePoint>() : Nullable<NativePoint>(currentPointScreen);
 				GuiPointEventArgs arguments(captureComposition, eventType, GetPoints(captureComposition));
 				static_cast<WindowPointInfo&>(arguments) = ConvertSample(info, captureComposition);
 				if (captureComposition->HasEventReceiver()) captureComposition->GetEventReceiver()->pointAction.Execute(arguments);
-				if (selectedGesture) selectedGesture->OnPointAction(info, eventType);
+				if (selectedGesture) selectedGesture->OnPointAction(arguments);
 				else for (auto gesture : gestures)
 				{
-					gesture->OnPointAction(info, eventType);
+					gesture->OnPointAction(arguments);
 					if (gesture->IsGestureSelected())
 					{
 						selectedGesture = gesture.Obj();
@@ -79314,19 +79676,19 @@ GuiPointActionManager
 			{
 				if (!captureComposition || ended || firstPoint.sequenceId != info.sequenceId) return false;
 				ended = true;
-				if (selectedGesture) selectedGesture->OnPointSequenceEnded(info);
+				GuiPointSequenceEndedEventArgs arguments(captureComposition, GetPoints(captureComposition));
+				static_cast<PointSequenceEndInfo&>(arguments) = info;
+				arguments.accepted = true;
+				if (selectedGesture) selectedGesture->OnPointSequenceEnded(arguments);
 				else for (auto gesture : gestures)
 				{
-					gesture->OnPointSequenceEnded(info);
+					gesture->OnPointSequenceEnded(arguments);
 					if (gesture->IsGestureSelected())
 					{
 						selectedGesture = gesture.Obj();
 						break;
 					}
 				}
-				GuiPointSequenceEndedEventArgs arguments(captureComposition, GetPoints(captureComposition));
-				static_cast<PointSequenceEndInfo&>(arguments) = info;
-				arguments.accepted = true;
 				if (captureComposition->HasEventReceiver()) captureComposition->GetEventReceiver()->pointSequenceEnded.Execute(arguments);
 				return true;
 			}
@@ -79345,6 +79707,7 @@ GuiPointActionManager
 				captureComposition = nullptr;
 				firstPoint = {};
 				firstPointScreen = {};
+				currentPointScreen = {};
 				nativePoints.Clear();
 				points.Clear();
 				selectedGesture = nullptr;
@@ -79375,6 +79738,11 @@ GuiPointActionManager
 			{
 				auto origin = host->GetNativeWindow()->GetClientBoundsInScreen().LeftTop();
 				return NativePoint(info.position.x + origin.x, info.position.y + origin.y);
+			}
+
+			NativePoint GuiPointActionManager::GetCurrentScreenPoint()
+			{
+				return currentPointScreen;
 			}
 
 			Point GuiPointActionManager::ConvertPoint(NativePoint screen, GuiGraphicsComposition* relativeTo)
