@@ -86,6 +86,21 @@ These are requirements for implementation; this review does not execute the task
 
 No unresolved review comments. The implementation choices and verification requirements are recorded above.
 
+# UPDATES
+
+## UPDATE
+
+The previous work needs a few improvements:
+
+- I think there is no need to let `LeftClickGesture` inherits from `RightClickGesture`, using `minimumDuration` to distinguish them does not look good although it is technically accurate. I would like you to split them, aka making `LeftClickGesture` repeat the implementation instead of inheriting from `RightClickGesture`, and let `RightClickGesture` no need to implement both. The implementation is very short, not sharing code between them is totally OK.
+- The tooltip issue is a general GacUI issue, I don't think it is Windows specific, I would like you to reconsider the change to [WinNativeWindow.cpp](Source/PlatformProviders/Windows/WinNativeWindow.cpp) , and see if there is any replacement implementation that could be done in GacUI. It is totally find if the answer is still no, and in this case you might need to take a look at `wGac` and `iGac` and see if any patch needs to applied to them too.
+  - I am also questioning the reason to fix `WindoesForm::Hide` in this way, what is the issue of sending `WM_CLOSE` to a invisible window?
+  - I am also questioning the reason to fix `WindowsForm::ClosePopupsOf` as in GuiWindow there is also storing parent-child popup relationship, if the patch could be applied to GacUI shared code directly, then it would actually simplify any native platform provider implementation.
+  - Another reason is that, if the fix could make remote protocol based unit test pass, why it is needed to fix [WinNativeWindow.cpp](Source/PlatformProviders/Windows/WinNativeWindow.cpp) ?
+  - Please consider above question carefully before making your decision.
+- In `UnitTest.vcxproj` there is a `LinuxSkin` solution explorer folder, there are 6 files that only available for linux
+  - You need to delete that solution explorer folder as well as detach those files from the `UnitTest` project
+  - These files could be added to the dedicated `vmake` files instead of changing `UnitTest` itself.
 # TEST [CONFIRMED]
 
 - Add protocol rendering coverage for independently suppressing left and right deferred clicks, reflected defaults and writes, and owner-driven tooltip/popup/menu dismissal. Preserve the detailed success criteria in the problem description above.
@@ -97,9 +112,10 @@ No unresolved review comments. The implementation choices and verification requi
 
 # PROPOSALS
 
-- No.1 Latch Started options and dismiss explicitly owned popups at accepted lifecycle boundaries [CONFIRMED]
+- No.1 Latch Started options and dismiss explicitly owned popups at accepted lifecycle boundaries [DENIED]
+- No.2 Separate click recognizers and platform inventories; verify native popup lifecycle boundaries
 
-## No.1 Latch Started options and dismiss explicitly owned popups at accepted lifecycle boundaries [CONFIRMED]
+## No.1 Latch Started options and dismiss explicitly owned popups at accepted lifecycle boundaries [DENIED]
 
 Use the completed Started query to initialize internal recognizers with dedicated event arguments relative to the accepted composition. Keep canonical native screen samples in the manager, including the current sample independently of the sparse contact list, so final Up and current DPI/layout reprojection retain existing behavior. Only the respective click candidate uses its flag; recognizer priority and raw event ordering remain unchanged.
 
@@ -115,7 +131,9 @@ Add secondary-owner tooltip, ordinary/nested popup, context menu and menu-bar ca
 
 Updated canonical point-input and owner-lifetime guidance and propagated it through instruction synchronization. Generated metadata and unit-test snapshots are retained separately from authored changes.
 
-### CONFIRMED
+### DENIED BY USER
+
+The continuation rejects using right-click inheritance and a duration sentinel for left clicks, and requests an audit of the native popup changes and Linux-only inventory. The validation below is historical evidence for the previous implementation, not acceptance of these design choices.
 
 Owner dismissal is mandatory once the owner has accepted closing. A per-popup transient owner-dismissal flag is set before Hide and cleared before public Closed; the popup BeforeClosing override runs normal subscribers but clears cancellation for this path. Cancellation subscribers on both ordinary and nested test popups prove they cannot outlive an accepted owner close. Independent popup closes remain cancellable.
 
@@ -128,4 +146,41 @@ Owner dismissal is mandatory once the owner has accepted closing. A per-popup tr
 - The final Debug x64 solution build passed with zero warnings/errors. Metadata_Generate x64 and Metadata_Test x64 both exited zero, validating the core and complete metadata for both architectures after the prescribed Win32-then-x64 generation order.
 - The final Debug x64 affected-file run passed 10/10 files and 158/158 cases with no Debug leak dump. Both architectures include the point, reflection, tooltip, window, menu, theme, gallery and remote-startup filters. Final snapshot outputs contain both architecture logs and the complete new context-menu cases. No shared hosted-window-manager or GacUI_Compiler input change was needed.
 
-This is the only proposal and it is retained as the final implementation. Code review and authored-diff whitespace checks passed; generated allocation logs retain the snapshot writer's standard trailing blank line. The tests establish callback-time ordering as well as rendered results. After recording confirmation, the investigation baseline was restored and the selected proposal reapplied; the tracked patch hash remained identical to the verified patch.
+At the previous completion, No.1 was the only proposal and was retained as the final implementation; the continuation above supersedes that selection. Code review and authored-diff whitespace checks passed; generated allocation logs retain the snapshot writer's standard trailing blank line. The tests establish callback-time ordering as well as rendered results. After recording confirmation, the investigation baseline was restored and the selected proposal reapplied; the tracked patch hash remained identical to the verified patch.
+
+## No.2 Separate click recognizers and platform inventories; verify native popup lifecycle boundaries
+
+Implement independent left/right click recognizers. Each uses its own Started flag and fixed fallback button; only the right recognizer stores the starting timestamp and requires 500000 microseconds. Preserve native coordinate reprojection, priority and eligibility.
+
+Move the six Linux skin adapter compile items from the Windows project/filter into `CPP_ADDS` in `<GacUI repo>/Test/Linux/UnitTest/vmake`. Keep the physical source files and architecture-selecting adapters unchanged.
+
+Audit shared popup ownership against native lifecycle boundaries before deciding on platform changes. The existing shared AfterClosing hook owns descendant dismissal and tooltip/menu cleanup. INativeWindow currently exposes only Hide for hiding a reusable native popup; Windows queues WM_CLOSE while hosted subwindows complete synchronously. A shared-only implementation would need an additional synchronous native API, an asynchronous accepted-close continuation contract, or premature synthetic closure/destruction. Evaluate those costs against retaining the small synchronous popup implementation. Independently audit hidden-window notifications and mutation of native outside-click traversal, and inspect the Wayland and Cocoa equivalents.
+
+### CODE CHANGE
+
+Implemented independent click recognizers in `<GacUI repo>/Source/Application/GraphicsHost/GuiGraphicsHost_Point.cpp`; removed the six skin adapters and LinuxSkin filter from the UnitTest project and registered them explicitly in its Linux `vmake`. Retained the existing shared owner-lifetime implementation and Windows native fixes after auditing the notification and message paths. Patched `<wGac repo>/WGac/WGacNativeWindow.h` and `.cpp` to unify accepted hide/close and forced compositor dismissal, and `<iGac repo>/Mac/NativeWindow/OSX/CocoaWindow.h` and `.mm` to guard repeated popup hide and snapshot mutable native children with disposal tokens. Updated both Wayland README languages and the Cocoa window-provider guide.
+### Native provider audit and implementation decision
+
+- Keep ownership and mandatory dismissal in shared GuiApplication/GuiControlHost/GuiPopup. GuiWindow::ShowModalRecord is a modal-chain record, not a popup-child registry; openingPopups plus the native parent relationship already supplies the reusable popup inventory. There is no native visibility setter or synchronous reusable-popup operation besides Hide. Delaying an accepted owner close would require a new continuation/cancellation protocol across every provider; destroying and recreating a popup would break its reusable native-window lifecycle. Neither is a simpler replacement for synchronous native popup Hide.
+- Keep the Windows synchronous popup branch. A posted WM_CLOSE returns before BeforeClosing, AfterClosing, visibility change and Closed. Consequently the owner's AfterClosing would immediately publish WindowReadyToClose while its tooltip is still visible. Remote subwindows use GuiHostedWindow::Hide and NonMainProxy, which complete SetVisible(false) synchronously, so those tests cannot exercise this Windows queue boundary.
+- Sending WM_CLOSE to an invisible window is legal. The visibility guard is about GacUI callbacks: the WM_CLOSE handler always invokes BeforeClosing and accepted AfterClosing even when the window was already hidden, but Closed comes from a visibility transition. Reentrant menu/ALT dismissal can therefore repeat Closing/Ready notifications without another actual close. Keep the guard scoped to popup modes; normal-window behavior is unchanged.
+- Windows ClosePopupsOf implements native outside-click/application-deactivation dismissal, including native users without GuiApplication. It is distinct from explicit owner-lifetime dismissal. Shared Closed now detaches the native parent synchronously, invalidating the old live-index traversal and potentially skipping siblings. Descendant-first snapshots with disposal flags keep this native traversal valid; moving it into GuiWindow would introduce a provider-to-application dependency and lose raw-native behavior.
+- Cocoa already hides synchronously, but its live child traversal has the same mutation problem and repeated hidden-popup notifications. Mirror the guarded, descendant-first traversal there using a disposal token.
+- Wayland Hide(false) currently tears down roles and emits Closed without BeforeClosing/AfterClosing. Route requested hide and close through one accepted-close path, keeping low-level role teardown separate for native forced dismissal. Compositor popup_done and ancestor role teardown are mandatory and must still emit AfterClosing before hiding. Preserve descendant-first xdg role destruction and avoid invoking requested-close callbacks twice.
+
+The current Windows host has no installed WSL distribution and no macOS runtime. Port changes can be source-reviewed here; their official import/sync/build and native smoke checks remain platform verification requirements, separate from the Windows result.
+### Verification
+
+- The Debug x64 solution build through the repository wrapper passed with zero warnings and zero errors.
+- The unchanged ten-file regression filter passed 158/158 cases and 10/10 files, covering point suppression, priority, coordinates, final Up, cancellation, fallback, reflection, popup/tooltip ownership, menus, gallery, themes and remote startup. No Debug memory-leak dump followed the summary. The run produced no tracked snapshot differences.
+- The native Windows Playground fixture passed all nine tooltip/ordinary-popup/cascading-menu combinations with owner Hide, Close and native WM_CLOSE. Automation Controls established visible setup and surviving-main-only output; UIA Invoke triggered actions without an outside click. Tooltip hover used automation IO on the tooltip. Fixture assertions executed before owner WindowReadyToClose, including mandatory popup cancellation override and descendant/menu completion ordering. The native application wrapper exited zero.
+- Hosted Windows Playground passed the same nine combinations using UIA WindowPattern.Close for the logical owner close-request path, with automation Controls and hovered-tooltip IO. The hosted wrapper exited zero. The temporary test driver was corrected to read hosted subWindowsInZOrder; that initial driver-schema mismatch was not an application failure. Playground debugger arguments were restored.
+- Static inventory validation confirms that all six adapter files exist, appear exactly once in CPP_ADDS, and are absent from both MSBuild files. Both XML files parse, and LinuxSkin no longer exists. The Linux UnitTest vmake is the only consumer of UnitTest.vcxproj. Existing generated vmake.txt already lists those same six adapters; generated files were not edited manually.
+- Both native port build wrappers were attempted through Git Bash: wGac stopped at missing cmake; iGac stopped at missing cmake/make. WSL is not installed and no macOS SDK/runtime is available. The import/sync/build sequence and native Linux/macOS verification cannot be completed in this environment. Port patches are source-reviewed and retained for backup, not marked runtime-verified. Current release/import snapshots also predate CloseOwnedPopups; the normal GacUI release regeneration and port import/sync steps are required before validating the complete combined fix on each target.
+- No reflected declaration or registration changed in this continuation, so metadata regeneration is not required.
+
+### Remaining platform verification
+
+On Linux and macOS, regenerate the owning GacUI release, then run the port's import.sh, syncProj.sh and build.sh in that order. Verify native and hosted owner Hide/Close/native-close with hovered tooltip, ordinary/nested popup and menu cascade while an independent main window remains alive. Assert descendant Closed precedes owner Ready/Closed, preserve canceled independent closes, test mandatory compositor/ancestor dismissal and ensure unrelated popups survive. Exercise popup reuse and outside-click/app-deactivation closure with multiple children, including callback-driven child deletion. Rebuild Linux UnitTest through its wrapper to regenerate inventories from the new CPP_ADDS registration.
+
+No.2 remains without a global CONFIRMED marker until the native port changes receive their target-platform builds and tests. Windows implementation and regression results above are confirmed separately.

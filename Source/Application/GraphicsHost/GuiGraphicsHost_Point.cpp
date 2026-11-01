@@ -55,14 +55,12 @@ Predefined Gestures
 				protected:
 					NativePoint first;
 					vuint64_t timestamp = 0;
-					vuint64_t minimumDuration;
 					vint downCount = 0;
 					bool eligible = false;
 					Nullable<NativeMouseButton> fallback;
 
 				public:
-					RightClickGesture(GuiPointActionManager* manager, vuint64_t duration = 500000)
-						:GuiPointGestureBase(manager), minimumDuration(duration) {}
+					RightClickGesture(GuiPointActionManager* manager) : GuiPointGestureBase(manager) {}
 
 					void OnPointSequenceStarted(const GuiPointSequenceStartedEventArgs& info)override
 					{
@@ -70,7 +68,7 @@ Predefined Gestures
 						first = manager->GetCurrentScreenPoint();
 						timestamp = info.timestamp;
 						downCount = 0;
-						eligible = minimumDuration == 0 ? info.generateLeftButtonClick : info.generateRightButtonClick;
+						eligible = info.generateRightButtonClick;
 						fallback.Reset();
 					}
 
@@ -88,19 +86,55 @@ Predefined Gestures
 					void OnPointSequenceEnded(const GuiPointSequenceEndedEventArgs& info)override
 					{
 						if (eligible && downCount == 1 && info.reason == PointSequenceEndReason::Succeeded
-							&& info.timestamp - timestamp >= minimumDuration)
+							&& info.timestamp - timestamp >= 500000)
 						{
-							fallback = minimumDuration == 0 ? NativeMouseButton::Left : NativeMouseButton::Right;
+							fallback = NativeMouseButton::Right;
 						}
 					}
 
 					Nullable<NativeMouseButton> GetFallbackClick()override { return fallback; }
 				};
 
-				class LeftClickGesture : public RightClickGesture
+				class LeftClickGesture : public GuiPointGestureBase
 				{
+				protected:
+					NativePoint first;
+					vint downCount = 0;
+					bool eligible = false;
+					Nullable<NativeMouseButton> fallback;
+
 				public:
-					LeftClickGesture(GuiPointActionManager* manager) : RightClickGesture(manager, 0) {}
+					LeftClickGesture(GuiPointActionManager* manager) : GuiPointGestureBase(manager) {}
+
+					void OnPointSequenceStarted(const GuiPointSequenceStartedEventArgs& info)override
+					{
+						selected = false;
+						first = manager->GetCurrentScreenPoint();
+						downCount = 0;
+						eligible = info.generateLeftButtonClick;
+						fallback.Reset();
+					}
+
+					void OnPointAction(const GuiPointEventArgs& info)override
+					{
+						if (info.eventType == GuiPointEventsType::Down && ++downCount != 1) eligible = false;
+						if (eligible && info.pointId == 0)
+						{
+							auto start = manager->ConvertPoint(first, nullptr);
+							auto current = manager->ConvertPoint(manager->GetCurrentScreenPoint(), nullptr);
+							if (IsOutsideStaticPointRange(start, current)) eligible = false;
+						}
+					}
+
+					void OnPointSequenceEnded(const GuiPointSequenceEndedEventArgs& info)override
+					{
+						if (eligible && downCount == 1 && info.reason == PointSequenceEndReason::Succeeded)
+						{
+							fallback = NativeMouseButton::Left;
+						}
+					}
+
+					Nullable<NativeMouseButton> GetFallbackClick()override { return fallback; }
 				};
 
 				class ScrollingGesture : public GuiPointGestureBase

@@ -7,24 +7,6 @@
     <ClCompile Include="TestControls_PointScrolling.cpp">
       <Filter>Source Files\Controls\PointScrolling</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Linux\UnitTest\DarkSkin.Linux.cpp">
-      <Filter>Source Files\LinuxSkin</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Linux\UnitTest\DarkSkinReflection.Linux.cpp">
-      <Filter>Source Files\LinuxSkin</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Linux\UnitTest\DarkSkinResource.Linux.cpp">
-      <Filter>Source Files\LinuxSkin</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Linux\UnitTest\TuiSkin.Linux.cpp">
-      <Filter>Source Files\LinuxSkin</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Linux\UnitTest\TuiSkinReflection.Linux.cpp">
-      <Filter>Source Files\LinuxSkin</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Linux\UnitTest\TuiSkinResource.Linux.cpp">
-      <Filter>Source Files\LinuxSkin</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -89,9 +71,6 @@
     </Filter>
     <Filter Include="Source Files\Controls\PointScrolling">
       <UniqueIdentifier>{0aeea5a9-7274-4b7b-b9bb-e9848c6ed755}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\LinuxSkin">
-      <UniqueIdentifier>{34f04549-33d3-477b-aae3-b4af1949d41b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

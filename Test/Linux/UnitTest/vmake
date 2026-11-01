@@ -37,6 +37,14 @@ CPP_REMOVES=(
     "../../GacUISrc/Generated_TuiSkin/Source_x64/TuiSkinReflection.cpp"
     )
 TARGETS=("${CPP_TARGET}")
+CPP_ADDS=(
+    "DarkSkin.Linux.cpp"
+    "DarkSkinResource.Linux.cpp"
+    "DarkSkinReflection.Linux.cpp"
+    "TuiSkin.Linux.cpp"
+    "TuiSkinResource.Linux.cpp"
+    "TuiSkinReflection.Linux.cpp"
+    )
 CPP_COMPILE_OPTIONS="-DGACUI_SKIN_DEVELOPMENT -I ../../../Import -I ../../../Source"
 #>
 <#@ include "${VCPROOT}/vl/vmake-cpp" #>
