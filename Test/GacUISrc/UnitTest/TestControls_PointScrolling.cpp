@@ -1,5 +1,8 @@
 #include "TestControls.h"
 #include "TestPointInput.h"
+#include "../../../Source/GacUI.h"
+
+extern void SetGuiMainProxy(const Func<void()>& proxy);
 
 using namespace gacui_unittest_template;
 
@@ -50,6 +53,22 @@ void AssertTouchingListNoRed(GuiGraphicsComposition* composition)
 
 TEST_FILE
 {
+	SetGuiMainProxy([]()
+	{
+	TEST_CASE(L"MomentumScrolling is available to native and Workflow consumers")
+	{
+		TEST_ASSERT(GetTypeDescriptor<GuiComponent>() != nullptr);
+		auto type = GetGlobalTypeManager()->GetTypeDescriptor(L"presentation::compositions::MomentumScrolling");
+		TEST_ASSERT(type != nullptr);
+		TEST_ASSERT(type->GetConstructorGroup()->GetMethodCount() == 1);
+		TEST_ASSERT(type->GetMethodGroupByName(L"AttachControl", false) != nullptr);
+		TEST_ASSERT(type->GetMethodGroupByName(L"DetachControl", false) != nullptr);
+		TEST_ASSERT(type->GetPropertyByName(L"Deceleration", false) != nullptr);
+	});
+	});
+	SetupGacGenNativeController();
+	SetGuiMainProxy({});
+
 	for (auto suppressLeft : { true,false })
 	TEST_CASE(suppressLeft ? L"Started suppresses deferred left clicks" : L"Started suppresses deferred right clicks")
 	{
