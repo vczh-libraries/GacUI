@@ -4,6 +4,27 @@
     <ClCompile Include="TestControls_EasyLayout.cpp">
       <Filter>Source Files\Controls</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_PointScrolling.cpp">
+      <Filter>Source Files\Controls\PointScrolling</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Linux\UnitTest\DarkSkin.Linux.cpp">
+      <Filter>Source Files\LinuxSkin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Linux\UnitTest\DarkSkinReflection.Linux.cpp">
+      <Filter>Source Files\LinuxSkin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Linux\UnitTest\DarkSkinResource.Linux.cpp">
+      <Filter>Source Files\LinuxSkin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Linux\UnitTest\TuiSkin.Linux.cpp">
+      <Filter>Source Files\LinuxSkin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Linux\UnitTest\TuiSkinReflection.Linux.cpp">
+      <Filter>Source Files\LinuxSkin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Linux\UnitTest\TuiSkinResource.Linux.cpp">
+      <Filter>Source Files\LinuxSkin</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -65,6 +86,12 @@
     </Filter>
     <Filter Include="Source Files\ItemProviders">
       <UniqueIdentifier>{7784d18a-9d4d-41ca-8bc8-d174d9f3361f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controls\PointScrolling">
+      <UniqueIdentifier>{0aeea5a9-7274-4b7b-b9bb-e9848c6ed755}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\LinuxSkin">
+      <UniqueIdentifier>{34f04549-33d3-477b-aae3-b4af1949d41b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -320,9 +347,6 @@
     <ClCompile Include="TestControls_Editor_Regression.cpp">
       <Filter>Source Files\Controls\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="TestControls_PointScrolling.cpp">
-      <Filter>Source Files\Controls\Editor</Filter>
-    </ClCompile>
     <ClCompile Include="TestApplication_Tab.cpp">
       <Filter>Source Files\Controls\Application</Filter>
     </ClCompile>
@@ -441,31 +465,23 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Linux\UnitTest\DarkSkin.Linux.cpp">
+    <ClCompile Include="TestRemote_Raw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Linux\UnitTest\DarkSkinResource.Linux.cpp">
+    <ClCompile Include="TestRawElement_Windows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Linux\UnitTest\DarkSkinReflection.Linux.cpp">
+    <ClCompile Include="..\Generated_FullControlTest\FullControlTestRawElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Linux\UnitTest\TuiSkin.Linux.cpp">
+    <ClCompile Include="..\Generated_FullControlTest\FullControlTestEventHandlers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Linux\UnitTest\TuiSkinResource.Linux.cpp">
+    <ClInclude Include="..\Generated_FullControlTest\FullControlTestEventHandlers.h">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Linux\UnitTest\TuiSkinReflection.Linux.cpp">
+    </ClInclude>
+    <ClInclude Include="..\Generated_FullControlTest\FullControlTestRawElement.h">
       <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="TestRemote_Raw.cpp"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="TestRawElement_Windows.cpp"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\Generated_FullControlTest\FullControlTestRawElement.cpp"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\Generated_FullControlTest\FullControlTestEventHandlers.cpp"><Filter>Source Files</Filter></ClCompile>
-    <ClInclude Include="..\Generated_FullControlTest\FullControlTestEventHandlers.h"><Filter>Source Files</Filter></ClInclude>
-    <ClInclude Include="..\Generated_FullControlTest\FullControlTestRawElement.h"><Filter>Source Files</Filter></ClInclude>
+    </ClInclude>
   </ItemGroup>
 </Project>
