@@ -130,6 +130,8 @@ When an old user region has no identity match in the newly generated file, the m
 
 This section is part of `<output-file>`; it is not a separate report or sidecar. On a later run, `CppMerge` decodes the commented regions after this marker and considers them again. If a matching region reappears in newly generated code, its user content is restored to that region and removed from the unused section. Regions that still have no match remain commented at the end of the file for manual review.
 
+For a method-body region, the saved section includes the preceding declaration line as well as the marker-delimited body. That declaration preserves the method identity through repeated generation, including overloaded methods and changes in declaration order. Older output that omitted these declarations must be regenerated from an intact copy of the original regions; the missing identities cannot be reconstructed from the bodies alone.
+
 The exact line `// UNUSED_USER_CONTENT:` is reserved: encountering it makes the region scanner treat the remainder of the existing file as the recovery section. Do not place that line inside active user code. Do not delete the unused section until its preserved implementations are intentionally retired or moved, and do not hand-edit its comment prefixes if automatic restoration is still desired.
 
 ## Generated Output and Its Consumer
