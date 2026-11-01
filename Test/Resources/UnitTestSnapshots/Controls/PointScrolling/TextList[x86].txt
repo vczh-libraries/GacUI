@@ -25,9 +25,6 @@ namespace gacuisrc_unittest
     class MainWindowConstructor
     {
         @cpp:Protected
-        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
@@ -44,6 +41,9 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
         var list : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
@@ -85,6 +85,10 @@ namespace gacuisrc_unittest
                 (list = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("list", list);
             }
+            (<precompile>2 = list.BoundsComposition);
+            {
+                (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
             {
                 (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
                 {
@@ -92,10 +96,6 @@ namespace gacuisrc_unittest
                         return new (::gacuisrc_unittest::WideItem*)();
                     }
                 });
-            }
-            (<precompile>2 = list.BoundsComposition);
-            {
-                (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 <precompile>1.AddChild(list.BoundsComposition);
@@ -120,12 +120,12 @@ namespace gacuisrc_unittest
             {
                 (outer.ExtendToFullWidth = true);
             }
-            {
-                (outer.HorizontalAlwaysVisible = false);
-            }
             (<precompile>5 = outer.BoundsComposition);
             {
                 (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (outer.HorizontalAlwaysVisible = false);
             }
             {
                 (editor = new (::presentation::controls::GuiMultilineTextBox*)(::presentation::theme::ThemeName::MultilineTextBox));
@@ -226,20 +226,20 @@ namespace gacuisrc_unittest
     class WideItemConstructor
     {
         @cpp:Protected
-        var self : ::gacuisrc_unittest::WideItem* = null of (::gacuisrc_unittest::WideItem*);
+        var <precompile>0 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var self : ::gacuisrc_unittest::WideItem* = null of (::gacuisrc_unittest::WideItem*);
 
         @cpp:Protected
         func <gacuisrc_unittest-WideItem>Initialize(<this> : ::gacuisrc_unittest::WideItem*) : (::system::Void)
         {
             (self = <this>);
             {
-                (self.PreferredMinSize = {x : 650; y : 28;} of (::presentation::Size));
+                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (self.PreferredMinSize = {x : 650; y : 28;} of (::presentation::Size));
             }
             (<precompile>0 = new (::presentation::elements::GuiSolidLabelElement^)());
             {

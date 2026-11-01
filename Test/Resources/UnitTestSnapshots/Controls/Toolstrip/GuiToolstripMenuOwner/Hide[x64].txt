@@ -58,6 +58,9 @@ namespace gacuisrc_unittest
         var <precompile>9 : ::presentation::controls::GuiToolstripGroup* = null of (::presentation::controls::GuiToolstripGroup*);
 
         @cpp:Protected
+        var <precompile>10 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var button : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
@@ -137,9 +140,6 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var buttonDelete : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
-
-        @cpp:Protected
-        var <precompile>10 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)

@@ -25,6 +25,18 @@ namespace gacuisrc_unittest
     class ClickWindowConstructor
     {
         @cpp:Protected
+        var target : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var rightResult : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var disableLeft : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var disableRight : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
         var <precompile>0 : ::gacuisrc_unittest::ClickWindow* = null of (::gacuisrc_unittest::ClickWindow*);
 
         @cpp:Protected
@@ -43,18 +55,6 @@ namespace gacuisrc_unittest
         var <precompile>5 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var target : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var rightResult : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var disableLeft : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var disableRight : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
         func <gacuisrc_unittest-ClickWindow>Initialize(<this> : ::gacuisrc_unittest::ClickWindow*) : (::system::Void)
         {
             (<precompile>0 = <this>);
@@ -66,13 +66,13 @@ namespace gacuisrc_unittest
             }
             (<precompile>1 = new (::presentation::compositions::GuiStackComposition*)());
             {
+                (<precompile>1.AlignmentToParent = {left : 8; top : 8; right : 8; bottom : 8;} of (::presentation::Margin));
+            }
+            {
                 (<precompile>1.Padding = 8 of (::system::Int32));
             }
             {
                 (<precompile>1.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
-            }
-            {
-                (<precompile>1.AlignmentToParent = {left : 8; top : 8; right : 8; bottom : 8;} of (::presentation::Margin));
             }
             (<precompile>2 = new (::presentation::compositions::GuiStackItemComposition*)());
             {

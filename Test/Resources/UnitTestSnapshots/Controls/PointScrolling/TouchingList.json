@@ -28,97 +28,102 @@
     [26, "SolidBorder"],
     [27, "SolidBackground"],
     [28, "SolidBorder"],
-    [29, "FocusRectangle"],
-    [30, "SolidLabel"],
-    [31, "SolidBackground"],
-    [32, "SolidBorder"],
-    [33, "FocusRectangle"],
-    [34, "SolidLabel"],
+    [29, "Polygon"],
+    [30, "FocusRectangle"],
+    [31, "SolidLabel"],
+    [32, "SolidBackground"],
+    [33, "SolidBorder"],
+    [34, "FocusRectangle"],
     [35, "SolidLabel"],
     [36, "SolidBackground"],
     [37, "SolidBorder"],
-    [38, "SolidBackground"],
-    [39, "SolidBorder"],
-    [40, "Polygon"],
-    [41, "Polygon"],
-    [42, "SolidBackground"],
+    [38, "FocusRectangle"],
+    [39, "SolidLabel"],
+    [40, "SolidLabel"],
+    [41, "SolidBackground"],
+    [42, "SolidBorder"],
     [43, "SolidBackground"],
     [44, "SolidBorder"],
     [45, "Polygon"],
     [46, "Polygon"],
     [47, "SolidBackground"],
     [48, "SolidBackground"],
-    [49, "SolidBackground"],
-    [50, "SolidBackground"],
-    [51, "SolidLabel"],
+    [49, "SolidBorder"],
+    [50, "Polygon"],
+    [51, "Polygon"],
     [52, "SolidBackground"],
-    [53, "SolidLabel"],
+    [53, "SolidBackground"],
     [54, "SolidBackground"],
     [55, "SolidBackground"],
-    [56, "SolidBackground"],
-    [57, "SolidLabel"],
-    [58, "SolidBackground"],
-    [59, "SolidLabel"],
+    [56, "SolidLabel"],
+    [57, "SolidBackground"],
+    [58, "SolidLabel"],
+    [59, "SolidBackground"],
     [60, "SolidBackground"],
     [61, "SolidBackground"],
-    [62, "SolidBackground"],
-    [63, "SolidLabel"],
-    [64, "SolidBackground"],
-    [65, "SolidLabel"],
+    [62, "SolidLabel"],
+    [63, "SolidBackground"],
+    [64, "SolidLabel"],
+    [65, "SolidBackground"],
     [66, "SolidBackground"],
     [67, "SolidBackground"],
-    [68, "SolidBackground"],
-    [69, "SolidLabel"],
-    [70, "SolidBackground"],
-    [71, "SolidLabel"],
+    [68, "SolidLabel"],
+    [69, "SolidBackground"],
+    [70, "SolidLabel"],
+    [71, "SolidBackground"],
     [72, "SolidBackground"],
     [73, "SolidBackground"],
-    [74, "SolidBackground"],
-    [75, "SolidLabel"],
-    [76, "SolidBackground"],
-    [77, "SolidLabel"],
+    [74, "SolidLabel"],
+    [75, "SolidBackground"],
+    [76, "SolidLabel"],
+    [77, "SolidBackground"],
     [78, "SolidBackground"],
     [79, "SolidBackground"],
-    [80, "SolidBackground"],
-    [81, "SolidLabel"],
-    [82, "SolidBackground"],
-    [83, "SolidLabel"],
+    [80, "SolidLabel"],
+    [81, "SolidBackground"],
+    [82, "SolidLabel"],
+    [83, "SolidBackground"],
     [84, "SolidBackground"],
     [85, "SolidBackground"],
-    [86, "SolidBackground"],
-    [87, "SolidLabel"],
-    [88, "SolidBackground"],
-    [89, "SolidLabel"],
+    [86, "SolidLabel"],
+    [87, "SolidBackground"],
+    [88, "SolidLabel"],
+    [89, "SolidBackground"],
     [90, "SolidBackground"],
     [91, "SolidBackground"],
-    [92, "SolidBackground"],
-    [93, "SolidLabel"],
-    [94, "SolidBackground"],
-    [95, "SolidLabel"],
+    [92, "SolidLabel"],
+    [93, "SolidBackground"],
+    [94, "SolidLabel"],
+    [95, "SolidBackground"],
     [96, "SolidBackground"],
     [97, "SolidBackground"],
-    [98, "SolidBackground"],
-    [99, "SolidLabel"],
-    [100, "SolidBackground"],
-    [101, "SolidLabel"],
-    [342, "SolidBackground"],
-    [343, "SolidBackground"],
-    [344, "SolidBackground"],
-    [345, "SolidLabel"],
-    [346, "SolidBackground"],
-    [347, "SolidLabel"],
+    [98, "SolidLabel"],
+    [99, "SolidBackground"],
+    [100, "SolidLabel"],
+    [101, "SolidBackground"],
+    [102, "SolidBackground"],
+    [103, "SolidBackground"],
+    [104, "SolidLabel"],
+    [105, "SolidBackground"],
+    [106, "SolidLabel"],
+    [347, "SolidBackground"],
     [348, "SolidBackground"],
     [349, "SolidBackground"],
-    [350, "SolidBackground"],
-    [351, "SolidLabel"],
-    [352, "SolidBackground"],
-    [353, "SolidLabel"]
+    [350, "SolidLabel"],
+    [351, "SolidBackground"],
+    [352, "SolidLabel"],
+    [353, "SolidBackground"],
+    [354, "SolidBackground"],
+    [355, "SolidBackground"],
+    [356, "SolidLabel"],
+    [357, "SolidBackground"],
+    [358, "SolidLabel"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
   "frames": [
     {
-      "frameId": 6,
+      "frameId": 8,
       "frameName": "Ready",
       "windowSize": {
         "bounds": {
@@ -145,7 +150,7 @@
       "root": null
     },
     {
-      "frameId": 8,
+      "frameId": 10,
       "frameName": "Selected row uses DarkSkin",
       "windowSize": {
         "bounds": {
@@ -172,7 +177,7 @@
       "root": null
     },
     {
-      "frameId": 11,
+      "frameId": 13,
       "frameName": "Partial red reveal",
       "windowSize": {
         "bounds": {
@@ -199,7 +204,7 @@
       "root": null
     },
     {
-      "frameId": 14,
+      "frameId": 16,
       "frameName": "Partial release reset",
       "windowSize": {
         "bounds": {
@@ -226,7 +231,7 @@
       "root": null
     },
     {
-      "frameId": 17,
+      "frameId": 19,
       "frameName": "Full red reveal waits for End",
       "windowSize": {
         "bounds": {
@@ -253,7 +258,7 @@
       "root": null
     },
     {
-      "frameId": 23,
+      "frameId": 25,
       "frameName": "Deferred middle row removal",
       "windowSize": {
         "bounds": {
@@ -280,7 +285,7 @@
       "root": null
     },
     {
-      "frameId": 28,
+      "frameId": 30,
       "frameName": "Clear and Add before queued removal",
       "windowSize": {
         "bounds": {
@@ -307,7 +312,7 @@
       "root": null
     },
     {
-      "frameId": 33,
+      "frameId": 35,
       "frameName": "Newly realized rows at bottom stay closed",
       "windowSize": {
         "bounds": {
@@ -334,7 +339,7 @@
       "root": null
     },
     {
-      "frameId": 38,
+      "frameId": 40,
       "frameName": "Recycled rows at top stay closed",
       "windowSize": {
         "bounds": {
@@ -361,7 +366,7 @@
       "root": null
     },
     {
-      "frameId": 40,
+      "frameId": 42,
       "frameName": "Disabled row uses DarkSkin",
       "windowSize": {
         "bounds": {

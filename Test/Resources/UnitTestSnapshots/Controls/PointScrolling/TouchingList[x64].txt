@@ -1416,28 +1416,34 @@ namespace demo
         var <precompile>2 : ::presentation::compositions::eazy_layout::GuiEasyLeftLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>3 : ::presentation::compositions::eazy_layout::GuiEasyLeftLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::eazy_layout::GuiEasyLeftLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^);
+        var <precompile>4 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>5 : ::presentation::compositions::eazy_layout::GuiEasyLeftLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+        var <precompile>6 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var momentumOption : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
         var list : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>7 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
 
         @cpp:Protected
-        var <precompile>8 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+        var <precompile>8 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>9 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>9 : ::presentation::compositions::eazy_layout::GuiEasyFillLayout^ = null of (::presentation::compositions::eazy_layout::GuiEasyFillLayout^);
+
+        @cpp:Protected
+        var <precompile>10 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <demo-TouchingListTabPage>Initialize(<this> : ::demo::TouchingListTabPage*) : (::system::Void)
@@ -1450,40 +1456,55 @@ namespace demo
             (<precompile>1 = new (::presentation::compositions::eazy_layout::GuiEasyTopLayout^)());
             (<precompile>2 = new (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^)());
             {
-                (<precompile>3 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                (momentumOption = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("momentumOption", momentumOption);
             }
             {
-                (<precompile>3.Text = "Clear");
+                (momentumOption.Selected = false);
             }
             {
-                (<precompile>2.Composition = <precompile>3.BoundsComposition);
-            }
-            (<precompile>4 = new (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^)());
-            {
-                (<precompile>5 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                (momentumOption.Text = "Momentum Scrolling");
             }
             {
-                (<precompile>5.Text = "Add 5 Items");
+                (<precompile>2.Composition = momentumOption.BoundsComposition);
+            }
+            (<precompile>3 = new (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^)());
+            {
+                (<precompile>4 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                (<precompile>4.Composition = <precompile>5.BoundsComposition);
-            }
-            (<precompile>6 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
-            {
-                (<precompile>7 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (<precompile>4.Text = "Clear");
             }
             {
-                (<precompile>7.Text = "Swipe left fully and release to delete.");
+                (<precompile>3.Composition = <precompile>4.BoundsComposition);
+            }
+            (<precompile>5 = new (::presentation::compositions::eazy_layout::GuiEasyLeftLayout^)());
+            {
+                (<precompile>6 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                (<precompile>6.Composition = <precompile>7.BoundsComposition);
+                (<precompile>6.Text = "Add 5 Items");
+            }
+            {
+                (<precompile>5.Composition = <precompile>6.BoundsComposition);
+            }
+            (<precompile>7 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            {
+                (<precompile>8 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            {
+                (<precompile>8.Text = "Swipe left fully and release to delete.");
+            }
+            {
+                (<precompile>7.Composition = <precompile>8.BoundsComposition);
             }
             {
                 <precompile>1.Layouts.Add(<precompile>2);
-                <precompile>1.Layouts.Add(<precompile>4);
-                <precompile>1.Layouts.Add(<precompile>6);
+                <precompile>1.Layouts.Add(<precompile>3);
+                <precompile>1.Layouts.Add(<precompile>5);
+                <precompile>1.Layouts.Add(<precompile>7);
             }
-            (<precompile>8 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
+            (<precompile>9 = new (::presentation::compositions::eazy_layout::GuiEasyFillLayout^)());
             {
                 (list = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("list", list);
@@ -1510,13 +1531,13 @@ namespace demo
                     raise "Cannot find a matched control template to create.";
                 });
             }
-            (<precompile>9 = list.BoundsComposition);
+            (<precompile>10 = list.BoundsComposition);
             {
-                (<precompile>8.Composition = list.BoundsComposition);
+                (<precompile>9.Composition = list.BoundsComposition);
             }
             {
                 <precompile>0.Layouts.Add(<precompile>1);
-                <precompile>0.Layouts.Add(<precompile>8);
+                <precompile>0.Layouts.Add(<precompile>9);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
@@ -1524,24 +1545,38 @@ namespace demo
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
+                    if (momentumOption.Selected)
+                    {
+                        self.momentum.AttachControl(list);
+                    }
+                    else
+                    {
+                        self.momentum.DetachControl(list);
+                    }
+                };
+                attach(momentumOption.SelectedChanged, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
                     self.ResetSwipe();
                     self.Items.Clear();
                 };
-                attach(<precompile>3.Clicked, <event-handler>);
+                attach(<precompile>4.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     self.AddItems();
                 };
-                attach(<precompile>5.Clicked, <event-handler>);
+                attach(<precompile>6.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceStartedEventArgs*) : (::system::Void)
                 {
                     self.BeginSwipe(arguments);
                 };
-                attach(<precompile>9.pointSequenceStarted, <event-handler>);
+                attach(<precompile>10.pointSequenceStarted, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointEventArgs*) : (::system::Void)
@@ -1552,7 +1587,7 @@ namespace demo
                         self.ResetSwipe();
                     }
                 };
-                attach(<precompile>9.pointAction, <event-handler>);
+                attach(<precompile>10.pointAction, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointGestureEventArgs*) : (::system::Void)
@@ -1577,14 +1612,14 @@ namespace demo
                         }
                     }
                 };
-                attach(<precompile>9.pointGesture, <event-handler>);
+                attach(<precompile>10.pointGesture, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceEndedEventArgs*) : (::system::Void)
                 {
                     self.EndSwipe(arguments);
                 };
-                attach(<precompile>9.pointSequenceEnded, <event-handler>);
+                attach(<precompile>10.pointSequenceEnded, <event-handler>);
             }
             {
                 (list.ItemSource = self.Items);
@@ -1646,6 +1681,8 @@ namespace demo
         var swipeItem : TouchingListItem^ = null;
 
         var multipleContacts : bool = false;
+
+        var momentum : MomentumScrolling* = new (MomentumScrolling*)();
 
         func GetSwipeTemplate() : (TouchingListItemTemplate*)
         {
@@ -1741,6 +1778,7 @@ namespace demo
 
         func <instance-ctor>() : (::system::Void)
         {
+            self.AddComponent(momentum);
             self.AddItems();
         }
 
