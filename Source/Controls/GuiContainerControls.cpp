@@ -433,7 +433,10 @@ GuiScrollView
 
 			void GuiScrollView::OnPointGesture(GuiGraphicsComposition* sender, GuiPointGestureEventArgs& arguments)
 			{
-				if (arguments.handled || !GetVisuallyEnabled() || GetPointEventComposition() != boundsComposition) return;
+				if (arguments.handled || !GetVisuallyEnabled()) return;
+				if (arguments.compositionSource != boundsComposition || arguments.eventSource != boundsComposition) return;
+				auto capture = GetPointEventComposition();
+				if (capture && capture != boundsComposition) return;
 				if (auto scrolling = arguments.gesture.TryGet<GuiPointGesture_Scrolling>())
 				{
 					auto scroll = scrolling->isVertical ? GetVerticalScroll() : GetHorizontalScroll();

@@ -16,6 +16,11 @@ public:
 
 	PointProtocolInput(IGuiRemoteProtocolEvents* _events, bool _modifiers = true) : events(_events), modifiers(_modifiers) {}
 
+	void                        At(vuint64_t elapsed)
+	{
+		action.info.timestamp = u64tow(timestamp + elapsed);
+	}
+
 	void						Start(NativePoint position)
 	{
 		NativeWindowPointInfo sample;

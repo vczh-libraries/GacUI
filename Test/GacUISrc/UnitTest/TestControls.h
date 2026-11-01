@@ -51,6 +51,11 @@ namespace gacui_unittest_template
 			currentTime = currentTime.Forward(600);
 		}
 
+		void Advance(vuint64_t milliseconds)
+		{
+			currentTime = currentTime.Forward(milliseconds);
+		}
+
 		void WaitForClosing()
 		{
 			currentTime = currentTime.Forward(5100);

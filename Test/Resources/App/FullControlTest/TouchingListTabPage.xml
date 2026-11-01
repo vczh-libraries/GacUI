@@ -57,6 +57,7 @@
         var serial: int = 0;
         var swipeItem: TouchingListItem^ = null;
         var multipleContacts: bool = false;
+        var momentum: MomentumScrolling* = new MomentumScrolling*();
 
         func GetSwipeTemplate(): TouchingListItemTemplate*
         {
@@ -118,10 +119,18 @@
           }
         }
       ]]></ref.Members>
-      <ref.Ctor><![CDATA[{ self.AddItems(); }]]></ref.Ctor>
+      <ref.Ctor><![CDATA[{ self.AddComponent(momentum); self.AddItems(); }]]></ref.Ctor>
       <TabPage ref.Name="self" Text="TouchingList">
         <ez:Layout>
           <ez:Top>
+            <ez:Left>
+              <CheckBox ref.Name="momentumOption" Text="Momentum Scrolling" Selected="false">
+                <ev.SelectedChanged-eval><![CDATA[{
+                  if (momentumOption.Selected) { self.momentum.AttachControl(list); }
+                  else { self.momentum.DetachControl(list); }
+                }]]></ev.SelectedChanged-eval>
+              </CheckBox>
+            </ez:Left>
             <ez:Left>
               <Button Text="Clear">
                 <ev.Clicked-eval><![CDATA[{ self.ResetSwipe(); self.Items.Clear(); }]]></ev.Clicked-eval>

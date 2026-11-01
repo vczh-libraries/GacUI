@@ -1,5 +1,4 @@
 #include "GuiGraphicsHost.h"
-#include "GuiGraphicsHost_Point.h"
 #include "../Controls/GuiWindowControls.h"
 #include "../../GraphicsElement/GuiGraphicsResourceManager.h"
 

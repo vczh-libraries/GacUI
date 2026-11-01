@@ -117,6 +117,8 @@ function Controls {
 function Find-Raw { @(Controls | Where-Object elementId -eq 'FullControlTest.Touching')[0] }
 function State { [double[]]((Find-Raw).elementData.Split(',') | ForEach-Object {[double]::Parse($_,[Globalization.CultureInfo]::InvariantCulture)}) }
 function IO($endpoint,$command) {
+    # MiniHTTP rejects Expect headers; send these small requests without that handshake.
+    [Net.ServicePointManager]::FindServicePoint([Uri]$endpoint).Expect100Continue = $false
     $answer = Invoke-WebRequest "$endpoint/IO" -Method Post -ContentType 'application/json; charset=utf8' -Body ([Text.Encoding]::UTF8.GetBytes($command)) -UseBasicParsing -TimeoutSec 10
     if($answer.Content -ne 'Queued') {throw "IO $command : $($answer.Content)"}
 }
@@ -202,6 +204,31 @@ function Test-SwipeAndText {
     Select-Tab 'Add 5 Items'
     Wait-For { @(Controls | Where-Object elementText -like 'Item 16 *').Count -eq 1 } 'empty-space swipe cannot remove a replacement item'
     Write-Output 'PASS renderer IO / TouchingList partial, reversal, cancellation, extra contact, final Up, identity removal and scrolling'
+
+    for ($i=0; $i -lt 6; $i++) { Select-Tab 'Add 5 Items' }
+    Select-Tab 'Momentum Scrolling'
+    function Momentum-Rendering {
+        (Controls | Where-Object elementText -like 'Item *' | ForEach-Object {
+            "$($_.elementText)|$($_.bounds.y1)"
+        } | Sort-Object) -join "`n"
+    }
+    $beforeFlick = Momentum-Rendering
+    IO $rendererBase "!PointDown:130,$x,$($y+200)"
+    Start-Sleep -Milliseconds 100
+    IO $rendererBase "!PointUpdate:130,$x,$($y+100)"
+    Start-Sleep -Milliseconds 100
+    IO $rendererBase "!PointUp:130,$x,$y"
+    Wait-For { (Momentum-Rendering) -ne $beforeFlick } 'renderer flick moved viewport'
+    $released = Momentum-Rendering
+    Wait-For { (Momentum-Rendering) -ne $released } 'momentum continues after renderer Up'
+    IO $rendererBase "!PointDown:131,$x,$y"
+    Start-Sleep -Milliseconds 100
+    $interrupted = Momentum-Rendering
+    Start-Sleep -Milliseconds 250
+    if ((Momentum-Rendering) -ne $interrupted) { throw 'Fresh renderer contact did not stop momentum.' }
+    IO $rendererBase "!PointUp:131,$x,$y"
+    Select-Tab 'Momentum Scrolling'
+    Write-Output 'PASS renderer IO / optional momentum after Up and interruption on fresh Down'
 
     Select-Tab 'List'
     Wait-For { @(Controls | Where-Object elementText -eq 'ListView').Count -gt 0 } 'List page'

@@ -413,3 +413,7 @@ or after it stops they use the feature's fallback. Shutdown releases queued wait
 The protocol schema is `<GacUI repo>/Source/PlatformProviders/Remote/Protocol/Protocol_Injection.txt`.
 The controller wrappers and their lifetime state are in
 `<GacUI repo>/Source/PlatformProviders/Remote/GuiRemoteControllerInjection.h/.cpp`.
+
+## Underlying process services
+
+Core and a native renderer can each install their own underlying service implementations with `vl::InjectDateTimeImpl`, `vl::InjectLocaleImpl` and `vl::filesystem::InjectFileSystemImpl`. These process-local replacements are separate from the remote configuration/capability flags: installing one does not opt into remote injection. Core opt-in defaults, native-renderer capability defaults, DateTime/Locale predecessor fallback and the enabled-but-unavailable filesystem's empty root remain as described above.

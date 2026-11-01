@@ -8,6 +8,8 @@ GacUI::Graphics Composition Host
 #define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_POINT
 
 #include "../GraphicsCompositions/GuiGraphicsEventReceiver.h"
+#include "../Controls/GuiInstanceRootObject.h"
+#include "../Controls/GuiBasicControls.h"
 
 namespace vl
 {
@@ -16,6 +18,38 @@ namespace vl
 		namespace compositions
 		{
 			class GuiGraphicsHost;
+			class MomentumScrollingState;
+
+			/// <summary>Optional inertial scrolling for controls accepting point sequences. Own this component with GuiInstanceRootObject::AddComponent.</summary>
+			class MomentumScrolling : public controls::GuiComponent, public Description<MomentumScrolling>
+			{
+				friend class MomentumScrollingState;
+			protected:
+				controls::GuiInstanceRootObject*                rootObject = nullptr;
+				collections::List<Ptr<MomentumScrollingState>>  states;
+				double                                          deceleration = 1.0;
+
+				void                                            RetireDisposedControls();
+			public:
+				MomentumScrolling();
+				~MomentumScrolling();
+
+				void                                            Attach(controls::GuiInstanceRootObject* rootObject)override;
+				void                                            Detach(controls::GuiInstanceRootObject* rootObject)override;
+				void                                            EnvironmentChanged()override;
+				/// <summary>Observe a control's persistent bounds without changing AcceptPointEvents. Repeated attachment is a no-op.</summary>
+				/// <param name="control">The control to observe; attachments do not own controls.</param>
+				void                                            AttachControl(controls::GuiControl* control);
+				/// <summary>Stop continuation and remove listeners. An unattached control is a no-op.</summary>
+				/// <param name="control">The control to detach.</param>
+				void                                            DetachControl(controls::GuiControl* control);
+				/// <summary>Get the positive deceleration multiplier, initially 1.0 (320 logical pixels per second squared).</summary>
+				/// <returns>The multiplier.</returns>
+				double                                          GetDeceleration();
+				/// <summary>Set a finite positive multiplier for subsequent playbacks.</summary>
+				/// <param name="value">The multiplier; twice the value halves the stopping time.</param>
+				void                                            SetDeceleration(double value);
+			};
 
 			class IGuiPointGesture : public virtual Interface
 			{

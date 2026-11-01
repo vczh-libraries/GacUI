@@ -1,4 +1,4 @@
-// Run with a fresh FullControlTest Core on port 8888 and the built GacJS site on 8896.
+// Run with a fresh FullControlTest Core on port 8888 and the built GacJS site on 8896 (or GACUI_TOUCH_WEBSITE).
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -92,7 +92,7 @@ async function picture(name) {
     await page.screenshot({ path: target }); evidence.screenshots.push(target);
 }
 try {
-    await page.goto('http://localhost:8896/index.html');
+    await page.goto(process.env.GACUI_TOUCH_WEBSITE ?? 'http://localhost:8896/index.html');
     await idle(30000, true);
     await until(async () => await label('Misc') !== undefined, 'FullControlTest rendered');
     const outerScroll = await page.evaluate(() => [scrollX, scrollY]);
@@ -167,6 +167,30 @@ try {
     await until(async()=>(await item(8)).bounds.x1===left,'Recycled rows retain no swipe reveal');
     assert(!(await all()).some(node=>node.element?.startsWith('Background:#B82030,')));
     noCompatibility(swipeStart);
+
+    for(let i=0;i<6;i++) await click('Add 5 Items');
+    await click('Momentum Scrolling');
+    const momentumRendering=async()=>(await all()).filter(node=>node.elementText?.startsWith('Item '))
+        .map(node=>`${node.elementText}|${node.bounds.y1}`).sort().join('\n');
+    a=finger(151,{x:origin.x,y:origin.y+150});
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[a]});
+    await new Promise(resolve=>setTimeout(resolve,100));
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{...a,y:a.y-50}]});
+    await new Promise(resolve=>setTimeout(resolve,100));
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{...a,y:a.y-100}]});
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+    await idle();
+    await new Promise(resolve=>setTimeout(resolve,50));
+    const released=await momentumRendering();
+    await until(async()=>await momentumRendering()!==released,'Browser touch continues scrolling after release');
+    await touch('touchStart',[a]);
+    const interrupted=await momentumRendering();
+    await new Promise(resolve=>setTimeout(resolve,250));
+    assert.equal(await momentumRendering(),interrupted,'Fresh browser touch interrupts momentum');
+    evidence.checks.push('Fresh browser touch interrupts momentum');
+    await touch('touchEnd',[]);
+    await click('Momentum Scrolling');
+    await picture('momentum');
 
     await click('List'); await click('ListView');
     const firstList=async()=>(await all()).find(node=>node.control==='ListView');

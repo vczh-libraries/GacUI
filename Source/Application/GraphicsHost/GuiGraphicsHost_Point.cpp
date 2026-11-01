@@ -13,6 +13,284 @@ namespace vl
 			constexpr vint StaticPointRange = 8;
 
 /***********************************************************************
+MomentumScrollingState
+***********************************************************************/
+
+			class MomentumScrollingState : public Object, public controls::IGuiAnimation
+			{
+			public:
+				struct Sample
+				{
+					vuint64_t time;
+					double position;
+				};
+
+				MomentumScrolling* owner;
+				controls::GuiControl* control;
+				Ptr<controls::GuiDisposedFlag> disposed;
+				GuiGraphicsComposition* bounds;
+				GuiGraphicsHost* host = nullptr;
+				Ptr<IGuiGraphicsEventHandler> startedHandler, actionHandler, gestureHandler, endedHandler;
+				List<Sample> samples;
+				vuint64_t sequence = 0, started = 0, timestamp = 0, playbackStart = 0, version = 0;
+				double position = 0, velocity = 0, duration = 0, elapsed = 0, residue = 0;
+				vint boundary = 1;
+				bool vertical = false, scrolling = false, stopped = true, generating = false;
+
+				MomentumScrollingState(MomentumScrolling* _owner, controls::GuiControl* _control)
+					:owner(_owner), control(_control), disposed(_control->GetDisposedFlag()), bounds(_control->GetBoundsComposition())
+				{
+					auto receiver = bounds->GetEventReceiver();
+					startedHandler = receiver->pointSequenceStarted.AttachMethod(this, &MomentumScrollingState::OnStarted);
+					actionHandler = receiver->pointAction.AttachMethod(this, &MomentumScrollingState::OnAction);
+					gestureHandler = receiver->pointGesture.AttachMethod(this, &MomentumScrollingState::OnGesture);
+					endedHandler = receiver->pointSequenceEnded.AttachMethod(this, &MomentumScrollingState::OnEnded);
+				}
+
+				void Stop()
+				{
+					version++;
+					stopped = true;
+					sequence = 0;
+					samples.Clear();
+				}
+
+				void Detach()
+				{
+					Stop();
+					owner = nullptr;
+					if (!disposed->IsDisposed())
+					{
+						auto receiver = bounds->GetEventReceiver();
+						receiver->pointSequenceStarted.Detach(startedHandler);
+						receiver->pointAction.Detach(actionHandler);
+						receiver->pointGesture.Detach(gestureHandler);
+						receiver->pointSequenceEnded.Detach(endedHandler);
+					}
+				}
+
+				void Record(vuint64_t time)
+				{
+					if (samples.Count() && samples[samples.Count() - 1].time == time)
+					{
+						samples[samples.Count() - 1].position = position;
+					}
+					else
+					{
+						samples.Add({ time,position });
+					}
+					auto left = time > 500000 ? time - 500000 : 0;
+					while (samples.Count() > 1 && samples[1].time <= left) samples.RemoveAt(0);
+				}
+
+				void OnStarted(GuiGraphicsComposition*, GuiPointSequenceStartedEventArgs& arguments)
+				{
+					Stop();
+					if (!owner || disposed->IsDisposed()) return;
+					// A later Started handler can still accept this bounds. Rejected queries receive no actions.
+					if (arguments.acceptedComposition && arguments.acceptedComposition != bounds) return;
+					sequence = arguments.sequenceId;
+					started = timestamp = arguments.timestamp;
+					position = 0;
+					scrolling = false;
+					host = bounds->GetRelatedGraphicsHost();
+					Record(started);
+				}
+
+				void OnAction(GuiGraphicsComposition*, GuiPointEventArgs& arguments)
+				{
+					if (!sequence || arguments.sequenceId != sequence) return;
+					if (arguments.compositionSource != bounds || arguments.eventSource != bounds) return;
+					if (arguments.eventType == GuiPointEventsType::Down && arguments.pointId != 0)
+					{
+						Stop();
+						return;
+					}
+					timestamp = arguments.timestamp;
+				}
+
+				void OnGesture(GuiGraphicsComposition*, GuiPointGestureEventArgs& arguments)
+				{
+					if (!owner || disposed->IsDisposed() || generating || !sequence) return;
+					if (arguments.compositionSource != bounds || arguments.eventSource != bounds) return;
+					if (auto gesture = arguments.gesture.TryGet<GuiPointGesture_Scrolling>())
+					{
+						arguments.selected = true;
+						scrolling = true;
+						vertical = gesture->isVertical;
+						position += gesture->distance;
+						Record(timestamp);
+					}
+				}
+
+				void OnEnded(GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& arguments)
+				{
+					if (!owner || disposed->IsDisposed() || !sequence || arguments.sequenceId != sequence) return;
+					sequence = 0;
+					if (arguments.reason != PointSequenceEndReason::Succeeded || !scrolling || !owner->rootObject) return;
+					if (bounds->GetRelatedGraphicsHost() != host) return;
+					Record(arguments.timestamp);
+					auto left = arguments.timestamp - started > 500000 ? arguments.timestamp - 500000 : started;
+					if (left == arguments.timestamp || samples.Count() < 2) return;
+					auto first = samples[0];
+					auto next = samples[1];
+					auto initial = first.position + (next.position - first.position) * ((double)(left - first.time) / (next.time - first.time));
+					velocity = (position - initial) * 1000000 / (arguments.timestamp - left);
+					if (velocity == 0) return;
+					duration = std::abs(velocity) / 320 / owner->deceleration;
+					if (duration == 0) return;
+					stopped = false;
+					// Start also resets an animation still awaiting retirement from the previous sequence.
+					Start();
+					for (auto state : owner->states)
+					{
+						if (state.Obj() == this)
+						{
+							owner->rootObject->AddAnimation(state);
+							break;
+						}
+					}
+				}
+
+				void Start()override
+				{
+					if (stopped) return;
+					playbackStart = DateTime::UtcTime().osMilliseconds;
+					elapsed = residue = 0;
+					boundary = 1;
+				}
+
+				void Pause()override { Stop(); }
+				void Resume()override {}
+				bool GetStopped()override { return stopped; }
+
+				void Run()override
+				{
+					if (!owner) return;
+					if (disposed->IsDisposed())
+					{
+						owner->RetireDisposedControls();
+						return;
+					}
+					if (stopped) return;
+					if (bounds->GetRelatedGraphicsHost() != host)
+					{
+						Stop();
+						return;
+					}
+					auto now = DateTime::UtcTime().osMilliseconds;
+					auto time = (double)(now >= playbackStart ? now - playbackStart : 0) / 1000;
+					auto speed = std::abs(velocity);
+					auto playbackVersion = version;
+					while (!stopped)
+					{
+						auto end = std::min(boundary / 10.0, duration);
+						if (time < end) break;
+						auto distance = speed * (1 - (elapsed / duration + end / duration) / 2) * (end - elapsed);
+						residue += velocity < 0 ? -distance : distance;
+						auto rounded = std::round(residue);
+						// A carried half-pixel must not reverse direction on a zero-distance tail.
+						auto increment = (vint)(velocity < 0 ? std::min(0.0, rounded) : std::max(0.0, rounded));
+						residue -= increment;
+						elapsed = end;
+						boundary++;
+						if (end == duration) stopped = true;
+						if (increment != 0)
+						{
+							GuiPointGestureEventArgs arguments(bounds);
+							arguments.gesture = GuiPointGesture_Scrolling{ vertical,increment };
+							generating = true;
+							bounds->GetEventReceiver()->pointGesture.Execute(arguments);
+							generating = false;
+							if (!owner || disposed->IsDisposed() || version != playbackVersion) return;
+							if (bounds->GetRelatedGraphicsHost() != host) Stop();
+						}
+					}
+				}
+			};
+
+/***********************************************************************
+MomentumScrolling
+***********************************************************************/
+
+			MomentumScrolling::MomentumScrolling() {}
+
+			MomentumScrolling::~MomentumScrolling()
+			{
+				Detach(rootObject);
+			}
+
+			void MomentumScrolling::Attach(controls::GuiInstanceRootObject* value)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::compositions::MomentumScrolling::Attach#"
+				CHECK_ERROR(!rootObject, ERROR_MESSAGE_PREFIX L"The component already has an owner.");
+				rootObject = value;
+				RetireDisposedControls();
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void MomentumScrolling::Detach(controls::GuiInstanceRootObject*)
+			{
+				for (auto state : states) state->Detach();
+				states.Clear();
+				rootObject = nullptr;
+			}
+
+			void MomentumScrolling::EnvironmentChanged()
+			{
+				RetireDisposedControls();
+				for (auto state : states) state->Stop();
+			}
+
+			void MomentumScrolling::RetireDisposedControls()
+			{
+				for (vint i = states.Count() - 1; i >= 0; i--)
+				{
+					if (states[i]->disposed->IsDisposed())
+					{
+						states[i]->Detach();
+						states.RemoveAt(i);
+					}
+				}
+			}
+
+			void MomentumScrolling::AttachControl(controls::GuiControl* control)
+			{
+				RetireDisposedControls();
+				for (auto state : states) if (state->control == control) return;
+				states.Add(Ptr(new MomentumScrollingState(this, control)));
+			}
+
+			void MomentumScrolling::DetachControl(controls::GuiControl* control)
+			{
+				RetireDisposedControls();
+				for (auto [state, index] : indexed(states))
+				{
+					if (state->control == control)
+					{
+						state->Detach();
+						states.RemoveAt(index);
+						return;
+					}
+				}
+			}
+
+			double MomentumScrolling::GetDeceleration()
+			{
+				RetireDisposedControls();
+				return deceleration;
+			}
+
+			void MomentumScrolling::SetDeceleration(double value)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::compositions::MomentumScrolling::SetDeceleration#"
+				CHECK_ERROR(std::isfinite(value) && value > 0, ERROR_MESSAGE_PREFIX L"Deceleration must be finite and positive.");
+				RetireDisposedControls();
+				deceleration = value;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+/***********************************************************************
 Predefined Gestures
 ***********************************************************************/
 

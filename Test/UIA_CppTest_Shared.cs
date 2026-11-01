@@ -568,14 +568,23 @@ public static class GacUIShowcaseTests
     }
     static void TouchingState(int count, double[] transform, string description)
     {
-        Wait(() =>
+        double[] values = null;
+        try
         {
-            var values = TouchingData();
-            if (values.Length != 5 + count * 3 || values[4] != count) return false;
-            // Integral translation carries fractional residuals between updates.
-            for (int i = 0; i < 4; i++) if (Math.Abs(values[i] - transform[i]) > (i < 2 ? 1.0 : 0.001)) return false;
-            return true;
-        }, description);
+            Wait(() =>
+            {
+                values = TouchingData();
+                if (values.Length != 5 + count * 3 || values[4] != count) return false;
+                // Integral translation carries fractional residuals between updates.
+                for (int i = 0; i < 4; i++) if (Math.Abs(values[i] - transform[i]) > (i < 2 ? 1.0 : 0.001)) return false;
+                return true;
+            }, description);
+        }
+        catch (Exception error)
+        {
+            throw new Exception(description + ": expected " + string.Join(",", transform) + "; actual "
+                + (values == null ? "unavailable" : string.Join(",", values)), error);
+        }
     }
     static void PointInput(string operation, int token, System.Windows.Rect bounds, int x, int y)
     {
@@ -615,6 +624,11 @@ public static class GacUIShowcaseTests
         Test("TouchingList / list-owned swipes, deferred identity removal and recycled rows");
         var page = Page(Page(root, "Misc"), "TouchingList");
         Check(page.Current.ControlType == ControlType.TabItem, "TouchingList tab role");
+        var momentum = Named(page, "Momentum Scrolling", ControlType.CheckBox);
+        var momentumToggle = Pattern<TogglePattern>(momentum, TogglePattern.Pattern);
+        Check(momentumToggle.Current.ToggleState == ToggleState.Off, "momentum defaults unchecked");
+        Check(momentum.Current.BoundingRectangle.Right <= Named(page, "Clear", ControlType.Button).Current.BoundingRectangle.Left,
+            "momentum checkbox precedes Clear");
         var list = Find(page, ControlType.List)[0];
         Action settleItems = () =>
         {
@@ -688,7 +702,7 @@ public static class GacUIShowcaseTests
         Check(Items(list).Count == 10, "cancellation retains the identity");
         Test("TouchingList / final Up and deferred middle-row removal");
         PointInput("Down", 1006, label, 180, 25);
-        PointInput("Up", 1006, label, 180 - width, 25);
+        PointInput("Up", 1006, label, 180 - width - 50, 25);
         settleItems();
         Wait(() => Items(list).Count == 9, "final-Up-only full swipe removes exactly one item");
         foreach (var item in Items(list)) Check(item.Current.Name != name, "middle row identity is removed");
@@ -710,6 +724,59 @@ public static class GacUIShowcaseTests
         PointInput("Update", 1008, list, 0.2, 0.5);
         PointInput("Up", 1008, list, 0.2, 0.5);
         Invoke(page, "Add 5 Items"); settleItems(); Wait(() => Items(list).Count == 5, "empty-space swipe cannot delete newly added items");
+
+        Test("TouchingList / optional momentum, fresh contact and uncheck interruption");
+        for (int i = 0; i < 5; i++) Invoke(page, "Add 5 Items");
+        settleItems();
+        scroll = Pattern<ScrollPattern>(list, ScrollPattern.Pattern);
+        scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
+        Pattern<SelectionItemPattern>(Items(list)[0], SelectionItemPattern.Pattern).Select();
+        var selection = Pattern<SelectionPattern>(list, SelectionPattern.Pattern);
+        var selectedName = selection.Current.GetSelection()[0].Current.Name;
+        momentumToggle.Toggle();
+        Check(momentumToggle.Current.ToggleState == ToggleState.On, "momentum can be enabled");
+        Action<int> flick = token =>
+        {
+            PointInput("Down", token, list, 0.5, 0.8);
+            Thread.Sleep(100);
+            PointInput("Update", token, list, 0.5, 0.6);
+            Thread.Sleep(100);
+            PointInput("Up", token, list, 0.5, 0.4);
+        };
+        flick(1201);
+        var released = scroll.Current.VerticalScrollPercent;
+        Wait(() => scroll.Current.VerticalScrollPercent > released, "viewport continues moving after Up");
+        PointInput("Down", 1202, list, 0.5, 0.5);
+        var interrupted = scroll.Current.VerticalScrollPercent;
+        Thread.Sleep(250);
+        Check(scroll.Current.VerticalScrollPercent == interrupted, "fresh Down stops continuation");
+        Input("!PointCancel:1202,PlatformCanceled");
+        flick(1203);
+        momentumToggle.Toggle();
+        var uncheckedPosition = scroll.Current.VerticalScrollPercent;
+        Thread.Sleep(250);
+        Check(scroll.Current.VerticalScrollPercent == uncheckedPosition, "unchecking stops continuation");
+        Check(selection.Current.GetSelection()[0].Current.Name == selectedName, "momentum preserves selected item identity");
+        momentumToggle.Toggle();
+        flick(1204);
+        Invoke(page, "Clear");
+        Invoke(page, "Add 5 Items"); settleItems();
+        Thread.Sleep(250);
+        Check(Items(list).Count == 5, "Clear and repopulation during playback cannot delete another row");
+        closed("momentum does not resurrect an ended row swipe");
+        scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
+        name = Items(list)[1].Current.Name;
+        label = RenderedCaptionBounds(name);
+        PointInput("Down", 1205, label, 180, 25);
+        Thread.Sleep(100);
+        PointInput("Up", 1205, label, 180 - width - 50, 25);
+        settleItems();
+        Wait(() => Items(list).Count == 4, "full swipe with momentum removes exactly one row at real End");
+        Thread.Sleep(500);
+        Check(Items(list).Count == 4, "horizontal momentum cannot delete an additional row");
+        foreach (var item in Items(list)) Check(item.Current.Name != name, "momentum preserves identity-based removal");
+        closed("horizontal momentum cannot reopen a recycled row");
+        momentumToggle.Toggle();
     }
     static void TouchTextSelectionAutomation()
     {
@@ -755,6 +822,17 @@ public static class GacUIShowcaseTests
         OpenTouching();
         var bounds = SnapshotBounds(TouchingSnapshot());
         Check(bounds.Width >= 320 && bounds.Height >= 240, "Touching raw region has useful bounds");
+        int dpi = (int)GetDpiForWindow(new IntPtr(root.Current.NativeWindowHandle));
+        Check(dpi > 0, "point fixture reads native DPI");
+        // Automation converts integral logical coordinates to native pixels and back.
+        Func<int, int, System.Windows.Point> local = (x, y) => new System.Windows.Point(
+            ((int)bounds.Left + x) * dpi / 96 * 96 / dpi - bounds.Left,
+            ((int)bounds.Top + y) * dpi / 96 * 96 / dpi - bounds.Top);
+        var first = local(20, 20);
+        var translated = local(50, 40);
+        var second = local(150, 40);
+        var expanded = local(250, 40);
+        var turned = local(50, 240);
         var initial = TouchingData();
         foreach (var invalid in new[] { "!PointDown:abc,1,2", "!PointDown:-1,1,2", "!PointCancel:1,Succeeded", "!PointUpdate:1,1", "!PointDown:1,1,2,pen" })
         {
@@ -769,27 +847,36 @@ public static class GacUIShowcaseTests
         PointInput("Down", 7, bounds, 20, 20);
         TouchingState(1, initial, "Down outside polygon preserves transform");
         PointInput("Update", 7, bounds, 50, 40);
-        var moved = new double[] { initial[0] + 30, initial[1] + 20, initial[2], initial[3] };
+        var moved = new double[] { initial[0] + translated.X - first.X, initial[1] + translated.Y - first.Y, initial[2], initial[3] };
         TouchingState(1, moved, "one contact translates");
         PointInput("Down", 8, bounds, 150, 40);
         TouchingState(2, moved, "second contact rebases without jumping");
         PointInput("Update", 8, bounds, 250, 40);
-        var scaled = new double[] { 150 + 2 * (moved[0] - 100), 40 + 2 * (moved[1] - 40), 2 * moved[2], 2 * moved[3] };
+        double scale = (expanded.X - translated.X) / (second.X - translated.X);
+        var scaled = new double[] {
+            (translated.X + expanded.X) / 2 + scale * (moved[0] - (translated.X + second.X) / 2),
+            translated.Y + scale * (moved[1] - translated.Y), scale * moved[2], scale * moved[3] };
         TouchingState(2, scaled, "two contact scaling and translation");
         PointInput("Update", 8, bounds, 50, 240);
-        var rotated = new double[] { 50 - 2 * (moved[1] - 40), 140 + 2 * (moved[0] - 100), -2 * moved[3], 2 * moved[2] };
+        double turnScale = (turned.Y - translated.Y) / (expanded.X - translated.X);
+        var rotated = new double[] {
+            translated.X - turnScale * (scaled[1] - translated.Y),
+            (translated.Y + turned.Y) / 2 + turnScale * (scaled[0] - (translated.X + expanded.X) / 2),
+            -turnScale * scaled[3], turnScale * scaled[2] };
         TouchingState(2, rotated, "two contact rotation");
         PointInput("Down", 9, bounds, 300, 150);
         PointInput("Update", 7, bounds, -30, -30);
         TouchingState(3, rotated, "three contacts freeze while moving outside raw bounds");
         var markers = TouchingData();
-        Check(markers[6] == -30 && markers[7] == -30, "marker follows captured contact outside raw bounds");
+        var outside = local(-30, -30);
+        Check(markers[6] == outside.X && markers[7] == outside.Y, "marker follows captured contact outside raw bounds");
         PointInput("Up", 9, bounds, 300, 150);
         TouchingState(2, rotated, "three to two rebases");
         PointInput("Up", 7, bounds, -30, -30);
         TouchingState(1, rotated, "original contact can lift without ending sequence");
         PointInput("Update", 8, bounds, 60, 255);
-        var final = new double[] { rotated[0] + 10, rotated[1] + 15, rotated[2], rotated[3] };
+        var remaining = local(60, 255);
+        var final = new double[] { rotated[0] + remaining.X - turned.X, rotated[1] + remaining.Y - turned.Y, rotated[2], rotated[3] };
         TouchingState(1, final, "remaining contact translates from new baseline");
         PointInput("Up", 8, bounds, 60, 255);
         TouchingState(0, final, "successful End clears markers");
@@ -818,7 +905,8 @@ public static class GacUIShowcaseTests
         PointInput("Enter", 45, bounds, 20, 20);
         PointInput("Leave", 45, bounds, -20, -20);
         PointInput("Up", 45, bounds, -20, -20);
-        var boundary = new double[] { final[0] - 40, final[1] - 40, final[2], final[3] };
+        var left = local(-20, -20);
+        var boundary = new double[] { final[0] + left.X - first.X, final[1] + left.Y - first.Y, final[2], final[3] };
         TouchingState(0, boundary, "boundary callbacks preserve the captured route");
         Input("!LeftDown:" + ((int)bounds.Left + 20) + "," + ((int)bounds.Top + 20));
         Input("!MouseMove:" + ((int)bounds.Left + 80) + "," + ((int)bounds.Top + 80));

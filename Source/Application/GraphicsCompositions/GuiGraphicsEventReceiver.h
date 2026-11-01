@@ -187,26 +187,31 @@ Event
 
 				void ExecuteWithNewSender(T& argument, GuiGraphicsComposition* newSender)
 				{
-					auto currentHandler=&handlers;
-					while(*currentHandler)
+					auto currentHandler = handlers;
+					while(currentHandler)
 					{
+						if (!currentHandler->handler->IsAttached())
+						{
+							currentHandler = currentHandler->next;
+							continue;
+						}
 						if constexpr (std::is_same_v<T, GuiPointSequenceStartedEventArgs>)
 						{
 							auto accepted = argument.acceptedComposition;
-							(*currentHandler)->handler->Execute(newSender ? newSender : sender, argument);
+							currentHandler->handler->Execute(newSender ? newSender : sender, argument);
 							if (accepted) argument.acceptedComposition = accepted;
 						}
 						else if constexpr (std::is_same_v<T, GuiPointGestureEventArgs>)
 						{
 							auto selected = argument.selected;
-							(*currentHandler)->handler->Execute(newSender ? newSender : sender, argument);
+							currentHandler->handler->Execute(newSender ? newSender : sender, argument);
 							argument.selected = selected || argument.selected;
 						}
 						else
 						{
-							(*currentHandler)->handler->Execute(newSender ? newSender : sender, argument);
+							currentHandler->handler->Execute(newSender ? newSender : sender, argument);
 						}
-						currentHandler=&(*currentHandler)->next;
+						currentHandler = currentHandler->next;
 					}
 				}
 

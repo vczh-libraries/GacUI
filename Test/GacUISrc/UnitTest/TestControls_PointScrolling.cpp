@@ -1,6 +1,8 @@
 #include "TestControls.h"
 #include "TestPointInput.h"
 #include "../../../Source/GacUI.h"
+#include <limits>
+#include <cmath>
 
 extern void SetGuiMainProxy(const Func<void()>& proxy);
 
@@ -51,20 +53,359 @@ void AssertTouchingListNoRed(GuiGraphicsComposition* composition)
 	}
 }
 
+class MomentumTestControl : public GuiControl
+{
+public:
+	MomentumTestControl() : GuiControl(theme::ThemeName::CustomControl)
+	{
+		SetControlTemplate([](const Value&) { return new templates::GuiControlTemplate; });
+	}
+};
+
+class MomentumTestRoot : public GuiInstanceRootObject
+{
+protected:
+	GuiControlHost* GetControlHostForInstance()override { return nullptr; }
+public:
+	~MomentumTestRoot() { FinalizeInstance(); }
+	void Tick()
+	{
+		StartPendingAnimations();
+		collections::List<Ptr<IGuiAnimation>> snapshot;
+		CopyFrom(snapshot, runningAnimations);
+		for (auto animation : snapshot)
+		{
+			animation->Run();
+			if (animation->GetStopped()) runningAnimations.Remove(animation.Obj());
+		}
+	}
+	void Pause()
+	{
+		for (auto animation : runningAnimations) animation->Pause();
+	}
+};
+
+class MomentumTestScrollView : public GuiScrollView
+{
+protected:
+	Size QueryFullSize()override { return Size(1000, 1000); }
+	void UpdateView(Rect)override {}
+public:
+	MomentumTestScrollView(bool hasScroll) : GuiScrollView(theme::ThemeName::CustomControl)
+	{
+		SetControlTemplate([=](const Value&)
+		{
+			auto ct = new templates::GuiScrollViewTemplate;
+			if (hasScroll)
+			{
+				auto scroll = new GuiScroll(theme::ThemeName::CustomControl);
+				scroll->SetControlTemplate([](const Value&) { return new templates::GuiScrollTemplate; });
+				ct->AddChild(scroll->GetBoundsComposition());
+				ct->SetVerticalScroll(scroll);
+			}
+			return ct;
+		});
+	}
+};
+
+class MomentumTestInput
+{
+public:
+	GuiControl* control;
+	collections::List<Nullable<Point>> points;
+	vuint64_t sequence = 0;
+
+	MomentumTestInput(GuiControl* value) : control(value) {}
+	void Start(bool accepted = true)
+	{
+		GuiPointSequenceStartedEventArgs arguments(control->GetBoundsComposition(), points);
+		arguments.sequenceId = ++sequence;
+		arguments.timestamp = 1000000;
+		if (accepted) arguments.acceptedComposition = control->GetBoundsComposition();
+		control->GetBoundsComposition()->GetEventReceiver()->pointSequenceStarted.Execute(arguments);
+	}
+	void Move(vuint64_t time, vint distance, bool vertical = true, vint contact = 0)
+	{
+		auto bounds = control->GetBoundsComposition();
+		GuiPointEventArgs action(bounds, contact == 0 ? GuiPointEventsType::Update : GuiPointEventsType::Down, points);
+		action.sequenceId = sequence;
+		action.timestamp = 1000000 + time;
+		action.pointId = contact;
+		bounds->GetEventReceiver()->pointAction.Execute(action);
+		GuiPointGestureEventArgs gesture(bounds);
+		gesture.gesture = GuiPointGesture_Scrolling{ vertical,distance };
+		gesture.handled = true;
+		bounds->GetEventReceiver()->pointGesture.Execute(gesture);
+	}
+	void End(vuint64_t time, PointSequenceEndReason reason = PointSequenceEndReason::Succeeded)
+	{
+		auto bounds = control->GetBoundsComposition();
+		GuiPointSequenceEndedEventArgs arguments(bounds, points);
+		arguments.sequenceId = sequence;
+		arguments.timestamp = 1000000 + time;
+		arguments.reason = reason;
+		bounds->GetEventReceiver()->pointSequenceEnded.Execute(arguments);
+	}
+};
+
 TEST_FILE
 {
 	SetGuiMainProxy([]()
 	{
-	TEST_CASE(L"MomentumScrolling is available to native and Workflow consumers")
-	{
-		TEST_ASSERT(GetTypeDescriptor<GuiComponent>() != nullptr);
-		auto type = GetGlobalTypeManager()->GetTypeDescriptor(L"presentation::compositions::MomentumScrolling");
-		TEST_ASSERT(type != nullptr);
-		TEST_ASSERT(type->GetConstructorGroup()->GetMethodCount() == 1);
-		TEST_ASSERT(type->GetMethodGroupByName(L"AttachControl", false) != nullptr);
-		TEST_ASSERT(type->GetMethodGroupByName(L"DetachControl", false) != nullptr);
-		TEST_ASSERT(type->GetPropertyByName(L"Deceleration", false) != nullptr);
-	});
+		TEST_CASE(L"MomentumScrolling is available to native and Workflow consumers")
+		{
+			TEST_ASSERT(GetTypeDescriptor<GuiComponent>() != nullptr);
+			auto type = GetGlobalTypeManager()->GetTypeDescriptor(L"presentation::compositions::MomentumScrolling");
+			TEST_ASSERT(type != nullptr);
+			TEST_ASSERT(type->GetConstructorGroup()->GetMethodCount() == 1);
+			TEST_ASSERT(type->GetMethodGroupByName(L"AttachControl", false) != nullptr);
+			TEST_ASSERT(type->GetMethodGroupByName(L"DetachControl", false) != nullptr);
+			TEST_ASSERT(type->GetPropertyByName(L"Deceleration", false) != nullptr);
+		});
+
+		TEST_CASE(L"Momentum samples the trailing interval and integrates elapsed deceleration")
+		{
+			for (auto multiplier : { 0.5,1.0,2.0 })
+			for (auto vertical : { false,true })
+			for (auto sign : { -1,1 })
+			for (vint scenario = 0; scenario < 11; scenario++)
+			{
+				TooltipTimer clock;
+				MomentumTestRoot root;
+				auto momentum = new MomentumScrolling;
+				root.AddComponent(momentum);
+				MomentumTestControl control;
+				momentum->AttachControl(&control);
+				momentum->AttachControl(&control);
+				TEST_ASSERT(!control.GetAcceptPointEvents());
+				momentum->SetDeceleration(multiplier);
+				MomentumTestInput input(&control);
+				input.Start();
+				double expected = 160 / multiplier;
+				switch (scenario)
+				{
+				case 0: input.Move(500000, sign * 160, vertical); input.End(500000); break;
+				case 1: input.Move(100000, sign * 32, vertical); input.End(100000); break;
+				case 2: input.Move(500000, sign * 160, vertical); input.Move(750000, sign * 80, vertical); input.End(750000); break;
+				case 3: input.Move(100000, sign * 10000, vertical); input.Move(600000, sign * 160, vertical); input.End(600000); break;
+				case 4: input.Move(100000, sign * 160, vertical); input.End(1000000); expected = 0; break;
+				case 5: input.Move(0, sign * 160, vertical); input.End(0); expected = 0; break;
+				case 6: input.Move(250000, sign * 240, vertical); input.Move(500000, -sign * 80, vertical); input.End(500000); break;
+				case 7: input.Move(250000, sign * 80, vertical); input.Move(250000, sign * 80, vertical); input.End(500000); break;
+				case 8: input.Move(500000, sign * 1, vertical); input.End(500000); expected = 0; break;
+				case 9: input.Move(250000, sign * 160, vertical); input.Move(500000, -sign * 160, vertical); input.End(500000); expected = 0; break;
+				case 10: input.Move(500000, sign * 50, vertical); input.End(500000); expected = std::round(15.625 / multiplier); break;
+				}
+				momentum->SetDeceleration(100);
+				vint total = 0;
+				control.GetBoundsComposition()->GetEventReceiver()->pointGesture.AttachLambda([&](GuiGraphicsComposition*, GuiPointGestureEventArgs& args)
+				{
+					TEST_ASSERT(!args.handled);
+					TEST_ASSERT(args.eventSource == control.GetBoundsComposition() && args.compositionSource == args.eventSource);
+					auto scrolling = args.gesture.Get<GuiPointGesture_Scrolling>();
+					TEST_ASSERT(scrolling.isVertical == vertical);
+					TEST_ASSERT(scrolling.distance * sign > 0);
+					total += scrolling.distance;
+				});
+				root.Tick();
+				clock.Advance(99); root.Tick(); TEST_ASSERT(total == 0);
+				clock.Advance(1); root.Tick();
+				if (scenario < 4 || scenario == 6 || scenario == 7) TEST_ASSERT(total * sign > 0);
+				clock.Advance(1900); root.Tick();
+				TEST_ASSERT(total == sign * (vint)expected);
+				clock.Advance(3000); root.Tick();
+				TEST_ASSERT(total == sign * (vint)expected);
+			}
+		});
+
+		TEST_CASE(L"Momentum default emits elapsed tenth-second integrals and stops at one second")
+		{
+			TooltipTimer clock;
+			MomentumTestRoot root;
+			auto momentum = new MomentumScrolling;
+			root.AddComponent(momentum);
+			MomentumTestControl control;
+			momentum->AttachControl(&control);
+			MomentumTestInput input(&control);
+			input.Start(); input.Move(500000, 160); input.End(500000);
+			vint total = 0, count = 0;
+			control.GetBoundsComposition()->GetEventReceiver()->pointGesture.AttachLambda([&](auto*, auto& args)
+			{
+				total += args.gesture.template Get<GuiPointGesture_Scrolling>().distance;
+				count++;
+			});
+			root.Tick();
+			for (vint i = 1; i <= 10; i++)
+			{
+				clock.Advance(100); root.Tick();
+				auto time = i / 10.0;
+				TEST_ASSERT(total == (vint)std::round(320 * time - 160 * time * time));
+				TEST_ASSERT(count == i);
+			}
+			clock.Advance(1000); root.Tick();
+			TEST_ASSERT(total == 160 && count == 10);
+		});
+
+		TEST_CASE(L"Momentum rounding cannot reverse on a near-boundary final interval")
+		{
+			for (auto sign : { -1,1 })
+			{
+				TooltipTimer clock;
+				MomentumTestRoot root;
+				auto momentum = new MomentumScrolling;
+				root.AddComponent(momentum);
+				MomentumTestControl control;
+				momentum->AttachControl(&control);
+				momentum->SetDeceleration(std::nextafter(0.3125, 0.0));
+				MomentumTestInput input(&control);
+				input.Start(); input.Move(500000, sign * 5); input.End(500000);
+				vint total = 0, count = 0;
+				control.GetBoundsComposition()->GetEventReceiver()->pointGesture.AttachLambda([&](auto*, auto& args)
+				{
+					auto distance = args.gesture.template Get<GuiPointGesture_Scrolling>().distance;
+					TEST_ASSERT(distance * sign > 0);
+					total += distance;
+					count++;
+				});
+				root.Tick(); clock.Advance(100); root.Tick();
+				TEST_ASSERT(total == sign && count == 1);
+				clock.Advance(1); root.Tick();
+				TEST_ASSERT(total == sign && count == 1);
+			}
+		});
+
+		TEST_CASE(L"Momentum control lifetime and reentrant detachment are independent")
+		{
+			for (vint scenario = 0; scenario < 10; scenario++)
+			{
+				TooltipTimer clock;
+				MomentumTestRoot root;
+				auto momentum = new MomentumScrolling;
+				root.AddComponent(momentum);
+				auto first = new MomentumTestControl;
+				MomentumTestControl second;
+				momentum->AttachControl(first);
+				momentum->AttachControl(&second);
+				MomentumTestInput a(first), b(&second);
+				a.Start(); b.Start();
+				a.Move(500000, 160); b.Move(500000, 160);
+				if (scenario == 0) a.Move(500000, 0, true, 1);
+				a.End(500000, scenario == 1 ? PointSequenceEndReason::Canceled_CaptureLost : PointSequenceEndReason::Succeeded);
+				b.End(500000);
+				vint totalA = 0, totalB = 0;
+				first->GetBoundsComposition()->GetEventReceiver()->pointGesture.AttachLambda([&](auto*, auto& args)
+				{
+					totalA += args.gesture.template Get<GuiPointGesture_Scrolling>().distance;
+					if (scenario == 2) momentum->DetachControl(first);
+					if (scenario == 3) momentum->DetachControl(&second);
+				});
+				second.GetBoundsComposition()->GetEventReceiver()->pointGesture.AttachLambda([&](auto*, auto& args)
+				{
+					totalB += args.gesture.template Get<GuiPointGesture_Scrolling>().distance;
+				});
+				root.Tick();
+				if (scenario == 4) a.Start(false);
+				if (scenario == 5) { momentum->DetachControl(first); momentum->AttachControl(first); }
+				if (scenario == 6) { delete first; first = nullptr; }
+				if (scenario == 7) momentum->EnvironmentChanged();
+				if (scenario == 8) root.Pause();
+				if (scenario == 9) root.FinalizeInstance();
+				clock.Advance(1000); root.Tick();
+				if (scenario == 2) TEST_ASSERT(totalA == 30);
+				else if (scenario == 3) TEST_ASSERT(totalA == 160);
+				else TEST_ASSERT(totalA == 0);
+				if (scenario < 7 && scenario != 3) TEST_ASSERT(totalB == 160);
+				clock.Advance(1000); root.Tick();
+				if (first) delete first;
+			}
+		});
+
+		TEST_CASE(L"Momentum deceleration rejects invalid values")
+		{
+			MomentumScrolling momentum;
+			TEST_ASSERT(momentum.GetDeceleration() == 1.0);
+			for (auto value : { 0.0,-1.0,std::numeric_limits<double>::infinity(),std::numeric_limits<double>::quiet_NaN() })
+			{
+				TEST_ERROR(momentum.SetDeceleration(value));
+				TEST_ASSERT(momentum.GetDeceleration() == 1.0);
+			}
+		});
+
+		TEST_CASE(L"Post-End scrolling preserves target, scrollbar and boundary guards")
+		{
+			for (vint scenario = 0; scenario < 7; scenario++)
+			{
+				MomentumTestScrollView view(scenario != 0);
+				auto bar = view.GetVerticalScroll();
+				if (bar) { bar->SetTotalSize(1000); bar->SetPageSize(100); }
+				if (scenario == 1) bar->SetEnabled(false);
+				if (scenario == 2) bar->SetVisible(false);
+				if (scenario == 3) view.SetEnabled(false);
+				GuiPointGestureEventArgs arguments(view.GetBoundsComposition());
+				arguments.gesture = GuiPointGesture_Scrolling{ scenario != 4,-10000 };
+				if (scenario == 5) arguments.eventSource = nullptr;
+				view.GetBoundsComposition()->GetEventReceiver()->pointGesture.Execute(arguments);
+				TEST_ASSERT(arguments.handled == (scenario == 6));
+				if (scenario == 6)
+				{
+					TEST_ASSERT(bar->GetPosition() == bar->GetTotalSize() - bar->GetPageSize());
+					arguments.handled = false;
+					arguments.gesture = GuiPointGesture_Scrolling{ true,10000 };
+					view.GetBoundsComposition()->GetEventReceiver()->pointGesture.Execute(arguments);
+				}
+				TEST_ASSERT(view.GetViewPosition() == Point());
+			}
+		});
+
+		TEST_CASE(L"Momentum ignores child ownership and late attachment, and retires idle disposal")
+		{
+			TooltipTimer clock;
+			MomentumTestRoot root;
+			auto momentum = new MomentumScrolling;
+			root.AddComponent(momentum);
+			auto disposed = new MomentumTestControl;
+			momentum->AttachControl(disposed);
+			delete disposed;
+			MomentumTestControl parent, child;
+			momentum->AttachControl(&parent);
+			MomentumTestInput input(&parent);
+			collections::List<Nullable<Point>> points;
+			GuiPointSequenceStartedEventArgs started(parent.GetBoundsComposition(), points);
+			started.sequenceId = ++input.sequence;
+			started.timestamp = 1000000;
+			started.acceptedComposition = child.GetBoundsComposition();
+			parent.GetBoundsComposition()->GetEventReceiver()->pointSequenceStarted.Execute(started);
+			input.Move(500000, 160); input.End(500000);
+			vint total = 0;
+			parent.GetBoundsComposition()->GetEventReceiver()->pointGesture.AttachLambda([&](auto*, auto& args)
+			{
+				if (!args.handled) total += args.gesture.template Get<GuiPointGesture_Scrolling>().distance;
+			});
+			root.Tick(); clock.Advance(1000); root.Tick();
+			TEST_ASSERT(total == 0);
+			momentum->DetachControl(&parent);
+			input.Start();
+			momentum->AttachControl(&parent);
+			input.Move(500000, 160); input.End(500000);
+			root.Tick(); clock.Advance(1000); root.Tick();
+			TEST_ASSERT(total == 0);
+			input.Start(); input.Move(500000, 160); input.End(500000);
+			root.Tick(); clock.Advance(1000); root.Tick();
+			TEST_ASSERT(total == 160);
+			momentum->SetDeceleration(std::numeric_limits<double>::max());
+			input.Start(); input.Move(500000, 160); input.End(500000);
+			root.Tick(); clock.Advance(1000); root.Tick();
+			TEST_ASSERT(total == 160);
+			momentum->SetDeceleration(1);
+			auto handler = parent.GetBoundsComposition()->GetEventReceiver()->pointSequenceStarted.AttachLambda([](auto* sender, auto& args)
+			{
+				args.acceptedComposition = sender;
+			});
+			input.Start(false); input.Move(500000, 160); input.End(500000);
+			root.Tick(); clock.Advance(1000); root.Tick();
+			TEST_ASSERT(total == 320);
+			parent.GetBoundsComposition()->GetEventReceiver()->pointSequenceStarted.Detach(handler);
+		});
 	});
 	SetupGacGenNativeController();
 	SetGuiMainProxy({});
@@ -389,6 +730,98 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	for (bool document : { false,true })
+	TEST_CASE(document ? L"Document momentum preserves the selected range after Up" : L"List momentum preserves selected items after Up")
+	{
+		Ptr<TooltipTimer> clock;
+		Ptr<PointProtocolInput> input;
+		GuiScrollView* view = nullptr;
+		MomentumScrolling* momentum = nullptr;
+		NativePoint origin;
+		TextPos begin, end;
+		auto selected = [&]()
+		{
+			auto window = GetApplication()->GetMainWindow();
+			TEST_ASSERT(FindObjectByName<GuiTextList>(window, L"list")->GetSelectedItemIndex() == 0);
+			auto editor = FindObjectByName<GuiMultilineTextBox>(window, L"editor");
+			TEST_ASSERT(editor->GetCaretBegin() == begin && editor->GetCaretEnd() == end);
+		};
+		GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			input = Ptr(new PointProtocolInput(protocol->GetEvents(), false));
+			protocol->OnNextIdleFrame(L"Selected content ready", [&, protocol]()
+			{
+				view->SetViewPosition(Point());
+				origin = protocol->LocationOf(view, 0.5, 0.9);
+				input->Start(origin);
+				TEST_ASSERT(view->GetPointEventComposition() == view->GetBoundsComposition());
+				input->At(500000);
+				input->Up(0, NativePoint(origin.x, origin.y - 160));
+				input->End(500000);
+				TEST_ASSERT(!view->GetPointEventComposition());
+				TEST_ASSERT(view->GetViewPosition().y == 160);
+			});
+			protocol->OnNextIdleFrame(L"Final Up scrolled and released capture", [&]()
+			{
+				selected();
+				clock->Advance(100);
+				GetApplication()->GetMainWindow()->GetTimerManager()->Play();
+				TEST_ASSERT(view->GetViewPosition().y == 190);
+			});
+			protocol->OnNextIdleFrame(L"Momentum scrolled with capture cleared", [&]()
+			{
+				selected();
+				clock->Advance(900);
+				GetApplication()->GetMainWindow()->GetTimerManager()->Play();
+				TEST_ASSERT(view->GetViewPosition().y == 320);
+			});
+			protocol->OnNextIdleFrame(L"Momentum stopped at one second", [&]()
+			{
+				selected();
+				input->Start(origin);
+				input->At(500000); input->Up(0, NativePoint(origin.x, origin.y - 160)); input->End(500000);
+				momentum->DetachControl(view);
+				clock->Advance(1000);
+				GetApplication()->GetMainWindow()->GetTimerManager()->Play();
+				TEST_ASSERT(view->GetViewPosition().y == 480);
+			});
+			protocol->OnNextIdleFrame(L"Detachment stopped continuation", [&]()
+			{
+				selected();
+				GetApplication()->GetMainWindow()->Hide();
+				clock = nullptr;
+			});
+		});
+		GacUIUnitTest_Installer installer;
+		installer.installWindow = [&](GuiWindow* window)
+		{
+			clock = Ptr(new TooltipTimer);
+			momentum = new MomentumScrolling;
+			window->AddComponent(momentum);
+			auto list = FindObjectByName<GuiTextList>(window, L"list");
+			auto editor = FindObjectByName<GuiMultilineTextBox>(window, L"editor");
+			list->SetArranger(Ptr(new PointScrollingItemArranger));
+			WString text;
+			for (vint i = 0; i < 80; i++)
+			{
+				auto line = L"Selected content " + itow(i) + L" remains selected while momentum scrolls the viewport.";
+				list->GetItems().Add(Ptr(new TextItem(line)));
+				text += line + L"\r\n";
+			}
+			list->SetSelected(0, true);
+			editor->SetText(text);
+			editor->SetCaret(TextPos(0, 0), TextPos(0, 8));
+			editor->SetViewPosition(Point());
+			begin = editor->GetCaretBegin(); end = editor->GetCaretEnd();
+			editor->SetEditMode(GuiDocumentEditMode::ViewOnly);
+			view = document ? static_cast<GuiScrollView*>(editor) : list;
+			momentum->AttachControl(view);
+		};
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			document ? L"Controls/PointScrolling/DocumentMomentum" : L"Controls/PointScrolling/ListMomentum",
+			L"gacuisrc_unittest::MainWindow", resource, installer);
+	});
+
 	for (bool editor : { false,true })
 	TEST_CASE(editor ? L"Multiline text point selection" : L"List point scrolling")
 	{
@@ -427,6 +860,7 @@ TEST_FILE
 					TEST_ASSERT(textBox->GetViewPosition() == Point());
 					state->input->Up(0, NativePoint(state->origin.x + 60, state->origin.y + 30)); state->input->End();
 					textBox->SetControlTemplate([](const description::Value&) { return new darkskin::DocumentViewerTemplate; });
+					textBox->SetEditMode(GuiDocumentEditMode::Selectable);
 				});
 				protocol->OnNextIdleFrame(L"Replaced template keeps text input", [=]()
 				{
@@ -549,6 +983,9 @@ TEST_FILE
 		{
 			auto list = FindObjectByName<GuiTextList>(window, L"list");
 			auto textBox = FindObjectByName<GuiMultilineTextBox>(window, L"editor");
+			auto momentum = new MomentumScrolling;
+			window->AddComponent(momentum);
+			momentum->AttachControl(textBox);
 			list->SetArranger(Ptr(new PointScrollingItemArranger));
 			WString text;
 			for (vint i = 0; i < 40; i++)

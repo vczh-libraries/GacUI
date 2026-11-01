@@ -168,6 +168,7 @@ Type List (Compositions)
 ***********************************************************************/
 
 #define GUIREFLECTIONCOMPOSITION_EXTRA_TYPELIST(F)\
+			F(presentation::compositions::MomentumScrolling)\
 			F(presentation::compositions::eazy_layout::GuiEasyLayoutDirection)\
 			F(presentation::compositions::eazy_layout::GuiEasyLayout)\
 			F(presentation::compositions::eazy_layout::GuiEasyCellLayout)\

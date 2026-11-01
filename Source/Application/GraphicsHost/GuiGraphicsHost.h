@@ -12,6 +12,7 @@ Interfaces:
 #include "GuiGraphicsHost_ShortcutKey.h"
 #include "GuiGraphicsHost_Alt.h"
 #include "GuiGraphicsHost_Tab.h"
+#include "GuiGraphicsHost_Point.h"
 #include "../GraphicsCompositions/GuiGraphicsWindowComposition.h"
 
 namespace vl
@@ -25,8 +26,6 @@ namespace vl
 
 		namespace compositions
 		{
-			class GuiPointActionManager;
-
 /***********************************************************************
 Animation
 ***********************************************************************/
