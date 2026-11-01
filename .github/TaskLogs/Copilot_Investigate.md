@@ -105,12 +105,11 @@
 
 Deterministic point-input and animation-clock regressions will cover sampling, deceleration, per-control lifetime, routing and selection. Rendering snapshots, generated/interpreted demos, native renderer input and documentation/publication checks follow the verification requirements above.
 
-# PROPOSALS
-
-
 - Baseline Debug x64 solution build passed with zero warnings/errors. The ordinary reflection regression runs inside the initialized compiler-native harness, confirms GuiComponent is registered, and fails because MomentumScrolling is absent. This establishes the missing API independently of snapshot rendering.
 
-- No.1 Per-control sampled continuation through the existing UI animation scheduler
+# PROPOSALS
+
+- No.1 Per-control sampled continuation through the existing UI animation scheduler [CONFIRMED]
 
 ## No.1 Per-control sampled continuation through the existing UI animation scheduler
 
@@ -120,4 +119,46 @@ Use stopped animation state for safe retirement during dispatch; do not synchron
 
 ### CODE CHANGE
 
-Pending implementation. Verification includes deterministic ordinary tests, useful post-Up snapshots, both metadata architectures, compiler regeneration, full unit suite, generated/interpreted showcases, tutorial, native-renderer/browser coverage and website validation/publication. Publication skips both broad initialization jobs and preserves the deployed Wasm demo.
+The ordinary sampling/lifetime tests and list continuation snapshots pass. Debugging the document fixture showed its caret setup had already scrolled the viewport (250 pixels after the 160-pixel drag); explicitly reset the initial viewport before the gesture, as the existing selection fixture does.
+
+Implemented the component, composition reflection registration, targeted scroll-view dispatch, safe event-handler traversal, authored checkbox demos, deterministic input-clock/animation-clock tests and post-Up selection snapshots. Initial compilation corrected test-only collection spelling; the first runtime run exposed an invalid Unknown theme in the ordinary fixture, now replaced with CustomControl. Verification includes deterministic ordinary tests, useful post-Up snapshots, both metadata architectures, compiler regeneration, full unit suite, generated/interpreted showcases, tutorial, native-renderer/browser coverage and website validation/publication. Publication skips both broad initialization jobs and preserves the deployed Wasm demo.
+Additional ordinary regressions cover absent/disabled/hidden scrollbars, disabled controls, wrong event sources, clamping, child acceptance, late attachment and idle disposal. The post-template selection snapshot also exercises Selectable mode; the initial selection snapshot exercises Editable mode.
+
+Review identified two refinements: a Started handler installed after the component may accept the bounds, so retain the Started seed while acceptance is undecided and only consume correctly targeted raw actions/gestures. Compute captured stopping duration by dividing before scaling, then integrate normalized speed, avoiding overflow for valid extreme finite deceleration values.
+
+Extend the shared UI Automation scenario with a horizontal full swipe while momentum is enabled. After real End removes the selected identity, wait through generated horizontal events and assert that exactly one row was removed and no recycled row exposes a red panel.
+
+The first native Win32 automation run timed out in the pre-existing two-contact rotation check, before momentum. Add actual/expected transform diagnostics to that check, then reproduce and diagnose before proceeding.
+
+Diagnostics showed the first point at (20,19), the next at (49,39), and the final transform (-193,359), rather than the fixture's assumed (-190,360). Native Windows logical/native conversions truncate at the current DPI. Compute the fixture's analytic translation, scaling and quarter-turn expectations from those converted coordinates, retaining the existing one-pixel translation and 0.001 axis tolerances; no recognizer change is needed.
+
+The corrected transform checks pass. The same DPI quantization can leave a swipe exactly one pixel short of the deletion threshold; use the existing full-reveal fixture's 50-pixel overshoot for both final-Up deletion checks, while keeping exact threshold/clamp assertions in the deterministic unit tests.
+
+Numerical review reproduced a rounding edge: velocity 10 pixels/second and the representable multiplier immediately below 0.3125 yield a duration just above 0.1 seconds. The first interval rounds half a pixel to one and carries -0.5; the almost-zero final interval can round that carry to -1. Clamp each rounded increment to the initial velocity's direction, as required by the no-reversal contract, and add a deterministic two-sign regression spanning the 100-ms and 101-ms ticks.
+
+CDB reproduced the new assertion failure in Debug x64 before the correction: at time 0.101, velocity was -10, the interval ended at 0.10000000000000001943, integrated distance was zero, and the emitted increment was +1. The regression rejected that reverse step. The correction clamps the rounded increment to the captured velocity's sign while retaining fractional residue.
+
+The remote matrix passed Pipe and Http with both native backends. MiniHttp then rejected the fixture's first POST with HTTP 417: the existing VlppOS HTTP parser deliberately rejects Expect headers, while Windows PowerShell adds Expect: 100-continue by default. Disable that handshake on the fixture's endpoint ServicePoint before POSTing; preserve the server's existing protocol contract and rerun both MiniHttp backends.
+
+Windows OS input acquisition passed, but its subsequent repeat of the remote scenario missed continuation after release. The fixture performs an expensive full Controls read between the final move and Up, then another settling read and delay before beginning its continuation observation. This changes the sampled velocity and can consume the short playback window. Move the baseline observation before the timed flick, use a 200-pixel flick with two 100-ms intervals, and observe immediately after its completion. Deterministic unit tests retain exact velocity, final-Up and stopping-time assertions; the integration fixture verifies real viewport continuation and interruption without including snapshot latency in its input sampling.
+
+### CONFIRMED
+
+Select this proposal as the implementation. Sampling uses only the raw input clock, while elapsed animation integration uses its own clock. Deterministic tests establish the required distance and timing, and generated/interpreted/native/remote/browser consumers establish actual control routing, selection preservation and lifecycle behavior. The component remains optional, owns no attached control, and safely retires stopped animations and detached listeners. Review found and corrected the representable half-pixel reversal edge. Publication is separately pending the external environment described below; this confirmation does not claim that deployment has occurred.
+
+- The full unfiltered Debug Win32 suite passed 1,951/1,951 cases in 96/96 files, without a debug leak dump. This run preceded the final rounding correction; final focused runs on both architectures cover that correction. The initial focused Win32 run passed 102/102 cases.
+- Complete two-architecture resource regeneration finished without UI compiler error files. Final Debug Win32 and x64 builds passed with zero warnings/errors, and CDB confirmed both signs of the new rounding regression pass after the correction. Final focused runs passed 168/168 cases in 10/10 files on x64 and 105/105 cases in 3/3 files on Win32, without debug leak dumps.
+- The required post-generation sequence completed: Win32 build and Metadata_Generate, x64 build and Metadata_Generate, then x64 Metadata_Test. One x64 generation attempt failed opening Reflection64.bin for writing while other checks overlapped. CDB confirmed FileStream::Write received a closed stream, with a null implementation, at the full-metadata output. The file was available when inspected; a serialized rerun with all consumers stopped passed both generation and Metadata_Test. No metadata or reflection source change was needed.
+- The Release tutorial and the website's reflected XML example generated successfully for both architectures with the current GacGen/GacBuild tools. The cached older GacGen failed against current metadata; CDB traced that incompatibility to the old Workflow emitter. Rebuilding the current tools resolved generation without changing their sources.
+- The Release tutorial rebuilt successfully in Debug x64 after the final correction. UI Automation verified the initial unchecked checkbox, its position before Clear, toggling, list selection and scrolling, Clear/Add behavior, and normal shutdown.
+- Complete Win32 Touching automation passed 8,337 assertions in both no-reflection and full-reflection native consumers, and 8,336 assertions in the interpreted Workflow host. A full-reflection theme-navigation timeout during a concurrent large build passed on rerun. Both required named x64 wrappers, UIA_CppTest and UIA_CppTest_Metaonly, also passed 8,337 assertions each and shut down normally.
+- All six native remote combinations passed: Pipe, Http and MiniHttp with Direct2D and GDI. These exercised Core and renderer listener injection, actual rendered rectangle/contact pixels, post-Up momentum, fresh-Down interruption, identity-based swipe removal, list selection, document selection before/after template replacement, and normal shutdown.
+- Chromium CDP touch acquisition passed with both Http and MiniHttp. Outgoing protocol events, actual canvas pixels, momentum after release and interruption on fresh touch, selection rendering, swipe identity removal, unchanged outer-page scrolling, compatibility-mouse suppression and template replacement all passed. Both runs reported no browser errors and shut down Core normally. The momentum screenshot shows the checkbox before Clear and the scrolled list.
+- Windows OS injection through the Http/Direct2D native renderer passed WM_POINTER one-contact translation, multiple contacts with the original lifting first, canceled Up, rejected-touch compatibility mouse forwarding and independent unpromoted Windows mouse injection. Physical touch hardware, other-monitor DPI, and native Linux/macOS execution remain unverified; native wGac/iGac do not currently acquire touch. These results are separate from Core/listener injection and Chromium CDP acquisition.
+- After removing full-tree snapshot latency from the timed flick, the complete Http/Direct2D run with NativeInjection passed again, including momentum, interruption, list/document selection, template replacement and graceful shutdown. The earlier six-combination matrix and both browser transports passed independently.
+- Website build, all three test targets, sequential main/docs downloads, markdown export, and Chromium inspection of all changed articles passed. Navigation links to the new component page work, and the exported example compiled. Canonical and copied remote/point knowledge agree.
+- Publication prerequisites are incomplete on this host: `wsl --list --quiet` reports that WSL is not installed, and no container runtime or configured SSH host is available. The requested Linux/macOS Copy-WASM step and deployment remain pending. Both broad initialization invocations were skipped, as requested. The publishing repository and its existing Wasm folder were left unchanged.
+
+Remaining publication work requires the configured Linux/macOS build environment: complete the prescribed website build then Copy-WASM sequence, perform sequential main/docs downloads and markdown export without another website build, publish while preserving the existing wasm-fct folder, and verify CI and live pages. Then replace the canonical Tools manual and its final index section from the exported markdown and push those outputs. The local website export and validation are complete, but the canonical manual/index publication is pending this ordered workflow. No broad copilotInitAll invocation is required or permitted for this request.
+
+Authored website documentation is pushed in `<WebsiteSource repo>` commit `b35948b`. Canonical knowledge changes are pushed in `<Tools repo>` commits `359689d` and `66922a7`. The tutorial and regenerated distribution are pushed in `<Release repo>` commits `15eaeac6` and `588871c1`. GacUI implementation, generated files and snapshots are retained in separate commits following this investigation confirmation.
