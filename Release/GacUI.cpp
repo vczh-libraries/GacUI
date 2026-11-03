@@ -18919,6 +18919,7 @@ GuiDocumentCommonInterface
 				compositions::GuiGraphicsComposition* _mouseArea,
 				compositions::GuiGraphicsComposition* _container,
 				compositions::GuiGraphicsComposition* eventComposition,
+				compositions::GuiGraphicsComposition* pointEventComposition,
 				compositions::GuiGraphicsComposition* focusableComposition
 			)
 			{
@@ -18936,6 +18937,9 @@ GuiDocumentCommonInterface
 				documentComposition->SetAlignmentToParent(GetTuiApplication() ? Margin(0, 0, 0, 0) : Margin(2, 2, 2, 2));
 				_container->AddChild(documentComposition);
 				ReplaceMouseArea(_mouseArea);
+				documentPointEventComposition = pointEventComposition;
+				pointEventComposition->GetEventReceiver()->pointSequenceStarted.AttachMethod(this, &GuiDocumentCommonInterface::OnPointSequenceStarted);
+				pointEventComposition->GetEventReceiver()->pointGesture.AttachMethod(this, &GuiDocumentCommonInterface::OnPointGesture);
 
 				focusableComposition->GetEventReceiver()->caretNotify.AttachMethod(this, &GuiDocumentCommonInterface::OnCaretNotify);
 				focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnGotFocus);
@@ -18970,13 +18974,11 @@ GuiDocumentCommonInterface
 					documentMouseArea->GetEventReceiver()->mouseDown.Detach(onMouseDownHandler);
 					documentMouseArea->GetEventReceiver()->mouseUp.Detach(onMouseUpHandler);
 					documentMouseArea->GetEventReceiver()->mouseLeave.Detach(onMouseLeaveHandler);
-					documentMouseArea->GetEventReceiver()->pointSequenceStarted.Detach(onPointSequenceStartedHandler);
 
 					onMouseMoveHandler = nullptr;
 					onMouseDownHandler = nullptr;
 					onMouseUpHandler = nullptr;
 					onMouseLeaveHandler = nullptr;
-					onPointSequenceStartedHandler = nullptr;
 				}
 				documentMouseArea = _mouseArea;
 				if (documentMouseArea)
@@ -18990,15 +18992,48 @@ GuiDocumentCommonInterface
 					onMouseDownHandler = documentMouseArea->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseDown);
 					onMouseUpHandler = documentMouseArea->GetEventReceiver()->mouseUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
 					onMouseLeaveHandler = documentMouseArea->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
-					onPointSequenceStartedHandler = documentMouseArea->GetEventReceiver()->pointSequenceStarted.AttachMethod(this, &GuiDocumentCommonInterface::OnPointSequenceStarted);
 				}
 			}
 
 			void GuiDocumentCommonInterface::OnPointSequenceStarted(GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& arguments)
 			{
-				if (documentControl->GetVisuallyEnabled() && editMode != GuiDocumentEditMode::ViewOnly)
+				pointStartedInDocument = false;
+				for (auto composition = arguments.compositionSource; composition; composition = composition->GetParent())
 				{
-					arguments.handled = true;
+					if (composition == documentMouseArea)
+					{
+						pointStartedInDocument = true;
+						break;
+					}
+					if (auto control = composition->GetAssociatedControl(); control && control != documentControl) break;
+				}
+			}
+
+			void GuiDocumentCommonInterface::OnPointGesture(GuiGraphicsComposition* sender, GuiPointGestureEventArgs& arguments)
+			{
+				if (arguments.handled || !pointStartedInDocument || !documentControl->GetVisuallyEnabled() || editMode == GuiDocumentEditMode::ViewOnly) return;
+				if (arguments.eventSource != documentPointEventComposition || arguments.compositionSource != documentPointEventComposition) return;
+				if (documentControl->GetPointEventComposition() != documentPointEventComposition) return;
+
+				auto shortPress = arguments.gesture.TryGet<GuiPointGesture_ShortPressing>();
+				auto longPress = arguments.gesture.TryGet<GuiPointGesture_LongPressing>();
+				if (!shortPress && !longPress) return;
+				auto position = shortPress ? shortPress->position : longPress->position;
+				auto pointOrigin = documentPointEventComposition->GetGlobalBounds().LeftTop();
+				auto documentOrigin = documentComposition->GetGlobalBounds().LeftTop();
+				auto caret = documentElement->CalculateCaretFromPoint(Point(position.x + pointOrigin.x - documentOrigin.x, position.y + pointOrigin.y - documentOrigin.y));
+				auto begin = documentElement->GetCaretBegin();
+				auto end = documentElement->GetCaretEnd();
+				if (shortPress && begin != end && ((begin <= caret && caret <= end) || (end <= caret && caret <= begin)))
+				{
+					documentControl->SetFocused();
+					arguments.selected = arguments.handled = true;
+				}
+				else if (longPress && begin == end && caret != end)
+				{
+					documentControl->SetFocused();
+					Move(caret, true, caret < end);
+					arguments.selected = arguments.handled = true;
 				}
 			}
 
@@ -20615,7 +20650,7 @@ GuiDocumentViewer
 			{
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
-				InstallDocumentViewer(this, containerComposition->GetParent(), containerComposition, boundsComposition, focusableComposition);
+				InstallDocumentViewer(this, containerComposition->GetParent(), containerComposition, boundsComposition, boundsComposition, focusableComposition);
 
 				SetExtendToFullWidth(config.wrapLine);
 				SetHorizontalAlwaysVisible(!config.wrapLine);
@@ -20764,11 +20799,12 @@ GuiDocumentLabel
 				, GuiDocumentCommonInterface(FixConfig(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetDocumentLabelDefaultConfig(), _config)))
 			{
 				SetAcceptTabInput(true);
+				SetAcceptPointEvents(true);
 				SetFocusableComposition(boundsComposition);
 
 				if (config.autoExpand)
 				{
-					InstallDocumentViewer(this, containerComposition, containerComposition, boundsComposition, focusableComposition);
+					InstallDocumentViewer(this, containerComposition, containerComposition, boundsComposition, boundsComposition, focusableComposition);
 				}
 				else
 				{
@@ -20782,7 +20818,7 @@ GuiDocumentLabel
 
 					scrollingContainer->CachedBoundsChanged.AttachMethod(this, &GuiDocumentLabel::scrollingContainer_CachedBoundsChanged);
 					documentContainer->CachedBoundsChanged.AttachMethod(this, &GuiDocumentLabel::documentContainer_CachedMinSizeChanged);
-					InstallDocumentViewer(this, containerComposition, documentContainer, boundsComposition, focusableComposition);
+					InstallDocumentViewer(this, containerComposition, documentContainer, boundsComposition, boundsComposition, focusableComposition);
 				}
 			}
 
@@ -79378,7 +79414,7 @@ Predefined Gestures
 				GuiPointActionManager* manager;
 				bool selected = false;
 
-				void RaiseGesture(const Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>& payload)
+				void RaiseGesture(const decltype(GuiPointGestureEventArgs::gesture)& payload)
 				{
 					auto target = manager->GetPointCapture();
 					GuiPointGestureEventArgs arguments(target);
@@ -79404,6 +79440,7 @@ Predefined Gestures
 					vuint64_t timestamp = 0;
 					vint downCount = 0;
 					bool eligible = false;
+					bool generateClick = false;
 					Nullable<NativeMouseButton> fallback;
 
 				public:
@@ -79415,7 +79452,8 @@ Predefined Gestures
 						first = manager->GetCurrentScreenPoint();
 						timestamp = info.timestamp;
 						downCount = 0;
-						eligible = info.generateRightButtonClick;
+						eligible = true;
+						generateClick = info.generateRightButtonClick;
 						fallback.Reset();
 					}
 
@@ -79435,7 +79473,8 @@ Predefined Gestures
 						if (eligible && downCount == 1 && info.reason == PointSequenceEndReason::Succeeded
 							&& info.timestamp - timestamp >= 500000)
 						{
-							fallback = NativeMouseButton::Right;
+							if (generateClick) fallback = NativeMouseButton::Right;
+							RaiseGesture(GuiPointGesture_LongPressing{ manager->ConvertPoint(first, manager->GetPointCapture()) });
 						}
 					}
 
@@ -79446,8 +79485,10 @@ Predefined Gestures
 				{
 				protected:
 					NativePoint first;
+					vuint64_t timestamp = 0;
 					vint downCount = 0;
 					bool eligible = false;
+					bool generateClick = false;
 					Nullable<NativeMouseButton> fallback;
 
 				public:
@@ -79457,8 +79498,10 @@ Predefined Gestures
 					{
 						selected = false;
 						first = manager->GetCurrentScreenPoint();
+						timestamp = info.timestamp;
 						downCount = 0;
-						eligible = info.generateLeftButtonClick;
+						eligible = true;
+						generateClick = info.generateLeftButtonClick;
 						fallback.Reset();
 					}
 
@@ -79477,7 +79520,11 @@ Predefined Gestures
 					{
 						if (eligible && downCount == 1 && info.reason == PointSequenceEndReason::Succeeded)
 						{
-							fallback = NativeMouseButton::Left;
+							if (generateClick) fallback = NativeMouseButton::Left;
+							if (info.timestamp - timestamp < 500000)
+							{
+								RaiseGesture(GuiPointGesture_ShortPressing{ manager->ConvertPoint(first, manager->GetPointCapture()) });
+							}
 						}
 					}
 
@@ -79795,7 +79842,7 @@ GuiPointActionManager
 			Nullable<NativeMouseButton> GuiPointActionManager::GetFallbackClick()
 			{
 				if (!captureComposition || !ended) return {};
-				if (selectedGesture) return selectedGesture->GetFallbackClick();
+				if (selectedGesture) return {};
 				for (auto gesture : gestures)
 				{
 					if (auto button = gesture->GetFallbackClick()) return button;

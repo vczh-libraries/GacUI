@@ -335,6 +335,8 @@ Type List (Events)
 			F(presentation::compositions::GuiPointSequenceEndedEventArgs)\
 			F(presentation::compositions::GuiPointGesture_Scrolling)\
 			F(presentation::compositions::GuiPointGesture_DraggingAndRotation)\
+			F(presentation::compositions::GuiPointGesture_ShortPressing)\
+			F(presentation::compositions::GuiPointGesture_LongPressing)\
 			F(presentation::compositions::GuiPointGestureEventArgs)\
 			F(presentation::compositions::ControlSignal)\
 			F(presentation::compositions::GuiControlSignalEventArgs)\
