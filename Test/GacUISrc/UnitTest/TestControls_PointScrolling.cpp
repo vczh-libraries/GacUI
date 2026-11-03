@@ -432,6 +432,8 @@ TEST_FILE
 		GuiDocumentViewer* viewer = nullptr;
 		GuiButton* other = nullptr;
 		GuiButton* embeddedButton = nullptr;
+		GuiPopup* contextMenu = nullptr;
+		vint contextMenuOpened = 0;
 		Ptr<PointProtocolInput> pointInput;
 		vint shorts = 0, longs = 0, lefts = 0, rights = 0;
 		vint hyperlinks = 0, childPresses = 0;
@@ -460,6 +462,20 @@ TEST_FILE
 				TEST_ASSERT(selected == expectSelected && !control->GetPointEventComposition());
 				TEST_ASSERT(lefts == (!longPress && !expectSelected && expectClick ? 1 : 0));
 				TEST_ASSERT(rights == (longPress && !expectSelected && expectClick ? 1 : 0));
+			};
+			auto verifyContextMenu = [&](TextPos caret)
+			{
+				auto begin = document->GetCaretBegin(), end = document->GetCaretEnd();
+				auto origin = position(caret);
+				auto client = window->GetNativeWindow()->GetClientBoundsInScreen();
+				auto opened = contextMenuOpened;
+				control->SetContextMenu(contextMenu);
+				press(caret, true, false);
+				TEST_ASSERT(contextMenu->GetOpening() && contextMenuOpened == opened + 1);
+				TEST_ASSERT(contextMenu->GetLocation() == NativePoint(client.x1 + origin.x, client.y1 + origin.y));
+				TEST_ASSERT(document->GetCaretBegin() == begin && document->GetCaretEnd() == end);
+				contextMenu->Hide();
+				control->SetContextMenu(nullptr);
 			};
 			for (auto mode : { GuiDocumentEditMode::ViewOnly,GuiDocumentEditMode::Selectable,GuiDocumentEditMode::Editable })
 			for (vint range = 0; range < 3; range++)
@@ -533,6 +549,7 @@ TEST_FILE
 				TEST_ASSERT(content->GetGlobalBounds().x1 < control->GetBoundsComposition()->GetGlobalBounds().x1);
 				press(TextPos(0, 145), true, true);
 				TEST_ASSERT(document->GetCaretBegin() == TextPos(0, 150) && document->GetCaretEnd() == TextPos(0, 145));
+				verifyContextMenu(TextPos(0, 145));
 			}
 			else if (viewer)
 			{
@@ -540,6 +557,7 @@ TEST_FILE
 				viewer->SetViewPosition(Point(0, 20));
 				press(TextPos(1, 8), true, true);
 				TEST_ASSERT(document->GetCaretBegin() == TextPos(1, 4) && document->GetCaretEnd() == TextPos(1, 8));
+				verifyContextMenu(TextPos(1, 8));
 				auto before = viewer->GetViewPosition();
 				auto origin = protocol.LocationOf(viewer, 0.5, 0.8);
 				input.Start(origin); input.Move(NativePoint(origin.x, origin.y - 30)); input.Up(0, NativePoint(origin.x, origin.y - 30)); input.End();
@@ -616,6 +634,26 @@ TEST_FILE
 			input.Start(origin); input.Up(0, origin); input.End(500000);
 			TEST_ASSERT(shorts == 0 && longs == 1 && rights == 0 && selected);
 			TEST_ASSERT(document->GetCaretBegin() == TextPos() && document->GetCaretEnd() == TextPos(0, 4));
+			control->SetContextMenu(contextMenu);
+			control->SetDisplayContextMenuOnRightClick(false);
+			GetApplication()->RefreshThemes();
+			TEST_ASSERT(control->GetContextMenu() == contextMenu && !control->GetDisplayContextMenuOnRightClick());
+			control->SetDisplayContextMenuOnRightClick(true);
+			for (vint repeat = 0; repeat < 2; repeat++)
+			{
+				GetApplication()->RefreshThemes();
+				TEST_ASSERT(control->GetContextMenu() == contextMenu && control->GetDisplayContextMenuOnRightClick());
+				origin = position(TextPos(0, 4));
+				auto opened = contextMenuOpened;
+				input.Start(origin);
+				input.At(500000);
+				TEST_ASSERT(!contextMenu->GetOpening() && contextMenuOpened == opened);
+				input.Up(0, origin); input.End(500000);
+				TEST_ASSERT(contextMenu->GetOpening() && contextMenuOpened == opened + 1);
+				TEST_ASSERT(document->GetCaretBegin() == TextPos() && document->GetCaretEnd() == TextPos(0, 4));
+				contextMenu->Hide();
+			}
+			control->SetContextMenu(nullptr);
 			window->Hide();
 		});
 		SetGuiMainProxy([&]()
@@ -626,6 +664,10 @@ TEST_FILE
 			{
 				GuiWindow host(theme::ThemeName::Window);
 				window = &host;
+				GuiPopup popup(theme::ThemeName::Window);
+				contextMenu = &popup;
+				popup.SetClientSize(Size(80, 50));
+				popup.WindowOpened.AttachLambda([&](auto*, GuiEventArgs&) { contextMenuOpened++; });
 				host.SetClientSize(Size(700, 500));
 				GuiDocumentConfig config;
 				config.wrapLine = family != 2;

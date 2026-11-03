@@ -439,6 +439,7 @@ GuiControl
 
 					boundsComposition->AddChild(containerComposition);
 					auto receiver = boundsComposition->GetEventReceiver();
+					receiver->mouseUp.AttachMethod(this, &GuiControl::OnContextMenuMouseUp);
 					receiver->pointSequenceStarted.AttachMethod(this, &GuiControl::OnPointSequenceStarted);
 					receiver->pointAction.AttachMethod(this, &GuiControl::OnPointAction);
 					receiver->pointGesture.AttachMethod(this, &GuiControl::OnPointGesture);
@@ -459,6 +460,15 @@ GuiControl
 					ContextChanged.SetAssociatedComposition(boundsComposition);
 				}
 				sharedPtrDestructorProc = &GuiControl::SharedPtrDestructorProc;
+			}
+
+			void GuiControl::OnContextMenuMouseUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+			{
+				if (!arguments.handled && arguments.button == NativeMouseButton::Right && displayContextMenuOnRightClick && contextMenu)
+				{
+					arguments.handled = true;
+					contextMenu->ShowPopup(this, Point(arguments.x, arguments.y));
+				}
 			}
 
 			void GuiControl::OnPointSequenceStarted(GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& arguments)
@@ -832,6 +842,26 @@ GuiControl
 			void GuiControl::SetTag(const description::Value& value)
 			{
 				tag=value;
+			}
+
+			GuiPopup* GuiControl::GetContextMenu()
+			{
+				return contextMenu;
+			}
+
+			void GuiControl::SetContextMenu(GuiPopup* value)
+			{
+				contextMenu = value;
+			}
+
+			bool GuiControl::GetDisplayContextMenuOnRightClick()
+			{
+				return displayContextMenuOnRightClick;
+			}
+
+			void GuiControl::SetDisplayContextMenuOnRightClick(bool value)
+			{
+				displayContextMenuOnRightClick = value;
 			}
 
 			GuiControl* GuiControl::GetTooltipControl()

@@ -1,5 +1,6 @@
 #include "TestRemote_GraphicsHost_Shared.h"
 #include "TestPointInput.h"
+#include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 #include "../../../Source/Utilities/SharedServices/GuiSharedAutomationService_Controls.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 #include <cmath>
@@ -74,6 +75,162 @@ public:
 
 TEST_FILE
 {
+	TEST_CATEGORY(L"Borrowed context menus consume only eligible right-button releases")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		GuiControl* parent = nullptr;
+		GuiControl* child = nullptr;
+		GuiBoundsComposition* descendant = nullptr;
+		GuiPopup* parentMenu = nullptr;
+		GuiPopup* childMenu = nullptr;
+		Ptr<GuiDisposedFlag> firstDisposed, secondDisposed;
+		vint parentOpened = 0, childOpened = 0;
+		bool suppress = false;
+		protocol.OnNextFrame([&]()
+		{
+			using namespace vl::reflection::description;
+			auto controlType = GetTypeDescriptor<GuiControl>();
+			auto control = new GuiControl(theme::ThemeName::CustomControl);
+			auto first = new GuiPopup(theme::ThemeName::Window);
+			auto second = new GuiPopup(theme::ThemeName::Window);
+			firstDisposed = first->GetDisposedFlag();
+			secondDisposed = second->GetDisposedFlag();
+			TEST_ASSERT(control->GetContextMenu() == nullptr);
+			TEST_ASSERT(control->GetDisplayContextMenuOnRightClick());
+			control->SetContextMenu(first);
+			control->SetDisplayContextMenuOnRightClick(false);
+			TEST_ASSERT(control->GetContextMenu() == first);
+			TEST_ASSERT(!control->GetDisplayContextMenuOnRightClick());
+			auto menuProperty = controlType->GetPropertyByName(L"ContextMenu", true);
+			auto displayProperty = controlType->GetPropertyByName(L"DisplayContextMenuOnRightClick", true);
+			TEST_ASSERT(UnboxValue<GuiPopup*>(menuProperty->GetValue(Value::From(control))) == first);
+			auto controlValue = Value::From(control);
+			menuProperty->SetValue(controlValue, Value::From(second));
+			displayProperty->SetValue(controlValue, BoxValue(true));
+			TEST_ASSERT(control->GetContextMenu() == second);
+			TEST_ASSERT(UnboxValue<bool>(displayProperty->GetValue(Value::From(control))));
+			TEST_ASSERT(!firstDisposed->IsDisposed());
+			control->SetContextMenu(nullptr);
+			TEST_ASSERT(control->GetContextMenu() == nullptr && !secondDisposed->IsDisposed());
+			control->SetContextMenu(second);
+			SafeDeleteControl(control);
+			TEST_ASSERT(!firstDisposed->IsDisposed() && !secondDisposed->IsDisposed());
+			SafeDeleteControl(first);
+			SafeDeleteControl(second);
+
+			parent = new GuiControl(theme::ThemeName::CustomControl);
+			child = new GuiControl(theme::ThemeName::CustomControl);
+			parent->GetBoundsComposition()->SetExpectedBounds(Rect(20, 30, 400, 350));
+			child->GetBoundsComposition()->SetExpectedBounds(Rect(40, 50, 160, 140));
+			parent->AddChild(child);
+			controlHost->AddChild(parent);
+			descendant = new GuiBoundsComposition;
+			descendant->SetExpectedBounds(Rect(10, 11, 50, 40));
+			child->GetContainerComposition()->AddChild(descendant);
+			descendant->GetEventReceiver()->mouseUp.AttachLambda([&](auto*, GuiMouseEventArgs& arguments)
+			{
+				arguments.handled = suppress;
+			});
+			parentMenu = new GuiPopup(theme::ThemeName::Window);
+			childMenu = new GuiPopup(theme::ThemeName::Window);
+			parentMenu->SetClientSize(Size(80, 60));
+			childMenu->SetClientSize(Size(80, 60));
+			parentMenu->WindowOpened.AttachLambda([&](auto*, GuiEventArgs&) { parentOpened++; });
+			childMenu->WindowOpened.AttachLambda([&](auto*, GuiEventArgs&) { childOpened++; });
+			parent->SetContextMenu(parentMenu);
+			child->SetContextMenu(childMenu);
+			controlHost->ForceCalculateSizeImmediately();
+		});
+		protocol.OnNextFrame([&]()
+		{
+			auto receiver = child->GetBoundsComposition()->GetEventReceiver();
+			auto dispatch = [&](NativeMouseButton button, bool handled)
+			{
+				GuiMouseEventArgs arguments(child->GetBoundsComposition());
+				arguments.button = button;
+				arguments.handled = handled;
+				arguments.x = 15;
+				arguments.y = 16;
+				receiver->mouseUp.Execute(arguments);
+				return arguments.handled;
+			};
+			for (auto button : { NativeMouseButton::Left,NativeMouseButton::Middle,NativeMouseButton::Mouse4,NativeMouseButton::Mouse5 })
+			{
+				TEST_ASSERT(!dispatch(button, false));
+				TEST_ASSERT(!childMenu->GetOpening());
+			}
+			TEST_ASSERT(dispatch(NativeMouseButton::Right, true));
+			TEST_ASSERT(!childMenu->GetOpening());
+			child->SetContextMenu(nullptr);
+			TEST_ASSERT(!dispatch(NativeMouseButton::Right, false));
+			child->SetContextMenu(childMenu);
+			child->SetDisplayContextMenuOnRightClick(false);
+			TEST_ASSERT(!dispatch(NativeMouseButton::Right, false));
+			child->SetDisplayContextMenuOnRightClick(true);
+			protocol.MouseMove(NativePoint(75, 96));
+			protocol._RDown();
+			TEST_ASSERT(childOpened == 0 && parentOpened == 0);
+			protocol._RUp();
+			TEST_ASSERT(childOpened == 1 && parentOpened == 0 && childMenu->GetOpening());
+			TEST_ASSERT(childMenu->GetLocation() == NativePoint(75, 96));
+			childMenu->Hide();
+			child->SetContextMenu(nullptr);
+			protocol.RClick(NativePoint(75, 96));
+			TEST_ASSERT(childOpened == 1 && parentOpened == 1 && parentMenu->GetOpening());
+			TEST_ASSERT(parentMenu->GetLocation() == NativePoint(75, 96));
+			parentMenu->Hide();
+			suppress = true;
+			protocol.RClick(NativePoint(75, 96));
+			TEST_ASSERT(childOpened == 1 && parentOpened == 1);
+			suppress = false;
+			child->SetContextMenu(childMenu);
+			auto bounds = child->GetBoundsComposition();
+			child->SetDisplayContextMenuOnRightClick(false);
+			child->RefreshThemes();
+			TEST_ASSERT(child->GetBoundsComposition() == bounds && child->GetContextMenu() == childMenu);
+			TEST_ASSERT(!child->GetDisplayContextMenuOnRightClick());
+			child->SetControlTemplate([](const description::Value&)
+			{
+				auto result = new templates::GuiControlTemplate;
+				result->SetContainerComposition(result);
+				return result;
+			});
+			child->SetDisplayContextMenuOnRightClick(true);
+			GetApplication()->RefreshThemes();
+			TEST_ASSERT(child->GetBoundsComposition() == bounds && child->GetContextMenu() == childMenu);
+			TEST_ASSERT(child->GetDisplayContextMenuOnRightClick());
+			parent->GetBoundsComposition()->SetExpectedBounds(Rect(100, 80, 480, 400));
+			controlHost->ForceCalculateSizeImmediately();
+			protocol.RClick(NativePoint(155, 146));
+			TEST_ASSERT(childOpened == 2 && parentOpened == 1);
+			TEST_ASSERT(childMenu->GetLocation() == NativePoint(155, 146));
+			childMenu->Hide();
+			parent->GetBoundsComposition()->SetExpectedBounds(Rect(480, 360, 640, 480));
+			controlHost->ForceCalculateSizeImmediately();
+			protocol.RClick(NativePoint(620, 460));
+			TEST_ASSERT(childOpened == 3 && parentOpened == 1);
+			auto screen = controlHost->GetRelatedScreen()->GetClientBounds();
+			auto popup = childMenu->GetNativeWindow()->GetBounds();
+			TEST_ASSERT(popup.x2 == screen.x2 && popup.y2 == screen.y2);
+			TEST_ASSERT(popup.x1 >= screen.x1 && popup.y1 >= screen.y1);
+			childMenu->Hide();
+			child->SetContextMenu(nullptr);
+			parent->SetContextMenu(nullptr);
+			SafeDeleteControl(childMenu);
+			SafeDeleteControl(parentMenu);
+		});
+		protocol.OnNextFrame([&]()
+		{
+			// SafeDeleteControl defers control-host destruction until queued events finish.
+			TEST_ASSERT(firstDisposed->IsDisposed() && secondDisposed->IsDisposed());
+			controlHost->Hide();
+		});
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
 	TEST_CATEGORY(L"Press offers are independent of deferred click flags")
 	{
 		GraphicsHostProtocol protocol;

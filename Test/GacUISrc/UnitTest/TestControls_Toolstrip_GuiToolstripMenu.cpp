@@ -60,7 +60,7 @@ TEST_FILE
           </ToolstripGroupContainer>
         </ToolstripMenu>
 
-        <Button ref.Name="button" Text="Show Menu">
+        <Button ref.Name="button" Text="Show Menu" ContextMenu-eval="menu">
           <att.BoundsComposition-set AlignmentToParent="left:10 top:10 right:-1 bottom:-1"/>
           <ev.Clicked-eval><![CDATA[{
             menu.ShowPopup(button, true);
@@ -71,6 +71,62 @@ TEST_FILE
   </Instance>
 </Resource>
 )GacUISrc";
+
+	TEST_CASE(L"Automatic context menu placement and retained command bindings")
+	{
+		vint opened = 0;
+		NativePoint edgeClick;
+		GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto button = FindObjectByName<GuiControl>(window, L"button");
+				auto menu = FindObjectByName<GuiToolstripMenu>(window, L"menu");
+				TEST_ASSERT(button->GetContextMenu() == menu);
+				menu->WindowOpened.AttachLambda([&](auto*, GuiEventArgs&) { opened++; });
+				protocol->RClick(protocol->LocationOf(button, 0, 0, 8, 9));
+			});
+			protocol->OnNextIdleFrame(L"Menu at the right-button release", [&, protocol]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				TEST_ASSERT(opened == 1);
+				protocol->LClick(protocol->LocationOf(FindObjectByName<GuiControl>(window, L"buttonUndo")));
+				TEST_ASSERT(window->GetText() == L"Undo");
+			});
+			protocol->OnNextIdleFrame(L"Context command executed", [&]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto button = FindObjectByName<GuiControl>(window, L"button");
+				window->SetClientSize(Size(640, 480));
+				button->GetBoundsComposition()->SetAlignmentToParent(Margin(-1, -1, 5, 5));
+				GetApplication()->RefreshThemes();
+				TEST_ASSERT(button->GetContextMenu() == FindObjectByName<GuiToolstripMenu>(window, L"menu"));
+				TEST_ASSERT(button->GetDisplayContextMenuOnRightClick());
+			});
+			protocol->OnNextIdleFrame(L"Owner moved to the screen edge after refresh", [&, protocol]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				edgeClick = protocol->LocationOf(FindObjectByName<GuiControl>(window, L"button"));
+				protocol->RClick(edgeClick);
+			});
+			protocol->OnNextIdleFrame(L"Context menu adjusted inside the screen", [&]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto menu = FindObjectByName<GuiToolstripMenu>(window, L"menu");
+				TEST_ASSERT(opened == 2 && menu->GetOpening());
+				auto bounds = menu->GetNativeWindow()->GetBounds();
+				auto screen = menu->GetRelatedScreen()->GetClientBounds();
+				TEST_ASSERT(bounds.x1 >= screen.x1 && bounds.y1 >= screen.y1);
+				TEST_ASSERT(bounds.x2 <= screen.x2 && bounds.y2 <= screen.y2);
+				TEST_ASSERT(bounds.x1 < edgeClick.x && bounds.y1 < edgeClick.y);
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			WString::Unmanaged(L"Controls/Toolstrip/GuiToolstripMenuAutomatic"),
+			WString::Unmanaged(L"gacuisrc_unittest::MainWindow"), resourceToolBar);
+	});
 
 	for (auto closeOwner : { false,true })
 	TEST_CASE(closeOwner ? L"Close context menu owner" : L"Hide context menu owner")

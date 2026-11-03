@@ -135,6 +135,41 @@
       </ref.Ctor>
       <CustomControl ref.Name="self" Text="Document Editor">
         <att.HasEditableSelection-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.HasEditableSelection-bind>
+        <ToolstripMenu ref.Name="documentContextMenu">
+          <ToolstripGroupContainer>
+            <ToolstripGroup>
+              <MenuItemButton Command-eval="commandUndo"/>
+              <MenuItemButton Command-eval="commandRedo"/>
+            </ToolstripGroup>
+            <ToolstripGroup>
+              <MenuItemButton Command-eval="commandCopy"/>
+              <MenuItemButton Command-eval="commandCut"/>
+              <MenuItemButton Command-eval="commandPaste"/>
+            </ToolstripGroup>
+            <ToolstripGroup>
+              <MenuItemButton Command-eval="commandDelete"/>
+            </ToolstripGroup>
+            <ToolstripGroup>
+              <MenuItemButton Command-eval="commandSelect"/>
+              <MenuItemButton Text="Object">
+                <att.SubMenu-set>
+                  <MenuItemButton Command-eval="commandInsertImage"/>
+                  <MenuItemButton Command-eval="commandEditHyperlink"/>
+                  <MenuItemButton Command-eval="commandRemoveHyperlink"/>
+                </att.SubMenu-set>
+              </MenuItemButton>
+            </ToolstripGroup>
+            <ToolstripGroup>
+              <MenuItemButton Command-eval="commandFont"/>
+              <MenuItemButton Command-eval="commandColor"/>
+              <MenuItemButton Command-eval="commandBackColor"/>
+            </ToolstripGroup>
+            <ToolstripGroup>
+              <MenuItemButton Command-eval="commandEditHyperlink"/>
+              <MenuItemButton Command-eval="commandRemoveHyperlink"/>
+            </ToolstripGroup>
+          </ToolstripGroupContainer>
+        </ToolstripMenu>
         <MessageDialog ref.Name="dialogMessage" Title="You Clicked a Hyperlink!"/>
         <OpenFileDialog ref.Name="dialogOpen" Title="Select an Image" Filter="Image Files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp" EnabledPreview="true" Options="FileDialogFileMustExist|FileDialogDereferenceLinks"/>
         <OpenFileDialog ref.Name="dialogOpenDoc" Title="Load a GacUI Document" Filter="Private Format (*.bin)|*.bin" Options="FileDialogFileMustExist|FileDialogDereferenceLinks"/>
@@ -161,7 +196,7 @@
           <Cell ref.Name="toolstripContainer" Site="row:1 column:0"/>
 
           <Cell Site="row:2 column:0">
-            <DocumentViewer ref.Name="document" EditMode="Editable" Alt="D">
+            <DocumentViewer ref.Name="document" EditMode="Editable" Alt="D" ContextMenu-eval="documentContextMenu">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <ev.ActiveHyperlinkExecuted-eval>
                 <![CDATA[
@@ -221,35 +256,35 @@
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://ToolbarImages/Undo" LargeImage-uri="res://ToolbarImages/UndoLarge" ShortcutBuilder="Ctrl+Z">
+        <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://ToolbarImages/Undo" LargeImage-uri="res://ToolbarImages/UndoLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+Z&quot; : &quot;&quot;">
           <att.Enabled-bind>document.observe as _(_.CanUndo() on _.UndoRedoChanged)</att.Enabled-bind>
           <ev.Executed-eval>
             <![CDATA[document.Undo();]]>
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandRedo" Text="Redo" Image-uri="res://ToolbarImages/Redo" LargeImage-uri="res://ToolbarImages/RedoLarge" ShortcutBuilder="Ctrl+Y">
+        <ToolstripCommand ref.Name="commandRedo" Text="Redo" Image-uri="res://ToolbarImages/Redo" LargeImage-uri="res://ToolbarImages/RedoLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+Y&quot; : &quot;&quot;">
           <att.Enabled-bind>document.observe as _(_.CanRedo() on _.UndoRedoChanged)</att.Enabled-bind>
           <ev.Executed-eval>
             <![CDATA[document.Redo();]]>
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandCopy" Text="Copy" Image-uri="res://ToolbarImages/Copy" LargeImage-uri="res://ToolbarImages/CopyLarge" ShortcutBuilder="Ctrl+C">
+        <ToolstripCommand ref.Name="commandCopy" Text="Copy" Image-uri="res://ToolbarImages/Copy" LargeImage-uri="res://ToolbarImages/CopyLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+C&quot; : &quot;&quot;">
           <att.Enabled-bind>document.observe as _(_.CanCopy() on _.SelectionChanged)</att.Enabled-bind>
           <ev.Executed-eval>
             <![CDATA[document.Copy();]]>
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolbarImages/Cut" LargeImage-uri="res://ToolbarImages/CutLarge" ShortcutBuilder="Ctrl+X">
+        <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolbarImages/Cut" LargeImage-uri="res://ToolbarImages/CutLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+X&quot; : &quot;&quot;">
           <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
           <ev.Executed-eval>
             <![CDATA[document.Cut();]]>
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://ToolbarImages/Paste" LargeImage-uri="res://ToolbarImages/PasteLarge" ShortcutBuilder="Ctrl+V">
+        <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://ToolbarImages/Paste" LargeImage-uri="res://ToolbarImages/PasteLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+V&quot; : &quot;&quot;">
           <att.Enabled-bind>self.observe as _(document.CanPaste() on _.BoundsComposition.clipboardNotify)</att.Enabled-bind>
           <ev.Executed-eval>
             <![CDATA[document.Paste();]]>
@@ -263,7 +298,7 @@
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandSelect" Text="Select All" ShortcutBuilder="Ctrl+A">
+        <ToolstripCommand ref.Name="commandSelect" Text="Select All" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+A&quot; : &quot;&quot;">
           <ev.Executed-eval>
             <![CDATA[document.SelectAll();]]>
           </ev.Executed-eval>
@@ -467,19 +502,19 @@
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandViewOnly" Text="Preview" Image-uri="res://ToolbarImages/ViewOnly" LargeImage-uri="res://ToolbarImages/ViewOnlyLarge" ShortcutBuilder="Ctrl+Shift+P">
+        <ToolstripCommand ref.Name="commandViewOnly" Text="Preview" Image-uri="res://ToolbarImages/ViewOnly" LargeImage-uri="res://ToolbarImages/ViewOnlyLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+Shift+P&quot; : &quot;&quot;">
           <ev.Executed-eval>
             <![CDATA[self.SetEditMode(ViewOnly);]]>
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandSelectable" Text="Selectable" Image-uri="res://ToolbarImages/Selectable" LargeImage-uri="res://ToolbarImages/SelectableLarge" ShortcutBuilder="Ctrl+Shift+S">
+        <ToolstripCommand ref.Name="commandSelectable" Text="Selectable" Image-uri="res://ToolbarImages/Selectable" LargeImage-uri="res://ToolbarImages/SelectableLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+Shift+S&quot; : &quot;&quot;">
           <ev.Executed-eval>
             <![CDATA[self.SetEditMode(Selectable);]]>
           </ev.Executed-eval>
         </ToolstripCommand>
 
-        <ToolstripCommand ref.Name="commandEditable" Text="Editable" Image-uri="res://ToolbarImages/Editable" LargeImage-uri="res://ToolbarImages/EditableLarge" ShortcutBuilder="Ctrl+Shift+E">
+        <ToolstripCommand ref.Name="commandEditable" Text="Editable" Image-uri="res://ToolbarImages/Editable" LargeImage-uri="res://ToolbarImages/EditableLarge" ShortcutBuilder-bind="document.Focused ? &quot;Ctrl+Shift+E&quot; : &quot;&quot;">
           <ev.Executed-eval>
             <![CDATA[self.SetEditMode(Editable);]]>
           </ev.Executed-eval>

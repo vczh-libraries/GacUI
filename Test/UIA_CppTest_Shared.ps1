@@ -4,7 +4,7 @@ param(
     [ValidateSet('Win32','x64')][string]$Platform = 'x64',
     [int]$ClientProcessId = 0,
     [string]$BusyClick = '',
-    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence','DocumentStyles','DocumentContextMenu')][string]$Scenario = 'All',
+    [ValidateSet('All','List','Grid','Text','Refresh','Calendar','Layout','Responsive','ResponsiveWindow','ResponsivePalette','Walk','Window','Concurrent','Review','Review2','Review3','Transitions','Lifetime','RawClock','Touching','Persistence','DocumentStyles','DocumentContextMenu','DocumentEditorSop')][string]$Scenario = 'All',
     [switch]$HostedFixture,
     [switch]$GdiFixture,
     [switch]$Gdi,
@@ -123,7 +123,7 @@ try {
     $clientHandle = $client.Handle
     $lastCount = 0
     # Full showcase coverage includes repeated layout rebuilds and palette replacement.
-    $deadline = [DateTime]::UtcNow.AddMinutes(30)
+    $deadline = [DateTime]::UtcNow.AddMinutes($(if ($Scenario -eq 'DocumentEditorSop') { 90 } else { 30 }))
     do {
         $lines = @(Get-Content (Join-Path $env:TEMP "$Application-uia.stdout.txt") -ErrorAction SilentlyContinue)
         $lines | Select-Object -Skip $lastCount | Write-Host
