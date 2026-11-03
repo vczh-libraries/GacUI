@@ -1,0 +1,19 @@
+
+- Left/right click gesture generates short/long pressing gesture at OnPointSequenceEnded when it satisfies the click criteria (no matter generate(Left|Right)Click is true or false), if the gesture is selected, the point manager will automatically skip generating left/right click.
+- Touching experience on text selection.
+  - This include all controls inheriting from `GuiDocumentCommonInterface`:
+    - For controls whose has a `GuiScrollView` base class they are scrollable.
+    - For controls whose doesn't they are not scrollable.
+    - But all of them are editable
+    - Make sure generate(Left|Right)Click is set to true in all controls, and gestures are activated. `GuiScrollView` already handles it but the other one does not.
+    - You probably only need to work on `GuiDocumentViewer` and `GuiDocumentLabel`. Since they share a lot of code, event handlers could be declared in `GuiDocumentCommonInterface` just like others, with a new argument `pointEventComposition` added to `InstallDocumentViewer`. I would expect most updates happen in `GuiDocumentCommonInterface`.
+  - Short pressing on non selected text moves the caret.
+    - This is done by when short press on selection it selects the ahort press gesture.
+    - Therefore in other cases it generates a left click to move the caret.
+  - Long pressing when no selection available select text from current caret to the pressing caret.
+    - Long pressing on selection or on the current caret generates right click.
+    - This is also done by not selecting the long pressing gesture accordingly.
+  - No rendering is needed to change.
+  - EditMode(ViewOnly, Selectable and Editable) should affect how control responding to point actions.
+- Update KB pages and website to mention short/long pressing gesture, and text box's touch integration.
+  - Be aware of there is a list of touching supported controls.
