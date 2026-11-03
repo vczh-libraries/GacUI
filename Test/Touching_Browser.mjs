@@ -77,10 +77,10 @@ async function click(text) {
 }
 const cdp = await context.newCDPSession(page);
 await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
-const touch = async (type, fingers) => {
+const touch = async (type, fingers, settle = true) => {
     idlePending = false;
     await cdp.send('Input.dispatchTouchEvent', { type, touchPoints: fingers });
-    await idle();
+    if (settle) await idle();
 };
 const finger = (id, p) => ({ id, ...p, radiusX: 6, radiusY: 8, force: 0.7 });
 function noCompatibility(start) {
@@ -220,7 +220,7 @@ try {
         const document=()=>all().then(values=>values.find(node=>node.elementDocument?.includes('I am the bone')));
         await until(async()=>await document()!==undefined,'Multiline editor inside scroll container');
         let d=await document(); a=finger(301+pass,await screenPoint(d.bounds,8,8));
-        await touch('touchStart',[a]); await touch('touchEnd',[]);
+        await touch('touchStart',[a],false); await touch('touchEnd',[]);
         await page.keyboard.press('Control+Home');
         await page.keyboard.press('Control+Shift+End'); await idle();
         await page.keyboard.type('I am the bone of my sword.'); await idle();
@@ -237,15 +237,15 @@ try {
             return node.elementText.match(/^Touch: Short=(\d+) Long=(\d+) Right=(\d+)$/).slice(1).map(Number);
         };
         const textStart=events.length;
-        await touch('touchStart',[a]); await touch('touchEnd',[]);
+        await touch('touchStart',[a],false); await touch('touchEnd',[]);
         await until(async()=>{const m=(await document()).element.match(/Selection(\([^)]*\))-(\([^)]*\))/);return m!==null&&m[1]===m[2];},'Short press positions a collapsed caret');
         const b={...a,x:a.x+100,y:a.y+25};
-        await touch('touchStart',[b]); await new Promise(resolve=>setTimeout(resolve,550)); await touch('touchEnd',[]);
+        await touch('touchStart',[b],false); await new Promise(resolve=>setTimeout(resolve,550)); await touch('touchEnd',[]);
         await until(async()=>{const m=(await document()).element.match(/Selection(\([^)]*\))-(\([^)]*\))/);return m!==null&&m[1]!==m[2];},'Touch creates a nonempty text range');
         const selection=(await document()).element.match(/Selection\([^)]*\)-\([^)]*\)/)[0];
         for(const duration of [0,550]) {
             const counts=await counters();
-            await touch('touchStart',[b]);
+            await touch('touchStart',[b],false);
             if(duration) await new Promise(resolve=>setTimeout(resolve,duration));
             await touch('touchEnd',[]);
             await until(async()=>(await document()).element.includes(selection),'Press on a selected endpoint preserves the exact range');
@@ -255,7 +255,7 @@ try {
             },'Exclusive press offer and exactly one long-press right fallback');
         }
         const beforeY=(await document()).bounds.y1;
-        await touch('touchStart',[{...b,y:b.y+40}]); await touch('touchMove',[b]); await touch('touchEnd',[]);
+        await touch('touchStart',[{...b,y:b.y+40}],false); await touch('touchMove',[b]); await touch('touchEnd',[]);
         await until(async()=>(await document()).bounds.y1<beforeY,'Accepted document drag scrolls content');
         assert((await document()).element.includes(selection),'Document scrolling preserves the exact range');
         noCompatibility(textStart);
@@ -263,19 +263,19 @@ try {
         for(let mode=0;mode<2;mode++) {
             if(mode) await click('Selection Only');
             await click('Document Momentum');
-            await touch('touchStart',[{...b,y:b.y+100}]); await new Promise(resolve=>setTimeout(resolve,100));
+            await touch('touchStart',[{...b,y:b.y+100}],false); await new Promise(resolve=>setTimeout(resolve,100));
             await touch('touchMove',[{...b,y:b.y+60}]); await new Promise(resolve=>setTimeout(resolve,100));
             await touch('touchEnd',[]);
             const released=(await document()).bounds.y1;
             await until(async()=>(await document()).bounds.y1<released,'Document momentum continues after Up in each edit mode');
-            await touch('touchStart',[b]); await new Promise(resolve=>setTimeout(resolve,100));
+            await touch('touchStart',[b],false); await new Promise(resolve=>setTimeout(resolve,100));
             const stopped=(await document()).bounds.y1;
             await new Promise(resolve=>setTimeout(resolve,250));
             assert.equal((await document()).bounds.y1,stopped,'Fresh document contact stops momentum');
             await touch('touchCancel',[]);
             assert((await document()).element.includes(selection),'Document momentum preserves exact selection');
             await click('Document Momentum');
-            await touch('touchStart',[b]); await touch('touchMove',[{...b,y:b.y+300}]); await touch('touchEnd',[]);
+            await touch('touchStart',[b],false); await touch('touchMove',[{...b,y:b.y+300}]); await touch('touchEnd',[]);
             await until(async()=>(await document()).bounds.y1===d.bounds.y1,'Document returns to its initial viewport before the next edit mode');
             assert((await document()).element.includes(selection),'Viewport reset preserves exact selection');
         }

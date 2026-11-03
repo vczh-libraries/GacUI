@@ -213,20 +213,25 @@ function Test-SwipeAndText {
         } | Sort-Object) -join "`n"
     }
     $beforeFlick = Momentum-Rendering
-    IO $rendererBase "!PointDown:130,$x,$($y+200)"
+    $momentumList = @(Controls | Where-Object control -eq 'TextList')[0]
+    if (!$momentumList) { throw 'Missing TouchingList viewport.' }
+    $momentumX = [int](($momentumList.bounds.x1 + $momentumList.bounds.x2) / 2)
+    $momentumStep = [int](($momentumList.bounds.y2 - $momentumList.bounds.y1) / 5)
+    $momentumY = [int]$momentumList.bounds.y1 + 4 * $momentumStep
+    IO $rendererBase "!PointDown:130,$momentumX,$momentumY"
     Start-Sleep -Milliseconds 100
-    IO $rendererBase "!PointUpdate:130,$x,$($y+100)"
+    IO $rendererBase "!PointUpdate:130,$momentumX,$($momentumY-$momentumStep)"
     Start-Sleep -Milliseconds 100
-    IO $rendererBase "!PointUp:130,$x,$y"
+    IO $rendererBase "!PointUp:130,$momentumX,$($momentumY-2*$momentumStep)"
     Wait-For { (Momentum-Rendering) -ne $beforeFlick } 'renderer flick moved viewport'
     $released = Momentum-Rendering
     Wait-For { (Momentum-Rendering) -ne $released } 'momentum continues after renderer Up'
-    IO $rendererBase "!PointDown:131,$x,$y"
+    IO $rendererBase "!PointDown:131,$momentumX,$($momentumY-$momentumStep)"
     Start-Sleep -Milliseconds 100
     $interrupted = Momentum-Rendering
     Start-Sleep -Milliseconds 250
     if ((Momentum-Rendering) -ne $interrupted) { throw 'Fresh renderer contact did not stop momentum.' }
-    IO $rendererBase "!PointUp:131,$x,$y"
+    IO $rendererBase "!PointUp:131,$momentumX,$($momentumY-$momentumStep)"
     Select-Tab 'Momentum Scrolling'
     Write-Output 'PASS renderer IO / optional momentum after Up and interruption on fresh Down'
 

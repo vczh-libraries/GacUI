@@ -1,4 +1,4 @@
-# Test Matrix Card 2026-11-03T02:35:29Z
+# Test Matrix Card 2026-11-03T04:31:50Z
 
 Scope: document press selection and momentum in rebuilt Wasm FCT for the current investigation. RPT/RVMT are excluded by the request.
 
@@ -8,7 +8,7 @@ Scope: document press selection and momentum in rebuilt Wasm FCT for the current
 
 ## Observations and limitations
 
-The required Linux wrapper cannot run here: WSL reports that it is not installed, Docker and Emscripten are not installed, and no SSH host configuration exists. Existing deployed Wasm files have not been treated as current-build evidence. Native-Core HTTP/MiniHTTP browser verification is recorded separately in the investigation and does not verify Wasm FCT.
+The required Linux wrapper cannot run here: WSL reports that it is not installed, Docker and Emscripten are not installed, and no SSH host configuration exists. Existing deployed Wasm files have not been treated as current-build evidence. The updated shared document-touch helper passed against the rebuilt native FCT Core over HTTP and MiniHTTP, and both browser SOP transports passed. These results are recorded separately in the investigation and do not verify Wasm FCT.
 
 ## Issues and fixes
 

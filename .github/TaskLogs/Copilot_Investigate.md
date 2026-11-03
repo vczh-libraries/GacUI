@@ -98,7 +98,7 @@ The Debug x64 solution build passed with zero warnings/errors. The added ordinar
 
 # PROPOSALS
 
-- No.1 Offer exclusive End-time presses and consume document selection on the persistent point target
+- No.1 Offer exclusive End-time presses and consume document selection on the persistent point target [CONFIRMED]
 
 ## No.1 Offer exclusive End-time presses and consume document selection on the persistent point target
 
@@ -137,3 +137,28 @@ The complete resource compiler run finished successfully with no error artifacts
 The complete Win32 unit run passed 96/96 files and 1960/1960 cases, with no leak diagnostics. The final focused x64 run passed 4/4 files and 145/145 cases, and x64 Metadata_Test exited successfully. Browser/native remote fixture work continues after the demo-only layout correction; the ordinary Core, reflection, Workflow and document-routing tests are complete.
 
 Both corrected FCT architectures generated successfully, the temporary compiler driver was restored byte-for-byte, and the final Win32/x64 consumer builds passed with zero warnings/errors. Metadata generation and x64 validation passed again. Win32 interpreted UIA passed 8529 assertions with positive option visibility checks. A subsequent fixture wait now observes scrollable layout before resetting the viewport after SetValue. GacJS's final build, nine portable package suites, all 38 entry unit cases and both live HTTP/MiniHTTP touch cases passed; repeated codegen was unchanged. Its authored helper/documentation and generated snapshots are pushed separately as 1cd53af and 6f10b41. The native remote text fixture also needed explicit Enter key events: character-only Type input does not perform the document control's paragraph-creation key operation.
+
+All four final x64 UIA application modes passed separately with visible options and normal shutdown: CppTest, CppTest_Metaonly and CppTest_Reflection each reported 8531 assertions, and GacUI_Host reported 8530. A concurrent earlier native-app run had timed out on the existing list swipe; the standalone rerun passed. Native remote initialization now selects the textbox through Ctrl+Home followed by Ctrl+Shift+End, verifies a nonempty selection, sends explicit Enter operations and verifies 41 paragraphs before testing scrolling. Ctrl+A did not select this textbox in the showcase. The GDI list-momentum fixture now derives its contact coordinates from the TextList viewport instead of a row-relative offset, keeping the flick inside both backends' viewport geometry. Browser stationary Down operations no longer wait for a renderer idle signal before starting the intended press duration.
+
+Implementation, regenerated resources/metadata/manuals, and unit snapshots are pushed separately as 4e75e75ed, 306a5673b and 69db7ddf4. The final GacJS caret-navigation fixture refinement is pushed as ff1f0a2 after both live transport cases passed again.
+
+### CONFIRMED
+
+The original regression is fixed: press eligibility no longer depends on click-generation flags, exactly one duration-specific offer is raised at successful End, and selecting any gesture suppresses click fallback. Existing recognition priority and capture lifetime are preserved. Shared document handlers consume only the specified selection cases on the persistent point target, while ordinary clicks, content ownership, edit modes, scrolling and momentum keep their existing responsibilities. No renderer implementation change was needed.
+
+| Verification | Result |
+| --- | --- |
+| Debug Win32 and x64 solution builds | Passed with zero warnings/errors, including final consumers after demo regeneration. |
+| Full Win32 unit suite | 96/96 files and 1960/1960 cases passed; no leak diagnostics. |
+| Focused Win32 and x64 unit suites | 4/4 files and 145/145 cases passed on each architecture, covering point lifecycle, document selection/routing, reflection and Workflow. |
+| Metadata and resources | Both metadata architectures generated; x64 Metadata_Test passed. Complete resource generation and the final FCT layout regeneration succeeded without error artifacts. |
+| Native application modes | Final x64 CppTest, metadata-only, reflection and interpreted-host Touching runs passed with visible demo options, both palettes and normal shutdown. Win32 interpreted-host coverage also passed. |
+| Native remote matrix | Pipe, HTTP and MiniHTTP each passed with Direct2D and GDI: renderer/Core routing, list gestures, selection preservation, document presses, Selectable/Editable momentum, both palettes and shutdown. |
+| Browser SOP | Chromium CDP over HTTP and MiniHTTP passed both palettes, exact press/right-click counters, selected-document scrolling/momentum, compatibility-mouse suppression, stationary outer page and Core shutdown; no page errors. |
+| GacJS | Import/codegen/build passed; repeated codegen was unchanged. Nine portable package suites, all 38 entry unit cases and both final live HTTP/MiniHTTP touch cases passed. |
+| Visual review | Generated long-press and selected-document momentum snapshots rendered correctly. Browser screenshots showed the visible options/counters in both palettes. Native raw-pixel checks passed for Pipe/Direct2D and all three GDI transports. |
+| Documentation | Canonical point-input KB and synchronized copies agree. Website build/tests, both download validations, manual export and seven-page browser inspection passed. |
+
+Verification limits remain explicit. Some later Direct2D desktop captures were black and therefore did not verify their pixels. Windows native input injection was attempted through `<GacUI repo>/Test/Touching_NativeInput.ps1` and failed at InjectTouchInput with Win32 error 203; this does not establish native acquisition or physical-device coverage. Physical touch/mouse and additional-monitor DPI were not exercised. The rebuilt Wasm FCT run remains unavailable because this host has no Linux build environment; see `<GacUI repo>/.github/TaskLogs/TestMatrix_Wasm.md`. Native-Core browser results are not presented as Wasm evidence. Live RPT/RVMT execution and website publication were outside the requested scope.
+
+All owned test applications exited or were cleaned up by their harnesses. The authored implementation, generated artifacts, snapshots, documentation and final fixture/report refinements are committed and pushed; unavailable environment checks remain documented rather than reported as passes.
