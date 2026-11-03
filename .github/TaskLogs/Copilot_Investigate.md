@@ -104,3 +104,15 @@ Source analysis confirms that `<GacUI repo>/Source/Application/Controls/GuiBasic
 The initial run also regenerated the existing file-dialog InitialName_Open snapshots before reaching the new regression; those outputs are committed separately. The targeted UIA client now compiles under Windows PowerShell and is queued for execution after rebuilding the showcase. Website build and tests pass; publication has not started.
 
 # PROPOSALS
+
+- No.1 Borrowed context menus on persistent control bounds
+
+## No.1 Borrowed context menus on persistent control bounds
+
+Store a nullable GuiPopup pointer and a true-by-default automatic-display flag on GuiControl. Attach one mouseUp handler when constructing BoundsComposition. On an unhandled right-button release with both settings enabled, mark the event handled and call ShowPopup(this, Point(arguments.x, arguments.y)). Leave ownership and all coordinate conversion with the existing caller/popup APIs. Existing point fallback supplies long-press right clicks; no document-selection or gesture behavior changes are needed. Register writable FAST reflection properties without events.
+
+Declare the shared document editor's named ToolstripMenu directly under its root and bind its entries to existing commands. Attach it with ContextMenu-eval so the loader owns the popup separately from the borrowed property. Verify ordinary property/lifetime/input contracts, rendered placement and document selection, regenerate both metadata architectures and resources, then exercise CppTest SOP and targeted hosted/native UIA regressions. Publish the authored documentation and synchronized manuals after the requested checkpoint, regenerate GacUI release inputs, and update/build the Release tutorial without replacing its persistence hooks.
+
+### CODE CHANGE
+
+Implementation pending. The reproduction, SOP, targeted UIA checks and website explanation have been committed and pushed.
