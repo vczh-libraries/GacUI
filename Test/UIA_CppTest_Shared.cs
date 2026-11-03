@@ -1621,7 +1621,7 @@ public static class GacUIShowcaseTests
         if (context)
         {
             EditorContextOpen(document);
-            if (!objectMenu) { ContextMenuCommand(command, uia); return; }
+            if (!objectMenu) { ContextMenuCommand(command, uia); ControlsSnapshot(); return; }
             var header = Named(Popup(ControlType.Menu), "Object", ControlType.MenuItem);
             if (uia) Pattern<ExpandCollapsePattern>(header, ExpandCollapsePattern.Pattern).Expand(); else ContextMenuCommand("Object", false);
             AutomationElement child = null;
