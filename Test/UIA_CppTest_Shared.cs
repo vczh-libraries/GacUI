@@ -2002,7 +2002,7 @@ public static class GacUIShowcaseTests
         }
         Console.WriteLine("SOP outputs: " + folder);
     }
-    static void DocumentStyles(IntPtr hwnd, string folder)
+    static void DocumentStyles(IntPtr hwnd, string folder, double? defaultFontSize = null)
     {
         Test("Document styles / fixture load, all built-ins, unused definitions and palette replacement");
         var names = new[] { "Header 1", "Header 2", "Header 3", "Strong", "Quote", "Emphasis", "Intense Emphasis", "Deleted" };
@@ -2014,7 +2014,7 @@ public static class GacUIShowcaseTests
         var page = Page(Page(root, "Control"), "Document Editor (Ribbon)");
         var document = Find(page, ControlType.Document)[0];
         var text = Pattern<TextPattern>(document, TextPattern.Pattern);
-        double baseSize = Convert.ToDouble(text.DocumentRange.GetAttributeValue(TextPattern.FontSizeAttribute));
+        double baseSize = defaultFontSize ?? Convert.ToDouble(text.DocumentRange.GetAttributeValue(TextPattern.FontSizeAttribute));
         var originalBounds = root.Current.BoundingRectangle;
         Pattern<TransformPattern>(root, TransformPattern.Pattern).Resize(1400, 900);
         string fixture = System.IO.Path.GetFullPath(System.IO.Path.Combine(PersistenceOutput, "..", "..", "TestDocument.bin"));
@@ -3990,10 +3990,15 @@ public static class GacUIShowcaseTests
         if (scenario == "All" || scenario == "DocumentContextMenu") DocumentContextMenu(hwnd);
         if (scenario == "DocumentEditorSop")
         {
+            var page = Page(Page(root, "Control"), "Document Editor (Ribbon)");
+            var document = Find(page, ControlType.Document)[0];
+            var text = Pattern<TextPattern>(document, TextPattern.Pattern);
+            // Capture the default before the SOP loads a mixed-format fixture.
+            double defaultFontSize = Convert.ToDouble(text.DocumentRange.GetAttributeValue(TextPattern.FontSizeAttribute));
             DocumentContextMenu(hwnd);
             DocumentEditorSop(hwnd);
             string folder = System.IO.Path.Combine(PersistenceOutput, "SOP-" + ownedProcess);
-            DocumentStyles(hwnd, folder);
+            DocumentStyles(hwnd, folder, defaultFontSize);
         }
         if (scenario == "DocumentStyles")
         {
