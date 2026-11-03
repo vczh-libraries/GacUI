@@ -1125,7 +1125,12 @@ public static class GacUIShowcaseTests
                 if (automation) Click(file); else Pattern<ExpandCollapsePattern>(file, ExpandCollapsePattern.Pattern).Expand();
                 if (command != "Load as Private Format")
                 {
-                    var save = Named(page, "Save as", ControlType.MenuItem);
+                    AutomationElement save = null;
+                    Wait(() => {
+                        var menu = Popup(ControlType.Menu);
+                        save = menu == null ? null : FindNamed(menu, "Save as", ControlType.MenuItem);
+                        return save != null && !save.Current.IsOffscreen;
+                    }, "File popup exposes Save as");
                     if (automation) Click(save); else Pattern<ExpandCollapsePattern>(save, ExpandCollapsePattern.Pattern).Expand();
                 }
             }
@@ -1928,10 +1933,12 @@ public static class GacUIShowcaseTests
             ContextMenuCommand("Copy", uia);
             EditorCommand(page, document, ribbon, "Editable", false, uia);
             EditorSelect(document, !ribbon, "GacUI Remote", true);
-            document.SetFocus(); Input("!Type:SOP editable ");
-            Wait(() => text.DocumentRange.GetText(-1).Contains("SOP editable "), "Editable accepts text");
-            Press("Ctrl+Z");
-            Wait(() => !text.DocumentRange.GetText(-1).Contains("SOP editable "), "Undo shortcut restores the document");
+            string editableText = "SOP editable ";
+            document.SetFocus(); Input("!Type:" + editableText);
+            Wait(() => text.DocumentRange.GetText(-1).Contains(editableText), "Editable accepts text");
+            // Automation typing creates one edit step for each character.
+            for (int index = 0; index < editableText.Length; index++) Press("Ctrl+Z");
+            Wait(() => text.DocumentRange.GetText(-1) == selectableText, "Undo shortcuts restore the exact document");
             foreach (string shortcut in new[] { "Ctrl+Shift+P", "Ctrl+Shift+S", "Ctrl+Shift+E" })
             {
                 document.SetFocus(); Press(shortcut); ControlsSnapshot();
