@@ -9406,6 +9406,8 @@ namespace vl
 
 		namespace controls
 		{
+			class GuiPopup;
+
 			template<typename T, typename=void>
 			struct QueryServiceHelper;
 
@@ -9509,6 +9511,8 @@ Basic Construction
 				description::Value						tag;
 				GuiControl*								tooltipControl = nullptr;
 				vint									tooltipWidth = 0;
+				GuiPopup*								contextMenu = nullptr;
+				bool									displayContextMenuOnRightClick = true;
 
 				virtual void							BeforeControlTemplateUninstalled();
 				virtual void							AfterControlTemplateInstalled(bool initialize);
@@ -9532,6 +9536,7 @@ Basic Construction
 				virtual void							OnPointSequenceEnded(compositions::GuiGraphicsComposition* sender, compositions::GuiPointSequenceEndedEventArgs& arguments);
 				void									OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnContextMenuMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									SetFocusableComposition(compositions::GuiGraphicsComposition* value);
 
 				bool									IsControlVisibleAndEnabled();
@@ -9713,6 +9718,18 @@ Basic Construction
 				/// <summary>Set the tag object of the control.</summary>
 				/// <param name="value">The tag object of the control.</param>
 				void									SetTag(const description::Value& value);
+				/// <summary>Get the borrowed context menu. Null by default.</summary>
+				/// <returns>The borrowed context menu.</returns>
+				GuiPopup*								GetContextMenu();
+				/// <summary>Set the borrowed context menu. Replacing or clearing it, or deleting this control, does not delete the popup. Clear or replace the pointer before deleting its target, and keep the popup owner alive while it is shown.</summary>
+				/// <param name="value">The borrowed context menu, or null to clear it.</param>
+				void									SetContextMenu(GuiPopup* value);
+				/// <summary>Get whether unhandled right-button releases on the bounds automatically display the context menu. True by default.</summary>
+				/// <returns>True to automatically display the context menu.</returns>
+				bool									GetDisplayContextMenuOnRightClick();
+				/// <summary>Set automatic context-menu display. Disable it for custom handling on the same bounds. Both context-menu settings survive template replacement and theme refresh.</summary>
+				/// <param name="value">True to automatically display the context menu.</param>
+				void									SetDisplayContextMenuOnRightClick(bool value);
 				/// <summary>Get the tooltip control of the control.</summary>
 				/// <returns>The tooltip control of the control.</returns>
 				GuiControl*								GetTooltipControl();
