@@ -167,6 +167,18 @@ Pressing **ALT** causes a window prints all acceptable keys to move focus to all
 
 For controls that are not focusable but manage focus of direct child controls (like Tab control), or for controls that manage focus of child controls in another window (like menus), **SetActivatingAltHost** is an important function to activate this feature for this control. This function is only for control authors to use. Pressing **ESC** or **BACKSPACE** goes back to the upper level window or control during a **ALT** sequence.
 
+### ContextMenu and DisplayContextMenuOnRightClick
+
+**ContextMenu** is a **GuiPopup*** property whose default is **null**. **DisplayContextMenuOnRightClick** defaults to **true**. Both properties are writable and have no change events. A **GuiToolstripMenu** or another **GuiPopup** can be used.
+
+The control borrows the popup. Replacing or clearing this property, or deleting the control, does not delete the popup. The caller owns its lifetime and must clear or replace the pointer before deleting the popup. Keep the popup's owner alive while the popup is shown. In an XML resource, a named **ToolstripMenu** directly under the root control is owned through **AddControlHostComponent**; assign it to a child with **ContextMenu-eval**.
+
+When automatic display is enabled and the menu is non-null, an unhandled right-button **mouseUp** on the persistent **BoundsComposition** opens the popup. The handler calls **ShowPopup(this, Point(arguments.x, arguments.y))**: these coordinates are already relative to this receiver, and the popup converts them to the native window and adjusts its placement at screen edges. Right-button down and other buttons do not open it.
+
+Opening the menu marks the event handled, so a child and ancestor do not both open menus. A null menu or disabled automatic display leaves the event unchanged and allows an ancestor to handle it. A descendant can suppress the menu by handling the event first. For custom handling on the same bounds, set **DisplayContextMenuOnRightClick** to **false**; a later handler cannot cancel a menu that has already opened.
+
+Both settings survive control-template replacement and theme refresh. Eligible long presses use the existing right-click fallback on release. Opening a context menu preserves the document's current caret and selection.
+
 ### TooltipControl
 
 The default value for this property is **null**.
