@@ -15,5 +15,9 @@
     - This is also done by not selecting the long pressing gesture accordingly.
   - No rendering is needed to change.
   - EditMode(ViewOnly, Selectable and Editable) should affect how control responding to point actions.
+- To verify:
+  - You need to verify if the text box touch experience is working in `CppTest`, `RemotingTest_Core`+`RemotingTest_Rendering_Win32` and `GacJS`.
+  - Also do a verification again in `CppTest`, `RemotingTest_Core`+`RemotingTest_Rendering_Win32` and `GacJS` for `TODO_TASK1.md`, for the momentum scrolling part only.
+  - I would expect `GacJS` no need to change because this is a core side only update.
 - Update KB pages and website to mention short/long pressing gesture, and text box's touch integration.
   - Be aware of there is a list of touching supported controls.
