@@ -309,7 +309,7 @@ Predefined Gestures
 				GuiPointActionManager* manager;
 				bool selected = false;
 
-				void RaiseGesture(const Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>& payload)
+				void RaiseGesture(const decltype(GuiPointGestureEventArgs::gesture)& payload)
 				{
 					auto target = manager->GetPointCapture();
 					GuiPointGestureEventArgs arguments(target);
@@ -335,6 +335,7 @@ Predefined Gestures
 					vuint64_t timestamp = 0;
 					vint downCount = 0;
 					bool eligible = false;
+					bool generateClick = false;
 					Nullable<NativeMouseButton> fallback;
 
 				public:
@@ -346,7 +347,8 @@ Predefined Gestures
 						first = manager->GetCurrentScreenPoint();
 						timestamp = info.timestamp;
 						downCount = 0;
-						eligible = info.generateRightButtonClick;
+						eligible = true;
+						generateClick = info.generateRightButtonClick;
 						fallback.Reset();
 					}
 
@@ -366,7 +368,8 @@ Predefined Gestures
 						if (eligible && downCount == 1 && info.reason == PointSequenceEndReason::Succeeded
 							&& info.timestamp - timestamp >= 500000)
 						{
-							fallback = NativeMouseButton::Right;
+							if (generateClick) fallback = NativeMouseButton::Right;
+							RaiseGesture(GuiPointGesture_LongPressing{ manager->ConvertPoint(first, manager->GetPointCapture()) });
 						}
 					}
 
@@ -377,8 +380,10 @@ Predefined Gestures
 				{
 				protected:
 					NativePoint first;
+					vuint64_t timestamp = 0;
 					vint downCount = 0;
 					bool eligible = false;
+					bool generateClick = false;
 					Nullable<NativeMouseButton> fallback;
 
 				public:
@@ -388,8 +393,10 @@ Predefined Gestures
 					{
 						selected = false;
 						first = manager->GetCurrentScreenPoint();
+						timestamp = info.timestamp;
 						downCount = 0;
-						eligible = info.generateLeftButtonClick;
+						eligible = true;
+						generateClick = info.generateLeftButtonClick;
 						fallback.Reset();
 					}
 
@@ -408,7 +415,11 @@ Predefined Gestures
 					{
 						if (eligible && downCount == 1 && info.reason == PointSequenceEndReason::Succeeded)
 						{
-							fallback = NativeMouseButton::Left;
+							if (generateClick) fallback = NativeMouseButton::Left;
+							if (info.timestamp - timestamp < 500000)
+							{
+								RaiseGesture(GuiPointGesture_ShortPressing{ manager->ConvertPoint(first, manager->GetPointCapture()) });
+							}
 						}
 					}
 
@@ -726,7 +737,7 @@ GuiPointActionManager
 			Nullable<NativeMouseButton> GuiPointActionManager::GetFallbackClick()
 			{
 				if (!captureComposition || !ended) return {};
-				if (selectedGesture) return selectedGesture->GetFallbackClick();
+				if (selectedGesture) return {};
 				for (auto gesture : gestures)
 				{
 					if (auto button = gesture->GetFallbackClick()) return button;

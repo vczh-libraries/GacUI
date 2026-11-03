@@ -80,31 +80,70 @@ So as I pray, unlimited blade works.]]>
       <ref.Members>
         <![CDATA[
           prop TextBoxAcceptTabInput : bool = true {}
+          prop ShortPressCount : int = 0 {}
+          prop LongPressCount : int = 0 {}
+          prop RightClickCount : int = 0 {}
+          var momentum : MomentumScrolling* = new MomentumScrolling*();
+
+          func ObservePress(arguments : GuiPointGestureEventArgs*) : void
+          {
+            if (var press : GuiPointGesture_ShortPressing? = arguments.gesture as GuiPointGesture_ShortPressing?)
+            {
+              ShortPressCount = ShortPressCount + 1;
+            }
+            if (var press : GuiPointGesture_LongPressing? = arguments.gesture as GuiPointGesture_LongPressing?)
+            {
+              LongPressCount = LongPressCount + 1;
+            }
+          }
+
+          func ObserveMouse(arguments : GuiMouseEventArgs*) : void
+          {
+            if (arguments.button == NativeMouseButton::Right) { RightClickCount = RightClickCount + 1; }
+          }
         ]]>
       </ref.Members>
+      <ref.Ctor><![CDATA[{ self.AddComponent(momentum); }]]></ref.Ctor>
       <TabPage ref.Name="self">
         <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
           </att.Rows>
           <att.Columns>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <SinglelineTextBox AcceptTabInput-bind="self.TextBoxAcceptTabInput" Text="Archer" Alt="S">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <SinglelineTextBox ref.Name="singleline" AcceptTabInput-bind="self.TextBoxAcceptTabInput" Text="Archer" Alt="S">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" ev.pointGesture-eval="self.ObservePress(arguments);" ev.mouseUp-eval="self.ObserveMouse(arguments);"/>
             </SinglelineTextBox>
           </Cell>
 
           <Cell Site="row:1 column:0">
             <ScrollContainer ExtendToFullWidth="true" ExtendToFullHeight="true" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <MultilineTextBox AcceptTabInput-bind="self.TextBoxAcceptTabInput" Text-uri="res://TextBoxComponents/Text" Alt="M" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <MultilineTextBox ref.Name="multiline" AcceptTabInput-bind="self.TextBoxAcceptTabInput" Text-uri="res://TextBoxComponents/Text" Alt="M" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" EditMode-bind="selectable.Selected ? GuiDocumentEditMode::Selectable : GuiDocumentEditMode::Editable">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" ev.pointGesture-eval="self.ObservePress(arguments);" ev.mouseUp-eval="self.ObserveMouse(arguments);"/>
               </MultilineTextBox>
             </ScrollContainer>
+          </Cell>
+          <Cell Site="row:2 column:0">
+            <Stack Direction="Vertical" Padding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <StackItem>
+                <Stack Padding="8" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <StackItem><CheckBox ref.Name="momentumOption" Text="Document Momentum" Selected="false">
+                    <ev.SelectedChanged-eval><![CDATA[{
+                      if (momentumOption.Selected) { self.momentum.AttachControl(multiline); }
+                      else { self.momentum.DetachControl(multiline); }
+                    }]]></ev.SelectedChanged-eval>
+                  </CheckBox></StackItem>
+                  <StackItem><CheckBox ref.Name="selectable" Text="Selection Only" Selected="false"/></StackItem>
+                </Stack>
+              </StackItem>
+              <StackItem><Label Text-bind='"Touch: Short=" &amp; cast string self.ShortPressCount &amp; " Long=" &amp; cast string self.LongPressCount &amp; " Right=" &amp; cast string self.RightClickCount'/></StackItem>
+            </Stack>
           </Cell>
         </Table>
       </TabPage>

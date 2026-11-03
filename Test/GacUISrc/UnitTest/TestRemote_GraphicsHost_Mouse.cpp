@@ -81,6 +81,9 @@ TEST_FILE
 		GuiWindow* controlHost = nullptr;
 		GuiControl* surface = nullptr;
 		vint flags = 0, response = 0, offers = 0, ends = 0;
+		vint selectMoving = 0;
+		bool expectLong = false;
+		Point expectedPosition(80, 70);
 		bool ending = false;
 		List<WString> order;
 		List<NativeMouseButton> clicks;
@@ -102,7 +105,16 @@ TEST_FILE
 			});
 			receiver->pointGesture.AttachLambda([&](GuiGraphicsComposition*, GuiPointGestureEventArgs& a)
 			{
-				if (!ending) return;
+				auto shortPress = a.gesture.TryGet<GuiPointGesture_ShortPressing>();
+				auto longPress = a.gesture.TryGet<GuiPointGesture_LongPressing>();
+				if (!shortPress && !longPress)
+				{
+					a.selected = (selectMoving == 1 && a.gesture.TryGet<GuiPointGesture_Scrolling>()) || (selectMoving == 2 && a.gesture.TryGet<GuiPointGesture_DraggingAndRotation>());
+					return;
+				}
+				TEST_ASSERT(ending);
+				TEST_ASSERT((longPress != nullptr) == expectLong);
+				TEST_ASSERT((shortPress ? shortPress->position : longPress->position) == expectedPosition);
 				offers++;
 				order.Add(L"Press");
 				TEST_ASSERT(a.compositionSource == surface->GetBoundsComposition() && a.eventSource == a.compositionSource);
@@ -113,14 +125,17 @@ TEST_FILE
 			receiver->pointGesture.AttachLambda([](GuiGraphicsComposition*, GuiPointGestureEventArgs& a) { a.selected = false; });
 			receiver->pointGesture.AttachLambda([&](GuiGraphicsComposition*, GuiPointGestureEventArgs& a)
 			{
-				if (ending) TEST_ASSERT(a.selected == (response == 1));
+				if (a.gesture.TryGet<GuiPointGesture_ShortPressing>() || a.gesture.TryGet<GuiPointGesture_LongPressing>()) TEST_ASSERT(a.selected == (response == 1));
 			});
 			receiver->pointSequenceEnded.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& a)
 			{
 				ends++;
 				order.Add(L"End");
 				TEST_ASSERT(surface->GetPointEventComposition() == a.compositionSource);
-				TEST_ASSERT(a.GetPoints().Count() == 1 && !a.GetPoints()[0]);
+				if (a.reason == PointSequenceEndReason::Succeeded)
+				{
+					for (auto point : a.GetPoints()) TEST_ASSERT(!point);
+				}
 				a.handled = true;
 			});
 			receiver->mouseMove.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs&)
@@ -148,6 +163,7 @@ TEST_FILE
 			for (response = 0; response < 3; response++)
 			for (auto duration : { 499999,500000 })
 			{
+				expectLong = duration == 500000;
 				order.Clear(); clicks.Clear(); offers = ends = 0; ending = false;
 				input.Start(NativePoint(100, 100));
 				input.At(duration);
@@ -163,6 +179,54 @@ TEST_FILE
 				TEST_ASSERT(order.Count() == (click ? 6 : 3));
 				TEST_ASSERT(order[0] == L"Up" && order[1] == L"Press" && order[2] == L"End");
 				if (click) TEST_ASSERT(order[3] == L"MouseMove" && order[4] == L"MouseDown" && order[5] == L"MouseUp");
+			}
+			flags = 3; response = 0; expectLong = false;
+			for (vint scenario = 0; scenario < 10; scenario++)
+			{
+				offers = ends = 0; clicks.Clear(); ending = false;
+				selectMoving = scenario == 8 ? 1 : scenario == 9 ? 2 : 0;
+				input.Start(NativePoint(100, 100));
+				if (scenario == 4) { input.Move(NativePoint(109, 100)); input.Move(NativePoint(100, 100)); }
+				if (scenario == 5) { input.Down(1, NativePoint(100, 100)); input.Up(1, NativePoint(100, 100)); }
+				if (scenario == 8) input.Move(NativePoint(100, 120));
+				if (scenario != 6)
+				{
+					auto position = scenario == 0 ? NativePoint(108, 100) : scenario == 1 ? NativePoint(100, 108) : scenario == 2 ? NativePoint(106, 106) : scenario == 3 ? NativePoint(109, 100) : NativePoint(100, 100);
+					input.Up(0, position);
+				}
+				TEST_ASSERT(offers == 0);
+				ending = true;
+				input.End(499999, scenario == 6 ? PointSequenceEndReason::Canceled_PlatformCanceled : PointSequenceEndReason::Succeeded);
+				auto eligible = scenario < 2 || scenario == 7;
+				TEST_ASSERT(offers == (eligible ? 1 : 0) && ends == 1 && clicks.Count() == (eligible ? 1 : 0));
+				TEST_ASSERT(!surface->GetPointEventComposition());
+			}
+			flags = 0; response = 1; selectMoving = 0;
+			for (auto duration : { 499999,500000 })
+			{
+				auto window = surface->GetBoundsComposition()->GetRelatedGraphicsHost()->GetNativeWindow();
+				auto bounds = window->GetBounds();
+				auto origin = window->GetClientBoundsInScreen().LeftTop();
+				auto firstScreen = NativePoint(origin.x + 100, origin.y + 100);
+				offers = ends = 0; ending = false; expectLong = duration == 500000;
+				input.Start(NativePoint(100, 100));
+				input.Up(0, NativePoint(100, 100));
+				auto screen = GraphicsHostProtocol::MakeUnitTestScreenConfig().screenConfig;
+				screen.scalingX = 2.0; screen.scalingY = 1.25;
+				protocol.GetEvents()->OnControllerScreenUpdated(screen);
+				window->SetBounds(NativeRect(bounds.x1 + 20, bounds.y1 + 30, bounds.x2 + 20, bounds.y2 + 30));
+				controlHost->ForceCalculateSizeImmediately();
+				origin = window->GetClientBoundsInScreen().LeftTop();
+				auto logical = window->Convert(NativePoint(firstScreen.x - origin.x, firstScreen.y - origin.y));
+				auto target = surface->GetBoundsComposition()->GetGlobalBounds().LeftTop();
+				expectedPosition = Point(logical.x - target.x, logical.y - target.y);
+				ending = true;
+				input.End(duration);
+				TEST_ASSERT(offers == 1 && ends == 1 && !surface->GetPointEventComposition());
+				window->SetBounds(bounds);
+				screen.scalingX = screen.scalingY = 1.0;
+				protocol.GetEvents()->OnControllerScreenUpdated(screen);
+				controlHost->ForceCalculateSizeImmediately();
 			}
 			controlHost->Hide();
 		});
@@ -211,9 +275,9 @@ TEST_FILE
 					y = imaginary * x + real * y + transform->distance.y;
 					x = nx;
 				}
-				else
+				else if (auto scroll = a.gesture.TryGet<GuiPointGesture_Scrolling>())
 				{
-					scrolling.Add(a.gesture.Get<GuiPointGesture_Scrolling>());
+					scrolling.Add(*scroll);
 					a.selected = chooseScroll;
 				}
 				a.handled = true;
@@ -221,7 +285,7 @@ TEST_FILE
 			receiver->pointGesture.AttachLambda([](GuiGraphicsComposition*, GuiPointGestureEventArgs& a) { a.selected = false; });
 			receiver->pointGesture.AttachLambda([&](GuiGraphicsComposition*, GuiPointGestureEventArgs& a)
 			{
-				TEST_ASSERT(a.selected == (a.gesture.TryGet<GuiPointGesture_Scrolling>() ? chooseScroll : manipulate));
+				TEST_ASSERT(a.selected == (a.gesture.TryGet<GuiPointGesture_Scrolling>() ? chooseScroll : a.gesture.TryGet<GuiPointGesture_DraggingAndRotation>() ? manipulate : false));
 			});
 			receiver->pointSequenceEnded.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& a)
 			{

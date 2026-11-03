@@ -270,15 +270,90 @@ function Test-SwipeAndText {
         $document = @(Controls | Where-Object elementDocument -like '*I am the bone*')[0]
         $dx=[int]$document.bounds.x1+8; $dy=[int]$document.bounds.y1+8
         IO $rendererBase "!PointDown:110,$dx,$dy"
-        IO $rendererBase "!PointUpdate:110,$($dx+100),$($dy+25)"
+        IO $rendererBase "!PointUp:110,$dx,$dy"
+        Wait-For { @(Controls | Where-Object elementText -like 'Touch: Short=*')[0].elementText -ne 'Touch: Short=0 Long=0 Right=0' } 'initial document press reaches Core'
+        IO $rendererBase '!KeyPress:CTRL+HOME'
+        IO $rendererBase '!KeyPress:CTRL+SHIFT+END'
         Wait-For {
             $selection = @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element
             $selection -match 'Selection(\([^)]*\))-(\([^)]*\))' -and $Matches[1] -ne $Matches[2]
-        } 'nonempty touch text selection'
+        } 'select all before replacing document content'
+        IO $rendererBase '!Type:I am the bone of my sword.'
+        foreach ($line in 0..39) {
+            IO $rendererBase '!KeyPress:ENTER'
+            IO $rendererBase "!Type:Line $line."
+        }
+        Wait-For {
+            $content = @(Controls | Where-Object elementDocument -like '*Line 39.*')[0].elementDocument
+            $content -and ([regex]::Matches($content, '<p>')).Count -eq 41
+        } 'long document paragraphs are ready'
+        IO $rendererBase '!KeyPress:CTRL+HOME'
+        Wait-For { @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element -like '*Selection(0,0)-(0,0)*' } 'document caret returns to the beginning'
+        $document = @(Controls | Where-Object elementDocument -like '*I am the bone*')[0]
+        $dx=[int]$document.bounds.x1+8; $dy=[int]$document.bounds.y1+8
+        function Touch-Counters {
+            $text = @(Controls | Where-Object elementText -like 'Touch: Short=*')[0].elementText
+            if ($text -notmatch '^Touch: Short=(\d+) Long=(\d+) Right=(\d+)$') { throw 'Missing document touch counters.' }
+            @([int]$Matches[1],[int]$Matches[2],[int]$Matches[3])
+        }
+        IO $rendererBase "!PointDown:110,$dx,$dy"
+        IO $rendererBase "!PointUp:110,$dx,$dy"
+        Wait-For {
+            $selection = @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element
+            $selection -match 'Selection(\([^)]*\))-(\([^)]*\))' -and $Matches[1] -eq $Matches[2]
+        } 'short press positions a collapsed caret'
+        IO $rendererBase "!PointDown:110,$($dx+100),$($dy+25)"
+        Start-Sleep -Milliseconds 550
+        IO $rendererBase "!PointUp:110,$($dx+100),$($dy+25)"
+        Wait-For {
+            $selection = @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element
+            $selection -match 'Selection(\([^)]*\))-(\([^)]*\))' -and $Matches[1] -ne $Matches[2]
+        } 'long press extends text selection on release'
         $selected = @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element
-        IO $rendererBase "!PointUpdate:110,$($dx+180),$($dy+50)"
-        Wait-For { @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element -ne $selected } 'changing touch text selection'
-        IO $rendererBase "!PointUp:110,$($dx+180),$($dy+50)"
+        $selected = [regex]::Match($selected, 'Selection\([^)]*\)-\([^)]*\)').Value
+        foreach ($duration in @(0,550)) {
+            $counts = Touch-Counters
+            IO $rendererBase "!PointDown:110,$($dx+100),$($dy+25)"
+            if ($duration) { Start-Sleep -Milliseconds $duration }
+            IO $rendererBase "!PointUp:110,$($dx+100),$($dy+25)"
+            Wait-For { @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element.Contains($selected) } 'press on existing range preserves exact endpoints'
+            Wait-For {
+                $current = Touch-Counters
+                if ($duration) { $current[0] -eq $counts[0] -and $current[1] -eq $counts[1]+1 -and $current[2] -eq $counts[2]+1 }
+                else { $current[0] -eq $counts[0]+1 -and $current[1] -eq $counts[1] -and $current[2] -eq $counts[2] }
+            } 'one exclusive press offer and exactly one long-press right fallback'
+        }
+        $beforeY = [int]$document.bounds.y1
+        IO $rendererBase "!PointDown:110,$($dx+100),$($dy+65)"
+        IO $rendererBase "!PointUpdate:110,$($dx+100),$($dy+25)"
+        IO $rendererBase "!PointUp:110,$($dx+100),$($dy+25)"
+        Wait-For { [int]@(Controls | Where-Object elementDocument -like '*I am the bone*')[0].bounds.y1 -lt $beforeY } 'accepted document drag scrolls content'
+        Wait-For { @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element.Contains($selected) } 'document drag preserves exact selection'
+        foreach ($mode in @(0,1)) {
+            if ($mode) { Select-Tab 'Selection Only' }
+            Select-Tab 'Document Momentum'
+            IO $rendererBase "!PointDown:140,$($dx+100),$($dy+120)"
+            Start-Sleep -Milliseconds 100
+            IO $rendererBase "!PointUpdate:140,$($dx+100),$($dy+80)"
+            Start-Sleep -Milliseconds 100
+            IO $rendererBase "!PointUp:140,$($dx+100),$($dy+40)"
+            $released = [int]@(Controls | Where-Object elementDocument -like '*I am the bone*')[0].bounds.y1
+            Wait-For { [int]@(Controls | Where-Object elementDocument -like '*I am the bone*')[0].bounds.y1 -lt $released } 'document momentum continues after Up in both edit modes'
+            IO $rendererBase "!PointDown:141,$($dx+100),$($dy+80)"
+            Start-Sleep -Milliseconds 100
+            $interrupted = [int]@(Controls | Where-Object elementDocument -like '*I am the bone*')[0].bounds.y1
+            Start-Sleep -Milliseconds 250
+            if ([int]@(Controls | Where-Object elementDocument -like '*I am the bone*')[0].bounds.y1 -ne $interrupted) { throw 'Fresh document contact did not stop momentum.' }
+            IO $rendererBase '!PointCancel:141,PlatformCanceled'
+            Wait-For { @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element.Contains($selected) } 'document momentum preserves exact selection'
+            Select-Tab 'Document Momentum'
+            IO $rendererBase "!PointDown:142,$($dx+100),$($dy+25)"
+            IO $rendererBase "!PointUpdate:142,$($dx+100),$($dy+325)"
+            IO $rendererBase "!PointUp:142,$($dx+100),$($dy+325)"
+            Wait-For { [int]@(Controls | Where-Object elementDocument -like '*I am the bone*')[0].bounds.y1 -eq $beforeY } 'document viewport resets before the next edit mode'
+            Wait-For { @(Controls | Where-Object elementDocument -like '*I am the bone*')[0].element.Contains($selected) } 'viewport reset preserves exact selection'
+        }
+        Select-Tab 'Selection Only'
         if ($pass -eq 0) {
             Select-Tab 'Window Manager'
             Wait-For { @(Controls | Where-Object elementText -eq 'Aurora').Count -gt 0 } 'palette controls'
@@ -286,7 +361,7 @@ function Test-SwipeAndText {
             Wait-For { @(Controls | Where-Object element -like '*#168A7A*').Count -gt 0 } 'Aurora templates are installed'
         }
     }
-    Write-Output 'PASS renderer IO / changing text selection before and after template replacement'
+    Write-Output 'PASS renderer IO / press selection and viewport scrolling before and after template replacement'
 }
 try {
     foreach($transportName in $Transport) {foreach($backendName in $Backend) {

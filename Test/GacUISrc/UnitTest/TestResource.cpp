@@ -282,21 +282,29 @@ TEST_FILE
 				L"if (var scrolling : GuiPointGesture_Scrolling? = arguments.gesture as GuiPointGesture_Scrolling?) { arguments.selected = scrolling.distance != 0; } "
 				L"else if (var transform : GuiPointGesture_DraggingAndRotation? = arguments.gesture as GuiPointGesture_DraggingAndRotation?) { arguments.selected = transform.scale > 0.0; }",
 				L"var value : GuiPointGesture_Scrolling = {isVertical:true distance:7}; "
-				L"arguments.gesture = value of variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>; arguments.selected = true;",
+				L"arguments.gesture = value of variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation, GuiPointGesture_ShortPressing, GuiPointGesture_LongPressing>; arguments.selected = true;",
 				L"var value : GuiPointGesture_DraggingAndRotation = {rotation:0.0 scale:2.0}; "
-				L"arguments.gesture = value of variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>; arguments.selected = true;",
+				L"arguments.gesture = value of variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation, GuiPointGesture_ShortPressing, GuiPointGesture_LongPressing>; arguments.selected = true;",
 				L"var value : object = variant in arguments.gesture; "
 				L"if (var scrolling : GuiPointGesture_Scrolling? = value as GuiPointGesture_Scrolling?) { arguments.selected = scrolling.distance != 0; }",
 				L"var value = cast GuiPointGesture_Scrolling variant in arguments.gesture; arguments.selected = value.distance != 0;",
+				L"if (var press : GuiPointGesture_ShortPressing? = arguments.gesture as GuiPointGesture_ShortPressing?) { arguments.selected = press.position.x == 20; }",
+				L"if (var press : GuiPointGesture_LongPressing? = arguments.gesture as GuiPointGesture_LongPressing?) { arguments.selected = press.position.y == 30; }",
+				L"var value : GuiPointGesture_ShortPressing = {position:{x:20 y:30}}; "
+				L"arguments.gesture = value of variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation, GuiPointGesture_ShortPressing, GuiPointGesture_LongPressing>;",
+				L"var value : GuiPointGesture_LongPressing = {position:{x:20 y:30}}; "
+				L"arguments.gesture = value of variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation, GuiPointGesture_ShortPressing, GuiPointGesture_LongPressing>;",
 				L"arguments.gesture = 1;",
 				L"var value : GuiPointGesture_Scrolling = {distance:7}; arguments.gesture = value;",
 				L"var value : GuiPointGesture_Scrolling = {distance:7}; "
-				L"arguments.gesture = value of variant<GuiPointGesture_DraggingAndRotation, GuiPointGesture_Scrolling>;",
+				L"arguments.gesture = value of variant<GuiPointGesture_DraggingAndRotation, GuiPointGesture_Scrolling, GuiPointGesture_ShortPressing, GuiPointGesture_LongPressing>;",
+				L"var value : GuiPointGesture_Scrolling = {distance:7}; "
+				L"arguments.gesture = value of variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>;",
 				L"var value = cast object arguments.gesture;",
 				L"var value = variant in arguments.selected;",
 				L"var payload : object = variant in arguments.gesture; var value = variant in payload;",
 			};
-			const wchar_t* errorCodes[] = { L"", L"", L"", L"", L"", L"A10", L"A10", L"A10", L"A11", L"A16", L"A16" };
+			const wchar_t* errorCodes[] = { L"", L"", L"", L"", L"", L"", L"", L"", L"", L"A10", L"A10", L"A10", L"A10", L"A11", L"A16", L"A16" };
 			for (vint i = 0; i < sizeof(cases) / sizeof(*cases); i++)
 			{
 				GuiResourceError::List errors;
@@ -309,8 +317,8 @@ TEST_FILE
 				TEST_ASSERT(resource && errors.Count() == 0);
 				PrecompileResource(resource, GuiResourceCpuArchitecture::Unspecified, nullptr, errors);
 				for (auto error : errors) TEST_PRINT(error.message);
-				TEST_ASSERT((errors.Count() > 0) == (i >= 5));
-				if (i >= 5)
+				TEST_ASSERT((errors.Count() > 0) == (i >= 9));
+				if (i >= 9)
 				{
 					bool expectedError = false;
 					for (auto error : errors)

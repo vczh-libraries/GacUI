@@ -459,12 +459,30 @@ Predefined Point Events
 				auto operator<=>(const GuiPointGesture_DraggingAndRotation&) const = default;
 			};
 
-			/// <summary>A predefined gesture offered directly to the accepted composition. Selection persists until the sequence ends.</summary>
+			/// <summary>A successful single-contact press shorter than 500000 microseconds, offered at End independently of click-generation flags.</summary>
+			struct GuiPointGesture_ShortPressing
+			{
+				/// <summary>The original screen start reprojected into the accepted composition's current logical coordinates at End.</summary>
+				Point										position;
+
+				auto operator<=>(const GuiPointGesture_ShortPressing&) const = default;
+			};
+
+			/// <summary>A successful single-contact press lasting at least 500000 microseconds, offered at End independently of click-generation flags.</summary>
+			struct GuiPointGesture_LongPressing
+			{
+				/// <summary>The original screen start reprojected into the accepted composition's current logical coordinates at End.</summary>
+				Point										position;
+
+				auto operator<=>(const GuiPointGesture_LongPressing&) const = default;
+			};
+
+			/// <summary>A predefined gesture offered directly to the accepted composition. Selection persists until the sequence ends and suppresses all deferred clicks.</summary>
 			class GuiPointGestureEventArgs : public GuiEventArgs, public Description<GuiPointGestureEventArgs>
 			{
 			public:
 				/// <summary>The writable reflected variant payload. Reading or extracting it produces a copy; assign the complete variant to write it back.</summary>
-				Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation> gesture;
+				Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation, GuiPointGesture_ShortPressing, GuiPointGesture_LongPressing> gesture;
 				/// <summary>Select this gesture when unhandled. Later handlers cannot undo selection.</summary>
 				bool										selected = false;
 

@@ -69,6 +69,8 @@ GuiDocumentCommonInterface
 				GuiControl*									documentControl = nullptr;
 				elements::GuiDocumentElement*				documentElement = nullptr;
 				compositions::GuiBoundsComposition*			documentComposition = nullptr;
+				compositions::GuiGraphicsComposition*		documentPointEventComposition = nullptr;
+				bool										pointStartedInDocument = false;
 
 				compositions::GuiGraphicsComposition*		documentMouseArea = nullptr;
 				INativeCursor*								documentCursor = nullptr;
@@ -76,7 +78,6 @@ GuiDocumentCommonInterface
 				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseDownHandler;
 				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseUpHandler;
 				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseLeaveHandler;
-				Ptr<compositions::IGuiGraphicsEventHandler>	onPointSequenceStartedHandler;
 
 				Ptr<DocumentHyperlinkRun::Package>			activeHyperlinks;
 				bool										dragging = false;
@@ -100,6 +101,7 @@ GuiDocumentCommonInterface
 																compositions::GuiGraphicsComposition* _mouseArea,
 																compositions::GuiGraphicsComposition* _container,
 																compositions::GuiGraphicsComposition* eventComposition,
+																compositions::GuiGraphicsComposition* pointEventComposition,
 																compositions::GuiGraphicsComposition* focusableComposition
 																);
 				void										ReplaceMouseArea(compositions::GuiGraphicsComposition* _mouseArea);
@@ -125,6 +127,7 @@ GuiDocumentCommonInterface
 				void										OnMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void										OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnPointSequenceStarted(compositions::GuiGraphicsComposition* sender, compositions::GuiPointSequenceStartedEventArgs& arguments);
+				void										OnPointGesture(compositions::GuiGraphicsComposition* sender, compositions::GuiPointGestureEventArgs& arguments);
 
 				virtual Point								GetDocumentViewPosition() = 0;
 				virtual void								EnsureRectVisible(Rect bounds) = 0;

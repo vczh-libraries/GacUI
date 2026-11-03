@@ -1,5 +1,6 @@
 #include "TestControls.h"
 #include "TestPointInput.h"
+#include "TestRemote.h"
 #include "../../../Source/GacUI.h"
 #include <limits>
 #include <cmath>
@@ -146,6 +147,14 @@ public:
 		arguments.reason = reason;
 		bounds->GetEventReceiver()->pointSequenceEnded.Execute(arguments);
 	}
+};
+
+template<typename T>
+class PointSelectionDocument : public T
+{
+public:
+	PointSelectionDocument(theme::ThemeName themeName, const GuiDocumentConfig& config) : T(themeName, config) {}
+	GuiBoundsComposition* DocumentComposition() { return this->documentComposition; }
 };
 
 TEST_FILE
@@ -410,6 +419,264 @@ TEST_FILE
 	SetupGacGenNativeController();
 	SetGuiMainProxy({});
 
+	for (vint family = 0; family < 3; family++)
+	TEST_CASE(L"Exact document press selection, family " + itow(family))
+	{
+		UnitTestScreenConfig screen;
+		screen.FastInitialize(800, 600);
+		UnitTestRemoteProtocol protocol(L"DocumentPressAssertions", screen);
+		GuiWindow* window = nullptr;
+		GuiControl* control = nullptr;
+		GuiDocumentCommonInterface* document = nullptr;
+		GuiBoundsComposition* content = nullptr;
+		GuiDocumentViewer* viewer = nullptr;
+		GuiButton* other = nullptr;
+		GuiButton* embeddedButton = nullptr;
+		Ptr<PointProtocolInput> pointInput;
+		vint shorts = 0, longs = 0, lefts = 0, rights = 0;
+		vint hyperlinks = 0, childPresses = 0;
+		bool selected = false, suppressClicks = false;
+		auto position = [&](TextPos caret)
+		{
+			window->ForceCalculateSizeImmediately();
+			auto bounds = document->GetCaretBounds(caret, true);
+			return protocol.LocationOf(content, 0, 0, bounds.x1, (bounds.y1 + bounds.y2) / 2);
+		};
+		protocol.OnNextIdleFrame([&]()
+		{
+			pointInput = Ptr(new PointProtocolInput(protocol.GetEvents(), false));
+			auto& input = *pointInput.Obj();
+			auto press = [&](TextPos caret, bool longPress, bool expectSelected, bool expectClick = true)
+			{
+				shorts = longs = lefts = rights = 0; selected = false;
+				auto origin = position(caret);
+				input.Start(origin);
+				TEST_ASSERT(control->GetPointEventComposition() == control->GetBoundsComposition());
+				input.At(longPress ? 500000 : 499999);
+				input.Up(0, origin);
+				TEST_ASSERT(shorts == 0 && longs == 0 && lefts == 0 && rights == 0);
+				input.End(longPress ? 500000 : 499999);
+				TEST_ASSERT(shorts == (longPress ? 0 : 1) && longs == (longPress ? 1 : 0));
+				TEST_ASSERT(selected == expectSelected && !control->GetPointEventComposition());
+				TEST_ASSERT(lefts == (!longPress && !expectSelected && expectClick ? 1 : 0));
+				TEST_ASSERT(rights == (longPress && !expectSelected && expectClick ? 1 : 0));
+			};
+			for (auto mode : { GuiDocumentEditMode::ViewOnly,GuiDocumentEditMode::Selectable,GuiDocumentEditMode::Editable })
+			for (vint range = 0; range < 3; range++)
+			for (vint column : { 0,2,4,6,8 })
+			for (bool longPress : { false,true })
+			{
+				document->SetEditMode(mode);
+				auto begin = TextPos(0, range == 0 ? 4 : range == 1 ? 2 : 6);
+				auto end = TextPos(0, range == 0 ? 4 : range == 1 ? 6 : 2);
+				auto hit = TextPos(0, column);
+				document->SetCaret(begin, end);
+				other->SetFocused();
+				auto editable = mode != GuiDocumentEditMode::ViewOnly;
+				auto consume = editable && (longPress ? range == 0 && hit != end : range != 0 && column >= 2 && column <= 6);
+				press(hit, longPress, consume);
+				if (editable && longPress && consume) end = hit;
+				if (editable && !longPress && !consume && hit != end) begin = end = hit;
+				TEST_ASSERT(document->GetCaretBegin() == begin && document->GetCaretEnd() == end);
+				auto focused = control->GetBoundsComposition()->GetRelatedGraphicsHost()->GetFocusedComposition();
+				TEST_ASSERT(focused == (editable && (!longPress || consume) ? control->GetFocusableComposition() : other->GetFocusableComposition()));
+			}
+
+			document->SetEditMode(GuiDocumentEditMode::Editable);
+			document->SetCaret(TextPos(0, 4), TextPos(0, 4));
+			other->SetFocused();
+			control->SetEnabled(false);
+			press(TextPos(0, 8), true, false);
+			press(TextPos(0, 0), false, false);
+			TEST_ASSERT(document->GetCaretBegin() == TextPos(0, 4) && document->GetCaretEnd() == TextPos(0, 4));
+			TEST_ASSERT(control->GetBoundsComposition()->GetRelatedGraphicsHost()->GetFocusedComposition() == other->GetFocusableComposition());
+			control->SetEnabled(true);
+
+			suppressClicks = true;
+			press(TextPos(0, 8), true, true, false);
+			TEST_ASSERT(document->GetCaretBegin() == TextPos(0, 4) && document->GetCaretEnd() == TextPos(0, 8));
+			press(TextPos(0, 0), false, false, false);
+			TEST_ASSERT(document->GetCaretBegin() == TextPos(0, 4) && document->GetCaretEnd() == TextPos(0, 8));
+			suppressClicks = false;
+
+			for (bool extraContact : { false,true })
+			{
+				shorts = longs = lefts = rights = 0;
+				auto origin = position(TextPos(0, 0));
+				input.Start(origin);
+				if (extraContact)
+				{
+					input.Down(1, origin); input.Up(1, origin); input.Up(0, origin); input.End(500000);
+				}
+				else input.End(500000, PointSequenceEndReason::Canceled_PlatformCanceled);
+				TEST_ASSERT(shorts == 0 && longs == 0 && lefts == 0 && rights == 0);
+				TEST_ASSERT(document->GetCaretBegin() == TextPos(0, 4) && document->GetCaretEnd() == TextPos(0, 8));
+			}
+
+			// Deferred clicks keep ordinary modifiers; keyboard selection still uses its existing path.
+			document->SetCaret(TextPos(0, 2), TextPos(0, 2));
+			input.modifiers = true;
+			press(TextPos(0, 6), false, false);
+			TEST_ASSERT(document->GetCaretBegin() == TextPos(0, 2) && document->GetCaretEnd() == TextPos(0, 6));
+			input.modifiers = false;
+			protocol.KeyPress(VKEY::KEY_RIGHT, false, true, false);
+			TEST_ASSERT(document->GetCaretBegin() == TextPos(0, 2) && document->GetCaretEnd() == TextPos(0, 7));
+			auto start = position(TextPos(0, 1)), finish = position(TextPos(0, 5));
+			protocol.MouseMove(start); protocol._LDown(); protocol.MouseMove(finish); protocol._LUp();
+			TEST_ASSERT(document->GetCaretBegin() == TextPos(0, 1) && document->GetCaretEnd() == TextPos(0, 5));
+
+			if (family == 2)
+			{
+				document->SetCaret(TextPos(0, 150), TextPos(0, 150));
+				document->EnsureCaretVisible();
+				window->ForceCalculateSizeImmediately();
+				TEST_ASSERT(content->GetGlobalBounds().x1 < control->GetBoundsComposition()->GetGlobalBounds().x1);
+				press(TextPos(0, 145), true, true);
+				TEST_ASSERT(document->GetCaretBegin() == TextPos(0, 150) && document->GetCaretEnd() == TextPos(0, 145));
+			}
+			else if (viewer)
+			{
+				document->SetCaret(TextPos(1, 4), TextPos(1, 4));
+				viewer->SetViewPosition(Point(0, 20));
+				press(TextPos(1, 8), true, true);
+				TEST_ASSERT(document->GetCaretBegin() == TextPos(1, 4) && document->GetCaretEnd() == TextPos(1, 8));
+				auto before = viewer->GetViewPosition();
+				auto origin = protocol.LocationOf(viewer, 0.5, 0.8);
+				input.Start(origin); input.Move(NativePoint(origin.x, origin.y - 30)); input.Up(0, NativePoint(origin.x, origin.y - 30)); input.End();
+				TEST_ASSERT(viewer->GetViewPosition().y == before.y + 30);
+				TEST_ASSERT(document->GetCaretBegin() == TextPos(1, 4) && document->GetCaretEnd() == TextPos(1, 8));
+				document->SetCaret(TextPos(0, 4), TextPos(0, 4));
+				suppressClicks = true;
+				for (auto origin : { protocol.LocationOf(viewer->GetVerticalScroll()),protocol.LocationOf(control, 0, 0) })
+				{
+					longs = 0; selected = false;
+					input.Start(origin); input.Up(0, origin); input.End(500000);
+					TEST_ASSERT(longs == 1 && !selected);
+					TEST_ASSERT(document->GetCaretBegin() == TextPos(0, 4) && document->GetCaretEnd() == TextPos(0, 4));
+				}
+				suppressClicks = false;
+			}
+			auto model = Ptr(new DocumentModel);
+			auto paragraph = Ptr(new DocumentParagraphRun);
+			auto text = Ptr(new DocumentTextRun);
+			text->text = L"0123456789 ";
+			paragraph->runs.Add(text);
+			auto embedded = Ptr(new DocumentEmbeddedObjectRun);
+			embedded->name = L"button";
+			embedded->sizeOverride = Size(120, 30);
+			paragraph->runs.Add(embedded);
+			model->paragraphs.Add(paragraph);
+			auto item = Ptr(new GuiDocumentItem(L"button"));
+			embeddedButton = new GuiButton(theme::ThemeName::Button);
+			embeddedButton->SetText(L"Embedded control");
+			embeddedButton->GetBoundsComposition()->SetPreferredMinSize(Size(120, 30));
+			item->GetContainer()->AddChild(embeddedButton->GetBoundsComposition());
+			TEST_ASSERT(document->AddDocumentItem(item));
+			document->SetDocument(model);
+			document->EditHyperlink(0, 0, 10, L"touch-link");
+			document->SetCaret(TextPos(), TextPos());
+			document->EnsureCaretVisible();
+			document->SetEditMode(GuiDocumentEditMode::ViewOnly);
+			document->ActiveHyperlinkExecuted.AttachLambda([&](GuiGraphicsComposition*, GuiEventArgs&) { hyperlinks++; });
+			embeddedButton->GetBoundsComposition()->GetEventReceiver()->pointGesture.AttachLambda([&](GuiGraphicsComposition*, GuiPointGestureEventArgs& a)
+			{
+				if (a.gesture.TryGet<GuiPointGesture_LongPressing>()) childPresses++;
+			});
+		});
+		protocol.OnNextIdleFrame([&]()
+		{
+			auto& input = *pointInput.Obj();
+			auto origin = position(TextPos(0, 4));
+			input.Start(origin); input.Up(0, origin); input.End(499999);
+			TEST_ASSERT(hyperlinks == 1);
+			TEST_ASSERT(document->GetCaretBegin() == TextPos() && document->GetCaretEnd() == TextPos());
+			document->SetEditMode(GuiDocumentEditMode::Selectable);
+			for (bool childAccepts : { false,true })
+			{
+				embeddedButton->SetAcceptPointEvents(childAccepts);
+				other->SetFocused();
+				longs = 0; selected = false;
+				origin = protocol.LocationOf(embeddedButton);
+				input.Start(origin);
+				TEST_ASSERT(control->GetPointEventComposition() == (childAccepts ? embeddedButton->GetBoundsComposition() : control->GetBoundsComposition()));
+				input.Up(0, origin); input.End(500000);
+				TEST_ASSERT(longs == (childAccepts ? 0 : 1) && !selected);
+				TEST_ASSERT(document->GetCaretBegin() == TextPos() && document->GetCaretEnd() == TextPos());
+				TEST_ASSERT(!control->GetFocused());
+			}
+			TEST_ASSERT(childPresses == 1);
+			if (viewer) control->SetControlTemplate([](const Value&) { return new darkskin::DocumentViewerTemplate; });
+			else control->SetControlTemplate([](const Value&) { return new darkskin::DocumentLabelTemplate; });
+		});
+		protocol.OnNextIdleFrame([&]()
+		{
+			auto& input = *pointInput.Obj();
+			shorts = longs = rights = 0; selected = false;
+			auto origin = position(TextPos(0, 4));
+			input.Start(origin); input.Up(0, origin); input.End(500000);
+			TEST_ASSERT(shorts == 0 && longs == 1 && rights == 0 && selected);
+			TEST_ASSERT(document->GetCaretBegin() == TextPos() && document->GetCaretEnd() == TextPos(0, 4));
+			window->Hide();
+		});
+		SetGuiMainProxy([&]()
+		{
+			protocol.GetEvents()->OnControllerConnect(MakeGlobalConfig());
+			auto skin = Ptr(new darkskin::Theme);
+			theme::RegisterTheme(skin);
+			{
+				GuiWindow host(theme::ThemeName::Window);
+				window = &host;
+				host.SetClientSize(Size(700, 500));
+				GuiDocumentConfig config;
+				config.wrapLine = family != 2;
+				config.paragraphMode = family == 2 ? GuiDocumentParagraphMode::Singleline : GuiDocumentParagraphMode::Paragraph;
+				config.autoExpand = family != 2;
+				if (family == 0)
+				{
+					auto editor = new PointSelectionDocument<GuiDocumentViewer>(theme::ThemeName::DocumentViewer, config);
+					control = viewer = editor; document = editor; content = editor->DocumentComposition();
+				}
+				else
+				{
+					auto editor = new PointSelectionDocument<GuiDocumentLabel>(theme::ThemeName::DocumentLabel, config);
+					control = editor; document = editor; content = editor->DocumentComposition();
+				}
+				control->GetBoundsComposition()->SetExpectedBounds(Rect(20, 30, 420, family == 2 ? 65 : 330));
+				host.AddChild(control);
+				other = new GuiButton(theme::ThemeName::Button);
+				other->SetText(L"Focus sentinel");
+				other->GetBoundsComposition()->SetExpectedBounds(Rect(450, 30, 650, 65));
+				host.AddChild(other);
+				WString text;
+				for (vint i = 0; i < (family == 2 ? 1 : 8); i++)
+				{
+					if (i) text += L"\r\n\r\n";
+					for (vint j = 0; j < 20; j++) text += L"0123456789";
+				}
+				control->SetText(text);
+				document->SetCaret(TextPos(), TextPos());
+				auto receiver = control->GetBoundsComposition()->GetEventReceiver();
+				receiver->pointSequenceStarted.AttachLambda([&](auto*, GuiPointSequenceStartedEventArgs& a)
+				{
+					if (suppressClicks) a.generateLeftButtonClick = a.generateRightButtonClick = false;
+				});
+				receiver->pointGesture.AttachLambda([&](auto*, GuiPointGestureEventArgs& a)
+				{
+					if (a.gesture.TryGet<GuiPointGesture_ShortPressing>()) { shorts++; selected = a.selected; }
+					if (a.gesture.TryGet<GuiPointGesture_LongPressing>()) { longs++; selected = a.selected; }
+				});
+				receiver->mouseUp.AttachLambda([&](auto*, GuiMouseEventArgs& a)
+				{
+					if (a.button == NativeMouseButton::Left) lefts++;
+					if (a.button == NativeMouseButton::Right) rights++;
+				});
+				GetApplication()->Run(&host);
+			}
+			theme::UnregisterTheme(skin->Name);
+		});
+		StartRemoteControllerTest(protocol);
+	});
+
 	for (auto suppressLeft : { true,false })
 	TEST_CASE(suppressLeft ? L"Started suppresses deferred left clicks" : L"Started suppresses deferred right clicks")
 	{
@@ -423,7 +690,22 @@ TEST_FILE
             arguments.generateLeftButtonClick = not disableLeft.Selected;
             arguments.generateRightButtonClick = not disableRight.Selected;
           }]]></ev.pointSequenceStarted-eval>
-          <StackItem><CheckBox ref.Name="target" Text="Tap activation"/></StackItem>
+          <StackItem><CheckBox ref.Name="target" Text="Tap activation">
+            <att.BoundsComposition-set>
+              <ev.pointGesture-eval><![CDATA[{
+                if (var press : GuiPointGesture_ShortPressing? = arguments.gesture as GuiPointGesture_ShortPressing?)
+                {
+                  var changed : GuiPointGesture_ShortPressing = {position:{x:(press.position.x + 1) y:(press.position.y + 2)}};
+                  arguments.gesture = changed of variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation, GuiPointGesture_ShortPressing, GuiPointGesture_LongPressing>;
+                }
+                if (var press : GuiPointGesture_LongPressing? = arguments.gesture as GuiPointGesture_LongPressing?)
+                {
+                  var changed : GuiPointGesture_LongPressing = {position:{x:(press.position.x + 1) y:(press.position.y + 2)}};
+                  arguments.gesture = changed of variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation, GuiPointGesture_ShortPressing, GuiPointGesture_LongPressing>;
+                }
+              }]]></ev.pointGesture-eval>
+            </att.BoundsComposition-set>
+          </CheckBox></StackItem>
           <StackItem><CheckBox ref.Name="rightResult" Text="Right activation"/></StackItem>
           <StackItem><CheckBox ref.Name="disableLeft" Text="Suppress left click"/></StackItem>
           <StackItem><CheckBox ref.Name="disableRight" Text="Suppress right click"/></StackItem>
@@ -463,6 +745,16 @@ TEST_FILE
 				disableLeft = FindObjectByName<GuiSelectableButton>(window, L"disableLeft");
 				disableRight = FindObjectByName<GuiSelectableButton>(window, L"disableRight");
 				auto receiver = target->GetBoundsComposition()->GetEventReceiver();
+				receiver->pointGesture.AttachLambda([&](GuiGraphicsComposition*, GuiPointGestureEventArgs& arguments)
+				{
+					auto shortPress = arguments.gesture.TryGet<GuiPointGesture_ShortPressing>();
+					auto longPress = arguments.gesture.TryGet<GuiPointGesture_LongPressing>();
+					if (shortPress || longPress)
+					{
+						auto bounds = target->GetBoundsComposition()->GetGlobalBounds();
+						TEST_ASSERT((shortPress ? shortPress->position : longPress->position) == Point(bounds.Width() / 2 + 1, bounds.Height() / 2 + 2));
+					}
+				});
 				receiver->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& arguments)
 				{
 					TEST_ASSERT(arguments.generateLeftButtonClick && arguments.generateRightButtonClick);
@@ -730,9 +1022,11 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
-	for (bool document : { false,true })
-	TEST_CASE(document ? L"Document momentum preserves the selected range after Up" : L"List momentum preserves selected items after Up")
+	for (vint scenario = 0; scenario < 4; scenario++)
+	TEST_CASE(L"Momentum preserves selected content after Up, mode " + itow(scenario))
 	{
+		bool document = scenario != 0;
+		auto mode = scenario <= 1 ? GuiDocumentEditMode::ViewOnly : scenario == 2 ? GuiDocumentEditMode::Selectable : GuiDocumentEditMode::Editable;
 		Ptr<TooltipTimer> clock;
 		Ptr<PointProtocolInput> input;
 		GuiScrollView* view = nullptr;
@@ -813,12 +1107,12 @@ TEST_FILE
 			editor->SetCaret(TextPos(0, 0), TextPos(0, 8));
 			editor->SetViewPosition(Point());
 			begin = editor->GetCaretBegin(); end = editor->GetCaretEnd();
-			editor->SetEditMode(GuiDocumentEditMode::ViewOnly);
+			editor->SetEditMode(mode);
 			view = document ? static_cast<GuiScrollView*>(editor) : list;
 			momentum->AttachControl(view);
 		};
 		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-			document ? L"Controls/PointScrolling/DocumentMomentum" : L"Controls/PointScrolling/ListMomentum",
+			document ? L"Controls/PointScrolling/DocumentMomentum" + WString(scenario == 1 ? L"" : scenario == 2 ? L"Selectable" : L"Editable") : L"Controls/PointScrolling/ListMomentum",
 			L"gacuisrc_unittest::MainWindow", resource, installer);
 	});
 
@@ -844,59 +1138,60 @@ TEST_FILE
 			state->input = Ptr(new PointProtocolInput(protocol->GetEvents(), false));
 			if (editor)
 			{
-				protocol->OnNextIdleFrame(L"Ready for text selection", [=]()
+				protocol->OnNextIdleFrame(L"Ready for press selection", [=]()
 				{
-					auto view = findView();
-					state->origin = protocol->LocationOf(view, 0.3, 0.3);
+					auto textBox = FindObjectByName<GuiMultilineTextBox>(GetApplication()->GetMainWindow(), L"editor");
+					state->origin = protocol->LocationOf(textBox, 0.3, 0.3);
 					state->input->Start(state->origin);
-					TEST_ASSERT(!view->GetPointEventComposition());
-					TEST_ASSERT(!FindObjectByName<GuiScrollContainer>(GetApplication()->GetMainWindow(), L"outer")->GetPointEventComposition());
-					state->input->Move(NativePoint(state->origin.x + 60, state->origin.y + 30));
+					TEST_ASSERT(textBox->GetPointEventComposition() == textBox->GetBoundsComposition());
+					state->input->Up(0, state->origin); state->input->End(100000);
+					TEST_ASSERT(textBox->GetCaretBegin() == textBox->GetCaretEnd());
 				});
-				protocol->OnNextIdleFrame(L"Touch drag selects text", [=]()
+				protocol->OnNextIdleFrame(L"Short press moved the caret", [=]()
+				{
+					state->origin = protocol->LocationOf(findView(), 0.6, 0.4);
+					state->input->Start(state->origin);
+					state->input->At(500000); state->input->Up(0, state->origin); state->input->End(500000);
+				});
+				protocol->OnNextIdleFrame(L"Long press extended the selection", [=]()
 				{
 					auto textBox = FindObjectByName<GuiMultilineTextBox>(GetApplication()->GetMainWindow(), L"editor");
 					TEST_ASSERT(textBox->GetCaretBegin() != textBox->GetCaretEnd());
-					TEST_ASSERT(textBox->GetViewPosition() == Point());
-					state->input->Up(0, NativePoint(state->origin.x + 60, state->origin.y + 30)); state->input->End();
+					state->caretBegin = textBox->GetCaretBegin(); state->caretEnd = textBox->GetCaretEnd();
+					state->input->Start(state->origin); state->input->Up(0, state->origin); state->input->End(100000);
+					assertSelection();
 					textBox->SetControlTemplate([](const description::Value&) { return new darkskin::DocumentViewerTemplate; });
 					textBox->SetEditMode(GuiDocumentEditMode::Selectable);
 				});
-				protocol->OnNextIdleFrame(L"Replaced template keeps text input", [=]()
+				protocol->OnNextIdleFrame(L"Template refresh preserved press selection", [=]()
 				{
-					state->origin = protocol->LocationOf(findView(), 0.4, 0.4);
-					state->input->Start(state->origin);
-					TEST_ASSERT(!findView()->GetPointEventComposition());
-					state->input->Move(NativePoint(state->origin.x + 50, state->origin.y));
-				});
-				protocol->OnNextIdleFrame(L"Selection after template replacement", [=]()
-				{
-					auto textBox = FindObjectByName<GuiMultilineTextBox>(GetApplication()->GetMainWindow(), L"editor");
-					TEST_ASSERT(textBox->GetCaretBegin() != textBox->GetCaretEnd());
-					state->input->Up(0, NativePoint(state->origin.x + 50, state->origin.y)); state->input->End();
-					textBox->SetEditMode(GuiDocumentEditMode::ViewOnly);
+					assertSelection();
 					state->input->Start(state->origin);
 					TEST_ASSERT(findView()->GetPointEventComposition() == findView()->GetBoundsComposition());
+					state->input->At(500000); state->input->Up(0, state->origin); state->input->End(500000);
+					TEST_ASSERT(state->rightClicks == 1);
+					assertSelection();
+					state->input->Start(state->origin);
 					state->input->Move(NativePoint(state->origin.x, state->origin.y - 40));
+					state->input->Up(0, NativePoint(state->origin.x, state->origin.y - 40)); state->input->End();
 				});
-				protocol->OnNextIdleFrame(L"View-only text still scrolls", [=]()
+				protocol->OnNextIdleFrame(L"Selectable content scrolled without changing the range", [=]()
 				{
 					TEST_ASSERT(findView()->GetViewPosition().y == 40);
-					state->input->Up(0, NativePoint(state->origin.x, state->origin.y - 40)); state->input->End();
+					assertSelection();
 					auto textBox = FindObjectByName<GuiMultilineTextBox>(GetApplication()->GetMainWindow(), L"editor");
-					textBox->SetEditMode(GuiDocumentEditMode::Editable);
-					auto begin = textBox->GetCaretBegin(), end = textBox->GetCaretEnd();
-					auto receiver = textBox->GetBoundsComposition()->GetEventReceiver();
-					auto handler = receiver->pointSequenceStarted.AttachLambda([](GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& a) { a.acceptedComposition = sender; });
+					textBox->SetEditMode(GuiDocumentEditMode::ViewOnly);
 					state->input->Start(state->origin);
-					TEST_ASSERT(textBox->GetPointEventComposition() == textBox->GetBoundsComposition());
 					state->input->Move(NativePoint(state->origin.x, state->origin.y - 20));
 					state->input->Up(0, NativePoint(state->origin.x, state->origin.y - 20)); state->input->End();
-					TEST_ASSERT(textBox->GetCaretBegin() == begin && textBox->GetCaretEnd() == end);
-					receiver->pointSequenceStarted.Detach(handler);
+				});
+				protocol->OnNextIdleFrame(L"View-only content still scrolls", [=]()
+				{
+					TEST_ASSERT(findView()->GetViewPosition().y == 60);
+					assertSelection();
+					auto textBox = FindObjectByName<GuiMultilineTextBox>(GetApplication()->GetMainWindow(), L"editor");
 					state->origin = protocol->LocationOf(textBox->GetVerticalScroll(), 0.5, 0.5);
 					state->input->Start(state->origin);
-					TEST_ASSERT(textBox->GetPointEventComposition() == textBox->GetBoundsComposition());
 					state->input->End(0, PointSequenceEndReason::Canceled_PlatformCanceled);
 					GetApplication()->GetMainWindow()->Hide();
 				});

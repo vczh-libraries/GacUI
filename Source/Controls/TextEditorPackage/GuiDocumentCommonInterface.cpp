@@ -276,6 +276,7 @@ GuiDocumentCommonInterface
 				compositions::GuiGraphicsComposition* _mouseArea,
 				compositions::GuiGraphicsComposition* _container,
 				compositions::GuiGraphicsComposition* eventComposition,
+				compositions::GuiGraphicsComposition* pointEventComposition,
 				compositions::GuiGraphicsComposition* focusableComposition
 			)
 			{
@@ -293,6 +294,9 @@ GuiDocumentCommonInterface
 				documentComposition->SetAlignmentToParent(GetTuiApplication() ? Margin(0, 0, 0, 0) : Margin(2, 2, 2, 2));
 				_container->AddChild(documentComposition);
 				ReplaceMouseArea(_mouseArea);
+				documentPointEventComposition = pointEventComposition;
+				pointEventComposition->GetEventReceiver()->pointSequenceStarted.AttachMethod(this, &GuiDocumentCommonInterface::OnPointSequenceStarted);
+				pointEventComposition->GetEventReceiver()->pointGesture.AttachMethod(this, &GuiDocumentCommonInterface::OnPointGesture);
 
 				focusableComposition->GetEventReceiver()->caretNotify.AttachMethod(this, &GuiDocumentCommonInterface::OnCaretNotify);
 				focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnGotFocus);
@@ -327,13 +331,11 @@ GuiDocumentCommonInterface
 					documentMouseArea->GetEventReceiver()->mouseDown.Detach(onMouseDownHandler);
 					documentMouseArea->GetEventReceiver()->mouseUp.Detach(onMouseUpHandler);
 					documentMouseArea->GetEventReceiver()->mouseLeave.Detach(onMouseLeaveHandler);
-					documentMouseArea->GetEventReceiver()->pointSequenceStarted.Detach(onPointSequenceStartedHandler);
 
 					onMouseMoveHandler = nullptr;
 					onMouseDownHandler = nullptr;
 					onMouseUpHandler = nullptr;
 					onMouseLeaveHandler = nullptr;
-					onPointSequenceStartedHandler = nullptr;
 				}
 				documentMouseArea = _mouseArea;
 				if (documentMouseArea)
@@ -347,15 +349,48 @@ GuiDocumentCommonInterface
 					onMouseDownHandler = documentMouseArea->GetEventReceiver()->mouseDown.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseDown);
 					onMouseUpHandler = documentMouseArea->GetEventReceiver()->mouseUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
 					onMouseLeaveHandler = documentMouseArea->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
-					onPointSequenceStartedHandler = documentMouseArea->GetEventReceiver()->pointSequenceStarted.AttachMethod(this, &GuiDocumentCommonInterface::OnPointSequenceStarted);
 				}
 			}
 
 			void GuiDocumentCommonInterface::OnPointSequenceStarted(GuiGraphicsComposition* sender, GuiPointSequenceStartedEventArgs& arguments)
 			{
-				if (documentControl->GetVisuallyEnabled() && editMode != GuiDocumentEditMode::ViewOnly)
+				pointStartedInDocument = false;
+				for (auto composition = arguments.compositionSource; composition; composition = composition->GetParent())
 				{
-					arguments.handled = true;
+					if (composition == documentMouseArea)
+					{
+						pointStartedInDocument = true;
+						break;
+					}
+					if (auto control = composition->GetAssociatedControl(); control && control != documentControl) break;
+				}
+			}
+
+			void GuiDocumentCommonInterface::OnPointGesture(GuiGraphicsComposition* sender, GuiPointGestureEventArgs& arguments)
+			{
+				if (arguments.handled || !pointStartedInDocument || !documentControl->GetVisuallyEnabled() || editMode == GuiDocumentEditMode::ViewOnly) return;
+				if (arguments.eventSource != documentPointEventComposition || arguments.compositionSource != documentPointEventComposition) return;
+				if (documentControl->GetPointEventComposition() != documentPointEventComposition) return;
+
+				auto shortPress = arguments.gesture.TryGet<GuiPointGesture_ShortPressing>();
+				auto longPress = arguments.gesture.TryGet<GuiPointGesture_LongPressing>();
+				if (!shortPress && !longPress) return;
+				auto position = shortPress ? shortPress->position : longPress->position;
+				auto pointOrigin = documentPointEventComposition->GetGlobalBounds().LeftTop();
+				auto documentOrigin = documentComposition->GetGlobalBounds().LeftTop();
+				auto caret = documentElement->CalculateCaretFromPoint(Point(position.x + pointOrigin.x - documentOrigin.x, position.y + pointOrigin.y - documentOrigin.y));
+				auto begin = documentElement->GetCaretBegin();
+				auto end = documentElement->GetCaretEnd();
+				if (shortPress && begin != end && ((begin <= caret && caret <= end) || (end <= caret && caret <= begin)))
+				{
+					documentControl->SetFocused();
+					arguments.selected = arguments.handled = true;
+				}
+				else if (longPress && begin == end && caret != end)
+				{
+					documentControl->SetFocused();
+					Move(caret, true, caret < end);
+					arguments.selected = arguments.handled = true;
 				}
 			}
 

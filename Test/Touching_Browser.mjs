@@ -219,15 +219,67 @@ try {
         await click('TextBox');
         const document=()=>all().then(values=>values.find(node=>node.elementDocument?.includes('I am the bone')));
         await until(async()=>await document()!==undefined,'Multiline editor inside scroll container');
-        const d=await document(); a=finger(301+pass,await screenPoint(d.bounds,8,8));
+        let d=await document(); a=finger(301+pass,await screenPoint(d.bounds,8,8));
+        await touch('touchStart',[a]); await touch('touchEnd',[]);
+        await page.keyboard.press('Control+Home');
+        await page.keyboard.press('Control+Shift+End'); await idle();
+        await page.keyboard.type('I am the bone of my sword.'); await idle();
+        for(let line=0;line<40;line++) {
+            await page.keyboard.press('Enter');
+            await page.keyboard.type(`Line ${line}.`);
+            await until(async()=>(await document()).elementDocument.includes(`Line ${line}.`),`Document setup line ${line} is ready`);
+        }
+        await page.keyboard.press('Control+Home'); await idle();
+        await until(async()=>(await document()).elementDocument.includes('Line 39.'),'Long document content is ready');
+        d=await document(); a=finger(301+pass,await screenPoint(d.bounds,8,8));
+        const counters=async()=>{
+            const node=(await all()).find(node=>node.elementText?.startsWith('Touch: Short='));
+            return node.elementText.match(/^Touch: Short=(\d+) Long=(\d+) Right=(\d+)$/).slice(1).map(Number);
+        };
         const textStart=events.length;
-        await touch('touchStart',[a]); await touch('touchMove',[{...a,x:a.x+100,y:a.y+25}]);
+        await touch('touchStart',[a]); await touch('touchEnd',[]);
+        await until(async()=>{const m=(await document()).element.match(/Selection(\([^)]*\))-(\([^)]*\))/);return m!==null&&m[1]===m[2];},'Short press positions a collapsed caret');
+        const b={...a,x:a.x+100,y:a.y+25};
+        await touch('touchStart',[b]); await new Promise(resolve=>setTimeout(resolve,550)); await touch('touchEnd',[]);
         await until(async()=>{const m=(await document()).element.match(/Selection(\([^)]*\))-(\([^)]*\))/);return m!==null&&m[1]!==m[2];},'Touch creates a nonempty text range');
-        const selection=(await document()).element;
-        await touch('touchMove',[{...a,x:a.x+180,y:a.y+50}]);
-        await until(async()=>(await document()).element!==selection,'Continued touch changes text range');
-        await touch('touchEnd',[]); noCompatibility(textStart);
+        const selection=(await document()).element.match(/Selection\([^)]*\)-\([^)]*\)/)[0];
+        for(const duration of [0,550]) {
+            const counts=await counters();
+            await touch('touchStart',[b]);
+            if(duration) await new Promise(resolve=>setTimeout(resolve,duration));
+            await touch('touchEnd',[]);
+            await until(async()=>(await document()).element.includes(selection),'Press on a selected endpoint preserves the exact range');
+            await until(async()=>{
+                const current=await counters();
+                return duration ? current[0]===counts[0]&&current[1]===counts[1]+1&&current[2]===counts[2]+1 : current[0]===counts[0]+1&&current[1]===counts[1]&&current[2]===counts[2];
+            },'Exclusive press offer and exactly one long-press right fallback');
+        }
+        const beforeY=(await document()).bounds.y1;
+        await touch('touchStart',[{...b,y:b.y+40}]); await touch('touchMove',[b]); await touch('touchEnd',[]);
+        await until(async()=>(await document()).bounds.y1<beforeY,'Accepted document drag scrolls content');
+        assert((await document()).element.includes(selection),'Document scrolling preserves the exact range');
+        noCompatibility(textStart);
         await picture(pass===0?'text-selection':'text-selection-aurora');
+        for(let mode=0;mode<2;mode++) {
+            if(mode) await click('Selection Only');
+            await click('Document Momentum');
+            await touch('touchStart',[{...b,y:b.y+100}]); await new Promise(resolve=>setTimeout(resolve,100));
+            await touch('touchMove',[{...b,y:b.y+60}]); await new Promise(resolve=>setTimeout(resolve,100));
+            await touch('touchEnd',[]);
+            const released=(await document()).bounds.y1;
+            await until(async()=>(await document()).bounds.y1<released,'Document momentum continues after Up in each edit mode');
+            await touch('touchStart',[b]); await new Promise(resolve=>setTimeout(resolve,100));
+            const stopped=(await document()).bounds.y1;
+            await new Promise(resolve=>setTimeout(resolve,250));
+            assert.equal((await document()).bounds.y1,stopped,'Fresh document contact stops momentum');
+            await touch('touchCancel',[]);
+            assert((await document()).element.includes(selection),'Document momentum preserves exact selection');
+            await click('Document Momentum');
+            await touch('touchStart',[b]); await touch('touchMove',[{...b,y:b.y+300}]); await touch('touchEnd',[]);
+            await until(async()=>(await document()).bounds.y1===d.bounds.y1,'Document returns to its initial viewport before the next edit mode');
+            assert((await document()).element.includes(selection),'Viewport reset preserves exact selection');
+        }
+        await click('Selection Only');
         if(pass===0){
             await click('Window Manager'); await click('Aurora');
             await until(async()=>(await all()).some(node=>node.element?.includes('#168A7A')),'Aurora templates are installed');

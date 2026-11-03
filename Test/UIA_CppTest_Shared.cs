@@ -780,7 +780,16 @@ public static class GacUIShowcaseTests
     }
     static void TouchTextSelectionAutomation()
     {
-        Test("Point input / editable text uses the rejected mouse stream");
+        Test("Point input / document press selection and scrolling");
+        Func<int[]> counters = () => {
+            foreach (var node in SnapshotNodes(ControlsSnapshot())) {
+                object value;
+                if (!node.TryGetValue("elementText", out value) || !((string)value).StartsWith("Touch: Short=")) continue;
+                var parts = ((string)value).Split(' ');
+                return new[] { int.Parse(parts[1].Split('=')[1]), int.Parse(parts[2].Split('=')[1]), int.Parse(parts[3].Split('=')[1]) };
+            }
+            throw new Exception("Document touch counters are missing.");
+        };
         for (int pass = 0; pass < 2; pass++)
         {
             var page = Page(Page(root, "Control"), "TextBox");
@@ -793,18 +802,99 @@ public static class GacUIShowcaseTests
                     && candidate.TryGetCurrentPattern(TextPattern.Pattern, out value)) { editor = candidate; break; }
             }
             Check(editor != null, "multiline editor exposes text ranges");
+            Test("Document touch / palette " + pass + " / install scrollable text");
             var content = new StringBuilder();
-            for (int line = 0; line < 20; line++) content.AppendLine("Line " + line + ": Touch dragging selects a changing range inside an enclosing scroll view.");
+            for (int line = 0; line < 80; line++) content.AppendLine("Line " + line + ": Press to select text; drag to scroll while keeping the selected range.");
             Pattern<ValuePattern>(editor, ValuePattern.Pattern).SetValue(content.ToString());
+            var scroll = Pattern<ScrollPattern>(editor, ScrollPattern.Pattern);
+            Test("Document touch / reset viewport");
+            Wait(() => scroll.Current.VerticallyScrollable && scroll.Current.VerticalViewSize < 50, "document fixture has laid out its scrollable text");
+            scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
+            Wait(() => scroll.Current.VerticalScrollPercent == 0, "document fixture starts at the top");
             var text = Pattern<TextPattern>(editor, TextPattern.Pattern);
+            Test("Document touch / press selection and right-click fallback");
             int token = 1101 + pass;
             PointInput("Down", token, editor, 0.05, 0.05);
-            PointInput("Update", token, editor, 0.45, 0.15);
-            Wait(() => text.GetSelection().Length == 1 && text.GetSelection()[0].GetText(-1).Length > 0, "touch drag creates a nonempty selection");
-            var selected = text.GetSelection()[0].GetText(-1);
-            PointInput("Update", token, editor, 0.70, 0.25);
-            Wait(() => text.GetSelection()[0].GetText(-1) != selected, "continued drag changes the selection range");
-            PointInput("Up", token, editor, 0.70, 0.25);
+            PointInput("Up", token, editor, 0.05, 0.05);
+            Wait(() => text.GetSelection().Length == 1 && text.GetSelection()[0].GetText(-1).Length == 0, "short press positions a collapsed caret");
+            PointInput("Down", token, editor, 0.45, 0.15);
+            Thread.Sleep(550);
+            Check(text.GetSelection()[0].GetText(-1).Length == 0, "holding a long press does not select before release");
+            PointInput("Up", token, editor, 0.45, 0.15);
+            Wait(() => text.GetSelection()[0].GetText(-1).Length > 0, "long press extends the caret on release");
+            var selected = text.GetSelection()[0].Clone();
+            Action<string> unchanged = description => Wait(() => {
+                var current = text.GetSelection()[0];
+                return current.CompareEndpoints(TextPatternRangeEndpoint.Start, selected, TextPatternRangeEndpoint.Start) == 0
+                    && current.CompareEndpoints(TextPatternRangeEndpoint.End, selected, TextPatternRangeEndpoint.End) == 0;
+            }, description);
+            PointInput("Down", token, editor, 0.45, 0.15);
+            PointInput("Up", token, editor, 0.45, 0.15);
+            unchanged("short press at the selected endpoint retains both endpoints");
+            var beforeRight = counters();
+            PointInput("Down", token, editor, 0.45, 0.15);
+            Thread.Sleep(550);
+            PointInput("Up", token, editor, 0.45, 0.15);
+            unchanged("long press on the selection retains both endpoints for right click");
+            Wait(() => { var current = counters(); return current[0] == beforeRight[0] && current[1] == beforeRight[1] + 1 && current[2] == beforeRight[2] + 1; }, "long press delivers one right click and no short-press offer");
+            Check(scroll.Current.VerticalViewSize < 50, "document has room for scrolling and momentum");
+            double before = scroll.Current.VerticalScrollPercent;
+            PointInput("Down", token, editor, 0.6, 0.8);
+            PointInput("Update", token, editor, 0.6, 0.3);
+            PointInput("Up", token, editor, 0.6, 0.3);
+            Wait(() => scroll.Current.VerticalScrollPercent > before, "accepted document drag scrolls the viewport");
+            unchanged("document scrolling preserves the selected endpoints");
+            var momentumControl = Named(page, "Document Momentum", ControlType.CheckBox);
+            Test("Document touch / visible options and momentum");
+            var selectableControl = Named(page, "Selection Only", ControlType.CheckBox);
+            Check(!momentumControl.Current.IsOffscreen && momentumControl.Current.BoundingRectangle.Height > 0, "document momentum option is visible");
+            Check(!selectableControl.Current.IsOffscreen && selectableControl.Current.BoundingRectangle.Height > 0, "document selection mode option is visible");
+            var momentum = Pattern<TogglePattern>(momentumControl, TogglePattern.Pattern);
+            var selectable = Pattern<TogglePattern>(selectableControl, TogglePattern.Pattern);
+            Check(momentum.Current.ToggleState == ToggleState.Off, "document momentum defaults off");
+            for (int mode = 0; mode < 2; mode++) {
+                if (mode == 1) selectable.Toggle();
+                scroll.SetScrollPercent(ScrollPattern.NoScroll, 0);
+                momentum.Toggle();
+                PointInput("Down", token, editor, 0.6, 0.8);
+                Thread.Sleep(100);
+                PointInput("Update", token, editor, 0.6, 0.6);
+                Thread.Sleep(100);
+                PointInput("Up", token, editor, 0.6, 0.4);
+                var released = scroll.Current.VerticalScrollPercent;
+                Check(released < 100, "document flick leaves room for momentum");
+                Wait(() => scroll.Current.VerticalScrollPercent > released, "document momentum continues after Up in each edit mode");
+                PointInput("Down", token, editor, 0.6, 0.5);
+                Thread.Sleep(100);
+                var interrupted = scroll.Current.VerticalScrollPercent;
+                Thread.Sleep(250);
+                Check(scroll.Current.VerticalScrollPercent == interrupted, "fresh document contact interrupts momentum");
+                Input("!PointCancel:" + token + ",PlatformCanceled");
+                unchanged("document momentum retains the exact selected endpoints");
+                momentum.Toggle();
+            }
+            selectable.Toggle();
+            var singlelineCandidates = Find(page, ControlType.Document);
+            Test("Document touch / single-line selection and right-click fallback");
+            singlelineCandidates.AddRange(Find(page, ControlType.Edit));
+            AutomationElement singleline = null;
+            foreach (var candidate in singlelineCandidates) {
+                object value;
+                if (!candidate.Current.IsPassword && candidate.Current.BoundingRectangle.Height < 80
+                    && candidate.TryGetCurrentPattern(TextPattern.Pattern, out value)) { singleline = candidate; break; }
+            }
+            Check(singleline != null, "single-line label family exposes a text range");
+            Pattern<ValuePattern>(singleline, ValuePattern.Pattern).SetValue("0123456789 abcdefghijklmnopqrstuvwxyz");
+            var lineText = Pattern<TextPattern>(singleline, TextPattern.Pattern);
+            PointInput("Down", token, singleline, 0.02, 0.5); PointInput("Up", token, singleline, 0.02, 0.5);
+            Wait(() => lineText.GetSelection()[0].GetText(-1).Length == 0, "single-line short press positions the caret");
+            PointInput("Down", token, singleline, 0.3, 0.5); Thread.Sleep(550); PointInput("Up", token, singleline, 0.3, 0.5);
+            Wait(() => lineText.GetSelection()[0].GetText(-1).Length > 0, "single-line long press extends selection");
+            var lineRange = lineText.GetSelection()[0].Clone();
+            beforeRight = counters();
+            PointInput("Down", token, singleline, 0.3, 0.5); Thread.Sleep(550); PointInput("Up", token, singleline, 0.3, 0.5);
+            Wait(() => { var current = counters(); return current[0] == beforeRight[0] && current[1] == beforeRight[1] + 1 && current[2] == beforeRight[2] + 1; }, "single-line long press produces exactly one right fallback");
+            Check(lineText.GetSelection()[0].Compare(lineRange), "single-line right fallback preserves both endpoints");
             if (pass == 0)
             {
                 var hwnd = new IntPtr(root.Current.NativeWindowHandle);

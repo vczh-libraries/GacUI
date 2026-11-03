@@ -155,6 +155,14 @@ Type Declaration
 				STRUCT_MEMBER(distance)
 			END_STRUCT_MEMBER(GuiPointGesture_DraggingAndRotation)
 
+			BEGIN_STRUCT_MEMBER(GuiPointGesture_ShortPressing)
+				STRUCT_MEMBER(position)
+			END_STRUCT_MEMBER(GuiPointGesture_ShortPressing)
+
+			BEGIN_STRUCT_MEMBER(GuiPointGesture_LongPressing)
+				STRUCT_MEMBER(position)
+			END_STRUCT_MEMBER(GuiPointGesture_LongPressing)
+
 			BEGIN_CLASS_MEMBER(GuiPointGestureEventArgs)
 				CLASS_MEMBER_BASE(GuiEventArgs)
 				EVENTARGS_CONSTRUCTOR(GuiPointGestureEventArgs)

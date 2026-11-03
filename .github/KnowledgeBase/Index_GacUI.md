@@ -219,8 +219,9 @@ Use GitTui to browse working-tree diffs and local branch history in a terminal, 
 
 Touch input is supported by Windows and GacJS (WebAssembly or HTTP, including browsers on Linux/macOS); native wGac and iGac do not acquire touch.
 
-- Four fixed recognizers provide deferred left/right clicks, locked-axis scrolling and selected translation/rotation/scaling, with a typed variant payload shared by C++ and Workflow.
+- Four fixed recognizers provide exclusive End-time short/long press offers, deferred left/right clicks, locked-axis scrolling and selected translation/rotation/scaling, with a four-alternative typed variant shared by C++ and Workflow. Click flags control fallback only; selecting any gesture suppresses fallback.
 - `GuiScrollView` accepts point events by default and consumes eligible one-finger scrolling. It does not automatically zoom, rotate, add inertia or hand a captured sequence to a parent.
-- Composition capture, raw lifecycle, text-selection exclusions, remote forwarding, Touching/TouchingList and automation verification share the same sequence contract.
+- Both document families accept press selection through persistent bounds handlers. Selectable/Editable content preserves an existing range on an inside short press and extends a collapsed caret on a different long press. Scrollable documents drag and optionally continue with momentum without changing selection; labels support press selection and their existing caret-visibility offset.
+- Composition capture, raw lifecycle, document content routing, remote forwarding, Touching/TouchingList and automation verification share the same sequence contract.
 
 [Design Explanation](./KB_GacUI_Design_PointInput.md)

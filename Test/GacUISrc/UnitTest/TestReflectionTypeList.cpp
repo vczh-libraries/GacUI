@@ -196,7 +196,7 @@ TEST_FILE
 
 		TEST_CASE(L"Gesture reflection preserves variant tags, copies and whole-field writes")
 		{
-			using Gesture = Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation>;
+			using Gesture = Variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation, GuiPointGesture_ShortPressing, GuiPointGesture_LongPressing>;
 			auto type = GetTypeDescriptor<GuiPointGestureEventArgs>();
 			TEST_ASSERT(type->CanConvertTo(GetTypeDescriptor<GuiEventArgs>()));
 			auto property = type->GetPropertyByName(L"gesture", true);
@@ -204,9 +204,11 @@ TEST_FILE
 			auto fieldType = property->GetReturn();
 			TEST_ASSERT(fieldType->GetDecorator() == ITypeInfo::Variant);
 			TEST_ASSERT(!fieldType->GetElementType() && !fieldType->GetTypeDescriptor());
-			TEST_ASSERT(fieldType->GetGenericArgumentCount() == 2);
+			TEST_ASSERT(fieldType->GetGenericArgumentCount() == 4);
 			TEST_ASSERT(fieldType->GetGenericArgument(0)->GetTypeDescriptor() == GetTypeDescriptor<GuiPointGesture_Scrolling>());
 			TEST_ASSERT(fieldType->GetGenericArgument(1)->GetTypeDescriptor() == GetTypeDescriptor<GuiPointGesture_DraggingAndRotation>());
+			TEST_ASSERT(fieldType->GetGenericArgument(2)->GetTypeDescriptor() == GetTypeDescriptor<GuiPointGesture_ShortPressing>());
+			TEST_ASSERT(fieldType->GetGenericArgument(3)->GetTypeDescriptor() == GetTypeDescriptor<GuiPointGesture_LongPressing>());
 			TEST_ASSERT(!type->GetPropertyByName(L"Gesture", true));
 			TEST_ASSERT(!type->GetMethodGroupByName(L"GetGesture", true));
 			GuiBoundsComposition composition;
@@ -236,6 +238,23 @@ TEST_FILE
 			Variant<vint, WString> invalid(vint(1));
 			TEST_EXCEPTION(boxed.SetProperty(L"gesture", BoxParameter(invalid)), ArgumentTypeMismtatchException, [](const ArgumentTypeMismtatchException&) {});
 			TEST_ASSERT(arguments.gesture.Get<GuiPointGesture_DraggingAndRotation>().scale == 3.0);
+			auto verifyPress = [&]<typename T>()
+			{
+				auto position = GetTypeDescriptor<T>()->GetPropertyByName(L"position", true);
+				TEST_ASSERT(position && position->GetReturn()->GetTypeDescriptor() == GetTypeDescriptor<Point>());
+				arguments.gesture = T{ Point(20, 30) };
+				auto copy = UnboxParameter<Gesture>(boxed.GetProperty(L"gesture"));
+				TEST_ASSERT(!copy.Ref().TryGet<GuiPointGesture_Scrolling>() && !copy.Ref().TryGet<GuiPointGesture_DraggingAndRotation>());
+				auto payload = BoxValue(copy.Ref().Get<T>());
+				TEST_ASSERT(UnboxValue<Point>(payload.GetProperty(L"position")) == Point(20, 30));
+				payload.SetProperty(L"position", BoxValue(Point(40, 50)));
+				copy.Ref() = UnboxValue<T>(payload);
+				TEST_ASSERT(arguments.gesture.Get<T>().position == Point(20, 30));
+				boxed.SetProperty(L"gesture", BoxParameter(copy.Ref()));
+				TEST_ASSERT(arguments.gesture.Get<T>().position == Point(40, 50));
+			};
+			verifyPress.operator()<GuiPointGesture_ShortPressing>();
+			verifyPress.operator()<GuiPointGesture_LongPressing>();
 		});
 
 		TEST_CASE(L"Ensure mouse button and Super modifier reflection surface")
