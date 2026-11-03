@@ -74,6 +74,102 @@ public:
 
 TEST_FILE
 {
+	TEST_CATEGORY(L"Press offers are independent of deferred click flags")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		GuiControl* surface = nullptr;
+		vint flags = 0, response = 0, offers = 0, ends = 0;
+		bool ending = false;
+		List<WString> order;
+		List<NativeMouseButton> clicks;
+		protocol.OnNextFrame([&]()
+		{
+			surface = new GuiControl(theme::ThemeName::CustomControl);
+			surface->SetAcceptPointEvents(true);
+			surface->GetBoundsComposition()->SetExpectedBounds(Rect(20, 30, 220, 230));
+			controlHost->GetContainerComposition()->AddChild(surface->GetBoundsComposition());
+			auto receiver = surface->GetBoundsComposition()->GetEventReceiver();
+			receiver->pointSequenceStarted.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceStartedEventArgs& a)
+			{
+				a.generateLeftButtonClick = (flags & 1) != 0;
+				a.generateRightButtonClick = (flags & 2) != 0;
+			});
+			receiver->pointAction.AttachLambda([&](GuiGraphicsComposition*, GuiPointEventArgs& a)
+			{
+				if (a.eventType == GuiPointEventsType::Up) order.Add(L"Up");
+			});
+			receiver->pointGesture.AttachLambda([&](GuiGraphicsComposition*, GuiPointGestureEventArgs& a)
+			{
+				if (!ending) return;
+				offers++;
+				order.Add(L"Press");
+				TEST_ASSERT(a.compositionSource == surface->GetBoundsComposition() && a.eventSource == a.compositionSource);
+				TEST_ASSERT(surface->GetPointEventComposition() == a.compositionSource);
+				a.selected = response == 1;
+				a.handled = response != 0;
+			});
+			receiver->pointGesture.AttachLambda([](GuiGraphicsComposition*, GuiPointGestureEventArgs& a) { a.selected = false; });
+			receiver->pointGesture.AttachLambda([&](GuiGraphicsComposition*, GuiPointGestureEventArgs& a)
+			{
+				if (ending) TEST_ASSERT(a.selected == (response == 1));
+			});
+			receiver->pointSequenceEnded.AttachLambda([&](GuiGraphicsComposition*, GuiPointSequenceEndedEventArgs& a)
+			{
+				ends++;
+				order.Add(L"End");
+				TEST_ASSERT(surface->GetPointEventComposition() == a.compositionSource);
+				TEST_ASSERT(a.GetPoints().Count() == 1 && !a.GetPoints()[0]);
+				a.handled = true;
+			});
+			receiver->mouseMove.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs&)
+			{
+				TEST_ASSERT(!surface->GetPointEventComposition());
+				order.Add(L"MouseMove");
+			});
+			receiver->mouseDown.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs& a)
+			{
+				TEST_ASSERT(!surface->GetPointEventComposition());
+				clicks.Add(a.button);
+				order.Add(L"MouseDown");
+			});
+			receiver->mouseUp.AttachLambda([&](GuiGraphicsComposition*, GuiMouseEventArgs&)
+			{
+				TEST_ASSERT(!surface->GetPointEventComposition());
+				order.Add(L"MouseUp");
+			});
+			controlHost->ForceCalculateSizeImmediately();
+		});
+		protocol.OnNextFrame([&]()
+		{
+			PointProtocolInput input(protocol.GetEvents(), false);
+			for (flags = 0; flags < 4; flags++)
+			for (response = 0; response < 3; response++)
+			for (auto duration : { 499999,500000 })
+			{
+				order.Clear(); clicks.Clear(); offers = ends = 0; ending = false;
+				input.Start(NativePoint(100, 100));
+				input.At(duration);
+				input.Up(0, NativePoint(100, 100));
+				TEST_ASSERT(offers == 0 && ends == 0 && clicks.Count() == 0);
+				ending = true;
+				input.End(duration);
+				TEST_ASSERT(offers == 1 && ends == 1 && !surface->GetPointEventComposition());
+				auto right = duration == 500000 && (flags & 2) != 0;
+				auto click = response != 1 && (right || (flags & 1) != 0);
+				TEST_ASSERT(clicks.Count() == (click ? 1 : 0));
+				if (click) TEST_ASSERT(clicks[0] == (right ? NativeMouseButton::Right : NativeMouseButton::Left));
+				TEST_ASSERT(order.Count() == (click ? 6 : 3));
+				TEST_ASSERT(order[0] == L"Up" && order[1] == L"Press" && order[2] == L"End");
+				if (click) TEST_ASSERT(order[3] == L"MouseMove" && order[4] == L"MouseDown" && order[5] == L"MouseUp");
+			}
+			controlHost->Hide();
+		});
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
+	});
+
 	TEST_CATEGORY(L"Gesture selection, incremental manipulation and raw lifecycle")
 	{
 		GraphicsHostProtocol protocol;
