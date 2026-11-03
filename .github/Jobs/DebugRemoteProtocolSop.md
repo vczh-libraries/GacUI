@@ -255,6 +255,14 @@ Use a fresh application state.
 9. Require the application to remain connected and responsive throughout the
    typing and tab changes.
 
+#### 3.1 Ensure Document Editor Features on "Document Editor (Ribbon)" test page
+
+<!-- will be filled when executing TODO_TASK3.md, delete this comment after that -->
+
+#### 3.2 Ensure Document Editor Features on "Document Editor (Toolstrip)" test page
+
+<!-- will be filled when executing TODO_TASK3.md, delete this comment after that -->
+
 ### 4. Verify Shortcuts and Mouse Buttons
 
 1. Activate `Window Manager` and require the three shortcut labels to be

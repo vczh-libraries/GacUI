@@ -1,0 +1,23 @@
+- In `GuiControl` add these 2 members:
+  - A `ContextMenu` property in type `GuiPoup*`, default to `nullptr`, `GuiControl` does not care about lifetime of the context menu, it only simply tests if it is null before using it.
+  - A `DisplayContextMenuOnRightClick` property in type `bool`, default to `true`. When it is true and when its `BoundsComposition` receiving a right click event with `handled` set to `false`, the popup is displayed with the control and the specified relative location.
+  - Update the website to mention these 2 properties in the control page, with the title name "ContextMenu and DisplayContextMenuOnRightClick".
+- In `FullControlTest` make this change to the ribbon and toolstrip document test page:
+  - The change is made in `DocumentEditorBase.xml`.
+  - Add a toolstrip menu with following items:
+    - `Undo` `Redo` | `Copy` `Cut` `Paste` | `Delete` | `Select All` `Object` | `Set Font ...` `Text Color ...` `Background Color ...` | `Edit Hyperlink ...` `Remove Hyperlink`
+    - Reuse toolstrip commands for every menu item. 
+    - `Object` has a sub menu like document toolstrip test page's edit menu.
+  - Use `ContextMenu` property to attach it to the document viewer.
+  - Verify it on `CppTest` to make sure the context menu would show and menu items are working.
+  - Update `DebugRemoteProtocolSop.md`:
+    - Fill `3.1 Ensure Document Editor Features on "Document Editor (Ribbon)" test page`:
+      - Load `TestDocument.bin`. When testing against `GacJS` make sure `remoteFS` option should not turn on otherwise it cannot access the local file system.
+      - Based on the loaded document, try every feature on the ribbon and the context menu, including applying styles.
+    - Fill `3.2 Ensure Document Editor Features on "Document Editor (Toolstrip)" test page`
+      - Simply mention that applying everything in `3.1` on the toolstrip test page (need to skip style application because the UI does not exist in this test page), but text selections and caret location should be done via point events. Since `wGac` and `iGac` native renderers does not support point events, this will be skipped. Since `GacJS` supports point events so this will not be skipped no matter which OS is running. DO NOT repeat test steps.
+    - Run `3.1` and `3.2` only with `CppTest` to make sure the test SOP is working.
+- Commit and push all local changes so far.
+- Publish the website, but when running `job:copilotInitAll`, skip learning.
+- Update in `Release` repo `GacUI_Controls/DocumentEditor` with the same change applied to `DocumentEditorBase.xml`.
+  - Run `../Tools/Tools/Build.ps1 -Project Release` to make sure the `Release` repo is fully updated.
