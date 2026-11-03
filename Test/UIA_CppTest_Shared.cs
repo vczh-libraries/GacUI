@@ -1833,6 +1833,8 @@ public static class GacUIShowcaseTests
                 string cssColor = "#" + red.ToString("X2") + green.ToString("X2") + blue.ToString("X2");
                 Check(formattedHtml.Contains((index == 2 ? "color:" : "background-color:") + cssColor), "HTML retains the chosen color");
             }
+            // RTF/HTML exports select the entire document; reload before point selection.
+            PersistenceFile(page, ribbon, "Load as Private Format", fixture, false, !uia);
             for (int route = 0; route < 3; route++)
             {
                 EditorSelect(document, !ribbon, "Private save preserves");
