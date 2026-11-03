@@ -5838,9 +5838,11 @@ class presentation::controls::GuiControl : system::ReferenceType {
     property ChildrenCount : system::Int64 { get:GetChildrenCount }
     property ContainerComposition : presentation::compositions::GuiGraphicsComposition* { get:GetContainerComposition }
     property Context : system::Object { get:GetContext set:SetContext event:ContextChanged }
+    property ContextMenu : presentation::controls::GuiPopup* { get:GetContextMenu set:SetContextMenu }
     property ControlTemplate : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^ { get:GetControlTemplate set:SetControlTemplate event:ControlTemplateChanged }
     property ControlTemplateObject : presentation::templates::GuiControlTemplate* { get:GetControlTemplateObject }
     property ControlThemeName : presentation::theme::ThemeName { get:GetControlThemeName set:SetControlThemeName event:ControlThemeNameChanged }
+    property DisplayContextMenuOnRightClick : system::Boolean { get:GetDisplayContextMenuOnRightClick set:SetDisplayContextMenuOnRightClick }
     property DisplayFont : presentation::FontProperties { get:GetDisplayFont event:DisplayFontChanged }
     property DisposedFlag : presentation::controls::GuiDisposedFlag^ { get:GetDisposedFlag }
     property Enabled : system::Boolean { get:GetEnabled set:SetEnabled event:EnabledChanged }
@@ -5870,9 +5872,11 @@ class presentation::controls::GuiControl : system::ReferenceType {
     function GetChildrenCount() : system::Int64;
     function GetContainerComposition() : presentation::compositions::GuiGraphicsComposition*;
     function GetContext() : system::Object;
+    function GetContextMenu() : presentation::controls::GuiPopup*;
     function GetControlTemplate() : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^;
     function GetControlTemplateObject() : presentation::templates::GuiControlTemplate*;
     function GetControlThemeName() : presentation::theme::ThemeName;
+    function GetDisplayContextMenuOnRightClick() : system::Boolean;
     function GetDisplayFont() : presentation::FontProperties;
     function GetDisposedFlag() : presentation::controls::GuiDisposedFlag^;
     function GetEnabled() : system::Boolean;
@@ -5900,9 +5904,11 @@ class presentation::controls::GuiControl : system::ReferenceType {
     function SetActivatingAltHost(host : presentation::compositions::IGuiAltActionHost*) : system::Void;
     function SetAlt(value : system::String) : system::Boolean;
     function SetContext(value : system::Object) : system::Void;
+    function SetContextMenu(value : presentation::controls::GuiPopup*) : system::Void;
     function SetControlTemplate(value : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^) : system::Void;
     function SetControlThemeName(value : presentation::theme::ThemeName) : system::Void;
     function SetControlThemeNameAndTemplate(themeNameValue : presentation::theme::ThemeName, controlTemplateValue : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^) : system::Void;
+    function SetDisplayContextMenuOnRightClick(value : system::Boolean) : system::Void;
     function SetEnabled(value : system::Boolean) : system::Void;
     function SetFocused() : system::Void;
     function SetFont(value : presentation::FontProperties?) : system::Void;
