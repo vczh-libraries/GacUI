@@ -97,3 +97,19 @@ Extend existing deterministic gesture, document selection, reflection and Workfl
 The Debug x64 solution build passed with zero warnings/errors. The added ordinary gesture regression failed on the first short press with both click flags disabled: no End-time press offer arrived, while one is required. The process exited at the exact offer/End/capture assertion. Existing focused tests before this regression passed.
 
 # PROPOSALS
+
+- No.1 Offer exclusive End-time presses and consume document selection on the persistent point target
+
+## No.1 Offer exclusive End-time presses and consume document selection on the persistent point target
+
+Keep the existing recognizer order and lifecycle. Both click recognizers track single-contact eligibility independently of click-generation flags. At successful End, the right-click recognizer offers a long press at or above 500000 microseconds; the left-click recognizer offers a short press below that boundary. Deferred fallback remains separately controlled by the completed Started flags, including left-only fallback after a declined long press. Any selected gesture suppresses every fallback click. Existing radial movement, extra-contact and cancellation checks remain authoritative.
+
+Append typed short/long press payloads to the gesture variant. Reproject the saved original screen start into the accepted composition's current logical coordinates at End, while capture is still valid. Register both payloads and expand exact reflected/Workflow variant tests without changing existing alternative indices or value-copy semantics.
+
+Install shared document Started/gesture subscriptions once on each control's persistent bounds composition, which is also the scroll viewer's point target. Track whether the original hit belongs to document content and exclude chrome and embedded controls. Remove the old mouse-area rejection gate and enable point events by default for the label family. Do not rewrite acceptance or click flags. Translate the press position through current composition bounds before document hit testing, so scrolling, label offsets and template replacement remain correct.
+
+For enabled Selectable/Editable documents, consume a short press inside an existing inclusive range without moving endpoints; consume a long press at a different caret only when the range is collapsed, extending through the existing Move path. Focus only consumed selections. Decline all other presses for ordinary click fallback. Preserve ViewOnly hyperlinks, disabled behavior, physical mouse/keyboard selection and existing scrolling/momentum arbitration.
+
+Extend ordinary deterministic lifecycle, coordinate, reflection and exact document selection tests; update useful scrolling/selection snapshots and existing live fixtures. Validate metadata, all consumer modes, the full unit suite and available native/remote/browser paths. Reconcile canonical KB, authored website articles and exported manual copies, explicitly recording unavailable hardware or Linux/Wasm coverage. Keep authored, generated and snapshot commits separate.
+
+### CODE CHANGE
