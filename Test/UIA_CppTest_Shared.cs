@@ -1112,6 +1112,30 @@ public static class GacUIShowcaseTests
         Page(Page(root, "Misc"), "Touching");
         TouchingState(0, state, "switching tabs retains rectangle transform");
     }
+    static void ActivatePersistenceMenuItem(AutomationElement item, bool submenu = false)
+    {
+        if (isHosted) { Click(item); return; }
+        string name = item.Current.Name;
+        foreach (var window in SnapshotNodes(ControlsSnapshot()))
+        {
+            object windowId, composition, role;
+            if (!window.TryGetValue("windowId", out windowId) || !window.TryGetValue("composition", out composition)) continue;
+            var content = composition as Dictionary<string, object>;
+            if (content == null || !content.TryGetValue("control", out role) || (string)role != "Menu") continue;
+            foreach (var node in SnapshotNodes(composition))
+            {
+                object caption;
+                if (!node.TryGetValue("elementText", out caption) || (string)caption != name) continue;
+                var bounds = SnapshotBounds(node);
+                Check(bounds.Width > 0 && bounds.Height > 0, "native persistence command has rendered bounds: " + name);
+                // Native cascading headers open on hover; a subsequent click closes the menu chain.
+                string action = submenu ? "MouseMove" : "LeftClick";
+                Input("!" + action + ":" + (int)(bounds.Left + bounds.Width / 2) + "," + (int)(bounds.Top + bounds.Height / 2), inputEndpoint + "/" + (string)windowId);
+                return;
+            }
+        }
+        throw new Exception("Rendered native persistence command is missing: " + name);
+    }
     static AutomationElement PersistenceCommand(AutomationElement page, bool ribbon, string command, bool automation = false)
     {
         Action openMenu = () => {
@@ -1131,7 +1155,7 @@ public static class GacUIShowcaseTests
                         save = menu == null ? null : FindNamed(menu, "Save as", ControlType.MenuItem);
                         return save != null && !save.Current.IsOffscreen;
                     }, "File popup exposes Save as");
-                    if (automation) Click(save); else Pattern<ExpandCollapsePattern>(save, ExpandCollapsePattern.Pattern).Expand();
+                    if (automation) ActivatePersistenceMenuItem(save, true); else Pattern<ExpandCollapsePattern>(save, ExpandCollapsePattern.Pattern).Expand();
                 }
             }
         };
@@ -1162,7 +1186,7 @@ public static class GacUIShowcaseTests
             }
             return false;
         }, "persistence menu command: " + command, 30000);
-        if (automation) Click(item); else Pattern<InvokePattern>(item, InvokePattern.Pattern).Invoke();
+        if (automation) ActivatePersistenceMenuItem(item); else Pattern<InvokePattern>(item, InvokePattern.Pattern).Invoke();
         AutomationElement dialog = null;
         string title = command == "Load as Private Format" ? "Load a GacUI Document" : "Save a GacUI Document";
         Wait(() => {
@@ -1246,6 +1270,12 @@ public static class GacUIShowcaseTests
         catch (InvalidOperationException error)
         {
             if (confirm.Current.FrameworkId == "GacUI" || error.StackTrace == null || !error.StackTrace.Contains("SendInput")) throw;
+            nativeClick = true;
+        }
+        catch (System.ComponentModel.Win32Exception error)
+        {
+            if (confirm.Current.FrameworkId == "GacUI" || error.NativeErrorCode != 1409 || error.StackTrace == null || !error.StackTrace.Contains("AutomationProxies.Misc.SetFocus")) throw;
+            Console.WriteLine("NOTE native file-dialog UIA focus failed with ERROR_HOTKEY_ALREADY_REGISTERED in this session");
             nativeClick = true;
         }
         if (nativeClick)
@@ -1366,7 +1396,8 @@ public static class GacUIShowcaseTests
                 string endpoint = inputEndpoint;
                 object windowId;
                 if (menu.TryGetValue("windowId", out windowId)) endpoint += "/" + (string)windowId;
-                Input("!LeftClick:" + (int)(bounds.Left + bounds.Width / 2) + "," + (int)(bounds.Top + bounds.Height / 2), endpoint);
+                string action = !isHosted && name == "Object" ? "MouseMove" : "LeftClick";
+                Input("!" + action + ":" + (int)(bounds.Left + bounds.Width / 2) + "," + (int)(bounds.Top + bounds.Height / 2), endpoint);
                 return;
             }
             throw new Exception("Rendered context command is missing: " + name);
