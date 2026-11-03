@@ -1,6 +1,6 @@
 ﻿{
   "frameId": 12,
-  "frameName": "Selection after template replacement",
+  "frameName": "Template refresh preserved press selection",
   "windowSize": {
     "bounds": {
       "x1": {"value": 212},
@@ -1088,12 +1088,24 @@
             "runsDiff": [
               {
                 "caretBegin": 0,
-                "caretEnd": 79,
+                "caretEnd": 11,
                 "props": [
                   "DocumentTextRunProperty",
                   {
                     "textColor": "#FFFFFF",
                     "backgroundColor": "#00000000",
+                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
+                  }
+                ]
+              },
+              {
+                "caretBegin": 11,
+                "caretEnd": 79,
+                "props": [
+                  "DocumentTextRunProperty",
+                  {
+                    "textColor": "#FFFFFF",
+                    "backgroundColor": "#007ACC",
                     "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
                   }
                 ]
@@ -1125,7 +1137,7 @@
                   "DocumentTextRunProperty",
                   {
                     "textColor": "#FFFFFF",
-                    "backgroundColor": "#00000000",
+                    "backgroundColor": "#007ACC",
                     "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
                   }
                 ]
@@ -1152,19 +1164,7 @@
             "runsDiff": [
               {
                 "caretBegin": 0,
-                "caretEnd": 15,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#00000000",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              },
-              {
-                "caretBegin": 15,
-                "caretEnd": 22,
+                "caretEnd": 23,
                 "props": [
                   "DocumentTextRunProperty",
                   {
@@ -1175,7 +1175,7 @@
                 ]
               },
               {
-                "caretBegin": 22,
+                "caretBegin": 23,
                 "caretEnd": 79,
                 "props": [
                   "DocumentTextRunProperty",
@@ -1190,7 +1190,7 @@
             "createdInlineObjects": null,
             "removedInlineObjects": null
           },
-          "caret": {"id": 107, "caret": 22, "caretColor": "#FFFFFF", "frontSide": true}
+          "caret": {"id": 107, "caret": 23, "caretColor": "#FFFFFF", "frontSide": true}
         }
       ]
     ],

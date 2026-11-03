@@ -1,6 +1,6 @@
 ﻿{
   "frameId": 7,
-  "frameName": "Touch drag selects text",
+  "frameName": "Short press moved the caret",
   "windowSize": {
     "bounds": {
       "x1": {"value": 212},
@@ -913,12 +913,12 @@
             "id": 64,
             "text": "Row 3: long overflowing content for point scrolling and selection preservation.",
             "wrapLine": false,
-            "maxWidth": 575,
+            "maxWidth": 568,
             "alignment": "Left",
             "runsDiff": [
               {
                 "caretBegin": 0,
-                "caretEnd": 11,
+                "caretEnd": 79,
                 "props": [
                   "DocumentTextRunProperty",
                   {
@@ -927,24 +927,12 @@
                     "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
                   }
                 ]
-              },
-              {
-                "caretBegin": 11,
-                "caretEnd": 79,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#007ACC",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
               }
             ],
             "createdInlineObjects": null,
             "removedInlineObjects": null
           },
-          "caret": null
+          "caret": {"id": 64, "caret": 11, "caretColor": "#FFFFFF", "frontSide": false}
         }
       ]
     ],
@@ -957,7 +945,7 @@
             "id": 65,
             "text": "Row 4: long overflowing content for point scrolling and selection preservation.",
             "wrapLine": false,
-            "maxWidth": 575,
+            "maxWidth": 568,
             "alignment": "Left",
             "runsDiff": [
               {
@@ -967,7 +955,7 @@
                   "DocumentTextRunProperty",
                   {
                     "textColor": "#FFFFFF",
-                    "backgroundColor": "#007ACC",
+                    "backgroundColor": "#00000000",
                     "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
                   }
                 ]
@@ -989,23 +977,11 @@
             "id": 66,
             "text": "Row 5: long overflowing content for point scrolling and selection preservation.",
             "wrapLine": false,
-            "maxWidth": 575,
+            "maxWidth": 568,
             "alignment": "Left",
             "runsDiff": [
               {
                 "caretBegin": 0,
-                "caretEnd": 19,
-                "props": [
-                  "DocumentTextRunProperty",
-                  {
-                    "textColor": "#FFFFFF",
-                    "backgroundColor": "#007ACC",
-                    "fontProperties": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": true}
-                  }
-                ]
-              },
-              {
-                "caretBegin": 19,
                 "caretEnd": 79,
                 "props": [
                   "DocumentTextRunProperty",
@@ -1020,7 +996,7 @@
             "createdInlineObjects": null,
             "removedInlineObjects": null
           },
-          "caret": {"id": 66, "caret": 19, "caretColor": "#FFFFFF", "frontSide": true}
+          "caret": null
         }
       ]
     ],

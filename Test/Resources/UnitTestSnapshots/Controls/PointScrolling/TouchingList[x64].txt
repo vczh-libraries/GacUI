@@ -25,13 +25,13 @@ namespace gacuisrc_unittest
     class SwipeWindowConstructor
     {
         @cpp:Protected
-        var self : ::gacuisrc_unittest::SwipeWindow* = null of (::gacuisrc_unittest::SwipeWindow*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
 
         @cpp:Protected
         var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::SwipeWindow* = null of (::gacuisrc_unittest::SwipeWindow*);
 
         @cpp:Protected
         var sample : ::demo::TouchingListTabPage* = null of (::demo::TouchingListTabPage*);
@@ -141,9 +141,6 @@ namespace demo
     class TouchingTabPageConstructor
     {
         @cpp:Protected
-        var self : ::demo::TouchingTabPage* = null of (::demo::TouchingTabPage*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
@@ -160,6 +157,9 @@ namespace demo
 
         @cpp:Protected
         var <precompile>5 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var self : ::demo::TouchingTabPage* = null of (::demo::TouchingTabPage*);
 
         @cpp:Protected
         var touchingBounds : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -224,20 +224,6 @@ namespace demo
                 self.ContainerComposition.AddChild(<precompile>0);
             }
             {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceStartedEventArgs*) : (::system::Void)
-                {
-                    (arguments.acceptedComposition = touchingBounds);
-                };
-                attach(touchingBounds.pointSequenceStarted, <event-handler>);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointEventArgs*) : (::system::Void)
-                {
-                    self.UpdatePoints(arguments);
-                };
-                attach(touchingBounds.pointAction, <event-handler>);
-            }
-            {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointGestureEventArgs*) : (::system::Void)
                 {
                     if ((!arguments.handled))
@@ -261,6 +247,20 @@ namespace demo
                     }
                 };
                 attach(touchingBounds.pointGesture, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceStartedEventArgs*) : (::system::Void)
+                {
+                    (arguments.acceptedComposition = touchingBounds);
+                };
+                attach(touchingBounds.pointSequenceStarted, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointEventArgs*) : (::system::Void)
+                {
+                    self.UpdatePoints(arguments);
+                };
+                attach(touchingBounds.pointAction, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceEndedEventArgs*) : (::system::Void)
@@ -403,9 +403,6 @@ namespace demo
     class TouchingListItemTemplateConstructor
     {
         @cpp:Protected
-        var self : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
@@ -428,6 +425,9 @@ namespace demo
 
         @cpp:Protected
         var ViewModel : ::demo::TouchingListItem^ = null of (::demo::TouchingListItem^);
+
+        @cpp:Protected
+        var self : ::demo::TouchingListItemTemplate* = null of (::demo::TouchingListItemTemplate*);
 
         @cpp:Protected
         var deleteBackground : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -1404,9 +1404,6 @@ namespace demo
     class TouchingListTabPageConstructor
     {
         @cpp:Protected
-        var self : ::demo::TouchingListTabPage* = null of (::demo::TouchingListTabPage*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::eazy_layout::GuiEasyLayoutComposition* = null of (::presentation::compositions::eazy_layout::GuiEasyLayoutComposition*);
 
         @cpp:Protected
@@ -1426,6 +1423,9 @@ namespace demo
 
         @cpp:Protected
         var <precompile>6 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var self : ::demo::TouchingListTabPage* = null of (::demo::TouchingListTabPage*);
 
         @cpp:Protected
         var momentumOption : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
@@ -1572,24 +1572,6 @@ namespace demo
                 attach(<precompile>6.Clicked, <event-handler>);
             }
             {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceStartedEventArgs*) : (::system::Void)
-                {
-                    self.BeginSwipe(arguments);
-                };
-                attach(<precompile>10.pointSequenceStarted, <event-handler>);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointEventArgs*) : (::system::Void)
-                {
-                    if (((arguments.eventType == GuiPointEventsType::Down) and (arguments.pointId != 0)))
-                    {
-                        (self.multipleContacts = true);
-                        self.ResetSwipe();
-                    }
-                };
-                attach(<precompile>10.pointAction, <event-handler>);
-            }
-            {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointGestureEventArgs*) : (::system::Void)
                 {
                     if ((!arguments.handled))
@@ -1613,6 +1595,24 @@ namespace demo
                     }
                 };
                 attach(<precompile>10.pointGesture, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceStartedEventArgs*) : (::system::Void)
+                {
+                    self.BeginSwipe(arguments);
+                };
+                attach(<precompile>10.pointSequenceStarted, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointEventArgs*) : (::system::Void)
+                {
+                    if (((arguments.eventType == GuiPointEventsType::Down) and (arguments.pointId != 0)))
+                    {
+                        (self.multipleContacts = true);
+                        self.ResetSwipe();
+                    }
+                };
+                attach(<precompile>10.pointAction, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceEndedEventArgs*) : (::system::Void)

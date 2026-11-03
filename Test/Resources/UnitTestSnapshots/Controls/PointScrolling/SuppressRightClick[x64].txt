@@ -25,24 +25,6 @@ namespace gacuisrc_unittest
     class ClickWindowConstructor
     {
         @cpp:Protected
-        var <precompile>0 : ::gacuisrc_unittest::ClickWindow* = null of (::gacuisrc_unittest::ClickWindow*);
-
-        @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
-
-        @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
-
-        @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
-
-        @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
-
-        @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
-
-        @cpp:Protected
         var target : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
@@ -53,6 +35,27 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var disableRight : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var <precompile>0 : ::gacuisrc_unittest::ClickWindow* = null of (::gacuisrc_unittest::ClickWindow*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-ClickWindow>Initialize(<this> : ::gacuisrc_unittest::ClickWindow*) : (::system::Void)
@@ -66,19 +69,20 @@ namespace gacuisrc_unittest
             }
             (<precompile>1 = new (::presentation::compositions::GuiStackComposition*)());
             {
+                (<precompile>1.AlignmentToParent = {left : 8; top : 8; right : 8; bottom : 8;} of (::presentation::Margin));
+            }
+            {
                 (<precompile>1.Padding = 8 of (::system::Int64));
             }
             {
                 (<precompile>1.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
-            }
-            {
-                (<precompile>1.AlignmentToParent = {left : 8; top : 8; right : 8; bottom : 8;} of (::presentation::Margin));
             }
             (<precompile>2 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (target = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("target", target);
             }
+            (<precompile>3 = target.BoundsComposition);
             {
                 (target.Text = "Tap activation");
             }
@@ -88,7 +92,7 @@ namespace gacuisrc_unittest
             {
                 <precompile>1.AddChild(<precompile>2);
             }
-            (<precompile>3 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>4 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (rightResult = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("rightResult", rightResult);
@@ -97,12 +101,12 @@ namespace gacuisrc_unittest
                 (rightResult.Text = "Right activation");
             }
             {
-                <precompile>3.AddChild(rightResult.BoundsComposition);
+                <precompile>4.AddChild(rightResult.BoundsComposition);
             }
             {
-                <precompile>1.AddChild(<precompile>3);
+                <precompile>1.AddChild(<precompile>4);
             }
-            (<precompile>4 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>5 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (disableLeft = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("disableLeft", disableLeft);
@@ -111,12 +115,12 @@ namespace gacuisrc_unittest
                 (disableLeft.Text = "Suppress left click");
             }
             {
-                <precompile>4.AddChild(disableLeft.BoundsComposition);
+                <precompile>5.AddChild(disableLeft.BoundsComposition);
             }
             {
-                <precompile>1.AddChild(<precompile>4);
+                <precompile>1.AddChild(<precompile>5);
             }
-            (<precompile>5 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>6 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (disableRight = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("disableRight", disableRight);
@@ -125,13 +129,29 @@ namespace gacuisrc_unittest
                 (disableRight.Text = "Suppress right click");
             }
             {
-                <precompile>5.AddChild(disableRight.BoundsComposition);
+                <precompile>6.AddChild(disableRight.BoundsComposition);
             }
             {
-                <precompile>1.AddChild(<precompile>5);
+                <precompile>1.AddChild(<precompile>6);
             }
             {
                 <precompile>0.ContainerComposition.AddChild(<precompile>1);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointGestureEventArgs*) : (::system::Void)
+                {
+                    if (var press : GuiPointGesture_ShortPressing? = (arguments.gesture as (GuiPointGesture_ShortPressing?)))
+                    {
+                        var changed : GuiPointGesture_ShortPressing = {position : {x : (press.position.x + 1); y : (press.position.y + 2);};};
+                        (arguments.gesture = changed of (variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation, GuiPointGesture_ShortPressing, GuiPointGesture_LongPressing>));
+                    }
+                    if (var press : GuiPointGesture_LongPressing? = (arguments.gesture as (GuiPointGesture_LongPressing?)))
+                    {
+                        var changed : GuiPointGesture_LongPressing = {position : {x : (press.position.x + 1); y : (press.position.y + 2);};};
+                        (arguments.gesture = changed of (variant<GuiPointGesture_Scrolling, GuiPointGesture_DraggingAndRotation, GuiPointGesture_ShortPressing, GuiPointGesture_LongPressing>));
+                    }
+                };
+                attach(<precompile>3.pointGesture, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiPointSequenceStartedEventArgs*) : (::system::Void)

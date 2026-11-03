@@ -116,14 +116,15 @@
     [114, "DocumentParagraph"],
     [115, "DocumentParagraph"],
     [116, "DocumentParagraph"],
-    [117, "DocumentParagraph"]
+    [117, "DocumentParagraph"],
+    [118, "DocumentParagraph"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
   "frames": [
     {
       "frameId": 5,
-      "frameName": "Ready for text selection",
+      "frameName": "Ready for press selection",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -150,7 +151,7 @@
     },
     {
       "frameId": 7,
-      "frameName": "Touch drag selects text",
+      "frameName": "Short press moved the caret",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -176,8 +177,8 @@
       "root": null
     },
     {
-      "frameId": 10,
-      "frameName": "Replaced template keeps text input",
+      "frameId": 9,
+      "frameName": "Long press extended the selection",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -204,7 +205,7 @@
     },
     {
       "frameId": 12,
-      "frameName": "Selection after template replacement",
+      "frameName": "Template refresh preserved press selection",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
@@ -231,7 +232,34 @@
     },
     {
       "frameId": 15,
-      "frameName": "View-only text still scrolls",
+      "frameName": "Selectable content scrolled without changing the range",
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "clientBounds": {
+          "x1": {"value": 0},
+          "y1": {"value": 0},
+          "x2": {"value": 0},
+          "y2": {"value": 0}
+        },
+        "sizeState": "Minimized",
+        "customFramePadding": {
+          "left": {"value": 0},
+          "top": {"value": 0},
+          "right": {"value": 0},
+          "bottom": {"value": 0}
+        }
+      },
+      "elements": null,
+      "root": null
+    },
+    {
+      "frameId": 18,
+      "frameName": "View-only content still scrolls",
       "windowSize": {
         "bounds": {
           "x1": {"value": 0},
