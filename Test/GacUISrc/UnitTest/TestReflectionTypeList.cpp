@@ -50,6 +50,25 @@ TEST_FILE
 {
 	SetGuiMainProxy([]()
 	{
+		TEST_CASE(L"Controls expose writable context menu properties without change events")
+		{
+			auto controlType = GetTypeDescriptor<GuiControl>();
+			for (auto name : { L"ContextMenu", L"DisplayContextMenuOnRightClick" })
+			{
+				auto property = controlType->GetPropertyByName(name, true);
+				TEST_ASSERT(property);
+				TEST_ASSERT(property->GetGetter());
+				TEST_ASSERT(property->GetSetter());
+				TEST_ASSERT(!property->GetValueChangedEvent());
+			}
+			auto menuType = controlType->GetPropertyByName(L"ContextMenu", true)->GetReturn();
+			TEST_ASSERT(menuType->GetDecorator() == ITypeInfo::RawPtr);
+			TEST_ASSERT(menuType->GetTypeDescriptor() == GetTypeDescriptor<GuiPopup>());
+			auto displayType = controlType->GetPropertyByName(L"DisplayContextMenuOnRightClick", true)->GetReturn();
+			TEST_ASSERT(displayType->GetDecorator() == ITypeInfo::TypeDescriptor);
+			TEST_ASSERT(displayType->GetTypeDescriptor() == GetTypeDescriptor<bool>());
+		});
+
 		TEST_CASE(L"Raw elements expose shared Id and Data without property events")
 		{
 			auto rawType = GetTypeDescriptor(L"presentation::elements::GuiRawElementBase");

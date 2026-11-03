@@ -1315,6 +1315,173 @@ public static class GacUIShowcaseTests
         Wait(() => StylePopupSnapshot() == null, "popup application closes the menu");
         Check(Pattern<WindowPattern>(root, WindowPattern.Pattern).WaitForInputIdle(30000), "popup closure reaches idle");
     }
+    static List<Dictionary<string, object>> DocumentContextMenus()
+    {
+        var menus = new List<Dictionary<string, object>>();
+        foreach (var node in SnapshotNodes(ControlsSnapshot()))
+        {
+            object composition, role;
+            if (!node.TryGetValue("composition", out composition)) continue;
+            var content = composition as Dictionary<string, object>;
+            if (content != null && content.TryGetValue("control", out role) && (string)role == "Menu"
+                && SnapshotHas(content, "elementText", "Select All") && SnapshotHas(content, "elementText", "Object")) menus.Add(node);
+        }
+        return menus;
+    }
+    static void ContextMenuCommand(string name, bool uia)
+    {
+        if (uia)
+        {
+            var popup = Popup(ControlType.Menu);
+            Check(popup != null, "UIA context menu is exposed");
+            Pattern<InvokePattern>(Named(popup, name, ControlType.MenuItem), InvokePattern.Pattern).Invoke();
+        }
+        else
+        {
+            var menus = DocumentContextMenus();
+            Check(menus.Count == 1, "one document context menu before command");
+            var menu = menus[0];
+            foreach (var node in SnapshotNodes(menu["composition"]))
+            {
+                object caption;
+                if (!node.TryGetValue("elementText", out caption) || (string)caption != name) continue;
+                var bounds = SnapshotBounds(node);
+                string endpoint = inputEndpoint;
+                object windowId;
+                if (menu.TryGetValue("windowId", out windowId)) endpoint += "/" + (string)windowId;
+                Input("!LeftClick:" + (int)(bounds.Left + bounds.Width / 2) + "," + (int)(bounds.Top + bounds.Height / 2), endpoint);
+                return;
+            }
+            throw new Exception("Rendered context command is missing: " + name);
+        }
+    }
+    static void DocumentContextMenu(IntPtr hwnd)
+    {
+        Test("Document context menus / automation IO followed by UIA Invoke");
+        string fixture = System.IO.Path.GetFullPath(System.IO.Path.Combine(PersistenceOutput, "..", "..", "TestDocument.bin"));
+        var expected = new[] { "Undo", "Redo", "Copy", "Cut", "Paste", "Delete", "Select All", "Object", "Set Font ...", "Text Color ...", "Background Color ...", "Edit Hyperlink ...", "Remove Hyperlink" };
+        for (int pass = 0; pass < 2; pass++)
+        {
+            PersistencePalette(hwnd, pass == 0 ? "Default" : "Aurora");
+            for (int editor = 0; editor < 2; editor++)
+            {
+                bool ribbon = editor == 0;
+                bool uia = pass == 1;
+                var page = Page(Page(root, "Control"), ribbon ? "Document Editor (Ribbon)" : "Document Editor (Toolstrip)");
+                PersistenceFile(page, ribbon, "Load as Private Format", fixture, false);
+                var document = Find(page, ControlType.Document)[0];
+                var text = Pattern<TextPattern>(document, TextPattern.Pattern);
+                Wait(() => text.DocumentRange.GetText(-1).Contains("GacUI Remote Document"), "context fixture loaded");
+                document.SetFocus();
+                if (ribbon)
+                {
+                    Press("Ctrl+Home");
+                    Press("Ctrl+Shift+Right");
+                }
+                else
+                {
+                    PointInput("Down", 1301, document, 0.02, 0.02);
+                    PointInput("Up", 1301, document, 0.02, 0.02);
+                    Wait(() => text.GetSelection()[0].GetText(-1).Length == 0, "point short press establishes a caret");
+                    PointInput("Down", 1301, document, 0.25, 0.02);
+                    Thread.Sleep(550);
+                    Check(text.GetSelection()[0].GetText(-1).Length == 0, "point hold leaves the caret collapsed until release");
+                    PointInput("Up", 1301, document, 0.25, 0.02);
+                }
+                Wait(() => text.GetSelection()[0].GetText(-1).Length > 0, "context test has a selected range");
+                Action open = () => {
+                    var selection = text.GetSelection()[0].Clone();
+                    if (ribbon)
+                    {
+                        var bounds = document.Current.BoundingRectangle;
+                        double x = bounds.Left + bounds.Width * 0.4, y = bounds.Top + bounds.Height * 0.15;
+                        Pointer("RightDown", x, y);
+                        Check(DocumentContextMenus().Count == 0, "right down does not open the menu");
+                        Pointer("RightUp", x, y);
+                    }
+                    else
+                    {
+                        PointInput("Down", 1302, document, 0.25, 0.02);
+                        Thread.Sleep(550);
+                        Check(DocumentContextMenus().Count == 0, "long hold does not open the menu before release");
+                        PointInput("Up", 1302, document, 0.25, 0.02);
+                    }
+                    Wait(() => DocumentContextMenus().Count == 1, "one context popup opens on release");
+                    Check(text.GetSelection()[0].Compare(selection), "context opening preserves both caret endpoints");
+                };
+                open();
+                var popup = Popup(ControlType.Menu);
+                var items = Find(popup, ControlType.MenuItem).FindAll(item => !item.Current.IsOffscreen);
+                Check(items.Count == expected.Length, "context menu has exactly thirteen top-level items");
+                for (int index = 0; index < expected.Length; index++) Check(items[index].Current.Name == expected[index], "context item order " + index + ": " + expected[index]);
+                Check(Find(popup, ControlType.Separator).Count == 5, "context menu has five group separators");
+                foreach (string name in new[] { "Undo", "Redo", "Copy", "Cut", "Paste" })
+                {
+                    var equivalent = FindNamed(page, name, ControlType.Button);
+                    if (equivalent != null)
+                    {
+                        var item = Named(popup, name, ControlType.MenuItem);
+                        Check(item.Current.IsEnabled == equivalent.Current.IsEnabled, "shared enabled state: " + name);
+                        Check(item.Current.AcceleratorKey == equivalent.Current.AcceleratorKey, "shared shortcut: " + name);
+                    }
+                }
+                var objectItem = Named(popup, "Object", ControlType.MenuItem);
+                Absent(objectItem, InvokePattern.Pattern);
+                if (uia) Pattern<ExpandCollapsePattern>(objectItem, ExpandCollapsePattern.Pattern).Expand();
+                else ContextMenuCommand("Object", false);
+                Wait(() => Pattern<ExpandCollapsePattern>(objectItem, ExpandCollapsePattern.Pattern).Current.ExpandCollapseState == ExpandCollapseState.Expanded, "Object submenu opens");
+                foreach (string name in new[] { "Insert Image ...", "Edit Hyperlink ...", "Remove Hyperlink" })
+                {
+                    Wait(() => {
+                        foreach (var window in OwnedWindows())
+                        foreach (var item in Find(window, ControlType.MenuItem))
+                        {
+                            if (!item.Current.IsOffscreen && item.Current.Name == name) return true;
+                        }
+                        return false;
+                    }, "Object child is exposed: " + name);
+                }
+                Press("Escape"); Press("Escape");
+                Wait(() => DocumentContextMenus().Count == 0, "Escape dismisses the context menu");
+                open();
+                string before = text.DocumentRange.GetText(-1);
+                string selectedText = text.GetSelection()[0].GetText(-1);
+                ContextMenuCommand("Copy", uia);
+                Wait(() => DocumentContextMenus().Count == 0, "Copy dismisses the menu");
+                Check(text.DocumentRange.GetText(-1) == before && text.GetSelection()[0].GetText(-1) == selectedText, "Copy preserves text and selection");
+                open(); ContextMenuCommand("Cut", uia);
+                Wait(() => text.DocumentRange.GetText(-1).Length == before.Length - selectedText.Length, "Cut removes the selected text");
+                // A short press is unnecessary here: Cut leaves its insertion caret.
+                var boundsAfterCut = document.Current.BoundingRectangle;
+                Pointer("RightClick", boundsAfterCut.Left + 20, boundsAfterCut.Top + 20);
+                Wait(() => DocumentContextMenus().Count == 1, "menu opens at the cut caret");
+                ContextMenuCommand("Paste", uia);
+                Wait(() => text.DocumentRange.GetText(-1) == before, "Paste restores the copied text at the cut caret");
+                Pointer("RightClick", boundsAfterCut.Left + 20, boundsAfterCut.Top + 20);
+                Wait(() => DocumentContextMenus().Count == 1, "menu reopens for Undo");
+                ContextMenuCommand("Undo", uia);
+                Wait(() => text.DocumentRange.GetText(-1).Length == before.Length - selectedText.Length, "Undo removes the pasted text");
+                Pointer("RightClick", boundsAfterCut.Left + 20, boundsAfterCut.Top + 20);
+                Wait(() => DocumentContextMenus().Count == 1, "menu reopens for Redo");
+                ContextMenuCommand("Redo", uia);
+                Wait(() => text.DocumentRange.GetText(-1) == before, "Redo restores the pasted text");
+                Pointer("RightClick", boundsAfterCut.Left + 20, boundsAfterCut.Top + 20);
+                Wait(() => DocumentContextMenus().Count == 1, "menu reopens for Select All");
+                ContextMenuCommand("Select All", uia);
+                Wait(() => text.GetSelection()[0].GetText(-1) == before, "Select All covers the document");
+                open(); ContextMenuCommand("Delete", uia);
+                Wait(() => text.DocumentRange.GetText(-1) == "", "Delete clears the selected document");
+                Pointer("RightClick", boundsAfterCut.Left + 20, boundsAfterCut.Top + 20);
+                Wait(() => DocumentContextMenus().Count == 1, "menu opens in the empty document");
+                ContextMenuCommand("Undo", uia);
+                Wait(() => text.DocumentRange.GetText(-1) == before, "Undo restores the deleted document");
+                Console.WriteLine("PASS context editing / " + (ribbon ? "Ribbon" : "Toolstrip synthetic point selection") + " / " + (uia ? "UIA Invoke after Aurora refresh" : "automation IO"));
+                PersistenceFile(page, ribbon, "Load as Private Format", fixture, false);
+            }
+        }
+        Console.WriteLine("LIMITATION UIA has no point-injection or context-menu-open pattern; opening uses synthetic automation IO in both passes, never physical touch.");
+        PersistencePalette(hwnd, "Default");
+    }
     static void DocumentStyles(IntPtr hwnd, string folder)
     {
         Test("Document styles / fixture load, all built-ins, unused definitions and palette replacement");
@@ -3255,13 +3422,14 @@ public static class GacUIShowcaseTests
         // template replacement before broad notification subscriptions; those
         // exercise event contracts separately and cache the entire rebuilt tree.
         if (scenario == "All" || scenario == "Persistence") DocumentPersistence(hwnd);
+        if (scenario == "All" || scenario == "DocumentContextMenu") DocumentContextMenu(hwnd);
         if (scenario == "DocumentStyles")
         {
             string folder = System.IO.Path.Combine(PersistenceOutput, "UIA-" + ownedProcess);
             System.IO.Directory.CreateDirectory(folder);
             DocumentStyles(hwnd, folder);
         }
-        if (scenario != "RawClock" && scenario != "Touching" && scenario != "Persistence" && scenario != "DocumentStyles")
+        if (scenario != "RawClock" && scenario != "Touching" && scenario != "Persistence" && scenario != "DocumentStyles" && scenario != "DocumentContextMenu")
         {
             Automation.AddStructureChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref structureEvents));
             Automation.AddAutomationPropertyChangedEventHandler(root, TreeScope.Subtree, (s,e) => Interlocked.Increment(ref propertyEvents), AutomationElement.NameProperty, SelectionItemPattern.IsSelectedProperty, TogglePattern.ToggleStateProperty);
