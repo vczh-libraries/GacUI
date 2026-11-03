@@ -606,6 +606,9 @@ namespace gacuisrc_unittest
                 (buttonDelete.Command = commandDelete);
             }
             {
+                (button.ContextMenu = menu);
+            }
+            {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     menu.ShowPopup(button, true);
